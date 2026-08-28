@@ -1,16 +1,19 @@
-﻿@inherits LayoutComponentBase
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+@inherits LayoutComponentBase
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+<div class="sem-app">
+    <header class="sem-header">
+        <span class="brand">Stellaris Empire Manager</span>
+        <NavLink href="" Match="NavLinkMatch.All" class="sem-tab">Empires</NavLink>
+        <NavLink href="settings" class="sem-tab">Settings</NavLink>
+    </header>
 
-        <article class="content px-4">
-            @Body
-        </article>
+    <main class="sem-main">
+        @Body
     </main>
+</div>
+
+<div id="blazor-error-ui">
+    Something went wrong.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
 </div>

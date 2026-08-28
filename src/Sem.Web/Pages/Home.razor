@@ -1,16 +1,159 @@
 @page "/"
+@using Sem.Designs
+@using Sem.Ui.Components
+@using Sem.Ui.Services
+@inject SessionHost Host
+@inject IFileExchange Files
+@inject NavigationManager Navigation
 
-<PageTitle>Stellaris Empire Manager</PageTitle>
+<PageTitle>Empires — Stellaris Empire Manager</PageTitle>
 
-<h1>Stellaris Empire Manager</h1>
+@if (_session is null)
+{
+    <div class="sem-loading">
+        @if (Host.LoadError is { } error)
+        {
+            <h2>The game data is not available</h2>
+            <p class="sem-hint">@error</p>
+            <p class="sem-hint">
+                A local build needs the data extracted first:
+                <code>dotnet run --project src/Sem.Cli -- extract --web</code>
+            </p>
+        }
+        else
+        {
+            <p>Loading game data…</p>
+        }
+    </div>
+}
+else
+{
+    <div class="sem-panel">
+        <div class="sem-row">
+            <div>
+                <h2 style="margin:0">Your empires</h2>
+                <span class="sem-hint">
+                    @if (_session.File is { } file && file.Designs.Count > 0)
+                    {
+                        @($"{file.Designs.Count} in {_session.FileName}")
+                        @if (_session.IsModified)
+                        {
+                            <text> · unsaved changes</text>
+                        }
+                    }
+                    else
+                    {
+                        <text>Open your empire designs file to begin.</text>
+                    }
+                </span>
+            </div>
 
-<p>
-    The empire designer is not built yet. This shell exists so the WebAssembly host is wired up
-    and building from the first commit.
-</p>
+            <span class="sem-spacer"></span>
 
-<p>
-    When it is finished, this page will let you load your <code>user_empire_designs_v3.4.txt</code>,
-    edit your empires against the real game rules, and export the file again. Your designs are
-    parsed in your own browser and never uploaded.
-</p>
+            <label class="sem-button" for="designs-file">Open designs file</label>
+            <InputFile id="designs-file" OnChange="OpenFile" style="display:none" accept=".txt" />
+
+            <button type="button" @onclick="AddEmpire">New empire</button>
+
+            <button type="button" class="primary"
+                    disabled="@(_session.File is null || _session.File.Designs.Count == 0)"
+                    @onclick="Export">
+                @Files.SaveVerb
+            </button>
+        </div>
+
+        @if (_error is { } message)
+        {
+            <p class="sem-status bad" style="margin-top:10px">@message</p>
+        }
+    </div>
+
+    <p class="sem-hint" style="margin-bottom:16px">
+        Your file is read in this tab and never uploaded. Empires you do not touch are written back
+        exactly as they were.
+    </p>
+
+    <EmpireBrowser Session="_session" OnSelected="OpenDesigner" />
+}
+
+@code {
+    private DesignSession? _session;
+    private string? _error;
+
+    protected override async Task OnInitializedAsync() => _session = await Host.GetAsync();
+
+    private async Task OpenFile(InputFileChangeEventArgs e)
+    {
+        _error = null;
+
+        try
+        {
+            // Generous enough for any real designs file; the player's own is about forty kilobytes.
+            await using var stream = e.File.OpenReadStream(maxAllowedSize: 16 * 1024 * 1024);
+            using var buffer = new MemoryStream();
+            await stream.CopyToAsync(buffer);
+
+            _session!.Load(buffer.ToArray(), e.File.Name);
+        }
+        catch (Exception ex) when (ex is Sem.Clausewitz.CwSyntaxException or IOException)
+        {
+            // Loading half a damaged file would be worse than refusing it.
+            _error = $"That file could not be read: {ex.Message}";
+        }
+    }
+
+    private void AddEmpire()
+    {
+        if (_session?.File is null)
+        {
+            _session?.StartEmptyFile();
+        }
+
+        var name = NextName();
+        var template = _session!.Data.Database.NewEmpireTemplate;
+
+        // The game keeps a blank template of its own; starting from it means a new empire is
+        // playable straight away rather than an empty shell.
+        _session.EditFile(file =>
+        {
+            if (string.IsNullOrEmpty(template))
+            {
+                file.Add(name);
+            }
+            else
+            {
+                file.AddFromTemplate(template, name);
+            }
+        });
+
+        _session.Select(_session.File!.Find(name));
+        Navigation.NavigateTo("designer");
+    }
+
+    private string NextName()
+    {
+        const string baseName = "New Empire";
+
+        if (_session?.File?.Find(baseName) is null)
+        {
+            return baseName;
+        }
+
+        for (var i = 2; ; i++)
+        {
+            var candidate = $"{baseName} {i}";
+            if (_session.File.Find(candidate) is null)
+            {
+                return candidate;
+            }
+        }
+    }
+
+    private void OpenDesigner(EmpireDesign design) => Navigation.NavigateTo("designer");
+
+    private async Task Export()
+    {
+        var name = _session!.FileName is { Length: > 0 } existing ? existing : EmpireDesignsFile.FileName;
+        await Files.SaveAsync(name, _session.Save());
+    }
+}

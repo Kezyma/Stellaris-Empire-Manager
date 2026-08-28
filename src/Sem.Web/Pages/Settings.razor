@@ -1,0 +1,46 @@
+@page "/settings"
+@using Sem.Ui.Components
+@using Sem.Ui.Services
+@inject SessionHost Host
+
+<PageTitle>Settings — Stellaris Empire Manager</PageTitle>
+
+<h1>Settings</h1>
+
+@if (_session is null)
+{
+    <div class="sem-loading"><p>Loading…</p></div>
+}
+else
+{
+    <CascadingValue Value="_session">
+        <DlcPanel />
+    </CascadingValue>
+
+    <div class="sem-panel">
+        <h3>Game data</h3>
+        <dl class="sem-summary">
+            <dt>Game version</dt>
+            <dd>@_session.Data.Database.GameVersion</dd>
+            <dt>Extractor</dt>
+            <dd>@_session.Data.Database.ExtractorVersion</dd>
+            <dt>Text entries</dt>
+            <dd>@_session.Data.Localisation.Count.ToString("N0")</dd>
+        </dl>
+
+        @if (_session.Data.Database.UnrecognisedTriggers.Count > 0)
+        {
+            <p class="sem-status warn" style="margin-top:10px">
+                @_session.Data.Database.UnrecognisedTriggers.Count condition(s) in the game files were
+                not understood when this data was extracted. Options relying on them are offered
+                rather than hidden.
+            </p>
+        }
+    </div>
+}
+
+@code {
+    private DesignSession? _session;
+
+    protected override async Task OnInitializedAsync() => _session = await Host.GetAsync();
+}

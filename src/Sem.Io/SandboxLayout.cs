@@ -19,6 +19,7 @@ public sealed class SandboxLayout
         UserData = Path.Combine(Root, "userdata");
         GameFiles = Path.Combine(Root, "gamefiles");
         Output = Path.Combine(Root, "output");
+        WebGameData = Path.Combine(repositoryRoot, "src", "Sem.Web", "wwwroot", "gamedata");
     }
 
     /// <summary>Repository root, identified by the solution file.</summary>
@@ -35,6 +36,12 @@ public sealed class SandboxLayout
 
     /// <summary>Scratch space for exports and test artifacts.</summary>
     public string Output { get; }
+
+    /// <summary>
+    /// Where the web app expects its extracted game data, so a local build has something to serve.
+    /// Gitignored, since extracted content never enters the repository.
+    /// </summary>
+    public string WebGameData { get; }
 
     /// <summary>Builds the layout for a known repository root.</summary>
     public static SandboxLayout ForRepository(string repositoryRoot)
@@ -83,7 +90,12 @@ public sealed class SandboxLayout
     /// </summary>
     public WritePolicy CreateDevelopmentPolicy()
     {
-        var policy = WritePolicy.ForDevelopment(Root).Named("development (sandbox only)");
+        // The web app's extracted data lives inside the repository because that is where the site
+        // build has to find it. It is gitignored, and the protections that matter, on the game
+        // install and the player's presets, are unaffected.
+        var policy = WritePolicy.ForDevelopment(Root)
+            .Allowing(WebGameData)
+            .Named("development (sandbox only)");
 
         var installRoot = StellarisLocator.FindInstallRoot();
         if (installRoot is not null)

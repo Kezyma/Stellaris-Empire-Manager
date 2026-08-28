@@ -13,11 +13,11 @@ internal static class PrescriptedConverter
 {
     public static void Populate(PrescriptedEmpire source, EmpireDesign target)
     {
-        CopyName(target.Name, source.Name);
-        CopyName(target.Adjective, source.Adjective);
-        CopyName(target.ShipPrefix, source.ShipPrefix);
-        CopyName(target.PlanetName, source.PlanetName);
-        CopyName(target.SystemName, source.SystemName);
+        CopyName(() => target.Name, source.Name);
+        CopyName(() => target.Adjective, source.Adjective);
+        CopyName(() => target.ShipPrefix, source.ShipPrefix);
+        CopyName(() => target.PlanetName, source.PlanetName);
+        CopyName(() => target.SystemName, source.SystemName);
 
         target.Authority = source.Authority;
         target.Government = source.Government;
@@ -70,9 +70,9 @@ internal static class PrescriptedConverter
         target.Gender = source.Gender ?? "not_set";
         target.SetTraits(source.Traits);
 
-        CopyName(target.Name, source.Name);
-        CopyName(target.Plural, source.Plural);
-        CopyName(target.Adjective, source.Adjective);
+        CopyName(() => target.Name, source.Name);
+        CopyName(() => target.Plural, source.Plural);
+        CopyName(() => target.Adjective, source.Adjective);
     }
 
     /// <summary>
@@ -121,11 +121,15 @@ internal static class PrescriptedConverter
     /// Points a structured name at a localisation key, leaving it non-literal so the game still
     /// translates it.
     /// </summary>
-    private static void CopyName(LocRef target, string? localisationKey)
+    /// <remarks>
+    /// The target is reached through a function rather than passed in, so a source with no such
+    /// name leaves no empty block behind. The game's own blank template names almost nothing.
+    /// </remarks>
+    private static void CopyName(Func<LocRef> target, string? localisationKey)
     {
         if (localisationKey is not null)
         {
-            target.Key = localisationKey;
+            target().Key = localisationKey;
         }
     }
 }

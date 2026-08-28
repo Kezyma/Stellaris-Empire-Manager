@@ -1,0 +1,168 @@
+@*
+    The empire's first ruler.
+*@
+
+<div class="sem-columns">
+    <div class="sem-panel">
+        <h3>Ruler</h3>
+
+        <div class="sem-field">
+            <label for="ruler-name">Name</label>
+            <input id="ruler-name" type="text" value="@RulerName"
+                   @onchange="e => SetName(e.Value?.ToString())" />
+        </div>
+
+        <div class="sem-field">
+            <label for="ruler-title">Title</label>
+            <input id="ruler-title" type="text" value="@Design.Ruler.Title?.Key"
+                   placeholder="@DefaultTitle"
+                   @onchange="e => SetTitle(e.Value?.ToString())" />
+            <span class="sem-hint">Left empty, the government supplies one.</span>
+        </div>
+
+        <div class="sem-field">
+            <label for="ruler-gender">Gender</label>
+            <select id="ruler-gender" @onchange="e => Session.Edit(d => d.Ruler.Gender = e.Value?.ToString())">
+                @foreach (var gender in (string[])["not_set", "male", "female", "indeterminable"])
+                {
+                    <option value="@gender" selected="@(gender == Design.Ruler.Gender)">
+                        @Localizer.Prettify(gender)
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="sem-field">
+            <label for="ruler-class">Leader class</label>
+            <select id="ruler-class" @onchange="e => Session.Edit(d => d.Ruler.LeaderClass = e.Value?.ToString())">
+                @foreach (var leaderClass in (string[])["official", "commander", "scientist"])
+                {
+                    <option value="@leaderClass" selected="@(leaderClass == Design.Ruler.LeaderClass)">
+                        @Localizer.Prettify(leaderClass)
+                    </option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="sem-panel">
+        <h3>Traits</h3>
+
+        <p class="sem-hint">
+            A ruler begins with one of these, and the government's own bonuses come on top.
+        </p>
+
+        <div class="sem-options">
+            @foreach (var trait in RulerTraits)
+            {
+                <OptionCard Name="@Session.Localizer.Text(trait.Key)"
+                            Description="@Session.Localizer.Text($"{trait.Key}_desc", string.Empty)"
+                            Icon="@trait.Icon"
+                            Selected="@Design.Ruler.Traits.Contains(trait.Key)"
+                            Enabled="@IsAllowed(trait)"
+                            Reasons="@Blockers(trait)"
+                            OnSelect="() => Toggle(trait.Key)" />
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    private EmpireDesign Design => Session.Current!;
+
+    private DesignContext Context => Session.Context!;
+
+    /// <summary>
+    /// The name as stored. A ruler's name is normally a template the game fills from the species'
+    /// name list, and typing over it replaces the whole thing with plain text.
+    /// </summary>
+    private string RulerName => Design.Ruler.Name.FullNames?.Key ?? string.Empty;
+
+    private string DefaultTitle =>
+        Session.Rules.DeriveGovernment(Context)?.RulerTitleKey is { } key
+            ? Session.Localizer.Text(key)
+            : "chosen by the government";
+
+    private IEnumerable<TraitDefinition> RulerTraits =>
+        Session.Data.Database.Traits
+            .Where(t => t.Kind == TraitKind.StartingRuler)
+            .OrderBy(t => Session.Localizer.Text(t.Key), StringComparer.CurrentCulture);
+
+    private bool IsAllowed(TraitDefinition trait) =>
+        Blockers(trait).Count == 0;
+
+    /// <summary>
+    /// Why a ruler trait is out of reach. These are gated by origin and by content pack rather
+    /// than by the species rules that govern the founder species' own traits.
+    /// </summary>
+    private IReadOnlyList<string> Blockers(TraitDefinition trait)
+    {
+        var reasons = new List<string>();
+
+        if (trait.RequiredDlc is { } dlc && !Context.OwnedDlc.Contains(dlc))
+        {
+            reasons.Add($"Needs {dlc}");
+        }
+
+        if (Context.Origin is { } origin && trait.ForbiddenOrigins.Contains(origin))
+        {
+            reasons.Add($"Not with {Session.Localizer.Text(origin)}");
+        }
+
+        if (trait.AllowedOrigins.Count > 0 &&
+            (Context.Origin is null || !trait.AllowedOrigins.Contains(Context.Origin)))
+        {
+            reasons.Add("Needs a different origin");
+        }
+
+        if (trait.AllowedEthics.Count > 0 && !Context.Ethics.Any(trait.AllowedEthics.Contains))
+        {
+            reasons.Add("Needs different ethics");
+        }
+
+        return reasons;
+    }
+
+    private void SetName(string? value)
+    {
+        Session.Edit(d =>
+        {
+            var names = d.Ruler.Name.GetOrAddFullNames();
+            names.SetLiteral(value ?? string.Empty);
+        });
+    }
+
+    private void SetTitle(string? value)
+    {
+        Session.Edit(d =>
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                d.Ruler.Block.Remove(d.Ruler.Block.Nodes.FirstOrDefault(n => n.Key == "ruler_title")!);
+                return;
+            }
+
+            d.Ruler.GetOrAddTitle().SetLiteral(value);
+        });
+    }
+
+    private void Toggle(string key)
+    {
+        Session.Edit(d =>
+        {
+            var traits = d.Ruler.Traits.ToList();
+
+            if (!traits.Remove(key))
+            {
+                // A starting ruler takes one trait, so choosing another replaces it.
+                traits.Clear();
+                traits.Add(key);
+            }
+
+            d.Ruler.SetTraits(traits);
+        });
+    }
+}

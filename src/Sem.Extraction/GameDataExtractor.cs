@@ -90,6 +90,7 @@ public sealed class GameDataExtractor(LayeredContent content)
 
         Report("Reading built-in empires");
         var prescripted = MetadataExtractor.ExtractPrescriptedEmpires(loader, requirements);
+        var template = MetadataExtractor.ExtractNewEmpireTemplate(loader);
 
         return new GameDatabase
         {
@@ -119,6 +120,7 @@ public sealed class GameDataExtractor(LayeredContent content)
             FlagCategories = flagCategories,
             FlagColors = flagColors,
             PrescriptedEmpires = prescripted,
+            NewEmpireTemplate = template,
             UnrecognisedTriggers = requirements.Unrecognised
                 .OrderByDescending(p => p.Value)
                 .ToDictionary(p => p.Key, p => p.Value, StringComparer.Ordinal),

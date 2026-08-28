@@ -1,0 +1,40 @@
+@*
+    Which content packs to judge availability against.
+
+    The desktop app knows this from the installation it read. The web app cannot, so it opens with
+    whatever the data was extracted from and lets the player correct it.
+*@
+
+<div class="sem-panel">
+    <h3>Content packs</h3>
+    <p class="sem-hint">
+        Options are shown or blocked according to what is ticked here.
+        <button type="button" class="sem-tab" @onclick="SelectAll">Select all</button>
+        <button type="button" class="sem-tab" @onclick="SelectNone">None</button>
+    </p>
+
+    <div class="sem-checklist">
+        @foreach (var pack in Packs)
+        {
+            var owned = Session.OwnedDlc.Contains(pack.Name);
+
+            <label class="sem-check @(owned ? "on" : null)">
+                <input type="checkbox" checked="@owned"
+                       @onchange="e => Session.ToggleDlc(pack.Name, e.Value is true)" />
+                @Session.Localizer.Text(pack.NameKey, pack.Name)
+            </label>
+        }
+    </div>
+</div>
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    private IEnumerable<DlcDefinition> Packs =>
+        Session.Data.Database.Dlc.OrderBy(d => d.Name, StringComparer.CurrentCulture);
+
+    private void SelectAll() => Session.SetOwnedDlc(Session.Data.Database.Dlc.Select(d => d.Name));
+
+    private void SelectNone() => Session.SetOwnedDlc([]);
+}

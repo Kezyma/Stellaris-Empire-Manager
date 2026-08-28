@@ -1,0 +1,124 @@
+@implements IDisposable
+
+@*
+    The empire designer. Tabs follow the order the game puts them in, so someone who knows the
+    game's own designer already knows where to look.
+*@
+
+<CascadingValue Value="Session">
+    @if (Session.Current is null)
+    {
+        <div class="sem-empty">
+            <p>No empire selected.</p>
+        </div>
+    }
+    else
+    {
+        <div class="sem-tabs">
+            @foreach (var tab in Tabs)
+            {
+                var problems = ProblemCount(tab);
+
+                <button type="button"
+                        class="sem-tab @(tab == _selected ? "active" : null)"
+                        @onclick="() => _selected = tab">
+                    @Title(tab)
+                    @if (problems > 0)
+                    {
+                        <span class="count">@problems</span>
+                    }
+                </button>
+            }
+        </div>
+
+        @switch (_selected)
+        {
+            case DesignerTab.Species:
+                <SpeciesTab />
+                break;
+
+            case DesignerTab.Ethics:
+                <EthicsTab />
+                break;
+
+            case DesignerTab.Government:
+                <GovernmentTab />
+                break;
+
+            case DesignerTab.Origin:
+                <OriginTab />
+                break;
+
+            case DesignerTab.Homeworld:
+                <HomeworldTab />
+                break;
+
+            case DesignerTab.Appearance:
+                <AppearanceTab />
+                break;
+
+            case DesignerTab.Ruler:
+                <RulerTab />
+                break;
+
+            default:
+                <SummaryTab />
+                break;
+        }
+    }
+</CascadingValue>
+
+@code {
+    [Parameter, EditorRequired]
+    public required DesignSession Session { get; set; }
+
+    private DesignerTab _selected = DesignerTab.Species;
+
+    private static readonly DesignerTab[] AllTabs = Enum.GetValues<DesignerTab>();
+
+    /// <summary>
+    /// The second species tab appears only when the chosen origin calls for one, which is how the
+    /// game handles it too.
+    /// </summary>
+    private IEnumerable<DesignerTab> Tabs => AllTabs;
+
+    protected override void OnInitialized() => Session.Changed += OnChanged;
+
+    public void Dispose() => Session.Changed -= OnChanged;
+
+    private void OnChanged() => InvokeAsync(StateHasChanged);
+
+    private static string Title(DesignerTab tab) => tab switch
+    {
+        DesignerTab.Species => "Species",
+        DesignerTab.Ethics => "Ethics",
+        DesignerTab.Government => "Government",
+        DesignerTab.Origin => "Origin",
+        DesignerTab.Homeworld => "Homeworld",
+        DesignerTab.Appearance => "Appearance",
+        DesignerTab.Ruler => "Ruler",
+        _ => "Summary",
+    };
+
+    /// <summary>
+    /// How many problems belong to a tab, so the player can see at a glance where the trouble is
+    /// rather than hunting for it.
+    /// </summary>
+    private int ProblemCount(DesignerTab tab)
+    {
+        var areas = tab switch
+        {
+            DesignerTab.Species => new[] { ValidationArea.Species, ValidationArea.Traits, ValidationArea.SecondarySpecies },
+            DesignerTab.Ethics => [ValidationArea.Ethics],
+            DesignerTab.Government => [ValidationArea.Authority, ValidationArea.Civics],
+            DesignerTab.Origin => [ValidationArea.Origin],
+            DesignerTab.Homeworld => [ValidationArea.Homeworld],
+            DesignerTab.Ruler => [ValidationArea.Ruler],
+            _ => [],
+        };
+
+        return areas.Length == 0
+            ? 0
+            : Session.Report.Errors.Count(p => areas.Contains(p.Area));
+    }
+}

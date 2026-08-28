@@ -30,8 +30,8 @@ Early development. See [the milestone plan](docs/) for what is built and what is
 | M3 — Game data extraction | Done |
 | M4 — Rules and validation engine | Done |
 | M5 — Icons, flags and image pipeline | Done |
-| M6 — Designer UI and web app | Next |
-| M7 — Desktop application | |
+| M6 — Designer UI and web app | Done |
+| M7 — Desktop application | Next |
 | M8 — Portrait rendering | |
 | M9 — Hardening and first release | |
 
@@ -77,6 +77,16 @@ To check the rules engine against the game's own built-in empires:
 
 ```bash
 dotnet run --project src/Sem.Cli -- validate
+```
+
+To run the web app locally, extract into it and start the site:
+
+```bash
+dotnet run --project src/Sem.Cli -- extract --web
+```
+
+```bash
+dotnet run --project src/Sem.Web
 ```
 
 **Your game install and your real empire designs are never modified during development.** This is

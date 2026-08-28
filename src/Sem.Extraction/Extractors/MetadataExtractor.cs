@@ -121,6 +121,37 @@ internal static class MetadataExtractor
         return results;
     }
 
+    /// <summary>
+    /// Converts the game's blank template into the player's designs format, so a new empire starts
+    /// from something playable rather than from nothing.
+    /// </summary>
+    public static string? ExtractNewEmpireTemplate(ScriptLoader loader)
+    {
+        foreach (var path in loader.Content.EnumerateFiles("prescripted_countries", "*.txt"))
+        {
+            PrescriptedCountriesFile file;
+            try
+            {
+                file = PrescriptedCountriesFile.Load(loader.Content.Read(path));
+            }
+            catch (CwSyntaxException)
+            {
+                continue;
+            }
+
+            if (file.Empires.FirstOrDefault(e => e.IsDefaultTemplate) is not { } template)
+            {
+                continue;
+            }
+
+            var designs = EmpireDesignsFile.CreateEmpty();
+            designs.AddFromPrescripted(template, "New Empire");
+            return designs.Document.ToText();
+        }
+
+        return null;
+    }
+
     private static Dictionary<string, DlcDefinition> ReadInstalledPacks(ScriptLoader loader)
     {
         var packs = new Dictionary<string, DlcDefinition>(StringComparer.Ordinal);

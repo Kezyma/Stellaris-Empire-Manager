@@ -1,0 +1,90 @@
+@implements IDisposable
+
+@*
+    The empires in the loaded file, with whichever ones the game would refuse marked as such.
+*@
+
+<CascadingValue Value="Session">
+    @if (Session.File is null)
+    {
+        <div class="sem-empty">
+            <p>No file open.</p>
+        </div>
+    }
+    else if (Session.File.Designs.Count == 0)
+    {
+        <div class="sem-empty">
+            <p>This file has no empires in it yet.</p>
+        </div>
+    }
+    else
+    {
+        <div class="sem-empires">
+            @foreach (var design in Session.File.Designs)
+            {
+                var report = Session.Validate(design);
+
+                <button type="button"
+                        class="sem-empire @(ReferenceEquals(design, Session.Current) ? "selected" : null)"
+                        @onclick="() => Choose(design)">
+
+                    <FlagPreview Flag="@design.Flag" Class="small" />
+
+                    <span class="body">
+                        <span class="name">@Session.Localizer.Text(design.Name.Key, design.Key)</span>
+                        <span class="sub">@Describe(design)</span>
+
+                        @if (!report.IsValid)
+                        {
+                            <span class="sem-status bad">@report.Errors.Count problem@(report.Errors.Count == 1 ? "" : "s")</span>
+                        }
+                    </span>
+                </button>
+            }
+        </div>
+    }
+</CascadingValue>
+
+@code {
+    [Parameter, EditorRequired]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>Raised when an empire is chosen, so the host can move to the designer.</summary>
+    [Parameter]
+    public EventCallback<EmpireDesign> OnSelected { get; set; }
+
+    protected override void OnInitialized() => Session.Changed += OnChanged;
+
+    public void Dispose() => Session.Changed -= OnChanged;
+
+    private void OnChanged() => InvokeAsync(StateHasChanged);
+
+    private async Task Choose(EmpireDesign design)
+    {
+        Session.Select(design);
+        await OnSelected.InvokeAsync(design);
+    }
+
+    /// <summary>A one-line description, the way the game lists an empire.</summary>
+    private string Describe(EmpireDesign design)
+    {
+        var parts = new List<string>();
+
+        if (design.Species.Class is { Length: > 0 } speciesClass)
+        {
+            parts.Add(Session.Localizer.Text(speciesClass));
+        }
+
+        if (design.Authority is { Length: > 0 } authority)
+        {
+            parts.Add(Session.Localizer.Text(authority));
+        }
+
+        if (design.Origin is { Length: > 0 } origin)
+        {
+            parts.Add(Session.Localizer.Text(origin));
+        }
+
+        return string.Join(" · ", parts);
+    }
+}

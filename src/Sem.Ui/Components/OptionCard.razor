@@ -1,0 +1,82 @@
+@*
+    One thing the player can pick. Shows what it costs, and when it cannot be picked, says why in
+    the game's own words rather than in wording this project invented.
+*@
+
+<button type="button"
+        class="sem-option @(Selected ? "selected" : null) @(Enabled ? null : "blocked")"
+        disabled="@(!Enabled && !Selected)"
+        title="@Description"
+        @onclick="OnClicked">
+
+    <GameIcon Path="@Icon" Alt="@Name" />
+
+    <span class="body">
+        <span class="name">
+            @Name
+            @if (Cost != 0)
+            {
+                <span class="cost @(Cost < 0 ? "negative" : null)">@(Cost > 0 ? "+" : "")@Cost</span>
+            }
+        </span>
+
+        @if (!string.IsNullOrEmpty(Description))
+        {
+            <span class="sem-desc">@Description</span>
+        }
+
+        @if (!Enabled && !Selected)
+        {
+            @foreach (var reason in Reasons.Distinct().Take(3))
+            {
+                <span class="why">@reason</span>
+            }
+        }
+
+        @if (!string.IsNullOrEmpty(RequiredDlc))
+        {
+            <span class="dlc">Needs @RequiredDlc</span>
+        }
+    </span>
+</button>
+
+@code {
+    /// <summary>The option's display name.</summary>
+    [Parameter, EditorRequired]
+    public required string Name { get; set; }
+
+    /// <summary>A short description, shown under the name and as a tooltip.</summary>
+    [Parameter]
+    public string? Description { get; set; }
+
+    /// <summary>The option's icon in the extracted assets.</summary>
+    [Parameter]
+    public string? Icon { get; set; }
+
+    /// <summary>What it costs, when it costs anything. Negative values give points back.</summary>
+    [Parameter]
+    public int Cost { get; set; }
+
+    /// <summary>Whether it is currently chosen.</summary>
+    [Parameter]
+    public bool Selected { get; set; }
+
+    /// <summary>Whether it can be chosen.</summary>
+    [Parameter]
+    public bool Enabled { get; set; } = true;
+
+    /// <summary>Why it cannot be chosen, in the game's own words.</summary>
+    [Parameter]
+    public IReadOnlyList<string> Reasons { get; set; } = [];
+
+    /// <summary>The content pack it needs, when the player does not have it.</summary>
+    [Parameter]
+    public string? RequiredDlc { get; set; }
+
+    /// <summary>Raised when the option is clicked.</summary>
+    [Parameter]
+    public EventCallback OnSelect { get; set; }
+
+    private Task OnClicked() =>
+        Enabled || Selected ? OnSelect.InvokeAsync() : Task.CompletedTask;
+}

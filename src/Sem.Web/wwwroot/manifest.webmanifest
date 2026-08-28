@@ -1,0 +1,16 @@
+{
+  "name": "Stellaris Empire Manager",
+  "short_name": "Empire Manager",
+  "description": "Build and manage Stellaris empire designs in your browser.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0d1117",
+  "theme_color": "#0d1117",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ]
+}

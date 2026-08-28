@@ -300,25 +300,24 @@ public sealed class EmpireRules(GameDatabase database)
             var reasons = new List<string>();
 
             // Gestalt consciousness replaces an empire's whole ethos rather than joining it.
-            if (ethic.IsGestalt && context.Ethics.Count > 0)
+            if ((ethic.IsGestalt && context.Ethics.Count > 0) || (!ethic.IsGestalt && context.IsGestalt))
             {
-                reasons.Add("ethic_gestalt_consciousness");
-            }
-            else if (!ethic.IsGestalt && context.IsGestalt)
-            {
-                reasons.Add("ethic_gestalt_consciousness");
+                reasons.Add(RuleReasons.GestaltExclusive);
             }
 
             // Opposing ethics share a category, and only one may be taken from each.
-            if (context.Ethics.Any(e => _ethics.TryGetValue(e, out var taken) &&
-                                        string.Equals(taken.Category, ethic.Category, StringComparison.Ordinal)))
+            var conflicting = context.Ethics.FirstOrDefault(
+                e => _ethics.TryGetValue(e, out var taken) &&
+                     string.Equals(taken.Category, ethic.Category, StringComparison.Ordinal));
+
+            if (conflicting is not null)
             {
-                reasons.Add(ethic.Key);
+                reasons.Add(RuleReasons.For(RuleReasons.EthicGroupTaken, conflicting));
             }
 
             if (budget.Remaining < ethic.Cost)
             {
-                reasons.Add("ETHIC_POINTS");
+                reasons.Add(RuleReasons.NotEnoughEthicsPoints);
             }
 
             options.Add(new OptionState(ethic.Key, true, reasons.Count == 0, reasons, ethic.Cost));
@@ -630,13 +629,13 @@ public sealed class EmpireRules(GameDatabase database)
 
         if (trait.RequiredDlc is { } dlc && !context.OwnedDlc.Contains(dlc))
         {
-            reasons.Add(dlc);
+            reasons.Add(RuleReasons.For(RuleReasons.MissingDlc, dlc));
         }
 
         if (trait.AllowedArchetypes.Count > 0 &&
             (context.SpeciesArchetype is null || !trait.AllowedArchetypes.Contains(context.SpeciesArchetype)))
         {
-            reasons.Add(trait.NameKey);
+            reasons.Add(RuleReasons.WrongArchetype);
         }
 
         // A portrait in the override list lifts the class restriction, which is how the game's own
@@ -645,7 +644,7 @@ public sealed class EmpireRules(GameDatabase database)
             (context.SpeciesClass is null || !trait.AllowedSpeciesClasses.Contains(context.SpeciesClass)) &&
             (context.Portrait is null || !trait.PortraitOverride.Contains(context.Portrait)))
         {
-            reasons.Add(trait.NameKey);
+            reasons.Add(RuleReasons.WrongSpeciesClass);
         }
 
         // Aquatic needs an ocean world, and a few others are tied to a homeworld in the same way.
@@ -654,50 +653,50 @@ public sealed class EmpireRules(GameDatabase database)
             context.EffectivePlanetClass is { } planet &&
             !trait.AllowedPlanetClasses.Contains(planet))
         {
-            reasons.Add(trait.NameKey);
+            reasons.Add(RuleReasons.For(RuleReasons.WrongPlanetClass, string.Join(", ", trait.AllowedPlanetClasses)));
         }
 
         if (trait.AllowedOrigins.Count > 0 &&
             (context.Origin is null || !trait.AllowedOrigins.Contains(context.Origin)))
         {
-            reasons.Add(trait.NameKey);
+            reasons.Add(RuleReasons.For(RuleReasons.WrongOrigin, string.Join(", ", trait.AllowedOrigins)));
         }
 
         if (context.Origin is { } origin && trait.ForbiddenOrigins.Contains(origin))
         {
-            reasons.Add(trait.NameKey);
+            reasons.Add(RuleReasons.For(RuleReasons.ForbiddenByOrigin, origin));
         }
 
         if (trait.AllowedEthics.Count > 0 && !context.Ethics.Any(trait.AllowedEthics.Contains))
         {
-            reasons.Add(trait.NameKey);
+            reasons.Add(RuleReasons.For(RuleReasons.WrongEthics, string.Join(", ", trait.AllowedEthics)));
         }
 
-        if (context.Ethics.Any(trait.ForbiddenEthics.Contains))
+        if (context.Ethics.FirstOrDefault(trait.ForbiddenEthics.Contains) is { } forbidden)
         {
-            reasons.Add(trait.NameKey);
+            reasons.Add(RuleReasons.For(RuleReasons.ForbiddenByEthics, forbidden));
         }
 
         if (trait.AllowedCivics.Count > 0 && !context.Civics.Any(trait.AllowedCivics.Contains))
         {
-            reasons.Add(trait.NameKey);
+            reasons.Add(RuleReasons.For(RuleReasons.WrongCivics, string.Join(", ", trait.AllowedCivics)));
         }
 
         foreach (var opposite in trait.Opposites.Where(context.Traits.Contains))
         {
-            reasons.Add(opposite);
+            reasons.Add(RuleReasons.For(RuleReasons.Opposite, opposite));
         }
 
         if (!ignoreBudget)
         {
             if (budget.Points.Remaining < trait.Cost)
             {
-                reasons.Add("TRAIT_POINTS");
+                reasons.Add(RuleReasons.NotEnoughPoints);
             }
 
             if (trait.Cost != 0 && budget.Picks.Remaining < 1)
             {
-                reasons.Add("MAX_TRAITS");
+                reasons.Add(RuleReasons.NoPicksLeft);
             }
         }
 

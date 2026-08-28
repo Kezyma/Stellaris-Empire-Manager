@@ -1,0 +1,37 @@
+@*
+    One of the game's icons, with a placeholder for the many entities that have none.
+    A missing icon is normal rather than an error, so it takes the same space and stays quiet.
+*@
+
+@if (!string.IsNullOrEmpty(Path))
+{
+    <img class="sem-icon @Size" src="@Session.Data.AssetUrl(Path)" alt="@Alt" loading="lazy" />
+}
+else
+{
+    <span class="sem-icon-placeholder @Size" style="@PlaceholderStyle" aria-hidden="true"></span>
+}
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>Where the icon lives in the extracted assets, as the database records it.</summary>
+    [Parameter]
+    public string? Path { get; set; }
+
+    /// <summary>Alternative text, normally the thing's display name.</summary>
+    [Parameter]
+    public string? Alt { get; set; }
+
+    /// <summary>An optional size class: <c>small</c> or <c>large</c>.</summary>
+    [Parameter]
+    public string? Size { get; set; }
+
+    private string PlaceholderStyle => Size switch
+    {
+        "small" => "width:20px;height:20px",
+        "large" => "width:40px;height:40px",
+        _ => "width:28px;height:28px",
+    };
+}

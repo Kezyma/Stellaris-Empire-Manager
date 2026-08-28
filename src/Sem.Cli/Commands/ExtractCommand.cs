@@ -33,20 +33,27 @@ public static class ExtractCommand
             Description = "Where to write gamedb.json. Defaults to the sandbox output directory.",
         };
 
+        var webOption = new Option<bool>("--web")
+        {
+            Description = "Write into the web app's wwwroot so a local site build has data to serve.",
+        };
+
         var command = new Command("extract", "Read a Stellaris installation into a game database.")
         {
             installOption,
             outputOption,
+            webOption,
         };
 
         command.SetAction(parseResult => Run(
             parseResult.GetValue(installOption)?.FullName,
-            parseResult.GetValue(outputOption)?.FullName));
+            parseResult.GetValue(outputOption)?.FullName,
+            parseResult.GetValue(webOption)));
 
         return command;
     }
 
-    private static int Run(string? installOverride, string? outputOverride)
+    private static int Run(string? installOverride, string? outputOverride, bool forWeb)
     {
         var sandbox = SandboxLayout.Discover(Environment.CurrentDirectory);
         var file = new SafeFile(sandbox.CreateDevelopmentPolicy());
@@ -58,7 +65,8 @@ public static class ExtractCommand
             return 1;
         }
 
-        var output = outputOverride ?? Path.Combine(sandbox.Output, "gamedata", "gamedb.json");
+        var defaultDirectory = forWeb ? sandbox.WebGameData : Path.Combine(sandbox.Output, "gamedata");
+        var output = outputOverride ?? Path.Combine(defaultDirectory, "gamedb.json");
 
         Console.WriteLine($"Install : {installRoot}");
         Console.WriteLine($"Output  : {output}");

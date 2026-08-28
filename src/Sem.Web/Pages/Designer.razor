@@ -1,0 +1,102 @@
+@page "/designer"
+@using Sem.Designs
+@using Sem.Ui.Components
+@using Sem.Ui.Services
+@implements IDisposable
+@inject SessionHost Host
+@inject IFileExchange Files
+@inject NavigationManager Navigation
+
+<PageTitle>@Title — Stellaris Empire Manager</PageTitle>
+
+@if (_session is null)
+{
+    <div class="sem-loading"><p>Loading…</p></div>
+}
+else if (_session.Current is null)
+{
+    <div class="sem-empty">
+        <p>No empire is open.</p>
+        <button type="button" class="primary" @onclick="@(() => Navigation.NavigateTo(""))">
+            Back to your empires
+        </button>
+    </div>
+}
+else
+{
+    <div class="sem-panel">
+        <div class="sem-row">
+            <button type="button" @onclick="@(() => Navigation.NavigateTo(""))">← Empires</button>
+
+            <div class="sem-field" style="margin:0;flex:1;min-width:200px">
+                <input type="text" value="@_session.Current.Key" aria-label="Empire key"
+                       @onchange="Rename" />
+            </div>
+
+            <span class="sem-status @(_session.Report.IsValid ? "ok" : "bad")">
+                @(_session.Report.IsValid ? "Valid" : $"{_session.Report.Errors.Count} problem(s)")
+            </span>
+
+            <button type="button" class="danger" @onclick="Delete">Delete</button>
+            <button type="button" class="primary" @onclick="Export">@Files.SaveVerb</button>
+        </div>
+    </div>
+
+    <DesignerShell Session="_session" />
+}
+
+@code {
+    private DesignSession? _session;
+
+    private string Title => _session?.Current is { } design
+        ? _session.Localizer.Text(design.Name.Key, design.Key)
+        : "Designer";
+
+    protected override async Task OnInitializedAsync()
+    {
+        _session = await Host.GetAsync();
+
+        if (_session is not null)
+        {
+            _session.Changed += OnChanged;
+        }
+    }
+
+    public void Dispose()
+    {
+        if (_session is not null)
+        {
+            _session.Changed -= OnChanged;
+        }
+    }
+
+    private void OnChanged() => InvokeAsync(StateHasChanged);
+
+    private void Rename(ChangeEventArgs e)
+    {
+        if (e.Value?.ToString() is { Length: > 0 } name && _session?.Current is not null)
+        {
+            // The file keys empires by name, so a clash would make one unreachable.
+            if (_session.File?.Find(name) is null)
+            {
+                _session.Edit(d => d.Rename(name));
+            }
+        }
+    }
+
+    private void Delete()
+    {
+        if (_session?.Current is { } design)
+        {
+            _session.EditFile(file => file.Remove(design));
+            _session.Select(_session.File?.Designs.FirstOrDefault());
+            Navigation.NavigateTo("");
+        }
+    }
+
+    private async Task Export()
+    {
+        var name = _session!.FileName is { Length: > 0 } existing ? existing : EmpireDesignsFile.FileName;
+        await Files.SaveAsync(name, _session.Save());
+    }
+}

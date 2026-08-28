@@ -112,6 +112,21 @@ public sealed class EmpireDesignsFile
         return design;
     }
 
+    /// <summary>
+    /// Adds an empire copied from a template written in this same format, which is how a new
+    /// empire starts from the game's blank slate rather than from nothing.
+    /// </summary>
+    public EmpireDesign AddFromTemplate(string template, string key)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(template);
+        ArgumentException.ThrowIfNullOrEmpty(key);
+
+        var source = LoadText(template).Designs.FirstOrDefault()
+            ?? throw new ArgumentException("The template holds no empire.", nameof(template));
+
+        return AddCopy(source, key);
+    }
+
     /// <summary>Removes an empire from the file.</summary>
     public bool Remove(EmpireDesign design)
     {

@@ -86,6 +86,17 @@ public sealed record GameDatabase
     public IReadOnlyList<PrescriptedEmpireSummary> PrescriptedEmpires { get; init; } = [];
 
     /// <summary>
+    /// The game's blank template, written in the player's own designs format, for starting a new
+    /// empire from.
+    /// </summary>
+    /// <remarks>
+    /// The game keeps a template of its own for the same purpose. Beginning from it means a new
+    /// empire is playable straight away rather than being an empty shell the player must fill in
+    /// before anything makes sense.
+    /// </remarks>
+    public string? NewEmpireTemplate { get; init; }
+
+    /// <summary>
     /// Conditions the extractor did not recognise, with how often each appeared. A game patch
     /// showing up here is the signal that the extractor needs attention.
     /// </summary>

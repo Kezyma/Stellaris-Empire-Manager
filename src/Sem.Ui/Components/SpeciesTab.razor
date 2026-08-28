@@ -1,0 +1,177 @@
+﻿@*
+    The founder species: its class, its name, and the traits it spends its allowance on.
+*@
+
+<div class="sem-columns">
+    <div>
+        <div class="sem-panel">
+            <h3>Names</h3>
+
+            <div class="sem-field">
+                <label for="species-name">Species</label>
+                <input id="species-name" type="text" value="@Species.Name.Key"
+                       @onchange="e => SetName(s => s.Name, e.Value?.ToString())" />
+            </div>
+
+            <div class="sem-field">
+                <label for="species-plural">Plural</label>
+                <input id="species-plural" type="text" value="@Species.Plural.Key"
+                       @onchange="e => SetName(s => s.Plural, e.Value?.ToString())" />
+            </div>
+
+            <div class="sem-field">
+                <label for="species-adjective">Adjective</label>
+                <input id="species-adjective" type="text" value="@Species.Adjective.Key"
+                       @onchange="e => SetName(s => s.Adjective, e.Value?.ToString())" />
+            </div>
+
+            <div class="sem-field">
+                <label for="name-list">Name list</label>
+                <select id="name-list" value="@Species.NameList"
+                        @onchange="e => Session.Edit(d => d.Species.NameList = e.Value?.ToString())">
+                    @foreach (var group in NameLists)
+                    {
+                        <optgroup label="@group.Key">
+                            @foreach (var list in group)
+                            {
+                                <option value="@list.Key" selected="@(list.Key == Species.NameList)">@list.Key</option>
+                            }
+                        </optgroup>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="sem-panel">
+            <h3>Class</h3>
+            <div class="sem-options">
+                @foreach (var option in Session.Rules.GetSpeciesClassOptions(Context).Where(o => o.Visible))
+                {
+                    <OptionCard Name="@Session.Localizer.Text(option.Key)"
+                                Selected="@(option.Key == Species.Class)"
+                                Enabled="@option.Enabled"
+                                Reasons="@Explain(option.Reasons)"
+                                OnSelect="() => SetClass(option.Key)" />
+                }
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="sem-panel">
+            <h3>Traits</h3>
+
+            <BudgetBar Label="Trait points" Value="@Budget.Points" />
+            <BudgetBar Label="Traits" Value="@Budget.Picks" />
+
+            @if (Forced.Count > 0)
+            {
+                <p class="sem-hint">
+                    Fixed by the species class, authority, civics or origin:
+                    @string.Join(", ", Forced.Select(t => Session.Localizer.Text(t)))
+                </p>
+            }
+
+            <div class="sem-options">
+                @foreach (var option in TraitOptions)
+                {
+                    var selected = Species.Traits.Contains(option.Key);
+
+                    <OptionCard Name="@Session.Localizer.Text(option.Key)"
+                                Description="@Session.Localizer.Text($"{option.Key}_desc", string.Empty)"
+                                Icon="@IconFor(option.Key)"
+                                Cost="@option.Cost"
+                                Selected="@selected"
+                                Enabled="@(option.Enabled && !Forced.Contains(option.Key))"
+                                Reasons="@Explain(option.Reasons)"
+                                RequiredDlc="@option.RequiredDlc"
+                                OnSelect="() => ToggleTrait(option.Key)" />
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    private EmpireDesign Design => Session.Current!;
+
+    private SpeciesDesign Species => Design.Species;
+
+    private DesignContext Context => Session.Context!;
+
+    private TraitBudget Budget => Session.Rules.GetTraitBudget(Context);
+
+    private IReadOnlyList<string> Forced => Session.Rules.GetForcedTraits(Context);
+
+    /// <summary>
+    /// Traits worth showing, sorted the way the game's own list is: by its sorting hint, then by
+    /// name so the order does not shift about between visits.
+    /// </summary>
+    private IEnumerable<OptionState> TraitOptions =>
+        Session.Rules.GetSpeciesTraitOptions(Context)
+            .Where(o => o.Visible)
+            .OrderBy(o => Session.Data.Database.Traits.FirstOrDefault(t => t.Key == o.Key)?.SortingPriority ?? 0)
+            .ThenBy(o => Session.Localizer.Text(o.Key), StringComparer.CurrentCulture);
+
+    /// <summary>
+    /// The name lists a player may choose. A dozen exist only for the game's own creatures, and
+    /// the game marks those unselectable rather than removing them.
+    /// </summary>
+    private IEnumerable<IGrouping<string, NameListDefinition>> NameLists =>
+        Session.Data.Database.NameLists
+            .Where(n => _evaluator.IsSatisfied(n.Selectable, Context))
+            .GroupBy(n => n.Category ?? "Other")
+            .OrderBy(g => g.Key, StringComparer.CurrentCulture);
+
+    private readonly RequirementEvaluator _evaluator = new();
+
+    private string? IconFor(string trait) =>
+        Session.Data.Database.Traits.FirstOrDefault(t => t.Key == trait)?.Icon;
+
+    private IReadOnlyList<string> Explain(IReadOnlyList<string> reasons) => Session.Reasons.Describe(reasons);
+
+    private void SetClass(string key)
+    {
+        Session.Edit(d =>
+        {
+            d.Species.Class = key;
+
+            // A class carries a trait of its own, and leaving the previous class's behind would
+            // give the species two contradictory ones.
+            var classTraits = Session.Data.Database.SpeciesClasses
+                .Select(c => c.ForcedTrait)
+                .OfType<string>()
+                .ToHashSet(StringComparer.Ordinal);
+
+            var kept = d.Species.Traits.Where(t => !classTraits.Contains(t)).ToList();
+
+            if (Session.Data.Database.SpeciesClasses.FirstOrDefault(c => c.Key == key)?.ForcedTrait is { } trait)
+            {
+                kept.Insert(0, trait);
+            }
+
+            d.Species.SetTraits(kept);
+        });
+    }
+
+    private void ToggleTrait(string key)
+    {
+        Session.Edit(d =>
+        {
+            var traits = d.Species.Traits.ToList();
+
+            if (!traits.Remove(key))
+            {
+                traits.Add(key);
+            }
+
+            d.Species.SetTraits(traits);
+        });
+    }
+
+    private void SetName(Func<SpeciesDesign, LocRef> field, string? value) =>
+        Session.Edit(d => field(d.Species).SetLiteral(value ?? string.Empty));
+}

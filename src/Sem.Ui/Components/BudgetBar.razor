@@ -1,0 +1,32 @@
+@*
+    Points spent against points available, which is the thing a player checks most often while
+    building an empire.
+*@
+
+<div class="sem-budget @StateClass">
+    <div class="head">
+        <span>@Label</span>
+        <span class="value">@Value.Spent / @Value.Available</span>
+    </div>
+    <div class="track">
+        <div class="fill" style="width:@(Percent)%"></div>
+    </div>
+</div>
+
+@code {
+    /// <summary>What is being spent, such as "Trait points".</summary>
+    [Parameter, EditorRequired]
+    public required string Label { get; set; }
+
+    /// <summary>The spend and the allowance.</summary>
+    [Parameter, EditorRequired]
+    public Budget Value { get; set; }
+
+    private int Percent => Value.Available <= 0
+        ? (Value.Spent > 0 ? 100 : 0)
+        : Math.Clamp(Value.Spent * 100 / Value.Available, 0, 100);
+
+    private string? StateClass => Value.IsOverspent
+        ? "over"
+        : Value.Remaining == 0 ? "full" : null;
+}
