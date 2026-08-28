@@ -14,7 +14,8 @@ internal static class WorldExtractor
     /// </remarks>
     public static List<PlanetClassDefinition> ExtractPlanetClasses(
         ScriptLoader loader,
-        RequirementCompiler requirements)
+        RequirementCompiler requirements,
+        AssetCatalog assets)
     {
         var results = new List<PlanetClassDefinition>();
 
@@ -28,7 +29,9 @@ internal static class WorldExtractor
                 IsStartingWorld = body.GetBool("initial"),
                 Colonizable = body.GetBool("colonizable"),
                 Potential = requirements.CompileTrigger(body.GetBlock("potential")),
-                Icon = $"icons/planets/{entry.Key}.png",
+                Icon = assets.Register(
+                    $"gfx/interface/icons/planet_backgrounds/{entry.Key}.dds",
+                    $"icons/planets/{entry.Key}.png"),
             });
         }
 

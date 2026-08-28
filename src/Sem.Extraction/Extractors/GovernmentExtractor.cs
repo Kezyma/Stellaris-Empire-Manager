@@ -16,7 +16,8 @@ internal static class GovernmentExtractor
     /// <summary>Reads the government authorities.</summary>
     public static List<AuthorityDefinition> ExtractAuthorities(
         ScriptLoader loader,
-        RequirementCompiler requirements)
+        RequirementCompiler requirements,
+        AssetCatalog assets)
     {
         var results = new List<AuthorityDefinition>();
 
@@ -37,7 +38,9 @@ internal static class GovernmentExtractor
                 HasHeir = body.GetBool("has_heir"),
                 ElectionType = body.GetString("election_type"),
                 Modifiers = body.GetModifiers("country_modifier", loader),
-                Icon = $"icons/authorities/{entry.Key}.png",
+                Icon = assets.Register(
+                    $"gfx/interface/icons/governments/authorities/{entry.Key}.dds",
+                    $"icons/authorities/{entry.Key}.png"),
             });
         }
 
@@ -50,7 +53,8 @@ internal static class GovernmentExtractor
     /// </summary>
     public static List<CivicDefinition> ExtractCivics(
         ScriptLoader loader,
-        RequirementCompiler requirements)
+        RequirementCompiler requirements,
+        AssetCatalog assets)
     {
         var results = new List<CivicDefinition>();
 
@@ -81,7 +85,7 @@ internal static class GovernmentExtractor
                     : ReadTraitList(secondarySpecies.GetBlock("traits")),
                 EffectsKey = body.GetString("description"),
                 PenaltiesKey = body.GetString("negative_description"),
-                Icon = ResolveIcon(entry.Key, body, isOrigin),
+                Icon = ResolveIcon(entry.Key, body, isOrigin, assets),
             });
         }
 
@@ -183,17 +187,24 @@ internal static class GovernmentExtractor
     }
 
     /// <summary>
-    /// Works out a civic or origin's icon. Origins always state theirs, and one states it without
+    /// Works out a civic or origin's icon. Origins state theirs outright, one of them without
     /// quotes. Civics normally follow the naming convention but two dozen override it.
     /// </summary>
-    private static string ResolveIcon(string key, CwBlock body, bool isOrigin)
+    private static string? ResolveIcon(string key, CwBlock body, bool isOrigin, AssetCatalog assets)
     {
-        if (body.GetString("icon") is { Length: > 0 } declared)
-        {
-            var name = Path.GetFileNameWithoutExtension(declared.Replace('\\', '/'));
-            return isOrigin ? $"icons/origins/{name}.png" : $"icons/civics/{name}.png";
-        }
+        var folder = isOrigin ? "origins" : "civics";
+        var destination = $"icons/{folder}/{key}.png";
 
-        return isOrigin ? $"icons/origins/{key}.png" : $"icons/civics/{key}.png";
+        // A declared path is used as given; the game's own files are the authority on where an
+        // icon lives, and several do not match their key.
+        var declared = body.GetString("icon") is { Length: > 0 } path
+            ? path.Replace('\\', '/')
+            : null;
+
+        return assets.RegisterFirst(
+            declared is null
+                ? [$"gfx/interface/icons/governments/{folder}/{key}.dds"]
+                : [declared, $"gfx/interface/icons/governments/{folder}/{key}.dds"],
+            destination);
     }
 }

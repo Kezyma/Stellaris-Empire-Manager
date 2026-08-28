@@ -21,7 +21,7 @@ internal static class TraitsExtractor
     /// directions and the designer has to block the pairing either way round.
     /// </para>
     /// </remarks>
-    public static List<TraitDefinition> Extract(ScriptLoader loader)
+    public static List<TraitDefinition> Extract(ScriptLoader loader, AssetCatalog assets)
     {
         var traits = new List<TraitDefinition>();
 
@@ -52,7 +52,14 @@ internal static class TraitsExtractor
                 SortingPriority = loader.ResolveInt(body.GetString("sorting_priority")) ?? 0,
                 Tags = body.GetList("tags"),
                 Modifiers = body.GetModifiers("modifier", loader),
-                Icon = $"icons/traits/{entry.Key}.png",
+                // Most traits follow the naming convention; the ones that do not are aliases of
+                // another trait and fall back to the game's own unknown-trait icon.
+                Icon = assets.RegisterFirst(
+                    [
+                        $"gfx/interface/icons/traits/{entry.Key}.dds",
+                        "gfx/interface/icons/traits/trait_unknown.dds",
+                    ],
+                    $"icons/traits/{entry.Key}.png"),
             });
         }
 

@@ -13,7 +13,7 @@ internal static class CosmeticsExtractor
     /// pick rooms during play based on conditions the designer cannot evaluate. Rooms have no
     /// localised names anywhere in the game, which is why the picker shows images alone.
     /// </remarks>
-    public static List<RoomDefinition> ExtractRooms(ScriptLoader loader)
+    public static List<RoomDefinition> ExtractRooms(ScriptLoader loader, AssetCatalog assets)
     {
         var results = new List<RoomDefinition>();
 
@@ -30,7 +30,15 @@ internal static class CosmeticsExtractor
         {
             if (node.Key is { Length: > 0 } key)
             {
-                results.Add(new RoomDefinition(key) { Image = $"rooms/{key}.png" });
+                // Rooms are 952 by 340 and the picker shows them at about a third of that, so
+                // half size is still sharper than anything the interface will draw.
+                results.Add(new RoomDefinition(key)
+                {
+                    Image = assets.Register(
+                        $"gfx/portraits/city_sets/{key}.dds",
+                        $"rooms/{key}.png",
+                        maxDimension: 480),
+                });
             }
         }
 
@@ -46,13 +54,15 @@ internal static class CosmeticsExtractor
     /// </remarks>
     public static List<GraphicalCultureDefinition> ExtractGraphicalCultures(
         ScriptLoader loader,
-        RequirementCompiler requirements)
+        RequirementCompiler requirements,
+        AssetCatalog assets)
     {
         var results = new List<GraphicalCultureDefinition>();
 
         foreach (var entry in loader.LoadDefinitions("common/graphical_culture"))
         {
             var body = entry.Body;
+            var citySource = $"gfx/portraits/city_sets/{entry.Key}_city_l01.dds";
 
             results.Add(new GraphicalCultureDefinition(entry.Key)
             {
@@ -60,7 +70,10 @@ internal static class CosmeticsExtractor
                     ? requirements.CompileTrigger(selectable)
                     : new AlwaysRequirement(true),
                 Fallback = body.GetString("fallback"),
-                HasCityArt = loader.Content.Contains($"gfx/portraits/city_sets/{entry.Key}_city_l01.dds"),
+
+                // A set with no city artwork can still dress ships, but cannot be a city choice.
+                HasCityArt = loader.Content.Contains(citySource),
+                CityPreview = assets.Register(citySource, $"cities/{entry.Key}.png", maxDimension: 400),
             });
         }
 
@@ -70,7 +83,8 @@ internal static class CosmeticsExtractor
     /// <summary>Reads the advisor voices, in the order the game lists them.</summary>
     public static List<AdvisorVoiceDefinition> ExtractAdvisorVoices(
         ScriptLoader loader,
-        RequirementCompiler requirements)
+        RequirementCompiler requirements,
+        AssetCatalog assets)
     {
         var results = new List<AdvisorVoiceDefinition>();
 
@@ -81,8 +95,12 @@ internal static class CosmeticsExtractor
             results.Add(new AdvisorVoiceDefinition(entry.Key, body.GetString("name") ?? entry.Key)
             {
                 Playable = requirements.CompileTrigger(body.GetBlock("playable")),
+                // These borrow icons from elsewhere, mostly the ethics and traits they suit, so
+                // the declared path is followed rather than guessed at.
                 Icon = body.GetString("icon") is { Length: > 0 } icon
-                    ? $"icons/advisors/{Path.GetFileNameWithoutExtension(icon)}.png"
+                    ? assets.Register(
+                        icon.Replace('\\', '/'),
+                        $"icons/advisors/{Path.GetFileNameWithoutExtension(icon)}.png")
                     : null,
             });
         }

@@ -23,6 +23,12 @@ public sealed class GameDataExtractor(LayeredContent content)
 
     private readonly LayeredContent _content = content ?? throw new ArgumentNullException(nameof(content));
 
+    /// <summary>
+    /// The images the last extraction referred to, ready to be converted by
+    /// <see cref="AssetBaker"/>. Empty until <see cref="Extract"/> has run.
+    /// </summary>
+    public AssetCatalog Assets { get; private set; } = new(content);
+
     /// <summary>Builds a database from an installation directory.</summary>
     public static GameDatabase ExtractFrom(string installRoot, IProgress<string>? progress = null) =>
         new GameDataExtractor(LayeredContent.ForInstall(installRoot)).Extract(progress);
@@ -39,6 +45,8 @@ public sealed class GameDataExtractor(LayeredContent content)
     {
         var loader = new ScriptLoader(_content);
         var requirements = new RequirementCompiler();
+        var assets = new AssetCatalog(_content);
+        Assets = assets;
 
         Report("Reading shared variables and triggers");
         loader.LoadVariables();
@@ -53,16 +61,16 @@ public sealed class GameDataExtractor(LayeredContent content)
         var speciesClasses = SpeciesExtractor.ExtractSpeciesClasses(loader, requirements);
 
         Report("Reading ethics and traits");
-        var ethics = EthicsExtractor.Extract(loader);
-        var traits = TraitsExtractor.Extract(loader);
+        var ethics = EthicsExtractor.Extract(loader, assets);
+        var traits = TraitsExtractor.Extract(loader, assets);
 
         Report("Reading governments");
-        var authorities = GovernmentExtractor.ExtractAuthorities(loader, requirements);
-        var civics = GovernmentExtractor.ExtractCivics(loader, requirements);
+        var authorities = GovernmentExtractor.ExtractAuthorities(loader, requirements, assets);
+        var civics = GovernmentExtractor.ExtractCivics(loader, requirements, assets);
         var governmentTypes = GovernmentExtractor.ExtractGovernmentTypes(loader, requirements);
 
         Report("Reading worlds and starting systems");
-        var planetClasses = WorldExtractor.ExtractPlanetClasses(loader, requirements);
+        var planetClasses = WorldExtractor.ExtractPlanetClasses(loader, requirements, assets);
         var initializers = WorldExtractor.ExtractInitializers(loader);
 
         Report("Reading portraits");
@@ -71,13 +79,13 @@ public sealed class GameDataExtractor(LayeredContent content)
         var portraits = PortraitExtractor.ExtractPortraits(loader);
 
         Report("Reading appearance options");
-        var rooms = CosmeticsExtractor.ExtractRooms(loader);
-        var graphicalCultures = CosmeticsExtractor.ExtractGraphicalCultures(loader, requirements);
-        var advisorVoices = CosmeticsExtractor.ExtractAdvisorVoices(loader, requirements);
+        var rooms = CosmeticsExtractor.ExtractRooms(loader, assets);
+        var graphicalCultures = CosmeticsExtractor.ExtractGraphicalCultures(loader, requirements, assets);
+        var advisorVoices = CosmeticsExtractor.ExtractAdvisorVoices(loader, requirements, assets);
         var nameLists = CosmeticsExtractor.ExtractNameLists(loader, requirements);
 
         Report("Reading flags");
-        var flagCategories = FlagExtractor.ExtractCategories(loader);
+        var flagCategories = FlagExtractor.ExtractCategories(loader, assets);
         var flagColors = FlagExtractor.ExtractColors(loader);
 
         Report("Reading built-in empires");

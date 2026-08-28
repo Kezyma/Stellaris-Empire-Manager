@@ -20,7 +20,7 @@ internal static class FlagExtractor
     /// enclave, pre-FTL and special emblems stay out of the player's list. A category without that
     /// file is shown.
     /// </remarks>
-    public static List<FlagCategoryDefinition> ExtractCategories(ScriptLoader loader)
+    public static List<FlagCategoryDefinition> ExtractCategories(ScriptLoader loader, AssetCatalog assets)
     {
         var results = new List<FlagCategoryDefinition>();
         var content = loader.Content;
@@ -32,20 +32,28 @@ internal static class FlagExtractor
                 continue;
             }
 
-            var files = content
-                .EnumerateFiles($"{FlagRoot}/{category}", "*.dds")
-                .Select(Path.GetFileName)
-                .OfType<string>()
-                .Order(StringComparer.Ordinal)
-                .ToList();
+            var isBackground = category == "backgrounds";
+            var files = new List<string>();
+
+            foreach (var source in content.EnumerateFiles($"{FlagRoot}/{category}", "*.dds"))
+            {
+                if (Path.GetFileName(source) is not { Length: > 0 } name)
+                {
+                    continue;
+                }
+
+                // Backgrounds and emblems are shipped as ingredients rather than finished flags:
+                // the colours a player picks are applied when the flag is drawn, and pre-baking
+                // every combination of seventy-two colours is not worth contemplating.
+                assets.Register(source, $"flags/{category}/{Path.GetFileNameWithoutExtension(name)}.png");
+                files.Add(name);
+            }
 
             if (files.Count > 0)
             {
-                results.Add(new FlagCategoryDefinition(
-                    category,
-                    IsBackground: category == "backgrounds")
+                results.Add(new FlagCategoryDefinition(category, isBackground)
                 {
-                    Files = files,
+                    Files = [.. files.Order(StringComparer.Ordinal)],
                 });
             }
         }

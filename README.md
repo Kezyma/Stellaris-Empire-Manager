@@ -29,8 +29,8 @@ Early development. See [the milestone plan](docs/) for what is built and what is
 | M2 — Empire design model and mappers | Done |
 | M3 — Game data extraction | Done |
 | M4 — Rules and validation engine | Done |
-| M5 — Icons, flags and image pipeline | Next |
-| M6 — Designer UI and web app | |
+| M5 — Icons, flags and image pipeline | Done |
+| M6 — Designer UI and web app | Next |
 | M7 — Desktop application | |
 | M8 — Portrait rendering | |
 | M9 — Hardening and first release | |

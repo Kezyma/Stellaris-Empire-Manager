@@ -72,12 +72,48 @@ public static class ExtractCommand
 
         Console.WriteLine("  Reading localisation");
         var localisation = extractor.ExtractLocalisation(reachableFrom: database);
-        var localisationPath = Path.Combine(Path.GetDirectoryName(output)!, "loc", "en.json");
+        var outputDirectory = Path.GetDirectoryName(output)!;
         var localisationJson = JsonSerializer.SerializeToUtf8Bytes(localisation, SerializerOptions);
-        file.WriteAllBytes(localisationPath, localisationJson);
+        file.WriteAllBytes(Path.Combine(outputDirectory, "loc", "en.json"), localisationJson);
+
+        var bake = new AssetBaker(LayeredContent.ForInstall(installRoot), file).Bake(
+            extractor.Assets,
+            Path.Combine(outputDirectory, "assets"),
+            new Progress<string>(message => Console.WriteLine($"  {message}")));
 
         Console.WriteLine();
         WriteSummary(database, json.Length, localisation.Count, localisationJson.Length);
+
+        Console.WriteLine();
+        Console.WriteLine($"Images: {bake.Written:N0} written, {bake.Bytes / 1024.0 / 1024.0:F1} MB");
+
+        foreach (var folder in bake.ByFolder)
+        {
+            Console.WriteLine($"  {folder.Files,6}  {folder.Bytes / 1024.0 / 1024.0,6:F1} MB  {folder.Folder}");
+        }
+
+        if (bake.Failures.Count > 0)
+        {
+            Console.WriteLine($"{bake.Failures.Count} image(s) could not be converted:");
+            foreach (var failure in bake.Failures.Take(10))
+            {
+                Console.WriteLine($"  {failure}");
+            }
+        }
+
+        if (extractor.Assets.Missing.Count > 0)
+        {
+            // Not every entity has artwork; the game leaves some without and shows nothing.
+            Console.WriteLine($"{extractor.Assets.Missing.Count} referenced image(s) are not in the installation:");
+
+            foreach (var group in extractor.Assets.Missing
+                         .GroupBy(m => Path.GetDirectoryName(m)?.Replace('\\', '/') ?? "")
+                         .OrderByDescending(g => g.Count()))
+            {
+                Console.WriteLine($"  {group.Count(),4}  {group.Key}");
+            }
+        }
+
         return 0;
     }
 

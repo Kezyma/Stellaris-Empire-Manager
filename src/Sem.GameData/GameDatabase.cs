@@ -539,6 +539,9 @@ public sealed record GraphicalCultureDefinition(string Key)
     /// <summary>Whether this set has city artwork, and so can be used as a city appearance.</summary>
     public bool HasCityArt { get; init; }
 
+    /// <summary>A preview of the city artwork within the extracted assets, when there is any.</summary>
+    public string? CityPreview { get; init; }
+
     /// <summary>Localisation key for the display name.</summary>
     public string NameKey => Key;
 }

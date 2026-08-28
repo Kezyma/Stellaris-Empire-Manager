@@ -10,9 +10,11 @@
     ImageSharp (split licence), System.Drawing (not WASM-safe).
   -->
   <ItemGroup Label="Blazor">
+    <PackageVersion Include="BCnEncoder.Net" Version="2.3.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="10.0.11" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.11" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.11" />
+    <PackageVersion Include="SkiaSharp" Version="4.151.1" />
     <PackageVersion Include="System.CommandLine" Version="2.0.11" />
   </ItemGroup>
   <ItemGroup Label="Testing">
