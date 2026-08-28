@@ -17,6 +17,16 @@ public interface IFileExchange
 
     /// <summary>How saving is described to the user, which differs between the two hosts.</summary>
     string SaveVerb { get; }
+
+    /// <summary>
+    /// The file this host already knows about, if any.
+    /// </summary>
+    /// <remarks>
+    /// The desktop app knows where the player's designs live and opens them straight away. A
+    /// browser cannot know, and must wait to be handed one.
+    /// </remarks>
+    Task<(string Name, byte[] Contents)?> TryOpenExistingAsync() =>
+        Task.FromResult<(string, byte[])?>(null);
 }
 
 /// <summary>Offers the file as a browser download.</summary>

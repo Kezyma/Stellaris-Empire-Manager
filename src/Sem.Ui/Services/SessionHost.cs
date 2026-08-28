@@ -4,9 +4,10 @@ namespace Sem.Ui.Services;
 /// Keeps the one working session alive across pages, so moving between the empire list and the
 /// designer does not reload the game data or lose unsaved changes.
 /// </summary>
-public sealed class SessionHost(IGameDataSource source)
+public sealed class SessionHost(IGameDataSource source, IFileExchange files)
 {
     private readonly IGameDataSource _source = source ?? throw new ArgumentNullException(nameof(source));
+    private readonly IFileExchange _files = files ?? throw new ArgumentNullException(nameof(files));
     private readonly SemaphoreSlim _gate = new(1, 1);
 
     private DesignSession? _session;
@@ -36,7 +37,17 @@ public sealed class SessionHost(IGameDataSource source)
 
             var data = await _source.LoadAsync(cancellationToken).ConfigureAwait(false);
             var session = new DesignSession(data);
-            session.StartEmptyFile();
+
+            // The desktop app knows where the player's designs are and opens them; a browser has
+            // to be handed one, so it starts empty.
+            if (await TryOpenExistingAsync().ConfigureAwait(false) is { } existing)
+            {
+                session.Load(existing.Contents, existing.Name);
+            }
+            else
+            {
+                session.StartEmptyFile();
+            }
 
             _session = session;
             LoadError = null;
@@ -51,6 +62,23 @@ public sealed class SessionHost(IGameDataSource source)
         finally
         {
             _gate.Release();
+        }
+    }
+
+    /// <summary>
+    /// Opens the host's existing file when it has one. A file that cannot be read leaves the
+    /// session empty with the reason recorded, rather than stopping the app from starting.
+    /// </summary>
+    private async Task<(string Name, byte[] Contents)?> TryOpenExistingAsync()
+    {
+        try
+        {
+            return await _files.TryOpenExistingAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or Clausewitz.CwSyntaxException)
+        {
+            LoadError = $"Your empire designs file could not be read: {ex.Message}";
+            return null;
         }
     }
 }

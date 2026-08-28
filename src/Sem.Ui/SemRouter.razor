@@ -1,0 +1,13 @@
+@*
+    The application's routes, shared by both hosts.
+
+    The pages live here rather than in either host, so the desktop app and the web app show exactly
+    the same designer. All a host supplies is where the data comes from and what saving means.
+*@
+
+<Router AppAssembly="@typeof(SemRouter).Assembly" NotFoundPage="typeof(Sem.Ui.Pages.NotFound)">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(Sem.Ui.Layout.MainLayout)" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
+</Router>

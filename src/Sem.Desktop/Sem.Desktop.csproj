@@ -1,4 +1,25 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<!--
+  The Razor SDK, so the root component compiles; WPF supplies the window that hosts it.
+-->
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+
+    <!--
+      A Windows SDK version rather than plain net10.0-windows: the embedded browser draws through
+      a composition surface that needs the Windows SDK projections, and without them the window
+      fails the moment it tries to lay itself out.
+    -->
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>Sem.Desktop</RootNamespace>
+    <AssemblyName>StellarisEmpireManager</AssemblyName>
+    <ApplicationIcon></ApplicationIcon>
+  </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Sem.Ui\Sem.Ui.csproj" />
@@ -6,12 +27,9 @@
     <ProjectReference Include="..\Sem.Io\Sem.Io.csproj" />
   </ItemGroup>
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net10.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UseWPF>true</UseWPF>
-  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Wpf" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+  </ItemGroup>
 
 </Project>

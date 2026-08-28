@@ -1,6 +1,6 @@
-﻿<Router AppAssembly="@typeof(App).Assembly" NotFoundPage="typeof(Pages.NotFound)">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-    </Found>
-</Router>
+@*
+    The web host's root. Everything it shows comes from the shared library, so the desktop app can
+    render the identical thing.
+*@
+
+<Sem.Ui.SemRouter />
