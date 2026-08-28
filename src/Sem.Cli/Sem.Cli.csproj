@@ -4,6 +4,7 @@
     <ProjectReference Include="..\Sem.Extraction\Sem.Extraction.csproj" />
     <ProjectReference Include="..\Sem.Io\Sem.Io.csproj" />
     <ProjectReference Include="..\Sem.Designs\Sem.Designs.csproj" />
+    <ProjectReference Include="..\Sem.Rules\Sem.Rules.csproj" />
   </ItemGroup>
 
   <ItemGroup>

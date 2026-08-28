@@ -5,6 +5,7 @@ var root = new RootCommand("Stellaris Empire Manager development tools.")
 {
     DevSyncCommand.Create(),
     ExtractCommand.Create(),
+    ValidateCommand.Create(),
 };
 
 return root.Parse(args).Invoke();

@@ -200,6 +200,13 @@ public sealed record TraitDefinition(string Key, TraitKind Kind)
     /// <summary>Species classes that may take it. Empty means no restriction.</summary>
     public IReadOnlyList<string> AllowedSpeciesClasses { get; init; } = [];
 
+    /// <summary>
+    /// Portraits that lift the species-class restriction. A species using one of these may take
+    /// the trait whatever its class, which is how the game's own psionic empires carry traits
+    /// nominally reserved for the psionic class.
+    /// </summary>
+    public IReadOnlyList<string> PortraitOverride { get; init; } = [];
+
     /// <summary>Traits that cannot be taken alongside this one.</summary>
     public IReadOnlyList<string> Opposites { get; init; } = [];
 
@@ -350,6 +357,12 @@ public sealed record CivicDefinition(string Key, bool IsOrigin)
 
     /// <summary>The homeworld type an origin forces, such as a habitat for Void Dwellers.</summary>
     public string? StartingColony { get; init; }
+
+    /// <summary>
+    /// The climate an origin gives the founder species regardless of what was picked, such as
+    /// ocean for Ocean Paradise. Traits tied to a homeworld type are judged against this.
+    /// </summary>
+    public string? HabitabilityPreference { get; init; }
 
     /// <summary>Starting systems an origin restricts the empire to.</summary>
     public IReadOnlyList<string> Initializers { get; init; } = [];

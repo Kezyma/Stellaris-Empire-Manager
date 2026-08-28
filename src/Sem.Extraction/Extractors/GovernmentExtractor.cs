@@ -71,6 +71,7 @@ internal static class GovernmentExtractor
                 Modifiers = modifiers,
                 TraitBudgetModifiers = ExtractTraitBudgetModifiers(modifiers),
                 StartingColony = body.GetString("starting_colony"),
+                HabitabilityPreference = body.GetString("habitability_preference"),
                 Initializers = body.GetList("initializers"),
                 AddedPlanetClasses = body.GetList("added_planet_types"),
                 RemovedPlanetClasses = body.GetList("removed_planet_types"),

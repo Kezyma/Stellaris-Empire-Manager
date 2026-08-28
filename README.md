@@ -28,8 +28,8 @@ Early development. See [the milestone plan](docs/) for what is built and what is
 | M1 — Clausewitz parser and byte-exact writer | Done |
 | M2 — Empire design model and mappers | Done |
 | M3 — Game data extraction | Done |
-| M4 — Rules and validation engine | Next |
-| M5 — Icons, flags and image pipeline | |
+| M4 — Rules and validation engine | Done |
+| M5 — Icons, flags and image pipeline | Next |
 | M6 — Designer UI and web app | |
 | M7 — Desktop application | |
 | M8 — Portrait rendering | |
@@ -71,6 +71,12 @@ To read your installation into the game database the designer runs on:
 
 ```bash
 dotnet run --project src/Sem.Cli -- extract
+```
+
+To check the rules engine against the game's own built-in empires:
+
+```bash
+dotnet run --project src/Sem.Cli -- validate
 ```
 
 **Your game install and your real empire designs are never modified during development.** This is

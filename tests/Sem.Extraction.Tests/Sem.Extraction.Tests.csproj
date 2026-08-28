@@ -23,6 +23,8 @@
     <ProjectReference Include="..\..\src\Sem.Extraction\Sem.Extraction.csproj" />
     <ProjectReference Include="..\..\src\Sem.Assets\Sem.Assets.csproj" />
     <ProjectReference Include="..\..\src\Sem.MeshBake\Sem.MeshBake.csproj" />
+    <ProjectReference Include="..\..\src\Sem.Rules\Sem.Rules.csproj" />
+    <ProjectReference Include="..\..\src\Sem.Designs\Sem.Designs.csproj" />
   </ItemGroup>
 
 </Project>

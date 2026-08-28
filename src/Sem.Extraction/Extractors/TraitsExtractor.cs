@@ -35,6 +35,7 @@ internal static class TraitsExtractor
                 Cost = body.GetCost(loader),
                 AllowedArchetypes = body.GetList("allowed_archetypes"),
                 AllowedSpeciesClasses = ReadSpeciesClasses(body),
+                PortraitOverride = body.GetList("portrait_override"),
                 Opposites = body.GetList("opposites"),
                 AllowedPlanetClasses = body.GetList("allowed_planet_classes"),
                 AllowedOrigins = body.GetList("allowed_origins"),

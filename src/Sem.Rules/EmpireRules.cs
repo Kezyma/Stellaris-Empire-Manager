@@ -1,0 +1,785 @@
+using Sem.Designs;
+using Sem.GameData;
+
+namespace Sem.Rules;
+
+/// <summary>
+/// Enforces the game's rules on an empire design: what may be chosen, what it costs, and why
+/// something is unavailable.
+/// </summary>
+/// <remarks>
+/// Everything here is a pure function of a <see cref="DesignContext"/>, so a change to any
+/// selection is handled by rebuilding the context rather than by keeping state in step.
+/// </remarks>
+public sealed class EmpireRules(GameDatabase database)
+{
+    private readonly GameDatabase _database = database ?? throw new ArgumentNullException(nameof(database));
+    private readonly RequirementEvaluator _evaluator = new();
+
+    private readonly Dictionary<string, TraitDefinition> _traits =
+        database.Traits.GroupBy(t => t.Key, StringComparer.Ordinal)
+            .ToDictionary(g => g.Key, g => g.Last(), StringComparer.Ordinal);
+
+    private readonly Dictionary<string, EthicDefinition> _ethics =
+        database.Ethics.ToDictionary(e => e.Key, StringComparer.Ordinal);
+
+    private readonly Dictionary<string, CivicDefinition> _civics =
+        database.Civics.ToDictionary(c => c.Key, StringComparer.Ordinal);
+
+    private readonly Dictionary<string, ArchetypeDefinition> _archetypes =
+        database.Archetypes.ToDictionary(a => a.Key, StringComparer.Ordinal);
+
+    /// <summary>The extracted game data being enforced.</summary>
+    public GameDatabase Database => _database;
+
+    /// <summary>Builds a context from a design.</summary>
+    public DesignContext CreateContext(EmpireDesign design, IReadOnlySet<string>? ownedDlc = null) =>
+        DesignContext.FromDesign(design, _database, ownedDlc);
+
+    // ---------------------------------------------------------------------------------------
+    // Budgets
+    // ---------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// What the founder species may spend on traits, after the civics and origin that change the
+    /// allowance.
+    /// </summary>
+    public TraitBudget GetTraitBudget(DesignContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        var archetype = context.SpeciesArchetype is { } key && _archetypes.TryGetValue(key, out var found)
+            ? found
+            : null;
+
+        var points = archetype?.TraitPoints ?? 0;
+        var picks = archetype?.MaxTraits ?? 0;
+
+        if (context.SpeciesArchetype is { } archetypeKey)
+        {
+            // Natural Design, Overtuned, Shroud-Forged and Unplugged all widen the allowance, and
+            // the budget is wrong before they are applied.
+            var pointsKey = $"{archetypeKey}_species_trait_points_add";
+            var picksKey = $"{archetypeKey}_species_trait_picks_add";
+
+            foreach (var civic in SelectedCivicsAndOrigin(context))
+            {
+                points += (int)civic.TraitBudgetModifiers.GetValueOrDefault(pointsKey);
+                picks += (int)civic.TraitBudgetModifiers.GetValueOrDefault(picksKey);
+            }
+        }
+
+        var spent = 0;
+        var used = 0;
+
+        foreach (var trait in context.Traits)
+        {
+            if (!_traits.TryGetValue(trait, out var definition))
+            {
+                continue;
+            }
+
+            spent += definition.Cost;
+
+            // A trait costing nothing, such as the one a species class carries, is not a pick.
+            if (definition.Cost != 0)
+            {
+                used++;
+            }
+        }
+
+        return new TraitBudget(new Budget(spent, points), new Budget(used, picks));
+    }
+
+    /// <summary>What the empire has spent on ethics against the three points it has.</summary>
+    public Budget GetEthicsBudget(DesignContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        var spent = context.Ethics.Sum(e => _ethics.TryGetValue(e, out var ethic) ? ethic.Cost : 0);
+        return new Budget(spent, _database.Defines.EthicsPoints);
+    }
+
+    /// <summary>How many civics the empire has taken against how many it may.</summary>
+    public Budget GetCivicsBudget(DesignContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+        return new Budget(context.Civics.Count, _database.Defines.CivicPoints);
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // Derived values
+    // ---------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// Works out what the empire's government is called.
+    /// </summary>
+    /// <remarks>
+    /// The government is not chosen. The game takes the highest-weighted type whose conditions the
+    /// design meets, and settles ties by which was defined first.
+    /// </remarks>
+    public GovernmentTypeDefinition? DeriveGovernment(DesignContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        GovernmentTypeDefinition? best = null;
+
+        foreach (var government in _database.GovernmentTypes)
+        {
+            if (!_evaluator.IsSatisfied(government.Possible, context))
+            {
+                continue;
+            }
+
+            if (best is null ||
+                government.Weight > best.Weight ||
+                (government.Weight == best.Weight && government.FileOrder < best.FileOrder))
+            {
+                best = government;
+            }
+        }
+
+        return best;
+    }
+
+    /// <summary>
+    /// The homeworld types this empire may start on.
+    /// </summary>
+    /// <remarks>
+    /// Normally the classes the game flags as starting worlds, but an origin can replace that
+    /// outright, which is how Void Dwellers begin on a habitat, and civics, origins and species
+    /// classes can each add or remove types.
+    /// </remarks>
+    public IReadOnlyList<string> GetHomeworldOptions(DesignContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        // An origin that supplies its own world leaves nothing to choose.
+        if (OriginOf(context) is { } chosen &&
+            (chosen.HabitabilityPreference ?? chosen.StartingColony) is { Length: > 0 } forced)
+        {
+            return [forced];
+        }
+
+        var candidates = new List<string>();
+
+        foreach (var planet in _database.PlanetClasses)
+        {
+            if (planet.IsStartingWorld && _evaluator.IsSatisfied(planet.Potential, context))
+            {
+                candidates.Add(planet.Key);
+            }
+        }
+
+        foreach (var added in SelectedCivicsAndOrigin(context).SelectMany(c => c.AddedPlanetClasses)
+                     .Concat(SpeciesClassOf(context)?.AddedPlanetClasses ?? []))
+        {
+            if (!candidates.Contains(added, StringComparer.Ordinal))
+            {
+                candidates.Add(added);
+            }
+        }
+
+        foreach (var removed in SelectedCivicsAndOrigin(context).SelectMany(c => c.RemovedPlanetClasses)
+                     .Concat(SpeciesClassOf(context)?.RemovedPlanetClasses ?? []))
+        {
+            candidates.RemoveAll(c => string.Equals(c, removed, StringComparison.Ordinal));
+        }
+
+        return candidates;
+    }
+
+    /// <summary>
+    /// The starting systems this empire may use: those an origin names, or the ones open to any
+    /// custom empire.
+    /// </summary>
+    public IReadOnlyList<string> GetStartingSystemOptions(DesignContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        if (OriginOf(context) is { Initializers.Count: > 0 } origin)
+        {
+            return origin.Initializers;
+        }
+
+        return [.. _database.Initializers
+            .Where(i => i.Usage == InitializerUsage.CustomEmpire)
+            .Select(i => i.Key)];
+    }
+
+    /// <summary>Traits the design forces onto the founder species and the player cannot remove.</summary>
+    public IReadOnlyList<string> GetForcedTraits(DesignContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        var forced = new List<string>();
+
+        if (SpeciesClassOf(context)?.ForcedTrait is { Length: > 0 } classTrait)
+        {
+            forced.Add(classTrait);
+        }
+
+        if (context.Authority is { } authorityKey)
+        {
+            var authority = _database.Authorities
+                .FirstOrDefault(a => string.Equals(a.Key, authorityKey, StringComparison.Ordinal));
+
+            forced.AddRange(authority?.ForcedTraits ?? []);
+        }
+
+        forced.AddRange(SelectedCivicsAndOrigin(context).SelectMany(c => c.ForcedTraits));
+
+        return [.. forced.Distinct(StringComparer.Ordinal)];
+    }
+
+    /// <summary>Whether the chosen origin requires the player to design a second species.</summary>
+    public bool RequiresSecondarySpecies(DesignContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+        return OriginOf(context)?.RequiresSecondarySpecies ?? false;
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // Options
+    // ---------------------------------------------------------------------------------------
+
+    /// <summary>The species classes the player may choose from.</summary>
+    public IReadOnlyList<OptionState> GetSpeciesClassOptions(DesignContext context) =>
+        Options(
+            _database.SpeciesClasses.Where(c => !c.IsAppearanceOnly),
+            c => c.Key,
+            c => c.Playable,
+            c => c.Possible,
+            context);
+
+    /// <summary>The authorities the player may choose from.</summary>
+    public IReadOnlyList<OptionState> GetAuthorityOptions(DesignContext context) =>
+        Options(
+            _database.Authorities.Where(a => !a.AiOnly),
+            a => a.Key,
+            a => a.Playable,
+            a => a.Possible,
+            context);
+
+    /// <summary>The origins the player may choose from.</summary>
+    public IReadOnlyList<OptionState> GetOriginOptions(DesignContext context) =>
+        Options(
+            _database.Civics.Where(c => c.IsOrigin),
+            c => c.Key,
+            c => Combine(c.Playable, c.Potential),
+            c => c.Possible,
+            context);
+
+    /// <summary>The civics the player may choose from.</summary>
+    public IReadOnlyList<OptionState> GetCivicOptions(DesignContext context) =>
+        Options(
+            _database.Civics.Where(c => !c.IsOrigin),
+            c => c.Key,
+            c => Combine(c.Playable, c.Potential),
+            c => c.Possible,
+            context);
+
+    /// <summary>
+    /// The ethics the player may choose from, with the ones that would break a rule disabled.
+    /// </summary>
+    public IReadOnlyList<OptionState> GetEthicOptions(DesignContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        var budget = GetEthicsBudget(context);
+        var options = new List<OptionState>(_database.Ethics.Count);
+
+        foreach (var ethic in _database.Ethics)
+        {
+            if (context.Ethics.Contains(ethic.Key))
+            {
+                options.Add(OptionState.Available(ethic.Key, ethic.Cost));
+                continue;
+            }
+
+            var reasons = new List<string>();
+
+            // Gestalt consciousness replaces an empire's whole ethos rather than joining it.
+            if (ethic.IsGestalt && context.Ethics.Count > 0)
+            {
+                reasons.Add("ethic_gestalt_consciousness");
+            }
+            else if (!ethic.IsGestalt && context.IsGestalt)
+            {
+                reasons.Add("ethic_gestalt_consciousness");
+            }
+
+            // Opposing ethics share a category, and only one may be taken from each.
+            if (context.Ethics.Any(e => _ethics.TryGetValue(e, out var taken) &&
+                                        string.Equals(taken.Category, ethic.Category, StringComparison.Ordinal)))
+            {
+                reasons.Add(ethic.Key);
+            }
+
+            if (budget.Remaining < ethic.Cost)
+            {
+                reasons.Add("ETHIC_POINTS");
+            }
+
+            options.Add(new OptionState(ethic.Key, true, reasons.Count == 0, reasons, ethic.Cost));
+        }
+
+        return options;
+    }
+
+    /// <summary>
+    /// The traits the founder species may take, with the ones that would break a rule disabled.
+    /// </summary>
+    public IReadOnlyList<OptionState> GetSpeciesTraitOptions(DesignContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        var budget = GetTraitBudget(context);
+        var options = new List<OptionState>();
+
+        foreach (var trait in _database.Traits.Where(t => t.Kind == TraitKind.Species))
+        {
+            // Hidden traits and ones the game never offers at creation are not choices at all.
+            if (trait.Hidden || !trait.Initial)
+            {
+                continue;
+            }
+
+            var selected = context.Traits.Contains(trait.Key);
+            var reasons = selected ? [] : TraitBlockers(trait, context, budget);
+
+            options.Add(new OptionState(
+                trait.Key,
+                Visible: IsTraitRelevant(trait, context),
+                Enabled: selected || reasons.Count == 0,
+                reasons,
+                trait.Cost,
+                trait.RequiredDlc is { } dlc && !context.OwnedDlc.Contains(dlc) ? dlc : null));
+        }
+
+        return options;
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // Validation
+    // ---------------------------------------------------------------------------------------
+
+    /// <summary>Checks a whole design and reports everything the game would reject.</summary>
+    public ValidationReport Validate(EmpireDesign design, IReadOnlySet<string>? ownedDlc = null)
+    {
+        ArgumentNullException.ThrowIfNull(design);
+        return Validate(CreateContext(design, ownedDlc), design);
+    }
+
+    /// <summary>Checks a design that has already been reduced to a context.</summary>
+    public ValidationReport Validate(DesignContext context, EmpireDesign? design = null)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        var problems = new List<ValidationProblem>();
+
+        ValidateSpeciesClass(context, problems);
+        ValidateTraits(context, problems);
+        ValidateEthics(context, problems);
+        ValidateAuthority(context, problems);
+        ValidateCivics(context, problems);
+        ValidateOrigin(context, problems);
+        ValidateHomeworld(context, problems);
+
+        if (design is not null && RequiresSecondarySpecies(context) && design.SecondarySpecies is null)
+        {
+            problems.Add(new ValidationProblem(
+                ValidationArea.SecondarySpecies,
+                context.Origin,
+                "This origin needs a second species, and the design has none.",
+                []));
+        }
+
+        return new ValidationReport(problems);
+    }
+
+    private void ValidateSpeciesClass(DesignContext context, List<ValidationProblem> problems)
+    {
+        if (context.SpeciesClass is not { Length: > 0 } key)
+        {
+            problems.Add(new ValidationProblem(
+                ValidationArea.Species, null, "No species class is set.", []));
+            return;
+        }
+
+        var speciesClass = SpeciesClassOf(context);
+        if (speciesClass is null)
+        {
+            problems.Add(new ValidationProblem(
+                ValidationArea.Species, key, $"'{key}' is not a species class this game defines.", []));
+            return;
+        }
+
+        Check(ValidationArea.Species, key, speciesClass.Playable, "is not available", context, problems);
+        Check(ValidationArea.Species, key, speciesClass.Possible, "cannot be used by this empire", context, problems);
+    }
+
+    private void ValidateTraits(DesignContext context, List<ValidationProblem> problems)
+    {
+        var budget = GetTraitBudget(context);
+
+        if (budget.Points.IsOverspent)
+        {
+            problems.Add(new ValidationProblem(
+                ValidationArea.Traits,
+                null,
+                $"Traits cost {budget.Points.Spent} points but only {budget.Points.Available} are available.",
+                []));
+        }
+
+        if (budget.Picks.IsOverspent)
+        {
+            problems.Add(new ValidationProblem(
+                ValidationArea.Traits,
+                null,
+                $"The species has {budget.Picks.Spent} traits but may have {budget.Picks.Available}.",
+                []));
+        }
+
+        foreach (var key in context.Traits)
+        {
+            if (!_traits.TryGetValue(key, out var trait))
+            {
+                problems.Add(new ValidationProblem(
+                    ValidationArea.Traits, key, $"'{key}' is not a trait this game defines.", []));
+                continue;
+            }
+
+            foreach (var reason in TraitBlockers(trait, context, budget, ignoreBudget: true))
+            {
+                problems.Add(new ValidationProblem(
+                    ValidationArea.Traits, key, $"'{key}' cannot be taken by this species.", [reason]));
+            }
+        }
+    }
+
+    private void ValidateEthics(DesignContext context, List<ValidationProblem> problems)
+    {
+        var budget = GetEthicsBudget(context);
+
+        if (context.Ethics.Count == 0)
+        {
+            problems.Add(new ValidationProblem(ValidationArea.Ethics, null, "The empire has no ethics.", []));
+            return;
+        }
+
+        foreach (var key in context.Ethics.Where(e => !_ethics.ContainsKey(e)))
+        {
+            problems.Add(new ValidationProblem(
+                ValidationArea.Ethics, key, $"'{key}' is not an ethic this game defines.", []));
+        }
+
+        if (budget.IsOverspent)
+        {
+            problems.Add(new ValidationProblem(
+                ValidationArea.Ethics,
+                null,
+                $"Ethics cost {budget.Spent} points but only {budget.Available} are available.",
+                []));
+        }
+
+        // A gestalt has no ethos beyond being a gestalt.
+        if (context.IsGestalt && context.Ethics.Count > 1)
+        {
+            problems.Add(new ValidationProblem(
+                ValidationArea.Ethics,
+                "ethic_gestalt_consciousness",
+                "Gestalt consciousness cannot be combined with other ethics.",
+                []));
+        }
+
+        foreach (var group in context.Ethics
+                     .Select(e => _ethics.GetValueOrDefault(e))
+                     .OfType<EthicDefinition>()
+                     .GroupBy(e => e.Category, StringComparer.Ordinal)
+                     .Where(g => g.Count() > 1))
+        {
+            problems.Add(new ValidationProblem(
+                ValidationArea.Ethics,
+                group.Key,
+                $"Only one ethic may be taken from the '{group.Key}' group, but the empire has " +
+                $"{string.Join(" and ", group.Select(e => e.Key))}.",
+                []));
+        }
+    }
+
+    private void ValidateAuthority(DesignContext context, List<ValidationProblem> problems)
+    {
+        if (context.Authority is not { Length: > 0 } key)
+        {
+            problems.Add(new ValidationProblem(
+                ValidationArea.Authority, null, "No authority is set.", []));
+            return;
+        }
+
+        var authority = _database.Authorities
+            .FirstOrDefault(a => string.Equals(a.Key, key, StringComparison.Ordinal));
+
+        if (authority is null)
+        {
+            problems.Add(new ValidationProblem(
+                ValidationArea.Authority, key, $"'{key}' is not an authority this game defines.", []));
+            return;
+        }
+
+        Check(ValidationArea.Authority, key, authority.Playable, "is not available", context, problems);
+        Check(ValidationArea.Authority, key, authority.Possible, "cannot be used by this empire", context, problems);
+    }
+
+    private void ValidateCivics(DesignContext context, List<ValidationProblem> problems)
+    {
+        var budget = GetCivicsBudget(context);
+
+        if (budget.Spent != budget.Available)
+        {
+            problems.Add(new ValidationProblem(
+                ValidationArea.Civics,
+                null,
+                $"The empire has {budget.Spent} civics but must have exactly {budget.Available}.",
+                []));
+        }
+
+        foreach (var key in context.Civics)
+        {
+            if (!_civics.TryGetValue(key, out var civic) || civic.IsOrigin)
+            {
+                problems.Add(new ValidationProblem(
+                    ValidationArea.Civics, key, $"'{key}' is not a civic this game defines.", []));
+                continue;
+            }
+
+            Check(ValidationArea.Civics, key, civic.Playable, "is not available", context, problems);
+            Check(ValidationArea.Civics, key, civic.Potential, "does not apply to this empire", context, problems);
+            Check(ValidationArea.Civics, key, civic.Possible, "cannot be combined with the rest of this empire", context, problems);
+        }
+    }
+
+    private void ValidateOrigin(DesignContext context, List<ValidationProblem> problems)
+    {
+        if (context.Origin is not { Length: > 0 } key)
+        {
+            problems.Add(new ValidationProblem(ValidationArea.Origin, null, "No origin is set.", []));
+            return;
+        }
+
+        if (!_civics.TryGetValue(key, out var origin) || !origin.IsOrigin)
+        {
+            problems.Add(new ValidationProblem(
+                ValidationArea.Origin, key, $"'{key}' is not an origin this game defines.", []));
+            return;
+        }
+
+        Check(ValidationArea.Origin, key, origin.Playable, "is not available", context, problems);
+        Check(ValidationArea.Origin, key, origin.Potential, "does not apply to this empire", context, problems);
+        Check(ValidationArea.Origin, key, origin.Possible, "cannot be combined with the rest of this empire", context, problems);
+    }
+
+    private void ValidateHomeworld(DesignContext context, List<ValidationProblem> problems)
+    {
+        if (context.PlanetClass is not { Length: > 0 } key)
+        {
+            return;
+        }
+
+        // An origin that supplies its own homeworld simply overrides whatever the design recorded.
+        // The game loads such a design and uses the origin's world, so this is worth mentioning
+        // but is not a reason to reject the empire.
+        if (OriginOf(context) is { } origin &&
+            (origin.HabitabilityPreference ?? origin.StartingColony) is { Length: > 0 } imposed)
+        {
+            if (!string.Equals(key, imposed, StringComparison.Ordinal))
+            {
+                problems.Add(new ValidationProblem(
+                    ValidationArea.Homeworld,
+                    key,
+                    $"This origin starts the empire on '{imposed}', so the '{key}' homeworld is ignored.",
+                    [],
+                    ValidationSeverity.Warning));
+            }
+
+            return;
+        }
+
+        if (!GetHomeworldOptions(context).Contains(key, StringComparer.Ordinal))
+        {
+            problems.Add(new ValidationProblem(
+                ValidationArea.Homeworld,
+                key,
+                $"'{key}' is not a homeworld this empire can start on.",
+                []));
+        }
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // Helpers
+    // ---------------------------------------------------------------------------------------
+
+    /// <summary>Everything about a trait that would stop this species taking it.</summary>
+    private List<string> TraitBlockers(
+        TraitDefinition trait,
+        DesignContext context,
+        TraitBudget budget,
+        bool ignoreBudget = false)
+    {
+        var reasons = new List<string>();
+
+        if (trait.RequiredDlc is { } dlc && !context.OwnedDlc.Contains(dlc))
+        {
+            reasons.Add(dlc);
+        }
+
+        if (trait.AllowedArchetypes.Count > 0 &&
+            (context.SpeciesArchetype is null || !trait.AllowedArchetypes.Contains(context.SpeciesArchetype)))
+        {
+            reasons.Add(trait.NameKey);
+        }
+
+        // A portrait in the override list lifts the class restriction, which is how the game's own
+        // psionic empires carry traits nominally reserved for the psionic species class.
+        if (trait.AllowedSpeciesClasses.Count > 0 &&
+            (context.SpeciesClass is null || !trait.AllowedSpeciesClasses.Contains(context.SpeciesClass)) &&
+            (context.Portrait is null || !trait.PortraitOverride.Contains(context.Portrait)))
+        {
+            reasons.Add(trait.NameKey);
+        }
+
+        // Aquatic needs an ocean world, and a few others are tied to a homeworld in the same way.
+        // Judged against what the origin actually gives the species, not what the design records.
+        if (trait.AllowedPlanetClasses.Count > 0 &&
+            context.EffectivePlanetClass is { } planet &&
+            !trait.AllowedPlanetClasses.Contains(planet))
+        {
+            reasons.Add(trait.NameKey);
+        }
+
+        if (trait.AllowedOrigins.Count > 0 &&
+            (context.Origin is null || !trait.AllowedOrigins.Contains(context.Origin)))
+        {
+            reasons.Add(trait.NameKey);
+        }
+
+        if (context.Origin is { } origin && trait.ForbiddenOrigins.Contains(origin))
+        {
+            reasons.Add(trait.NameKey);
+        }
+
+        if (trait.AllowedEthics.Count > 0 && !context.Ethics.Any(trait.AllowedEthics.Contains))
+        {
+            reasons.Add(trait.NameKey);
+        }
+
+        if (context.Ethics.Any(trait.ForbiddenEthics.Contains))
+        {
+            reasons.Add(trait.NameKey);
+        }
+
+        if (trait.AllowedCivics.Count > 0 && !context.Civics.Any(trait.AllowedCivics.Contains))
+        {
+            reasons.Add(trait.NameKey);
+        }
+
+        foreach (var opposite in trait.Opposites.Where(context.Traits.Contains))
+        {
+            reasons.Add(opposite);
+        }
+
+        if (!ignoreBudget)
+        {
+            if (budget.Points.Remaining < trait.Cost)
+            {
+                reasons.Add("TRAIT_POINTS");
+            }
+
+            if (trait.Cost != 0 && budget.Picks.Remaining < 1)
+            {
+                reasons.Add("MAX_TRAITS");
+            }
+        }
+
+        return reasons;
+    }
+
+    /// <summary>
+    /// Whether a trait belongs in this species' list at all. The game shows a biological species
+    /// biological traits, not the machine ones it could never take.
+    /// </summary>
+    private static bool IsTraitRelevant(TraitDefinition trait, DesignContext context) =>
+        trait.AllowedArchetypes.Count == 0 ||
+        context.SpeciesArchetype is null ||
+        trait.AllowedArchetypes.Contains(context.SpeciesArchetype);
+
+    private IReadOnlyList<OptionState> Options<T>(
+        IEnumerable<T> items,
+        Func<T, string> key,
+        Func<T, Requirement> visibility,
+        Func<T, Requirement> availability,
+        DesignContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        var options = new List<OptionState>();
+
+        foreach (var item in items)
+        {
+            var visible = _evaluator.Evaluate(visibility(item), context);
+            var enabled = _evaluator.Evaluate(availability(item), context);
+
+            options.Add(new OptionState(
+                key(item),
+                visible.Passed,
+                visible.Passed && enabled.Passed,
+                enabled.Passed ? [] : enabled.Reasons));
+        }
+
+        return options;
+    }
+
+    private void Check(
+        ValidationArea area,
+        string key,
+        Requirement requirement,
+        string description,
+        DesignContext context,
+        List<ValidationProblem> problems)
+    {
+        var verdict = _evaluator.Evaluate(requirement, context);
+
+        if (!verdict.Passed)
+        {
+            problems.Add(new ValidationProblem(area, key, $"'{key}' {description}.", verdict.Reasons));
+        }
+    }
+
+    private static Requirement Combine(Requirement first, Requirement second) =>
+        new AllRequirement([first, second]);
+
+    private SpeciesClassDefinition? SpeciesClassOf(DesignContext context) =>
+        context.SpeciesClass is { } key
+            ? _database.SpeciesClasses.FirstOrDefault(c => string.Equals(c.Key, key, StringComparison.Ordinal))
+            : null;
+
+    private CivicDefinition? OriginOf(DesignContext context) =>
+        context.Origin is { } key && _civics.TryGetValue(key, out var origin) && origin.IsOrigin ? origin : null;
+
+    /// <summary>The selected civics together with the origin, which behaves like one.</summary>
+    private IEnumerable<CivicDefinition> SelectedCivicsAndOrigin(DesignContext context)
+    {
+        foreach (var key in context.Civics)
+        {
+            if (_civics.TryGetValue(key, out var civic))
+            {
+                yield return civic;
+            }
+        }
+
+        if (OriginOf(context) is { } origin)
+        {
+            yield return origin;
+        }
+    }
+}
