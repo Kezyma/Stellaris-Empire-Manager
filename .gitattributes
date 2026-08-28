@@ -1,0 +1,30 @@
+# Normalise line endings for source, and check out native on each platform.
+* text=auto
+
+*.cs        text diff=csharp
+*.razor     text
+*.csproj    text
+*.props     text
+*.targets   text
+*.slnx      text
+*.json      text
+*.yml       text
+*.md        text
+*.css       text
+*.js        text
+*.html      text
+
+# ---------------------------------------------------------------------------
+# Paradox script fixtures and anything else byte-compared by the round-trip
+# tests. Git must not touch a single byte of these: the whole point of the
+# tests is that our writer reproduces the game's output exactly, CRLF, tabs,
+# trailing whitespace and all. Marking them binary disables all normalisation.
+# ---------------------------------------------------------------------------
+tests/**/Fixtures/**    -text -diff
+*.gamefixture           -text -diff
+
+# Binary assets
+*.png       binary
+*.dds       binary
+*.ico       binary
+*.mesh      binary

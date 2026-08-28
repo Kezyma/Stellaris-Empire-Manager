@@ -1,0 +1,29 @@
+<Project>
+
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CA1848;CA1031</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Product>Stellaris Empire Manager</Product>
+    <Company>Alex Ashmore</Company>
+    <Copyright>Copyright (c) Alex Ashmore</Copyright>
+    <Version>0.1.0</Version>
+    <RepositoryUrl>https://github.com/Kezyma/Stellaris-Empire-Manager</RepositoryUrl>
+  </PropertyGroup>
+
+  <!--
+    Deterministic builds keep round-trip fixture hashes stable across machines.
+  -->
+  <PropertyGroup Condition="'$(ContinuousIntegrationBuild)' == ''">
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+</Project>

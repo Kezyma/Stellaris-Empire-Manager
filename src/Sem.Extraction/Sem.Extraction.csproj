@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Sem.Clausewitz\Sem.Clausewitz.csproj" />
+    <ProjectReference Include="..\Sem.GameData\Sem.GameData.csproj" />
+    <ProjectReference Include="..\Sem.Designs\Sem.Designs.csproj" />
+    <ProjectReference Include="..\Sem.Assets\Sem.Assets.csproj" />
+    <ProjectReference Include="..\Sem.MeshBake\Sem.MeshBake.csproj" />
+    <ProjectReference Include="..\Sem.Io\Sem.Io.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

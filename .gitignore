@@ -1,0 +1,46 @@
+# ---------------------------------------------------------------------------
+# Working copies of the user's real Stellaris files. NEVER commit these, and
+# never edit the originals: all development reads/writes these copies only.
+# See docs/file-safety.md.
+# ---------------------------------------------------------------------------
+sandbox/
+
+# ---------------------------------------------------------------------------
+# Extracted game data and baked assets. These are derived from a local Stellaris
+# install and are © Paradox Interactive - they must not enter the public repo.
+# ---------------------------------------------------------------------------
+artifacts/gamedata/
+**/wwwroot/gamedata/
+*.gamedb.json
+
+# .NET build output
+bin/
+obj/
+artifacts/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+
+# Test output
+TestResults/
+coverage/
+*.coverage
+*.trx
+*.received.*
+
+# Tooling
+.idea/
+.vscode/
+*.swp
+*~
+
+# OS
+Thumbs.db
+desktop.ini
+.DS_Store

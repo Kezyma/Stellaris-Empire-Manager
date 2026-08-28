@@ -1,0 +1,21 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Sem.Assets/Sem.Assets.csproj" />
+    <Project Path="src/Sem.Clausewitz/Sem.Clausewitz.csproj" />
+    <Project Path="src/Sem.Cli/Sem.Cli.csproj" />
+    <Project Path="src/Sem.Designs/Sem.Designs.csproj" />
+    <Project Path="src/Sem.Desktop/Sem.Desktop.csproj" />
+    <Project Path="src/Sem.Extraction/Sem.Extraction.csproj" />
+    <Project Path="src/Sem.GameData/Sem.GameData.csproj" />
+    <Project Path="src/Sem.Io/Sem.Io.csproj" />
+    <Project Path="src/Sem.MeshBake/Sem.MeshBake.csproj" />
+    <Project Path="src/Sem.Rules/Sem.Rules.csproj" />
+    <Project Path="src/Sem.Ui/Sem.Ui.csproj" />
+    <Project Path="src/Sem.Web/Sem.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Sem.Core.Tests/Sem.Core.Tests.csproj" />
+    <Project Path="tests/Sem.Extraction.Tests/Sem.Extraction.Tests.csproj" />
+    <Project Path="tests/Sem.Ui.Tests/Sem.Ui.Tests.csproj" />
+  </Folder>
+</Solution>
