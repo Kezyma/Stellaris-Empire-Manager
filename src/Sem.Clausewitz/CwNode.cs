@@ -26,7 +26,7 @@ public sealed class CwNode
     }
 
     /// <summary>The key token, or null when this is a bare element.</summary>
-    public CwToken? KeyToken { get; }
+    public CwToken? KeyToken { get; private set; }
 
     /// <summary>The operator token, or null when this is a bare element.</summary>
     public CwToken? OperatorToken { get; }
@@ -51,6 +51,30 @@ public sealed class CwNode
 
     /// <summary>The scalar value without quotes, or null when the value is a block.</summary>
     public string? ScalarValue => (Value as CwScalar)?.Value;
+
+    /// <summary>Copies this node and everything under it, keeping the original's formatting.</summary>
+    public CwNode Clone() => KeyToken is null
+        ? new CwNode(Value.Clone())
+        : new CwNode(KeyToken, OperatorToken!, Value.Clone());
+
+    /// <summary>
+    /// Renames this node, keeping its original position and surrounding whitespace so only the key
+    /// itself changes in the written file.
+    /// </summary>
+    public void Rename(string key, bool quoted)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(key);
+
+        if (KeyToken is null)
+        {
+            throw new InvalidOperationException("A bare element has no key to rename.");
+        }
+
+        KeyToken = new CwToken(
+            quoted ? CwTokenKind.QuotedString : CwTokenKind.BareToken,
+            quoted ? $"\"{key}\"" : key,
+            KeyToken.LeadingTrivia);
+    }
 
     /// <summary>Builds <c>key = value</c> with formatting left to the writer.</summary>
     public static CwNode Assignment(string key, CwValue value, bool quoteKey = false) =>

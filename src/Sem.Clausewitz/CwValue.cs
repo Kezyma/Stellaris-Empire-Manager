@@ -6,6 +6,12 @@ public abstract class CwValue
     private protected CwValue()
     {
     }
+
+    /// <summary>
+    /// Copies this value and everything under it. Tokens are immutable and therefore shared, so a
+    /// clone keeps the original's formatting and writes out looking exactly like its source.
+    /// </summary>
+    public abstract CwValue Clone();
 }
 
 /// <summary>A single token value: an identifier, number, keyword or quoted string.</summary>
@@ -39,6 +45,9 @@ public sealed class CwScalar : CwValue
     /// <summary>Creates an unquoted scalar to be formatted by the writer.</summary>
     public static CwScalar Bare(string value) =>
         new(CwToken.Synthetic(CwTokenKind.BareToken, value));
+
+    /// <inheritdoc />
+    public override CwValue Clone() => new CwScalar(Token);
 
     public override string ToString() => Value;
 }
@@ -105,4 +114,7 @@ public sealed class CwBlock : CwValue
 
     /// <summary>Removes every child.</summary>
     public void Clear() => _nodes.Clear();
+
+    /// <inheritdoc />
+    public override CwValue Clone() => new CwBlock(Open, _nodes.Select(n => n.Clone()), Close);
 }

@@ -26,8 +26,8 @@ Early development. See [the milestone plan](docs/) for what is built and what is
 | --- | --- |
 | M0 — Repository bootstrap and file-safety guard | Done |
 | M1 — Clausewitz parser and byte-exact writer | Done |
-| M2 — Empire design model and mappers | Next |
-| M3 — Game data extraction | |
+| M2 — Empire design model and mappers | Done |
+| M3 — Game data extraction | Next |
 | M4 — Rules and validation engine | |
 | M5 — Icons, flags and image pipeline | |
 | M6 — Designer UI and web app | |
