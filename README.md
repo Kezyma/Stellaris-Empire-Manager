@@ -27,8 +27,8 @@ Early development. See [the milestone plan](docs/) for what is built and what is
 | M0 — Repository bootstrap and file-safety guard | Done |
 | M1 — Clausewitz parser and byte-exact writer | Done |
 | M2 — Empire design model and mappers | Done |
-| M3 — Game data extraction | Next |
-| M4 — Rules and validation engine | |
+| M3 — Game data extraction | Done |
+| M4 — Rules and validation engine | Next |
 | M5 — Icons, flags and image pipeline | |
 | M6 — Designer UI and web app | |
 | M7 — Desktop application | |
@@ -65,6 +65,12 @@ development is permitted to write. Then:
 
 ```bash
 dotnet test
+```
+
+To read your installation into the game database the designer runs on:
+
+```bash
+dotnet run --project src/Sem.Cli -- extract
 ```
 
 **Your game install and your real empire designs are never modified during development.** This is
