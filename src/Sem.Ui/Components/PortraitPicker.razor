@@ -167,19 +167,8 @@ else
     /// The rendered likeness, when one exists. A group stands in for a portrait and takes its
     /// artwork from whichever the group defaults to.
     /// </summary>
-    private string? Thumbnail(string key)
-    {
-        var portrait = Session.Data.Database.Portraits.FirstOrDefault(p => p.Key == key);
-
-        if (portrait?.Thumbnail is { Length: > 0 } own)
-        {
-            return own;
-        }
-
-        return portrait?.ResolvesTo is { } resolved
-            ? Session.Data.Database.Portraits.FirstOrDefault(p => p.Key == resolved)?.Thumbnail
-            : null;
-    }
+    private string? Thumbnail(string key) =>
+        PortraitArtwork.For(Session.Data.Database, key, Species.Gender);
 
     private void Choose(string key)
     {

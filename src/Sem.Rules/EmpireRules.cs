@@ -229,8 +229,58 @@ public sealed class EmpireRules(GameDatabase database)
 
         forced.AddRange(SelectedCivicsAndOrigin(context).SelectMany(c => c.ForcedTraits));
 
+        if (HabitabilityTraitFor(context) is { Length: > 0 } preference)
+        {
+            forced.Add(preference);
+        }
+
         return [.. forced.Distinct(StringComparer.Ordinal)];
     }
+
+    /// <summary>
+    /// The habitability preference the homeworld gives the species.
+    /// </summary>
+    /// <remarks>
+    /// A species does not choose what it is suited to; the world it evolved on decides. The game
+    /// names these traits after the thing that grants them — <c>trait_pc_continental_preference</c>
+    /// for a planet class, or <c>trait_auto_wet_preference</c> for a climate where several classes
+    /// share one — so the trait is found by name rather than by a list that would need maintaining.
+    /// </remarks>
+    public string? HabitabilityTraitFor(DesignContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        if (context.EffectivePlanetClass is not { Length: > 0 } planetClass)
+        {
+            return null;
+        }
+
+        if (Trait($"trait_{planetClass}_preference") is { } exact)
+        {
+            return exact;
+        }
+
+        var climate = _database.PlanetClasses
+            .FirstOrDefault(p => string.Equals(p.Key, planetClass, StringComparison.Ordinal))?.Climate;
+
+        return climate is { Length: > 0 } ? Trait($"trait_auto_{climate}_preference") : null;
+
+        string? Trait(string key) =>
+            _database.Traits.Any(t => string.Equals(t.Key, key, StringComparison.Ordinal)) ? key : null;
+    }
+
+    /// <summary>
+    /// Whether a trait is one the homeworld decides rather than one the player picks.
+    /// </summary>
+    /// <remarks>
+    /// Offering these would be offering a choice the game does not have. They are shown among what
+    /// the species already has, so a player can see what it is suited to.
+    /// </remarks>
+    public static bool IsHabitabilityPreference(string traitKey) =>
+        traitKey is { Length: > 0 } &&
+        traitKey.EndsWith("_preference", StringComparison.Ordinal) &&
+        (traitKey.StartsWith("trait_pc_", StringComparison.Ordinal) ||
+         traitKey.StartsWith("trait_auto_", StringComparison.Ordinal));
 
     /// <summary>
     /// The portraits this species may wear, grouped as the game's picker groups them.

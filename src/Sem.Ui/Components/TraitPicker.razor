@@ -11,6 +11,10 @@
     <BudgetBar Label="Traits" Value="@Budget.Picks" />
 </div>
 
+@*
+    What the pointer is over is described beneath the chosen traits rather than beneath both lists,
+    so reading about a trait and seeing what it would join happen in one place.
+*@
 <div class="sem-trait-lists">
     <div class="sem-trait-list" role="listbox" aria-label="Available traits">
         @foreach (var trait in Available)
@@ -19,45 +23,47 @@
         }
     </div>
 
-    <div class="sem-trait-list chosen" role="listbox" aria-label="Chosen traits">
-        @if (Chosen.Count == 0)
-        {
-            <p class="sem-hint" style="padding:6px">Nothing chosen yet.</p>
-        }
+    <div class="chosen-column">
+        <div class="sem-trait-list chosen" role="listbox" aria-label="Chosen traits">
+            @if (Chosen.Count == 0)
+            {
+                <p class="sem-hint" style="padding:6px">Nothing chosen yet.</p>
+            }
 
-        @foreach (var trait in Chosen)
-        {
-            @Row(trait, chosen: true)
-        }
-    </div>
-</div>
+            @foreach (var trait in Chosen)
+            {
+                @Row(trait, chosen: true)
+            }
+        </div>
 
-<div class="sem-trait-detail">
-    @if (Described is { } described)
-    {
-        <h4>@described.Name</h4>
+        <div class="sem-trait-detail">
+            @if (Described is { } described)
+            {
+                <h4>@described.Name</h4>
 
-        @if (described.Lore is { Length: > 0 } lore)
-        {
-            <div class="sem-detail-lore">@((MarkupString)lore)</div>
-        }
-
-        <EffectsList Effects="@described.Effects" ShowNothing="true" />
-
-        @if (described.Reasons.Count > 0)
-        {
-            <ul class="sem-blocked">
-                @foreach (var reason in described.Reasons)
+                @if (described.Lore is { Length: > 0 } lore)
                 {
-                    <li>@reason</li>
+                    <div class="sem-detail-lore">@((MarkupString)lore)</div>
                 }
-            </ul>
-        }
-    }
-    else
-    {
-        <p class="sem-hint">Hover a trait to see what it does.</p>
-    }
+
+                <EffectsList Effects="@described.Effects" ShowNothing="true" />
+
+                @if (described.Reasons.Count > 0)
+                {
+                    <ul class="sem-blocked">
+                        @foreach (var reason in described.Reasons)
+                        {
+                            <li>@reason</li>
+                        }
+                    </ul>
+                }
+            }
+            else
+            {
+                <p class="sem-hint">Hover a trait to see what it does.</p>
+            }
+        </div>
+    </div>
 </div>
 
 @code {
@@ -86,46 +92,81 @@
     private IReadOnlyDictionary<string, TraitDefinition>? _byKey;
 
     /// <summary>
-    /// Traits that may be taken, sorted as the game's own list is: by its sorting hint, then by
-    /// name, so the order does not shift about between visits.
+    /// Traits that may be taken, dearest first and alphabetically within a price.
     /// </summary>
+    /// <remarks>
+    /// What cannot be taken sinks to the bottom — but only what cannot be taken for a reason that
+    /// will not change on its own. A trait merely unaffordable this moment keeps its place, since
+    /// hiding the expensive ones is exactly backwards while the player is deciding what to spend on.
+    /// </remarks>
     private IReadOnlyList<TraitEntry> Available =>
     [
         .. Session.Rules.GetSpeciesTraitOptions(Context)
-            .Where(o => o.Visible && !Species.Traits.Contains(o.Key))
-            .OrderBy(o => ByKey.GetValueOrDefault(o.Key)?.SortingPriority ?? 0)
-            .ThenBy(o => Session.Localizer.Text(o.Key), StringComparer.CurrentCulture)
+            .Where(o => o.Visible
+                        && !Species.Traits.Contains(o.Key)
+                        && !EmpireRules.IsHabitabilityPreference(o.Key))
             .Select(Entry)
+            .OrderBy(t => t.Unavailable)
+            .ThenByDescending(t => t.Cost)
+            .ThenBy(t => t.Name, StringComparer.CurrentCulture)
     ];
 
     /// <summary>
     /// What the species has, in the order it was taken, so a trait does not move when another is
     /// added beside it.
     /// </summary>
-    private IReadOnlyList<TraitEntry> Chosen =>
-    [
-        .. Species.Traits.Select(key =>
-            Entry(new OptionState(
-                key,
-                true,
-                Enabled: true,
-                Reasons: [],
-                Cost: ByKey.GetValueOrDefault(key)?.Cost ?? 0)))
-    ];
+    /// <remarks>
+    /// Traits something else decides are listed here too even though the design does not record
+    /// them. A habitability preference is the homeworld's doing and the game adds it when the game
+    /// begins — neither the player's own designs nor the game's built-in empires store one — so it
+    /// is shown rather than written.
+    /// </remarks>
+    private IReadOnlyList<TraitEntry> Chosen
+    {
+        get
+        {
+            var held = Species.Traits.ToList();
+            var shown = held.Concat(Forced.Where(f => !held.Contains(f)));
+
+            return
+            [
+                .. shown.Select(key => Entry(new OptionState(
+                    key,
+                    true,
+                    Enabled: true,
+                    Reasons: [],
+                    Cost: ByKey.GetValueOrDefault(key)?.Cost ?? 0)))
+            ];
+        }
+    }
 
     private TraitEntry? Described =>
         _described is { } key
             ? Available.Concat(Chosen).FirstOrDefault(t => t.Key == key)
             : null;
 
+    /// <summary>
+    /// The budget reasons, which say only that a trait cannot be afforded right now.
+    /// </summary>
+    /// <remarks>
+    /// Kept apart from the rest because they are temporary: clearing another trait or choosing a
+    /// different civic makes them go away, where a species class never will.
+    /// </remarks>
+    private static readonly string[] BudgetReasons = [RuleReasons.NotEnoughPoints, RuleReasons.NoPicksLeft];
+
     private TraitEntry Entry(OptionState state)
     {
         var definition = ByKey.GetValueOrDefault(state.Key);
+        var forced = Forced.Contains(state.Key);
         var reasons = Session.Reasons.Describe(state.Reasons).ToList();
 
-        if (Forced.Contains(state.Key))
+        if (forced)
         {
-            reasons.Insert(0, "Fixed by the species class, authority, civics or origin.");
+            reasons.Insert(
+                0,
+                EmpireRules.IsHabitabilityPreference(state.Key)
+                    ? "Fixed by the homeworld."
+                    : "Fixed by the species class, authority, civics or origin.");
         }
 
         if (state.RequiredDlc is { Length: > 0 } dlc)
@@ -140,8 +181,9 @@
             definition?.Icon,
             state.Cost,
             definition?.Effects,
-            state.Enabled && !Forced.Contains(state.Key),
-            reasons);
+            state.Enabled && !forced,
+            reasons,
+            Unavailable: !state.Enabled && state.Reasons.Any(r => !BudgetReasons.Contains(r)));
     }
 
     private void Toggle(TraitEntry trait, bool chosen)
@@ -196,6 +238,9 @@
         </button>;
 
     /// <summary>One trait as the two lists need it.</summary>
+    /// <param name="Unavailable">
+    /// Whether something other than the budget blocks it, which is what decides where it sorts.
+    /// </param>
     private sealed record TraitEntry(
         string Key,
         string Name,
@@ -204,5 +249,6 @@
         int Cost,
         EffectSet? Effects,
         bool Enabled,
-        IReadOnlyList<string> Reasons);
+        IReadOnlyList<string> Reasons,
+        bool Unavailable = false);
 }

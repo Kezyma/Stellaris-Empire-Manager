@@ -125,20 +125,9 @@
             </div>
         </div>;
 
-    /// <summary>The rendered likeness, following a group to whichever portrait it stands for.</summary>
-    private string? Thumbnail(SpeciesDesign species)
-    {
-        var portrait = Session.Data.Database.Portraits.FirstOrDefault(p => p.Key == species.Portrait);
-
-        if (portrait?.Thumbnail is { Length: > 0 } own)
-        {
-            return own;
-        }
-
-        return portrait?.ResolvesTo is { } resolved
-            ? Session.Data.Database.Portraits.FirstOrDefault(p => p.Key == resolved)?.Thumbnail
-            : null;
-    }
+    /// <summary>The rendered likeness, following a group to the face its gender calls for.</summary>
+    private string? Thumbnail(SpeciesDesign species) =>
+        PortraitArtwork.For(Session.Data.Database, species.Portrait, species.Gender);
 
     private RenderFragment Row(string label, string? value) => builder =>
     {

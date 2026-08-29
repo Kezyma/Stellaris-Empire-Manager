@@ -22,20 +22,11 @@ public sealed record RenderSettings
     /// How much of the model, measured in its own units, the frame's height covers.
     /// </summary>
     /// <remarks>
-    /// <para>
-    /// One value for every portrait, which is the point: a species is the size it was modelled at
-    /// rather than the size of the frame. Fitting each one to its own bounds — which is what this
-    /// used to do — is why a small species came out as large as a big one.
-    /// </para>
-    /// <para>
-    /// The game's own frame is 380 pixels at a scale of 24, so it shows 15.8 units. Measured against
-    /// all 406 portraits that clips a quarter of them, which suits a game that shows a character in
-    /// a room rather better than it suits a picker where the face is the whole point. Twenty units
-    /// leaves 4% clipped — the ones with antennae and wings, which the game clips too — and still
-    /// puts the median portrait at about two thirds of the frame's height.
-    /// </para>
+    /// The game's own figure: its portrait frame is 380 pixels tall at a scale of 24, so it shows
+    /// 15.8 units of model whatever that model is. One value for every portrait is the point — a
+    /// species comes out the size it was modelled at rather than the size of the frame.
     /// </remarks>
-    public double VisibleHeight { get; init; } = 20;
+    public double VisibleHeight { get; init; } = 380.0 / 24.0;
 
     /// <summary>
     /// How far above the frame's bottom edge the model's feet sit, as a fraction of the height.
@@ -151,15 +142,14 @@ public sealed class PortraitRenderer(RenderSettings? settings = null)
         int height,
         float modelScale)
     {
-        var (min, max) = mesh.Bounds;
-
         var scale = (float)(height / Math.Max(_settings.VisibleHeight, 0.0001)) * Math.Max(modelScale, 0.01f);
-        var centreX = (min.X + max.X) / 2;
+
+        // The model's own origin goes on the line the game puts it on. Once a portrait has been
+        // posed, that origin means the same thing for every species, so nothing here needs to look
+        // at the geometry — which is what makes them all line up with each other.
         var feet = height * (1 + (float)_settings.BottomMargin);
 
-        return (
-            scale,
-            new Vector2((width / 2f) - (centreX * scale), feet + (mesh.Footing * scale)));
+        return (scale, new Vector2(width / 2f, feet));
     }
 
     private void DrawPart(

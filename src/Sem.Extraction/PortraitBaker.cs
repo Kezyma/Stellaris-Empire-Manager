@@ -86,6 +86,8 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
         var wardrobes = ReadWardrobes();
         var entityScales = ReadScales("*.asset", "entity");
         var meshScales = ReadScales("*.gfx", "pdxmesh");
+        var meshAnimations = ReadMeshAnimations();
+        var animationPaths = ReadAnimationPaths();
 
         var results = new List<PortraitDefinition>(portraits.Count);
         var failures = new List<string>();
@@ -125,10 +127,18 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
                 var scale = entityScales.GetValueOrDefault(entity, 1) *
                             meshScales.GetValueOrDefault(meshName, 1);
 
+                // The model is drawn in whatever space it was modelled in; its skeleton's rest pose
+                // is what carries it to where the game shows it.
+                var pose = meshAnimations.GetValueOrDefault(meshName) is { } animation &&
+                           animationPaths.GetValueOrDefault(animation) is { } animationPath
+                    ? LoadPose(animationPath)
+                    : PortraitPose.None;
+
                 var png = Draw(
                     meshPath,
                     wardrobes.GetValueOrDefault(portrait.Key) ?? PortraitTextures.None,
-                    (float)scale);
+                    (float)scale,
+                    pose);
                 var destination = $"portraits/{portrait.Key}.png";
 
                 _file.WriteAllBytes(Path.Combine(outputDirectory, destination), png);
@@ -148,9 +158,38 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
         return (results, new PortraitBakeReport(rendered, bytes, failures));
     }
 
-    private byte[] Draw(string meshPath, PortraitTextures wearing, float scale)
+    /// <summary>
+    /// The rest pose from an animation, kept because a model's animations are read once but its
+    /// portraits many times — the human model dresses a dozen of them.
+    /// </summary>
+    private PortraitPose LoadPose(string path)
     {
-        var mesh = PortraitMesh.Load(_content.Read(meshPath));
+        if (_poses.TryGetValue(path, out var cached))
+        {
+            return cached;
+        }
+
+        PortraitPose pose;
+
+        try
+        {
+            pose = _content.Contains(path) ? PortraitPose.Read(_content.Read(path)) : PortraitPose.None;
+        }
+        catch (Exception ex) when (ex is InvalidDataException or IOException)
+        {
+            // A portrait drawn in the pose it was modelled in is worth more than none at all.
+            pose = PortraitPose.None;
+        }
+
+        _poses[path] = pose;
+        return pose;
+    }
+
+    private readonly Dictionary<string, PortraitPose> _poses = new(StringComparer.OrdinalIgnoreCase);
+
+    private byte[] Draw(string meshPath, PortraitTextures wearing, float scale, PortraitPose pose)
+    {
+        var mesh = pose.ApplyTo(PortraitMesh.Load(_content.Read(meshPath)));
 
         // Each part is told what it is actually wearing before anything is drawn, so the renderer
         // has one job and a portrait in different clothes is the same call with a different set.
@@ -403,6 +442,87 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
     /// <summary>Entity name to the mesh it uses, from the entity definitions.</summary>
     private Dictionary<string, string> ReadEntities() =>
         ReadNameToValue("*.asset", blockKey: "entity", valueKey: "pdxmesh");
+
+    /// <summary>Animation name to the file holding it.</summary>
+    /// <remarks>
+    /// Written beside the asset that names it rather than as a path from the game's root, so the
+    /// folder it was found in has to travel with it.
+    /// </remarks>
+    private Dictionary<string, string> ReadAnimationPaths()
+    {
+        var map = new Dictionary<string, string>(StringComparer.Ordinal);
+
+        foreach (var path in _content.EnumerateFiles(ModelRoot, "*.asset", recursive: true))
+        {
+            if (TryParse(path) is not { } document)
+            {
+                continue;
+            }
+
+            var directory = path[..path.LastIndexOf('/')];
+
+            foreach (var node in document.Nodes)
+            {
+                if (node.Key == "animation" && node.Block is { } body &&
+                    body.GetString("name") is { Length: > 0 } name &&
+                    body.GetString("file") is { Length: > 0 } file)
+                {
+                    map.TryAdd(name, $"{directory}/{file.Replace('\\', '/')}");
+                }
+            }
+        }
+
+        return map;
+    }
+
+    /// <summary>Mesh name to an animation it uses, any of which carries the rest pose.</summary>
+    private Dictionary<string, string> ReadMeshAnimations()
+    {
+        var map = new Dictionary<string, string>(StringComparer.Ordinal);
+
+        foreach (var path in _content.EnumerateFiles(ModelRoot, "*.gfx", recursive: true))
+        {
+            if (TryParse(path) is not { } document)
+            {
+                continue;
+            }
+
+            foreach (var node in document.Nodes)
+            {
+                Collect(node);
+            }
+        }
+
+        return map;
+
+        void Collect(CwNode node)
+        {
+            if (node.Block is not { } body)
+            {
+                return;
+            }
+
+            if (string.Equals(node.Key, "pdxmesh", StringComparison.Ordinal) &&
+                body.GetString("name") is { Length: > 0 } name)
+            {
+                // Any of a model's animations will do: they all open from the same rest pose.
+                var animation = body.Nodes
+                    .FirstOrDefault(n => n.Key == "animation")?.Block?.GetString("type");
+
+                if (animation is { Length: > 0 })
+                {
+                    map.TryAdd(name, animation);
+                }
+
+                return;
+            }
+
+            foreach (var child in body.Nodes)
+            {
+                Collect(child);
+            }
+        }
+    }
 
     /// <summary>
     /// How much each entity and each mesh is scaled by.

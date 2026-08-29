@@ -1115,10 +1115,21 @@ label {
 
 .sem-trait-lists {
     display: grid;
-    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: var(--gap);
     margin-top: 4px;
 }
+
+/* What is chosen, and beneath it what the pointer is over: reading about a trait and seeing what
+   it would join belong together. */
+.sem-trait-lists .chosen-column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+    min-width: 0;
+}
+
+.sem-trait-lists .chosen-column .sem-trait-detail { margin-top: 0; }
 
 @media (max-width: 700px) {
     .sem-trait-lists { grid-template-columns: 1fr; }

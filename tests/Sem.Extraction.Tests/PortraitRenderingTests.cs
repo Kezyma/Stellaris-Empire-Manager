@@ -69,7 +69,14 @@ public sealed class PortraitRenderingTests
         Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
 
         var path = ModelPath("mammalian/mammalian_01_portrait.mesh");
-        var mesh = PortraitMesh.Load(SafeFile.ReadAllBytes(path));
+
+        // Posed as the game poses it. A model's vertices are stored in the space it was drawn in —
+        // this one sits thirty units above its own origin — and the skeleton's rest pose is what
+        // carries it to where the game shows it. Drawn unposed it lands outside the frame.
+        var pose = PortraitPose.Read(
+            SafeFile.ReadAllBytes(ModelPath("mammalian/mammalian_01_portrait_happy.anim")));
+
+        var mesh = pose.ApplyTo(PortraitMesh.Load(SafeFile.ReadAllBytes(path)));
         var directory = Path.GetDirectoryName(path)!;
 
         var textures = mesh.Parts

@@ -38,11 +38,37 @@ public sealed record MeshPart(
     Vector2[] TexCoords,
     int[] Triangles,
     string? Texture,
-    PartKind Kind = PartKind.Character);
+    PartKind Kind = PartKind.Character)
+{
+    /// <summary>Which bones move each vertex, four per vertex.</summary>
+    public int[] BoneIndices { get; init; } = [];
+
+    /// <summary>How much each of those bones moves it, four per vertex.</summary>
+    public float[] BoneWeights { get; init; } = [];
+
+    /// <summary>How many bones share each vertex.</summary>
+    public int Influences => Positions.Length == 0 ? 0 : BoneIndices.Length / Positions.Length;
+}
+
+/// <summary>One bone of a portrait's skeleton.</summary>
+/// <param name="Name">Its name, which is how the animation refers to it.</param>
+/// <param name="Parent">The bone it hangs from, or -1 at the root.</param>
+/// <param name="InverseBind">
+/// The transform taking a vertex out of the model's own space and into this bone's.
+/// </param>
+public sealed record MeshBone(string Name, int Parent, Matrix4x4 InverseBind);
 
 /// <summary>A whole portrait model, in the pose the artist modelled it in.</summary>
 public sealed record PortraitMesh(IReadOnlyList<MeshPart> Parts)
 {
+    /// <summary>
+    /// The skeleton, in the order the skin's bone indices refer to it.
+    /// </summary>
+    /// <remarks>
+    /// Empty for the models built as a single flat card, which have no bones and need none.
+    /// </remarks>
+    public IReadOnlyList<MeshBone> Bones { get; init; } = [];
+
     /// <summary>The box enclosing every part, for framing the view.</summary>
     public (Vector3 Min, Vector3 Max) Bounds
     {
@@ -62,6 +88,17 @@ public sealed record PortraitMesh(IReadOnlyList<MeshPart> Parts)
     }
 
     /// <summary>
+    /// How far a part may sit from the figure before it counts as something else, as a fraction of
+    /// the figure's own height.
+    /// </summary>
+    /// <remarks>
+    /// Generous on purpose. A portrait may be several pieces that do not touch — a gestalt
+    /// councillor is a cluster of drones — and those belong together. What does not is a scrap left
+    /// a whole body-length away.
+    /// </remarks>
+    private const float DetachedGap = 0.8f;
+
+    /// <summary>
     /// The height the figure stands at.
     /// </summary>
     /// <remarks>
@@ -72,10 +109,14 @@ public sealed record PortraitMesh(IReadOnlyList<MeshPart> Parts)
     /// </para>
     /// <para>
     /// Nor the bottom of the largest part, which sounds like the body and often is not: a detailed
-    /// head can carry more vertices than the torso beneath it, and a portrait balanced on its chin
-    /// is no better. So the figure is grown outwards from its largest part, taking in anything that
-    /// overlaps what has been gathered so far. What is connected to the body is the body; a scrap
-    /// floating well below it never joins.
+    /// head carries more vertices than the torso beneath it, and a portrait balanced on its chin is
+    /// no better.
+    /// </para>
+    /// <para>
+    /// So the figure is grown outwards from its largest part, taking in anything within reach. The
+    /// reach matters: requiring parts to actually overlap left the portraits built from separate
+    /// floating pieces standing on whichever piece happened to be biggest. A gap is only a gap when
+    /// it is large beside the figure it is measured against.
     /// </para>
     /// </remarks>
     public float Footing
@@ -100,9 +141,14 @@ public sealed record PortraitMesh(IReadOnlyList<MeshPart> Parts)
             {
                 joined = false;
 
+                // Measured against what has been gathered so far, so a figure assembled from small
+                // pieces widens its own reach as it grows.
+                var reach = Math.Max((high - low) * DetachedGap, 0.5f);
+
                 foreach (var span in spans)
                 {
-                    if (span.Low <= high && span.High >= low && (span.Low < low || span.High > high))
+                    if (span.Low <= high + reach && span.High >= low - reach &&
+                        (span.Low < low || span.High > high))
                     {
                         low = Math.Min(low, span.Low);
                         high = Math.Max(high, span.High);
@@ -120,12 +166,19 @@ public sealed record PortraitMesh(IReadOnlyList<MeshPart> Parts)
     {
         var asset = PdxAssetReader.Read(bytes);
         var parts = new List<MeshPart>();
+        IReadOnlyList<MeshBone> bones = [];
 
         foreach (var shape in asset.Descendants())
         {
             if (shape.Child("mesh") is not { } mesh)
             {
                 continue;
+            }
+
+            // Every part repeats the same skeleton, so the first one that carries it settles it.
+            if (bones.Count == 0 && shape.Child("skeleton") is { } skeleton)
+            {
+                bones = ReadBones(skeleton);
             }
 
             var positions = ReadVector3(mesh.Floats("p"));
@@ -137,6 +190,7 @@ public sealed record PortraitMesh(IReadOnlyList<MeshPart> Parts)
             }
 
             var material = mesh.Child("material");
+            var skin = mesh.Child("skin");
 
             parts.Add(new MeshPart(
                 shape.Name,
@@ -145,10 +199,46 @@ public sealed record PortraitMesh(IReadOnlyList<MeshPart> Parts)
                 ReadVector2(mesh.Floats("u0")),
                 triangles,
                 material?.String("diff"),
-                KindOf(material?.String("shader"))));
+                KindOf(material?.String("shader")))
+            {
+                BoneIndices = skin?.Ints("ix") ?? [],
+                BoneWeights = skin?.Floats("w") ?? [],
+            });
         }
 
-        return new PortraitMesh(parts);
+        return new PortraitMesh(parts) { Bones = bones };
+    }
+
+    /// <summary>
+    /// Reads the skeleton: each bone's parent, and the transform into its own space.
+    /// </summary>
+    /// <remarks>
+    /// The transform is stored as nine numbers of rotation followed by three of translation. It
+    /// takes a vertex out of the space the model was drawn in; putting it back where the game shows
+    /// it needs the other half of the pair, which lives in the animation.
+    /// </remarks>
+    private static IReadOnlyList<MeshBone> ReadBones(PdxNode skeleton)
+    {
+        var bones = new List<MeshBone>();
+
+        foreach (var bone in skeleton.Children)
+        {
+            if (bone.Floats("tx") is not { Length: >= 12 } tx)
+            {
+                continue;
+            }
+
+            bones.Add(new MeshBone(
+                bone.Name,
+                bone.Ints("pa")?.FirstOrDefault() ?? -1,
+                new Matrix4x4(
+                    tx[0], tx[1], tx[2], 0,
+                    tx[3], tx[4], tx[5], 0,
+                    tx[6], tx[7], tx[8], 0,
+                    tx[9], tx[10], tx[11], 1)));
+        }
+
+        return bones;
     }
 
     /// <summary>

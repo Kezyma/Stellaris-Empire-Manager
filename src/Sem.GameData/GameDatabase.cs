@@ -603,8 +603,26 @@ public sealed record PortraitDefinition(string Key)
     /// </remarks>
     public string? ResolvesTo { get; init; }
 
+    /// <summary>
+    /// The likenesses a group offers, by the gender each is for.
+    /// </summary>
+    /// <remarks>
+    /// A group exists so the same choice can show a different face depending on gender, which is
+    /// why a design stores the group rather than one of its members — the game's own United Nations
+    /// of Earth records <c>portrait = "human"</c>. Keeping the members lets a designer show the
+    /// right face without changing what is written to the file.
+    /// </remarks>
+    public IReadOnlyDictionary<string, string> Members { get; init; } =
+        new Dictionary<string, string>();
+
     /// <summary>True when this key names a group rather than a single portrait.</summary>
     public bool IsGroup => ResolvesTo is not null;
+
+    /// <summary>
+    /// The likeness to show for a gender, falling back to the group's default.
+    /// </summary>
+    public string? For(string? gender) =>
+        gender is { Length: > 0 } && Members.TryGetValue(gender, out var member) ? member : ResolvesTo;
 
     /// <summary>How many skin variants it has, which the design stores as an index.</summary>
     public int TextureCount { get; init; }

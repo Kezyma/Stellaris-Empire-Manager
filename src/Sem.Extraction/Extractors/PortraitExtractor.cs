@@ -96,7 +96,7 @@ internal static class PortraitExtractor
         var results = new List<PortraitDefinition>();
         var textureCounts = new Dictionary<string, int>(StringComparer.Ordinal);
         var seen = new HashSet<string>(StringComparer.Ordinal);
-        var groups = new List<(string Key, string Default)>();
+        var groups = new List<(string Key, string Default, Dictionary<string, string> Members)>();
 
         foreach (var (_, document) in loader.LoadDirectory("gfx/portraits/portraits"))
         {
@@ -129,10 +129,10 @@ internal static class PortraitExtractor
                     case "portrait_groups" when node.Block is not null:
                         foreach (var group in node.Block.Nodes)
                         {
-                            if (group.Key is { Length: > 0 } key &&
-                                group.Block?.GetString("default") is { Length: > 0 } fallback)
+                            if (group.Key is { Length: > 0 } key && group.Block is { } body &&
+                                body.GetString("default") is { Length: > 0 } fallback)
                             {
-                                groups.Add((key, fallback));
+                                groups.Add((key, fallback, ReadMembers(body)));
                             }
                         }
 
@@ -141,19 +141,87 @@ internal static class PortraitExtractor
             }
         }
 
-        foreach (var (key, fallback) in groups)
+        foreach (var (key, fallback, members) in groups)
         {
             if (seen.Add(key))
             {
                 results.Add(new PortraitDefinition(key)
                 {
                     ResolvesTo = fallback,
+                    Members = members,
                     TextureCount = textureCounts.GetValueOrDefault(fallback),
                 });
             }
         }
 
         return results;
+    }
+
+    /// <summary>
+    /// Which likeness a group shows for each gender.
+    /// </summary>
+    /// <remarks>
+    /// Written as a list of additions, each gated on a trigger, under the scope for the situation
+    /// being asked about — and one of those scopes is the empire designer, which the game names
+    /// <c>game_setup</c> and comments as running with a species and a government but no country. A
+    /// portrait offered for more than one gender, as these are for the indeterminate case, is left
+    /// to whichever claims it first, since either answer is one the game would give.
+    /// </remarks>
+    private static Dictionary<string, string> ReadMembers(CwBlock group)
+    {
+        var members = new Dictionary<string, string>(StringComparer.Ordinal);
+
+        if (group.GetBlock("game_setup") is not { } scope)
+        {
+            return members;
+        }
+
+        foreach (var addition in scope.Nodes)
+        {
+            if (addition.Key != "add" || addition.Block is not { } body ||
+                body.GetBlock("portraits")?.Nodes.FirstOrDefault(n => n.Scalar is not null)?.ScalarValue
+                    is not { Length: > 0 } portrait)
+            {
+                continue;
+            }
+
+            foreach (var gender in Genders(body.GetBlock("trigger")))
+            {
+                members.TryAdd(gender, portrait);
+            }
+        }
+
+        return members;
+    }
+
+    /// <summary>
+    /// The genders a trigger accepts.
+    /// </summary>
+    /// <remarks>
+    /// The condition is nested — a ruler scope holding an <c>OR</c> of gender comparisons — and the
+    /// only part of it that matters here is which genders are named, so the tree is searched for
+    /// them rather than compiled. Compiling it would ask the rules engine about a ruler that does
+    /// not exist yet.
+    /// </remarks>
+    private static IEnumerable<string> Genders(CwBlock? trigger)
+    {
+        if (trigger is null)
+        {
+            yield break;
+        }
+
+        foreach (var node in trigger.Nodes)
+        {
+            if (node.Key == "gender" && node.ScalarValue is { Length: > 0 } gender)
+            {
+                yield return gender;
+            }
+
+            foreach (var nested in Genders(node.Block))
+            {
+                yield return nested;
+            }
+        }
     }
 
     private static int CountTextures(CwBlock portrait) =>
