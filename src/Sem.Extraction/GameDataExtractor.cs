@@ -119,6 +119,7 @@ public sealed class GameDataExtractor(LayeredContent content)
 
         Report("Reading modifier display settings");
         var modifiers = DescribeModifiers(ethics, traits, authorities, civics);
+        var textIcons = ExtractTextIcons(sprites, assets);
 
         return new GameDatabase
         {
@@ -134,6 +135,7 @@ public sealed class GameDataExtractor(LayeredContent content)
             Traits = traits,
             Modifiers = modifiers,
             SpeciesNames = speciesNames,
+            TextIcons = textIcons,
             Ethics = ethics,
             Authorities = authorities,
             Civics = civics,
@@ -160,6 +162,92 @@ public sealed class GameDataExtractor(LayeredContent content)
         };
 
         void Report(string message) => progress?.Report(message);
+    }
+
+    /// <summary>
+    /// Collects the pictures that appear inline in the game's sentences.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The game writes these as a code between pound signs — <c>£energy£</c> — and the code names a
+    /// sprite. Most are the dedicated <c>GFX_text_</c> ones, but a sentence may equally call for a
+    /// modifier's own icon, so the code is tried both ways.
+    /// </para>
+    /// <para>
+    /// Which codes exist is decided by reading the text rather than by taking every sprite in the
+    /// game: the codes are what has to be resolved, and the text is where they are.
+    /// </para>
+    /// </remarks>
+    private Dictionary<string, string> ExtractTextIcons(SpriteCatalog sprites, AssetCatalog assets)
+    {
+        var icons = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var code in IconCodes(Localisation.Values))
+        {
+            var destination = $"icons/text/{code}.png";
+
+            // Shown at the size of a letter, so there is no reason to carry a large picture.
+            const int LetterHeight = 32;
+
+            var path = assets.RegisterSprite($"GFX_text_{code}", destination, LetterHeight)
+                       ?? assets.RegisterSprite($"GFX_{code}", destination, LetterHeight)
+
+                       // Not every icon is declared as a sprite. A modifier's own picture is found
+                       // by its name, which is how the game finds it when nothing declares one.
+                       ?? assets.RegisterFirst(
+                           [
+                               $"gfx/interface/icons/modifiers/{code}.dds",
+                               $"gfx/interface/icons/modifiers/mod_{code}.dds",
+                               $"gfx/interface/icons/resources/{code}.dds",
+                           ],
+                           destination,
+                           LetterHeight);
+
+            if (path is { Length: > 0 })
+            {
+                icons[code] = path;
+            }
+        }
+
+        return icons;
+    }
+
+    /// <summary>
+    /// Every icon code the game's text refers to.
+    /// </summary>
+    /// <remarks>
+    /// A code may carry a frame number after a vertical bar, naming a variant of the same picture,
+    /// which is the same icon as far as this is concerned.
+    /// </remarks>
+    private static IEnumerable<string> IconCodes(IEnumerable<string> text)
+    {
+        var codes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var value in text)
+        {
+            var start = value.IndexOf('£');
+
+            while (start >= 0)
+            {
+                var end = value.IndexOf('£', start + 1);
+
+                if (end < 0)
+                {
+                    break;
+                }
+
+                var code = value[(start + 1)..end].Split('|')[0];
+
+                if (code.Length > 0)
+                {
+                    codes.Add(code);
+                }
+
+                start = value.IndexOf('£', end + 1);
+            }
+        }
+
+        return codes;
     }
 
     /// <summary>

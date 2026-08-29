@@ -11,20 +11,20 @@
             <p class="sem-hint">The chosen origin decides where this empire begins.</p>
         }
 
-        <div class="sem-options">
-            @foreach (var key in Options)
-            {
-                <OptionCard Name="@Session.Localizer.Text(key)"
-                            Icon="@IconFor(key)"
-                            Selected="@(key == Design.PlanetClass)"
-                            OnSelect="() => Session.Edit(d => d.PlanetClass = key)" />
-            }
-        </div>
+        @* The pictures are the planets themselves, so they need room to be recognised. *@
+        <OptionGrid Options="@WorldOptions"
+                    IconSize="56"
+                    EmptyHint="Hover a world to see what kind of home it makes."
+                    OnSelect="key => Session.Edit(d => d.PlanetClass = key)" />
 
         <div class="sem-field" style="margin-top:12px">
             <label for="planet-name">Planet name</label>
-            <input id="planet-name" type="text" value="@Design.PlanetName.Key"
-                   @onchange="e => Session.Edit(d => d.PlanetName.SetLiteral(e.Value?.ToString() ?? string.Empty))" />
+            <div class="sem-row" style="flex-wrap:nowrap">
+                <input id="planet-name" type="text" value="@Design.PlanetName.Key"
+                       @onchange="e => Session.Edit(d => d.PlanetName.SetLiteral(e.Value?.ToString() ?? string.Empty))" />
+                <button type="button" title="A world from the empire's name list"
+                        @onclick="RandomisePlanetName">Randomise</button>
+            </div>
         </div>
     </div>
 
@@ -65,6 +65,29 @@
     public required DesignSession Session { get; set; }
 
     private EmpireDesign Design => Session.Current!;
+
+    private IReadOnlyList<OptionGrid.GridOption> WorldOptions
+    {
+        get
+        {
+            var byKey = Session.Data.Database.PlanetClasses.ToDictionary(p => p.Key, StringComparer.Ordinal);
+
+            return GridOptions.Build(
+                Session,
+                Options.Select(OptionState.Available),
+                key => (byKey.GetValueOrDefault(key)?.Icon, null),
+                key => key == Design.PlanetClass);
+        }
+    }
+
+    /// <summary>A world named the way the empire's own people would name one.</summary>
+    private void RandomisePlanetName()
+    {
+        if (Session.Names.Planet(Design.Species.NameList) is { Length: > 0 } name)
+        {
+            Session.Edit(d => d.PlanetName.SetLiteral(name));
+        }
+    }
 
     private IReadOnlyList<string> Options => Session.Rules.GetHomeworldOptions(Session.Context!);
 

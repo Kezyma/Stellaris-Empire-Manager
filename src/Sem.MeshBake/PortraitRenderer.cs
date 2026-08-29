@@ -27,8 +27,15 @@ public sealed record RenderSettings
     /// <summary>How much light reaches a surface facing away from the lamp.</summary>
     public double Ambient { get; init; } = 0.55;
 
-    /// <summary>The direction light comes from, over the viewer's left shoulder.</summary>
-    public Vector3 LightDirection { get; init; } = Vector3.Normalize(new Vector3(-0.4f, 0.5f, 1f));
+    /// <summary>
+    /// The direction light comes from, over the viewer's left shoulder.
+    /// </summary>
+    /// <remarks>
+    /// Pointing back along negative z, which is where the viewer stands. The parts are flat planes
+    /// all facing that way, so this makes little difference to the result — but a lamp behind the
+    /// model would leave every one of them at the ambient level, which is not what it is for.
+    /// </remarks>
+    public Vector3 LightDirection { get; init; } = Vector3.Normalize(new Vector3(-0.4f, 0.5f, -1f));
 }
 
 /// <summary>
@@ -72,9 +79,10 @@ public sealed class PortraitRenderer(RenderSettings? settings = null)
         var height = _settings.Height * _settings.Supersample;
 
         var pixels = new byte[width * height * 4];
-        var (scale, offset, front) = Frame(mesh, width, height);
+        var (scale, offset) = Frame(mesh, width, height);
 
-        // Back to front, so nearer parts paint over what is behind them.
+        // Furthest first, so nearer parts paint over what is behind them. Depth decreases towards
+        // the viewer: hair sits at a lower z than the face it falls across.
         foreach (var part in mesh.Parts.OrderByDescending(AverageDepth))
         {
             if (part.Texture is not { } name || textures.GetValueOrDefault(name) is not { } texture)
@@ -82,7 +90,7 @@ public sealed class PortraitRenderer(RenderSettings? settings = null)
                 continue;
             }
 
-            DrawPart(part, texture, pixels, width, height, scale, offset, front);
+            DrawPart(part, texture, pixels, width, height, scale, offset);
         }
 
         return Downsample(pixels, width, height, _settings.Supersample);
@@ -92,23 +100,25 @@ public sealed class PortraitRenderer(RenderSettings? settings = null)
         part.Positions.Length == 0 ? 0 : part.Positions.Average(p => p.Z);
 
     /// <summary>
-    /// Works out how to fit the model into the image, and which way it faces.
+    /// Works out how to fit the model into the image.
     /// </summary>
     /// <remarks>
-    /// The model is shown from the front, head and shoulders. Which direction is front is decided
-    /// by where the surfaces point on average, since the models are not all built facing the same
-    /// way.
+    /// <para>
+    /// Every portrait is built the same way and shown from the same side, so there is nothing here
+    /// to decide. The camera sits on the negative z side looking towards positive z; model x runs to
+    /// the right of the picture and model y runs up it.
+    /// </para>
+    /// <para>
+    /// This used to guess by adding up which way the surfaces pointed. That reads as reasonable and
+    /// is worthless: nearly every normal in the game points the same way, so the sum says nothing
+    /// about an individual model — and on the three models built double-sided it comes out at zero,
+    /// leaving rounding error to decide which way a face turned.
+    /// </para>
     /// </remarks>
-    private (float Scale, Vector2 Offset, bool Front) Frame(PortraitMesh mesh, int width, int height)
+    private (float Scale, Vector2 Offset) Frame(PortraitMesh mesh, int width, int height)
     {
         var (min, max) = mesh.Bounds;
         var size = max - min;
-
-        var facing = mesh.Parts
-            .SelectMany(p => p.Normals)
-            .Aggregate(0f, (sum, normal) => sum + normal.Z);
-
-        var front = facing >= 0;
 
         // Fit the width, then show only the top part of the height.
         var visibleHeight = Math.Max(size.Y * (float)_settings.VerticalExtent, 0.0001f);
@@ -121,8 +131,7 @@ public sealed class PortraitRenderer(RenderSettings? settings = null)
 
         return (
             scale,
-            new Vector2((width / 2f) - (centreX * scale), (height * 0.06f) + (topY * scale)),
-            front);
+            new Vector2((width / 2f) - (centreX * scale), (height * 0.06f) + (topY * scale)));
     }
 
     private void DrawPart(
@@ -132,11 +141,8 @@ public sealed class PortraitRenderer(RenderSettings? settings = null)
         int width,
         int height,
         float scale,
-        Vector2 offset,
-        bool front)
+        Vector2 offset)
     {
-        var flip = front ? 1f : -1f;
-
         for (var i = 0; i + 2 < part.Triangles.Length; i += 3)
         {
             var a = part.Triangles[i];
@@ -150,9 +156,9 @@ public sealed class PortraitRenderer(RenderSettings? settings = null)
 
             Span<Vector3> screen =
             [
-                Project(part.Positions[a], scale, offset, flip),
-                Project(part.Positions[b], scale, offset, flip),
-                Project(part.Positions[c], scale, offset, flip),
+                Project(part.Positions[a], scale, offset),
+                Project(part.Positions[b], scale, offset),
+                Project(part.Positions[c], scale, offset),
             ];
 
             Span<Vector2> uv =
@@ -164,35 +170,36 @@ public sealed class PortraitRenderer(RenderSettings? settings = null)
 
             Span<float> light =
             [
-                LightOf(part, a, flip),
-                LightOf(part, b, flip),
-                LightOf(part, c, flip),
+                LightOf(part, a),
+                LightOf(part, b),
+                LightOf(part, c),
             ];
 
             Rasterise(screen, uv, light, texture, pixels, width, height);
         }
     }
 
-    private static Vector3 Project(Vector3 position, float scale, Vector2 offset, float flip) =>
+    private static Vector3 Project(Vector3 position, float scale, Vector2 offset) =>
         new(
-            (position.X * scale * flip) + offset.X,
+            (position.X * scale) + offset.X,
 
             // Screen coordinates run downwards while the model's do not.
             offset.Y - (position.Y * scale),
-            position.Z * flip);
+            position.Z);
 
     private static Vector2 UvOf(MeshPart part, int index) =>
         index < part.TexCoords.Length ? part.TexCoords[index] : Vector2.Zero;
 
-    private float LightOf(MeshPart part, int index, float flip)
+    private float LightOf(MeshPart part, int index)
     {
         if (index >= part.Normals.Length)
         {
             return 1f;
         }
 
-        var normal = part.Normals[index] * new Vector3(flip, 1, flip);
-        var lambert = Math.Max(0f, Vector3.Dot(Vector3.Normalize(normal), _settings.LightDirection));
+        var lambert = Math.Max(
+            0f,
+            Vector3.Dot(Vector3.Normalize(part.Normals[index]), _settings.LightDirection));
 
         return (float)(_settings.Ambient + ((1 - _settings.Ambient) * lambert));
     }

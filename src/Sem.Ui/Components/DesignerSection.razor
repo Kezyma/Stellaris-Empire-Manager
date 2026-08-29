@@ -1,0 +1,56 @@
+@*
+    One part of the designer, collapsible.
+
+    Sections start open. The point of the redesign is that everything fits at once, so hiding things
+    by default would give back what the compact layout won; collapsing exists for the reader who has
+    finished with a section and wants it out of the way.
+*@
+
+<section class="sem-section @(_open ? "open" : "closed")">
+    <button type="button" class="head" @onclick="() => _open = !_open">
+        <span class="chevron">@(_open ? "▾" : "▸")</span>
+        <span class="title">@Title</span>
+
+        @if (Summary is { Length: > 0 })
+        {
+            <span class="summary">@Summary</span>
+        }
+
+        @if (Problems > 0)
+        {
+            <span class="count">@Problems</span>
+        }
+    </button>
+
+    @if (_open)
+    {
+        <div class="body">
+            @ChildContent
+        </div>
+    }
+</section>
+
+@code {
+    private bool _open = true;
+
+    /// <summary>The section's name.</summary>
+    [Parameter, EditorRequired]
+    public required string Title { get; set; }
+
+    /// <summary>What is currently chosen, shown in the header so a closed section still says so.</summary>
+    [Parameter]
+    public string? Summary { get; set; }
+
+    /// <summary>How many problems belong to this section.</summary>
+    [Parameter]
+    public int Problems { get; set; }
+
+    /// <summary>Whether it begins open.</summary>
+    [Parameter]
+    public bool StartOpen { get; set; } = true;
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    protected override void OnInitialized() => _open = StartOpen;
+}

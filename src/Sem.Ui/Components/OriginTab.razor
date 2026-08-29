@@ -26,18 +26,9 @@
         </div>
     }
 
-    <div class="sem-options">
-        @foreach (var option in Origins)
-        {
-            <OptionCard Name="@Session.Localizer.Text(option.Key)"
-                        Description="@Description(option.Key)"
-                        Icon="@IconFor(option.Key)"
-                        Selected="@(option.Key == Design.Origin)"
-                        Enabled="@option.Enabled"
-                        Reasons="@Explain(option.Reasons)"
-                        OnSelect="() => Choose(option.Key)" />
-        }
-    </div>
+    <OptionGrid Options="@Origins"
+                EmptyHint="Hover an origin to see where it starts the empire."
+                OnSelect="Choose" />
 </div>
 
 @code {
@@ -51,21 +42,22 @@
     private CivicDefinition? Selected =>
         Session.Data.Database.Civics.FirstOrDefault(c => c.IsOrigin && c.Key == Design.Origin);
 
-    private IEnumerable<OptionState> Origins =>
-        Session.Rules.GetOriginOptions(Context)
-            .Where(o => o.Visible)
-            .OrderBy(o => Session.Localizer.Text(o.Key), StringComparer.CurrentCulture);
-
-    private string? IconFor(string key) =>
-        Session.Data.Database.Civics.FirstOrDefault(c => c.Key == key)?.Icon;
-
-    private string Description(string key)
+    private IReadOnlyList<OptionGrid.GridOption> Origins
     {
-        var origin = Session.Data.Database.Civics.FirstOrDefault(c => c.Key == key);
-        return Session.Localizer.Text(origin?.EffectsKey ?? $"{key}_desc", string.Empty);
-    }
+        get
+        {
+            var byKey = Session.Data.Database.Civics.ToDictionary(c => c.Key, StringComparer.Ordinal);
 
-    private IReadOnlyList<string> Explain(IReadOnlyList<string> reasons) => Session.Reasons.Describe(reasons);
+            var states = Session.Rules.GetOriginOptions(Context)
+                .OrderBy(o => Session.Localizer.Text(o.Key), StringComparer.CurrentCulture);
+
+            return GridOptions.Build(
+                Session,
+                states,
+                key => (byKey.GetValueOrDefault(key)?.Icon, byKey.GetValueOrDefault(key)?.Effects),
+                key => key == Design.Origin);
+        }
+    }
 
     private void Choose(string key)
     {

@@ -10,15 +10,24 @@
         <div class="sem-row" style="align-items:flex-start">
             <FlagPreview Flag="@Design.Flag" Class="large" />
 
+            @*
+                Three colours, not four. The first two are the flag's, as the game's own editor
+                offers. The third is the empire's colour on the galaxy map, which the game fills in
+                for itself and never lets you choose. The fourth slot the file stores does nothing —
+                the line that would have used it is commented out in the game's own shader — so it is
+                left exactly as it was found.
+            *@
             <div style="flex:1;min-width:200px">
-                @for (var slot = 0; slot < EmpireFlag.ColorSlots; slot++)
+                @for (var slot = 0; slot < EditableColorSlots; slot++)
                 {
                     var index = slot;
 
                     <div class="sem-field">
                         <label for="@($"flag-color-{index}")">@ColorLabel(index)</label>
                         <select id="@($"flag-color-{index}")" @onchange="e => SetColor(index, e.Value?.ToString())">
-                            <option value="null" selected="@(ColorAt(index) is null)">None</option>
+                            <option value="null" selected="@(ColorAt(index) is null)">
+                                @(index == MapColorSlot ? "Follow the flag" : "None")
+                            </option>
 
                             @foreach (var color in Session.Data.Database.FlagColors)
                             {
@@ -27,6 +36,17 @@
                                 </option>
                             }
                         </select>
+
+                        <div class="sem-swatches">
+                            @foreach (var color in Session.Data.Database.FlagColors)
+                            {
+                                <button type="button"
+                                        class="sem-swatch @(color.Key == ColorAt(index) ? "selected" : null)"
+                                        style="background:@Swatch(index, color)"
+                                        title="@Localizer.Prettify(color.Key)"
+                                        @onclick="() => SetColor(index, color.Key)"></button>
+                            }
+                        </div>
                     </div>
                 }
             </div>
@@ -187,13 +207,31 @@
     private bool IsSelectable(GraphicalCultureDefinition culture) =>
         new RequirementEvaluator().IsSatisfied(culture.Selectable, Session.Context!);
 
+    /// <summary>The slot holding the empire's colour on the galaxy map.</summary>
+    private const int MapColorSlot = 2;
+
+    /// <summary>
+    /// How many colours are worth offering. The fourth slot the file stores is inert — the shader
+    /// line that would have used it is commented out — so it is preserved rather than edited.
+    /// </summary>
+    private const int EditableColorSlots = 3;
+
     private string ColorLabel(int slot) => slot switch
     {
         0 => "Primary",
         1 => "Secondary",
-        2 => "Emblem",
-        _ => "Spare",
+        MapColorSlot => "Map colour",
+        _ => "Unused",
     };
+
+    /// <summary>
+    /// A swatch in the colour it will actually appear in. Each named colour has a different shade
+    /// for a flag and for the map, so a map swatch showing the flag shade would mislead.
+    /// </summary>
+    private static string Swatch(int slot, FlagColorDefinition color) =>
+        slot == MapColorSlot
+            ? $"rgb({color.MapRed},{color.MapGreen},{color.MapBlue})"
+            : $"rgb({color.Red},{color.Green},{color.Blue})";
 
     private string? ColorAt(int slot)
     {

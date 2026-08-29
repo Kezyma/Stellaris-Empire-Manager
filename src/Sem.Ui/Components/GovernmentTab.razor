@@ -8,18 +8,9 @@
         <div class="sem-panel">
             <h3>Authority</h3>
 
-            <div class="sem-options">
-                @foreach (var option in Session.Rules.GetAuthorityOptions(Context).Where(o => o.Visible))
-                {
-                    <OptionCard Name="@Session.Localizer.Text(option.Key)"
-                                Description="@Session.Localizer.Text($"{option.Key}_tt", string.Empty)"
-                                Icon="@IconFor(option.Key)"
-                                Selected="@(option.Key == Design.Authority)"
-                                Enabled="@option.Enabled"
-                                Reasons="@Explain(option.Reasons)"
-                                OnSelect="() => Session.Edit(d => d.Authority = option.Key)" />
-                }
-            </div>
+            <OptionGrid Options="@Authorities"
+                        EmptyHint="Hover an authority to see how it governs."
+                        OnSelect="key => Session.Edit(d => d.Authority = key)" />
         </div>
 
         <div class="sem-panel">
@@ -51,18 +42,9 @@
 
         <BudgetBar Label="Civics" Value="@Session.Rules.GetCivicsBudget(Context)" />
 
-        <div class="sem-options">
-            @foreach (var option in Civics)
-            {
-                <OptionCard Name="@Session.Localizer.Text(option.Key)"
-                            Description="@Description(option.Key)"
-                            Icon="@CivicIcon(option.Key)"
-                            Selected="@Design.Civics.Contains(option.Key)"
-                            Enabled="@option.Enabled"
-                            Reasons="@Explain(option.Reasons)"
-                            OnSelect="() => Toggle(option.Key)" />
-            }
-        </div>
+        <OptionGrid Options="@Civics"
+                    EmptyHint="Hover a civic to see what it changes."
+                    OnSelect="Toggle" />
     </div>
 </div>
 
@@ -76,24 +58,36 @@
 
     private GovernmentTypeDefinition? Government => Session.Rules.DeriveGovernment(Context);
 
-    private IEnumerable<OptionState> Civics =>
-        Session.Rules.GetCivicOptions(Context)
-            .Where(o => o.Visible)
-            .OrderBy(o => Session.Localizer.Text(o.Key), StringComparer.CurrentCulture);
-
-    private string? IconFor(string key) =>
-        Session.Data.Database.Authorities.FirstOrDefault(a => a.Key == key)?.Icon;
-
-    private string? CivicIcon(string key) =>
-        Session.Data.Database.Civics.FirstOrDefault(c => c.Key == key)?.Icon;
-
-    private string Description(string key)
+    private IReadOnlyList<OptionGrid.GridOption> Authorities
     {
-        var civic = Session.Data.Database.Civics.FirstOrDefault(c => c.Key == key);
-        return Session.Localizer.Text(civic?.EffectsKey ?? $"{key}_desc", string.Empty);
+        get
+        {
+            var byKey = Session.Data.Database.Authorities.ToDictionary(a => a.Key, StringComparer.Ordinal);
+
+            return GridOptions.Build(
+                Session,
+                Session.Rules.GetAuthorityOptions(Context),
+                key => (byKey.GetValueOrDefault(key)?.Icon, byKey.GetValueOrDefault(key)?.Effects),
+                key => key == Design.Authority);
+        }
     }
 
-    private IReadOnlyList<string> Explain(IReadOnlyList<string> reasons) => Session.Reasons.Describe(reasons);
+    private IReadOnlyList<OptionGrid.GridOption> Civics
+    {
+        get
+        {
+            var byKey = Session.Data.Database.Civics.ToDictionary(c => c.Key, StringComparer.Ordinal);
+
+            var states = Session.Rules.GetCivicOptions(Context)
+                .OrderBy(o => Session.Localizer.Text(o.Key), StringComparer.CurrentCulture);
+
+            return GridOptions.Build(
+                Session,
+                states,
+                key => (byKey.GetValueOrDefault(key)?.Icon, byKey.GetValueOrDefault(key)?.Effects),
+                Design.Civics.Contains);
+        }
+    }
 
     private void Toggle(string key)
     {

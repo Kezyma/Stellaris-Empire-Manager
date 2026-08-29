@@ -1,8 +1,11 @@
 @implements IDisposable
 
 @*
-    The empire designer. Tabs follow the order the game puts them in, so someone who knows the
-    game's own designer already knows where to look.
+    The empire designer: every choice on the left, what the empire amounts to on the right.
+
+    The game fits all of this into two panels, and so does this. Sections run in the order the game's
+    own designer runs them, so someone who knows that one already knows where to look — but nothing
+    is behind a tab, because comparing an ethic against a civic should not mean changing screens.
 *@
 
 <CascadingValue Value="Session">
@@ -14,57 +17,54 @@
     }
     else
     {
-        <div class="sem-tabs">
-            @foreach (var tab in Tabs)
-            {
-                var problems = ProblemCount(tab);
+        <div class="sem-designer">
+            <div class="sem-sections">
+                <DesignerSection Title="Species"
+                                 Summary="@SpeciesSummary"
+                                 Problems="@Problems(ValidationArea.Species, ValidationArea.Traits, ValidationArea.SecondarySpecies)">
+                    <SpeciesTab />
+                </DesignerSection>
 
-                <button type="button"
-                        class="sem-tab @(tab == _selected ? "active" : null)"
-                        @onclick="() => _selected = tab">
-                    @Title(tab)
-                    @if (problems > 0)
-                    {
-                        <span class="count">@problems</span>
-                    }
-                </button>
-            }
-        </div>
+                <DesignerSection Title="Ethics"
+                                 Summary="@Names(Session.Current.Ethics)"
+                                 Problems="@Problems(ValidationArea.Ethics)">
+                    <EthicsSection />
+                </DesignerSection>
 
-        @switch (_selected)
-        {
-            case DesignerTab.Species:
-                <SpeciesTab />
-                break;
+                <DesignerSection Title="Government"
+                                 Summary="@GovernmentSummary"
+                                 Problems="@Problems(ValidationArea.Authority, ValidationArea.Civics)">
+                    <GovernmentTab />
+                </DesignerSection>
 
-            case DesignerTab.Ethics:
-                <EthicsTab />
-                break;
+                <DesignerSection Title="Origin"
+                                 Summary="@Name(Session.Current.Origin)"
+                                 Problems="@Problems(ValidationArea.Origin)">
+                    <OriginTab />
+                </DesignerSection>
 
-            case DesignerTab.Government:
-                <GovernmentTab />
-                break;
+                <DesignerSection Title="Homeworld"
+                                 Summary="@Name(Session.Current.PlanetClass)"
+                                 Problems="@Problems(ValidationArea.Homeworld)">
+                    <HomeworldTab />
+                </DesignerSection>
 
-            case DesignerTab.Origin:
-                <OriginTab />
-                break;
+                <DesignerSection Title="Ruler"
+                                 Summary="@Session.Current.Ruler.Name.FullNames?.Key"
+                                 Problems="@Problems(ValidationArea.Ruler)">
+                    <RulerTab />
+                </DesignerSection>
 
-            case DesignerTab.Homeworld:
-                <HomeworldTab />
-                break;
+                <DesignerSection Title="Appearance" StartOpen="false">
+                    <AppearanceTab />
+                </DesignerSection>
+            </div>
 
-            case DesignerTab.Appearance:
-                <AppearanceTab />
-                break;
-
-            case DesignerTab.Ruler:
-                <RulerTab />
-                break;
-
-            default:
+            <aside class="sem-summary-pane">
                 <SummaryTab />
-                break;
-        }
+                <CombinedEffects />
+            </aside>
+        </div>
     }
 </CascadingValue>
 
@@ -72,53 +72,42 @@
     [Parameter, EditorRequired]
     public required DesignSession Session { get; set; }
 
-    private DesignerTab _selected = DesignerTab.Species;
-
-    private static readonly DesignerTab[] AllTabs = Enum.GetValues<DesignerTab>();
-
-    /// <summary>
-    /// The second species tab appears only when the chosen origin calls for one, which is how the
-    /// game handles it too.
-    /// </summary>
-    private IEnumerable<DesignerTab> Tabs => AllTabs;
-
     protected override void OnInitialized() => Session.Changed += OnChanged;
 
     public void Dispose() => Session.Changed -= OnChanged;
 
     private void OnChanged() => InvokeAsync(StateHasChanged);
 
-    private static string Title(DesignerTab tab) => tab switch
-    {
-        DesignerTab.Species => "Species",
-        DesignerTab.Ethics => "Ethics",
-        DesignerTab.Government => "Government",
-        DesignerTab.Origin => "Origin",
-        DesignerTab.Homeworld => "Homeworld",
-        DesignerTab.Appearance => "Appearance",
-        DesignerTab.Ruler => "Ruler",
-        _ => "Summary",
-    };
+    private int Problems(params ValidationArea[] areas) =>
+        Session.Report.Errors.Count(p => areas.Contains(p.Area));
 
-    /// <summary>
-    /// How many problems belong to a tab, so the player can see at a glance where the trouble is
-    /// rather than hunting for it.
-    /// </summary>
-    private int ProblemCount(DesignerTab tab)
+    private string? SpeciesSummary
     {
-        var areas = tab switch
+        get
         {
-            DesignerTab.Species => new[] { ValidationArea.Species, ValidationArea.Traits, ValidationArea.SecondarySpecies },
-            DesignerTab.Ethics => [ValidationArea.Ethics],
-            DesignerTab.Government => [ValidationArea.Authority, ValidationArea.Civics],
-            DesignerTab.Origin => [ValidationArea.Origin],
-            DesignerTab.Homeworld => [ValidationArea.Homeworld],
-            DesignerTab.Ruler => [ValidationArea.Ruler],
-            _ => [],
-        };
+            var design = Session.Current!;
+            var name = design.Species.Name.Key;
+            var traits = design.Species.Traits.Count;
 
-        return areas.Length == 0
-            ? 0
-            : Session.Report.Errors.Count(p => areas.Contains(p.Area));
+            return traits == 0 ? name : $"{name} · {traits} trait{(traits == 1 ? string.Empty : "s")}";
+        }
     }
+
+    private string? GovernmentSummary
+    {
+        get
+        {
+            var design = Session.Current!;
+            var authority = Name(design.Authority);
+            var civics = design.Civics.Count;
+
+            return civics == 0 ? authority : $"{authority} · {civics} civic{(civics == 1 ? string.Empty : "s")}";
+        }
+    }
+
+    private string? Name(string? key) =>
+        string.IsNullOrEmpty(key) ? null : Session.Localizer.Text(key);
+
+    private string? Names(IReadOnlyList<string> keys) =>
+        keys.Count == 0 ? null : string.Join(", ", keys.Select(k => Session.Localizer.Text(k)));
 }

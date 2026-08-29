@@ -7,6 +7,16 @@
         <div class="sem-panel">
             <h3>Names</h3>
 
+            @*
+                One button, not four, because the game's own randomise fills all of these at once
+                from a single ready-made species — which is why the homeworld it offers suits the
+                species rather than being an unrelated word.
+            *@
+            <div class="sem-row" style="justify-content:space-between;margin-bottom:8px">
+                <span class="sem-hint" style="margin:0">Species, plural, adjective and name list.</span>
+                <button type="button" @onclick="RandomiseSpecies">Randomise</button>
+            </div>
+
             <div class="sem-field">
                 <label for="species-name">Species</label>
                 <input id="species-name" type="text" value="@Species.Name.Key"
@@ -34,25 +44,35 @@
                         <optgroup label="@group.Key">
                             @foreach (var list in group)
                             {
-                                <option value="@list.Key" selected="@(list.Key == Species.NameList)">@list.Key</option>
+                                <option value="@list.Key" selected="@(list.Key == Species.NameList)">
+                                    @ListName(list)
+                                </option>
                             }
                         </optgroup>
                     }
                 </select>
+
+                @if (SampleNames is { Length: > 0 } samples)
+                {
+                    @* "Mammalian 1" says far less about a list than two names drawn from it. *@
+                    <p class="sem-hint" style="margin-top:4px">@samples</p>
+                }
             </div>
         </div>
 
         <div class="sem-panel">
             <h3>Class</h3>
-            <div class="sem-options">
-                @foreach (var option in Session.Rules.GetSpeciesClassOptions(Context).Where(o => o.Visible))
-                {
-                    <OptionCard Name="@Session.Localizer.Text(option.Key)"
-                                Selected="@(option.Key == Species.Class)"
-                                Enabled="@option.Enabled"
-                                Reasons="@Explain(option.Reasons)"
-                                OnSelect="() => SetClass(option.Key)" />
-                }
+            <div class="sem-field">
+                <select id="species-class" @onchange="e => SetClass(e.Value?.ToString() ?? Species.Class ?? string.Empty)">
+                    @foreach (var option in Session.Rules.GetSpeciesClassOptions(Context).Where(o => o.Visible))
+                    {
+                        <option value="@option.Key"
+                                selected="@(option.Key == Species.Class)"
+                                disabled="@(!option.Enabled && option.Key != Species.Class)">
+                            @Session.Localizer.Text(option.Key)
+                        </option>
+                    }
+                </select>
             </div>
         </div>
 
@@ -62,34 +82,7 @@
     <div>
         <div class="sem-panel">
             <h3>Traits</h3>
-
-            <BudgetBar Label="Trait points" Value="@Budget.Points" />
-            <BudgetBar Label="Traits" Value="@Budget.Picks" />
-
-            @if (Forced.Count > 0)
-            {
-                <p class="sem-hint">
-                    Fixed by the species class, authority, civics or origin:
-                    @string.Join(", ", Forced.Select(t => Session.Localizer.Text(t)))
-                </p>
-            }
-
-            <div class="sem-options">
-                @foreach (var option in TraitOptions)
-                {
-                    var selected = Species.Traits.Contains(option.Key);
-
-                    <OptionCard Name="@Session.Localizer.Text(option.Key)"
-                                Description="@Session.Localizer.Text($"{option.Key}_desc", string.Empty)"
-                                Icon="@IconFor(option.Key)"
-                                Cost="@option.Cost"
-                                Selected="@selected"
-                                Enabled="@(option.Enabled && !Forced.Contains(option.Key))"
-                                Reasons="@Explain(option.Reasons)"
-                                RequiredDlc="@option.RequiredDlc"
-                                OnSelect="() => ToggleTrait(option.Key)" />
-                }
-            </div>
+            <TraitsSection />
         </div>
     </div>
 </div>
@@ -176,4 +169,75 @@
 
     private void SetName(Func<SpeciesDesign, LocRef> field, string? value) =>
         Session.Edit(d => field(d.Species).SetLiteral(value ?? string.Empty));
+
+    /// <summary>
+    /// A name list's display name, which the game does provide — the raw key is what it looks like
+    /// when nothing bothers to read it.
+    /// </summary>
+    private string ListName(NameListDefinition list) =>
+        Session.Localizer.Text(list.NameKey, list.Key);
+
+    /// <summary>
+    /// A couple of names the chosen list actually contains. Only two lists in the whole game carry
+    /// a written description, so this is drawn from the names themselves.
+    /// </summary>
+    private string? SampleNames
+    {
+        get
+        {
+            var list = Session.Data.Database.NameLists
+                .FirstOrDefault(n => n.Key == Species.NameList);
+
+            if (list is null)
+            {
+                return null;
+            }
+
+            var ruler = Session.Names.Ruler(list.Key);
+            var planet = list.PlanetNames.FirstOrDefault();
+
+            return (ruler, planet) switch
+            {
+                ({ Length: > 0 }, { Length: > 0 }) => $"Rulers like {ruler}; worlds like {planet}.",
+                ({ Length: > 0 }, _) => $"Rulers like {ruler}.",
+                (_, { Length: > 0 }) => $"Worlds like {planet}.",
+                _ => null,
+            };
+        }
+    }
+
+    /// <summary>
+    /// Fills in the species and where it came from together, which is what the game's own button
+    /// does: one ready-made species supplies the name, its plural, a homeworld, a home system and a
+    /// name list that suit each other.
+    /// </summary>
+    private void RandomiseSpecies()
+    {
+        if (Session.Names.Species(Species.Class) is not { } suggestion)
+        {
+            return;
+        }
+
+        Session.Edit(d =>
+        {
+            d.Species.Name.SetLiteral(suggestion.Name);
+            d.Species.Plural.SetLiteral(suggestion.Plural ?? suggestion.Name);
+            d.Species.Adjective.SetLiteral(NameGenerator.Adjective(suggestion.Name));
+
+            if (suggestion.NameList is { Length: > 0 } list)
+            {
+                d.Species.NameList = list;
+            }
+
+            if (suggestion.HomePlanet is { Length: > 0 } planet)
+            {
+                d.PlanetName.SetLiteral(planet);
+            }
+
+            if (suggestion.HomeSystem is { Length: > 0 } system)
+            {
+                d.SystemName.SetLiteral(system);
+            }
+        });
+    }
 }

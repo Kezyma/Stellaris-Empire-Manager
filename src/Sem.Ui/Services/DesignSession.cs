@@ -22,9 +22,12 @@ public sealed class DesignSession
         ArgumentNullException.ThrowIfNull(data);
 
         Data = data;
-        Localizer = new Localizer(data.Localisation);
+        Localizer = new Localizer(data.Localisation, data.Database.TextIcons, data.AssetUrl);
         Reasons = new ReasonWriter(Localizer);
         Rules = new EmpireRules(data.Database);
+        Modifiers = new ModifierFormatter(Localizer, data.Database);
+        Conditions = new ConditionWriter(Localizer);
+        Names = new NameGenerator(data.Database);
 
         // Start from what the installation the data came from had, which is right for the desktop
         // app and a sensible opening guess on the web.
@@ -42,6 +45,15 @@ public sealed class DesignSession
 
     /// <summary>Turns the reasons the rules give into sentences.</summary>
     public ReasonWriter Reasons { get; }
+
+    /// <summary>Turns modifiers into the lines the game would show for them.</summary>
+    public ModifierFormatter Modifiers { get; }
+
+    /// <summary>Says in words when a conditional modifier applies.</summary>
+    public ConditionWriter Conditions { get; }
+
+    /// <summary>Invents names the way the game's randomise buttons do.</summary>
+    public NameGenerator Names { get; }
 
     /// <summary>The rules being enforced.</summary>
     public EmpireRules Rules { get; }

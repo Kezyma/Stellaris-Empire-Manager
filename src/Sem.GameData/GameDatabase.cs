@@ -44,6 +44,14 @@ public sealed record GameDatabase
     /// <summary>Ready-made species the randomise button offers, grouped by species class.</summary>
     public IReadOnlyList<SpeciesNameSuggestion> SpeciesNames { get; init; } = [];
 
+    /// <summary>
+    /// The little pictures that appear inside the game's own sentences, by the code that stands for
+    /// them. An effects line reading "+10" where the game shows an energy symbol is not the same
+    /// sentence, so these travel with the text.
+    /// </summary>
+    public IReadOnlyDictionary<string, string> TextIcons { get; init; } =
+        new Dictionary<string, string>();
+
     /// <summary>Ethics, including the fanatic variants and gestalt consciousness.</summary>
     public IReadOnlyList<EthicDefinition> Ethics { get; init; } = [];
 

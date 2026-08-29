@@ -39,8 +39,12 @@
 
             <div class="sem-field">
                 <label for="empire-name">Name</label>
-                <input id="empire-name" type="text" value="@Design.Name.Key"
-                       @onchange="e => Session.Edit(d => d.Name.SetLiteral(e.Value?.ToString() ?? string.Empty))" />
+                <div class="sem-row" style="flex-wrap:nowrap">
+                    <input id="empire-name" type="text" value="@Design.Name.Key"
+                           @onchange="e => Session.Edit(d => d.Name.SetLiteral(e.Value?.ToString() ?? string.Empty))" />
+                    <button type="button" title="The species adjective and a form of government"
+                            @onclick="RandomiseName">Randomise</button>
+                </div>
             </div>
 
             <div class="sem-field">
@@ -89,6 +93,26 @@
     public required DesignSession Session { get; set; }
 
     private EmpireDesign Design => Session.Current!;
+
+    /// <summary>
+    /// Names an empire the way the game most often does: the species adjective followed by a form of
+    /// government that suits its authority.
+    /// </summary>
+    private void RandomiseName()
+    {
+        var species = Design.Species.Name.Key;
+
+        if (Session.Names.Empire(species, Design.Authority) is not { Length: > 0 } name)
+        {
+            return;
+        }
+
+        Session.Edit(d =>
+        {
+            d.Name.SetLiteral(name);
+            d.Adjective.SetLiteral(NameGenerator.Adjective(species));
+        });
+    }
 
     private string GovernmentName =>
         Session.Rules.DeriveGovernment(Session.Context!) is { } government

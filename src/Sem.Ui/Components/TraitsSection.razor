@@ -1,0 +1,72 @@
+@*
+    The founder species' traits, bought from two allowances at once: points, which drawbacks give
+    back, and a limit on how many may be taken at all.
+*@
+
+<div class="sem-row" style="gap:20px">
+    <BudgetBar Label="Trait points" Value="@Budget.Points" />
+    <BudgetBar Label="Traits" Value="@Budget.Picks" />
+</div>
+
+@if (Forced.Count > 0)
+{
+    <p class="sem-hint">
+        Fixed by the species class, authority, civics or origin:
+        @string.Join(", ", Forced.Select(t => Session.Localizer.Text(t)))
+    </p>
+}
+
+<OptionGrid Options="@Options"
+            EmptyHint="Hover a trait to see what it does."
+            OnSelect="Toggle" />
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    private EmpireDesign Design => Session.Current!;
+
+    private DesignContext Context => Session.Context!;
+
+    private TraitBudget Budget => Session.Rules.GetTraitBudget(Context);
+
+    private IReadOnlyList<string> Forced => Session.Rules.GetForcedTraits(Context);
+
+    /// <summary>
+    /// Sorted as the game's own list is: by its sorting hint, then by name, so the order does not
+    /// shift about between visits.
+    /// </summary>
+    private IReadOnlyList<OptionGrid.GridOption> Options
+    {
+        get
+        {
+            var byKey = Session.Data.Database.Traits.ToDictionary(t => t.Key, StringComparer.Ordinal);
+
+            var states = Session.Rules.GetSpeciesTraitOptions(Context)
+                .OrderBy(o => byKey.GetValueOrDefault(o.Key)?.SortingPriority ?? 0)
+                .ThenBy(o => Session.Localizer.Text(o.Key), StringComparer.CurrentCulture);
+
+            return GridOptions.Build(
+                Session,
+                states,
+                key => (byKey.GetValueOrDefault(key)?.Icon, byKey.GetValueOrDefault(key)?.Effects),
+                Design.Species.Traits.Contains,
+                Forced.Contains);
+        }
+    }
+
+    private void Toggle(string key)
+    {
+        Session.Edit(d =>
+        {
+            var traits = d.Species.Traits.ToList();
+
+            if (!traits.Remove(key))
+            {
+                traits.Add(key);
+            }
+
+            d.Species.SetTraits(traits);
+        });
+    }
+}

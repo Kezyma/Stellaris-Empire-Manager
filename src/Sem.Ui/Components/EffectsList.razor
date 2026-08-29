@@ -1,0 +1,99 @@
+@*
+    What one option does, laid out the way the game lays it out.
+
+    The order matters and is the game's: what it gives you, then what it lets you do, then what it
+    costs you. An option that writes its own description has that shown instead of the bare numbers,
+    because the game suppresses the list in that case and showing both would state the same bonus
+    twice.
+*@
+
+@using Sem.GameData
+
+@if (Effects is null || Effects.IsEmpty)
+{
+    @if (ShowNothing)
+    {
+        <p class="sem-effects-none">No effects.</p>
+    }
+}
+else
+{
+    <div class="sem-effects">
+        @if (Effects.DescriptionKey is { Length: > 0 } description)
+        {
+            <div class="sem-effects-text">@((MarkupString)Session.Localizer.Html(description))</div>
+        }
+
+        @if (Effects.TooltipKey is { Length: > 0 } tooltip)
+        {
+            <div class="sem-effects-text">@((MarkupString)Session.Localizer.Html(tooltip))</div>
+        }
+
+        @if (Modifiers.Count > 0)
+        {
+            <ul class="sem-modifiers">
+                @foreach (var modifier in Modifiers)
+                {
+                    <li>
+                        <span class="label">@((MarkupString)Session.Modifiers.LabelHtml(modifier.Key))</span>
+                        <span class="value @ToneClass(modifier.Tone)">@modifier.Value</span>
+                    </li>
+                }
+            </ul>
+        }
+
+        @foreach (var tag in Effects.TagKeys)
+        {
+            <div class="sem-effects-text">@((MarkupString)Session.Localizer.Html(tag))</div>
+        }
+
+        @foreach (var conditional in Effects.Conditional)
+        {
+            var when = Session.Conditions.Describe(conditional.When);
+
+            <div class="sem-effects-when">
+                <div class="when">@(when is null ? "In some empires" : $"When {when}")</div>
+                <ul class="sem-modifiers">
+                    @foreach (var modifier in Session.Modifiers.Format(conditional.Modifiers))
+                    {
+                        <li>
+                            <span class="label">@((MarkupString)Session.Modifiers.LabelHtml(modifier.Key))</span>
+                            <span class="value @ToneClass(modifier.Tone)">@modifier.Value</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+
+        @if (Effects.PenaltyKey is { Length: > 0 } penalty)
+        {
+            <div class="sem-effects-penalty">
+                <div class="heading">Penalties</div>
+                <div class="sem-effects-text">@((MarkupString)Session.Localizer.Html(penalty))</div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>What to describe.</summary>
+    [Parameter]
+    public EffectSet? Effects { get; set; }
+
+    /// <summary>Whether to say so when there is nothing, rather than showing an empty space.</summary>
+    [Parameter]
+    public bool ShowNothing { get; set; }
+
+    private IReadOnlyList<FormattedModifier> Modifiers =>
+        Effects is null ? [] : Session.Modifiers.Format(Effects.VisibleModifiers);
+
+    private static string ToneClass(ModifierTone tone) => tone switch
+    {
+        ModifierTone.Good => "good",
+        ModifierTone.Bad => "bad",
+        _ => string.Empty,
+    };
+}

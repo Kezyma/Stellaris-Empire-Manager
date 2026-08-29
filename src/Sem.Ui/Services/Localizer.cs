@@ -12,12 +12,22 @@ namespace Sem.Ui.Services;
 /// This resolves the substitutions and converts the colours to HTML, so the designer reads the way
 /// the game does rather than showing raw markup.
 /// </remarks>
-public sealed partial class Localizer(IReadOnlyDictionary<string, string> entries)
+public sealed partial class Localizer(
+    IReadOnlyDictionary<string, string> entries,
+    IReadOnlyDictionary<string, string>? textIcons = null,
+    Func<string, string>? assetUrl = null)
 {
     /// <summary>How deep a chain of variables standing for other entries is followed.</summary>
     private const int MaxSubstitutionDepth = 8;
 
     private readonly IReadOnlyDictionary<string, string> _entries = entries ?? new Dictionary<string, string>();
+
+    /// <summary>Where each inline picture lives, by the code that stands for it.</summary>
+    private readonly IReadOnlyDictionary<string, string> _textIcons =
+        textIcons ?? new Dictionary<string, string>();
+
+    /// <summary>Turns an extracted image's path into an address the page can load.</summary>
+    private readonly Func<string, string> _assetUrl = assetUrl ?? (path => path);
 
     /// <summary>The game's colour letters, as CSS colours.</summary>
     private static readonly Dictionary<char, string> Colors = new()
@@ -55,7 +65,7 @@ public sealed partial class Localizer(IReadOnlyDictionary<string, string> entrie
             return fallback ?? Prettify(key);
         }
 
-        return StripMarkup(Substitute(value, 0));
+        return StripMarkup(ScriptedToken().Replace(ResolveConcepts(Substitute(value, 0)), string.Empty));
     }
 
     /// <summary>
@@ -79,6 +89,12 @@ public sealed partial class Localizer(IReadOnlyDictionary<string, string> entrie
 
         return ToHtml(Substitute(value, 0));
     }
+
+    /// <summary>
+    /// Renders a piece of the game's text that is already in hand, rather than one looked up by key.
+    /// </summary>
+    public string HtmlOf(string? value) =>
+        string.IsNullOrEmpty(value) ? string.Empty : ToHtml(Substitute(value, 0));
 
     /// <summary>
     /// A readable label for a key the game has no text for, by turning it into words.
@@ -154,8 +170,11 @@ public sealed partial class Localizer(IReadOnlyDictionary<string, string> entrie
     }
 
     /// <summary>Converts the game's markup into HTML, escaping everything else.</summary>
-    private static string ToHtml(string value)
+    private string ToHtml(string value)
     {
+        value = ResolveConcepts(value);
+        value = ScriptedToken().Replace(value, string.Empty);
+
         var builder = new StringBuilder(value.Length + 32);
         var openSpans = 0;
 
@@ -186,13 +205,15 @@ public sealed partial class Localizer(IReadOnlyDictionary<string, string> entrie
 
             if (c == '£')
             {
-                // Icon placeholders are dropped rather than shown; the designer supplies its own.
-                while (i + 1 < value.Length && value[i + 1] != '£')
+                var close = value.IndexOf('£', i + 1);
+
+                if (close < 0)
                 {
-                    i++;
+                    break;
                 }
 
-                i++;
+                AppendIcon(builder, value[(i + 1)..close]);
+                i = close;
                 continue;
             }
 
@@ -214,6 +235,62 @@ public sealed partial class Localizer(IReadOnlyDictionary<string, string> entrie
         return builder.ToString();
     }
 
+    /// <summary>
+    /// Writes one of the little pictures that appear inside the game's sentences.
+    /// </summary>
+    /// <remarks>
+    /// A code may carry a frame number after a vertical bar, which names a variant of the same
+    /// picture and can be ignored. A code with no picture is dropped rather than shown as text: the
+    /// game's sentences read as though the symbol were a word, so a bare code in the middle of one
+    /// looks like a fault.
+    /// </remarks>
+    private void AppendIcon(StringBuilder builder, string code)
+    {
+        var name = code.Split('|')[0];
+
+        if (name.Length == 0 || !_textIcons.TryGetValue(name, out var path))
+        {
+            return;
+        }
+
+        builder.Append("<img class=\"sem-text-icon\" src=\"")
+            .Append(System.Net.WebUtility.HtmlEncode(_assetUrl(path)))
+            .Append("\" alt=\"\">");
+    }
+
+    /// <summary>
+    /// Replaces the game's links to its own glossary with the words they display.
+    /// </summary>
+    /// <remarks>
+    /// Written as <c>['concept_pop']</c>, or with the text to show given after the concept, as in
+    /// <c>['concept_habitat_1', $tech_habitat_1$]</c>. The link itself has nowhere to go in a
+    /// designer, so only the words survive.
+    /// </remarks>
+    private string ResolveConcepts(string value) =>
+        !value.Contains("['", StringComparison.Ordinal)
+            ? value
+            : ConceptLink().Replace(value, match =>
+            {
+                if (match.Groups[2].Success && match.Groups[2].Value.Trim() is { Length: > 0 } shown)
+                {
+                    return shown;
+                }
+
+                var key = match.Groups[1].Value;
+                return _entries.TryGetValue(key, out var text) ? text : Prettify(key);
+            });
+
+    /// <summary>Replaces variables standing for other entries with those entries' text.</summary>
     [GeneratedRegex(@"\$([A-Za-z_][A-Za-z0-9_.]*)(?:\|[^$]*)?\$")]
     private static partial Regex VariableReference();
+
+    [GeneratedRegex(@"\['([A-Za-z0-9_]+)'(?:\s*,\s*([^\]]*))?\]")]
+    private static partial Regex ConceptLink();
+
+    /// <summary>
+    /// A value only a running game could supply, such as the name of a faction that does not exist
+    /// while an empire is being designed. Removed rather than shown.
+    /// </summary>
+    [GeneratedRegex(@"\[[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)+\]")]
+    private static partial Regex ScriptedToken();
 }

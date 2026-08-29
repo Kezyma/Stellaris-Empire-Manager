@@ -8,8 +8,12 @@
 
         <div class="sem-field">
             <label for="ruler-name">Name</label>
-            <input id="ruler-name" type="text" value="@RulerName"
-                   @onchange="e => SetName(e.Value?.ToString())" />
+            <div class="sem-row" style="flex-wrap:nowrap">
+                <input id="ruler-name" type="text" value="@RulerName"
+                       @onchange="e => SetName(e.Value?.ToString())" />
+                <button type="button" title="A name from the empire's name list"
+                        @onclick="RandomiseName">Randomise</button>
+            </div>
         </div>
 
         <div class="sem-field">
@@ -52,18 +56,9 @@
             A ruler begins with one of these, and the government's own bonuses come on top.
         </p>
 
-        <div class="sem-options">
-            @foreach (var trait in RulerTraits)
-            {
-                <OptionCard Name="@Session.Localizer.Text(trait.Key)"
-                            Description="@Session.Localizer.Text($"{trait.Key}_desc", string.Empty)"
-                            Icon="@trait.Icon"
-                            Selected="@Design.Ruler.Traits.Contains(trait.Key)"
-                            Enabled="@IsAllowed(trait)"
-                            Reasons="@Blockers(trait)"
-                            OnSelect="() => Toggle(trait.Key)" />
-            }
-        </div>
+        <OptionGrid Options="@TraitOptions"
+                    EmptyHint="Hover a trait to see what the ruler brings."
+                    OnSelect="Toggle" />
     </div>
 </div>
 
@@ -85,6 +80,15 @@
         Session.Rules.DeriveGovernment(Context)?.RulerTitleKey is { } key
             ? Session.Localizer.Text(key)
             : "chosen by the government";
+
+    private IReadOnlyList<OptionGrid.GridOption> TraitOptions =>
+        GridOptions.Build(
+            Session,
+            RulerTraits.Select(t => new OptionState(t.Key, true, IsAllowed(t), Blockers(t))),
+            key => RulerTraits.FirstOrDefault(t => t.Key == key) is { } trait
+                ? (trait.Icon, trait.Effects)
+                : (null, null),
+            Design.Ruler.Traits.Contains);
 
     private IEnumerable<TraitDefinition> RulerTraits =>
         Session.Data.Database.Traits
@@ -133,6 +137,20 @@
             var names = d.Ruler.Name.GetOrAddFullNames();
             names.SetLiteral(value ?? string.Empty);
         });
+    }
+
+    /// <summary>
+    /// A name from the empire's own name list, matched to the ruler's gender where the list draws
+    /// that distinction.
+    /// </summary>
+    private void RandomiseName()
+    {
+        var female = string.Equals(Design.Ruler.Gender, "female", StringComparison.Ordinal);
+
+        if (Session.Names.Ruler(Design.Species.NameList, female) is { Length: > 0 } name)
+        {
+            SetName(name);
+        }
     }
 
     private void SetTitle(string? value)
