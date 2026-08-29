@@ -5,6 +5,8 @@
     <ProjectReference Include="..\Sem.Io\Sem.Io.csproj" />
     <ProjectReference Include="..\Sem.Designs\Sem.Designs.csproj" />
     <ProjectReference Include="..\Sem.Rules\Sem.Rules.csproj" />
+    <ProjectReference Include="..\Sem.MeshBake\Sem.MeshBake.csproj" />
+    <ProjectReference Include="..\Sem.Assets\Sem.Assets.csproj" />
   </ItemGroup>
 
   <ItemGroup>

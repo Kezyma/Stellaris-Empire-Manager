@@ -19,11 +19,6 @@ namespace Sem.Desktop;
 /// </remarks>
 public sealed class GameDataCache
 {
-    private static readonly JsonSerializerOptions Options = new()
-    {
-        DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
-    };
-
     private readonly string _installRoot;
 
     public GameDataCache(string installRoot)
@@ -57,7 +52,8 @@ public sealed class GameDataCache
             using var document = JsonDocument.Parse(stream);
             var root = document.RootElement;
 
-            if (!root.TryGetProperty("SchemaVersion", out var schema) ||
+            // Property names follow the generated serialiser, which writes them in camel case.
+            if (!root.TryGetProperty("schemaVersion", out var schema) ||
                 schema.GetInt32() != GameDataExtractor.SchemaVersion)
             {
                 reason = "built by an older version of this app";
@@ -66,7 +62,7 @@ public sealed class GameDataCache
 
             // A game patch changes what the designer must offer, so the data is rebuilt with it.
             var installed = ReadInstalledVersion();
-            if (root.TryGetProperty("GameVersion", out var cached) &&
+            if (root.TryGetProperty("gameVersion", out var cached) &&
                 installed is not null &&
                 !string.Equals(cached.GetString(), installed, StringComparison.Ordinal))
             {
@@ -93,13 +89,13 @@ public sealed class GameDataCache
         var extractor = new GameDataExtractor(content);
 
         var database = extractor.Extract(progress);
-        file.WriteAllBytes(DatabasePath, JsonSerializer.SerializeToUtf8Bytes(database, Options));
+        file.WriteAllBytes(DatabasePath, JsonSerializer.SerializeToUtf8Bytes(database, GameDataJsonContext.Default.GameDatabase));
 
         progress?.Report("Reading text");
         var localisation = extractor.ExtractLocalisation(reachableFrom: database);
         file.WriteAllBytes(
             Path.Combine(Directory, "loc", "en.json"),
-            JsonSerializer.SerializeToUtf8Bytes(localisation, Options));
+            JsonSerializer.SerializeToUtf8Bytes(localisation, GameDataJsonContext.Default.DictionaryStringString));
 
         new AssetBaker(content, file).Bake(extractor.Assets, Path.Combine(Directory, "assets"), progress);
     }

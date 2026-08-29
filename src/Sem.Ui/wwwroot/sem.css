@@ -353,6 +353,72 @@ label {
     white-space: nowrap;
 }
 
+/* ---------------------------------------------------------------- portraits */
+
+.sem-portraits {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+    gap: 8px;
+    max-height: 460px;
+    overflow-y: auto;
+}
+
+.sem-portrait {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 4px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+}
+
+.sem-portrait:hover:not(.blocked) {
+    background: var(--bg-hover);
+    border-color: var(--accent-dim);
+}
+
+.sem-portrait.selected { border-color: var(--accent); }
+
+.sem-portrait.blocked {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.sem-portrait img {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    border-radius: 3px;
+    background: var(--bg);
+}
+
+/*
+   Stands in where no likeness has been rendered. A plain shape reads as "no picture yet" rather
+   than as a broken image.
+*/
+.sem-portrait .silhouette {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    border-radius: 3px;
+    background:
+        radial-gradient(circle at 50% 34%, var(--border-strong) 0 18%, transparent 19%),
+        radial-gradient(ellipse at 50% 92%, var(--border-strong) 0 34%, transparent 35%),
+        var(--bg);
+}
+
+.sem-portrait .caption {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    text-align: center;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 /* ---------------------------------------------------------------- flags */
 
 .sem-flag {

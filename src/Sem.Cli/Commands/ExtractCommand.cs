@@ -11,16 +11,6 @@ namespace Sem.Cli.Commands;
 /// </summary>
 public static class ExtractCommand
 {
-    /// <summary>
-    /// Written indented so a patch's effect on the extracted data shows up as a readable diff
-    /// rather than one enormous line.
-    /// </summary>
-    private static readonly JsonSerializerOptions SerializerOptions = new()
-    {
-        WriteIndented = true,
-        DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
-    };
-
     public static Command Create()
     {
         var installOption = new Option<DirectoryInfo?>("--install")
@@ -75,19 +65,28 @@ public static class ExtractCommand
         var extractor = new GameDataExtractor(LayeredContent.ForInstall(installRoot));
         var database = extractor.Extract(new Progress<string>(message => Console.WriteLine($"  {message}")));
 
-        var json = JsonSerializer.SerializeToUtf8Bytes(database, SerializerOptions);
+        var json = JsonSerializer.SerializeToUtf8Bytes(database, GameDataJsonContext.Default.GameDatabase);
         file.WriteAllBytes(output, json);
 
         Console.WriteLine("  Reading localisation");
         var localisation = extractor.ExtractLocalisation(reachableFrom: database);
         var outputDirectory = Path.GetDirectoryName(output)!;
-        var localisationJson = JsonSerializer.SerializeToUtf8Bytes(localisation, SerializerOptions);
+        var localisationJson = JsonSerializer.SerializeToUtf8Bytes(localisation, GameDataJsonContext.Default.DictionaryStringString);
         file.WriteAllBytes(Path.Combine(outputDirectory, "loc", "en.json"), localisationJson);
 
-        var bake = new AssetBaker(LayeredContent.ForInstall(installRoot), file).Bake(
-            extractor.Assets,
-            Path.Combine(outputDirectory, "assets"),
-            new Progress<string>(message => Console.WriteLine($"  {message}")));
+        var content = LayeredContent.ForInstall(installRoot);
+        var reporter = new Progress<string>(message => Console.WriteLine($"  {message}"));
+        var assetDirectory = Path.Combine(outputDirectory, "assets");
+
+        var bake = new AssetBaker(content, file).Bake(extractor.Assets, assetDirectory, reporter);
+
+        // Portraits are models rather than pictures, so each one has to be drawn.
+        var (portraits, portraitBake) = new PortraitBaker(content, file)
+            .Bake(database.Portraits, assetDirectory, reporter);
+
+        database = database with { Portraits = portraits };
+        json = JsonSerializer.SerializeToUtf8Bytes(database, GameDataJsonContext.Default.GameDatabase);
+        file.WriteAllBytes(output, json);
 
         Console.WriteLine();
         WriteSummary(database, json.Length, localisation.Count, localisationJson.Length);
@@ -98,6 +97,18 @@ public static class ExtractCommand
         foreach (var folder in bake.ByFolder)
         {
             Console.WriteLine($"  {folder.Files,6}  {folder.Bytes / 1024.0 / 1024.0,6:F1} MB  {folder.Folder}");
+        }
+
+        Console.WriteLine(
+            $"  {portraitBake.Rendered,6}  {portraitBake.Bytes / 1024.0 / 1024.0,6:F1} MB  portraits");
+
+        if (portraitBake.Failures.Count > 0)
+        {
+            Console.WriteLine($"{portraitBake.Failures.Count} portrait(s) could not be drawn:");
+            foreach (var failure in portraitBake.Failures.Take(10))
+            {
+                Console.WriteLine($"  {failure}");
+            }
         }
 
         if (bake.Failures.Count > 0)

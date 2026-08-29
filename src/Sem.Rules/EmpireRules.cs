@@ -232,6 +232,58 @@ public sealed class EmpireRules(GameDatabase database)
         return [.. forced.Distinct(StringComparer.Ordinal)];
     }
 
+    /// <summary>
+    /// The portraits this species may wear, grouped as the game's picker groups them.
+    /// </summary>
+    /// <remarks>
+    /// Order is the game's own and must be left alone. Sets use conditional groups with no
+    /// condition purely to arrange the picker, so sorting here would rearrange the list for no
+    /// reason. Sets belonging to other species classes are left out, and an origin that dictates a
+    /// portrait narrows the choice to that one.
+    /// </remarks>
+    public IReadOnlyList<PortraitGroup> GetPortraitOptions(DesignContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        var groups = new List<PortraitGroup>();
+        var setsByKey = _database.PortraitSets.ToDictionary(s => s.Key, StringComparer.Ordinal);
+
+        foreach (var category in _database.PortraitCategories)
+        {
+            var options = new List<OptionState>();
+
+            foreach (var setKey in category.Sets)
+            {
+                if (!setsByKey.TryGetValue(setKey, out var set))
+                {
+                    continue;
+                }
+
+                // A set belongs to one species class; showing another class's portraits would
+                // offer a choice the game would not accept.
+                if (set.SpeciesClass is { Length: > 0 } speciesClass &&
+                    context.SpeciesClass is not null &&
+                    !string.Equals(speciesClass, context.SpeciesClass, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                foreach (var portrait in set.Portraits)
+                {
+                    var verdict = _evaluator.Evaluate(portrait.Playable, context);
+                    options.Add(new OptionState(portrait.Key, true, verdict.Passed, verdict.Reasons));
+                }
+            }
+
+            if (options.Count > 0)
+            {
+                groups.Add(new PortraitGroup(category.Key, category.NameKey, options));
+            }
+        }
+
+        return groups;
+    }
+
     /// <summary>Whether the chosen origin requires the player to design a second species.</summary>
     public bool RequiresSecondarySpecies(DesignContext context)
     {

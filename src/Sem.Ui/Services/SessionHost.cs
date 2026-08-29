@@ -53,10 +53,11 @@ public sealed class SessionHost(IGameDataSource source, IFileExchange files)
             LoadError = null;
             return _session;
         }
-        catch (Exception ex) when (ex is HttpRequestException or InvalidOperationException or System.Text.Json.JsonException)
+        catch (Exception ex)
         {
-            // Almost always the extracted data missing from the site, which has a specific fix.
-            LoadError = ex.Message;
+            // Usually the extracted data missing from the site, which has a specific fix. Anything
+            // else is caught too: a designer that says what went wrong beats one that spins.
+            LoadError = $"{ex.GetType().Name}: {ex.Message}";
             return null;
         }
         finally

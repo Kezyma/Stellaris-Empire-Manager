@@ -32,8 +32,8 @@ Early development. See [the milestone plan](docs/) for what is built and what is
 | M5 — Icons, flags and image pipeline | Done |
 | M6 — Designer UI and web app | Done |
 | M7 — Desktop application | Done |
-| M8 — Portrait rendering | Next |
-| M9 — Hardening and first release | |
+| M8 — Portrait rendering | Done |
+| M9 — Hardening and first release | Next |
 
 ## Repository layout
 

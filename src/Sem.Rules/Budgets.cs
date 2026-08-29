@@ -132,3 +132,11 @@ public sealed record OptionState(
     /// <summary>An option that can be chosen.</summary>
     public static OptionState Available(string key, int cost = 0) => new(key, true, true, [], cost);
 }
+
+/// <summary>One tab of the portrait picker, holding the portraits it shows.</summary>
+/// <param name="Key">The category's key.</param>
+/// <param name="NameKey">Localisation key for the tab's label.</param>
+/// <param name="Portraits">
+/// The portraits, in the game's own order. That order is deliberate and must not be sorted.
+/// </param>
+public sealed record PortraitGroup(string Key, string NameKey, IReadOnlyList<OptionState> Portraits);

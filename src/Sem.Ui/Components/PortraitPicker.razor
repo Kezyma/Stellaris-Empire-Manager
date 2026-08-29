@@ -1,0 +1,108 @@
+@*
+    Choosing the founder species' likeness.
+
+    Portraits in Stellaris are three-dimensional models rather than pictures, so a thumbnail exists
+    only where one has been rendered. Where none has, the portrait is still offered under its name:
+    a picker that works without artwork is better than no picker.
+*@
+
+<div class="sem-panel">
+    <h3>Portrait</h3>
+
+    @if (Groups.Count == 0)
+    {
+        <p class="sem-hint">Choose a species class to see its portraits.</p>
+    }
+    else
+    {
+        @if (Groups.Count > 1)
+        {
+            <div class="sem-tabs">
+                @foreach (var group in Groups)
+                {
+                    <button type="button"
+                            class="sem-tab @(group.Key == CurrentGroup.Key ? "active" : null)"
+                            @onclick="() => _group = group.Key">
+                        @Session.Localizer.Text(group.NameKey, Localizer.Prettify(group.Key))
+                    </button>
+                }
+            </div>
+        }
+
+        <div class="sem-portraits">
+            @foreach (var portrait in CurrentGroup.Portraits)
+            {
+                var thumbnail = Thumbnail(portrait.Key);
+
+                <button type="button"
+                        class="sem-portrait @(portrait.Key == Selected ? "selected" : null) @(portrait.Enabled ? null : "blocked")"
+                        disabled="@(!portrait.Enabled && portrait.Key != Selected)"
+                        title="@Session.Localizer.Text(portrait.Key, portrait.Key)"
+                        @onclick="() => Choose(portrait.Key)">
+
+                    @if (thumbnail is not null)
+                    {
+                        <img src="@Session.Data.AssetUrl(thumbnail)" alt="@portrait.Key" loading="lazy" />
+                    }
+                    else
+                    {
+                        <span class="silhouette" aria-hidden="true"></span>
+                    }
+
+                    <span class="caption">@Session.Localizer.Text(portrait.Key, portrait.Key)</span>
+                </button>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>The species whose portrait is being chosen, which may be the second one.</summary>
+    [Parameter, EditorRequired]
+    public required SpeciesDesign Species { get; set; }
+
+    private string? _group;
+
+    private IReadOnlyList<PortraitGroup> Groups => Session.Rules.GetPortraitOptions(Session.Context!);
+
+    private PortraitGroup CurrentGroup =>
+        Groups.FirstOrDefault(g => g.Key == _group) ?? Groups[0];
+
+    private string? Selected => Species.Portrait;
+
+    /// <summary>
+    /// The rendered likeness, when one exists. A group stands in for a portrait and takes its
+    /// artwork from whichever the group defaults to.
+    /// </summary>
+    private string? Thumbnail(string key)
+    {
+        var portrait = Session.Data.Database.Portraits.FirstOrDefault(p => p.Key == key);
+
+        if (portrait?.Thumbnail is { Length: > 0 } own)
+        {
+            return own;
+        }
+
+        return portrait?.ResolvesTo is { } resolved
+            ? Session.Data.Database.Portraits.FirstOrDefault(p => p.Key == resolved)?.Thumbnail
+            : null;
+    }
+
+    private void Choose(string key)
+    {
+        Session.Edit(_ =>
+        {
+            Species.Portrait = key;
+
+            // The ruler wears the founder species' likeness unless deliberately given another,
+            // and leaving a portrait from a different species behind looks like a fault.
+            if (Session.Current is { } design && ReferenceEquals(Species.Block, design.Species.Block))
+            {
+                design.Ruler.Portrait = key;
+            }
+        });
+    }
+}
