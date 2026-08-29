@@ -42,6 +42,11 @@ Stellaris must not be running. It writes this file on exit and would overwrite t
 5. **Start the game.** In the empire creation screen, your new empire should appear in the list
    with the right name, flag and portrait, and every choice should be as you left it.
 
+   The flag is worth a second look. A two-tone background should show both colours, not two shades
+   of one, and the emblem should be its own artwork rather than a flat silhouette. If you set a map
+   colour, the empire's territory should take it once the game starts; the fourth stored colour does
+   nothing in the game and should still be `"null"` in the file.
+
 6. **Check the log.** `Documents\Paradox Interactive\Stellaris\logs\error.log` should contain
    nothing about empire designs. Warnings there mean the game read something it did not like even
    if it did not complain on screen.

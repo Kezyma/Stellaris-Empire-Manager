@@ -19,7 +19,7 @@ public sealed class GameDataExtractor(LayeredContent content)
     /// Version of the produced database's shape. Raise it when the shape changes, so a cache built
     /// by an older version is rebuilt rather than misread.
     /// </summary>
-    public const int SchemaVersion = 1;
+    public const int SchemaVersion = 2;
 
     private readonly LayeredContent _content = content ?? throw new ArgumentNullException(nameof(content));
 
