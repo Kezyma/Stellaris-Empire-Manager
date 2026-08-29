@@ -21,7 +21,10 @@ internal static class TraitsExtractor
     /// directions and the designer has to block the pairing either way round.
     /// </para>
     /// </remarks>
-    public static List<TraitDefinition> Extract(ScriptLoader loader, AssetCatalog assets)
+    public static List<TraitDefinition> Extract(
+        ScriptLoader loader,
+        RequirementCompiler requirements,
+        AssetCatalog assets)
     {
         var traits = new List<TraitDefinition>();
 
@@ -51,7 +54,11 @@ internal static class TraitsExtractor
                 Category = body.GetString("category"),
                 SortingPriority = loader.ResolveInt(body.GetString("sorting_priority")) ?? 0,
                 Tags = body.GetList("tags"),
-                Modifiers = body.GetModifiers("modifier", loader),
+
+                // A trait's own tags group it for filtering and have no text; the categories it
+                // displays are the separate localized_tags field.
+                Effects = EffectsReader.Read(body, loader, requirements, tagsKey: "localized_tags"),
+
                 // Most traits follow the naming convention; the ones that do not are aliases of
                 // another trait and fall back to the game's own unknown-trait icon.
                 Icon = assets.RegisterFirst(

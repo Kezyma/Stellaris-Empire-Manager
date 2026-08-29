@@ -117,19 +117,26 @@ internal static class CosmeticsExtractor
     /// </remarks>
     public static List<NameListDefinition> ExtractNameLists(
         ScriptLoader loader,
-        RequirementCompiler requirements)
+        RequirementCompiler requirements,
+        IReadOnlyDictionary<string, string> text)
     {
         var results = new List<NameListDefinition>();
 
         foreach (var entry in loader.LoadDefinitions("common/name_lists"))
         {
             var body = entry.Body;
+            var (characters, planets, ships) = NameExtractor.ReadNamePools(body, text);
 
             results.Add(new NameListDefinition(entry.Key, body.GetString("category"))
             {
                 Selectable = body.GetBlock("selectable") is { } selectable
                     ? requirements.CompileTrigger(selectable)
                     : new AlwaysRequirement(true),
+                Randomized = body.GetBool("randomized", defaultValue: true),
+                RandomNameSource = body.GetString("customize_random_override"),
+                CharacterNames = characters,
+                PlanetNames = planets,
+                ShipNames = ships,
             });
         }
 

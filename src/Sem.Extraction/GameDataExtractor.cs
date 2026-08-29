@@ -23,6 +23,25 @@ public sealed class GameDataExtractor(LayeredContent content)
 
     private readonly LayeredContent _content = content ?? throw new ArgumentNullException(nameof(content));
 
+    /// <summary>The installation this reads from, when a layer is backed by one.</summary>
+    private string? InstallRoot =>
+        _content.Layers.OfType<DirectoryContentSource>().LastOrDefault()?.Root;
+
+    /// <summary>
+    /// The game's text, read once and shared.
+    /// </summary>
+    /// <remarks>
+    /// Extraction needs this before the database exists, because the random name pools are stored as
+    /// the words themselves rather than as keys. Ten thousand names would otherwise appear twice,
+    /// once as a key in the database and again as text beside it, for no benefit — nothing ever
+    /// needs a name's key once it has the name.
+    /// </remarks>
+    private Dictionary<string, string> Localisation =>
+        _localisation ??= LocalisationExtractor.Extract(_content, _language);
+
+    private Dictionary<string, string>? _localisation;
+    private string _language = "english";
+
     /// <summary>
     /// The images the last extraction referred to, ready to be converted by
     /// <see cref="AssetBaker"/>. Empty until <see cref="Extract"/> has run.
@@ -45,7 +64,11 @@ public sealed class GameDataExtractor(LayeredContent content)
     {
         var loader = new ScriptLoader(_content);
         var requirements = new RequirementCompiler();
-        var assets = new AssetCatalog(_content);
+
+        Report("Reading sprite definitions");
+        var sprites = SpriteCatalog.Read(_content);
+
+        var assets = new AssetCatalog(_content, sprites);
         Assets = assets;
 
         Report("Reading shared variables and triggers");
@@ -61,8 +84,8 @@ public sealed class GameDataExtractor(LayeredContent content)
         var speciesClasses = SpeciesExtractor.ExtractSpeciesClasses(loader, requirements);
 
         Report("Reading ethics and traits");
-        var ethics = EthicsExtractor.Extract(loader, assets);
-        var traits = TraitsExtractor.Extract(loader, assets);
+        var ethics = EthicsExtractor.Extract(loader, requirements, assets);
+        var traits = TraitsExtractor.Extract(loader, requirements, assets);
 
         Report("Reading governments");
         var authorities = GovernmentExtractor.ExtractAuthorities(loader, requirements, assets);
@@ -82,7 +105,9 @@ public sealed class GameDataExtractor(LayeredContent content)
         var rooms = CosmeticsExtractor.ExtractRooms(loader, assets);
         var graphicalCultures = CosmeticsExtractor.ExtractGraphicalCultures(loader, requirements, assets);
         var advisorVoices = CosmeticsExtractor.ExtractAdvisorVoices(loader, requirements, assets);
-        var nameLists = CosmeticsExtractor.ExtractNameLists(loader, requirements);
+        Report("Reading names");
+        var nameLists = CosmeticsExtractor.ExtractNameLists(loader, requirements, Localisation);
+        var speciesNames = NameExtractor.ExtractSpeciesNames(loader, Localisation);
 
         Report("Reading flags");
         var flagCategories = FlagExtractor.ExtractCategories(loader, assets);
@@ -91,6 +116,9 @@ public sealed class GameDataExtractor(LayeredContent content)
         Report("Reading built-in empires");
         var prescripted = MetadataExtractor.ExtractPrescriptedEmpires(loader, requirements);
         var template = MetadataExtractor.ExtractNewEmpireTemplate(loader);
+
+        Report("Reading modifier display settings");
+        var modifiers = DescribeModifiers(ethics, traits, authorities, civics);
 
         return new GameDatabase
         {
@@ -104,6 +132,8 @@ public sealed class GameDataExtractor(LayeredContent content)
             Archetypes = archetypes,
             SpeciesClasses = speciesClasses,
             Traits = traits,
+            Modifiers = modifiers,
+            SpeciesNames = speciesNames,
             Ethics = ethics,
             Authorities = authorities,
             Civics = civics,
@@ -124,9 +154,61 @@ public sealed class GameDataExtractor(LayeredContent content)
             UnrecognisedTriggers = requirements.Unrecognised
                 .OrderByDescending(p => p.Value)
                 .ToDictionary(p => p.Key, p => p.Value, StringComparer.Ordinal),
+            UnrecognisedEffectConditions = requirements.UnrecognisedInEffects
+                .OrderByDescending(p => p.Value)
+                .ToDictionary(p => p.Key, p => p.Value, StringComparer.Ordinal),
         };
 
         void Report(string message) => progress?.Report(message);
+    }
+
+    /// <summary>
+    /// Works out how to display every modifier the options actually use.
+    /// </summary>
+    /// <remarks>
+    /// Only the modifiers reachable from the designer are described, which is a few hundred rather
+    /// than the several thousand the game defines. That keeps the database small and, more usefully,
+    /// makes the number of them that had to be guessed at a figure small enough to act on.
+    /// </remarks>
+    private Dictionary<string, ModifierInfo> DescribeModifiers(
+        IEnumerable<EthicDefinition> ethics,
+        IEnumerable<TraitDefinition> traits,
+        IEnumerable<AuthorityDefinition> authorities,
+        IEnumerable<CivicDefinition> civics)
+    {
+        var catalog = ModifierCatalog.Read(_content, InstallRoot);
+        var observed = new Dictionary<string, List<double>>(StringComparer.Ordinal);
+
+        foreach (var effects in ethics.Select(e => e.Effects)
+                     .Concat(traits.Select(t => t.Effects))
+                     .Concat(authorities.Select(a => a.Effects))
+                     .Concat(civics.Select(c => c.Effects)))
+        {
+            Record(effects.Modifiers);
+
+            foreach (var conditional in effects.Conditional)
+            {
+                Record(conditional.Modifiers);
+            }
+        }
+
+        return observed.ToDictionary(
+            p => p.Key,
+            p => catalog.Describe(p.Key, p.Value),
+            StringComparer.Ordinal);
+
+        void Record(IReadOnlyDictionary<string, double> modifiers)
+        {
+            foreach (var (key, value) in modifiers)
+            {
+                if (!observed.TryGetValue(key, out var values))
+                {
+                    observed[key] = values = [];
+                }
+
+                values.Add(value);
+            }
+        }
     }
 
     /// <summary>
@@ -146,7 +228,13 @@ public sealed class GameDataExtractor(LayeredContent content)
         string language = "english",
         GameDatabase? reachableFrom = null)
     {
-        var all = LocalisationExtractor.Extract(_content, language);
+        if (!string.Equals(language, _language, StringComparison.OrdinalIgnoreCase))
+        {
+            _language = language;
+            _localisation = null;
+        }
+
+        var all = Localisation;
         return reachableFrom is null ? all : LocalisationPruner.Prune(reachableFrom, all);
     }
 

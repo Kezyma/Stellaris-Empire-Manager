@@ -29,9 +29,14 @@ internal static class WorldExtractor
                 IsStartingWorld = body.GetBool("initial"),
                 Colonizable = body.GetBool("colonizable"),
                 Potential = requirements.CompileTrigger(body.GetBlock("potential")),
-                Icon = assets.Register(
-                    $"gfx/interface/icons/planet_backgrounds/{entry.Key}.dds",
-                    $"icons/planets/{entry.Key}.png"),
+
+                // Each class names its own picture, and the larger of the two is a frame of a strip
+                // rather than a file of its own. Reading the name is also what makes this the round
+                // planet the game shows, instead of the square ground texture sharing its key.
+                Icon = assets.RegisterSprite(
+                           body.GetString("icon_large"), $"icons/planets/{entry.Key}.png")
+                       ?? assets.RegisterSprite(
+                           body.GetString("icon"), $"icons/planets/{entry.Key}.png"),
             });
         }
 

@@ -1,6 +1,7 @@
 using System.CommandLine;
 using System.Text.Json;
 using Sem.Extraction;
+using Sem.Extraction.Extractors;
 using Sem.GameData;
 using Sem.Io;
 
@@ -117,6 +118,51 @@ public static class ExtractCommand
         }
     }
 
+    /// <summary>
+    /// Reports how much of the effects display rests on the game's own settings and how much on
+    /// inference, so the difference is a number rather than an impression.
+    /// </summary>
+    private static void WriteModifierSummary(GameDatabase database)
+    {
+        var described = database.Modifiers;
+
+        if (described.Count == 0)
+        {
+            return;
+        }
+
+        var guessed = described.Values.Count(m => !m.Declared);
+
+        Console.WriteLine();
+        Console.WriteLine($"Effects: {described.Count} modifier(s) used by the designer");
+        Console.WriteLine(
+            $"  {described.Count - guessed,6}  described by the game");
+        Console.WriteLine(
+            $"  {guessed,6}  inferred from the modifier's name");
+
+        var withEffects = database.Ethics.Count(e => !e.Effects.IsEmpty);
+        Console.WriteLine($"  {withEffects,6}  of {database.Ethics.Count} ethics have effects to show");
+
+        if (database.UnrecognisedEffectConditions.Count > 0)
+        {
+            // Not a fault. These ask about a game in progress, which a design cannot answer, so the
+            // modifiers behind them are shown as conditional rather than counted.
+            var total = database.UnrecognisedEffectConditions.Values.Sum();
+            Console.WriteLine(
+                $"  {total,6}  modifier condition(s) that only a running game could answer " +
+                $"({string.Join(", ", database.UnrecognisedEffectConditions.Keys.Take(4))})");
+        }
+
+        if (guessed > 0 && ModifierCatalog.LogPath() is { } log && !File.Exists(log))
+        {
+            Console.WriteLine();
+            Console.WriteLine(
+                "  Running Stellaris once with -debug_mode writes a table of every modifier to");
+            Console.WriteLine($"  {log}");
+            Console.WriteLine("  which would replace those inferences with the game's own settings.");
+        }
+    }
+
     private static void WriteSummary(ExtractionResult result)
     {
         var database = result.Database;
@@ -158,6 +204,8 @@ public static class ExtractCommand
         {
             Console.WriteLine($"  {count,6}  {label}");
         }
+
+        WriteModifierSummary(database);
 
         if (database.UnrecognisedTriggers.Count == 0)
         {

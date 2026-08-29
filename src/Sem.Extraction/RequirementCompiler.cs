@@ -54,9 +54,47 @@ public sealed class RequirementCompiler
 
     private readonly Dictionary<string, CwBlock> _scriptedTriggers = new(StringComparer.Ordinal);
     private readonly Dictionary<string, int> _unrecognised = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, int> _unrecognisedInEffects = new(StringComparer.Ordinal);
 
     /// <summary>Conditions that were not recognised, and how often each appeared.</summary>
     public IReadOnlyDictionary<string, int> Unrecognised => _unrecognised;
+
+    /// <summary>
+    /// Conditions on modifiers that were not recognised.
+    /// </summary>
+    /// <remarks>
+    /// Kept apart from the conditions that gate an option, because they mean something different. A
+    /// gating condition the compiler cannot read is a defect: an option may be offered that the game
+    /// would refuse. A condition on a modifier is usually about the state of a game in progress —
+    /// whether a tradition has been adopted, whether a planet exists — which cannot be known while
+    /// an empire is only being designed, and which the designer shows as conditional rather than
+    /// pretending to resolve.
+    /// </remarks>
+    public IReadOnlyDictionary<string, int> UnrecognisedInEffects => _unrecognisedInEffects;
+
+    /// <summary>
+    /// Whether unrecognised conditions are currently being attributed to modifiers.
+    /// </summary>
+    private bool _compilingEffects;
+
+    /// <summary>
+    /// Compiles a condition that decides when a modifier applies, rather than one that decides
+    /// whether an option may be chosen.
+    /// </summary>
+    public Requirement CompileEffectCondition(CwBlock? block)
+    {
+        var wasCompilingEffects = _compilingEffects;
+        _compilingEffects = true;
+
+        try
+        {
+            return CompileTrigger(block);
+        }
+        finally
+        {
+            _compilingEffects = wasCompilingEffects;
+        }
+    }
 
     /// <summary>Scripted triggers available for inlining.</summary>
     public IReadOnlyDictionary<string, CwBlock> ScriptedTriggers => _scriptedTriggers;
@@ -451,7 +489,8 @@ public sealed class RequirementCompiler
 
     private UnknownRequirement RecordUnrecognised(string name)
     {
-        _unrecognised[name] = _unrecognised.GetValueOrDefault(name) + 1;
+        var into = _compilingEffects ? _unrecognisedInEffects : _unrecognised;
+        into[name] = into.GetValueOrDefault(name) + 1;
         return new UnknownRequirement(name);
     }
 }

@@ -81,13 +81,14 @@ internal static partial class LocalisationPruner
         {
             Add(trait.NameKey);
             Add(trait.DescriptionKey);
-            AddModifiers(trait.Modifiers);
+            AddEffects(trait.Effects);
         }
 
         foreach (var ethic in database.Ethics)
         {
             Add(ethic.NameKey);
             Add(ethic.DescriptionKey);
+            AddEffects(ethic.Effects);
         }
 
         foreach (var authority in database.Authorities)
@@ -96,7 +97,7 @@ internal static partial class LocalisationPruner
             Add(authority.DescriptionKey);
             AddRequirement(authority.Possible);
             AddRequirement(authority.Playable);
-            AddModifiers(authority.Modifiers);
+            AddEffects(authority.Effects);
         }
 
         foreach (var civic in database.Civics)
@@ -108,7 +109,7 @@ internal static partial class LocalisationPruner
             AddRequirement(civic.Potential);
             AddRequirement(civic.Possible);
             AddRequirement(civic.Playable);
-            AddModifiers(civic.Modifiers);
+            AddEffects(civic.Effects);
         }
 
         foreach (var government in database.GovernmentTypes)
@@ -206,13 +207,36 @@ internal static partial class LocalisationPruner
         {
             foreach (var key in modifiers.Keys)
             {
-                // The game names a modifier either with a lowercase override or an uppercase
-                // hand-written label, so both spellings have to be looked for.
+                // A modifier's label is written one of three ways and the three barely overlap: a
+                // lowercase prefixed key, an uppercase one, or the modifier's own name with no
+                // prefix at all. Dropping any of them leaves effects lines with no label.
                 Add($"mod_{key}");
                 Add($"mod_{key}_desc");
                 Add($"MOD_{key.ToUpperInvariant()}");
                 Add($"MOD_{key.ToUpperInvariant()}_DESC");
+                Add(key);
+                Add($"{key}_tt");
             }
+        }
+
+        void AddEffects(EffectSet effects)
+        {
+            AddModifiers(effects.Modifiers);
+
+            foreach (var conditional in effects.Conditional)
+            {
+                AddModifiers(conditional.Modifiers);
+                AddRequirement(conditional.When);
+            }
+
+            foreach (var tag in effects.TagKeys)
+            {
+                Add(tag);
+            }
+
+            Add(effects.DescriptionKey);
+            Add(effects.PenaltyKey);
+            Add(effects.TooltipKey);
         }
 
         void AddRequirement(Requirement requirement)

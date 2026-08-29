@@ -37,7 +37,7 @@ internal static class GovernmentExtractor
                 ForcedTraits = ReadForcedTraits(body),
                 HasHeir = body.GetBool("has_heir"),
                 ElectionType = body.GetString("election_type"),
-                Modifiers = body.GetModifiers("country_modifier", loader),
+                Effects = EffectsReader.Read(body, loader, requirements),
                 Icon = assets.Register(
                     $"gfx/interface/icons/governments/authorities/{entry.Key}.dds",
                     $"icons/authorities/{entry.Key}.png"),
@@ -62,7 +62,7 @@ internal static class GovernmentExtractor
         {
             var body = entry.Body;
             var isOrigin = body.GetBool("is_origin");
-            var modifiers = body.GetModifiers("modifier", loader);
+            var effects = EffectsReader.Read(body, loader, requirements);
             var secondarySpecies = body.GetBlock("has_secondary_species");
 
             results.Add(new CivicDefinition(entry.Key, isOrigin)
@@ -72,8 +72,8 @@ internal static class GovernmentExtractor
                 Possible = requirements.CompileRequirementsList(body.GetBlock("possible")),
                 ForcedTraits = ReadForcedTraits(body),
                 SoftTraits = ReadTraitList(body.GetBlock("soft_traits")),
-                Modifiers = modifiers,
-                TraitBudgetModifiers = ExtractTraitBudgetModifiers(modifiers),
+                Effects = effects,
+                TraitBudgetModifiers = ExtractTraitBudgetModifiers(effects.Modifiers),
                 StartingColony = body.GetString("starting_colony"),
                 HabitabilityPreference = body.GetString("habitability_preference"),
                 Initializers = body.GetList("initializers"),

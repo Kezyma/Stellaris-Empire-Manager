@@ -1,4 +1,5 @@
 using Sem.Assets;
+using Sem.Extraction.Extractors;
 using Sem.Io;
 
 namespace Sem.Extraction;
@@ -63,6 +64,17 @@ public sealed class AssetBaker(LayeredContent content, SafeFile file)
             try
             {
                 var image = DdsReader.Read(_content.Read(request.Source));
+
+                if (request.Frame is { } frame)
+                {
+                    image = DdsImageOps.Frame(image, frame.Frame, frame.FrameCount);
+                }
+
+                if (request.Channel is { } channel)
+                {
+                    image = DdsImageOps.AlphaFromChannel(image, channel);
+                }
+
                 var png = PngWriter.Encode(image, request.MaxDimension);
 
                 _file.WriteAllBytes(Path.Combine(outputDirectory, request.Destination), png);
@@ -86,4 +98,5 @@ public sealed class AssetBaker(LayeredContent content, SafeFile file)
             [.. folders.OrderByDescending(f => f.Value.Bytes)
                 .Select(f => new FolderSize(f.Key, f.Value.Files, f.Value.Bytes))]);
     }
+
 }

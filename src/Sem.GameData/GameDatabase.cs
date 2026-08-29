@@ -34,6 +34,16 @@ public sealed record GameDatabase
     /// <summary>Species traits, leader traits and starting ruler traits.</summary>
     public IReadOnlyList<TraitDefinition> Traits { get; init; } = [];
 
+    /// <summary>
+    /// How to display each modifier the options refer to. Carried in the database because the web
+    /// app has no installation of its own to read it from.
+    /// </summary>
+    public IReadOnlyDictionary<string, ModifierInfo> Modifiers { get; init; } =
+        new Dictionary<string, ModifierInfo>();
+
+    /// <summary>Ready-made species the randomise button offers, grouped by species class.</summary>
+    public IReadOnlyList<SpeciesNameSuggestion> SpeciesNames { get; init; } = [];
+
     /// <summary>Ethics, including the fanatic variants and gestalt consciousness.</summary>
     public IReadOnlyList<EthicDefinition> Ethics { get; init; } = [];
 
@@ -101,6 +111,18 @@ public sealed record GameDatabase
     /// showing up here is the signal that the extractor needs attention.
     /// </summary>
     public IReadOnlyDictionary<string, int> UnrecognisedTriggers { get; init; } =
+        new Dictionary<string, int>();
+
+    /// <summary>
+    /// Conditions on modifiers that the extractor did not recognise.
+    /// </summary>
+    /// <remarks>
+    /// Expected rather than alarming, and kept apart for that reason. These are mostly about a game
+    /// in progress — whether a tradition has been adopted, whether a planet exists — which has no
+    /// answer while an empire is only being designed. The modifiers they gate are shown as
+    /// conditional instead of being counted as though they applied.
+    /// </remarks>
+    public IReadOnlyDictionary<string, int> UnrecognisedEffectConditions { get; init; } =
         new Dictionary<string, int>();
 }
 
@@ -186,6 +208,93 @@ public sealed record SpeciesClassDefinition(string Key, string? Archetype)
     public string NameKey => Key;
 }
 
+/// <summary>How a modifier's value should be displayed.</summary>
+/// <param name="IsPercentage">Whether the value is a proportion, shown as a percentage.</param>
+/// <param name="IsGood">Whether a larger number is the better one.</param>
+/// <param name="IsNeutral">Whether the value is neither good nor bad, and so uncoloured.</param>
+/// <param name="Decimals">How many decimal places to show at most.</param>
+/// <param name="Declared">
+/// Whether the game states this, as opposed to it having been guessed from the modifier's name.
+/// Guesses are right more often than not but not always, so it is worth being able to count them.
+/// </param>
+public sealed record ModifierInfo(
+    bool IsPercentage,
+    bool IsGood,
+    bool IsNeutral,
+    int Decimals,
+    bool Declared)
+{
+    /// <summary>What to assume about a modifier nothing is known about.</summary>
+    public static ModifierInfo Unknown { get; } = new(false, true, false, 2, false);
+}
+
+/// <summary>Modifiers that apply only when a condition holds.</summary>
+/// <param name="When">The condition, compiled from the block's <c>potential</c>.</param>
+/// <param name="Modifiers">What applies while it holds.</param>
+public sealed record ConditionalEffects(Requirement When, IReadOnlyDictionary<string, double> Modifiers);
+
+/// <summary>
+/// Everything an option does, as the game would describe it.
+/// </summary>
+/// <remarks>
+/// The game does not simply list an option's modifiers. A hand-written tooltip can replace that
+/// list, add to it, or be the only thing there is, and some options hide their numbers entirely.
+/// Recording which of those applies is what keeps a democratic authority from showing its two
+/// modifiers twice, once from the script and once from the tooltip that restates them.
+/// </remarks>
+public sealed record EffectSet
+{
+    /// <summary>An option with nothing to say.</summary>
+    public static EffectSet None { get; } = new();
+
+    /// <summary>Modifiers that always apply, as keys and their values.</summary>
+    public IReadOnlyDictionary<string, double> Modifiers { get; init; } =
+        new Dictionary<string, double>();
+
+    /// <summary>Modifiers that apply only in certain empires.</summary>
+    public IReadOnlyList<ConditionalEffects> Conditional { get; init; } = [];
+
+    /// <summary>
+    /// Localisation keys naming capabilities rather than numbers, such as being able to use a war
+    /// doctrine. Each resolves to a complete sentence.
+    /// </summary>
+    public IReadOnlyList<string> TagKeys { get; init; } = [];
+
+    /// <summary>Extra text shown under the effects heading, for consequences that are not modifiers.</summary>
+    public string? DescriptionKey { get; init; }
+
+    /// <summary>Text shown under a separate penalties heading.</summary>
+    public string? PenaltyKey { get; init; }
+
+    /// <summary>A hand-written tooltip that stands in place of, or alongside, the modifier list.</summary>
+    public string? TooltipKey { get; init; }
+
+    /// <summary>
+    /// Whether <see cref="TooltipKey"/> replaces the modifier list rather than adding to it. The
+    /// game's default when a tooltip is declared inside a modifier block, unless it opts out.
+    /// </summary>
+    public bool TooltipReplacesModifiers { get; init; }
+
+    /// <summary>Whether the option's numbers are deliberately not shown.</summary>
+    public bool HideModifiers { get; init; }
+
+    /// <summary>Whether there is anything at all to display.</summary>
+    public bool IsEmpty =>
+        Modifiers.Count == 0 &&
+        Conditional.Count == 0 &&
+        TagKeys.Count == 0 &&
+        DescriptionKey is null &&
+        PenaltyKey is null &&
+        TooltipKey is null;
+
+    /// <summary>
+    /// The modifiers that should be listed, which is nothing when the option suppresses them or
+    /// replaces them with its own wording.
+    /// </summary>
+    public IReadOnlyDictionary<string, double> VisibleModifiers =>
+        HideModifiers || TooltipReplacesModifiers ? new Dictionary<string, double>() : Modifiers;
+}
+
 /// <summary>What sort of thing a trait applies to.</summary>
 public enum TraitKind
 {
@@ -257,8 +366,8 @@ public sealed record TraitDefinition(string Key, TraitKind Kind)
     /// <summary>Descriptive tags, used for filtering.</summary>
     public IReadOnlyList<string> Tags { get; init; } = [];
 
-    /// <summary>The effects this trait has, as modifier keys and their values.</summary>
-    public IReadOnlyDictionary<string, double> Modifiers { get; init; } = new Dictionary<string, double>();
+    /// <summary>What this trait does, and how the game describes it.</summary>
+    public EffectSet Effects { get; init; } = EffectSet.None;
 
     /// <summary>Path to the trait's icon within the extracted assets.</summary>
     public string? Icon { get; init; }
@@ -291,6 +400,9 @@ public sealed record EthicDefinition(string Key, int Cost, string Category)
     /// <summary>True when this is a fanatic ethic, which the game marks by having no fanatic form.</summary>
     public bool IsFanatic => FanaticVariant is null && !IsGestalt;
 
+    /// <summary>What this ethic does, and how the game describes it.</summary>
+    public EffectSet Effects { get; init; } = EffectSet.None;
+
     /// <summary>Path to the ethic's icon within the extracted assets.</summary>
     public string? Icon { get; init; }
 
@@ -322,8 +434,8 @@ public sealed record AuthorityDefinition(string Key)
     /// <summary>How rulers are chosen, or <c>none</c>.</summary>
     public string? ElectionType { get; init; }
 
-    /// <summary>The effects this authority has.</summary>
-    public IReadOnlyDictionary<string, double> Modifiers { get; init; } = new Dictionary<string, double>();
+    /// <summary>What this authority does, and how the game describes it.</summary>
+    public EffectSet Effects { get; init; } = EffectSet.None;
 
     /// <summary>Path to the authority's icon within the extracted assets.</summary>
     public string? Icon { get; init; }
@@ -359,8 +471,8 @@ public sealed record CivicDefinition(string Key, bool IsOrigin)
     /// <summary>Traits an origin grants that the player may remove again.</summary>
     public IReadOnlyList<string> SoftTraits { get; init; } = [];
 
-    /// <summary>The effects this has.</summary>
-    public IReadOnlyDictionary<string, double> Modifiers { get; init; } = new Dictionary<string, double>();
+    /// <summary>What this does, and how the game describes it.</summary>
+    public EffectSet Effects { get; init; } = EffectSet.None;
 
     /// <summary>Extra trait points or picks this grants, keyed by the modifier the game uses.</summary>
     public IReadOnlyDictionary<string, double> TraitBudgetModifiers { get; init; } =
@@ -495,8 +607,87 @@ public sealed record NameListDefinition(string Key, string? Category)
     /// <summary>Whether the player may choose it. A few lists exist only for the game's own use.</summary>
     public Requirement Selectable { get; init; } = new AlwaysRequirement(true);
 
+    /// <summary>Whether it may be picked when an empire asks for any name list at random.</summary>
+    public bool Randomized { get; init; } = true;
+
+    /// <summary>
+    /// A different name list to draw species, homeworld and system names from.
+    /// </summary>
+    /// <remarks>
+    /// The game's three human lists do this, so that randomising a species for the United Nations of
+    /// Earth offers ordinary human species names rather than the empire's own naming conventions.
+    /// </remarks>
+    public string? RandomNameSource { get; init; }
+
+    /// <summary>Ruler names this list offers, already in the player's language.</summary>
+    public NameSet CharacterNames { get; init; } = new();
+
+    /// <summary>Planet names this list offers, already in the player's language.</summary>
+    public IReadOnlyList<string> PlanetNames { get; init; } = [];
+
+    /// <summary>Ship names this list offers, used to show what the list sounds like.</summary>
+    public IReadOnlyList<string> ShipNames { get; init; } = [];
+
     /// <summary>Localisation key for the display name.</summary>
     public string NameKey => $"name_list_{Key}";
+}
+
+/// <summary>
+/// The names a list offers for a character.
+/// </summary>
+/// <remarks>
+/// A name is either complete in itself or a first name joined to a second. Where a list offers both,
+/// the game picks between them evenly. Gendered lists are used when they are not empty, and the
+/// ungendered list stands in when they are.
+/// </remarks>
+public sealed record NameSet
+{
+    /// <summary>Names that stand alone.</summary>
+    public IReadOnlyList<string> FullNames { get; init; } = [];
+
+    /// <summary>First names for a male character.</summary>
+    public IReadOnlyList<string> FirstNamesMale { get; init; } = [];
+
+    /// <summary>First names for a female character.</summary>
+    public IReadOnlyList<string> FirstNamesFemale { get; init; } = [];
+
+    /// <summary>First names used when the list draws no distinction.</summary>
+    public IReadOnlyList<string> FirstNames { get; init; } = [];
+
+    /// <summary>Second names, always joined to a first.</summary>
+    public IReadOnlyList<string> SecondNames { get; init; } = [];
+
+    /// <summary>Whether there is anything here to build a name from.</summary>
+    public bool IsEmpty =>
+        FullNames.Count == 0 &&
+        FirstNames.Count == 0 &&
+        FirstNamesMale.Count == 0 &&
+        FirstNamesFemale.Count == 0;
+}
+
+/// <summary>
+/// A ready-made species, as the game's own randomise button offers.
+/// </summary>
+/// <remarks>
+/// The game does not invent a species name a piece at a time. It picks one of these, which carries a
+/// name, its plural, a homeworld, a home system and the name list that suits it — so pressing
+/// randomise fills in five fields at once and they agree with each other.
+/// </remarks>
+/// <param name="SpeciesClass">The class this suits, such as <c>MAM</c>.</param>
+/// <param name="Name">The species name.</param>
+public sealed record SpeciesNameSuggestion(string SpeciesClass, string Name)
+{
+    /// <summary>The plural form.</summary>
+    public string? Plural { get; init; }
+
+    /// <summary>A name for the homeworld.</summary>
+    public string? HomePlanet { get; init; }
+
+    /// <summary>A name for the home system.</summary>
+    public string? HomeSystem { get; init; }
+
+    /// <summary>The name list that goes with it.</summary>
+    public string? NameList { get; init; }
 }
 
 /// <summary>How a starting system may be used.</summary>
@@ -572,7 +763,35 @@ public sealed record FlagCategoryDefinition(string Key, bool IsBackground)
 /// <param name="Red">Red channel of the flag colour, 0 to 255.</param>
 /// <param name="Green">Green channel of the flag colour, 0 to 255.</param>
 /// <param name="Blue">Blue channel of the flag colour, 0 to 255.</param>
-public sealed record FlagColorDefinition(string Key, byte Red, byte Green, byte Blue);
+/// <summary>
+/// A named colour a flag can use.
+/// </summary>
+/// <remarks>
+/// One name, three different colours. The game tints a flag, an empire's territory on the galaxy
+/// map and its ship trails from the same choice, and the three are not the same shade — "pink" is a
+/// muted purple on a flag and a far stronger one on the map. Showing the flag tint in a swatch that
+/// chooses a map colour would be quietly misleading, so all three are kept.
+/// </remarks>
+public sealed record FlagColorDefinition(string Key, byte Red, byte Green, byte Blue)
+{
+    /// <summary>The colour of an empire's territory on the galaxy map.</summary>
+    public byte MapRed { get; init; }
+
+    /// <summary>The colour of an empire's territory on the galaxy map.</summary>
+    public byte MapGreen { get; init; }
+
+    /// <summary>The colour of an empire's territory on the galaxy map.</summary>
+    public byte MapBlue { get; init; }
+
+    /// <summary>The colour of the empire's ship trails.</summary>
+    public byte ShipRed { get; init; }
+
+    /// <summary>The colour of the empire's ship trails.</summary>
+    public byte ShipGreen { get; init; }
+
+    /// <summary>The colour of the empire's ship trails.</summary>
+    public byte ShipBlue { get; init; }
+}
 
 /// <summary>Enough of a built-in empire to list it as a starting point in the designer.</summary>
 public sealed record PrescriptedEmpireSummary(string Key, string SourceFile)
