@@ -186,6 +186,9 @@ internal static class RulesTestData
                 Opposites = ["trait_intelligent"],
             },
             new TraitDefinition("trait_deviants", TraitKind.Species) { Cost = -1, AllowedArchetypes = ["BIOLOGICAL"] },
+
+            // Dear, and nothing else stands in its way, so the budget is the only thing that can.
+            new TraitDefinition("trait_expensive", TraitKind.Species) { Cost = 3, AllowedArchetypes = ["BIOLOGICAL"] },
             new TraitDefinition("trait_aquatic", TraitKind.Species)
             {
                 Cost = 2,

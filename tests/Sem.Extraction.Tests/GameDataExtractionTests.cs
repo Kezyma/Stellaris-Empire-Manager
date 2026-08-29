@@ -144,6 +144,54 @@ public sealed class GameDataExtractionTests
 
     [SkippableFact]
     [Trait("Category", "RealData")]
+    public void ATraitBorrowingAnothersArtworkSaysSoAndIsBelieved()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var extractor = new GameDataExtractor(LayeredContent.ForInstall(InstallRoot!));
+        extractor.Extract();
+
+        var sources = extractor.Assets.Requests.ToDictionary(
+            r => r.Destination,
+            r => r.Source,
+            StringComparer.OrdinalIgnoreCase);
+
+        // Fifty-three traits have no artwork of their own and name a another trait's. Ignoring that
+        // left them on the game's unknown-trait placeholder, so two drawbacks were wearing what
+        // reads as an ordinary trait's badge.
+        Assert.Equal(
+            "gfx/interface/icons/traits/trait_jinxed.dds",
+            sources["icons/traits/trait_humanoid_jinxed.png"]);
+
+        Assert.Equal(
+            "gfx/interface/icons/traits/trait_psychological_infertility.dds",
+            sources["icons/traits/trait_humanoid_psychological_infertility.png"]);
+
+        // The Lithoid traits do the same, wearing their organic counterparts' artwork.
+        Assert.Equal(
+            "gfx/interface/icons/traits/trait_adaptive.dds",
+            sources["icons/traits/trait_adaptive_lithoid.png"]);
+
+        // A trait that names nothing still follows the naming convention.
+        Assert.Equal(
+            "gfx/interface/icons/traits/trait_adaptive.dds",
+            sources["icons/traits/trait_adaptive.png"]);
+
+        // Galactic Paragons stacks layers into an icon block, which the leader traits use. Nothing
+        // here draws layers, so those fall back rather than reaching into the block for a value that
+        // is only one of several stacked pictures.
+        Assert.Equal(
+            "gfx/interface/icons/traits/trait_unknown.dds",
+            sources["icons/traits/leader_trait_unplugged_cybernetic_positives_1.png"]);
+
+        // Its species-trait twin writes the same artwork as a plain path, and that is honoured.
+        Assert.Equal(
+            "gfx/interface/icons/traits/trait_unplugged_positive_1.dds",
+            sources["icons/traits/trait_unplugged_cybernetic_positives_1.png"]);
+    }
+
+    [SkippableFact]
+    [Trait("Category", "RealData")]
     public void OppositeTraitsExcludeEachOtherBothWays()
     {
         Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");

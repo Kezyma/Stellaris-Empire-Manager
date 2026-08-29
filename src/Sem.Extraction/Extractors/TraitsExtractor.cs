@@ -59,10 +59,13 @@ internal static class TraitsExtractor
                 // displays are the separate localized_tags field.
                 Effects = EffectsReader.Read(body, loader, requirements, tagsKey: "localized_tags"),
 
-                // Most traits follow the naming convention; the ones that do not are aliases of
-                // another trait and fall back to the game's own unknown-trait icon.
+                // A trait that borrows another's artwork says so outright, and fifty-three do —
+                // Jinxed wears trait_jinxed, the Lithoid traits wear their organic counterparts'.
+                // Most say nothing and follow the naming convention instead; what does neither
+                // falls back to the game's own unknown-trait icon.
                 Icon = assets.RegisterFirst(
                     [
+                        .. Declared(body),
                         $"gfx/interface/icons/traits/{entry.Key}.dds",
                         "gfx/interface/icons/traits/trait_unknown.dds",
                     ],
@@ -85,6 +88,19 @@ internal static class TraitsExtractor
             ? TraitKind.Leader
             : TraitKind.Species;
     }
+
+    /// <summary>
+    /// The icon a trait names for itself, if it names one.
+    /// </summary>
+    /// <remarks>
+    /// Galactic Paragons added a layered form — <c>icon = { ... }</c> stacking a frame, a background
+    /// and a symbol — used by the unplugged leader traits. There is nothing here that draws layers,
+    /// so a block yields nothing and those keep the ordinary fallback.
+    /// </remarks>
+    private static IEnumerable<string> Declared(CwBlock body) =>
+        body.GetBlock("icon") is null && body.GetString("icon") is { Length: > 0 } icon
+            ? [icon.Replace('\\', '/')]
+            : [];
 
     /// <summary>
     /// Reads the species classes a trait is limited to. The field is written either as a list or

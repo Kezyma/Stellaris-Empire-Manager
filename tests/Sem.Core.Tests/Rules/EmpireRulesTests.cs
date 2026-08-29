@@ -242,6 +242,38 @@ public sealed class EmpireRulesTests
     }
 
     [Fact]
+    public void ATraitRestrictedToAnotherSpeciesSaysWhichOne()
+    {
+        // "Not for this species class" leaves a player to go and find out which class would take it,
+        // and the rules have the answer in hand.
+        var options = Rules.GetSpeciesTraitOptions(Context(RulesTestData.ValidEmpire()));
+        var psionic = Single(options, "trait_psionic_only");
+
+        Assert.False(psionic.Enabled);
+        Assert.Contains(RuleReasons.For(RuleReasons.WrongSpeciesClass, "PSIONIC"), psionic.Reasons);
+    }
+
+    [Fact]
+    public void RunningOutOfPointsDoesNotPutATraitBeyondReach()
+    {
+        // Two points to spend and this one costs three, with nothing else standing in its way. The
+        // rules still say no — the budget is real — but they say it with a reason the interface
+        // knows is temporary, so a player may take the trait anyway and settle up afterwards.
+        var design = RulesTestData.ValidEmpire();
+        design.Species.SetTraits(["trait_organic"]);
+
+        var options = Rules.GetSpeciesTraitOptions(Context(design));
+        var expensive = Single(options, "trait_expensive");
+
+        Assert.False(expensive.Enabled);
+        Assert.NotEmpty(expensive.Reasons);
+        Assert.All(expensive.Reasons, r => Assert.Contains(r, PassingReasons));
+    }
+
+    /// <summary>The reasons that go away on their own, which the interface treats as a warning.</summary>
+    private static readonly string[] PassingReasons = [RuleReasons.NotEnoughPoints, RuleReasons.NoPicksLeft];
+
+    [Fact]
     public void TraitsForOtherArchetypesAreHiddenRatherThanListedAsBlocked()
     {
         // A biological species should not be shown the machine traits it could never take.

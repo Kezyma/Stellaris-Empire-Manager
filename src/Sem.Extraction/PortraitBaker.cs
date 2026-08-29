@@ -12,6 +12,16 @@ namespace Sem.Extraction;
 /// <param name="Failures">Portraits that could not be drawn, with the reason.</param>
 public sealed record PortraitBakeReport(int Rendered, long Bytes, IReadOnlyList<string> Failures);
 
+/// <summary>How far a posed, scaled portrait reaches from its own origin.</summary>
+/// <param name="Key">The portrait.</param>
+/// <param name="Rise">How far the highest point stands above the origin, in model units.</param>
+/// <param name="Drop">How far the lowest point hangs below it, negative where nothing does.</param>
+/// <param name="Clipped">
+/// Whether it reached the edge of even the measuring frame, in which case what it reports is a floor
+/// rather than the truth.
+/// </param>
+public sealed record PortraitExtent(string Key, float Rise, float Drop, bool Clipped);
+
 /// <summary>What a portrait is wearing, as its own definition describes it.</summary>
 /// <param name="Character">The body texture.</param>
 /// <param name="Clothes">The clothing texture.</param>
@@ -80,14 +90,8 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
         ArgumentNullException.ThrowIfNull(portraits);
         ArgumentException.ThrowIfNullOrWhiteSpace(outputDirectory);
 
-        var entities = ReadEntities();
-        var meshes = ReadMeshPaths();
-        var portraitEntities = ReadPortraitEntities();
+        var index = BuildIndex();
         var wardrobes = ReadWardrobes();
-        var entityScales = ReadScales("*.asset", "entity");
-        var meshScales = ReadScales("*.gfx", "pdxmesh");
-        var meshAnimations = ReadMeshAnimations();
-        var animationPaths = ReadAnimationPaths();
 
         var results = new List<PortraitDefinition>(portraits.Count);
         var failures = new List<string>();
@@ -112,33 +116,18 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
 
             try
             {
-                if (!portraitEntities.TryGetValue(portrait.Key, out var entity) ||
-                    !entities.TryGetValue(entity, out var meshName) ||
-                    !meshes.TryGetValue(meshName, out var meshPath) ||
-                    !_content.Contains(meshPath))
+                if (index.Model(portrait.Key) is not { } model)
                 {
                     failures.Add($"{portrait.Key}: no model");
                     results.Add(portrait);
                     continue;
                 }
 
-                // The entity scales the model and the mesh may scale it again, which between them
-                // are what make a species the size the game shows it at.
-                var scale = entityScales.GetValueOrDefault(entity, 1) *
-                            meshScales.GetValueOrDefault(meshName, 1);
-
-                // The model is drawn in whatever space it was modelled in; its skeleton's rest pose
-                // is what carries it to where the game shows it.
-                var pose = meshAnimations.GetValueOrDefault(meshName) is { } animation &&
-                           animationPaths.GetValueOrDefault(animation) is { } animationPath
-                    ? LoadPose(animationPath)
-                    : PortraitPose.None;
-
                 var png = Draw(
-                    meshPath,
+                    model.Path,
                     wardrobes.GetValueOrDefault(portrait.Key) ?? PortraitTextures.None,
-                    (float)scale,
-                    pose);
+                    (float)model.Scale,
+                    PoseFor(index, model.Mesh));
                 var destination = $"portraits/{portrait.Key}.png";
 
                 _file.WriteAllBytes(Path.Combine(outputDirectory, destination), png);
@@ -157,6 +146,191 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
 
         return (results, new PortraitBakeReport(rendered, bytes, failures));
     }
+
+    /// <summary>
+    /// How far each portrait reaches above and below its own origin, once posed and scaled.
+    /// </summary>
+    /// <remarks>
+    /// This is what the frame has to cover. It is measured rather than assumed because the game's
+    /// own answer — a 380-pixel box at scale 24, with the figure standing 20 pixels up it — is the
+    /// size of a window the game then crops, not the size of the figures inside it. Portraits taller
+    /// than it lose their heads and shorter ones float above the bottom edge.
+    /// </remarks>
+    public IReadOnlyList<PortraitExtent> Measure(IEnumerable<string> keys, IProgress<string>? progress = null)
+    {
+        ArgumentNullException.ThrowIfNull(keys);
+
+        var index = BuildIndex();
+        var wardrobes = ReadWardrobes();
+        var extents = new List<PortraitExtent>();
+
+        // Deliberately far larger than anything could need, so nothing is cut and the measurement is
+        // of the portrait rather than of the frame. Drawn rather than taken from the model's bounds
+        // for two reasons: a part whose texture is missing is not drawn at all, and a sliver of
+        // geometry a pixel wide all but disappears once the drawing is scaled down. Both would report
+        // a figure reaching places nothing can be seen. Supersampled as the real thing is, so what is
+        // measured is what a viewer would see.
+        var settings = new RenderSettings
+        {
+            Width = (int)(Window * PerUnit),
+            Height = (int)(Sweep * PerUnit),
+            VisibleHeight = Sweep,
+            BottomMargin = -Below / Sweep,
+        };
+
+        var renderer = new PortraitRenderer(settings);
+        var origin = settings.Height * (1 - (Below / Sweep));
+        var measured = 0;
+
+        foreach (var key in keys)
+        {
+            if (index.Model(key) is not { } model)
+            {
+                continue;
+            }
+
+            if (++measured % 50 == 0)
+            {
+                progress?.Report($"Measuring portraits ({measured})");
+            }
+
+            try
+            {
+                var image = Draw(
+                    renderer,
+                    model.Path,
+                    wardrobes.GetValueOrDefault(key) ?? PortraitTextures.None,
+                    (float)model.Scale,
+                    PoseFor(index, model.Mesh));
+
+                var (top, bottom) = Ink(image);
+
+                if (top > bottom)
+                {
+                    continue;
+                }
+
+                extents.Add(new PortraitExtent(
+                    key,
+                    (float)((origin - top) / PerUnit),
+                    (float)((bottom - origin) / PerUnit),
+                    top <= 0 || bottom >= settings.Height - 1));
+            }
+            catch (Exception ex) when (ex is InvalidDataException or NotSupportedException or IOException)
+            {
+                // A model that will not read cannot say how tall it is; the rest still can.
+            }
+        }
+
+        return extents;
+    }
+
+    /// <summary>How many model units the measuring frame covers, and how much of that is below the origin.</summary>
+    /// <remarks>
+    /// Twice as tall as the game's own frame and six times as deep, so that nothing reaches the edge
+    /// and every measurement is of the portrait rather than of the frame.
+    /// </remarks>
+    private const double Sweep = 30;
+
+    private const double Below = 5;
+
+    /// <summary>How wide the measuring frame is, in model units.</summary>
+    /// <remarks>
+    /// Not as generous as the height, and deliberately so. A portrait tile is narrow, and a plume or
+    /// a wing held out to one side falls outside it. Measured in a wide frame that plume is counted,
+    /// and every species would be shrunk to make room for something nobody would ever see. This is
+    /// about what a finished tile shows: its own height, in units, times its width over its height.
+    /// </remarks>
+    private const double Window = 20 * 165.0 / 220.0;
+
+    /// <summary>How many pixels the measuring frame gives each model unit.</summary>
+    private const int PerUnit = 20;
+
+    /// <summary>
+    /// The first and last rows of an image with anything visible drawn on them.
+    /// </summary>
+    /// <remarks>
+    /// The threshold is what separates a portrait from the haze a stray triangle leaves behind once
+    /// the drawing has been scaled down. Framing around haze is framing around nothing.
+    /// </remarks>
+    private static (int Top, int Bottom) Ink(DdsImage image)
+    {
+        var top = image.Height;
+        var bottom = -1;
+
+        for (var y = 0; y < image.Height; y++)
+        {
+            for (var x = 0; x < image.Width; x++)
+            {
+                if (image[x, y].A > 32)
+                {
+                    top = Math.Min(top, y);
+                    bottom = y;
+                    break;
+                }
+            }
+        }
+
+        return (top, bottom);
+    }
+
+    /// <summary>The rest pose belonging to a mesh, or none where it has no animation.</summary>
+    private PortraitPose PoseFor(ModelIndex index, string mesh) =>
+        index.MeshAnimations.GetValueOrDefault(mesh) is { } animation &&
+        index.AnimationPaths.GetValueOrDefault(animation) is { } path
+            ? LoadPose(path)
+            : PortraitPose.None;
+
+    /// <summary>Everything needed to get from a portrait's key to a model that can be drawn.</summary>
+    private sealed record ModelIndex(
+        Func<string, bool> Exists,
+        Dictionary<string, string> PortraitEntities,
+        Dictionary<string, string> Entities,
+        Dictionary<string, string> Meshes,
+        Dictionary<string, string> Attachments,
+        Dictionary<string, double> EntityScales,
+        Dictionary<string, double> MeshScales,
+        Dictionary<string, string> MeshAnimations,
+        Dictionary<string, string> AnimationPaths)
+    {
+        /// <summary>The model a portrait wears, and how much it is scaled by.</summary>
+        public (string Mesh, string Path, double Scale)? Model(string portrait) =>
+            PortraitEntities.GetValueOrDefault(portrait) is { } entity ? Of(entity) : null;
+
+        /// <summary>
+        /// An entity need not carry the model itself. One molluscoid keeps an empty locator and hangs
+        /// its portrait off it as an attachment, so where an entity names no model that can be drawn
+        /// the search carries on into whatever it attaches. Scales multiply on the way down, since
+        /// every entity in the chain is entitled to one.
+        /// </summary>
+        private (string Mesh, string Path, double Scale)? Of(string entity, double inherited = 1, int depth = 0)
+        {
+            var scale = inherited * EntityScales.GetValueOrDefault(entity, 1);
+
+            if (Entities.GetValueOrDefault(entity) is { } mesh &&
+                Meshes.GetValueOrDefault(mesh) is { } path &&
+                Exists(path))
+            {
+                return (mesh, path, scale * MeshScales.GetValueOrDefault(mesh, 1));
+            }
+
+            // Bounded in case a pair of entities ever attach one another.
+            return depth < 4 && Attachments.GetValueOrDefault(entity) is { } attached
+                ? Of(attached, scale, depth + 1)
+                : null;
+        }
+    }
+
+    private ModelIndex BuildIndex() => new(
+        _content.Contains,
+        ReadPortraitEntities(),
+        ReadEntities(),
+        ReadMeshPaths(),
+        ReadAttachments(),
+        ReadScales("*.asset", "entity"),
+        ReadScales("*.gfx", "pdxmesh"),
+        ReadMeshAnimations(),
+        ReadAnimationPaths());
 
     /// <summary>
     /// The rest pose from an animation, kept because a model's animations are read once but its
@@ -187,7 +361,15 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
 
     private readonly Dictionary<string, PortraitPose> _poses = new(StringComparer.OrdinalIgnoreCase);
 
-    private byte[] Draw(string meshPath, PortraitTextures wearing, float scale, PortraitPose pose)
+    private byte[] Draw(string meshPath, PortraitTextures wearing, float scale, PortraitPose pose) =>
+        PngWriter.Encode(Draw(_renderer, meshPath, wearing, scale, pose));
+
+    private DdsImage Draw(
+        PortraitRenderer renderer,
+        string meshPath,
+        PortraitTextures wearing,
+        float scale,
+        PortraitPose pose)
     {
         var mesh = pose.ApplyTo(PortraitMesh.Load(_content.Read(meshPath)));
 
@@ -206,7 +388,7 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
             }
         }
 
-        return PngWriter.Encode(_renderer.Render(dressed, textures, scale));
+        return renderer.Render(dressed, textures, scale);
     }
 
     /// <summary>
@@ -442,6 +624,64 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
     /// <summary>Entity name to the mesh it uses, from the entity definitions.</summary>
     private Dictionary<string, string> ReadEntities() =>
         ReadNameToValue("*.asset", blockKey: "entity", valueKey: "pdxmesh");
+
+    /// <summary>
+    /// Entity name to the entity it hangs off itself, where it has one.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Written as a locator's name against the entity fixed to it:
+    /// <c>attach = { "root" = "portrait_molluscoid_05_portrait_entity" }</c>. Only one portrait in
+    /// the game is built this way, and it is built that way entirely — its own <c>pdxmesh</c> is the
+    /// empty <c>locator_mesh</c>, so without following the attachment there is nothing to draw.
+    /// </para>
+    /// <para>
+    /// The locator it attaches to has a position, which is not applied. It moves the figure sideways
+    /// only, and the thumbnail centres the figure on the frame regardless.
+    /// </para>
+    /// </remarks>
+    private Dictionary<string, string> ReadAttachments()
+    {
+        var map = new Dictionary<string, string>(StringComparer.Ordinal);
+
+        foreach (var path in _content.EnumerateFiles(ModelRoot, "*.asset", recursive: true))
+        {
+            foreach (var node in TryParse(path)?.Nodes ?? [])
+            {
+                Collect(node);
+            }
+        }
+
+        return map;
+
+        void Collect(CwNode node)
+        {
+            if (node.Block is not { } body)
+            {
+                return;
+            }
+
+            if (string.Equals(node.Key, "entity", StringComparison.Ordinal) &&
+                body.GetString("name") is { Length: > 0 } name)
+            {
+                var attached = body.GetBlock("attach")?.Nodes
+                    .Select(n => n.ScalarValue)
+                    .FirstOrDefault(v => v is { Length: > 0 });
+
+                if (attached is { Length: > 0 })
+                {
+                    map.TryAdd(name, attached);
+                }
+
+                return;
+            }
+
+            foreach (var child in body.Nodes)
+            {
+                Collect(child);
+            }
+        }
+    }
 
     /// <summary>Animation name to the file holding it.</summary>
     /// <remarks>

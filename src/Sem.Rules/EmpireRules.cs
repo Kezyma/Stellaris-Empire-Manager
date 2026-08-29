@@ -754,7 +754,7 @@ public sealed class EmpireRules(GameDatabase database)
         if (trait.AllowedArchetypes.Count > 0 &&
             (context.SpeciesArchetype is null || !trait.AllowedArchetypes.Contains(context.SpeciesArchetype)))
         {
-            reasons.Add(RuleReasons.WrongArchetype);
+            reasons.Add(RuleReasons.For(RuleReasons.WrongArchetype, string.Join(", ", trait.AllowedArchetypes)));
         }
 
         // A portrait in the override list lifts the class restriction, which is how the game's own
@@ -763,7 +763,9 @@ public sealed class EmpireRules(GameDatabase database)
             (context.SpeciesClass is null || !trait.AllowedSpeciesClasses.Contains(context.SpeciesClass)) &&
             (context.Portrait is null || !trait.PortraitOverride.Contains(context.Portrait)))
         {
-            reasons.Add(RuleReasons.WrongSpeciesClass);
+            reasons.Add(RuleReasons.For(
+                RuleReasons.WrongSpeciesClass,
+                string.Join(", ", trait.AllowedSpeciesClasses)));
         }
 
         // Aquatic needs an ocean world, and a few others are tied to a homeworld in the same way.

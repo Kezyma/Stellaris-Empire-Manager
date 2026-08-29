@@ -1,3 +1,4 @@
+using System.Numerics;
 using Sem.Io;
 using Sem.MeshBake;
 
@@ -41,6 +42,62 @@ public sealed class PortraitPoseTests
         // so a model still sitting thirty units up has not been posed at all.
         Assert.InRange(min.Y, -6f, 4f);
         Assert.InRange(max.Y - min.Y, 5f, 30f);
+    }
+
+    [SkippableTheory]
+    [Trait("Category", "RealData")]
+
+    // Four models whose mesh and animation disagree about the Maya namespace their joints are in —
+    // the mesh bare and the animation prefixed, or the other way about. Matched strictly, every bone
+    // misses and the figure is left small and low in the corner of its frame, which is exactly how
+    // these four looked.
+    [InlineData(
+        "mammalian/mammalian_ar/mammalian_ar_01_portrait_05.mesh",
+        "mammalian/mammalian_ar/mammalian_ar_01_portrait_05_idle1.anim")]
+    [InlineData(
+        "mammalian/mammalian_ar/mammalian_ar_01_portrait_06.mesh",
+        "mammalian/mammalian_ar/mammalian_ar_01_portrait_06_idle1.anim")]
+    [InlineData(
+        "mammalian/mammalian_ar/mammalian_ar_01_portrait_09.mesh",
+        "mammalian/mammalian_ar/mammalian_ar_01_portrait_09_idle1.anim")]
+    [InlineData(
+        "biogenesis/bio_01_portrait_01_f_01.mesh",
+        "biogenesis/bio_01_portrait_01_f_01_idle1.anim")]
+    public void ARigWhoseTwoHalvesDisagreeAboutTheirNamespaceIsStillPosed(string mesh, string animation)
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        Skip.If(!File.Exists(Model(mesh)) || !File.Exists(Model(animation)), "Model not in this installation.");
+
+        var pose = PortraitPose.Read(SafeFile.ReadAllBytes(Model(animation)));
+        var loaded = PortraitMesh.Load(SafeFile.ReadAllBytes(Model(mesh)));
+
+        // The premise: not one bone of this model is named as its own animation names it.
+        Assert.NotEmpty(loaded.Bones);
+        Assert.DoesNotContain(loaded.Bones, b => pose.BoneNames.Contains(b.Name));
+
+        // Placement only. These four carry pieces the renderer never draws — a part whose texture
+        // the portrait replaces, a scrap left over from the rig — and those stretch the model's box
+        // well past the figure inside it. Where the figure stands is the thing that was wrong.
+        var min = pose.ApplyTo(loaded).Bounds.Min;
+
+        Assert.InRange(min.Y, -8f, 4f);
+    }
+
+    [Fact]
+    public void ARigWithTwoBonesOfTheSameBareNameIsMatchedStrictly()
+    {
+        // Dropping the namespace is only safe while it leaves the names apart. Where it does not,
+        // there is no way to tell which bone was meant, and guessing is worse than not posing.
+        var pose = PortraitPose.Of(new Dictionary<string, Matrix4x4>
+        {
+            ["left:Chest_joint"] = Matrix4x4.CreateTranslation(0, 10, 0),
+            ["right:Chest_joint"] = Matrix4x4.CreateTranslation(0, -10, 0),
+            ["spine"] = Matrix4x4.CreateTranslation(0, 3, 0),
+        });
+
+        Assert.False(pose.Describes("Chest_joint"));
+        Assert.True(pose.Describes("anything:spine"));
+        Assert.True(pose.Describes("left:Chest_joint"));
     }
 
     [SkippableFact]

@@ -68,34 +68,36 @@ public sealed class PortraitTextureTests
         Assert.Null(PortraitTextures.None.For(PartKind.Attachment));
     }
 
-    [Fact]
-    public void AFigureStandsOnItsBodyRatherThanOnSomethingFloatingBelowIt()
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void AnEntityCarryingNoModelIsFollowedToTheOneThatDoes()
     {
-        // One humanoid keeps a scrap of geometry far beneath its feet. Standing the portrait on that
-        // pushes the figure off the top of the frame, which is what turned it blank.
-        var mesh = new PortraitMesh(
-        [
-            Part("body", count: 400, low: 33f, high: 49f),
-            Part("hair", count: 90, low: 38f, high: 52f),
-            Part("scrap", count: 40, low: 6f, high: 10f),
-        ]);
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
 
-        Assert.Equal(33f, mesh.Footing);
+        // Slender Molluscoid 05 keeps an empty locator where its model should be and hangs the real
+        // one off it as an attachment. Stopping at the locator is why it had no likeness at all.
+        // Measuring draws but never writes, so nothing here may write either.
+        var baker = new PortraitBaker(LayeredContent.ForInstall(InstallRoot!), new SafeFile(WritePolicy.DenyAll));
+
+        var measured = baker.Measure(["mol5", "mol4"]);
+
+        Assert.Equal(2, measured.Count);
+        Assert.All(measured, m => Assert.InRange(m.Rise, 8f, 20f));
     }
 
     [Fact]
-    public void AFigureStandsOnItsFeetEvenWhenItsHeadHasTheMostDetail()
+    public void AModelsBoundsCoverEveryPartOfIt()
     {
-        // A human portrait's head carries more vertices than its body. Taking the largest part for
-        // the body stands the figure on its chin.
         var mesh = new PortraitMesh(
         [
             Part("head", count: 279, low: 8.7f, high: 17.3f),
             Part("body", count: 76, low: 0f, high: 12.1f),
-            Part("clothes", count: 51, low: 0f, high: 11f),
         ]);
 
-        Assert.Equal(0f, mesh.Footing);
+        var (min, max) = mesh.Bounds;
+
+        Assert.Equal(0f, min.Y);
+        Assert.Equal(17.3f, max.Y);
     }
 
     private static MeshPart Part(string name, int count, float low, float high)

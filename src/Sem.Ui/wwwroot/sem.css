@@ -1171,6 +1171,20 @@ label {
     cursor: not-allowed;
 }
 
+/*
+    A trait there is no room for yet is still a trait the player may take: it is marked rather than
+    put out of reach, so building towards a total works from either direction.
+*/
+.sem-trait-row.overspends {
+    color: var(--warn);
+}
+
+.sem-trait-row.overspends .cost,
+.sem-trait-row.overspends .cost.gain {
+    color: var(--warn);
+    font-weight: 600;
+}
+
 .sem-trait-row img,
 .sem-trait-row .no-icon {
     width: 22px;

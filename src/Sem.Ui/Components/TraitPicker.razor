@@ -150,9 +150,13 @@
     /// </summary>
     /// <remarks>
     /// Kept apart from the rest because they are temporary: clearing another trait or choosing a
-    /// different civic makes them go away, where a species class never will.
+    /// different civic makes them go away, where a species class never will. They also do not stop
+    /// a trait being taken — a player building a species works towards a total rather than sideways
+    /// up to it, and being unable to try the expensive trait first is worse than briefly overspending.
     /// </remarks>
     private static readonly string[] BudgetReasons = [RuleReasons.NotEnoughPoints, RuleReasons.NoPicksLeft];
+
+    private static bool IsBudget(string reason) => BudgetReasons.Contains(reason);
 
     private TraitEntry Entry(OptionState state)
     {
@@ -174,6 +178,10 @@
             reasons.Add($"Requires {dlc}.");
         }
 
+        // Only the budget standing in the way is not a bar: the trait may be taken and the design
+        // then reads as overspent until something else gives way.
+        var overspends = !state.Enabled && state.Reasons.Count > 0 && state.Reasons.All(IsBudget);
+
         return new TraitEntry(
             state.Key,
             Session.Localizer.Text(state.Key),
@@ -181,9 +189,10 @@
             definition?.Icon,
             state.Cost,
             definition?.Effects,
-            state.Enabled && !forced,
+            (state.Enabled || overspends) && !forced,
             reasons,
-            Unavailable: !state.Enabled && state.Reasons.Any(r => !BudgetReasons.Contains(r)));
+            Unavailable: !state.Enabled && state.Reasons.Any(r => !IsBudget(r)),
+            Overspends: overspends);
     }
 
     private void Toggle(TraitEntry trait, bool chosen)
@@ -214,7 +223,7 @@
 
     private RenderFragment Row(TraitEntry trait, bool chosen) =>
         @<button type="button"
-                 class="sem-trait-row @(trait.Enabled ? null : "blocked")"
+                 class="sem-trait-row @(trait.Enabled ? null : "blocked") @(trait.Overspends ? "overspends" : null)"
                  title="@trait.Name"
                  @onmouseenter="() => _described = trait.Key"
                  @onfocus="() => _described = trait.Key"
@@ -241,6 +250,9 @@
     /// <param name="Unavailable">
     /// Whether something other than the budget blocks it, which is what decides where it sorts.
     /// </param>
+    /// <param name="Overspends">
+    /// Whether taking it would put the species over one of its allowances. It may still be taken.
+    /// </param>
     private sealed record TraitEntry(
         string Key,
         string Name,
@@ -250,5 +262,6 @@
         EffectSet? Effects,
         bool Enabled,
         IReadOnlyList<string> Reasons,
-        bool Unavailable = false);
+        bool Unavailable = false,
+        bool Overspends = false);
 }

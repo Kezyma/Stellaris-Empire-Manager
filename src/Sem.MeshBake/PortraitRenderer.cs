@@ -22,20 +22,35 @@ public sealed record RenderSettings
     /// How much of the model, measured in its own units, the frame's height covers.
     /// </summary>
     /// <remarks>
-    /// The game's own figure: its portrait frame is 380 pixels tall at a scale of 24, so it shows
-    /// 15.8 units of model whatever that model is. One value for every portrait is the point — a
-    /// species comes out the size it was modelled at rather than the size of the frame.
+    /// <para>
+    /// One value for every portrait is the point — a species comes out the size it was modelled at
+    /// rather than the size of the frame. What that value should be is a different question, and the
+    /// game's own answer is not it. Its portrait layout is 380 pixels at a scale of 24, so 15.8
+    /// units; but that layout is a window the game then crops rather than a fit around the figures,
+    /// and a fifth of the species are taller than it. Copying it cut their heads off.
+    /// </para>
+    /// <para>
+    /// So this is measured instead, by <c>sem portrait-bounds</c>, which draws every portrait a
+    /// player can choose into a frame far too large for any of them and reports how far each one
+    /// actually reaches. The tallest — a paragon — stands 19.6 units above the ground it is placed
+    /// on, measured to the nearest twentieth of a unit, and the frame covers that measurement to
+    /// its own precision rather than exactly, so the tallest stands inside the frame rather than
+    /// against it.
+    /// </para>
     /// </remarks>
-    public double VisibleHeight { get; init; } = 380.0 / 24.0;
+    public double VisibleHeight { get; init; } = 19.65;
 
     /// <summary>
     /// How far above the frame's bottom edge the model's feet sit, as a fraction of the height.
     /// </summary>
     /// <remarks>
-    /// The game nudges the character down by 20 pixels of its 380, which keeps a portrait from
-    /// looking as though it is balanced on the edge.
+    /// None. The game's layout lifts the figure 20 pixels of its 380, leaving room for what some
+    /// species keep below the ground they stand on — but the game never shows that room: its own
+    /// designer tile crops the render from the top down to three units above the ground line, so
+    /// everything beneath is thrown away. Reserving it here only left the portraits that keep
+    /// nothing down there hovering above an empty strip, which is what they looked like.
     /// </remarks>
-    public double BottomMargin { get; init; } = -20.0 / 380.0;
+    public double BottomMargin { get; init; }
 
     /// <summary>How much light reaches a surface facing away from the lamp.</summary>
     public double Ambient { get; init; } = 0.55;
@@ -131,9 +146,9 @@ public sealed class PortraitRenderer(RenderSettings? settings = null)
     /// </para>
     /// <para>
     /// The scale is the same for every portrait, which is the point: a species is as big as it was
-    /// modelled rather than as big as the frame. It stands on the bottom edge, centred on its own
-    /// width, and anything taller than the frame is cropped at the top — which is what the game
-    /// does, and what it counts on when it gives a species antennae.
+    /// modelled rather than as big as the frame. It stands on the ground it was placed on, centred
+    /// on its own width, and what a species keeps below that ground — a plinth, a hem, a nest of
+    /// tentacles — runs off the bottom edge, as it does in the game.
     /// </para>
     /// </remarks>
     private (float Scale, Vector2 Offset) Frame(
