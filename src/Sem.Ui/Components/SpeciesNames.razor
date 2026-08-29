@@ -1,57 +1,41 @@
 @*
     What the species is called, and where its other names come from.
 
-    Each of the three name fields is a combobox: type anything, or pick from the ready-made species
-    the game itself would draw on for this class. Picking one fills the other two, because the three
-    belong together — "Alari", "Alari", "Alarian" is one species described three ways, and choosing
-    a name only to be left with the previous species' adjective is a trap.
+    Each of the three name fields offers the ready-made species the game itself would draw on for
+    this class. Choosing one fills the other two, because the three belong together — "Alari",
+    "Alari", "Alarian" is one species described three ways, and being left with the previous
+    species' adjective is a trap.
 *@
 
-<div class="sem-row" style="justify-content:space-between;margin-bottom:8px">
-    <span class="sem-hint" style="margin:0">Type a name, or choose one the game would give.</span>
-    <button type="button" title="A species, its homeworld and its home system together"
-            @onclick="RandomiseSpecies">Randomise</button>
+<div class="sem-name-row">
+    <div class="sem-field">
+        <label for="@Field("name")">Species</label>
+        <ComboBox Id="@Field("name")" Value="@Species.Name.Key"
+                  Options="@Names" OnChange="ChooseName" />
+    </div>
+
+    <div class="sem-field">
+        <label for="@Field("plural")">Plural</label>
+        <ComboBox Id="@Field("plural")" Value="@Species.Plural.Key"
+                  Options="@Plurals" OnChange="ChoosePlural" />
+    </div>
+
+    <div class="sem-field">
+        <label for="@Field("adjective")">Adjective</label>
+        <ComboBox Id="@Field("adjective")" Value="@Species.Adjective.Key"
+                  Options="@Adjectives" OnChange="ChooseAdjective" />
+    </div>
+
+    <div class="sem-field">
+        <label>&nbsp;</label>
+        <button type="button" class="small" title="A species, its homeworld and its home system together"
+                @onclick="RandomiseSpecies">Randomise</button>
+    </div>
 </div>
 
 <div class="sem-field">
-    <label for="species-name">Species</label>
-    <input id="species-name" type="text" list="species-name-options"
-           value="@Species.Name.Key" @onchange="e => ChooseName(e.Value?.ToString())" />
-    <datalist id="species-name-options">
-        @foreach (var suggestion in Suggestions)
-        {
-            <option value="@suggestion.Name"></option>
-        }
-    </datalist>
-</div>
-
-<div class="sem-field">
-    <label for="species-plural">Plural</label>
-    <input id="species-plural" type="text" list="species-plural-options"
-           value="@Species.Plural.Key" @onchange="e => ChoosePlural(e.Value?.ToString())" />
-    <datalist id="species-plural-options">
-        @foreach (var plural in Suggestions.Select(s => s.Plural).OfType<string>().Distinct(StringComparer.Ordinal))
-        {
-            <option value="@plural"></option>
-        }
-    </datalist>
-</div>
-
-<div class="sem-field">
-    <label for="species-adjective">Adjective</label>
-    <input id="species-adjective" type="text" list="species-adjective-options"
-           value="@Species.Adjective.Key" @onchange="e => ChooseAdjective(e.Value?.ToString())" />
-    <datalist id="species-adjective-options">
-        @foreach (var adjective in Suggestions.Select(s => NameGenerator.Adjective(s.Name)).Distinct(StringComparer.Ordinal))
-        {
-            <option value="@adjective"></option>
-        }
-    </datalist>
-</div>
-
-<div class="sem-field">
-    <label for="name-list">Name list</label>
-    <select id="name-list" @onchange="e => Session.Edit(d => d.Species.NameList = e.Value?.ToString())">
+    <label for="@Field("list")">Name list</label>
+    <select id="@Field("list")" @onchange="e => Session.Edit(d => Species.NameList = e.Value?.ToString())">
         @foreach (var group in NameLists)
         {
             <optgroup label="@group.Key">
@@ -67,25 +51,42 @@
 </div>
 
 @* What the list actually holds, since "Mammalian 1" says nothing about how its names sound. *@
-@foreach (var (label, names) in Sets)
-{
-    <div class="sem-field sem-name-set">
-        <label>@label <span class="count">@names.Count</span></label>
-        <textarea readonly rows="3">@string.Join(", ", names)</textarea>
-    </div>
-}
+<div class="sem-name-sets">
+    @foreach (var (label, names) in Sets)
+    {
+        <div class="sem-field sem-name-set">
+            <label>@label <span class="count">@names.Count</span></label>
+            <textarea readonly rows="4">@string.Join(", ", names)</textarea>
+        </div>
+    }
+</div>
 
 @code {
+    /// <summary>How many leader names to assemble, where a list builds them from parts.</summary>
+    private const int AssembledLeaderNames = 60;
+
     [CascadingParameter]
     public required DesignSession Session { get; set; }
 
-    private EmpireDesign Design => Session.Current!;
+    /// <summary>The species being named, which may be the second one.</summary>
+    [Parameter, EditorRequired]
+    public required SpeciesDesign Species { get; set; }
 
-    private SpeciesDesign Species => Design.Species;
+    private EmpireDesign Design => Session.Current!;
 
     private DesignContext Context => Session.Context!;
 
     private readonly RequirementEvaluator _evaluator = new();
+
+    /// <summary>
+    /// An identifier for one of this species' fields.
+    /// </summary>
+    /// <remarks>
+    /// Scoped to the species, because an empire with a second one shows two of these editors at
+    /// once and a label may only point at one field.
+    /// </remarks>
+    private string Field(string name) =>
+        ReferenceEquals(Species.Block, Design.Species.Block) ? $"species-{name}" : $"second-species-{name}";
 
     /// <summary>
     /// The ready-made species this class could be given, which is what the game's own randomise
@@ -105,6 +106,14 @@
         }
     }
 
+    private IReadOnlyList<string> Names => [.. Suggestions.Select(s => s.Name).Distinct(StringComparer.Ordinal)];
+
+    private IReadOnlyList<string> Plurals =>
+        [.. Suggestions.Select(s => s.Plural).OfType<string>().Distinct(StringComparer.Ordinal)];
+
+    private IReadOnlyList<string> Adjectives =>
+        [.. Suggestions.Select(s => NameGenerator.Adjective(s.Name)).Distinct(StringComparer.Ordinal)];
+
     /// <summary>
     /// The name lists a player may choose. A dozen exist only for the game's own creatures, and the
     /// game marks those unselectable rather than removing them.
@@ -118,65 +127,57 @@
     private string ListName(NameListDefinition list) => Session.Localizer.Text(list.NameKey, list.Key);
 
     /// <summary>
-    /// The pools of names the chosen list holds, labelled as the game labels them.
+    /// The four kinds of name a list holds, under the headings the game uses for them.
     /// </summary>
-    /// <remarks>
-    /// A list either names its leaders outright or builds them from a first and a family name, so
-    /// which sets exist depends on the list. Empty ones are left out rather than shown blank.
-    /// </remarks>
     private IEnumerable<(string Label, IReadOnlyList<string> Names)> Sets
     {
         get
         {
-            if (Session.Data.Database.NameLists.FirstOrDefault(n => n.Key == Species.NameList) is not { } list)
-            {
-                yield break;
-            }
+            var list = Session.Data.Database.NameLists.FirstOrDefault(n => n.Key == Species.NameList);
 
-            var characters = list.CharacterNames;
-
-            // A list either names its leaders outright or builds them from a first and a family
-            // name, and some do both. Whichever it has is what is shown.
-            if (characters.FullNames.All is { Count: > 0 } full)
-            {
-                yield return ("Leader names", full);
-            }
-
-            if (characters.FirstNames.All is { Count: > 0 } firsts)
-            {
-                yield return ("Leader first names", firsts);
-            }
-
-            if (characters.SecondNames.All is { Count: > 0 } seconds)
-            {
-                yield return ("Leader family names", seconds);
-            }
-
-            if (list.ShipNames.Count > 0)
-            {
-                yield return ("Ship names", list.ShipNames);
-            }
-
-            if (list.FleetNames.Count > 0)
-            {
-                yield return ("Fleet names", list.FleetNames);
-            }
-
-            if (list.PlanetNames.Count > 0)
-            {
-                yield return ("Colony names", list.PlanetNames);
-            }
+            yield return ("Leaders", list is null ? [] : LeaderNames(list));
+            yield return ("Ships", list?.ShipNames ?? []);
+            yield return ("Fleets", list?.FleetNames ?? []);
+            yield return ("Colonies", list?.PlanetNames ?? []);
         }
     }
 
-    private void ChooseName(string? value) =>
-        Apply(value, s => s.Name, d => d.Species.Name);
+    /// <summary>
+    /// Leader names as they would actually appear.
+    /// </summary>
+    /// <remarks>
+    /// A list either names its leaders outright or gives first and family names to be joined. Where
+    /// it does the second, showing the two pools side by side reads as a jumble, so they are put
+    /// together — which is what the game does in its own descriptions of these lists.
+    /// </remarks>
+    private static IReadOnlyList<string> LeaderNames(NameListDefinition list)
+    {
+        var names = list.CharacterNames;
+        var whole = names.FullNames.All;
+        var firsts = names.FirstNames.All;
+        var seconds = names.SecondNames.All;
 
-    private void ChoosePlural(string? value) =>
-        Apply(value, s => s.Plural, d => d.Species.Plural);
+        if (firsts.Count == 0)
+        {
+            return whole;
+        }
+
+        var joined = new List<string>(whole);
+
+        for (var i = 0; i < firsts.Count && joined.Count < AssembledLeaderNames; i++)
+        {
+            joined.Add(seconds.Count == 0 ? firsts[i] : $"{firsts[i]} {seconds[i % seconds.Count]}");
+        }
+
+        return joined;
+    }
+
+    private void ChooseName(string? value) => Apply(value, s => s.Name, () => Species.Name);
+
+    private void ChoosePlural(string? value) => Apply(value, s => s.Plural, () => Species.Plural);
 
     private void ChooseAdjective(string? value) =>
-        Apply(value, s => NameGenerator.Adjective(s.Name), d => d.Species.Adjective);
+        Apply(value, s => NameGenerator.Adjective(s.Name), () => Species.Adjective);
 
     /// <summary>
     /// Records what was typed, and fills the other two names when it names a species the game knows.
@@ -188,32 +189,35 @@
     private void Apply(
         string? value,
         Func<SpeciesNameSuggestion, string?> matching,
-        Func<EmpireDesign, LocRef> field)
+        Func<LocRef> field)
     {
         var text = value ?? string.Empty;
 
         var chosen = Suggestions.FirstOrDefault(s =>
             string.Equals(matching(s), text, StringComparison.Ordinal));
 
-        Session.Edit(d =>
+        Session.Edit(_ =>
         {
             if (chosen is null)
             {
-                field(d).SetLiteral(text);
+                field().SetLiteral(text);
                 return;
             }
 
-            d.Species.Name.SetLiteral(chosen.Name);
-            d.Species.Plural.SetLiteral(chosen.Plural ?? chosen.Name);
-            d.Species.Adjective.SetLiteral(NameGenerator.Adjective(chosen.Name));
+            Species.Name.SetLiteral(chosen.Name);
+            Species.Plural.SetLiteral(chosen.Plural ?? chosen.Name);
+            Species.Adjective.SetLiteral(NameGenerator.Adjective(chosen.Name));
         });
     }
 
     /// <summary>
-    /// Fills in the species and where it came from together, which is what the game's own button
-    /// does: one ready-made species supplies the name, its plural, a homeworld, a home system and a
-    /// name list that suit each other.
+    /// Names the species and the world it came from, together.
     /// </summary>
+    /// <remarks>
+    /// The name list is deliberately left alone: it decides what every ruler, ship and colony will
+    /// be called for the rest of the game, which is too much to change behind a button meant to
+    /// suggest a name.
+    /// </remarks>
     private void RandomiseSpecies()
     {
         if (Session.Names.Species(Species.Class) is not { } suggestion)
@@ -223,13 +227,14 @@
 
         Session.Edit(d =>
         {
-            d.Species.Name.SetLiteral(suggestion.Name);
-            d.Species.Plural.SetLiteral(suggestion.Plural ?? suggestion.Name);
-            d.Species.Adjective.SetLiteral(NameGenerator.Adjective(suggestion.Name));
+            Species.Name.SetLiteral(suggestion.Name);
+            Species.Plural.SetLiteral(suggestion.Plural ?? suggestion.Name);
+            Species.Adjective.SetLiteral(NameGenerator.Adjective(suggestion.Name));
 
-            if (suggestion.NameList is { Length: > 0 } list)
+            // Only the founder species names the empire's homeworld.
+            if (!ReferenceEquals(Species.Block, d.Species.Block))
             {
-                d.Species.NameList = list;
+                return;
             }
 
             if (suggestion.HomePlanet is { Length: > 0 } planet)

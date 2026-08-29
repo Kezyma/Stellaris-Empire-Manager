@@ -25,14 +25,19 @@
     </button>
 
     <div class="body">
+        @Species(Design.Species)
+
+        @if (Design.SecondarySpecies is { } second)
+        {
+            @Species(second)
+        }
+
         <dl class="sem-summary">
-            @Row("Species", Session.Localizer.Text(Design.Species.Class))
             @Row("Ethics", string.Join(", ", Design.Ethics.Select(e => Session.Localizer.Text(e))))
             @Row("Authority", Session.Localizer.Text(Design.Authority))
             @Row("Civics", string.Join(", ", Design.Civics.Select(c => Session.Localizer.Text(c))))
             @Row("Origin", Session.Localizer.Text(Design.Origin))
             @Row("Homeworld", Session.Localizer.Text(Design.PlanetClass))
-            @Row("Traits", string.Join(", ", Design.Species.Traits.Select(t => Session.Localizer.Text(t))))
             @Row("Ruler", Session.Localizer.Text(Design.Ruler.Name.FullNames?.Key, "unnamed"))
         </dl>
 
@@ -84,6 +89,56 @@
         Session.Rules.DeriveGovernment(Session.Context!) is { } government
             ? Session.Localizer.Text(government.Key)
             : "No government";
+
+    /// <summary>
+    /// A species as the preview shows it: its likeness, what it is, and what it is good at.
+    /// </summary>
+    /// <remarks>
+    /// The traits carry their icons because that is how they are recognised — a row of names reads
+    /// as a list, where a row of icons reads as a species.
+    /// </remarks>
+    private RenderFragment Species(SpeciesDesign species) =>
+        @<div class="sem-preview-species">
+            @if (Thumbnail(species) is { Length: > 0 } portrait)
+            {
+                <img class="portrait" src="@Session.Data.AssetUrl(portrait)" alt="" loading="lazy">
+            }
+
+            <div class="about">
+                <div class="name">@(species.Name.Key is { Length: > 0 } n ? n : "Unnamed species")</div>
+                <div class="kind">@Session.Localizer.Text(species.Class)</div>
+
+                <div class="traits">
+                    @foreach (var trait in species.Traits)
+                    {
+                        var definition = Session.Data.Database.Traits.FirstOrDefault(t => t.Key == trait);
+
+                        <span class="trait" title="@Session.Localizer.Text(trait)">
+                            @if (definition?.Icon is { Length: > 0 } icon)
+                            {
+                                <img src="@Session.Data.AssetUrl(icon)" alt="" loading="lazy">
+                            }
+                            <span>@Session.Localizer.Text(trait)</span>
+                        </span>
+                    }
+                </div>
+            </div>
+        </div>;
+
+    /// <summary>The rendered likeness, following a group to whichever portrait it stands for.</summary>
+    private string? Thumbnail(SpeciesDesign species)
+    {
+        var portrait = Session.Data.Database.Portraits.FirstOrDefault(p => p.Key == species.Portrait);
+
+        if (portrait?.Thumbnail is { Length: > 0 } own)
+        {
+            return own;
+        }
+
+        return portrait?.ResolvesTo is { } resolved
+            ? Session.Data.Database.Portraits.FirstOrDefault(p => p.Key == resolved)?.Thumbnail
+            : null;
+    }
 
     private RenderFragment Row(string label, string? value) => builder =>
     {

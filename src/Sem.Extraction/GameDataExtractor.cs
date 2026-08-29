@@ -120,6 +120,7 @@ public sealed class GameDataExtractor(LayeredContent content)
         Report("Reading modifier display settings");
         var modifiers = DescribeModifiers(ethics, traits, authorities, civics);
         var textIcons = ExtractTextIcons(sprites, assets);
+        var icons = ExtractInterfaceIcons(assets);
 
         return new GameDatabase
         {
@@ -136,6 +137,7 @@ public sealed class GameDataExtractor(LayeredContent content)
             Modifiers = modifiers,
             SpeciesNames = speciesNames,
             TextIcons = textIcons,
+            Icons = icons,
             Ethics = ethics,
             Authorities = authorities,
             Civics = civics,
@@ -206,6 +208,37 @@ public sealed class GameDataExtractor(LayeredContent content)
             if (path is { Length: > 0 })
             {
                 icons[code] = path;
+            }
+        }
+
+        return icons;
+    }
+
+    /// <summary>
+    /// Pictures the designer's own controls borrow from the game.
+    /// </summary>
+    /// <remarks>
+    /// Named one at a time rather than swept up wholesale: these belong to no option, so nothing
+    /// else would ever ask for them, and a control that wants one should have to say so.
+    /// </remarks>
+    private static Dictionary<string, string> ExtractInterfaceIcons(AssetCatalog assets)
+    {
+        string[] wanted =
+        [
+            // The four the species editor offers for gender.
+            "GFX_button_gender_all",
+            "GFX_button_male",
+            "GFX_button_female",
+            "GFX_button_no_gender",
+        ];
+
+        var icons = new Dictionary<string, string>(StringComparer.Ordinal);
+
+        foreach (var sprite in wanted)
+        {
+            if (assets.RegisterSprite(sprite, $"icons/ui/{sprite}.png", maxDimension: 32) is { } path)
+            {
+                icons[sprite] = path;
             }
         }
 

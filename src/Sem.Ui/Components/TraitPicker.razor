@@ -70,7 +70,9 @@
     [CascadingParameter]
     public required DesignSession Session { get; set; }
 
-    private EmpireDesign Design => Session.Current!;
+    /// <summary>The species whose traits these are, which may be the second one.</summary>
+    [Parameter, EditorRequired]
+    public required SpeciesDesign Species { get; set; }
 
     private DesignContext Context => Session.Context!;
 
@@ -90,7 +92,7 @@
     private IReadOnlyList<TraitEntry> Available =>
     [
         .. Session.Rules.GetSpeciesTraitOptions(Context)
-            .Where(o => o.Visible && !Design.Species.Traits.Contains(o.Key))
+            .Where(o => o.Visible && !Species.Traits.Contains(o.Key))
             .OrderBy(o => ByKey.GetValueOrDefault(o.Key)?.SortingPriority ?? 0)
             .ThenBy(o => Session.Localizer.Text(o.Key), StringComparer.CurrentCulture)
             .Select(Entry)
@@ -102,7 +104,7 @@
     /// </summary>
     private IReadOnlyList<TraitEntry> Chosen =>
     [
-        .. Design.Species.Traits.Select(key =>
+        .. Species.Traits.Select(key =>
             Entry(new OptionState(
                 key,
                 true,
@@ -151,9 +153,9 @@
             return;
         }
 
-        Session.Edit(d =>
+        Session.Edit(_ =>
         {
-            var traits = d.Species.Traits.ToList();
+            var traits = Species.Traits.ToList();
 
             if (chosen)
             {
@@ -164,7 +166,7 @@
                 traits.Add(trait.Key);
             }
 
-            d.Species.SetTraits(traits);
+            Species.SetTraits(traits);
         });
     }
 

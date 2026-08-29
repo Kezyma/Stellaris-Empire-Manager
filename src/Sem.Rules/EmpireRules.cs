@@ -296,13 +296,30 @@ public sealed class EmpireRules(GameDatabase database)
     // ---------------------------------------------------------------------------------------
 
     /// <summary>The species classes the player may choose from.</summary>
+    /// <summary>
+    /// The species classes the player may choose from.
+    /// </summary>
+    /// <remarks>
+    /// A class needs both an archetype and a face. The archetype rules out the several classes that
+    /// exist only to carry a ship or city set — the game says as much in its own comments — but two
+    /// that have one, Spinovore and Solarpunk, still have no portraits anywhere, and a species with
+    /// no possible likeness is not a choice. Requiring a portrait set also keeps out AI, which has
+    /// portraits but no archetype and is nobody's species.
+    /// </remarks>
     public IReadOnlyList<OptionState> GetSpeciesClassOptions(DesignContext context) =>
         Options(
-            _database.SpeciesClasses.Where(c => !c.IsAppearanceOnly),
+            _database.SpeciesClasses.Where(c => !c.IsAppearanceOnly && HasPortraits(c.Key)),
             c => c.Key,
             c => c.Playable,
             c => c.Possible,
             context);
+
+    private bool HasPortraits(string speciesClass) =>
+        (_classesWithPortraits ??= [.. _database.PortraitSets
+            .Select(s => s.SpeciesClass)
+            .OfType<string>()]).Contains(speciesClass);
+
+    private HashSet<string>? _classesWithPortraits;
 
     /// <summary>The authorities the player may choose from.</summary>
     public IReadOnlyList<OptionState> GetAuthorityOptions(DesignContext context) =>

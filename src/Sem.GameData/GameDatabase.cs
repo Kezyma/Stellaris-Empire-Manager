@@ -52,6 +52,13 @@ public sealed record GameDatabase
     public IReadOnlyDictionary<string, string> TextIcons { get; init; } =
         new Dictionary<string, string>();
 
+    /// <summary>
+    /// Pictures the designer's own controls borrow from the game, by sprite name — the gender
+    /// buttons and the like, which belong to no option and so have nowhere else to live.
+    /// </summary>
+    public IReadOnlyDictionary<string, string> Icons { get; init; } =
+        new Dictionary<string, string>();
+
     /// <summary>Ethics, including the fanatic variants and gestalt consciousness.</summary>
     public IReadOnlyList<EthicDefinition> Ethics { get; init; } = [];
 

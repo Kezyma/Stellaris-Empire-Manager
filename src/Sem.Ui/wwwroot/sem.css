@@ -1196,3 +1196,191 @@ label {
     margin: 0 0 6px;
     font-size: 0.95rem;
 }
+
+/* ---------------------------------------------------------------- combobox
+
+   Type anything, or open the list. The browser's own datalist filters itself by what has been
+   typed, so it empties as soon as a name is entered; this does not. */
+
+.sem-combo {
+    position: relative;
+    display: flex;
+}
+
+.sem-combo input[type="text"] {
+    padding-right: 28px;
+}
+
+.sem-combo .toggle {
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    bottom: 1px;
+    width: 26px;
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    color: var(--text-dim);
+    line-height: 1;
+}
+
+.sem-combo .toggle:hover { background: var(--bg-hover); color: var(--text); }
+
+.sem-combo .options {
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0;
+    right: 0;
+    z-index: 20;
+    max-height: 260px;
+    overflow-y: auto;
+    margin: 0;
+    padding: 2px;
+    list-style: none;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+}
+
+.sem-combo .options button {
+    display: block;
+    width: 100%;
+    padding: 4px 8px;
+    background: none;
+    border: none;
+    border-radius: 3px;
+    color: var(--text);
+    font: inherit;
+    text-align: left;
+}
+
+.sem-combo .options button:hover { background: var(--bg-hover); }
+.sem-combo .options button.selected { color: var(--accent); }
+
+/* ---------------------------------------------------------------- name fields
+
+   Three names and the button that fills them, side by side, because they are one answer given three
+   ways rather than three separate questions. */
+
+.sem-name-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+    gap: var(--gap);
+    align-items: end;
+}
+
+.sem-name-row > .sem-field { margin-bottom: 0; }
+
+/* The class and gender pair sits in the same grid but wants only two columns. */
+.sem-name-row:has(.sem-genders) {
+    grid-template-columns: minmax(0, 1fr) auto;
+}
+
+@media (max-width: 700px) {
+    .sem-name-row,
+    .sem-name-row:has(.sem-genders) {
+        grid-template-columns: 1fr;
+    }
+}
+
+button.small {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+}
+
+/* Four sets of names, side by side where there is room for them. */
+.sem-name-sets {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--gap);
+    margin-top: var(--gap);
+}
+
+@media (max-width: 1100px) {
+    .sem-name-sets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 700px) {
+    .sem-name-sets { grid-template-columns: 1fr; }
+}
+
+/* ---------------------------------------------------------------- gender */
+
+.sem-genders {
+    display: flex;
+    gap: 4px;
+}
+
+.sem-gender {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 4px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    font-size: 0.7rem;
+}
+
+.sem-gender.selected {
+    border-color: var(--accent);
+    background: var(--bg-hover);
+}
+
+.sem-gender img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* ---------------------------------------------------------------- preview species */
+
+.sem-preview-species {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.sem-preview-species .portrait {
+    width: 56px;
+    flex-shrink: 0;
+    border-radius: var(--radius);
+    background: var(--bg-raised);
+    object-fit: contain;
+    object-position: bottom;
+}
+
+.sem-preview-species .about {
+    min-width: 0;
+    flex: 1;
+}
+
+.sem-preview-species .name { font-weight: 600; }
+
+.sem-preview-species .kind {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+}
+
+.sem-preview-species .traits {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    margin-top: 5px;
+}
+
+.sem-preview-species .trait {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 1px 5px 1px 2px;
+    border-radius: 9px;
+    background: var(--bg-raised);
+    color: var(--text-dim);
+    font-size: 0.72rem;
+}
+
+.sem-preview-species .trait img { width: 14px; height: 14px; object-fit: contain; }

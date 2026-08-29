@@ -19,10 +19,32 @@ public sealed record RenderSettings
     public int Supersample { get; init; } = 3;
 
     /// <summary>
-    /// How much of the model's height to show, measured from the top. Portraits are modelled full
-    /// length but shown as head and shoulders.
+    /// How much of the model, measured in its own units, the frame's height covers.
     /// </summary>
-    public double VerticalExtent { get; init; } = 0.62;
+    /// <remarks>
+    /// <para>
+    /// One value for every portrait, which is the point: a species is the size it was modelled at
+    /// rather than the size of the frame. Fitting each one to its own bounds — which is what this
+    /// used to do — is why a small species came out as large as a big one.
+    /// </para>
+    /// <para>
+    /// The game's own frame is 380 pixels at a scale of 24, so it shows 15.8 units. Measured against
+    /// all 406 portraits that clips a quarter of them, which suits a game that shows a character in
+    /// a room rather better than it suits a picker where the face is the whole point. Twenty units
+    /// leaves 4% clipped — the ones with antennae and wings, which the game clips too — and still
+    /// puts the median portrait at about two thirds of the frame's height.
+    /// </para>
+    /// </remarks>
+    public double VisibleHeight { get; init; } = 20;
+
+    /// <summary>
+    /// How far above the frame's bottom edge the model's feet sit, as a fraction of the height.
+    /// </summary>
+    /// <remarks>
+    /// The game nudges the character down by 20 pixels of its 380, which keeps a portrait from
+    /// looking as though it is balanced on the edge.
+    /// </remarks>
+    public double BottomMargin { get; init; } = -20.0 / 380.0;
 
     /// <summary>How much light reaches a surface facing away from the lamp.</summary>
     public double Ambient { get; init; } = 0.55;
@@ -70,7 +92,15 @@ public sealed class PortraitRenderer(RenderSettings? settings = null)
     /// The textures to wear, by the file name the model asks for. A part whose texture is missing
     /// is skipped, because without transparency to shape it a cut-out is only a rectangle.
     /// </param>
-    public DdsImage Render(PortraitMesh mesh, IReadOnlyDictionary<string, DdsImage> textures)
+    /// <param name="modelScale">
+    /// How much the entity scales this model by. Species are not modelled to a common size and the
+    /// game takes the difference out here, so a small species is drawn small rather than blown up to
+    /// fill the frame.
+    /// </param>
+    public DdsImage Render(
+        PortraitMesh mesh,
+        IReadOnlyDictionary<string, DdsImage> textures,
+        float modelScale = 1f)
     {
         ArgumentNullException.ThrowIfNull(mesh);
         ArgumentNullException.ThrowIfNull(textures);
@@ -79,7 +109,7 @@ public sealed class PortraitRenderer(RenderSettings? settings = null)
         var height = _settings.Height * _settings.Supersample;
 
         var pixels = new byte[width * height * 4];
-        var (scale, offset) = Frame(mesh, width, height);
+        var (scale, offset) = Frame(mesh, width, height, modelScale);
 
         // Furthest first, so nearer parts paint over what is behind them. Depth decreases towards
         // the viewer: hair sits at a lower z than the face it falls across.
@@ -100,38 +130,36 @@ public sealed class PortraitRenderer(RenderSettings? settings = null)
         part.Positions.Length == 0 ? 0 : part.Positions.Average(p => p.Z);
 
     /// <summary>
-    /// Works out how to fit the model into the image.
+    /// Works out where the model goes in the image.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Every portrait is built the same way and shown from the same side, so there is nothing here
-    /// to decide. The camera sits on the negative z side looking towards positive z; model x runs to
+    /// Every portrait is built the same way and shown from the same side, so orientation is not in
+    /// question. The camera sits on the negative z side looking towards positive z; model x runs to
     /// the right of the picture and model y runs up it.
     /// </para>
     /// <para>
-    /// This used to guess by adding up which way the surfaces pointed. That reads as reasonable and
-    /// is worthless: nearly every normal in the game points the same way, so the sum says nothing
-    /// about an individual model — and on the three models built double-sided it comes out at zero,
-    /// leaving rounding error to decide which way a face turned.
+    /// The scale is the same for every portrait, which is the point: a species is as big as it was
+    /// modelled rather than as big as the frame. It stands on the bottom edge, centred on its own
+    /// width, and anything taller than the frame is cropped at the top — which is what the game
+    /// does, and what it counts on when it gives a species antennae.
     /// </para>
     /// </remarks>
-    private (float Scale, Vector2 Offset) Frame(PortraitMesh mesh, int width, int height)
+    private (float Scale, Vector2 Offset) Frame(
+        PortraitMesh mesh,
+        int width,
+        int height,
+        float modelScale)
     {
         var (min, max) = mesh.Bounds;
-        var size = max - min;
 
-        // Fit the width, then show only the top part of the height.
-        var visibleHeight = Math.Max(size.Y * (float)_settings.VerticalExtent, 0.0001f);
-        var scale = Math.Min(
-            width / Math.Max(size.X, 0.0001f),
-            height / visibleHeight) * 0.92f;
-
+        var scale = (float)(height / Math.Max(_settings.VisibleHeight, 0.0001)) * Math.Max(modelScale, 0.01f);
         var centreX = (min.X + max.X) / 2;
-        var topY = max.Y;
+        var feet = height * (1 + (float)_settings.BottomMargin);
 
         return (
             scale,
-            new Vector2((width / 2f) - (centreX * scale), (height * 0.06f) + (topY * scale)));
+            new Vector2((width / 2f) - (centreX * scale), feet + (mesh.Footing * scale)));
     }
 
     private void DrawPart(

@@ -26,9 +26,23 @@
 
                 <DesignerSection Title="Species"
                                  Summary="@SpeciesSummary"
-                                 Problems="@Problems(ValidationArea.Species, ValidationArea.Traits, ValidationArea.SecondarySpecies)">
-                    <SpeciesTab />
+                                 Problems="@Problems(ValidationArea.Species, ValidationArea.Traits)">
+                    <SpeciesTab Species="@Session.Current.Species" />
                 </DesignerSection>
+
+                @*
+                    Three origins begin an empire with two species. The section appears only while
+                    one of them is chosen, because for every other empire there is nothing there to
+                    edit.
+                *@
+                @if (Session.Current.SecondarySpecies is { } secondary)
+                {
+                    <DesignerSection Title="Second species"
+                                     Summary="@secondary.Name.Key"
+                                     Problems="@Problems(ValidationArea.SecondarySpecies)">
+                        <SpeciesTab Species="@secondary" />
+                    </DesignerSection>
+                }
 
                 <DesignerSection Title="Ethics"
                                  Summary="@Names(Session.Current.Ethics)"

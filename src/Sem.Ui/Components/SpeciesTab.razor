@@ -1,12 +1,15 @@
 @*
-    The founder species, in the order the questions arise: what it is called, what it looks like,
-    and what it is good at.
+    A species, in the order the questions arise: what it is called, what it looks like, and what it
+    is good at.
+
+    The same three subsections serve the founder species and the second one some origins call for,
+    since the questions are the same either way.
 *@
 
 <div class="sem-subsections">
     <section>
         <h4>Names</h4>
-        <SpeciesNames />
+        <SpeciesNames Species="@Species" />
     </section>
 
     <section>
@@ -16,7 +19,7 @@
 
     <section>
         <h4>Traits</h4>
-        <TraitPicker />
+        <TraitPicker Species="@Species" />
     </section>
 </div>
 
@@ -24,5 +27,7 @@
     [CascadingParameter]
     public required DesignSession Session { get; set; }
 
-    private SpeciesDesign Species => Session.Current!.Species;
+    /// <summary>The species being designed, which may be the second one.</summary>
+    [Parameter, EditorRequired]
+    public required SpeciesDesign Species { get; set; }
 }

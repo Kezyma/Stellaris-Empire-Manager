@@ -12,18 +12,44 @@ namespace Sem.Extraction;
 /// <param name="Failures">Portraits that could not be drawn, with the reason.</param>
 public sealed record PortraitBakeReport(int Rendered, long Bytes, IReadOnlyList<string> Failures);
 
+/// <summary>What a portrait is wearing, as its own definition describes it.</summary>
+/// <param name="Character">The body texture.</param>
+/// <param name="Clothes">The clothing texture.</param>
+/// <param name="Attachment">Hair, horns, a hat — whatever is fixed to the head.</param>
+/// <remarks>
+/// Held apart rather than resolved into the mesh because the three are chosen independently. Drawing
+/// the same model in different clothes, which the ruler's appearance will want, is then a matter of
+/// a different set rather than a different renderer.
+/// </remarks>
+public sealed record PortraitTextures(string? Character, string? Clothes, string? Attachment)
+{
+    /// <summary>A portrait whose definition says nothing, leaving the mesh to supply everything.</summary>
+    public static PortraitTextures None { get; } = new(null, null, null);
+
+    /// <summary>The texture for one kind of part, or null when the definition names none.</summary>
+    public string? For(PartKind kind) => kind switch
+    {
+        PartKind.Clothes => Clothes,
+        PartKind.Attachment => Attachment,
+        _ => Character,
+    };
+}
+
 /// <summary>
 /// Draws every portrait the game defines, once, so the designer has faces to show.
 /// </summary>
 /// <remarks>
-/// Getting from a portrait's key to something that can be drawn takes three hops through the
-/// game's files: the portrait names an entity, the entity names a mesh, and a separate file says
-/// where that mesh lives. All three are ordinary script, so all three are read the same way as
-/// everything else.
+/// Getting from a portrait's key to something that can be drawn takes three hops through the game's
+/// files: the portrait names an entity, the entity names a mesh, and a separate file says where that
+/// mesh lives. What the model is wearing takes a fourth, through the portrait's own definition. All
+/// of it is ordinary script, so all of it is read the same way as everything else.
 /// </remarks>
 public sealed class PortraitBaker(LayeredContent content, SafeFile file)
 {
     private const string ModelRoot = "gfx/models/portraits";
+
+    /// <summary>The value a portrait uses to say it wears nothing of a given kind.</summary>
+    private const string NoTexture = "no_texture";
 
     private readonly LayeredContent _content = content ?? throw new ArgumentNullException(nameof(content));
     private readonly SafeFile _file = file ?? throw new ArgumentNullException(nameof(file));
@@ -57,6 +83,9 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
         var entities = ReadEntities();
         var meshes = ReadMeshPaths();
         var portraitEntities = ReadPortraitEntities();
+        var wardrobes = ReadWardrobes();
+        var entityScales = ReadScales("*.asset", "entity");
+        var meshScales = ReadScales("*.gfx", "pdxmesh");
 
         var results = new List<PortraitDefinition>(portraits.Count);
         var failures = new List<string>();
@@ -81,14 +110,25 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
 
             try
             {
-                if (Resolve(portrait.Key, portraitEntities, entities, meshes) is not { } meshPath)
+                if (!portraitEntities.TryGetValue(portrait.Key, out var entity) ||
+                    !entities.TryGetValue(entity, out var meshName) ||
+                    !meshes.TryGetValue(meshName, out var meshPath) ||
+                    !_content.Contains(meshPath))
                 {
                     failures.Add($"{portrait.Key}: no model");
                     results.Add(portrait);
                     continue;
                 }
 
-                var png = Draw(meshPath);
+                // The entity scales the model and the mesh may scale it again, which between them
+                // are what make a species the size the game shows it at.
+                var scale = entityScales.GetValueOrDefault(entity, 1) *
+                            meshScales.GetValueOrDefault(meshName, 1);
+
+                var png = Draw(
+                    meshPath,
+                    wardrobes.GetValueOrDefault(portrait.Key) ?? PortraitTextures.None,
+                    (float)scale);
                 var destination = $"portraits/{portrait.Key}.png";
 
                 _file.WriteAllBytes(Path.Combine(outputDirectory, destination), png);
@@ -108,22 +148,77 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
         return (results, new PortraitBakeReport(rendered, bytes, failures));
     }
 
-    private byte[] Draw(string meshPath)
+    private byte[] Draw(string meshPath, PortraitTextures wearing, float scale)
     {
         var mesh = PortraitMesh.Load(_content.Read(meshPath));
-        var directory = meshPath[..meshPath.LastIndexOf('/')];
+
+        // Each part is told what it is actually wearing before anything is drawn, so the renderer
+        // has one job and a portrait in different clothes is the same call with a different set.
+        var dressed = new PortraitMesh(
+            [.. mesh.Parts.Select(p => p with { Texture = TextureFor(p, wearing) })]);
 
         var textures = new Dictionary<string, DdsImage>(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var name in mesh.Parts.Select(p => p.Texture).OfType<string>().Distinct(StringComparer.OrdinalIgnoreCase))
+        foreach (var path in dressed.Parts.Select(p => p.Texture).OfType<string>().Distinct(StringComparer.OrdinalIgnoreCase))
         {
-            if (LoadTexture($"{directory}/{name}") is { } texture)
+            if (LoadTexture(path) is { } texture)
             {
-                textures[name] = texture;
+                textures[path] = texture;
             }
         }
 
-        return PngWriter.Encode(_renderer.Render(mesh, textures));
+        return PngWriter.Encode(_renderer.Render(dressed, textures, scale));
+    }
+
+    /// <summary>
+    /// Finds the texture a part should wear.
+    /// </summary>
+    /// <remarks>
+    /// What the portrait says it is wearing comes first, because the mesh's own texture is a default
+    /// the definition is entitled to override — several humanoids are modelled in a general's coat
+    /// and dressed by their portrait in a ruler's. Where the portrait says nothing, the mesh's
+    /// texture stands; and since that is a bare file name which may live in any of the portrait
+    /// folders, it is looked up by name rather than assumed to sit beside its mesh.
+    /// </remarks>
+    private string? TextureFor(MeshPart part, PortraitTextures wearing)
+    {
+        if (wearing.For(part.Kind) is { Length: > 0 } chosen)
+        {
+            return chosen;
+        }
+
+        return part.Texture is { Length: > 0 } own ? FindTexture(own) : null;
+    }
+
+    /// <summary>
+    /// Finds a texture named without a path.
+    /// </summary>
+    /// <remarks>
+    /// Meshes name their textures by file name alone, and those files are not always in the folder
+    /// the mesh is in: a humanoid portrait wears a coat kept with the mammalian art. Looking only
+    /// beside the mesh is why clothing went missing, and why portraits whose torso and sleeves share
+    /// one such texture came out as a head and a pair of floating hands.
+    /// </remarks>
+    private string? FindTexture(string name) =>
+        name.Contains('/') ? name : TextureIndex.GetValueOrDefault(Path.GetFileName(name));
+
+    /// <summary>Every texture in the portrait folders, by file name.</summary>
+    private Dictionary<string, string> TextureIndex =>
+        _textureIndex ??= BuildTextureIndex();
+
+    private Dictionary<string, string>? _textureIndex;
+
+    private Dictionary<string, string> BuildTextureIndex()
+    {
+        var index = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var path in _content.EnumerateFiles(ModelRoot, "*.dds", recursive: true))
+        {
+            // First wins, which matches the load order the caller enumerated in.
+            index.TryAdd(Path.GetFileName(path), path);
+        }
+
+        return index;
     }
 
     private DdsImage? LoadTexture(string path)
@@ -156,6 +251,123 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
 
         _textures[path] = image;
         return image;
+    }
+
+    /// <summary>
+    /// What each portrait says it is wearing.
+    /// </summary>
+    /// <remarks>
+    /// Most of the artwork is not named by the mesh at all. A portrait names its own body texture,
+    /// and points at selectors for its clothes and its hair; the psionic portraits name nothing in
+    /// their meshes whatsoever, which is why they came out blank.
+    /// </remarks>
+    private Dictionary<string, PortraitTextures> ReadWardrobes()
+    {
+        var selectors = ReadSelectors();
+        var wardrobes = new Dictionary<string, PortraitTextures>(StringComparer.Ordinal);
+
+        foreach (var path in _content.EnumerateFiles("gfx/portraits/portraits", "*.txt"))
+        {
+            var document = TryParse(path);
+
+            foreach (var node in document?.Nodes ?? [])
+            {
+                if (node.Key != "portraits" || node.Block is null)
+                {
+                    continue;
+                }
+
+                foreach (var portrait in node.Block.Nodes)
+                {
+                    if (portrait.Key is not { Length: > 0 } key || portrait.Block is not { } body)
+                    {
+                        continue;
+                    }
+
+                    wardrobes.TryAdd(key, new PortraitTextures(
+                        ReadCharacterTexture(body),
+                        Selected(selectors, body.GetString("clothes_selector")),
+                        Selected(selectors, body.GetString("attachment_selector"))));
+                }
+            }
+        }
+
+        return wardrobes;
+    }
+
+    /// <summary>
+    /// The body texture a portrait names.
+    /// </summary>
+    /// <remarks>
+    /// Written either as a plain list of paths or, where a portrait changes with an empire's
+    /// evolution, as blocks tying each texture to a stage. The first is the one an empire starts
+    /// with either way.
+    /// </remarks>
+    private static string? ReadCharacterTexture(CwBlock body)
+    {
+        if (body.GetBlock("character_textures") is not { } textures)
+        {
+            return null;
+        }
+
+        foreach (var node in textures.Nodes)
+        {
+            if (!node.IsAssignment && node.ScalarValue is { Length: > 0 } path)
+            {
+                return path;
+            }
+
+            if (node.Block?.GetString("texture") is { Length: > 0 } tied)
+            {
+                return tied;
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>The texture a named selector chooses, or null when there is none.</summary>
+    private static string? Selected(IReadOnlyDictionary<string, string> selectors, string? name) =>
+        name is { Length: > 0 } && !string.Equals(name, NoTexture, StringComparison.Ordinal)
+            ? selectors.GetValueOrDefault(name)
+            : null;
+
+    /// <summary>
+    /// What each asset selector chooses for an empire being designed.
+    /// </summary>
+    /// <remarks>
+    /// A selector holds a texture for every situation the game might ask about — a pop of some
+    /// stratum, a leader of some class, a ruler under some government. One of those situations is
+    /// ours, and the game names it: <c>game_setup</c>, commented in its own files as running with a
+    /// species and a government but no country. Its default is what the empire designer shows, and
+    /// the plain default stands in where a selector does not mention us.
+    /// </remarks>
+    private Dictionary<string, string> ReadSelectors()
+    {
+        var selectors = new Dictionary<string, string>(StringComparer.Ordinal);
+
+        foreach (var path in _content.EnumerateFiles("gfx/portraits/asset_selectors", "*.txt"))
+        {
+            var document = TryParse(path);
+
+            foreach (var node in document?.Nodes ?? [])
+            {
+                if (node.Key is not { Length: > 0 } key || node.Block is not { } body)
+                {
+                    continue;
+                }
+
+                var chosen = body.GetBlock("game_setup")?.GetString("default")
+                             ?? body.GetString("default");
+
+                if (chosen is { Length: > 0 })
+                {
+                    selectors.TryAdd(key, chosen);
+                }
+            }
+        }
+
+        return selectors;
     }
 
     /// <summary>Portrait key to the entity it wears, from the portrait definitions.</summary>
@@ -191,6 +403,76 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
     /// <summary>Entity name to the mesh it uses, from the entity definitions.</summary>
     private Dictionary<string, string> ReadEntities() =>
         ReadNameToValue("*.asset", blockKey: "entity", valueKey: "pdxmesh");
+
+    /// <summary>
+    /// How much each entity and each mesh is scaled by.
+    /// </summary>
+    /// <remarks>
+    /// Species are not modelled to a common size — a human is seventeen units of model and a
+    /// synthetic twenty-one — and the difference is taken out by a scale on the entity, sometimes
+    /// again on the mesh. Ignoring it is what made a small species draw as large as a big one.
+    /// </remarks>
+    private Dictionary<string, double> ReadScales(string pattern, string blockKey)
+    {
+        var scales = new Dictionary<string, double>(StringComparer.Ordinal);
+
+        foreach (var path in _content.EnumerateFiles(ModelRoot, pattern, recursive: true))
+        {
+            if (TryParse(path) is not { } document)
+            {
+                continue;
+            }
+
+            // These files declare their own variables, which is how a dozen human portraits share
+            // one scale written in a single place.
+            var variables = new Dictionary<string, double>(StringComparer.Ordinal);
+
+            foreach (var node in document.Nodes)
+            {
+                if (node.Key is { Length: > 1 } name && name[0] == '@' &&
+                    double.TryParse(node.ScalarValue, System.Globalization.CultureInfo.InvariantCulture, out var value))
+                {
+                    variables[name] = value;
+                }
+            }
+
+            foreach (var node in document.Nodes)
+            {
+                Collect(node);
+            }
+
+            void Collect(CwNode node)
+            {
+                if (node.Block is not { } body)
+                {
+                    return;
+                }
+
+                if (string.Equals(node.Key, blockKey, StringComparison.Ordinal) &&
+                    body.GetString("name") is { Length: > 0 } name &&
+                    body.GetString("scale") is { Length: > 0 } scale)
+                {
+                    if (variables.TryGetValue(scale, out var referenced))
+                    {
+                        scales.TryAdd(name, referenced);
+                    }
+                    else if (double.TryParse(scale, System.Globalization.CultureInfo.InvariantCulture, out var literal))
+                    {
+                        scales.TryAdd(name, literal);
+                    }
+
+                    return;
+                }
+
+                foreach (var child in body.Nodes)
+                {
+                    Collect(child);
+                }
+            }
+        }
+
+        return scales;
+    }
 
     /// <summary>Mesh name to the file that holds it, from the mesh declarations.</summary>
     private Dictionary<string, string> ReadMeshPaths()
@@ -251,22 +533,6 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
                 Collect(child);
             }
         }
-    }
-
-    private string? Resolve(
-        string portraitKey,
-        Dictionary<string, string> portraitEntities,
-        Dictionary<string, string> entities,
-        Dictionary<string, string> meshes)
-    {
-        if (!portraitEntities.TryGetValue(portraitKey, out var entity) ||
-            !entities.TryGetValue(entity, out var mesh) ||
-            !meshes.TryGetValue(mesh, out var path))
-        {
-            return null;
-        }
-
-        return _content.Contains(path) ? path : null;
     }
 
     private CwDocument? TryParse(string path)
