@@ -3,6 +3,20 @@ using Sem.GameData;
 
 namespace Sem.Extraction.Extractors;
 
+/// <summary>The pools of names one name list offers.</summary>
+/// <param name="Characters">Names for rulers and other leaders.</param>
+/// <param name="Planets">Names for colonies.</param>
+/// <param name="Ships">Names for ships.</param>
+/// <param name="Fleets">
+/// Names for fleets. Armies have no equivalent: the game numbers them from a template rather than
+/// naming them from a pool, so there is nothing to read.
+/// </param>
+public sealed record NamePools(
+    NameSet Characters,
+    IReadOnlyList<string> Planets,
+    IReadOnlyList<string> Ships,
+    IReadOnlyList<string> Fleets);
+
 /// <summary>
 /// Reads the pools of names the game draws on when a player presses randomise.
 /// </summary>
@@ -67,18 +81,16 @@ public static class NameExtractor
     }
 
     /// <summary>Reads the ruler, planet and ship names a name list offers.</summary>
-    public static (NameSet Characters, List<string> Planets, List<string> Ships) ReadNamePools(
-        CwBlock body,
-        IReadOnlyDictionary<string, string> text)
+    public static NamePools ReadNamePools(CwBlock body, IReadOnlyDictionary<string, string> text)
     {
         ArgumentNullException.ThrowIfNull(body);
         ArgumentNullException.ThrowIfNull(text);
 
-        var characters = ReadCharacterNames(body, text);
-        var planets = ReadNames(body.GetBlock("planet_names"), text);
-        var ships = ReadNames(body.GetBlock("ship_names"), text);
-
-        return (characters, planets, ships);
+        return new NamePools(
+            ReadCharacterNames(body, text),
+            ReadNames(body.GetBlock("planet_names"), text),
+            ReadNames(body.GetBlock("ship_names"), text),
+            ReadNames(body.GetBlock("fleet_names"), text));
     }
 
     /// <summary>
@@ -105,13 +117,31 @@ public static class NameExtractor
 
         return new NameSet
         {
-            FullNames = ResolveAll(culture.GetList("full_names"), text),
-            FirstNames = ResolveAll(culture.GetList("first_names"), text),
-            FirstNamesMale = ResolveAll(culture.GetList("first_names_male"), text),
-            FirstNamesFemale = ResolveAll(culture.GetList("first_names_female"), text),
-            SecondNames = ResolveAll(culture.GetList("second_names"), text),
+            FullNames = ReadGendered(culture, "full_names", text),
+            FirstNames = ReadGendered(culture, "first_names", text),
+            SecondNames = ReadGendered(culture, "second_names", text),
         };
     }
+
+    /// <summary>
+    /// Reads one kind of name in all three variants a list may offer it.
+    /// </summary>
+    /// <remarks>
+    /// Every kind comes in a plain form and a gendered pair, and which a list uses varies: the human
+    /// lists give complete names by gender and no first names at all, while the mammalian ones do
+    /// the opposite. Reading only the plain form leaves a dozen lists looking empty when they are
+    /// not — including the one a new human empire starts with.
+    /// </remarks>
+    private static GenderedNames ReadGendered(
+        CwBlock culture,
+        string field,
+        IReadOnlyDictionary<string, string> text) =>
+        new()
+        {
+            Any = ResolveAll(culture.GetList(field), text),
+            Male = ResolveAll(culture.GetList($"{field}_male"), text),
+            Female = ResolveAll(culture.GetList($"{field}_female"), text),
+        };
 
     /// <summary>
     /// Gathers names out of a section that groups them, such as planet names by planet class.

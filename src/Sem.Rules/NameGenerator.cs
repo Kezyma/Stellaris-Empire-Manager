@@ -70,27 +70,25 @@ public sealed class NameGenerator(GameDatabase database, Random? random = null)
             return null;
         }
 
-        var firsts = female ? names.FirstNamesFemale : names.FirstNamesMale;
+        var full = names.FullNames.For(female);
+        var firsts = names.FirstNames.For(female);
+        var seconds = names.SecondNames.For(female);
 
-        if (firsts.Count == 0)
-        {
-            firsts = names.FirstNames;
-        }
-
-        var canCombine = firsts.Count > 0 && names.SecondNames.Count > 0;
-        var useFull = names.FullNames.Count > 0 && (!canCombine || _random.Next(2) == 0);
+        var canCombine = firsts.Count > 0;
+        var useFull = full.Count > 0 && (!canCombine || _random.Next(2) == 0);
 
         if (useFull)
         {
-            return Pick(names.FullNames);
+            return Pick(full);
         }
 
-        if (firsts.Count == 0)
+        if (!canCombine)
         {
-            return Pick(names.FullNames);
+            return Pick(full);
         }
 
-        return canCombine ? $"{Pick(firsts)} {Pick(names.SecondNames)}" : Pick(firsts);
+        // A list may give first names and no family names, in which case the first name is the name.
+        return seconds.Count > 0 ? $"{Pick(firsts)} {Pick(seconds)}" : Pick(firsts);
     }
 
     /// <summary>Suggests a planet name from a name list.</summary>

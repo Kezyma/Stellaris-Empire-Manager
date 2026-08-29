@@ -125,7 +125,7 @@ internal static class CosmeticsExtractor
         foreach (var entry in loader.LoadDefinitions("common/name_lists"))
         {
             var body = entry.Body;
-            var (characters, planets, ships) = NameExtractor.ReadNamePools(body, text);
+            var pools = NameExtractor.ReadNamePools(body, text);
 
             results.Add(new NameListDefinition(entry.Key, body.GetString("category"))
             {
@@ -134,9 +134,10 @@ internal static class CosmeticsExtractor
                     : new AlwaysRequirement(true),
                 Randomized = body.GetBool("randomized", defaultValue: true),
                 RandomNameSource = body.GetString("customize_random_override"),
-                CharacterNames = characters,
-                PlanetNames = planets,
-                ShipNames = ships,
+                CharacterNames = pools.Characters,
+                PlanetNames = pools.Planets,
+                ShipNames = pools.Ships,
+                FleetNames = pools.Fleets,
             });
         }
 

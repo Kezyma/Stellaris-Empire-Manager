@@ -1,0 +1,56 @@
+@*
+    The empire's own name, as distinct from its species'. A human empire is not called "Human", and
+    the two are changed independently, so they sit in different places.
+*@
+
+<div class="sem-field">
+    <label for="empire-name">Name</label>
+    <div class="sem-row" style="flex-wrap:nowrap">
+        <input id="empire-name" type="text" value="@Design.Name.Key"
+               @onchange="e => Session.Edit(d => d.Name.SetLiteral(e.Value?.ToString() ?? string.Empty))" />
+        <button type="button" title="The species adjective and a form of government"
+                @onclick="RandomiseName">Randomise</button>
+    </div>
+</div>
+
+<div class="sem-field">
+    <label for="empire-adjective">Adjective</label>
+    <input id="empire-adjective" type="text" value="@Design.Adjective.Key"
+           @onchange="e => Session.Edit(d => d.Adjective.SetLiteral(e.Value?.ToString() ?? string.Empty))" />
+</div>
+
+<div class="sem-field">
+    <label for="spawn-enabled">Appears as an AI empire</label>
+    <select id="spawn-enabled" @onchange="e => Session.Edit(d => d.SpawnEnabled = e.Value?.ToString())">
+        <option value="no" selected="@(Design.SpawnEnabled != "always" && Design.SpawnEnabled != "yes")">Never</option>
+        <option value="yes" selected="@(Design.SpawnEnabled == "yes")">Sometimes</option>
+        <option value="always" selected="@(Design.SpawnEnabled == "always")">Always</option>
+    </select>
+</div>
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    private EmpireDesign Design => Session.Current!;
+
+    /// <summary>
+    /// Names an empire the way the game most often does: the species adjective followed by a form of
+    /// government that suits its authority.
+    /// </summary>
+    private void RandomiseName()
+    {
+        var species = Design.Species.Name.Key;
+
+        if (Session.Names.Empire(species, Design.Authority) is not { Length: > 0 } name)
+        {
+            return;
+        }
+
+        Session.Edit(d =>
+        {
+            d.Name.SetLiteral(name);
+            d.Adjective.SetLiteral(NameGenerator.Adjective(species));
+        });
+    }
+}

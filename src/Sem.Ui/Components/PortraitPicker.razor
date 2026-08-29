@@ -1,72 +1,76 @@
 @*
-    Choosing the founder species' likeness.
+    The species class, and the faces it allows.
 
-    Portraits in Stellaris are three-dimensional models rather than pictures, so a thumbnail exists
-    only where one has been rendered. Where none has, the portrait is still offered under its name:
-    a picker that works without artwork is better than no picker.
+    The two belong together: the class is what decides which portraits exist, so choosing one and
+    then looking elsewhere for the other would hide the connection. Every valid portrait is shown at
+    once rather than split across tabs — the categories divide a Humanoid from its cybernetic and
+    synthetic variants, which is a distinction worth seeing side by side rather than behind a click.
+
+    Portraits are three-dimensional models rather than pictures, so a thumbnail exists only where one
+    has been drawn. Where none has, the portrait is still offered: a picker that works without
+    artwork is better than no picker.
 *@
 
-<div class="sem-panel">
-    <h3>Portrait</h3>
-
-    @if (Groups.Count == 0)
-    {
-        <p class="sem-hint">Choose a species class to see its portraits.</p>
-    }
-    else
-    {
-        @if (Groups.Count > 1)
+<div class="sem-field">
+    <label for="species-class">Species class</label>
+    <select id="species-class" @onchange="e => SetClass(e.Value?.ToString())">
+        @foreach (var option in ClassOptions)
         {
-            <div class="sem-tabs">
-                @foreach (var group in Groups)
-                {
-                    <button type="button"
-                            class="sem-tab @(group.Key == CurrentGroup.Key ? "active" : null)"
-                            @onclick="() => _group = group.Key">
-                        @Session.Localizer.Text(group.NameKey, Localizer.Prettify(group.Key))
-                    </button>
-                }
-            </div>
+            <option value="@option.Key"
+                    selected="@(option.Key == Species.Class)"
+                    disabled="@(!option.Enabled && option.Key != Species.Class)">
+                @Session.Localizer.Text(option.Key)
+            </option>
         }
-
-        <div class="sem-portraits">
-            @foreach (var portrait in CurrentGroup.Portraits)
-            {
-                var thumbnail = Thumbnail(portrait.Key);
-
-                @*
-                    No caption. The game gives portraits no names — its own picker is a bare grid of
-                    faces — so a label here could only be the file's key, which is what "avi18" was.
-                *@
-                <button type="button"
-                        class="sem-portrait @(portrait.Key == Selected ? "selected" : null) @(portrait.Enabled ? null : "blocked")"
-                        disabled="@(!portrait.Enabled && portrait.Key != Selected)"
-                        title="@Caption(portrait.Key)"
-                        @onclick="() => Choose(portrait.Key)">
-
-                    @if (thumbnail is not null)
-                    {
-                        <img src="@Session.Data.AssetUrl(thumbnail)" alt="@Caption(portrait.Key)" loading="lazy" />
-                    }
-                    else
-                    {
-                        <span class="silhouette" aria-hidden="true"></span>
-                    }
-                </button>
-            }
-        </div>
-    }
+    </select>
 </div>
+
+@if (Portraits.Count == 0)
+{
+    <p class="sem-hint">Choose a species class to see its portraits.</p>
+}
+else
+{
+    <div class="sem-portraits">
+        @foreach (var portrait in Portraits)
+        {
+            var thumbnail = Thumbnail(portrait.Key);
+
+            @*
+                No caption. The game gives portraits no names — its own picker is a bare grid of
+                faces — so a label here could only be the file's key, which is what "avi18" was.
+            *@
+            <button type="button"
+                    class="sem-portrait @(portrait.Key == Selected ? "selected" : null) @(portrait.Enabled ? null : "blocked")"
+                    disabled="@(!portrait.Enabled && portrait.Key != Selected)"
+                    title="@Caption(portrait.Key)"
+                    @onclick="() => Choose(portrait.Key)">
+
+                @if (thumbnail is not null)
+                {
+                    <img src="@Session.Data.AssetUrl(thumbnail)" alt="@Caption(portrait.Key)" loading="lazy" />
+                }
+                else
+                {
+                    <span class="silhouette" aria-hidden="true"></span>
+                }
+            </button>
+        }
+    </div>
+}
 
 @code {
     [CascadingParameter]
     public required DesignSession Session { get; set; }
 
-    /// <summary>The species whose portrait is being chosen, which may be the second one.</summary>
+    /// <summary>The species whose portrait is being chosen.</summary>
     [Parameter, EditorRequired]
     public required SpeciesDesign Species { get; set; }
 
-    private string? _group;
+    private DesignContext Context => Session.Context!;
+
+    private IEnumerable<OptionState> ClassOptions =>
+        Session.Rules.GetSpeciesClassOptions(Context).Where(o => o.Visible);
 
     /// <summary>
     /// Something to read aloud or hover over.
@@ -79,10 +83,32 @@
     private string Caption(string key) =>
         Session.Localizer.Has(key) ? Session.Localizer.Text(key) : Localizer.Prettify(key);
 
-    private IReadOnlyList<PortraitGroup> Groups => Session.Rules.GetPortraitOptions(Session.Context!);
+    /// <summary>
+    /// Every portrait the chosen class allows, in the game's own order.
+    /// </summary>
+    /// <remarks>
+    /// The rules return these grouped by the category tabs the game uses, already filtered by
+    /// species class. A portrait can belong to more than one category, so the groups are flattened
+    /// and the duplicates dropped rather than shown twice.
+    /// </remarks>
+    private IReadOnlyList<OptionState> Portraits
+    {
+        get
+        {
+            var seen = new HashSet<string>(StringComparer.Ordinal);
+            var all = new List<OptionState>();
 
-    private PortraitGroup CurrentGroup =>
-        Groups.FirstOrDefault(g => g.Key == _group) ?? Groups[0];
+            foreach (var portrait in Session.Rules.GetPortraitOptions(Context).SelectMany(g => g.Portraits))
+            {
+                if (seen.Add(portrait.Key))
+                {
+                    all.Add(portrait);
+                }
+            }
+
+            return all;
+        }
+    }
 
     private string? Selected => Species.Portrait;
 
@@ -116,6 +142,35 @@
             {
                 design.Ruler.Portrait = key;
             }
+        });
+    }
+
+    private void SetClass(string? key)
+    {
+        if (key is not { Length: > 0 })
+        {
+            return;
+        }
+
+        Session.Edit(d =>
+        {
+            d.Species.Class = key;
+
+            // A class carries a trait of its own, and leaving the previous class's behind would
+            // give the species two contradictory ones.
+            var classTraits = Session.Data.Database.SpeciesClasses
+                .Select(c => c.ForcedTrait)
+                .OfType<string>()
+                .ToHashSet(StringComparer.Ordinal);
+
+            var kept = d.Species.Traits.Where(t => !classTraits.Contains(t)).ToList();
+
+            if (Session.Data.Database.SpeciesClasses.FirstOrDefault(c => c.Key == key)?.ForcedTrait is { } trait)
+            {
+                kept.Insert(0, trait);
+            }
+
+            d.Species.SetTraits(kept);
         });
     }
 }

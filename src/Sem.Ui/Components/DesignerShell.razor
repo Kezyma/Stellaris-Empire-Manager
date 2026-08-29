@@ -19,6 +19,11 @@
     {
         <div class="sem-designer">
             <div class="sem-sections">
+                <DesignerSection Title="Empire"
+                                 Summary="@Session.Localizer.Text(Session.Current.Name.Key, Session.Current.Key)">
+                    <EmpireSection />
+                </DesignerSection>
+
                 <DesignerSection Title="Species"
                                  Summary="@SpeciesSummary"
                                  Problems="@Problems(ValidationArea.Species, ValidationArea.Traits, ValidationArea.SecondarySpecies)">
@@ -61,8 +66,7 @@
             </div>
 
             <aside class="sem-summary-pane">
-                <SummaryTab />
-                <CombinedEffects />
+                <EmpirePreview />
             </aside>
         </div>
     }

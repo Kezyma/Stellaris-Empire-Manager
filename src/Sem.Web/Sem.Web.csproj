@@ -16,4 +16,44 @@
     <ProjectReference Include="..\Sem.Ui\Sem.Ui.csproj" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <!--
+      Where the site will be served from. GitHub Pages puts a project site under the repository's
+      name rather than at the domain root, and every address in the app is relative to the base
+      href, so this one value places the whole thing. Set it to "/" for a custom domain.
+    -->
+    <PagesBase Condition="'$(PagesBase)' == ''">/Stellaris-Empire-Manager/</PagesBase>
+  </PropertyGroup>
+
+  <!--
+    GitHub Pages serves static files and nothing else, which this app is already suited to. Two
+    things still have to be arranged at publish time.
+  -->
+  <Target Name="PrepareForPages" AfterTargets="Publish">
+
+    <PropertyGroup>
+      <PagesRoot>$(PublishDir)wwwroot\</PagesRoot>
+    </PropertyGroup>
+
+    <!--
+      The base href is written for local development, where the site is the whole origin. Rewriting
+      it here means index.html stays correct in both places rather than one of them.
+    -->
+    <WriteLinesToFile
+      File="$(PagesRoot)index.html"
+      Lines="$([System.IO.File]::ReadAllText('$(PagesRoot)index.html').Replace('&lt;base href=&quot;/&quot; /&gt;', '&lt;base href=&quot;$(PagesBase)&quot; /&gt;'))"
+      Overwrite="true"
+      WriteOnlyWhenDifferent="true" />
+
+    <!--
+      Pages has one file per address, so a route the player opens directly — a bookmarked designer,
+      say — finds nothing and gets the 404 page. Serving the app there hands the address to the
+      client router, which does know it. Copied rather than committed so it cannot fall out of step
+      with the page it duplicates.
+    -->
+    <Copy SourceFiles="$(PagesRoot)index.html" DestinationFiles="$(PagesRoot)404.html" />
+
+    <Message Importance="high" Text="Prepared for GitHub Pages at $(PagesBase)" />
+  </Target>
+
 </Project>

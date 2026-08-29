@@ -636,8 +636,45 @@ public sealed record NameListDefinition(string Key, string? Category)
     /// <summary>Ship names this list offers, used to show what the list sounds like.</summary>
     public IReadOnlyList<string> ShipNames { get; init; } = [];
 
+    /// <summary>Fleet names this list offers.</summary>
+    public IReadOnlyList<string> FleetNames { get; init; } = [];
+
     /// <summary>Localisation key for the display name.</summary>
     public string NameKey => $"name_list_{Key}";
+}
+
+/// <summary>
+/// One kind of name, in the variants a list may offer it.
+/// </summary>
+/// <remarks>
+/// The game's rule, from its own documentation: the list matching the character's gender is used
+/// when it holds anything, and the ungendered list stands in when it does not. Every kind of name
+/// follows it — a list may give full names by gender and second names without, or the reverse.
+/// </remarks>
+public sealed record GenderedNames
+{
+    /// <summary>Names for a character of no particular gender.</summary>
+    public IReadOnlyList<string> Any { get; init; } = [];
+
+    /// <summary>Names for a male character.</summary>
+    public IReadOnlyList<string> Male { get; init; } = [];
+
+    /// <summary>Names for a female character.</summary>
+    public IReadOnlyList<string> Female { get; init; } = [];
+
+    /// <summary>Whether the list offers none of this kind.</summary>
+    public bool IsEmpty => Any.Count == 0 && Male.Count == 0 && Female.Count == 0;
+
+    /// <summary>The names to draw on for a character, following the game's rule.</summary>
+    public IReadOnlyList<string> For(bool female)
+    {
+        var gendered = female ? Female : Male;
+        return gendered.Count > 0 ? gendered : Any;
+    }
+
+    /// <summary>Every name of this kind, for showing what a list sounds like.</summary>
+    public IReadOnlyList<string> All =>
+        [.. Any.Concat(Male).Concat(Female).Distinct(StringComparer.Ordinal)];
 }
 
 /// <summary>
@@ -645,32 +682,21 @@ public sealed record NameListDefinition(string Key, string? Category)
 /// </summary>
 /// <remarks>
 /// A name is either complete in itself or a first name joined to a second. Where a list offers both,
-/// the game picks between them evenly. Gendered lists are used when they are not empty, and the
-/// ungendered list stands in when they are.
+/// the game picks between them evenly.
 /// </remarks>
 public sealed record NameSet
 {
     /// <summary>Names that stand alone.</summary>
-    public IReadOnlyList<string> FullNames { get; init; } = [];
+    public GenderedNames FullNames { get; init; } = new();
 
-    /// <summary>First names for a male character.</summary>
-    public IReadOnlyList<string> FirstNamesMale { get; init; } = [];
-
-    /// <summary>First names for a female character.</summary>
-    public IReadOnlyList<string> FirstNamesFemale { get; init; } = [];
-
-    /// <summary>First names used when the list draws no distinction.</summary>
-    public IReadOnlyList<string> FirstNames { get; init; } = [];
+    /// <summary>First names, always joined to a second.</summary>
+    public GenderedNames FirstNames { get; init; } = new();
 
     /// <summary>Second names, always joined to a first.</summary>
-    public IReadOnlyList<string> SecondNames { get; init; } = [];
+    public GenderedNames SecondNames { get; init; } = new();
 
     /// <summary>Whether there is anything here to build a name from.</summary>
-    public bool IsEmpty =>
-        FullNames.Count == 0 &&
-        FirstNames.Count == 0 &&
-        FirstNamesMale.Count == 0 &&
-        FirstNamesFemale.Count == 0;
+    public bool IsEmpty => FullNames.IsEmpty && FirstNames.IsEmpty;
 }
 
 /// <summary>

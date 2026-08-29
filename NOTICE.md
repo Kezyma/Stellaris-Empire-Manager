@@ -22,10 +22,18 @@ Only original source code, licensed under the MIT Licence (see `LICENSE`).
   icons and thumbnails — and is served separately from the application itself so it can be
   withdrawn without breaking the app, which then falls back to placeholder imagery.
 
+## The published site
+
+The source repository holds no game content and is not the thing that is deployed. The site is built
+from a local Stellaris installation by `scripts/deploy-pages.ps1` and pushed to a separate `gh-pages`
+branch, which does carry the extracted data and artwork. That branch is the only place game content
+appears, and replacing rather than adding to it on each deploy keeps exactly one copy there.
+
 ## Before public release
 
 Review Paradox Interactive's current User Agreement and user-generated content policy, and seek
-their confirmation, before publishing any site that serves extracted game assets.
+their confirmation, before pushing that branch or publishing any other site that serves extracted
+game assets.
 
 ## Third-party components
 

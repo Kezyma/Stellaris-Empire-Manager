@@ -1,0 +1,5 @@
+This file stops GitHub Pages running Jekyll over the site.
+
+Jekyll ignores anything whose name begins with an underscore, which is the whole of _framework —
+where Blazor keeps its runtime. Without this file the site serves a blank page and the browser
+console reports a missing dotnet.js.

@@ -853,9 +853,16 @@ label {
     align-items: start;
 }
 
+/* One column, and the preview leads. Grid children follow source order, so without this the panel
+   would sit under every section — past the point where it answers anything. */
 @media (max-width: 1100px) {
     .sem-designer { grid-template-columns: 1fr; }
-    .sem-summary-pane { position: static !important; }
+
+    .sem-summary-pane {
+        position: static !important;
+        order: -1;
+        max-height: none;
+    }
 }
 
 .sem-sections {
@@ -968,4 +975,224 @@ label {
 .sem-swatch.selected {
     border-color: var(--text);
     box-shadow: 0 0 0 1px var(--text);
+}
+
+/* ---------------------------------------------------------------- preview
+
+   What the empire currently is. Beside the choices there is room to show all of it at once; above
+   them, on a narrow screen, the header alone answers the question and the rest waits for a tap. */
+
+.sem-preview {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.sem-preview > .head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    background: none;
+    border: none;
+    border-radius: 0;
+    color: var(--text);
+    font: inherit;
+    text-align: left;
+    /* Wide enough for the panel, and the toggle is inert there, so it should not invite a click. */
+    cursor: default;
+}
+
+.sem-preview > .head .titles {
+    flex: 1;
+    min-width: 0;
+}
+
+.sem-preview > .head .name {
+    display: block;
+    font-weight: 600;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.sem-preview > .head .government {
+    display: block;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+}
+
+.sem-preview > .head .count {
+    padding: 0 6px;
+    border-radius: 8px;
+    background: var(--bad);
+    color: var(--bg);
+    font-size: 0.75rem;
+}
+
+/* Only meaningful where the panel collapses, so it is not shown where it is not. */
+.sem-preview > .head .chevron { display: none; }
+
+.sem-preview > .body {
+    padding: 0 12px 12px;
+}
+
+.sem-summary {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 2px 10px;
+    margin: 0 0 12px;
+    font-size: 0.85rem;
+}
+
+.sem-summary dt {
+    color: var(--text-faint);
+    white-space: nowrap;
+}
+
+.sem-summary dd {
+    margin: 0;
+    color: var(--text-dim);
+}
+
+@media (max-width: 1100px) {
+    .sem-preview > .head { cursor: pointer; }
+    .sem-preview > .head:hover { background: var(--bg-hover); }
+    .sem-preview > .head .chevron { display: inline; color: var(--text-faint); }
+    .sem-preview.collapsed > .body { display: none; }
+}
+
+/* ---------------------------------------------------------------- subsections
+
+   Parts of one section, separated by a rule rather than another box: nesting a panel inside a panel
+   inside the page reads as three frames around one list. */
+
+.sem-subsections {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.sem-subsections > section + section {
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+}
+
+.sem-subsections > section > h4 {
+    margin: 0 0 10px;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+/* The names a list holds, shown rather than described. Read-only, and sized to hint at how many
+   there are without taking the page over. */
+.sem-name-set label {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.sem-name-set label .count {
+    color: var(--text-faint);
+    font-variant-numeric: tabular-nums;
+}
+
+.sem-name-set textarea {
+    resize: vertical;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    line-height: 1.45;
+}
+
+/* ---------------------------------------------------------------- traits
+
+   The game's own arrangement: what may be taken, what has been taken, and what the pointer is over
+   described underneath. */
+
+.sem-trait-lists {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: var(--gap);
+    margin-top: 4px;
+}
+
+@media (max-width: 700px) {
+    .sem-trait-lists { grid-template-columns: 1fr; }
+}
+
+.sem-trait-list {
+    max-height: 320px;
+    overflow-y: auto;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.sem-trait-list.chosen {
+    background: var(--bg-raised);
+}
+
+.sem-trait-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 3px 8px;
+    background: none;
+    border: none;
+    border-radius: 0;
+    color: var(--text);
+    font: inherit;
+    text-align: left;
+}
+
+.sem-trait-row:hover:not(.blocked) {
+    background: var(--bg-hover);
+    border-color: transparent;
+}
+
+.sem-trait-row.blocked {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.sem-trait-row img,
+.sem-trait-row .no-icon {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    object-fit: contain;
+}
+
+.sem-trait-row .name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.sem-trait-row .cost {
+    color: var(--gold);
+    font-variant-numeric: tabular-nums;
+}
+
+.sem-trait-row .cost.gain { color: var(--good); }
+
+.sem-trait-detail {
+    min-height: 90px;
+    margin-top: var(--gap);
+    padding: 10px 12px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.sem-trait-detail h4 {
+    margin: 0 0 6px;
+    font-size: 0.95rem;
 }
