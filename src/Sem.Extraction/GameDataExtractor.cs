@@ -155,6 +155,7 @@ public sealed class GameDataExtractor(LayeredContent content)
             FlagCategories = flagCategories,
             FlagColors = flagColors,
             PrescriptedEmpires = prescripted,
+            EmpireFlagSets = CosmeticsExtractor.ExtractEmpireFlagSets(loader, prescripted),
             NewEmpireTemplate = template,
             UnrecognisedTriggers = requirements.Unrecognised
                 .OrderByDescending(p => p.Value)

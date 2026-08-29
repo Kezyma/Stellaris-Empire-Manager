@@ -60,6 +60,13 @@
 
             <EffectsList Effects="@shown.Effects" />
 
+            @if (shown.Unlisted)
+            {
+                <p class="sem-hint unlisted">
+                    The game's own designer does not offer this, but a design may hold it.
+                </p>
+            }
+
             @if (!shown.Enabled && shown.Reasons.Count > 0)
             {
                 <ul class="sem-blocked">
@@ -165,6 +172,15 @@
 
         /// <summary>A larger picture, where the option has one, shown above its description.</summary>
         public string? Picture { get; init; }
+
+        /// <summary>
+        /// Whether the game's own designer leaves this out, though a design may still hold it.
+        /// </summary>
+        /// <remarks>
+        /// Not the same as being blocked, and worth saying out loud rather than quietly mixing the
+        /// two: one is a thing the game will refuse, the other a thing it simply never offered.
+        /// </remarks>
+        public bool Unlisted { get; init; }
 
         /// <summary>What it costs, where the choice is bought from a budget.</summary>
         public int? Cost { get; init; }

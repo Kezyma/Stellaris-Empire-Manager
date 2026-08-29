@@ -94,24 +94,28 @@
     </div>
 
     <div>
+        @*
+            Two lists, deliberately apart. The game's own designer offers the first; the second are
+            rooms it hands out during play, to a fallen empire or a galactic emperor or a world that
+            never left its own atmosphere. A design may name any of them and the game draws it — one
+            of the game's own empires sits in an ancient brick room this way — but choosing one is
+            stepping outside what the designer offers, and should feel like it.
+        *@
         <div class="sem-panel">
             <h3>Room</h3>
             <p class="sem-hint">The game gives these no names, so they are shown as they look.</p>
 
-            <div class="sem-thumbs">
-                @foreach (var room in Session.Data.Database.Rooms)
-                {
-                    <button type="button"
-                            class="sem-thumb-option @(room.Key == Design.Room ? "selected" : null)"
-                            @onclick="() => Session.Edit(d => d.Room = room.Key)">
-                        @if (room.Image is not null)
-                        {
-                            <img class="sem-thumb" src="@Session.Data.AssetUrl(room.Image)" alt="@room.Key" loading="lazy" />
-                        }
-                        <span class="caption">@Localizer.Prettify(room.Key.Replace("_room", string.Empty, StringComparison.Ordinal))</span>
-                    </button>
-                }
-            </div>
+            @Rooms(Offered)
+
+            @if (Unlisted.Count > 0)
+            {
+                <h4 class="sem-subhead">Rooms the game assigns rather than offers</h4>
+                <p class="sem-hint">
+                    Not in the game's own designer. A design may still hold one, as its own empires do.
+                </p>
+
+                @Rooms(Unlisted)
+            }
         </div>
 
         <div class="sem-panel">
@@ -174,6 +178,38 @@
     public required DesignSession Session { get; set; }
 
     private EmpireDesign Design => Session.Current!;
+
+    /// <summary>The rooms the game's own designer lists.</summary>
+    private IReadOnlyList<RoomDefinition> Offered =>
+        [.. Session.Data.Database.Rooms.Where(r => r.IsOffered)];
+
+    /// <summary>
+    /// The rest: rooms the game gives out during play rather than at design time.
+    /// </summary>
+    /// <remarks>
+    /// Their conditions in the room selector are things a designer cannot answer — a fallen empire,
+    /// a galactic emperor, a pre-FTL world — and some of them, the pre-FTL rooms among them, name a
+    /// country type a player can never be. That does not put them out of reach: the selector decides
+    /// what to pick when a design names nothing, and a design that names a room gets that room.
+    /// </remarks>
+    private IReadOnlyList<RoomDefinition> Unlisted =>
+        [.. Session.Data.Database.Rooms.Where(r => !r.IsOffered)];
+
+    private RenderFragment Rooms(IReadOnlyList<RoomDefinition> rooms) =>
+        @<div class="sem-thumbs">
+            @foreach (var room in rooms)
+            {
+                <button type="button"
+                        class="sem-thumb-option @(room.Key == Design.Room ? "selected" : null)"
+                        @onclick="() => Session.Edit(d => d.Room = room.Key)">
+                    @if (room.Image is not null)
+                    {
+                        <img class="sem-thumb" src="@Session.Data.AssetUrl(room.Image)" alt="@room.Key" loading="lazy" />
+                    }
+                    <span class="caption">@Localizer.Prettify(room.Key.Replace("_room", string.Empty, StringComparison.Ordinal))</span>
+                </button>
+            }
+        </div>;
 
     private string? _emblemCategory;
 

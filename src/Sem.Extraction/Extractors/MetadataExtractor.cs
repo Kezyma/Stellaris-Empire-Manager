@@ -131,6 +131,13 @@ internal static class MetadataExtractor
                     continue;
                 }
 
+                // Carried already converted into the player's own format. The game writes its
+                // empires in a different shape from the file a player saves, and a browser cannot
+                // reach the installation to do the conversion itself — so a player can take a copy
+                // of one and edit it, which is the whole point of listing them.
+                var designs = EmpireDesignsFile.CreateEmpty();
+                designs.AddFromPrescripted(empire, empire.Key);
+
                 results.Add(new PrescriptedEmpireSummary(empire.Key, Path.GetFileName(path))
                 {
                     NameKey = empire.Name,
@@ -139,6 +146,9 @@ internal static class MetadataExtractor
                     Authority = empire.Authority,
                     Origin = empire.Origin,
                     Playable = requirements.CompileTriggerByName(empire.Playable),
+                    FlagSet = empire.PrescriptedFlag,
+                    Room = empire.Room,
+                    Design = designs.Document.ToText(),
                 });
             }
         }

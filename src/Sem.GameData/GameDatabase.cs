@@ -119,6 +119,9 @@ public sealed record GameDatabase
     /// <summary>The named colours a flag can be tinted with.</summary>
     public IReadOnlyList<FlagColorDefinition> FlagColors { get; init; } = [];
 
+    /// <summary>Sets of country flags the game's own empires carry.</summary>
+    public IReadOnlyList<EmpireFlagSet> EmpireFlagSets { get; init; } = [];
+
     /// <summary>The game's built-in empires, offered as starting points.</summary>
     public IReadOnlyList<PrescriptedEmpireSummary> PrescriptedEmpires { get; init; } = [];
 
@@ -887,6 +890,40 @@ public sealed record RoomDefinition(string Key)
 {
     /// <summary>Path to the image within the extracted assets.</summary>
     public string? Image { get; init; }
+
+    /// <summary>
+    /// Whether the game's own empire designer lists this room.
+    /// </summary>
+    /// <remarks>
+    /// Two different things are being kept apart here. A room the designer lists is one the game
+    /// expects a custom empire to hold. A room it does not list is not thereby forbidden — most are
+    /// handed out during play by conditions no designer could evaluate, and a design that names one
+    /// is drawn in it. What would be a fault is offering something the game will not accept, since a
+    /// custom empire it refuses does not appear as an error but simply stops being offered.
+    /// </remarks>
+    public bool IsOffered { get; init; } = true;
+}
+
+/// <summary>
+/// A named set of country flags a design may carry.
+/// </summary>
+/// <remarks>
+/// <para>
+/// Not the picture on the ships — that is the empire flag, and it is drawn. These are markers the
+/// game's own script tests for: <c>custom_start_screen</c> is what gives the United Nations of Earth
+/// its own opening screen, and the rest gate the events written for that empire. A design names one
+/// set, with <c>flag = "empire_human_1"</c>.
+/// </para>
+/// <para>
+/// The game gives them no display names, so they are known by the empires that carry them.
+/// </para>
+/// </remarks>
+/// <param name="Key">The set's name, as a design refers to it.</param>
+/// <param name="Flags">The country flags it grants.</param>
+public sealed record EmpireFlagSet(string Key, IReadOnlyList<string> Flags)
+{
+    /// <summary>The built-in empires that carry this set, by their own keys.</summary>
+    public IReadOnlyList<string> Empires { get; init; } = [];
 }
 
 /// <summary>A ship and city appearance set.</summary>
@@ -973,4 +1010,20 @@ public sealed record PrescriptedEmpireSummary(string Key, string SourceFile)
 
     /// <summary>The scripted trigger gating whether the game offers it.</summary>
     public Requirement Playable { get; init; } = new AlwaysRequirement(true);
+
+    /// <summary>The set of country flags it carries, where it carries one.</summary>
+    public string? FlagSet { get; init; }
+
+    /// <summary>The room it sits in.</summary>
+    public string? Room { get; init; }
+
+    /// <summary>
+    /// The empire itself, written in the player's own designs format.
+    /// </summary>
+    /// <remarks>
+    /// The game writes its own empires in a shape of their own, and a browser has no installation to
+    /// convert them with, so the conversion travels with the data. This is what a player takes a
+    /// copy of.
+    /// </remarks>
+    public string? Design { get; init; }
 }

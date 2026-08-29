@@ -37,6 +37,28 @@
     </select>
 </div>
 
+@*
+    The country flags a design carries, which are markers rather than pictures: the game's own
+    empires use them to claim their bespoke opening screens and their own events. A custom empire may
+    take a set, which is how it inherits them.
+*@
+<div class="sem-field">
+    <label for="empire-flag-set">Special empire flags</label>
+    <select id="empire-flag-set" @onchange="e => Session.Edit(d => d.PrescriptedFlag = Chosen(e.Value?.ToString()))">
+        <option value="" selected="@string.IsNullOrEmpty(Design.PrescriptedFlag)">None</option>
+
+        @foreach (var set in FlagSets)
+        {
+            <option value="@set.Key" selected="@(set.Key == Design.PrescriptedFlag)">@FlagSetName(set)</option>
+        }
+    </select>
+
+    @if (FlagSets.FirstOrDefault(s => s.Key == Design.PrescriptedFlag) is { } current)
+    {
+        <p class="sem-hint">Grants @string.Join(", ", current.Flags).</p>
+    }
+</div>
+
 @code {
     /// <summary>Whether the last name typed was already taken by another empire.</summary>
     private bool _clash;
@@ -45,6 +67,36 @@
     public required DesignSession Session { get; set; }
 
     private EmpireDesign Design => Session.Current!;
+
+    private IReadOnlyList<EmpireFlagSet> FlagSets => Session.Data.Database.EmpireFlagSets;
+
+    /// <summary>The empty choice writes nothing rather than an empty string.</summary>
+    private static string? Chosen(string? key) => key is { Length: > 0 } ? key : null;
+
+    /// <summary>
+    /// What to call a set of flags.
+    /// </summary>
+    /// <remarks>
+    /// The game gives these no names at all, and "Empire Human 1" says nothing. What does say
+    /// something is whose flags they are, so the empires that carry the set name it.
+    /// </remarks>
+    private string FlagSetName(EmpireFlagSet set)
+    {
+        // Two of the game's empires may share both a set and a name — a species and its machine
+        // counterpart — and naming the set after both says it twice.
+        var empires = set.Empires
+            .Select(e => Session.Localizer.Text(EmpireNameKey(e), Localizer.Prettify(e)))
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
+
+        return empires.Count == 0
+            ? Localizer.Prettify(set.Key)
+            : string.Join(", ", empires);
+    }
+
+    private string? EmpireNameKey(string key) =>
+        Session.Data.Database.PrescriptedEmpires
+            .FirstOrDefault(e => string.Equals(e.Key, key, StringComparison.Ordinal))?.NameKey;
 
     /// <summary>
     /// Names the empire, and renames the design with it.

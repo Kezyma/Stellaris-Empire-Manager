@@ -1,4 +1,5 @@
 @page "/"
+@implements IDisposable
 @inject SessionHost Host
 @inject IFileExchange Files
 @inject NavigationManager Navigation
@@ -71,13 +72,70 @@ else
     </p>
 
     <EmpireBrowser Session="_session" OnSelected="OpenDesigner" />
+
+    @*
+        The game's own empires, for everyone. They are worth reading on their own — a good deal of
+        the game's writing is in them — and worth copying, since starting from one that already works
+        beats starting from a blank slate.
+    *@
+    <div class="sem-panel" style="margin-top:16px">
+        <div class="sem-row">
+            <div>
+                <h2 style="margin:0">The game's empires</h2>
+                <span class="sem-hint">@Prescripted.Count built in. Take a copy to make it your own.</span>
+            </div>
+        </div>
+
+        <div class="sem-preset-list">
+            @foreach (var empire in Prescripted)
+            {
+                <div class="sem-preset">
+                    @if (Thumbnail(empire) is { Length: > 0 } portrait)
+                    {
+                        <img src="@_session.Data.AssetUrl(portrait)" alt="" loading="lazy">
+                    }
+
+                    <div class="detail">
+                        <span class="name">@_session.Localizer.Text(empire.NameKey, empire.Key)</span>
+                        <span class="sem-hint">@Summary(empire)</span>
+                    </div>
+
+                    <button type="button" disabled="@(empire.Design is not { Length: > 0 })"
+                            @onclick="() => Duplicate(empire)">
+                        Duplicate
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
 }
 
 @code {
     private DesignSession? _session;
     private string? _error;
 
-    protected override async Task OnInitializedAsync() => _session = await Host.GetAsync();
+    protected override async Task OnInitializedAsync()
+    {
+        _session = await Host.GetAsync();
+
+        // The content packs decide which of the game's empires a player could actually start as, and
+        // the bar that turns them on and off is a different component. Without listening, turning a
+        // pack off left its empires sitting in the list.
+        if (_session is not null)
+        {
+            _session.Changed += OnChanged;
+        }
+    }
+
+    public void Dispose()
+    {
+        if (_session is not null)
+        {
+            _session.Changed -= OnChanged;
+        }
+    }
+
+    private void OnChanged() => InvokeAsync(StateHasChanged);
 
     private async Task OpenFile(InputFileChangeEventArgs e)
     {
@@ -139,6 +197,88 @@ else
         for (var i = 2; ; i++)
         {
             var candidate = $"{baseName} {i}";
+            if (_session.File.Find(candidate) is null)
+            {
+                return candidate;
+            }
+        }
+    }
+
+    /// <summary>
+    /// The game's own empires, those a player could actually start as.
+    /// </summary>
+    /// <remarks>
+    /// Several are marked playable only with a content pack, and a few are not offered at all — the
+    /// game keeps some of its own creatures in the same files. Judged against what the player says
+    /// they own, so the list matches what their game would show.
+    /// </remarks>
+    private IReadOnlyList<PrescriptedEmpireSummary> Prescripted =>
+        [.. _session!.Data.Database.PrescriptedEmpires
+            .Where(e => _evaluator.IsSatisfied(e.Playable, PlayerContext))
+            .OrderBy(e => _session.Localizer.Text(e.NameKey, e.Key), StringComparer.CurrentCulture)];
+
+    private readonly RequirementEvaluator _evaluator = new();
+
+    /// <summary>
+    /// An empty design judged against what the player owns.
+    /// </summary>
+    /// <remarks>
+    /// A built-in empire's own conditions are almost all about content packs, so nothing about the
+    /// empire being edited matters here — only what the player has.
+    /// </remarks>
+    private DesignContext PlayerContext =>
+        _session!.Rules.CreateContext(EmpireDesignsFile.CreateEmpty().Add("scratch"), _session.OwnedDlc);
+
+    private string? Thumbnail(PrescriptedEmpireSummary empire) =>
+        PortraitArtwork.For(_session!.Data.Database, empire.Portrait, gender: null);
+
+    private string Summary(PrescriptedEmpireSummary empire)
+    {
+        var parts = new[] { empire.SpeciesClass, empire.Authority, empire.Origin }
+            .OfType<string>()
+            .Where(p => p.Length > 0)
+            .Select(p => _session!.Localizer.Text(p));
+
+        return string.Join(" · ", parts);
+    }
+
+    /// <summary>
+    /// Copies one of the game's empires into the player's file and opens it.
+    /// </summary>
+    /// <remarks>
+    /// A copy, not a link: the point is to edit it. The name gains a number where one is already
+    /// taken, as a duplicate of anything else would.
+    /// </remarks>
+    private void Duplicate(PrescriptedEmpireSummary empire)
+    {
+        if (empire.Design is not { Length: > 0 } design)
+        {
+            return;
+        }
+
+        if (_session!.File is null)
+        {
+            _session.StartEmptyFile();
+        }
+
+        var name = Available(_session.Localizer.Text(empire.NameKey, empire.Key));
+
+        _session.EditFile(file => file.AddFromTemplate(design, name));
+        _session.Select(_session.File!.Find(name));
+        Navigation.NavigateTo("designer");
+    }
+
+    /// <summary>A name nothing in the file has yet.</summary>
+    private string Available(string wanted)
+    {
+        if (_session?.File?.Find(wanted) is null)
+        {
+            return wanted;
+        }
+
+        for (var i = 2; ; i++)
+        {
+            var candidate = $"{wanted} {i}";
             if (_session.File.Find(candidate) is null)
             {
                 return candidate;

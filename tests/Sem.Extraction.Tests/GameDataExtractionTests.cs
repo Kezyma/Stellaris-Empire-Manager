@@ -49,7 +49,14 @@ public sealed class GameDataExtractionTests
             ("starting worlds", 9, database.PlanetClasses.Count(p => p.IsStartingWorld)),
             ("starting systems", 23, database.Initializers.Count),
             ("advisor voices", 27, database.AdvisorVoices.Count),
-            ("rooms", 41, database.Rooms.Count),
+            // Sixty-six: the forty-one the game's own designer offers, plus twenty-five it hands out
+            // during play and has artwork for. The selector names one more, synth_queen_room, which
+            // no installation has a picture for.
+            ("rooms", 66, database.Rooms.Count),
+            ("rooms the designer offers", 41, database.Rooms.Count(r => r.IsOffered)),
+
+            // Twenty-one named sets of country flags, carried by the game's own empires.
+            ("empire flag sets", 21, database.EmpireFlagSets.Count),
             ("flag categories", 19, database.FlagCategories.Count),
             ("flag colours", 72, database.FlagColors.Count),
             ("built-in empires", 52, database.PrescriptedEmpires.Count),
@@ -143,6 +150,53 @@ public sealed class GameDataExtractionTests
         Assert.True(
             Single(database.Traits, t => t.Key == "trait_deviants").Cost < 0,
             "Deviants is a drawback and should give points back.");
+    }
+
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void RoomsTheGameAssignsAreKeptApartFromTheOnesItOffers()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        // The brick room one of the game's own empires sits in. Its condition in the selector names
+        // a country type a player can never be — the same kind of guard the fallen empires have — so
+        // it is not something the designer offers. But a design that names a room gets that room,
+        // which is exactly how that empire comes to be in it.
+        var brick = Single(database.Rooms, r => r.Key == "pre_ftl_ancient_room");
+
+        Assert.False(brick.IsOffered);
+        Assert.NotNull(brick.Image);
+
+        Assert.True(Single(database.Rooms, r => r.Key == "default_room").IsOffered);
+
+        // A room the selector names but no installation has a picture for is left out entirely:
+        // naming one would be the one way to ask for something that cannot be drawn.
+        Assert.DoesNotContain(database.Rooms, r => r.Key == "synth_queen_room");
+        Assert.All(database.Rooms, r => Assert.NotNull(r.Image));
+    }
+
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void TheGamesOwnEmpiresTravelInTheFormatAPlayerCanEdit()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        // A browser has no installation to convert them with, so the conversion has to have happened
+        // already. Without it there is nothing to take a copy of.
+        Assert.All(database.PrescriptedEmpires, e => Assert.False(string.IsNullOrEmpty(e.Design)));
+
+        var une = Single(database.PrescriptedEmpires, e => e.Key == "humans1");
+
+        Assert.Equal("empire_human_1", une.FlagSet);
+
+        // And it parses back as a design, which is what taking a copy does with it.
+        var reopened = Sem.Designs.EmpireDesignsFile.LoadText(une.Design!);
+        var design = Assert.Single(reopened.Designs);
+
+        Assert.Equal("auth_democratic", design.Authority);
+        Assert.Equal("empire_human_1", design.PrescriptedFlag);
     }
 
     [SkippableFact]
