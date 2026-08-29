@@ -10,26 +10,26 @@
 <div class="sem-name-row">
     <div class="sem-field">
         <label for="@Field("name")">Species</label>
-        <ComboBox Id="@Field("name")" Value="@Species.Name.Key"
+        <ComboBox Id="@Field("name")" Value="@Shown(Species.Name)"
                   Options="@Names" OnChange="ChooseName" />
     </div>
 
     <div class="sem-field">
         <label for="@Field("plural")">Plural</label>
-        <ComboBox Id="@Field("plural")" Value="@Species.Plural.Key"
+        <ComboBox Id="@Field("plural")" Value="@Shown(Species.Plural)"
                   Options="@Plurals" OnChange="ChoosePlural" />
     </div>
 
     <div class="sem-field">
         <label for="@Field("adjective")">Adjective</label>
-        <ComboBox Id="@Field("adjective")" Value="@Species.Adjective.Key"
+        <ComboBox Id="@Field("adjective")" Value="@Shown(Species.Adjective)"
                   Options="@Adjectives" OnChange="ChooseAdjective" />
     </div>
 
     <div class="sem-field">
         <label>&nbsp;</label>
-        <button type="button" class="small" title="A species, its homeworld and its home system together"
-                @onclick="RandomiseSpecies">Randomise</button>
+        <RandomiseButton Title="A species, its homeworld and its home system together"
+                         OnClick="RandomiseSpecies" />
     </div>
 </div>
 
@@ -172,6 +172,9 @@
         return joined;
     }
 
+    /// <summary>A stored name as a reader should see it, rather than as the file holds it.</summary>
+    private string Shown(LocRef name) => Session.Localizer.Name(name);
+
     private void ChooseName(string? value) => Apply(value, s => s.Name, () => Species.Name);
 
     private void ChoosePlural(string? value) => Apply(value, s => s.Plural, () => Species.Plural);
@@ -184,7 +187,8 @@
     /// </summary>
     /// <remarks>
     /// Text matching nothing is kept exactly as typed. That is the difference between a combobox and
-    /// a dropdown, and an empire called something the game never thought of is the normal case.
+    /// a dropdown, and an empire called something the game never thought of is the normal case. Text
+    /// that does match one is written the game's way, as a key rather than as the English for it.
     /// </remarks>
     private void Apply(
         string? value,
@@ -204,9 +208,7 @@
                 return;
             }
 
-            Species.Name.SetLiteral(chosen.Name);
-            Species.Plural.SetLiteral(chosen.Plural ?? chosen.Name);
-            Species.Adjective.SetLiteral(NameGenerator.Adjective(chosen.Name));
+            NameWriter.Species(Species, chosen);
         });
     }
 
@@ -227,9 +229,7 @@
 
         Session.Edit(d =>
         {
-            Species.Name.SetLiteral(suggestion.Name);
-            Species.Plural.SetLiteral(suggestion.Plural ?? suggestion.Name);
-            Species.Adjective.SetLiteral(NameGenerator.Adjective(suggestion.Name));
+            NameWriter.Species(Species, suggestion);
 
             // Only the founder species names the empire's homeworld.
             if (!ReferenceEquals(Species.Block, d.Species.Block))
@@ -239,12 +239,12 @@
 
             if (suggestion.HomePlanet is { Length: > 0 } planet)
             {
-                d.PlanetName.SetLiteral(planet);
+                NameWriter.Write(d.PlanetName, suggestion.HomePlanetKey, planet);
             }
 
             if (suggestion.HomeSystem is { Length: > 0 } system)
             {
-                d.SystemName.SetLiteral(system);
+                NameWriter.Write(d.SystemName, suggestion.HomeSystemKey, system);
             }
         });
     }

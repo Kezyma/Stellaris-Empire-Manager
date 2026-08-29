@@ -1,5 +1,7 @@
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
+using Sem.Designs;
 
 namespace Sem.Ui.Services;
 
@@ -15,12 +17,17 @@ namespace Sem.Ui.Services;
 public sealed partial class Localizer(
     IReadOnlyDictionary<string, string> entries,
     IReadOnlyDictionary<string, string>? textIcons = null,
-    Func<string, string>? assetUrl = null)
+    Func<string, string>? assetUrl = null,
+    IReadOnlyDictionary<string, double>? scriptedValues = null)
 {
     /// <summary>How deep a chain of variables standing for other entries is followed.</summary>
     private const int MaxSubstitutionDepth = 8;
 
     private readonly IReadOnlyDictionary<string, string> _entries = entries ?? new Dictionary<string, string>();
+
+    /// <summary>The numbers the script names rather than writes.</summary>
+    private readonly IReadOnlyDictionary<string, double> _scriptedValues =
+        scriptedValues ?? new Dictionary<string, double>();
 
     /// <summary>Where each inline picture lives, by the code that stands for it.</summary>
     private readonly IReadOnlyDictionary<string, string> _textIcons =
@@ -97,6 +104,75 @@ public sealed partial class Localizer(
         string.IsNullOrEmpty(value) ? string.Empty : ToHtml(Substitute(value, 0));
 
     /// <summary>
+    /// Reads a name out of a design.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A design stores a name either as text the player typed or as a localisation key, and the two
+    /// look identical in the file apart from a <c>literal</c> flag. Showing the key as though it
+    /// were the name is why every built-in empire read
+    /// <c>PRESCRIPTED_species_name_iferyx</c> in its own name field.
+    /// </para>
+    /// <para>
+    /// A key may be a template with its own variables — an adjective is stored as
+    /// <c>%ADJECTIVE%</c> plus the species it is formed from — and those nest: the player's own file
+    /// goes four deep. Each is resolved in turn, and a template the game has no text for falls back
+    /// to whatever its first variable resolves to, which is the species name and the word a reader
+    /// would expect.
+    /// </para>
+    /// </remarks>
+    public string Name(LocRef? name, string? fallback = null)
+    {
+        if (name is null || name.IsEmpty)
+        {
+            return fallback ?? string.Empty;
+        }
+
+        return Name(name, 0) is { Length: > 0 } text ? text : fallback ?? string.Empty;
+    }
+
+    private string Name(LocRef name, int depth)
+    {
+        if (name.IsLiteral || depth >= MaxSubstitutionDepth)
+        {
+            return name.Key;
+        }
+
+        var parts = name.Variables
+            .Select(v => v.Value is { } value ? Name(value, depth + 1) : string.Empty)
+            .Where(p => p.Length > 0)
+            .ToList();
+
+        if (_entries.TryGetValue(name.Key, out var template))
+        {
+            return StripMarkup(Fill(Substitute(template, 0), name, depth));
+        }
+
+        // No text under the key. A template is then worth nothing on its own, so what it was made
+        // from stands in; a plain key with no text is shown as the game shows it, as itself.
+        return parts.Count > 0 ? parts[0] : name.Key;
+    }
+
+    /// <summary>Puts a stored name's own variables into the text its key resolved to.</summary>
+    private string Fill(string template, LocRef name, int depth)
+    {
+        if (name.Variables.Count == 0)
+        {
+            return template;
+        }
+
+        return VariableReference().Replace(template, match =>
+        {
+            var wanted = match.Groups[1].Value;
+
+            var variable = name.Variables.FirstOrDefault(v =>
+                string.Equals(v.Key, wanted, StringComparison.OrdinalIgnoreCase));
+
+            return variable?.Value is { } value ? Name(value, depth + 1) : match.Value;
+        });
+    }
+
+    /// <summary>
     /// A readable label for a key the game has no text for, by turning it into words.
     /// </summary>
     public static string Prettify(string key)
@@ -130,10 +206,44 @@ public sealed partial class Localizer(
         return VariableReference().Replace(value, match =>
         {
             var name = match.Groups[1].Value;
+
+            // A name beginning with @ stands for a number the script declared rather than another
+            // piece of text, and what follows the bar says how to write it.
+            if (name.StartsWith('@'))
+            {
+                return _scriptedValues.TryGetValue(name[1..], out var number)
+                    ? Number(number, match.Groups[2].Value)
+                    : match.Value;
+            }
+
             return _entries.TryGetValue(name, out var replacement)
                 ? Substitute(replacement, depth + 1)
                 : match.Value;
         });
+    }
+
+    /// <summary>
+    /// Writes a number the way the text asks for it.
+    /// </summary>
+    /// <remarks>
+    /// The flags after the bar are the game's own number format, and the ones its text actually uses
+    /// are <c>*0</c>, <c>0</c>, <c>0%</c>, <c>%0</c>, <c>+0%</c>, <c>0%+</c> and <c>0=+%</c>. A digit
+    /// is how many decimal places to keep, a per cent sign multiplies by a hundred and adds one, and
+    /// a plus sign forces the sign onto a positive number. Anything else is written plainly rather
+    /// than guessed at.
+    /// </remarks>
+    private static string Number(double value, string flags)
+    {
+        var percent = flags.Contains('%', StringComparison.Ordinal);
+        var signed = flags.Contains('+', StringComparison.Ordinal);
+        var places = flags.FirstOrDefault(char.IsAsciiDigit) is var digit && digit != '\0'
+            ? digit - '0'
+            : 2;
+
+        var shown = percent ? value * 100 : value;
+        var text = shown.ToString($"F{places}", CultureInfo.InvariantCulture);
+
+        return (signed && shown > 0 ? "+" : string.Empty) + text + (percent ? "%" : string.Empty);
     }
 
     /// <summary>Removes the game's markup, for places that show plain text.</summary>
@@ -280,8 +390,11 @@ public sealed partial class Localizer(
                 return _entries.TryGetValue(key, out var text) ? text : Prettify(key);
             });
 
-    /// <summary>Replaces variables standing for other entries with those entries' text.</summary>
-    [GeneratedRegex(@"\$([A-Za-z_][A-Za-z0-9_.]*)(?:\|[^$]*)?\$")]
+    /// <summary>
+    /// A variable standing for another entry, or — with a leading <c>@</c> — for a number the script
+    /// declared. What follows the bar is a format, and is captured so numbers can honour it.
+    /// </summary>
+    [GeneratedRegex(@"\$(@?[A-Za-z_][A-Za-z0-9_.]*)(?:\|([^$]*))?\$")]
     private static partial Regex VariableReference();
 
     [GeneratedRegex(@"\['([A-Za-z0-9_]+)'(?:\s*,\s*([^\]]*))?\]")]

@@ -9,8 +9,16 @@ internal static class WorldExtractor
     /// Reads the planet classes, marking those an empire may start on.
     /// </summary>
     /// <remarks>
-    /// The starting worlds are those flagged <c>initial</c>. Origins reach further than that, by
-    /// naming a starting colony of their own, which is how Void Dwellers begin on a habitat.
+    /// <para>
+    /// A starting world is flagged <c>initial</c> and not flagged <c>starting_planet = no</c>. Both
+    /// are needed: a volcanic world and an arkship are each <c>initial</c>, and neither is a world a
+    /// player may simply choose — an Infernal species class adds the first and an origin the second.
+    /// Reading only the first offered both to everyone.
+    /// </para>
+    /// <para>
+    /// Origins reach further still by naming a starting colony of their own, which is how Void
+    /// Dwellers begin on a habitat.
+    /// </para>
     /// </remarks>
     public static List<PlanetClassDefinition> ExtractPlanetClasses(
         ScriptLoader loader,
@@ -26,7 +34,7 @@ internal static class WorldExtractor
             results.Add(new PlanetClassDefinition(entry.Key)
             {
                 Climate = body.GetString("climate"),
-                IsStartingWorld = body.GetBool("initial"),
+                IsStartingWorld = body.GetBool("initial") && body.GetBool("starting_planet", defaultValue: true),
                 Colonizable = body.GetBool("colonizable"),
                 Potential = requirements.CompileTrigger(body.GetBlock("potential")),
 

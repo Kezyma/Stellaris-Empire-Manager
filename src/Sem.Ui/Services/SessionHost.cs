@@ -1,13 +1,24 @@
+using Sem.Designs;
+
 namespace Sem.Ui.Services;
 
 /// <summary>
 /// Keeps the one working session alive across pages, so moving between the empire list and the
 /// designer does not reload the game data or lose unsaved changes.
 /// </summary>
-public sealed class SessionHost(IGameDataSource source, IFileExchange files)
+/// <param name="assumeAllPacks">
+/// Whether to open with every content pack enabled. True on the web, where the installation the
+/// data was read from is not the player's; false on the desktop, where it is.
+/// </param>
+public sealed class SessionHost(
+    IGameDataSource source,
+    IFileExchange files,
+    IDesignStore? store = null,
+    bool assumeAllPacks = false)
 {
     private readonly IGameDataSource _source = source ?? throw new ArgumentNullException(nameof(source));
     private readonly IFileExchange _files = files ?? throw new ArgumentNullException(nameof(files));
+    private readonly IDesignStore _store = store ?? new NoDesignStore();
     private readonly SemaphoreSlim _gate = new(1, 1);
 
     private DesignSession? _session;
@@ -36,18 +47,27 @@ public sealed class SessionHost(IGameDataSource source, IFileExchange files)
             }
 
             var data = await _source.LoadAsync(cancellationToken).ConfigureAwait(false);
-            var session = new DesignSession(data);
+            var session = new DesignSession(data, assumeAllPacks);
 
-            // The desktop app knows where the player's designs are and opens them; a browser has
-            // to be handed one, so it starts empty.
+            // The desktop app knows where the player's designs are and opens them. A browser has to
+            // be handed one — but it may have been handed one before, so what it kept is opened
+            // rather than starting empty and losing an evening's work to a closed tab.
             if (await TryOpenExistingAsync().ConfigureAwait(false) is { } existing)
             {
                 session.Load(existing.Contents, existing.Name);
+            }
+            else if (await _store.ReadAsync().ConfigureAwait(false) is { Length: > 0 } kept)
+            {
+                session.LoadText(kept, EmpireDesignsFile.FileName);
             }
             else
             {
                 session.StartEmptyFile();
             }
+
+            // Kept from here on, so that what is in the tab and what is in the browser's store stay
+            // the same thing. Opening a file replaces the store, which is what opening a file means.
+            session.Changed += Keep;
 
             _session = session;
             LoadError = null;
@@ -63,6 +83,21 @@ public sealed class SessionHost(IGameDataSource source, IFileExchange files)
         finally
         {
             _gate.Release();
+        }
+    }
+
+    /// <summary>
+    /// Writes the whole designs file back to the store whenever anything changes.
+    /// </summary>
+    /// <remarks>
+    /// Not awaited: this runs from a change notification during a render, and a save that takes a
+    /// moment must not hold one up. Failures are the store's own business and it swallows them.
+    /// </remarks>
+    private void Keep()
+    {
+        if (_session?.Save() is { } bytes)
+        {
+            _ = _store.WriteAsync(System.Text.Encoding.UTF8.GetString(bytes));
         }
     }
 

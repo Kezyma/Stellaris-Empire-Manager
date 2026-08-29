@@ -53,6 +53,33 @@ public sealed class ReasonWriter(Localizer localizer)
     }
 
     /// <summary>
+    /// Says what is holding a trait on a species.
+    /// </summary>
+    /// <remarks>
+    /// "Fixed by the species class, authority, civics or origin" named four things and blamed none
+    /// of them, leaving the player to work out which by removing things until it went away. The
+    /// rules know the answer.
+    /// </remarks>
+    public string Fixed(ForcedTrait forced)
+    {
+        ArgumentNullException.ThrowIfNull(forced);
+
+        var cause = forced.Cause is { Length: > 0 } key ? _localizer.Text(key) : null;
+
+        return forced.Source switch
+        {
+            // "a Continental World homeworld" says world twice; what it means is where they evolved.
+            ForcedTraitSource.Homeworld when cause is { Length: > 0 } => $"Fixed by starting on a {cause}.",
+            ForcedTraitSource.Homeworld => "Fixed by the homeworld.",
+            _ when cause is { Length: > 0 } => $"Fixed by {cause}.",
+            ForcedTraitSource.SpeciesClass => "Fixed by the species class.",
+            ForcedTraitSource.Authority => "Fixed by the authority.",
+            ForcedTraitSource.Civic => "Fixed by a civic.",
+            _ => "Fixed by the origin.",
+        };
+    }
+
+    /// <summary>
     /// Says which species a trait wants, rather than only that this one will not do.
     /// </summary>
     /// <remarks>

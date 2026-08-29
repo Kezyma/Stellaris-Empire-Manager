@@ -153,7 +153,16 @@ internal static partial class LocalisationPruner
         foreach (var initializer in database.Initializers)
         {
             Add(initializer.NameKey);
+            Add(initializer.DescriptionKey);
         }
+
+        // The blank choice in the starting-system list is the game's own Random, and it has a name
+        // and a description like the rest even though no initializer carries them.
+        Add("RANDOM_FRONTEND_NAME");
+        Add("random_system_initializer_DESC");
+        Add("SELECT_SYSTEM_INITIALIZER_LABEL");
+        Add("SYSTEM_NAME");
+        Add("IS_NOMADIC");
 
         foreach (var voice in database.AdvisorVoices)
         {

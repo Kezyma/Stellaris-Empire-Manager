@@ -29,22 +29,31 @@ public static class ExtractCommand
             Description = "Write into the web app's wwwroot so a local site build has data to serve.",
         };
 
+        var wardrobeOption = new Option<bool>("--wardrobe")
+        {
+            Description =
+                "Also draw every outfit, hairstyle and skin each portrait can wear, as stackable " +
+                "layers. Thousands of pictures; the empire designer needs none of them.",
+        };
+
         var command = new Command("extract", "Read a Stellaris installation into a game database.")
         {
             installOption,
             outputOption,
             webOption,
+            wardrobeOption,
         };
 
         command.SetAction(parseResult => Run(
             parseResult.GetValue(installOption)?.FullName,
             parseResult.GetValue(outputOption)?.FullName,
-            parseResult.GetValue(webOption)));
+            parseResult.GetValue(webOption),
+            parseResult.GetValue(wardrobeOption)));
 
         return command;
     }
 
-    private static int Run(string? installOverride, string? outputOverride, bool forWeb)
+    private static int Run(string? installOverride, string? outputOverride, bool forWeb, bool wardrobe = false)
     {
         var sandbox = SandboxLayout.Discover(Environment.CurrentDirectory);
         var file = new SafeFile(sandbox.CreateDevelopmentPolicy());
@@ -64,11 +73,14 @@ public static class ExtractCommand
         Console.WriteLine($"Output  : {Path.Combine(outputDirectory, GameDataWriter.DatabaseFileName)}");
         Console.WriteLine();
 
-        var result = GameDataWriter.Write(
-            installRoot,
-            outputDirectory,
-            file,
-            new Progress<string>(message => Console.WriteLine($"  {message}")));
+        var progress = new Progress<string>(message => Console.WriteLine($"  {message}"));
+
+        var result = GameDataWriter.Write(installRoot, outputDirectory, file, progress);
+
+        if (wardrobe)
+        {
+            WriteWardrobe(installRoot, outputDirectory, file, result, progress);
+        }
 
         Console.WriteLine();
         WriteSummary(result);
@@ -161,6 +173,52 @@ public static class ExtractCommand
             Console.WriteLine($"  {log}");
             Console.WriteLine("  which would replace those inferences with the game's own settings.");
         }
+    }
+
+    /// <summary>
+    /// Draws every portrait's wardrobe and says what it cost.
+    /// </summary>
+    /// <remarks>
+    /// Kept behind a switch because the empire designer needs none of it: it shows one face per
+    /// portrait, and the wardrobe exists for a leader designer that will come later. It is thousands
+    /// of pictures, and whether they are worth publishing is a question that needs the number this
+    /// prints rather than an estimate.
+    /// </remarks>
+    private static void WriteWardrobe(
+        string installRoot,
+        string outputDirectory,
+        SafeFile file,
+        ExtractionResult result,
+        IProgress<string> progress)
+    {
+        Console.WriteLine();
+        Console.WriteLine("Drawing every outfit, hairstyle and skin. This takes a while.");
+
+        var content = LayeredContent.ForInstall(installRoot);
+        var assets = Path.Combine(outputDirectory, "assets");
+
+        var (outfits, report) = new PortraitBaker(content, file)
+            .BakeWardrobe(result.Database.Portraits, assets, progress);
+
+        var layers = outfits.Sum(o => o.Layers.Count);
+
+        // Beside the database rather than inside it: the empire designer shows one face per portrait
+        // and should not read a wardrobe to do it.
+        file.WriteAllBytes(
+            Path.Combine(outputDirectory, "wardrobe.json"),
+            JsonSerializer.SerializeToUtf8Bytes(
+                outfits,
+                GameDataJsonContext.Default.IReadOnlyListPortraitOutfit));
+
+        Console.WriteLine();
+        Console.WriteLine(
+            $"Wardrobe: {report.Rendered:N0} picture(s) across {layers:N0} layer(s) of " +
+            $"{outfits.Count:N0} portrait(s), {report.Bytes / 1024.0 / 1024.0:F1} MB");
+
+        Console.WriteLine(
+            $"  against {result.Portraits.Bytes / 1024.0 / 1024.0:F1} MB for the portraits themselves");
+
+        WriteFailures("wardrobe(s) could not be drawn", report.Failures);
     }
 
     private static void WriteSummary(ExtractionResult result)

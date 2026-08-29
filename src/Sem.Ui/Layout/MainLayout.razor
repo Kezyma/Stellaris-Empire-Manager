@@ -1,11 +1,22 @@
 @inherits LayoutComponentBase
+@inject SessionHost Host
 
 <div class="sem-app">
     <header class="sem-header">
         <span class="brand">Stellaris Empire Manager</span>
         <NavLink href="" Match="NavLinkMatch.All" class="sem-tab">Empires</NavLink>
-        <NavLink href="settings" class="sem-tab">Settings</NavLink>
     </header>
+
+    @*
+        The content packs, across the top of every page. They decide what half the designer offers,
+        so they sit where the designer can be watched changing as they are turned on and off.
+    *@
+    @if (_session is not null)
+    {
+        <CascadingValue Value="_session">
+            <DlcPanel />
+        </CascadingValue>
+    }
 
     <main class="sem-main">
         @Body
@@ -17,3 +28,9 @@
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
+
+@code {
+    private DesignSession? _session;
+
+    protected override async Task OnInitializedAsync() => _session = await Host.GetAsync();
+}

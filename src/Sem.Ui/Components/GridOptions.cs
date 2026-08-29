@@ -19,16 +19,13 @@ public static class GridOptions
     /// <param name="states">What the rules say about each choice.</param>
     /// <param name="describe">Where to find a choice's picture and its effects.</param>
     /// <param name="isSelected">Whether the empire has it.</param>
-    /// <param name="isFixed">
-    /// Whether something else has already decided it, such as a trait an origin forces. Those are
-    /// shown as chosen but cannot be unchosen.
-    /// </param>
+    /// <param name="picture">A larger image to show beside the detail, where the option has one.</param>
     public static IReadOnlyList<OptionGrid.GridOption> Build(
         DesignSession session,
         IEnumerable<OptionState> states,
         Func<string, (string? Icon, EffectSet? Effects)> describe,
         Func<string, bool> isSelected,
-        Func<string, bool>? isFixed = null)
+        Func<string, string?>? picture = null)
     {
         ArgumentNullException.ThrowIfNull(session);
         ArgumentNullException.ThrowIfNull(states);
@@ -40,17 +37,17 @@ public static class GridOptions
             .. states.Where(s => s.Visible).Select(state =>
             {
                 var (icon, effects) = describe(state.Key);
-                var locked = isFixed?.Invoke(state.Key) ?? false;
 
                 return new OptionGrid.GridOption(state.Key, session.Localizer.Text(state.Key))
                 {
                     Description = session.Localizer.Html($"{state.Key}_desc", string.Empty),
                     Effects = effects,
                     Icon = icon,
+                    Picture = picture?.Invoke(state.Key),
                     Cost = state.Cost == 0 ? null : state.Cost,
                     Selected = isSelected(state.Key),
-                    Enabled = state.Enabled && !locked,
-                    Reasons = Reasons(session, state, locked),
+                    Enabled = state.Enabled,
+                    Reasons = Reasons(session, state),
                 };
             })
         ];
@@ -59,14 +56,9 @@ public static class GridOptions
     /// <summary>
     /// Why a choice is unavailable, in the game's own words where it has any.
     /// </summary>
-    private static IReadOnlyList<string> Reasons(DesignSession session, OptionState state, bool locked)
+    private static IReadOnlyList<string> Reasons(DesignSession session, OptionState state)
     {
         var reasons = session.Reasons.Describe(state.Reasons).ToList();
-
-        if (locked)
-        {
-            reasons.Insert(0, "Fixed by another choice.");
-        }
 
         if (state.RequiredDlc is { Length: > 0 } dlc)
         {

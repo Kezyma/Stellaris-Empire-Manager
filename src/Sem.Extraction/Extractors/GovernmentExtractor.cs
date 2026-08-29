@@ -86,6 +86,14 @@ internal static class GovernmentExtractor
                 EffectsKey = body.GetString("description"),
                 PenaltiesKey = body.GetString("negative_description"),
                 Icon = ResolveIcon(entry.Key, body, isOrigin, assets),
+
+                // The scene an origin opens on. Only origins have one, so a civic is not asked;
+                // asking and being told no is how two hundred civics came to be counted as missing
+                // artwork. Wider than it is tall and a good deal larger than an icon, so it is
+                // capped: sixty-one at full size would weigh more than every other picture together.
+                Picture = body.GetString("picture") is { Length: > 0 } picture
+                    ? assets.RegisterSprite(picture, $"pictures/origins/{entry.Key}.png", maxDimension: 480)
+                    : null,
             });
         }
 

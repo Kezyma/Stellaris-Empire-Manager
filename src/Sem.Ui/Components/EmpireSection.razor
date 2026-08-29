@@ -1,21 +1,30 @@
 @*
     The empire's own name, as distinct from its species'. A human empire is not called "Human", and
     the two are changed independently, so they sit in different places.
+
+    This is the only place the empire is named. The file keys an empire by its name and stores that
+    name again inside the block, and for an empire a player made the game writes the same words to
+    both — so asking for it twice was asking twice for one thing.
 *@
 
 <div class="sem-field">
     <label for="empire-name">Name</label>
     <div class="sem-row" style="flex-wrap:nowrap">
-        <input id="empire-name" type="text" value="@Design.Name.Key"
-               @onchange="e => Session.Edit(d => d.Name.SetLiteral(e.Value?.ToString() ?? string.Empty))" />
-        <button type="button" title="The species adjective and a form of government"
-                @onclick="RandomiseName">Randomise</button>
+        <input id="empire-name" type="text" value="@Session.Localizer.Name(Design.Name, Design.Key)"
+               @onchange="Rename" />
+        <RandomiseButton Title="The species adjective and a form of government"
+                         OnClick="RandomiseName" />
     </div>
+
+    @if (_clash)
+    {
+        <p class="sem-status bad">Another empire in this file already has that name.</p>
+    }
 </div>
 
 <div class="sem-field">
     <label for="empire-adjective">Adjective</label>
-    <input id="empire-adjective" type="text" value="@Design.Adjective.Key"
+    <input id="empire-adjective" type="text" value="@Session.Localizer.Name(Design.Adjective)"
            @onchange="e => Session.Edit(d => d.Adjective.SetLiteral(e.Value?.ToString() ?? string.Empty))" />
 </div>
 
@@ -29,20 +38,35 @@
 </div>
 
 @code {
+    /// <summary>Whether the last name typed was already taken by another empire.</summary>
+    private bool _clash;
+
     [CascadingParameter]
     public required DesignSession Session { get; set; }
 
     private EmpireDesign Design => Session.Current!;
 
     /// <summary>
-    /// Names an empire the way the game most often does: the species adjective followed by a form of
-    /// government that suits its authority.
+    /// Names the empire, and renames the design with it.
     /// </summary>
-    private void RandomiseName()
+    /// <remarks>
+    /// The file keys empires by name, so two of a name would make one of them unreachable. Rather
+    /// than silently keeping the old key — which left the two disagreeing with no sign of it — the
+    /// clash is said out loud and the name is left alone until it is resolved.
+    /// </remarks>
+    private void Rename(ChangeEventArgs e)
     {
-        var species = Design.Species.Name.Key;
+        var name = e.Value?.ToString() ?? string.Empty;
 
-        if (Session.Names.Empire(species, Design.Authority) is not { Length: > 0 } name)
+        if (name.Length == 0)
+        {
+            return;
+        }
+
+        var taken = Session.File?.Find(name);
+        _clash = taken is not null && !ReferenceEquals(taken, Design);
+
+        if (_clash)
         {
             return;
         }
@@ -50,7 +74,34 @@
         Session.Edit(d =>
         {
             d.Name.SetLiteral(name);
+            d.Rename(name);
+        });
+    }
+
+    /// <summary>
+    /// Names an empire the way the game most often does: the species adjective followed by a form of
+    /// government that suits its authority.
+    /// </summary>
+    private void RandomiseName()
+    {
+        var species = Session.Localizer.Name(Design.Species.Name);
+
+        if (Session.Names.Empire(species, Design.Authority) is not { Length: > 0 } name)
+        {
+            return;
+        }
+
+        _clash = Session.File?.Find(name) is { } taken && !ReferenceEquals(taken, Design);
+
+        Session.Edit(d =>
+        {
+            d.Name.SetLiteral(name);
             d.Adjective.SetLiteral(NameGenerator.Adjective(species));
+
+            if (!_clash)
+            {
+                d.Rename(name);
+            }
         });
     }
 }

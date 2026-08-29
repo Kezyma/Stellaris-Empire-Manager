@@ -8,12 +8,9 @@ namespace Sem.Rules;
 /// <param name="HomePlanet">A name for the homeworld.</param>
 /// <param name="HomeSystem">A name for the home system.</param>
 /// <param name="NameList">The name list that goes with it.</param>
-public sealed record SuggestedSpecies(
-    string Name,
-    string? Plural,
-    string? HomePlanet,
-    string? HomeSystem,
-    string? NameList);
+// A suggestion is returned as the database holds it. Copying it into a narrower shape dropped the
+// localisation keys the game stores a chosen name by, and the copy said nothing the original did
+// not.
 
 /// <summary>
 /// Invents names the way the game's own randomise buttons do.
@@ -33,7 +30,7 @@ public sealed class NameGenerator(GameDatabase database, Random? random = null)
     /// Suggests a species, its plural, its homeworld and its home system together.
     /// </summary>
     /// <param name="speciesClass">The class to suit, such as <c>MAM</c>.</param>
-    public SuggestedSpecies? Species(string? speciesClass)
+    public SpeciesNameSuggestion? Species(string? speciesClass)
     {
         var candidates = _database.SpeciesNames
             .Where(s => speciesClass is null || string.Equals(s.SpeciesClass, speciesClass, StringComparison.Ordinal))
@@ -45,14 +42,7 @@ public sealed class NameGenerator(GameDatabase database, Random? random = null)
             candidates = [.. _database.SpeciesNames];
         }
 
-        return Pick(candidates) is { } chosen
-            ? new SuggestedSpecies(
-                chosen.Name,
-                chosen.Plural,
-                chosen.HomePlanet,
-                chosen.HomeSystem,
-                chosen.NameList)
-            : null;
+        return Pick(candidates);
     }
 
     /// <summary>

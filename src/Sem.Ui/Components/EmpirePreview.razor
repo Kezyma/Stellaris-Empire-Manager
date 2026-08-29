@@ -12,7 +12,7 @@
         <FlagPreview Flag="@Design.Flag" Class="small" />
 
         <span class="titles">
-            <span class="name">@Session.Localizer.Text(Design.Name.Key, Design.Key)</span>
+            <span class="name">@Session.Localizer.Name(Design.Name, Design.Key)</span>
             <span class="government">@GovernmentName</span>
         </span>
 
@@ -105,7 +105,7 @@
             }
 
             <div class="about">
-                <div class="name">@(species.Name.Key is { Length: > 0 } n ? n : "Unnamed species")</div>
+                <div class="name">@Session.Localizer.Name(species.Name, "Unnamed species")</div>
                 <div class="kind">@Session.Localizer.Text(species.Class)</div>
 
                 <div class="traits">

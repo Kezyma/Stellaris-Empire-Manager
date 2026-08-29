@@ -11,78 +11,83 @@
     artwork is better than no picker.
 *@
 
-<div class="sem-name-row">
-    <div class="sem-field">
-        <label for="@ClassFieldId">Species class</label>
-        <select id="@ClassFieldId" @onchange="e => SetClass(e.Value?.ToString())">
-            @foreach (var option in ClassOptions)
-            {
-                <option value="@option.Key"
-                        selected="@(option.Key == Species.Class)"
-                        disabled="@(!option.Enabled && option.Key != Species.Class)">
-                    @Session.Localizer.Text(option.Key)
-                </option>
-            }
-        </select>
-    </div>
-
-    @* The game's own four, in its own order. *@
-    <div class="sem-field">
-        <label>Gender</label>
-        <div class="sem-genders">
-            @foreach (var (key, label, icon) in Genders)
-            {
-                <button type="button"
-                        class="sem-gender @(key == CurrentGender ? "selected" : null)"
-                        title="@label"
-                        @onclick="() => Session.Edit(_ => Species.Gender = key)">
-                    @if (Session.Data.Database.Icons.GetValueOrDefault(icon) is { Length: > 0 } path)
-                    {
-                        <img src="@Session.Data.AssetUrl(path)" alt="@label">
-                    }
-                    else
-                    {
-                        <span>@label</span>
-                    }
-                </button>
-            }
-        </div>
-    </div>
-</div>
-
-@if (Portraits.Count == 0)
-{
-    <p class="sem-hint">Choose a species class to see its portraits.</p>
-}
-else
-{
-    <div class="sem-portraits">
-        @foreach (var portrait in Portraits)
+@* The game's own four, in its own order. *@
+<div class="sem-field">
+    <label>Gender</label>
+    <div class="sem-genders">
+        @foreach (var (key, label, icon) in Genders)
         {
-            var thumbnail = Thumbnail(portrait.Key);
-
-            @*
-                No caption. The game gives portraits no names — its own picker is a bare grid of
-                faces — so a label here could only be the file's key, which is what "avi18" was.
-            *@
             <button type="button"
-                    class="sem-portrait @(portrait.Key == Selected ? "selected" : null) @(portrait.Enabled ? null : "blocked")"
-                    disabled="@(!portrait.Enabled && portrait.Key != Selected)"
-                    title="@Caption(portrait.Key)"
-                    @onclick="() => Choose(portrait.Key)">
-
-                @if (thumbnail is not null)
+                    class="sem-gender @(key == CurrentGender ? "selected" : null)"
+                    title="@label"
+                    @onclick="() => Session.Edit(_ => Species.Gender = key)">
+                @if (Session.Data.Database.Icons.GetValueOrDefault(icon) is { Length: > 0 } path)
                 {
-                    <img src="@Session.Data.AssetUrl(thumbnail)" alt="@Caption(portrait.Key)" loading="lazy" />
+                    <img src="@Session.Data.AssetUrl(path)" alt="@label">
                 }
                 else
                 {
-                    <span class="silhouette" aria-hidden="true"></span>
+                    <span>@label</span>
                 }
             </button>
         }
     </div>
-}
+</div>
+
+@*
+    The classes on the left and their faces on the right, as the game arranges them. A dropdown hid
+    which classes exist behind a click, and the class is not an afterthought to the portrait — it is
+    the thing that decides which portraits there are.
+*@
+<div class="sem-portrait-picker">
+    <div class="sem-class-list" role="listbox" aria-label="Species class">
+        @foreach (var option in ClassOptions)
+        {
+            <button type="button"
+                    role="option"
+                    aria-selected="@(option.Key == Species.Class)"
+                    class="@(option.Key == Species.Class ? "selected" : null) @(option.Enabled || option.Key == Species.Class ? null : "blocked")"
+                    disabled="@(!option.Enabled && option.Key != Species.Class)"
+                    @onclick="() => SetClass(option.Key)">
+                @Session.Localizer.Text(option.Key)
+            </button>
+        }
+    </div>
+
+    @if (Portraits.Count == 0)
+    {
+        <p class="sem-hint">Choose a species class to see its portraits.</p>
+    }
+    else
+    {
+        <div class="sem-portraits">
+            @foreach (var portrait in Portraits)
+            {
+                var thumbnail = Thumbnail(portrait.Key);
+
+                @*
+                    No caption. The game gives portraits no names — its own picker is a bare grid of
+                    faces — so a label here could only be the file's key, which is what "avi18" was.
+                *@
+                <button type="button"
+                        class="sem-portrait @(portrait.Key == Selected ? "selected" : null) @(portrait.Enabled ? null : "blocked")"
+                        disabled="@(!portrait.Enabled && portrait.Key != Selected)"
+                        title="@Caption(portrait.Key)"
+                        @onclick="() => Choose(portrait.Key)">
+
+                    @if (thumbnail is not null)
+                    {
+                        <img src="@Session.Data.AssetUrl(thumbnail)" alt="@Caption(portrait.Key)" loading="lazy" />
+                    }
+                    else
+                    {
+                        <span class="silhouette" aria-hidden="true"></span>
+                    }
+                </button>
+            }
+        </div>
+    }
+</div>
 
 @code {
     [CascadingParameter]
@@ -113,15 +118,6 @@ else
     ];
 
     private string CurrentGender => Species.Gender is { Length: > 0 } set ? set : "not_set";
-
-    /// <summary>
-    /// Scoped to the species, since an empire with a second one shows two of these at once and a
-    /// label may only point at one field.
-    /// </summary>
-    private string ClassFieldId =>
-        Session.Current is { } design && ReferenceEquals(Species.Block, design.Species.Block)
-            ? "species-class"
-            : "second-species-class";
 
     /// <summary>
     /// Something to read aloud or hover over.

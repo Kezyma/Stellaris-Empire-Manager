@@ -44,6 +44,15 @@
         {
             <h4>@shown.Name</h4>
 
+            @*
+                Some options carry a picture as well as an icon — an origin has a whole scene, which
+                is most of how the game sells it. Shown at the top, where the game shows it.
+            *@
+            @if (shown.Picture is { Length: > 0 } picture)
+            {
+                <img class="sem-detail-picture" src="@Session.Data.AssetUrl(picture)" alt="" loading="lazy">
+            }
+
             @if (shown.Description is { Length: > 0 } description)
             {
                 <div class="sem-detail-lore">@((MarkupString)description)</div>
@@ -153,6 +162,9 @@
 
         /// <summary>Path to its icon within the extracted assets.</summary>
         public string? Icon { get; init; }
+
+        /// <summary>A larger picture, where the option has one, shown above its description.</summary>
+        public string? Picture { get; init; }
 
         /// <summary>What it costs, where the choice is bought from a budget.</summary>
         public int? Cost { get; init; }

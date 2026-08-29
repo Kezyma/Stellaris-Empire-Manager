@@ -76,6 +76,9 @@ public sealed class LocRef(CwBlock block) : CwView(block, FieldOrder)
         return block;
     }
 
+    /// <summary>The placeholder the game wraps a species name in to make an adjective.</summary>
+    public const string AdjectiveTemplate = "%ADJECTIVE%";
+
     /// <summary>Replaces this name with literal text, discarding any variables it had.</summary>
     public void SetLiteral(string text)
     {
@@ -84,6 +87,48 @@ public sealed class LocRef(CwBlock block) : CwView(block, FieldOrder)
         RemoveAll("variables");
         Key = text;
         IsLiteral = true;
+    }
+
+    /// <summary>
+    /// Replaces this name with a localisation key, discarding any variables it had.
+    /// </summary>
+    /// <remarks>
+    /// The counterpart to <see cref="SetLiteral"/>, and the one the game uses whenever a name was
+    /// chosen from a list rather than typed. The <c>literal</c> field is removed rather than set to
+    /// no, because the game omits it entirely on a name that is a key.
+    /// </remarks>
+    public void SetKey(string localisationKey)
+    {
+        ArgumentNullException.ThrowIfNull(localisationKey);
+
+        RemoveAll("variables");
+        Key = localisationKey;
+        IsLiteral = false;
+    }
+
+    /// <summary>
+    /// Makes this an adjective formed from a species name, as the game forms one.
+    /// </summary>
+    /// <remarks>
+    /// The game does not store "Oxanalytoran". It stores the template and the species it is made
+    /// from — <c>key="%ADJECTIVE%" variables={ { key="adjective" value={ key="SPEC_Oxanalytor" } } }</c>
+    /// — and builds the word when it shows it, which is what lets the same design read correctly in
+    /// a language that forms adjectives differently.
+    /// </remarks>
+    public void SetAdjectiveOf(string speciesNameKey)
+    {
+        ArgumentNullException.ThrowIfNull(speciesNameKey);
+
+        RemoveAll("variables");
+        Key = AdjectiveTemplate;
+        IsLiteral = false;
+
+        var variable = new CwBlock();
+        variable.Add(CwNode.QuotedAssignment("key", "adjective"));
+        variable.Add(CwNode.Assignment("value", CreateKeyBlock(speciesNameKey)));
+
+        // The game writes the list as unkeyed blocks, so the variable goes in without a name.
+        GetOrAddBlock("variables").Add(new CwNode(variable));
     }
 
     public override string ToString() => IsLiteral ? Key : $"[{Key}]";

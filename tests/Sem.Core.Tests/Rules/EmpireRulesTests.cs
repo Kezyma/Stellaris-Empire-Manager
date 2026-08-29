@@ -242,6 +242,33 @@ public sealed class EmpireRulesTests
     }
 
     [Fact]
+    public void AForcedTraitNamesWhatIsHoldingIt()
+    {
+        // "Fixed by the species class, authority, civics or origin" named four things and blamed
+        // none of them, leaving a player to find out by removing things until it went away.
+        var design = RulesTestData.ValidEmpire();
+        var forced = Rules.GetForcedTraitSources(Context(design));
+
+        var organic = Assert.Single(forced, f => f.Trait == "trait_organic");
+
+        Assert.Equal(ForcedTraitSource.SpeciesClass, organic.Source);
+        Assert.Equal("MAM", organic.Cause);
+    }
+
+    [Fact]
+    public void AnOriginThatForcesATraitIsNamedAsTheOneDoingIt()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.Origin = "origin_void_dwellers";
+
+        var forced = Rules.GetForcedTraitSources(Context(design));
+        var dweller = Assert.Single(forced, f => f.Trait == "trait_void_dweller_1");
+
+        Assert.Equal(ForcedTraitSource.Origin, dweller.Source);
+        Assert.Equal("origin_void_dwellers", dweller.Cause);
+    }
+
+    [Fact]
     public void ATraitRestrictedToAnotherSpeciesSaysWhichOne()
     {
         // "Not for this species class" leaves a player to go and find out which class would take it,
@@ -402,11 +429,36 @@ public sealed class EmpireRulesTests
         var design = RulesTestData.ValidEmpire();
 
         var withoutPack = Rules.GetHomeworldOptions(Rules.CreateContext(design, new HashSet<string>()));
-        Assert.DoesNotContain("pc_volcanic", withoutPack);
+        Assert.DoesNotContain("pc_relic", withoutPack);
 
         var withPack = Rules.GetHomeworldOptions(
-            Rules.CreateContext(design, new HashSet<string> { "Infernals Species Pack" }));
-        Assert.Contains("pc_volcanic", withPack);
+            Rules.CreateContext(design, new HashSet<string> { "Ancient Relics Story Pack" }));
+        Assert.Contains("pc_relic", withPack);
+    }
+
+    [Fact]
+    public void AWorldTheGameNeverOffersIsNotOfferedUntilSomethingAddsIt()
+    {
+        // A volcanic world is flagged initial and flagged starting_planet = no beside it. Reading
+        // only the first put it in front of every empire that owned the pack, which is not a choice
+        // the game has: an Infernal species class or a civic has to bring it.
+        var design = RulesTestData.ValidEmpire();
+
+        Assert.DoesNotContain("pc_volcanic", Rules.GetHomeworldOptions(Context(design)));
+
+        design.SetCivics(["civic_hearth_of_the_forge"]);
+        Assert.Contains("pc_volcanic", Rules.GetHomeworldOptions(Context(design)));
+    }
+
+    [Fact]
+    public void ANomadicEmpireBeginsOnItsShipAndNowhereElse()
+    {
+        // The game's own arkship empire has no origin or civic that says so; being nomadic is what
+        // puts it there, and the arkship is a world no one else may pick.
+        var design = RulesTestData.ValidEmpire();
+        design.IsNomadic = true;
+
+        Assert.Equal(["pc_ark"], Rules.GetHomeworldOptions(Context(design)));
     }
 
     [Fact]

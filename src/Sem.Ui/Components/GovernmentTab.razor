@@ -11,6 +11,23 @@
             <OptionGrid Options="@Authorities"
                         EmptyHint="Hover an authority to see how it governs."
                         OnSelect="key => Session.Edit(d => d.Authority = key)" />
+
+            @*
+                Not an authority, but the game puts it beside them, and it belongs there: it changes
+                what an empire may govern with, ruling out a good many civics on its own.
+            *@
+            <button type="button"
+                    class="sem-toggle @(Design.IsNomadic == true ? "selected" : null)"
+                    title="@NomadicLabel"
+                    @onclick="() => Session.Edit(d => d.IsNomadic = d.IsNomadic != true)">
+
+                @if (Session.Data.Database.Icons.GetValueOrDefault(NomadSprite) is { Length: > 0 } icon)
+                {
+                    <img src="@Session.Data.AssetUrl(icon)" alt="">
+                }
+
+                <span>@NomadicLabel</span>
+            </button>
         </div>
 
         <div class="sem-panel">
@@ -49,10 +66,15 @@
 </div>
 
 @code {
+    /// <summary>The sprite the game's own nomad toggle wears.</summary>
+    private const string NomadSprite = "GFX_toggle_nomad";
+
     [CascadingParameter]
     public required DesignSession Session { get; set; }
 
     private EmpireDesign Design => Session.Current!;
+
+    private string NomadicLabel => Session.Localizer.Text("IS_NOMADIC", "Is a Nomadic Empire");
 
     private DesignContext Context => Session.Context!;
 

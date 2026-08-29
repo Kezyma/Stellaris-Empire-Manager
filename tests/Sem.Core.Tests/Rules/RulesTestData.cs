@@ -96,6 +96,12 @@ internal static class RulesTestData
         [
             new CivicDefinition("civic_beacon_of_liberty", IsOrigin: false),
             new CivicDefinition("civic_functional_architecture", IsOrigin: false),
+
+            // Some civics bring a world with them that nobody else may start on.
+            new CivicDefinition("civic_hearth_of_the_forge", IsOrigin: false)
+            {
+                AddedPlanetClasses = ["pc_volcanic"],
+            },
             new CivicDefinition("civic_needs_utopia", IsOrigin: false)
             {
                 Playable = new DlcRequirement("Utopia"),
@@ -154,12 +160,23 @@ internal static class RulesTestData
         [
             new PlanetClassDefinition("pc_continental") { IsStartingWorld = true, Climate = "wet" },
             new PlanetClassDefinition("pc_ocean") { IsStartingWorld = true, Climate = "wet" },
-            new PlanetClassDefinition("pc_volcanic")
+
+            // A starting world nobody without the pack may have, which is a different thing from a
+            // world nobody may pick at all.
+            new PlanetClassDefinition("pc_relic")
             {
                 IsStartingWorld = true,
                 Climate = "dry",
-                Potential = new DlcRequirement("Infernals Species Pack"),
+                Potential = new DlcRequirement("Ancient Relics Story Pack"),
             },
+
+            // Marked initial by the game and marked starting_planet = no beside it, so it is never
+            // offered on its own account: a species class or a civic has to add it.
+            new PlanetClassDefinition("pc_volcanic") { Climate = "dry" },
+
+            // The same, and reached only by being nomadic.
+            new PlanetClassDefinition("pc_ark") { Climate = "artificial" },
+
             new PlanetClassDefinition("pc_habitat"),
         ],
 

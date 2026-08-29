@@ -1,9 +1,9 @@
 @*
     One part of the designer, collapsible.
 
-    Sections start open. The point of the redesign is that everything fits at once, so hiding things
-    by default would give back what the compact layout won; collapsing exists for the reader who has
-    finished with a section and wants it out of the way.
+    Sections start closed. Eight of them open at once is a page taller than any screen, and the
+    header carries what is chosen in it, so a closed designer still reads as a summary of the whole
+    empire — which is the thing worth seeing first.
 *@
 
 <section class="sem-section @(_open ? "open" : "closed")">
@@ -47,7 +47,7 @@
 
     /// <summary>Whether it begins open.</summary>
     [Parameter]
-    public bool StartOpen { get; set; } = true;
+    public bool StartOpen { get; set; }
 
     [Parameter]
     public RenderFragment? ChildContent { get; set; }

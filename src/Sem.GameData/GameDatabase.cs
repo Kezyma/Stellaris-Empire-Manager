@@ -59,6 +59,18 @@ public sealed record GameDatabase
     public IReadOnlyDictionary<string, string> Icons { get; init; } =
         new Dictionary<string, string>();
 
+    /// <summary>
+    /// The numbers the game's script names rather than writes, by name without its <c>@</c>.
+    /// </summary>
+    /// <remarks>
+    /// Declared in <c>common/scripted_variables</c> so that a value used in twenty places can be
+    /// changed in one. The localisation refers to them too — the Organic trait's tooltip says
+    /// <c>$@living_standard_energy_normal|*0$</c> rather than "1" — so the text cannot be read
+    /// without them.
+    /// </remarks>
+    public IReadOnlyDictionary<string, double> ScriptedValues { get; init; } =
+        new Dictionary<string, double>();
+
     /// <summary>Ethics, including the fanatic variants and gestalt consciousness.</summary>
     public IReadOnlyList<EthicDefinition> Ethics { get; init; } = [];
 
@@ -165,7 +177,59 @@ public sealed record DlcDefinition(
     string Name,
     string? NameKey,
     string? Category,
-    bool Installed);
+    bool Installed)
+{
+    /// <summary>Path to the pack's icon within the extracted assets.</summary>
+    public string? Icon { get; init; }
+}
+
+/// <summary>Which of a portrait's three textures a layer wears.</summary>
+/// <remarks>
+/// The same three the mesh distinguishes by shader, named here as well so the wardrobe can be read
+/// without the model code.
+/// </remarks>
+public enum PortraitSlot
+{
+    /// <summary>The body, which carries the skin and the eyes.</summary>
+    Character,
+
+    /// <summary>Clothing.</summary>
+    Clothes,
+
+    /// <summary>Hair, horns, masks, hats.</summary>
+    Attachment,
+}
+
+/// <summary>One drawn form of one layer of a portrait.</summary>
+/// <param name="Texture">The game's texture this wears, or <c>default</c> where the mesh decides.</param>
+/// <param name="Image">Where the picture went, within the extracted assets.</param>
+/// <param name="Left">Where its left edge sits in the whole frame, since it has been trimmed.</param>
+/// <param name="Top">Where its top edge sits, likewise.</param>
+public sealed record PortraitLayerImage(string Texture, string Image, int Left, int Top);
+
+/// <summary>One layer of a portrait: a run of parts painted together, in every form it takes.</summary>
+/// <param name="Slot">Which of the three textures this run wears.</param>
+/// <param name="Images">Its forms, the empire designer's first.</param>
+public sealed record PortraitLayer(PortraitSlot Slot, IReadOnlyList<PortraitLayerImage> Images);
+
+/// <summary>
+/// A portrait's wardrobe, as pictures that stack back into a figure.
+/// </summary>
+/// <remarks>
+/// <para>
+/// Layers rather than finished portraits, because the combinations cannot be drawn: one humanoid has
+/// eight skins, seven outfits and a hundred hairstyles, and the whole set runs to millions. Drawn
+/// one form at a time it is a sum instead of a product.
+/// </para>
+/// <para>
+/// The order is the order they are painted, furthest from the viewer first, and it matters: clothing
+/// is painted on both sides of the body, so a humanoid's layers run outfit-back, body, outfit-front,
+/// head, hair. Stacking them in any other order puts the coat's back over the chest.
+/// </para>
+/// </remarks>
+/// <param name="Portrait">The portrait's key.</param>
+/// <param name="Layers">Its layers, in painting order.</param>
+public sealed record PortraitOutfit(string Portrait, IReadOnlyList<PortraitLayer> Layers);
 
 /// <summary>A species archetype and the trait budget it grants.</summary>
 /// <param name="Key">Such as <c>BIOLOGICAL</c>, <c>MACHINE</c> or <c>LITHOID</c>.</param>
@@ -520,6 +584,15 @@ public sealed record CivicDefinition(string Key, bool IsOrigin)
     /// <summary>Path to the icon within the extracted assets.</summary>
     public string? Icon { get; init; }
 
+    /// <summary>
+    /// Path to the larger picture an origin carries, beside its icon.
+    /// </summary>
+    /// <remarks>
+    /// Every origin has one, and in the game it is most of how an origin is presented: a scene of
+    /// the world the empire wakes up on. Civics have none.
+    /// </remarks>
+    public string? Picture { get; init; }
+
     /// <summary>Localisation key for the display name.</summary>
     public string NameKey => Key;
 
@@ -747,6 +820,25 @@ public sealed record SpeciesNameSuggestion(string SpeciesClass, string Name)
 
     /// <summary>The name list that goes with it.</summary>
     public string? NameList { get; init; }
+
+    /// <summary>
+    /// The localisation keys behind each of those names.
+    /// </summary>
+    /// <remarks>
+    /// The game's own files hold keys — <c>SPEC_Rexor</c>, not "Rexor" — and a design that picks one
+    /// of these stores the key rather than the word, so that a player reading another language sees
+    /// the species named in theirs. Both are needed: the key to write and the text to show.
+    /// </remarks>
+    public string? NameKey { get; init; }
+
+    /// <inheritdoc cref="NameKey"/>
+    public string? PluralKey { get; init; }
+
+    /// <inheritdoc cref="NameKey"/>
+    public string? HomePlanetKey { get; init; }
+
+    /// <inheritdoc cref="NameKey"/>
+    public string? HomeSystemKey { get; init; }
 }
 
 /// <summary>How a starting system may be used.</summary>
@@ -765,8 +857,17 @@ public enum InitializerUsage
 /// <summary>A starting system.</summary>
 public sealed record InitializerDefinition(string Key, InitializerUsage Usage)
 {
-    /// <summary>Localisation key for the display name.</summary>
-    public string NameKey => Key;
+    /// <summary>
+    /// Localisation key for the display name.
+    /// </summary>
+    /// <remarks>
+    /// The key with <c>_NAME</c> after it, not the key itself — which is why these read as tidied-up
+    /// file names ("Custom Starting Init 01") where the game says "Random Trinary I".
+    /// </remarks>
+    public string NameKey => $"{Key}_NAME";
+
+    /// <summary>Localisation key for the description, which says what shape the system is.</summary>
+    public string DescriptionKey => $"{Key}_DESC";
 }
 
 /// <summary>An advisor voice.</summary>

@@ -1,0 +1,35 @@
+@*
+    The game's own randomise button, which is a die rather than a word.
+
+    It appears beside four separate fields, and spelling out "Randomise" each time gave the least
+    interesting control on the page the most text on it. The game uses one sprite everywhere it
+    offers this, so the die is what a player already recognises.
+*@
+
+<button type="button" class="sem-randomise" title="@Title" aria-label="@Title" @onclick="OnClick">
+    @if (Icon is { Length: > 0 } icon)
+    {
+        <img src="@Session.Data.AssetUrl(icon)" alt="" />
+    }
+    else
+    {
+        <span aria-hidden="true">🎲</span>
+    }
+</button>
+
+@code {
+    /// <summary>The sprite the game uses on every randomise button it has.</summary>
+    private const string Sprite = "GFX_button_randomize";
+
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>What this particular button would randomise, shown on hover.</summary>
+    [Parameter, EditorRequired]
+    public required string Title { get; set; }
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    private string? Icon => Session.Data.Database.Icons.GetValueOrDefault(Sprite);
+}

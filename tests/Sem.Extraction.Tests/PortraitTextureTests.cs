@@ -85,6 +85,32 @@ public sealed class PortraitTextureTests
         Assert.All(measured, m => Assert.InRange(m.Rise, 8f, 20f));
     }
 
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void APortraitsWardrobeHoldsEverythingItCouldWearRatherThanWhatItOpensIn()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var baker = new PortraitBaker(LayeredContent.ForInstall(InstallRoot!), new SafeFile(WritePolicy.DenyAll));
+        var wardrobes = baker.Wardrobes();
+
+        // A humanoid has a great many outfits and hairstyles, and reading only what the empire
+        // designer shows found one of each — which is what a leader designer would have had to go
+        // back for. Its skin comes from the mesh rather than from a list, as humanoids' do.
+        var humanoid = wardrobes["humanoid_05_female_01"];
+
+        Assert.True(humanoid.Clothes.Count > 1, $"Found {humanoid.Clothes.Count} outfit(s).");
+        Assert.True(humanoid.Attachment.Count > 1, $"Found {humanoid.Attachment.Count} attachment(s).");
+
+        // Where a portrait does list its skins, all of them are kept.
+        var molluscoid = wardrobes["mol5"];
+        Assert.True(molluscoid.Character.Count > 1, $"Found {molluscoid.Character.Count} skin(s).");
+
+        // The empire designer's own choice leads, so the picker goes on showing what it showed.
+        Assert.Equal(humanoid.Clothes[0], humanoid.Default.Clothes);
+        Assert.Equal(molluscoid.Character[0], molluscoid.Default.Character);
+    }
+
     [Fact]
     public void AModelsBoundsCoverEveryPartOfIt()
     {

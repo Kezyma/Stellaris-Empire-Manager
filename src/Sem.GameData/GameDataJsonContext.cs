@@ -22,4 +22,8 @@ namespace Sem.GameData;
 [JsonSerializable(typeof(GameDatabase))]
 [JsonSerializable(typeof(Dictionary<string, string>))]
 [JsonSerializable(typeof(Requirement))]
+
+// The wardrobe is written beside the database rather than inside it: thousands of pictures serve a
+// leader designer, and the empire designer should not read them to show one face per portrait.
+[JsonSerializable(typeof(IReadOnlyList<PortraitOutfit>))]
 public sealed partial class GameDataJsonContext : JsonSerializerContext;

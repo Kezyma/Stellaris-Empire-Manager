@@ -25,15 +25,14 @@ else
         <div class="sem-row">
             <button type="button" @onclick="@(() => Navigation.NavigateTo(""))">← Empires</button>
 
-            <div class="sem-field" style="margin:0;flex:1;min-width:200px">
-                <input type="text" value="@_session.Current.Key" aria-label="Empire key"
-                       @onchange="Rename" />
-            </div>
+            @* Shown, not edited: the empire is named once, in its own section. *@
+            <span class="sem-title">@Title</span>
 
             <span class="sem-status @(_session.Report.IsValid ? "ok" : "bad")">
                 @(_session.Report.IsValid ? "Valid" : $"{_session.Report.Errors.Count} problem(s)")
             </span>
 
+            <button type="button" @onclick="CopyLink">@(_copied ? "Link copied" : "Copy link")</button>
             <button type="button" class="danger" @onclick="Delete">Delete</button>
             <button type="button" class="primary" @onclick="Export">@Files.SaveVerb</button>
         </div>
@@ -45,8 +44,11 @@ else
 @code {
     private DesignSession? _session;
 
+    /// <summary>Whether the last thing the player did was copy the link, so the button can say so.</summary>
+    private bool _copied;
+
     private string Title => _session?.Current is { } design
-        ? _session.Localizer.Text(design.Name.Key, design.Key)
+        ? _session.Localizer.Name(design.Name, design.Key)
         : "Designer";
 
     protected override async Task OnInitializedAsync()
@@ -56,7 +58,53 @@ else
         if (_session is not null)
         {
             _session.Changed += OnChanged;
+            OpenSharedDesign();
         }
+    }
+
+    /// <summary>
+    /// Opens an empire someone sent a link to, adding it to whatever file is already open.
+    /// </summary>
+    /// <remarks>
+    /// Added rather than swapped in: the link is a gift, not a replacement for the empires the
+    /// player already has. A name already taken gets a number after it, as a copy would.
+    /// </remarks>
+    private void OpenSharedDesign()
+    {
+        var query = new Uri(Navigation.Uri).Query;
+
+        if (System.Web.HttpUtility.ParseQueryString(query)[DesignLink.Parameter] is not { Length: > 0 } shared ||
+            DesignLink.Decode(shared) is not { } design)
+        {
+            return;
+        }
+
+        _session!.EditFile(file =>
+        {
+            var key = design.Key;
+
+            for (var attempt = 2; file.Find(key) is not null; attempt++)
+            {
+                key = $"{design.Key} {attempt}";
+            }
+
+            _session.Select(file.AddCopy(design, key));
+        });
+
+        // Taken out of the address bar once it has been opened, so a reload does not add it twice.
+        Navigation.NavigateTo("designer", replace: true);
+    }
+
+    private async Task CopyLink()
+    {
+        if (_session?.Current is not { } design)
+        {
+            return;
+        }
+
+        var link = $"{Navigation.BaseUri}designer?{DesignLink.Parameter}={DesignLink.Encode(design)}";
+
+        _copied = await Files.CopyToClipboardAsync(link);
     }
 
     public void Dispose()
@@ -68,18 +116,6 @@ else
     }
 
     private void OnChanged() => InvokeAsync(StateHasChanged);
-
-    private void Rename(ChangeEventArgs e)
-    {
-        if (e.Value?.ToString() is { Length: > 0 } name && _session?.Current is not null)
-        {
-            // The file keys empires by name, so a clash would make one unreachable.
-            if (_session.File?.Find(name) is null)
-            {
-                _session.Edit(d => d.Rename(name));
-            }
-        }
-    }
 
     private void Delete()
     {

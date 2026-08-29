@@ -31,7 +31,7 @@
                     <FlagPreview Flag="@design.Flag" Class="small" />
 
                     <span class="body">
-                        <span class="name">@Session.Localizer.Text(design.Name.Key, design.Key)</span>
+                        <span class="name">@Session.Localizer.Name(design.Name, design.Key)</span>
                         <span class="sub">@Describe(design)</span>
 
                         @if (!report.IsValid)

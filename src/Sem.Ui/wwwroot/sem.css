@@ -355,6 +355,60 @@ label {
 
 /* ---------------------------------------------------------------- portraits */
 
+/*
+    Classes on the left, their faces on the right — the game's own arrangement, and the one that
+    says the class is what decides the list rather than a filter applied to it afterwards.
+*/
+.sem-portrait-picker {
+    display: grid;
+    grid-template-columns: minmax(120px, 160px) 1fr;
+    gap: var(--gap);
+    align-items: start;
+}
+
+.sem-class-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-height: 460px;
+    overflow-y: auto;
+}
+
+.sem-class-list button {
+    padding: 6px 10px;
+    text-align: left;
+    background: none;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+}
+
+.sem-class-list button:hover:not(:disabled) {
+    background: var(--bg-hover);
+}
+
+.sem-class-list button.selected {
+    background: var(--bg-raised);
+    border-color: var(--gold);
+    color: var(--gold);
+}
+
+.sem-class-list button.blocked {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+@media (max-width: 720px) {
+    .sem-portrait-picker {
+        grid-template-columns: 1fr;
+    }
+
+    .sem-class-list {
+        flex-direction: row;
+        flex-wrap: wrap;
+        max-height: none;
+    }
+}
+
 .sem-portraits {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
@@ -495,6 +549,17 @@ label {
 .sem-budget.full .fill { background: var(--gold); }
 
 /* ---------------------------------------------------------------- status */
+
+/* The empire's name in the designer's top bar, shown rather than edited. */
+.sem-title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 1.05rem;
+    font-weight: 600;
+}
 
 .sem-status {
     display: inline-flex;
@@ -735,6 +800,106 @@ label {
 .sem-detail h4 {
     margin: 0 0 6px;
     font-size: 0.95rem;
+}
+
+/*
+    The content packs, across the top of every page. A pack that is off is dimmed rather than hidden,
+    because knowing what is being left out is the point of having them visible at all.
+*/
+.sem-dlc-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 16px;
+    background: var(--bg-raised);
+    border-bottom: 1px solid var(--border);
+}
+
+.sem-dlc-bar .spacer { flex: 1; }
+
+.sem-dlc {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    background: none;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+}
+
+.sem-dlc img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+.sem-dlc .initials {
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.sem-dlc.on { border-color: var(--border-strong); }
+
+.sem-dlc.off {
+    opacity: 0.3;
+    filter: grayscale(1);
+}
+
+.sem-dlc:hover { background: var(--bg-hover); }
+
+/*
+    The ethics, as arguments rather than as a list. One column per opposition, read top to bottom
+    from the fanatic form of one side to the fanatic form of the other, so what a conviction rules
+    out is directly beneath it.
+*/
+.sem-ethics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(52px, 1fr));
+    gap: 6px;
+    align-items: start;
+}
+
+.sem-ethics-grid .column {
+    display: grid;
+    gap: 6px;
+}
+
+/*
+    A choice that is on or off rather than one of a set — the nomad toggle beside the authorities.
+    Styled as a wide button so it reads as belonging with the grid above it without pretending to be
+    one of its cells.
+*/
+.sem-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    margin-top: var(--gap);
+    text-align: left;
+}
+
+.sem-toggle img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+.sem-toggle.selected {
+    border-color: var(--gold);
+    color: var(--gold);
+}
+
+/* The scene an origin opens on, above whatever is written about it. */
+.sem-detail-picture {
+    display: block;
+    width: 100%;
+    max-height: 160px;
+    object-fit: cover;
+    border-radius: var(--radius);
+    margin-bottom: 8px;
 }
 
 .sem-detail-lore {
@@ -1313,6 +1478,26 @@ label {
 button.small {
     padding: 6px 10px;
     font-size: 0.85rem;
+}
+
+/*
+    The game's randomise button: a die, sized to sit level with the field beside it. Square, because
+    the sprite is, and because four of these in a row read as a set only if they match.
+*/
+.sem-randomise {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+}
+
+.sem-randomise img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
 }
 
 /* Four sets of names, side by side where there is room for them. */

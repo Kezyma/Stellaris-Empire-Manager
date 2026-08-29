@@ -43,7 +43,10 @@ public sealed class GameDataExtractionTests
             ("portrait sets", 67, database.PortraitSets.Count),
             ("portraits", 496, database.Portraits.Count(p => !p.IsGroup)),
             ("portrait groups", 50, database.Portraits.Count(p => p.IsGroup)),
-            ("starting worlds", 11, database.PlanetClasses.Count(p => p.IsStartingWorld)),
+            // Nine, not eleven: a volcanic world and an arkship are each flagged initial, and each
+            // is also flagged starting_planet = no. Neither is a world a player may simply pick —
+            // an Infernal species class adds the first, and being nomadic puts you on the second.
+            ("starting worlds", 9, database.PlanetClasses.Count(p => p.IsStartingWorld)),
             ("starting systems", 23, database.Initializers.Count),
             ("advisor voices", 27, database.AdvisorVoices.Count),
             ("rooms", 41, database.Rooms.Count),

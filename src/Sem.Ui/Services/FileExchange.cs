@@ -27,6 +27,15 @@ public interface IFileExchange
     /// </remarks>
     Task<(string Name, byte[] Contents)?> TryOpenExistingAsync() =>
         Task.FromResult<(string, byte[])?>(null);
+
+    /// <summary>
+    /// Puts text on the clipboard, saying whether it got there.
+    /// </summary>
+    /// <remarks>
+    /// A browser may refuse — the clipboard needs a secure context and a recent gesture — and the
+    /// answer decides whether the button claims success.
+    /// </remarks>
+    Task<bool> CopyToClipboardAsync(string text) => Task.FromResult(false);
 }
 
 /// <summary>Offers the file as a browser download.</summary>
@@ -48,6 +57,17 @@ public sealed class BrowserFileExchange(IJSRuntime js) : IFileExchange, IAsyncDi
             "import", "./_content/Sem.Ui/sem.js").ConfigureAwait(false);
 
         await _module.InvokeVoidAsync("saveFile", fileName, contents).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> CopyToClipboardAsync(string text)
+    {
+        ArgumentNullException.ThrowIfNull(text);
+
+        _module ??= await _js.InvokeAsync<IJSObjectReference>(
+            "import", "./_content/Sem.Ui/sem.js").ConfigureAwait(false);
+
+        return await _module.InvokeAsync<bool>("copyText", text).ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()

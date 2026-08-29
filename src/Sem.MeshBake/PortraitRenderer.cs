@@ -6,8 +6,16 @@ namespace Sem.MeshBake;
 /// <summary>How a portrait is drawn.</summary>
 public sealed record RenderSettings
 {
-    /// <summary>Width of the finished image, before supersampling.</summary>
-    public int Width { get; init; } = 165;
+    /// <summary>
+    /// Width of the finished image, before supersampling.
+    /// </summary>
+    /// <remarks>
+    /// The game's own proportions, 575 to 380, so a portrait is the shape the game composites into a
+    /// room. The picker shows a narrower window onto it and lets the page do the cropping, which is
+    /// what the game does too — a species with a wing held out has the wing, and the tile decides how
+    /// much of it to show.
+    /// </remarks>
+    public int Width { get; init; } = (int)(220 * 575.0 / 380.0);
 
     /// <summary>Height of the finished image, before supersampling.</summary>
     public int Height { get; init; } = 220;
@@ -103,10 +111,16 @@ public sealed class PortraitRenderer(RenderSettings? settings = null)
     /// game takes the difference out here, so a small species is drawn small rather than blown up to
     /// fill the frame.
     /// </param>
+    /// <param name="only">
+    /// Which parts to draw, or null for all of them. Drawing a subset is how a portrait is split
+    /// into layers that can be recombined with different clothes; the rest of the framing is
+    /// unchanged, so the layers still line up when stacked.
+    /// </param>
     public DdsImage Render(
         PortraitMesh mesh,
         IReadOnlyDictionary<string, DdsImage> textures,
-        float modelScale = 1f)
+        float modelScale = 1f,
+        IReadOnlyCollection<MeshPart>? only = null)
     {
         ArgumentNullException.ThrowIfNull(mesh);
         ArgumentNullException.ThrowIfNull(textures);
@@ -119,8 +133,13 @@ public sealed class PortraitRenderer(RenderSettings? settings = null)
 
         // Furthest first, so nearer parts paint over what is behind them. Depth decreases towards
         // the viewer: hair sits at a lower z than the face it falls across.
-        foreach (var part in mesh.Parts.OrderByDescending(AverageDepth))
+        foreach (var part in Ordered(mesh.Parts))
         {
+            if (only is not null && !only.Contains(part))
+            {
+                continue;
+            }
+
             if (part.Texture is not { } name || textures.GetValueOrDefault(name) is not { } texture)
             {
                 continue;
@@ -130,6 +149,20 @@ public sealed class PortraitRenderer(RenderSettings? settings = null)
         }
 
         return Downsample(pixels, width, height, _settings.Supersample);
+    }
+
+    /// <summary>
+    /// A portrait's parts in the order they are painted, furthest from the viewer first.
+    /// </summary>
+    /// <remarks>
+    /// Public because the order is what decides which parts may be split into a layer together: two
+    /// parts of the same kind can share a layer only if nothing of another kind is painted between
+    /// them, and a humanoid paints its outfit's back, then its body, then the outfit's front.
+    /// </remarks>
+    public static IEnumerable<MeshPart> Ordered(IEnumerable<MeshPart> parts)
+    {
+        ArgumentNullException.ThrowIfNull(parts);
+        return parts.OrderByDescending(AverageDepth);
     }
 
     private static float AverageDepth(MeshPart part) =>

@@ -55,7 +55,8 @@
                 Session,
                 states,
                 key => (byKey.GetValueOrDefault(key)?.Icon, byKey.GetValueOrDefault(key)?.Effects),
-                key => key == Design.Origin);
+                key => key == Design.Origin,
+                key => byKey.GetValueOrDefault(key)?.Picture);
         }
     }
 

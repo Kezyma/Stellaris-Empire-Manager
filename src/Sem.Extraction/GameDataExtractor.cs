@@ -76,7 +76,7 @@ public sealed class GameDataExtractor(LayeredContent content)
         requirements.LoadScriptedTriggers(loader);
 
         Report("Reading content packs and defines");
-        var dlc = MetadataExtractor.ExtractDlc(loader);
+        var dlc = MetadataExtractor.ExtractDlc(loader, assets);
         var defines = MetadataExtractor.ExtractDefines(loader);
 
         Report("Reading species");
@@ -138,6 +138,7 @@ public sealed class GameDataExtractor(LayeredContent content)
             SpeciesNames = speciesNames,
             TextIcons = textIcons,
             Icons = icons,
+            ScriptedValues = ScriptedValues(loader),
             Ethics = ethics,
             Authorities = authorities,
             Civics = civics,
@@ -180,6 +181,29 @@ public sealed class GameDataExtractor(LayeredContent content)
     /// game: the codes are what has to be resolved, and the text is where they are.
     /// </para>
     /// </remarks>
+    /// <summary>
+    /// The numbers the script names rather than writes, which the text refers to as well.
+    /// </summary>
+    /// <remarks>
+    /// The loader has already gathered them, since a cost or a weight is as often a variable as a
+    /// literal. Only the ones that resolve to a number are kept: a few name a whole block or another
+    /// piece of script, and those mean nothing in a sentence.
+    /// </remarks>
+    private static Dictionary<string, double> ScriptedValues(ScriptLoader loader)
+    {
+        var values = new Dictionary<string, double>(StringComparer.Ordinal);
+
+        foreach (var (name, _) in loader.Variables)
+        {
+            if (loader.ResolveNumber(name) is { } number)
+            {
+                values[name.TrimStart('@')] = number;
+            }
+        }
+
+        return values;
+    }
+
     private Dictionary<string, string> ExtractTextIcons(SpriteCatalog sprites, AssetCatalog assets)
     {
         var icons = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -230,6 +254,12 @@ public sealed class GameDataExtractor(LayeredContent content)
             "GFX_button_male",
             "GFX_button_female",
             "GFX_button_no_gender",
+
+            // The die the game puts beside every name it will suggest one of.
+            "GFX_button_randomize",
+
+            // The toggle that makes an empire nomadic, which sits beside its authority.
+            "GFX_toggle_nomad",
         ];
 
         var icons = new Dictionary<string, string>(StringComparer.Ordinal);

@@ -84,7 +84,10 @@
 
     private TraitBudget Budget => Session.Rules.GetTraitBudget(Context);
 
-    private IReadOnlyList<string> Forced => Session.Rules.GetForcedTraits(Context);
+    private IReadOnlyList<ForcedTrait> Forced => Session.Rules.GetForcedTraitSources(Context);
+
+    private ForcedTrait? ForcedBy(string key) =>
+        Forced.FirstOrDefault(f => string.Equals(f.Trait, key, StringComparison.Ordinal));
 
     private IReadOnlyDictionary<string, TraitDefinition> ByKey =>
         _byKey ??= Session.Data.Database.Traits.ToDictionary(t => t.Key, StringComparer.Ordinal);
@@ -116,17 +119,26 @@
     /// added beside it.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Traits something else decides are listed here too even though the design does not record
     /// them. A habitability preference is the homeworld's doing and the game adds it when the game
     /// begins — neither the player's own designs nor the game's built-in empires store one — so it
     /// is shown rather than written.
+    /// </para>
+    /// <para>
+    /// Those come first, all of them together. Interleaved with the chosen ones by the order they
+    /// happen to sit in the file, a trait the player picked and a trait picked for them looked like
+    /// the same kind of thing, and the block of greyed rows at the top is what says they are not.
+    /// </para>
     /// </remarks>
     private IReadOnlyList<TraitEntry> Chosen
     {
         get
         {
             var held = Species.Traits.ToList();
-            var shown = held.Concat(Forced.Where(f => !held.Contains(f)));
+            var forced = Forced.Select(f => f.Trait).ToList();
+
+            var shown = forced.Concat(held.Where(t => !forced.Contains(t, StringComparer.Ordinal)));
 
             return
             [
@@ -161,16 +173,13 @@
     private TraitEntry Entry(OptionState state)
     {
         var definition = ByKey.GetValueOrDefault(state.Key);
-        var forced = Forced.Contains(state.Key);
+        var forcedBy = ForcedBy(state.Key);
+        var forced = forcedBy is not null;
         var reasons = Session.Reasons.Describe(state.Reasons).ToList();
 
-        if (forced)
+        if (forcedBy is not null)
         {
-            reasons.Insert(
-                0,
-                EmpireRules.IsHabitabilityPreference(state.Key)
-                    ? "Fixed by the homeworld."
-                    : "Fixed by the species class, authority, civics or origin.");
+            reasons.Insert(0, Session.Reasons.Fixed(forcedBy));
         }
 
         if (state.RequiredDlc is { Length: > 0 } dlc)

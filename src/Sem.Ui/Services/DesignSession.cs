@@ -17,21 +17,31 @@ public sealed class DesignSession
 {
     private readonly List<string> _ownedDlc = [];
 
-    public DesignSession(GameData data)
+    /// <param name="data">The extracted game data.</param>
+    /// <param name="assumeAllPacks">
+    /// Whether to open with every content pack enabled rather than only those installed where the
+    /// data was read. True on the web, where the installation the data came from is mine and not the
+    /// player's; false on the desktop, where it is theirs.
+    /// </param>
+    public DesignSession(GameData data, bool assumeAllPacks = false)
     {
         ArgumentNullException.ThrowIfNull(data);
 
         Data = data;
-        Localizer = new Localizer(data.Localisation, data.Database.TextIcons, data.AssetUrl);
+        Localizer = new Localizer(
+            data.Localisation,
+            data.Database.TextIcons,
+            data.AssetUrl,
+            data.Database.ScriptedValues);
         Reasons = new ReasonWriter(Localizer);
         Rules = new EmpireRules(data.Database);
         Modifiers = new ModifierFormatter(Localizer, data.Database);
         Conditions = new ConditionWriter(Localizer);
         Names = new NameGenerator(data.Database);
 
-        // Start from what the installation the data came from had, which is right for the desktop
-        // app and a sensible opening guess on the web.
-        _ownedDlc.AddRange(data.Database.Dlc.Where(d => d.Installed).Select(d => d.Name));
+        _ownedDlc.AddRange(data.Database.Dlc
+            .Where(d => assumeAllPacks || d.Installed)
+            .Select(d => d.Name));
     }
 
     /// <summary>Raised whenever anything an interface displays has changed.</summary>
@@ -85,6 +95,17 @@ public sealed class DesignSession
         ArgumentNullException.ThrowIfNull(contents);
 
         File = EmpireDesignsFile.Load(contents);
+        FileName = fileName;
+        IsModified = false;
+        Select(File.Designs.FirstOrDefault());
+    }
+
+    /// <summary>Opens a designs file already in hand as text.</summary>
+    public void LoadText(string contents, string fileName)
+    {
+        ArgumentNullException.ThrowIfNull(contents);
+
+        File = EmpireDesignsFile.LoadText(contents);
         FileName = fileName;
         IsModified = false;
         Select(File.Designs.FirstOrDefault());

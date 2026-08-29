@@ -91,9 +91,13 @@ public sealed class PortraitRenderingTests
 
         Assert.NotEmpty(textures);
 
-        var image = new PortraitRenderer().Render(mesh, textures);
+        var settings = new RenderSettings();
+        var image = new PortraitRenderer(settings).Render(mesh, textures);
 
-        Assert.Equal((165, 220), (image.Width, image.Height));
+        Assert.Equal((settings.Width, settings.Height), (image.Width, image.Height));
+
+        // The game's own proportions, so a portrait is the shape it composites into a room.
+        Assert.Equal(575.0 / 380.0, (double)image.Width / image.Height, 2);
 
         var alphas = image.Pixels.Where((_, i) => i % 4 == 3).ToList();
         var covered = alphas.Count(a => a > 32) / (double)alphas.Count;

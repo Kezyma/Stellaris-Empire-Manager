@@ -2,23 +2,102 @@
     Three points buy an empire's ethos: one fanatic conviction and one ordinary one, or three
     ordinary ones, or gestalt consciousness on its own.
 
-    Ordered as the game orders them, so a conviction sits beside the one it argues with rather than
-    wherever the files happened to put it.
+    Laid out as an argument. Each column is one of the game's four oppositions, running from the
+    fanatic form of one side, through its ordinary form, to the ordinary and then fanatic forms of
+    the other — so a conviction and the thing it contradicts are in the same column, and picking one
+    visibly rules out the three beneath it. Gestalt belongs to no argument and stands apart.
 *@
 
 <BudgetBar Label="Ethics points" Value="@Session.Rules.GetEthicsBudget(Context)" />
 
-<OptionGrid Options="@Options"
-            EmptyHint="Hover a conviction to see what it believes and what it grants."
-            OnSelect="Toggle" />
+<div class="sem-grid-and-detail">
+    <div class="sem-ethics-grid">
+        @foreach (var column in Columns)
+        {
+            <div class="column">
+                @foreach (var ethic in column)
+                {
+                    <button type="button"
+                            class="sem-icon-option @(ethic.Selected ? "selected" : null) @(ethic.Enabled || ethic.Selected ? null : "blocked")"
+                            disabled="@(!ethic.Enabled && !ethic.Selected)"
+                            title="@ethic.Name"
+                            @onmouseenter="() => _hovered = ethic.Key"
+                            @onfocus="() => _hovered = ethic.Key"
+                            @onclick="() => Toggle(ethic.Key)">
+
+                        @if (ethic.Icon is { Length: > 0 } icon)
+                        {
+                            <img src="@Session.Data.AssetUrl(icon)" alt="@ethic.Name" loading="lazy">
+                        }
+
+                        <span class="cost">@ethic.Cost</span>
+                    </button>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="sem-detail">
+        @if (Described is { } shown)
+        {
+            <h4>@shown.Name</h4>
+
+            @if (shown.Description is { Length: > 0 } description)
+            {
+                <div class="sem-detail-lore">@((MarkupString)description)</div>
+            }
+
+            <EffectsList Effects="@shown.Effects" />
+
+            @if (!shown.Enabled && shown.Reasons.Count > 0)
+            {
+                <ul class="sem-blocked">
+                    @foreach (var reason in shown.Reasons)
+                    {
+                        <li>@reason</li>
+                    }
+                </ul>
+            }
+        }
+        else
+        {
+            <p class="sem-hint">Hover a conviction to see what it believes and what it grants.</p>
+        }
+    </div>
+</div>
 
 @code {
+    /// <summary>Which conviction the pointer is over, kept so the panel does not flicker.</summary>
+    private string? _hovered;
+
     [CascadingParameter]
     public required DesignSession Session { get; set; }
 
     private EmpireDesign Design => Session.Current!;
 
     private DesignContext Context => Session.Context!;
+
+    /// <summary>
+    /// The convictions grouped into the arguments they belong to.
+    /// </summary>
+    /// <remarks>
+    /// The game already describes this: opposing ethics share a category, and their place within it
+    /// runs from the fanatic form of one side to the fanatic form of the other. Gestalt has a
+    /// category to itself with one member, which falls out of the same grouping without a special
+    /// case. Ordered by category so the columns do not move as the design changes.
+    /// </remarks>
+    private IEnumerable<IEnumerable<OptionGrid.GridOption>> Columns =>
+        Options
+            .GroupBy(o => Definition(o.Key)?.Category ?? string.Empty, StringComparer.Ordinal)
+            .OrderBy(g => g.Any(o => Definition(o.Key)?.IsGestalt == true))
+            .ThenBy(g => g.Key, StringComparer.Ordinal)
+            .Select(g => g.OrderBy(o => Definition(o.Key)?.CategoryValue ?? 0));
+
+    private EthicDefinition? Definition(string key) =>
+        Session.Data.Database.Ethics.FirstOrDefault(e => string.Equals(e.Key, key, StringComparison.Ordinal));
+
+    private OptionGrid.GridOption? Described =>
+        Options.FirstOrDefault(o => o.Key == _hovered) ?? Options.FirstOrDefault(o => o.Selected);
 
     private IReadOnlyList<OptionGrid.GridOption> Options
     {
@@ -30,9 +109,6 @@
             [
                 .. Session.Rules.GetEthicOptions(Context)
                     .Where(o => o.Visible)
-                    .OrderBy(o => byKey.GetValueOrDefault(o.Key)?.Category, StringComparer.Ordinal)
-                    .ThenBy(o => byKey.GetValueOrDefault(o.Key)?.CategoryValue ?? 0)
-                    .ThenByDescending(o => o.Cost)
                     .Select(o => new OptionGrid.GridOption(o.Key, Session.Localizer.Text(o.Key))
                     {
                         Description = Session.Localizer.Html($"{o.Key}_desc", string.Empty),

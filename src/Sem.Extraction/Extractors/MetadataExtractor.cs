@@ -16,7 +16,7 @@ internal static class MetadataExtractor
     /// lists them all; which are present comes from the folders, since only installed packs have
     /// one.
     /// </remarks>
-    public static List<DlcDefinition> ExtractDlc(ScriptLoader loader)
+    public static List<DlcDefinition> ExtractDlc(ScriptLoader loader, AssetCatalog assets)
     {
         var installed = ReadInstalledPacks(loader);
         var results = new List<DlcDefinition>(installed.Values);
@@ -48,7 +48,32 @@ internal static class MetadataExtractor
             }
         }
 
-        return [.. results.OrderBy(d => d.Folder, StringComparer.Ordinal)];
+        return [.. results
+            .Select(d => d with { Icon = PackIcon(d, assets) })
+            .OrderBy(d => d.Folder, StringComparer.Ordinal)];
+    }
+
+    /// <summary>
+    /// The picture a content pack is known by.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The game keeps these as sprites named after the pack with its spaces and punctuation taken
+    /// out — <c>GFX_themachineage</c> for The Machine Age — which covers three packs in four.
+    /// </para>
+    /// <para>
+    /// The rest are the old portrait packs, which predate the icon set. The game gives them no icon
+    /// either, and the store thumbnail in each pack's folder is a wide banner rather than a badge,
+    /// so those go without and are shown by name instead.
+    /// </para>
+    /// </remarks>
+    private static string? PackIcon(DlcDefinition pack, AssetCatalog assets)
+    {
+        var sprite = "GFX_" + new string([.. pack.Name.Where(char.IsLetterOrDigit)]).ToLowerInvariant();
+
+        return assets.Sprites.Resolve(sprite) is null
+            ? null
+            : assets.RegisterSprite(sprite, $"icons/dlc/{pack.Folder}.png", maxDimension: 64);
     }
 
     /// <summary>Reads the values from the game's defines that constrain empire creation.</summary>

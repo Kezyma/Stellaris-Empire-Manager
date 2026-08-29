@@ -72,6 +72,14 @@ public static class NameExtractor
                         HomePlanet = Resolve(body.GetString("home_planet"), text),
                         HomeSystem = Resolve(body.GetString("home_system"), text),
                         NameList = body.GetString("name_list"),
+
+                        // Kept beside the resolved text, because a design that takes one of these
+                        // stores the key: that is how the game writes it, and how the same empire
+                        // reads correctly in another language.
+                        NameKey = body.GetString("name"),
+                        PluralKey = body.GetString("plural"),
+                        HomePlanetKey = body.GetString("home_planet"),
+                        HomeSystemKey = body.GetString("home_system"),
                     });
                 }
             }

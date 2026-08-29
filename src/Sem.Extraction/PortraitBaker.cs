@@ -22,6 +22,47 @@ public sealed record PortraitBakeReport(int Rendered, long Bytes, IReadOnlyList<
 /// </param>
 public sealed record PortraitExtent(string Key, float Rise, float Drop, bool Clipped);
 
+/// <summary>
+/// Everything a portrait could be wearing, rather than the one thing it opens in.
+/// </summary>
+/// <remarks>
+/// <para>
+/// The empire designer needs one face per portrait; a leader designer needs the wardrobe. The game
+/// keeps the three separately — a body texture chosen from the portrait's own list, an outfit and an
+/// attachment each chosen by a selector — which is why they can be recombined at all. Baking the
+/// combinations is not possible: one humanoid has eight colours, seven outfits and a hundred
+/// attachments, which is five thousand six hundred pictures of one species.
+/// </para>
+/// <para>
+/// The default of each is the one the empire designer shows, and is listed first.
+/// </para>
+/// </remarks>
+/// <param name="Character">Body textures, which carry the skin and the eyes.</param>
+/// <param name="Clothes">Outfits.</param>
+/// <param name="Attachment">Hair, horns, masks and hats.</param>
+public sealed record PortraitWardrobe(
+    IReadOnlyList<string> Character,
+    IReadOnlyList<string> Clothes,
+    IReadOnlyList<string> Attachment)
+{
+    /// <summary>An empty wardrobe, for a portrait whose definition offers nothing.</summary>
+    public static PortraitWardrobe None { get; } = new([], [], []);
+
+    /// <summary>Every option for one kind of part.</summary>
+    public IReadOnlyList<string> For(PartKind kind) => kind switch
+    {
+        PartKind.Clothes => Clothes,
+        PartKind.Attachment => Attachment,
+        _ => Character,
+    };
+
+    /// <summary>What the empire designer shows, which is the first of each.</summary>
+    public PortraitTextures Default => new(
+        Character.FirstOrDefault(),
+        Clothes.FirstOrDefault(),
+        Attachment.FirstOrDefault());
+}
+
 /// <summary>What a portrait is wearing, as its own definition describes it.</summary>
 /// <param name="Character">The body texture.</param>
 /// <param name="Clothes">The clothing texture.</param>
@@ -125,7 +166,7 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
 
                 var png = Draw(
                     model.Path,
-                    wardrobes.GetValueOrDefault(portrait.Key) ?? PortraitTextures.None,
+                    (wardrobes.GetValueOrDefault(portrait.Key) ?? PortraitWardrobe.None).Default,
                     (float)model.Scale,
                     PoseFor(index, model.Mesh));
                 var destination = $"portraits/{portrait.Key}.png";
@@ -199,7 +240,7 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
                 var image = Draw(
                     renderer,
                     model.Path,
-                    wardrobes.GetValueOrDefault(key) ?? PortraitTextures.None,
+                    (wardrobes.GetValueOrDefault(key) ?? PortraitWardrobe.None).Default,
                     (float)model.Scale,
                     PoseFor(index, model.Mesh));
 
@@ -236,12 +277,11 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
 
     /// <summary>How wide the measuring frame is, in model units.</summary>
     /// <remarks>
-    /// Not as generous as the height, and deliberately so. A portrait tile is narrow, and a plume or
-    /// a wing held out to one side falls outside it. Measured in a wide frame that plume is counted,
-    /// and every species would be shrunk to make room for something nobody would ever see. This is
-    /// about what a finished tile shows: its own height, in units, times its width over its height.
+    /// As wide as a finished portrait, and no wider. What falls outside the frame is not drawn, so
+    /// measuring in a wider one counts a plume nobody would ever see and shrinks every species to
+    /// make room for it. This is the finished frame's own height in units, times its proportions.
     /// </remarks>
-    private const double Window = 20 * 165.0 / 220.0;
+    private const double Window = 20 * 575.0 / 380.0;
 
     /// <summary>How many pixels the measuring frame gives each model unit.</summary>
     private const int PerUnit = 20;
@@ -319,6 +359,230 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
                 ? Of(attached, scale, depth + 1)
                 : null;
         }
+    }
+
+    /// <summary>
+    /// Draws each portrait's wardrobe as separate layers that stack back into a whole figure.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A layer is a run of parts that sit together in the painting order and want the same texture.
+    /// Runs rather than kinds, because clothing is painted on both sides of the body: a humanoid
+    /// draws the back of its outfit, then its body and eyes, then the front of its outfit, then its
+    /// head, then its beard. Splitting by kind alone would put the coat's back in front of the chest.
+    /// </para>
+    /// <para>
+    /// Each layer is drawn in the whole frame and then trimmed to what it actually covers, and its
+    /// position recorded, since an attachment is a scrap of a large picture and storing the empty
+    /// part of it four thousand times over is the difference between affordable and not.
+    /// </para>
+    /// </remarks>
+    public (IReadOnlyList<PortraitOutfit> Outfits, PortraitBakeReport Report) BakeWardrobe(
+        IReadOnlyList<PortraitDefinition> portraits,
+        string outputDirectory,
+        IProgress<string>? progress = null)
+    {
+        ArgumentNullException.ThrowIfNull(portraits);
+        ArgumentException.ThrowIfNullOrWhiteSpace(outputDirectory);
+
+        var index = BuildIndex();
+        var wardrobes = ReadWardrobes();
+
+        var outfits = new List<PortraitOutfit>();
+        var failures = new List<string>();
+        var drawn = 0;
+        long bytes = 0;
+        var done = 0;
+
+        foreach (var portrait in portraits.Where(p => !p.IsGroup))
+        {
+            if (++done % 25 == 0)
+            {
+                progress?.Report($"Drawing wardrobes ({done} of {portraits.Count})");
+            }
+
+            if (index.Model(portrait.Key) is not { } model ||
+                wardrobes.GetValueOrDefault(portrait.Key) is not { } wardrobe)
+            {
+                continue;
+            }
+
+            try
+            {
+                var mesh = PoseFor(index, model.Mesh).ApplyTo(PortraitMesh.Load(_content.Read(model.Path)));
+                var layers = new List<PortraitLayer>();
+
+                foreach (var run in Runs(mesh))
+                {
+                    var options = wardrobe.For(run.Kind);
+
+                    // A run whose texture the portrait never names wears whatever its mesh does, and
+                    // has exactly one form.
+                    IReadOnlyList<string?> variants = options.Count > 0 ? [.. options] : [null];
+
+                    var images = new List<PortraitLayerImage>();
+
+                    foreach (var texture in variants)
+                    {
+                        var wearing = Wearing(run.Kind, texture);
+                        var image = DrawLayer(mesh, run.Parts, (float)model.Scale, wearing);
+
+                        if (Trim(image) is not { } trimmed)
+                        {
+                            continue;
+                        }
+
+                        var name = texture is null ? "default" : Path.GetFileNameWithoutExtension(texture);
+                        var destination = $"portraits/wardrobe/{portrait.Key}/{layers.Count}-{name}.png";
+                        var png = PngWriter.Encode(trimmed.Image);
+
+                        _file.WriteAllBytes(Path.Combine(outputDirectory, destination), png);
+
+                        drawn++;
+                        bytes += png.Length;
+
+                        images.Add(new PortraitLayerImage(
+                            texture ?? "default",
+                            destination,
+                            trimmed.Left,
+                            trimmed.Top));
+                    }
+
+                    if (images.Count > 0)
+                    {
+                        layers.Add(new PortraitLayer(Slot(run.Kind), images));
+                    }
+                }
+
+                if (layers.Count > 0)
+                {
+                    outfits.Add(new PortraitOutfit(portrait.Key, layers));
+                }
+            }
+            catch (Exception ex) when (ex is InvalidDataException or NotSupportedException or IOException)
+            {
+                failures.Add($"{portrait.Key}: {ex.Message}");
+            }
+        }
+
+        return (outfits, new PortraitBakeReport(drawn, bytes, failures));
+    }
+
+    /// <summary>
+    /// The mesh's idea of a part's kind, as the database names it.
+    /// </summary>
+    /// <remarks>
+    /// The mesh tells them apart by the shader that draws them, which is a fact about models; the
+    /// database says the same thing without needing the model code to say it.
+    /// </remarks>
+    private static PortraitSlot Slot(PartKind kind) => kind switch
+    {
+        PartKind.Clothes => PortraitSlot.Clothes,
+        PartKind.Attachment => PortraitSlot.Attachment,
+        _ => PortraitSlot.Character,
+    };
+
+    /// <summary>What a portrait wears when only one of its three textures is being decided.</summary>
+    private static PortraitTextures Wearing(PartKind kind, string? texture) => kind switch
+    {
+        PartKind.Clothes => new PortraitTextures(null, texture, null),
+        PartKind.Attachment => new PortraitTextures(null, null, texture),
+        _ => new PortraitTextures(texture, null, null),
+    };
+
+    /// <summary>
+    /// The runs of parts a portrait splits into: consecutive in the painting order and of one kind.
+    /// </summary>
+    private static IReadOnlyList<(PartKind Kind, List<MeshPart> Parts)> Runs(PortraitMesh mesh)
+    {
+        var runs = new List<(PartKind Kind, List<MeshPart> Parts)>();
+
+        foreach (var part in PortraitRenderer.Ordered(mesh.Parts))
+        {
+            if (runs.Count > 0 && runs[^1].Kind == part.Kind)
+            {
+                runs[^1].Parts.Add(part);
+                continue;
+            }
+
+            runs.Add((part.Kind, [part]));
+        }
+
+        return runs;
+    }
+
+    private DdsImage DrawLayer(
+        PortraitMesh mesh,
+        IReadOnlyCollection<MeshPart> parts,
+        float scale,
+        PortraitTextures wearing)
+    {
+        var dressed = new PortraitMesh(
+            [.. mesh.Parts.Select(p => p with { Texture = TextureFor(p, wearing) })]);
+
+        // The parts to draw are matched by position, since dressing them made new records.
+        var wanted = mesh.Parts
+            .Select((p, i) => (Part: p, Index: i))
+            .Where(x => parts.Contains(x.Part))
+            .Select(x => dressed.Parts[x.Index])
+            .ToHashSet();
+
+        var textures = new Dictionary<string, DdsImage>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var path in wanted.Select(p => p.Texture).OfType<string>().Distinct(StringComparer.OrdinalIgnoreCase))
+        {
+            if (LoadTexture(path) is { } texture)
+            {
+                textures[path] = texture;
+            }
+        }
+
+        return _renderer.Render(dressed, textures, scale, wanted);
+    }
+
+    /// <summary>
+    /// Cuts an image down to what is drawn on it, and says where that piece sat.
+    /// </summary>
+    /// <remarks>
+    /// Returns nothing for a layer that drew nothing at all, which happens whenever a portrait names
+    /// a texture for a kind of part it does not have.
+    /// </remarks>
+    private static (DdsImage Image, int Left, int Top)? Trim(DdsImage image)
+    {
+        int left = image.Width, right = -1, top = image.Height, bottom = -1;
+
+        for (var y = 0; y < image.Height; y++)
+        {
+            for (var x = 0; x < image.Width; x++)
+            {
+                if (image[x, y].A == 0)
+                {
+                    continue;
+                }
+
+                left = Math.Min(left, x);
+                right = Math.Max(right, x);
+                top = Math.Min(top, y);
+                bottom = Math.Max(bottom, y);
+            }
+        }
+
+        if (right < left || bottom < top)
+        {
+            return null;
+        }
+
+        var width = right - left + 1;
+        var height = bottom - top + 1;
+        var pixels = new byte[width * height * 4];
+
+        for (var y = 0; y < height; y++)
+        {
+            var source = (((y + top) * image.Width) + left) * 4;
+            Array.Copy(image.Pixels, source, pixels, y * width * 4, width * 4);
+        }
+
+        return (new DdsImage(width, height, pixels), left, top);
     }
 
     private ModelIndex BuildIndex() => new(
@@ -482,10 +746,13 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
     /// and points at selectors for its clothes and its hair; the psionic portraits name nothing in
     /// their meshes whatsoever, which is why they came out blank.
     /// </remarks>
-    private Dictionary<string, PortraitTextures> ReadWardrobes()
+    /// <summary>Everything each portrait could wear, by portrait key.</summary>
+    public IReadOnlyDictionary<string, PortraitWardrobe> Wardrobes() => ReadWardrobes();
+
+    private Dictionary<string, PortraitWardrobe> ReadWardrobes()
     {
         var selectors = ReadSelectors();
-        var wardrobes = new Dictionary<string, PortraitTextures>(StringComparer.Ordinal);
+        var wardrobes = new Dictionary<string, PortraitWardrobe>(StringComparer.Ordinal);
 
         foreach (var path in _content.EnumerateFiles("gfx/portraits/portraits", "*.txt"))
         {
@@ -505,10 +772,10 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
                         continue;
                     }
 
-                    wardrobes.TryAdd(key, new PortraitTextures(
-                        ReadCharacterTexture(body),
-                        Selected(selectors, body.GetString("clothes_selector")),
-                        Selected(selectors, body.GetString("attachment_selector"))));
+                    wardrobes.TryAdd(key, new PortraitWardrobe(
+                        ReadCharacterTextures(body),
+                        Offered(selectors, body.GetString("clothes_selector")),
+                        Offered(selectors, body.GetString("attachment_selector"))));
                 }
             }
         }
@@ -524,34 +791,38 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
     /// evolution, as blocks tying each texture to a stage. The first is the one an empire starts
     /// with either way.
     /// </remarks>
-    private static string? ReadCharacterTexture(CwBlock body)
+    private static IReadOnlyList<string> ReadCharacterTextures(CwBlock body)
     {
         if (body.GetBlock("character_textures") is not { } textures)
         {
-            return null;
+            return [];
         }
+
+        var found = new List<string>();
 
         foreach (var node in textures.Nodes)
         {
             if (!node.IsAssignment && node.ScalarValue is { Length: > 0 } path)
             {
-                return path;
+                found.Add(path);
             }
-
-            if (node.Block?.GetString("texture") is { Length: > 0 } tied)
+            else if (node.Block?.GetString("texture") is { Length: > 0 } tied)
             {
-                return tied;
+                found.Add(tied);
             }
         }
 
-        return null;
+        return [.. found.Distinct(StringComparer.OrdinalIgnoreCase)];
     }
 
-    /// <summary>The texture a named selector chooses, or null when there is none.</summary>
-    private static string? Selected(IReadOnlyDictionary<string, string> selectors, string? name) =>
-        name is { Length: > 0 } && !string.Equals(name, NoTexture, StringComparison.Ordinal)
-            ? selectors.GetValueOrDefault(name)
-            : null;
+    /// <summary>Every texture a named selector could choose, the empire designer's first.</summary>
+    private static IReadOnlyList<string> Offered(
+        IReadOnlyDictionary<string, AssetChoices> selectors,
+        string? name) =>
+        name is { Length: > 0 } && !string.Equals(name, NoTexture, StringComparison.Ordinal) &&
+        selectors.GetValueOrDefault(name) is { } choices
+            ? choices.All
+            : [];
 
     /// <summary>
     /// What each asset selector chooses for an empire being designed.
@@ -563,9 +834,9 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
     /// species and a government but no country. Its default is what the empire designer shows, and
     /// the plain default stands in where a selector does not mention us.
     /// </remarks>
-    private Dictionary<string, string> ReadSelectors()
+    private Dictionary<string, AssetChoices> ReadSelectors()
     {
-        var selectors = new Dictionary<string, string>(StringComparer.Ordinal);
+        var selectors = new Dictionary<string, AssetChoices>(StringComparer.Ordinal);
 
         foreach (var path in _content.EnumerateFiles("gfx/portraits/asset_selectors", "*.txt"))
         {
@@ -581,15 +852,55 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
                 var chosen = body.GetBlock("game_setup")?.GetString("default")
                              ?? body.GetString("default");
 
+                // Every texture the selector mentions, whatever situation it mentions it for: a
+                // leader's uniform and a worker's overalls are both things a portrait can wear, and
+                // the leader designer will want them. The empire designer's own choice leads.
+                var all = new List<string>();
+
                 if (chosen is { Length: > 0 })
                 {
-                    selectors.TryAdd(key, chosen);
+                    all.Add(chosen);
+                }
+
+                Collect(body, all);
+
+                if (all.Count > 0)
+                {
+                    selectors.TryAdd(key, new AssetChoices([.. all.Distinct(StringComparer.OrdinalIgnoreCase)]));
                 }
             }
         }
 
         return selectors;
+
+        // A selector is a tree of scopes and triggers, and the textures are scattered through it as
+        // keys, as values and inside random lists. Anything that looks like one of the game's own
+        // picture files counts.
+        static void Collect(CwBlock block, List<string> found)
+        {
+            foreach (var node in block.Nodes)
+            {
+                if (node.Key is { Length: > 4 } key && key.EndsWith(".dds", StringComparison.OrdinalIgnoreCase))
+                {
+                    found.Add(key);
+                }
+
+                if (node.ScalarValue is { Length: > 4 } value &&
+                    value.EndsWith(".dds", StringComparison.OrdinalIgnoreCase))
+                {
+                    found.Add(value);
+                }
+
+                if (node.Block is { } child)
+                {
+                    Collect(child, found);
+                }
+            }
+        }
     }
+
+    /// <summary>The textures one asset selector can choose between, its default first.</summary>
+    private sealed record AssetChoices(IReadOnlyList<string> All);
 
     /// <summary>Portrait key to the entity it wears, from the portrait definitions.</summary>
     private Dictionary<string, string> ReadPortraitEntities()

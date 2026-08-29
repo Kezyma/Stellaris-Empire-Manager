@@ -20,7 +20,7 @@
         <div class="sem-designer">
             <div class="sem-sections">
                 <DesignerSection Title="Empire"
-                                 Summary="@Session.Localizer.Text(Session.Current.Name.Key, Session.Current.Key)">
+                                 Summary="@Session.Localizer.Name(Session.Current.Name, Session.Current.Key)">
                     <EmpireSection />
                 </DesignerSection>
 
@@ -38,7 +38,7 @@
                 @if (Session.Current.SecondarySpecies is { } secondary)
                 {
                     <DesignerSection Title="Second species"
-                                     Summary="@secondary.Name.Key"
+                                     Summary="@Session.Localizer.Name(secondary.Name)"
                                      Problems="@Problems(ValidationArea.SecondarySpecies)">
                         <SpeciesTab Species="@secondary" />
                     </DesignerSection>
@@ -74,7 +74,7 @@
                     <RulerTab />
                 </DesignerSection>
 
-                <DesignerSection Title="Appearance" StartOpen="false">
+                <DesignerSection Title="Appearance">
                     <AppearanceTab />
                 </DesignerSection>
             </div>
@@ -104,7 +104,7 @@
         get
         {
             var design = Session.Current!;
-            var name = design.Species.Name.Key;
+            var name = Session.Localizer.Name(design.Species.Name);
             var traits = design.Species.Traits.Count;
 
             return traits == 0 ? name : $"{name} · {traits} trait{(traits == 1 ? string.Empty : "s")}";
