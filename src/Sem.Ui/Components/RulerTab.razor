@@ -7,7 +7,7 @@
         <h3>Ruler</h3>
 
         <div class="sem-field">
-            <label for="ruler-name">Name</label>
+            <label for="ruler-name">@Session.Localizer.Label("LEADER_NAME", "Leader Name")</label>
             <div class="sem-row" style="flex-wrap:nowrap">
                 <input id="ruler-name" type="text" value="@RulerName"
                        @onchange="e => SetName(e.Value?.ToString())" />
@@ -18,7 +18,7 @@
 
         <div class="sem-field">
             <label for="ruler-title">Title</label>
-            <input id="ruler-title" type="text" value="@Design.Ruler.Title?.Key"
+            <input id="ruler-title" type="text" value="@Session.Localizer.Name(Design.Ruler.Title)"
                    placeholder="@DefaultTitle"
                    @onchange="e => SetTitle(e.Value?.ToString())" />
             <span class="sem-hint">Left empty, the government supplies one.</span>
@@ -37,7 +37,7 @@
         </div>
 
         <div class="sem-field">
-            <label for="ruler-class">Leader class</label>
+            <label for="ruler-class">@Session.Localizer.Label("RULER_CLASS", "Leader Class")</label>
             <select id="ruler-class" @onchange="e => Session.Edit(d => d.Ruler.LeaderClass = e.Value?.ToString())">
                 @foreach (var leaderClass in (string[])["official", "commander", "scientist"])
                 {
@@ -74,7 +74,7 @@
     /// The name as stored. A ruler's name is normally a template the game fills from the species'
     /// name list, and typing over it replaces the whole thing with plain text.
     /// </summary>
-    private string RulerName => Design.Ruler.Name.FullNames?.Key ?? string.Empty;
+    private string RulerName => Session.Localizer.Name(Design.Ruler.Name.FullNames);
 
     private string DefaultTitle =>
         Session.Rules.DeriveGovernment(Context)?.RulerTitleKey is { } key

@@ -8,7 +8,7 @@
 *@
 
 <div class="sem-field">
-    <label for="empire-name">Name</label>
+    <label for="empire-name">@Session.Localizer.Label("EMPIRE_NAME", "Empire Name")</label>
     <div class="sem-row" style="flex-wrap:nowrap">
         <input id="empire-name" type="text" value="@Session.Localizer.Name(Design.Name, Design.Key)"
                @onchange="Rename" />
@@ -23,7 +23,7 @@
 </div>
 
 <div class="sem-field">
-    <label for="empire-adjective">Adjective</label>
+    <label for="empire-adjective">@Session.Localizer.Label("EMPIRE_ADJECTIVE", "Empire Adjective")</label>
     <input id="empire-adjective" type="text" value="@Session.Localizer.Name(Design.Adjective)"
            @onchange="e => Session.Edit(d => d.Adjective.SetLiteral(e.Value?.ToString() ?? string.Empty))" />
 </div>

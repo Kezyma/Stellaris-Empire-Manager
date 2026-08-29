@@ -9,19 +9,19 @@
 
 <div class="sem-name-row">
     <div class="sem-field">
-        <label for="@Field("name")">Species</label>
+        <label for="@Field("name")">@Session.Localizer.Label("SPECIES_NAME", "Species Name")</label>
         <ComboBox Id="@Field("name")" Value="@Shown(Species.Name)"
                   Options="@Names" OnChange="ChooseName" />
     </div>
 
     <div class="sem-field">
-        <label for="@Field("plural")">Plural</label>
+        <label for="@Field("plural")">@Session.Localizer.Label("SPECIES_PLURAL", "Species Name Plural")</label>
         <ComboBox Id="@Field("plural")" Value="@Shown(Species.Plural)"
                   Options="@Plurals" OnChange="ChoosePlural" />
     </div>
 
     <div class="sem-field">
-        <label for="@Field("adjective")">Adjective</label>
+        <label for="@Field("adjective")">@Session.Localizer.Label("SPECIES_ADJECTIVE", "Species Adjective")</label>
         <ComboBox Id="@Field("adjective")" Value="@Shown(Species.Adjective)"
                   Options="@Adjectives" OnChange="ChooseAdjective" />
     </div>
@@ -34,7 +34,7 @@
 </div>
 
 <div class="sem-field">
-    <label for="@Field("list")">Name list</label>
+    <label for="@Field("list")">@Session.Localizer.Label("NAME_LIST", "Name List")</label>
     <select id="@Field("list")" @onchange="e => Session.Edit(d => Species.NameList = e.Value?.ToString())">
         @foreach (var group in NameLists)
         {

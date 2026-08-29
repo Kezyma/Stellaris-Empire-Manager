@@ -135,7 +135,12 @@ else
         }
     }
 
-    private void OnChanged() => InvokeAsync(StateHasChanged);
+    private void OnChanged()
+    {
+        // The content packs decide which empires are listed, so the list is worked out again.
+        _prescripted = null;
+        InvokeAsync(StateHasChanged);
+    }
 
     private async Task OpenFile(InputFileChangeEventArgs e)
     {
@@ -164,7 +169,7 @@ else
             _session?.StartEmptyFile();
         }
 
-        var name = NextName();
+        var name = Available("New Empire");
         var template = _session!.Data.Database.NewEmpireTemplate;
 
         // The game keeps a blank template of its own; starting from it means a new empire is
@@ -185,49 +190,41 @@ else
         Navigation.NavigateTo("designer");
     }
 
-    private string NextName()
-    {
-        const string baseName = "New Empire";
-
-        if (_session?.File?.Find(baseName) is null)
-        {
-            return baseName;
-        }
-
-        for (var i = 2; ; i++)
-        {
-            var candidate = $"{baseName} {i}";
-            if (_session.File.Find(candidate) is null)
-            {
-                return candidate;
-            }
-        }
-    }
-
     /// <summary>
-    /// The game's own empires, those a player could actually start as.
+    /// The game's own empires, those a player could actually start as, worked out once.
     /// </summary>
     /// <remarks>
-    /// Several are marked playable only with a content pack, and a few are not offered at all — the
-    /// game keeps some of its own creatures in the same files. Judged against what the player says
-    /// they own, so the list matches what their game would show.
+    /// Several are marked playable only with a content pack, and a couple not at all — the game
+    /// keeps a legacy United Nations of Earth beside the playable one. Judged against what the
+    /// player says they own, so the list matches what their game would show.
+    /// </remarks>
+    /// <remarks>
+    /// Held rather than recomputed: judging one needs a context, and building that per empire meant
+    /// fifty-two throwaway files and designs every time the page drew. Cleared when the session
+    /// changes, which is what turning a content pack on and off does.
     /// </remarks>
     private IReadOnlyList<PrescriptedEmpireSummary> Prescripted =>
-        [.. _session!.Data.Database.PrescriptedEmpires
-            .Where(e => _evaluator.IsSatisfied(e.Playable, PlayerContext))
-            .OrderBy(e => _session.Localizer.Text(e.NameKey, e.Key), StringComparer.CurrentCulture)];
+        _prescripted ??= BuildPrescripted();
+
+    private IReadOnlyList<PrescriptedEmpireSummary>? _prescripted;
 
     private readonly RequirementEvaluator _evaluator = new();
 
-    /// <summary>
-    /// An empty design judged against what the player owns.
-    /// </summary>
-    /// <remarks>
-    /// A built-in empire's own conditions are almost all about content packs, so nothing about the
-    /// empire being edited matters here — only what the player has.
-    /// </remarks>
-    private DesignContext PlayerContext =>
-        _session!.Rules.CreateContext(EmpireDesignsFile.CreateEmpty().Add("scratch"), _session.OwnedDlc);
+    private IReadOnlyList<PrescriptedEmpireSummary> BuildPrescripted()
+    {
+        // A built-in empire's own conditions are almost all about content packs, so nothing about
+        // any particular design matters here — only what the player has.
+        var context = _session!.Rules.CreateContext(
+            EmpireDesignsFile.CreateEmpty().Add("scratch"),
+            _session.OwnedDlc);
+
+        return
+        [
+            .. _session.Data.Database.PrescriptedEmpires
+                .Where(e => _evaluator.IsSatisfied(e.Playable, context))
+                .OrderBy(e => _session.Localizer.Text(e.NameKey, e.Key), StringComparer.CurrentCulture)
+        ];
+    }
 
     private string? Thumbnail(PrescriptedEmpireSummary empire) =>
         PortraitArtwork.For(_session!.Data.Database, empire.Portrait, gender: null);

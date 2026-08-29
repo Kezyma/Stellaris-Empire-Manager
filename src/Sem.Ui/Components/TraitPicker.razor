@@ -7,8 +7,8 @@
 *@
 
 <div class="sem-row" style="gap:20px">
-    <BudgetBar Label="Trait points" Value="@Budget.Points" />
-    <BudgetBar Label="Traits" Value="@Budget.Picks" />
+    <BudgetBar Key="POINTS_LEFT" Fallback="Trait Points Left: $POINTS|H$" Value="@Budget.Points" />
+    <BudgetBar Key="PICKS_LEFT" Fallback="Trait Picks Left: $POINTS|H$" Value="@Budget.Picks" />
 </div>
 
 @*

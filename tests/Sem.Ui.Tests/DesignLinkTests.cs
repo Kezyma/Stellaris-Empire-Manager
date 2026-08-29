@@ -72,6 +72,21 @@ public sealed class DesignLinkTests
         Assert.DoesNotContain('=', encoded);
     }
 
+    [Fact]
+    public void AnEmpireWithAQuotationMarkInItsNameStillTravels()
+    {
+        // The key is written between quotation marks, so one inside it closed them early and the
+        // link came back as nothing at all — quietly, since a link that will not parse is treated
+        // as no design.
+        var design = Load();
+        design.Rename("The \"Peacock\" Dynamics");
+
+        var restored = DesignLink.Decode(DesignLink.Encode(design));
+
+        Assert.NotNull(restored);
+        Assert.Equal(design.Authority, restored.Authority);
+    }
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]

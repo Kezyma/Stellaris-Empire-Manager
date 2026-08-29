@@ -5,7 +5,7 @@
 
 <div class="sem-columns">
     <div class="sem-panel">
-        <h3>Flag</h3>
+        <h3>@Session.Localizer.Label("EMPIRE_FLAG", "Flag")</h3>
 
         <div class="sem-row" style="align-items:flex-start">
             <FlagPreview Flag="@Design.Flag" Class="large" />
@@ -53,7 +53,7 @@
         </div>
 
         <div class="sem-field">
-            <label for="flag-background">Background</label>
+            <label for="flag-background">@Session.Localizer.Label("EMBLEM_BACKGROUND_PATTERN", "Patterns")</label>
             <select id="flag-background" @onchange="e => SetBackground(e.Value?.ToString())">
                 @foreach (var file in BackgroundFiles)
                 {
@@ -65,7 +65,7 @@
         </div>
 
         <div class="sem-field">
-            <label for="emblem-category">Emblem</label>
+            <label for="emblem-category">@Session.Localizer.Label("CHOOSE_SYMBOL", "Choose Symbol")</label>
             <select id="emblem-category" @onchange="e => _emblemCategory = e.Value?.ToString() ?? _emblemCategory">
                 @foreach (var category in EmblemCategories)
                 {
@@ -102,7 +102,7 @@
             stepping outside what the designer offers, and should feel like it.
         *@
         <div class="sem-panel">
-            <h3>Room</h3>
+            <h3>@Session.Localizer.Label("EMPIRE_CREATION_ROOM_APPEARANCE", "Room")</h3>
             <p class="sem-hint">The game gives these no names, so they are shown as they look.</p>
 
             @Rooms(Offered)
@@ -122,7 +122,7 @@
             <h3>Ships and cities</h3>
 
             <div class="sem-field">
-                <label for="ship-set">Ship appearance</label>
+                <label for="ship-set">@Session.Localizer.Label("SHIPSETS_LABEL", "Shipsets")</label>
                 <select id="ship-set" @onchange="e => Session.Edit(d => d.GraphicalCulture = e.Value?.ToString())">
                     @foreach (var culture in ShipSets)
                     {
@@ -134,7 +134,7 @@
             </div>
 
             <div class="sem-field">
-                <label for="city-set">City appearance</label>
+                <label for="city-set">@Session.Localizer.Label("EMPIRE_CREATION_CITY_APPEARANCE", "City")</label>
                 <select id="city-set" @onchange="e => Session.Edit(d => d.CityGraphicalCulture = e.Value?.ToString())">
                     @foreach (var culture in CitySets)
                     {
@@ -151,14 +151,14 @@
             }
 
             <div class="sem-field" style="margin-top:12px">
-                <label for="ship-prefix">Fleet prefix</label>
-                <input id="ship-prefix" type="text" value="@Design.ShipPrefix.Key"
+                <label for="ship-prefix">@Session.Localizer.Label("SHIP_PREFIX", "Ship Prefix")</label>
+                <input id="ship-prefix" type="text" value="@Session.Localizer.Name(Design.ShipPrefix)"
                        @onchange="e => Session.Edit(d => d.ShipPrefix.SetLiteral(e.Value?.ToString() ?? string.Empty))" />
             </div>
         </div>
 
         <div class="sem-panel">
-            <h3>Advisor</h3>
+            <h3>@Session.Localizer.Label("EMPIRE_ADVISOR", "Advisor Voice")</h3>
 
             <div class="sem-options">
                 @foreach (var voice in Voices)

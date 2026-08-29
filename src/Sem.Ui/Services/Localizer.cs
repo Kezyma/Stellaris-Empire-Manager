@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using Sem.Designs;
+using Sem.Rules;
 
 namespace Sem.Ui.Services;
 
@@ -55,6 +56,26 @@ public sealed partial class Localizer(
 
     /// <summary>Whether the game has any text under this key.</summary>
     public bool Has(string? key) => key is not null && _entries.ContainsKey(key);
+
+    /// <summary>
+    /// A label the game's own empire designer puts on a field.
+    /// </summary>
+    /// <remarks>
+    /// The designer reproduces the game, so it should use the game's words — and then it reads in
+    /// whatever language the player has, instead of in whatever English seemed reasonable at the
+    /// time. The fallback is what to show if a future patch drops the key.
+    /// </remarks>
+    public string Label(string key, string fallback) => Text(key, fallback);
+
+    /// <summary>
+    /// One of the counters the designer keeps, as the game words it.
+    /// </summary>
+    /// <remarks>
+    /// The game writes these as a sentence with the number inside — "Trait Points Left: 2" — so the
+    /// label and the figure come out of one entry rather than being stitched together here.
+    /// </remarks>
+    public string Counter(string key, string fallback, int points) =>
+        Text(key, fallback).Replace("$POINTS|H$", points.ToString(CultureInfo.CurrentCulture), StringComparison.Ordinal);
 
     /// <summary>
     /// The plain text for a key, with variables resolved and markup stripped. Falls back to the
@@ -114,11 +135,12 @@ public sealed partial class Localizer(
     /// <c>PRESCRIPTED_species_name_iferyx</c> in its own name field.
     /// </para>
     /// <para>
-    /// A key may be a template with its own variables — an adjective is stored as
-    /// <c>%ADJECTIVE%</c> plus the species it is formed from — and those nest: the player's own file
-    /// goes four deep. Each is resolved in turn, and a template the game has no text for falls back
-    /// to whatever its first variable resolves to, which is the species name and the word a reader
-    /// would expect.
+    /// A key may be a template with its own variables, and those nest: the player's own file goes
+    /// four deep. Four of the templates are the engine's own and have no entry in the game's text at
+    /// all — <c>%ADJ%</c>, <c>%ADJECTIVE%</c> and the two leader forms — so they are composed here.
+    /// The Blessed Oxanalytoran Union is stored as <c>%ADJ%</c> over <c>Blessed</c> over
+    /// <c>%ADJECTIVE%</c> of <c>SPEC_Oxanalytor</c> over <c>Union</c>, and comes back out as its
+    /// name.
     /// </para>
     /// </remarks>
     public string Name(LocRef? name, string? fallback = null)
@@ -138,23 +160,94 @@ public sealed partial class Localizer(
             return name.Key;
         }
 
-        var parts = name.Variables
-            .Select(v => v.Value is { } value ? Name(value, depth + 1) : string.Empty)
-            .Where(p => p.Length > 0)
-            .ToList();
-
-        if (_entries.TryGetValue(name.Key, out var template))
+        // The engine builds these itself; the game's text files have no entry for any of them, so
+        // looking them up finds nothing and the name comes out as one of its own fragments.
+        switch (name.Key)
         {
-            return StripMarkup(Fill(Substitute(template, 0), name, depth));
+            case AdjWrapper:
+            case LeaderOnePart:
+                return Words(name, depth, "1");
+
+            case LeaderTwoParts:
+                return Words(name, depth, "1", "2");
+
+            case LocRef.AdjectiveTemplate:
+                // "Oxanalytor" becomes "Oxanalytoran", and whatever follows it follows it: the
+                // Blessed Oxanalytoran Union keeps its Union in the same variable.
+                var species = Variable(name, "adjective", depth);
+
+                return Join(
+                    species.Length > 0 ? NameGenerator.Adjective(species) : string.Empty,
+                    Words(name, depth, "1"));
         }
 
-        // No text under the key. A template is then worth nothing on its own, so what it was made
-        // from stands in; a plain key with no text is shown as the game shows it, as itself.
-        return parts.Count > 0 ? parts[0] : name.Key;
+        // A name's own variables are more specific than the game's text, so they are filled first
+        // and whatever is left over is looked up.
+        var used = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        var head = _entries.TryGetValue(name.Key, out var template)
+
+            // A placeholder nothing filled is dropped rather than shown. The Commonwealth of Man's
+            // species adjective is stored as "Human $1$" — the same entry serves the empire's own
+            // name, where something does fill it — and a player reading the species field should see
+            // "Human", not the machinery.
+            ? Tidy(StripMarkup(Substitute(Fill(template, name, depth, used), 0)))
+
+            // No text under the key. The game's own empire name parts are like this —
+            // "Corporate_Alliance" is shown as the words it spells.
+            : Prettify(name.Key);
+
+        // Whatever the text did not ask for still belongs to the name: a species adjective is stored
+        // as the plain word "Human" with the empire's noun hanging off it, and the game writes the
+        // two together.
+        return Join(head, Words(name, depth, Positional.Where(p => !used.Contains(p)).ToArray()));
     }
 
-    /// <summary>Puts a stored name's own variables into the text its key resolved to.</summary>
-    private string Fill(string template, LocRef name, int depth)
+    /// <summary>The variables a name carries by position rather than by name.</summary>
+    private static readonly string[] Positional = ["1", "2"];
+
+    /// <summary>The placeholder wrapping a name built from an adjective and a noun.</summary>
+    private const string AdjWrapper = "%ADJ%";
+
+    private const string LeaderOnePart = "%LEADER_1%";
+
+    private const string LeaderTwoParts = "%LEADER_2%";
+
+    /// <summary>The named variables of a name, in order, as words with spaces between them.</summary>
+    private string Words(LocRef name, int depth, params string[] keys) =>
+        Join([.. keys.Select(k => Variable(name, k, depth))]);
+
+    /// <summary>One variable of a name, resolved, or nothing where the name has no such variable.</summary>
+    private string Variable(LocRef name, string key, int depth) =>
+        name.Variables.FirstOrDefault(v => string.Equals(v.Key, key, StringComparison.OrdinalIgnoreCase))
+            ?.Value is { } value
+            ? Name(value, depth + 1)
+            : string.Empty;
+
+    private static string Join(params string[] parts) =>
+        string.Join(' ', parts.Where(p => p.Length > 0));
+
+    /// <summary>
+    /// Removes the placeholders nothing filled, and the gaps they leave behind.
+    /// </summary>
+    /// <remarks>
+    /// Only names are treated this way. Elsewhere an unresolved token is left visible so it can be
+    /// chased, but a name is something a player reads and types over, and half a template in a text
+    /// box is worse than a slightly shorter name.
+    /// </remarks>
+    private static string Tidy(string value) =>
+        value.Contains('$', StringComparison.Ordinal)
+            ? Whitespace().Replace(VariableReference().Replace(value, string.Empty), " ").Trim()
+            : value;
+
+    [GeneratedRegex(@"\s{2,}")]
+    private static partial Regex Whitespace();
+
+    /// <summary>
+    /// Puts a stored name's own variables into the text its key resolved to, recording which of them
+    /// the text actually asked for.
+    /// </summary>
+    private string Fill(string template, LocRef name, int depth, HashSet<string> used)
     {
         if (name.Variables.Count == 0)
         {
@@ -168,7 +261,13 @@ public sealed partial class Localizer(
             var variable = name.Variables.FirstOrDefault(v =>
                 string.Equals(v.Key, wanted, StringComparison.OrdinalIgnoreCase));
 
-            return variable?.Value is { } value ? Name(value, depth + 1) : match.Value;
+            if (variable?.Value is not { } value)
+            {
+                return match.Value;
+            }
+
+            used.Add(wanted);
+            return Name(value, depth + 1);
         });
     }
 
@@ -394,7 +493,12 @@ public sealed partial class Localizer(
     /// A variable standing for another entry, or — with a leading <c>@</c> — for a number the script
     /// declared. What follows the bar is a format, and is captured so numbers can honour it.
     /// </summary>
-    [GeneratedRegex(@"\$(@?[A-Za-z_][A-Za-z0-9_.]*)(?:\|([^$]*))?\$")]
+    /// <remarks>
+    /// A name may be a bare number. The game's own name templates are positional — "Blessed $1$" —
+    /// and a pattern that insisted on a letter first could never fill one, which is why an empire
+    /// built that way showed its template rather than its name.
+    /// </remarks>
+    [GeneratedRegex(@"\$(@?[A-Za-z0-9_][A-Za-z0-9_.]*)(?:\|([^$]*))?\$")]
     private static partial Regex VariableReference();
 
     [GeneratedRegex(@"\['([A-Za-z0-9_]+)'(?:\s*,\s*([^\]]*))?\]")]

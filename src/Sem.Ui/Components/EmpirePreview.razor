@@ -38,7 +38,7 @@
             @Row("Civics", string.Join(", ", Design.Civics.Select(c => Session.Localizer.Text(c))))
             @Row("Origin", Session.Localizer.Text(Design.Origin))
             @Row("Homeworld", Session.Localizer.Text(Design.PlanetClass))
-            @Row("Ruler", Session.Localizer.Text(Design.Ruler.Name.FullNames?.Key, "unnamed"))
+            @Row("Ruler", Session.Localizer.Name(Design.Ruler.Name.FullNames, "unnamed"))
         </dl>
 
         @if (Session.Report.IsValid && Session.Report.Warnings.Count == 0)

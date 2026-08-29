@@ -520,11 +520,17 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
         var dressed = new PortraitMesh(
             [.. mesh.Parts.Select(p => p with { Texture = TextureFor(p, wearing) })]);
 
-        // The parts to draw are matched by position, since dressing them made new records.
-        var wanted = mesh.Parts
-            .Select((p, i) => (Part: p, Index: i))
-            .Where(x => parts.Contains(x.Part))
-            .Select(x => dressed.Parts[x.Index])
+        // Matched by position, since dressing them made new records. By position rather than by
+        // value: a part's fields are arrays, so comparing two of them compares references, which
+        // happens to work here and would stop working the day a part is copied.
+        var indices = mesh.Parts
+            .Select((part, index) => (part, index))
+            .Where(x => parts.Contains(x.part))
+            .Select(x => x.index)
+            .ToHashSet();
+
+        var wanted = dressed.Parts
+            .Where((_, i) => indices.Contains(i))
             .ToHashSet();
 
         var textures = new Dictionary<string, DdsImage>(StringComparer.OrdinalIgnoreCase);

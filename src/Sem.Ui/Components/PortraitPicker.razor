@@ -13,7 +13,7 @@
 
 @* The game's own four, in its own order. *@
 <div class="sem-field">
-    <label>Gender</label>
+    <label>@Session.Localizer.Label("GENDER", "Gender")</label>
     <div class="sem-genders">
         @foreach (var (key, label, icon) in Genders)
         {
@@ -40,7 +40,7 @@
     the thing that decides which portraits there are.
 *@
 <div class="sem-portrait-picker">
-    <div class="sem-class-list" role="listbox" aria-label="Species class">
+    <div class="sem-class-list" role="listbox" aria-label="@Session.Localizer.Label("SPECIES_CLASS_LABEL", "Species Class")">
         @foreach (var option in ClassOptions)
         {
             <button type="button"

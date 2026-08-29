@@ -104,9 +104,10 @@ public sealed class NameTests
     }
 
     [Fact]
-    public void ATemplateTheGameHasNoTextForFallsBackToWhatItWasMadeFrom()
+    public void TheEngineOwnTemplatesAreComposedRatherThanLookedUp()
     {
-        // Better the species' own name than the word "%ADJECTIVE%" in a field a player is reading.
+        // Neither %ADJECTIVE% nor %ADJ% appears anywhere in the game's text: the engine builds them.
+        // Looked up and not found, an adjective came out as the species' own name.
         var species = Species();
         NameWriter.Species(species, Oxanalytor);
 
@@ -115,7 +116,173 @@ public sealed class NameTests
             ["SPEC_Oxanalytor"] = "Oxanalytor",
         });
 
-        Assert.Equal("Oxanalytor", localizer.Name(species.Adjective));
+        Assert.Equal("Oxanalytoran", localizer.Name(species.Adjective));
+    }
+
+    [Fact]
+    public void AWholeEmpireNameComesBackOutOfItsNestedParts()
+    {
+        // The Blessed Oxanalytoran Union, exactly as the player's own file stores it: a wrapper over
+        // a descriptor over an adjective over the species, with the noun hanging off the adjective.
+        var design = EmpireDesignsFile.LoadText(BlessedOxanalytoranUnion).Designs[0];
+
+        var localizer = new Localizer(new Dictionary<string, string>
+        {
+            ["SPEC_Oxanalytor"] = "Oxanalytor",
+        });
+
+        Assert.Equal("Blessed Oxanalytoran Union", localizer.Name(design.Name));
+    }
+
+    [Fact]
+    public void ALeaderWearsBothHalvesOfTheirName()
+    {
+        var design = EmpireDesignsFile.LoadText(BlessedOxanalytoranUnion).Designs[0];
+
+        var localizer = new Localizer(new Dictionary<string, string>
+        {
+            ["HUMAN1_CHR_Lawrence"] = "Lawrence",
+            ["HUMAN1_CHR_Whitfield"] = "Whitfield",
+        });
+
+        Assert.Equal("Lawrence Whitfield", localizer.Name(design.Ruler.Name.FullNames));
+    }
+
+    [Fact]
+    public void ANamePartWithNoTextIsShownAsTheWordsItSpells()
+    {
+        // The game's empire name parts have no text of their own — "Corporate_Alliance" is not in
+        // any of its files — and it writes them out as they read. Shown as the key, the underscore
+        // came with it.
+        var design = EmpireDesignsFile.LoadText(HumanCorporateAlliance).Designs[0];
+
+        var localizer = new Localizer(new Dictionary<string, string>
+        {
+            ["PRESCRIPTED_species_adjective_humans1"] = "Human",
+        });
+
+        Assert.Equal("Human Corporate Alliance", localizer.Name(design.Name));
+    }
+
+    /// <summary>Another of the player's own, and the one whose noun has an underscore in it.</summary>
+    private const string HumanCorporateAlliance = """
+        "Human Corporate Alliance"=
+        {
+        	key="Human Corporate Alliance"
+        	name=
+        	{
+        		key="%ADJ%"
+        		variables=
+        		{
+        			{
+        				key="1"
+        				value=
+        				{
+        					key="PRESCRIPTED_species_adjective_humans1"
+        					variables=
+        					{
+        						{ key="1" value={ key="Corporate_Alliance" } }
+        					}
+        				}
+        			}
+        		}
+        	}
+        }
+        """;
+
+    [Fact]
+    public void ANamesOwnVariablesBeatTheGamesTextOfTheSameName()
+    {
+        var design = EmpireDesignsFile.LoadText(BlessedOxanalytoranUnion).Designs[0];
+
+        // A design's variables are the more specific of the two, so an entry that happens to share a
+        // placeholder's name must not shadow them.
+        var localizer = new Localizer(new Dictionary<string, string>
+        {
+            ["Blessed"] = "Blessed $1$",
+            ["1"] = "SOMETHING ELSE",
+            ["SPEC_Oxanalytor"] = "Oxanalytor",
+        });
+
+        Assert.Equal("Blessed Oxanalytoran Union", localizer.Name(design.Name));
+    }
+
+    /// <summary>
+    /// One of the player's own empires, copied out of their file unchanged.
+    /// </summary>
+    private const string BlessedOxanalytoranUnion = """
+        "Blessed Oxanalytoran Union"=
+        {
+        	key="Blessed Oxanalytoran Union"
+        	name=
+        	{
+        		key="%ADJ%"
+        		variables=
+        		{
+        			{
+        				key="1"
+        				value=
+        				{
+        					key="Blessed"
+        					variables=
+        					{
+        						{
+        							key="1"
+        							value=
+        							{
+        								key="%ADJECTIVE%"
+        								variables=
+        								{
+        									{
+        										key="adjective"
+        										value={ key="SPEC_Oxanalytor" }
+        									}
+        									{
+        										key="1"
+        										value={ key="Union" }
+        									}
+        								}
+        							}
+        						}
+        					}
+        				}
+        			}
+        		}
+        	}
+        	ruler=
+        	{
+        		name=
+        		{
+        			full_names=
+        			{
+        				key="%LEADER_2%"
+        				variables=
+        				{
+        					{ key="1" value={ key="HUMAN1_CHR_Lawrence" } }
+        					{ key="2" value={ key="HUMAN1_CHR_Whitfield" } }
+        				}
+        			}
+        		}
+        	}
+        }
+        """;
+
+    [Fact]
+    public void APlaceholderNothingFilledIsDroppedRatherThanShown()
+    {
+        // The Commonwealth of Man's species adjective is stored as the key whose text is
+        // "Human $1$" — the same entry serves the empire's own name, where something does fill it.
+        // Read as the species' adjective there is nothing to fill it with, and the field showed the
+        // machinery.
+        var species = Species();
+        NameWriter.Write(species.Adjective, "PRESCRIPTED_species_adjective_humans2", text: null);
+
+        var localizer = new Localizer(new Dictionary<string, string>
+        {
+            ["PRESCRIPTED_species_adjective_humans2"] = "Human $1$",
+        });
+
+        Assert.Equal("Human", localizer.Name(species.Adjective));
     }
 
     [Fact]

@@ -31,8 +31,14 @@ public static class DesignLink
     {
         ArgumentNullException.ThrowIfNull(design);
 
+        // The key is written between quotation marks, so one inside it would close them early and
+        // the link would not parse back. The game's own files escape it the same way.
         var document = new CwDocument();
-        document.Add(CwNode.Assignment(design.Key, design.Block.Clone(), quoteKey: true));
+
+        document.Add(CwNode.Assignment(
+            design.Key.Replace("\"", "\\\"", StringComparison.Ordinal),
+            design.Block.Clone(),
+            quoteKey: true));
 
         using var packed = new MemoryStream();
 

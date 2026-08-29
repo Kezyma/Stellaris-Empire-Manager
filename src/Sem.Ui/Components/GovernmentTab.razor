@@ -6,7 +6,7 @@
 <div class="sem-columns">
     <div>
         <div class="sem-panel">
-            <h3>Authority</h3>
+            <h3>@Session.Localizer.Label("GOVERNMENT_AUTHORITY_AND_TYPE", "Authority and Type")</h3>
 
             <OptionGrid Options="@Authorities"
                         EmptyHint="Hover an authority to see how it governs."
@@ -31,7 +31,7 @@
         </div>
 
         <div class="sem-panel">
-            <h3>Government</h3>
+            <h3>@Session.Localizer.Label("GOVERNMENT_LABEL", "Government")</h3>
 
             @if (Government is { } government)
             {
@@ -57,7 +57,7 @@
     <div class="sem-panel">
         <h3>Civics</h3>
 
-        <BudgetBar Label="Civics" Value="@Session.Rules.GetCivicsBudget(Context)" />
+        <BudgetBar Key="POINTS_LEFT_CIVICS" Fallback="Civic Picks Left: $POINTS|H$" Value="@Session.Rules.GetCivicsBudget(Context)" />
 
         <OptionGrid Options="@Civics"
                     EmptyHint="Hover a civic to see what it changes."
