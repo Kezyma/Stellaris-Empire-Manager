@@ -29,8 +29,18 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
     private readonly SafeFile _file = file ?? throw new ArgumentNullException(nameof(file));
     private readonly PortraitRenderer _renderer = new();
 
-    /// <summary>Decoded textures are shared between portraits, and there are far fewer of them.</summary>
+    /// <summary>
+    /// Decoded textures, kept only while nearby portraits are still using them.
+    /// </summary>
+    /// <remarks>
+    /// A skin texture is a megapixel or more once decoded, and the game has hundreds. Holding them
+    /// all would cost well over a gigabyte for no benefit: portraits are drawn in order and the
+    /// ones that share a texture sit together, so a small cache catches almost every reuse.
+    /// </remarks>
     private readonly Dictionary<string, DdsImage?> _textures = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>How many decoded textures to keep before starting again.</summary>
+    private const int TextureCacheLimit = 24;
 
     /// <summary>
     /// Draws each portrait in the database and records where its likeness went.
@@ -135,6 +145,13 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
             {
                 image = null;
             }
+        }
+
+        // Emptied rather than evicted one at a time: the next species brings its own textures, so
+        // what is held is about to become useless anyway.
+        if (_textures.Count >= TextureCacheLimit)
+        {
+            _textures.Clear();
         }
 
         _textures[path] = image;

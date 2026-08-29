@@ -55,78 +55,45 @@ public static class ExtractCommand
             return 1;
         }
 
-        var defaultDirectory = forWeb ? sandbox.WebGameData : Path.Combine(sandbox.Output, "gamedata");
-        var output = outputOverride ?? Path.Combine(defaultDirectory, "gamedb.json");
+        var outputDirectory = outputOverride is { Length: > 0 } explicitPath
+            ? Path.GetDirectoryName(explicitPath)!
+            : forWeb ? sandbox.WebGameData : Path.Combine(sandbox.Output, "gamedata");
 
         Console.WriteLine($"Install : {installRoot}");
-        Console.WriteLine($"Output  : {output}");
+        Console.WriteLine($"Output  : {Path.Combine(outputDirectory, GameDataWriter.DatabaseFileName)}");
         Console.WriteLine();
 
-        var extractor = new GameDataExtractor(LayeredContent.ForInstall(installRoot));
-        var database = extractor.Extract(new Progress<string>(message => Console.WriteLine($"  {message}")));
-
-        var json = JsonSerializer.SerializeToUtf8Bytes(database, GameDataJsonContext.Default.GameDatabase);
-        file.WriteAllBytes(output, json);
-
-        Console.WriteLine("  Reading localisation");
-        var localisation = extractor.ExtractLocalisation(reachableFrom: database);
-        var outputDirectory = Path.GetDirectoryName(output)!;
-        var localisationJson = JsonSerializer.SerializeToUtf8Bytes(localisation, GameDataJsonContext.Default.DictionaryStringString);
-        file.WriteAllBytes(Path.Combine(outputDirectory, "loc", "en.json"), localisationJson);
-
-        var content = LayeredContent.ForInstall(installRoot);
-        var reporter = new Progress<string>(message => Console.WriteLine($"  {message}"));
-        var assetDirectory = Path.Combine(outputDirectory, "assets");
-
-        var bake = new AssetBaker(content, file).Bake(extractor.Assets, assetDirectory, reporter);
-
-        // Portraits are models rather than pictures, so each one has to be drawn.
-        var (portraits, portraitBake) = new PortraitBaker(content, file)
-            .Bake(database.Portraits, assetDirectory, reporter);
-
-        database = database with { Portraits = portraits };
-        json = JsonSerializer.SerializeToUtf8Bytes(database, GameDataJsonContext.Default.GameDatabase);
-        file.WriteAllBytes(output, json);
+        var result = GameDataWriter.Write(
+            installRoot,
+            outputDirectory,
+            file,
+            new Progress<string>(message => Console.WriteLine($"  {message}")));
 
         Console.WriteLine();
-        WriteSummary(database, json.Length, localisation.Count, localisationJson.Length);
+        WriteSummary(result);
 
         Console.WriteLine();
-        Console.WriteLine($"Images: {bake.Written:N0} written, {bake.Bytes / 1024.0 / 1024.0:F1} MB");
+        Console.WriteLine(
+            $"Images: {result.Images.Written:N0} written, {result.Images.Bytes / 1024.0 / 1024.0:F1} MB");
 
-        foreach (var folder in bake.ByFolder)
+        foreach (var folder in result.Images.ByFolder)
         {
             Console.WriteLine($"  {folder.Files,6}  {folder.Bytes / 1024.0 / 1024.0,6:F1} MB  {folder.Folder}");
         }
 
         Console.WriteLine(
-            $"  {portraitBake.Rendered,6}  {portraitBake.Bytes / 1024.0 / 1024.0,6:F1} MB  portraits");
+            $"  {result.Portraits.Rendered,6}  {result.Portraits.Bytes / 1024.0 / 1024.0,6:F1} MB  portraits");
 
-        if (portraitBake.Failures.Count > 0)
-        {
-            Console.WriteLine($"{portraitBake.Failures.Count} portrait(s) could not be drawn:");
-            foreach (var failure in portraitBake.Failures.Take(10))
-            {
-                Console.WriteLine($"  {failure}");
-            }
-        }
+        WriteFailures("portrait(s) could not be drawn", result.Portraits.Failures);
+        WriteFailures("image(s) could not be converted", result.Images.Failures);
 
-        if (bake.Failures.Count > 0)
-        {
-            Console.WriteLine($"{bake.Failures.Count} image(s) could not be converted:");
-            foreach (var failure in bake.Failures.Take(10))
-            {
-                Console.WriteLine($"  {failure}");
-            }
-        }
-
-        if (extractor.Assets.Missing.Count > 0)
+        if (result.MissingImages.Count > 0)
         {
             // Not every entity has artwork; the game leaves some without and shows nothing.
-            Console.WriteLine($"{extractor.Assets.Missing.Count} referenced image(s) are not in the installation:");
+            Console.WriteLine($"{result.MissingImages.Count} referenced image(s) are not in the installation:");
 
-            foreach (var group in extractor.Assets.Missing
-                         .GroupBy(m => Path.GetDirectoryName(m)?.Replace('\\', '/') ?? "")
+            foreach (var group in result.MissingImages
+                         .GroupBy(m => Path.GetDirectoryName(m)?.Replace('\\', '/') ?? string.Empty)
                          .OrderByDescending(g => g.Count()))
             {
                 Console.WriteLine($"  {group.Count(),4}  {group.Key}");
@@ -136,15 +103,28 @@ public static class ExtractCommand
         return 0;
     }
 
-    private static void WriteSummary(
-        GameDatabase database,
-        int byteCount,
-        int localisationEntries,
-        int localisationBytes)
+    private static void WriteFailures(string what, IReadOnlyList<string> failures)
     {
+        if (failures.Count == 0)
+        {
+            return;
+        }
+
+        Console.WriteLine($"{failures.Count} {what}:");
+        foreach (var failure in failures.Take(10))
+        {
+            Console.WriteLine($"  {failure}");
+        }
+    }
+
+    private static void WriteSummary(ExtractionResult result)
+    {
+        var database = result.Database;
+
         Console.WriteLine($"Game version : {database.GameVersion}");
-        Console.WriteLine($"Written      : {byteCount / 1024.0:F0} KB database, " +
-                          $"{localisationBytes / 1024.0:F0} KB localisation ({localisationEntries:N0} entries)");
+        Console.WriteLine($"Written      : {result.DatabaseBytes / 1024.0:F0} KB database, " +
+                          $"{result.LocalisationBytes / 1024.0:F0} KB localisation " +
+                          $"({result.LocalisationEntries:N0} entries)");
         Console.WriteLine();
 
         (string Label, int Count)[] counts =

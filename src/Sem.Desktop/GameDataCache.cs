@@ -81,24 +81,8 @@ public sealed class GameDataCache
     }
 
     /// <summary>Reads the installation and fills the cache.</summary>
-    public void Rebuild(SafeFile file, IProgress<string>? progress = null)
-    {
-        ArgumentNullException.ThrowIfNull(file);
-
-        var content = LayeredContent.ForInstall(_installRoot);
-        var extractor = new GameDataExtractor(content);
-
-        var database = extractor.Extract(progress);
-        file.WriteAllBytes(DatabasePath, JsonSerializer.SerializeToUtf8Bytes(database, GameDataJsonContext.Default.GameDatabase));
-
-        progress?.Report("Reading text");
-        var localisation = extractor.ExtractLocalisation(reachableFrom: database);
-        file.WriteAllBytes(
-            Path.Combine(Directory, "loc", "en.json"),
-            JsonSerializer.SerializeToUtf8Bytes(localisation, GameDataJsonContext.Default.DictionaryStringString));
-
-        new AssetBaker(content, file).Bake(extractor.Assets, Path.Combine(Directory, "assets"), progress);
-    }
+    public void Rebuild(SafeFile file, IProgress<string>? progress = null) =>
+        GameDataWriter.Write(_installRoot, Directory, file, progress);
 
     private string? ReadInstalledVersion()
     {

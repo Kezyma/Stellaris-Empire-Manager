@@ -98,6 +98,28 @@ dotnet run --project src/Sem.Web
 **Your game install and your real empire designs are never modified during development.** This is
 enforced in code, not by convention — see [docs/file-safety.md](docs/file-safety.md).
 
+## How it fits together
+
+The game's files are read once into a database of everything the designer needs: every option, the
+conditions that gate it, its icon, and its description. The desktop app builds that from your own
+installation and caches it; the web app ships one built at publish time. Both then run the same
+designer, which is why the two behave identically.
+
+Conditions are the interesting part. Stellaris expresses them in three different grammars, and all
+three compile into one expression tree that is evaluated against whatever you have currently
+chosen. When an option is unavailable, the explanation shown is the one the game's own script
+attaches to that condition, so you read the same words the game would tell you.
+
+Portraits are models rather than pictures, so there is nothing to copy out. They are drawn during
+extraction by a small renderer that reads Paradox's model format.
+
+Nothing is written back except by an explicit save, and only ever to your designs file.
+
+## Verifying a change
+
+Automated tests prove the file is written correctly; only the game can prove it accepts what was
+written. [docs/in-game-test.md](docs/in-game-test.md) is the checklist for that.
+
 ## Licence
 
 Source code is MIT licensed (see [LICENSE](LICENSE)). Game data and artwork extracted from
