@@ -14,24 +14,7 @@
 @* The game's own four, in its own order. *@
 <div class="sem-field">
     <label>@Session.Localizer.Label("GENDER", "Gender")</label>
-    <div class="sem-genders">
-        @foreach (var (key, label, icon) in Genders)
-        {
-            <button type="button"
-                    class="sem-gender @(key == CurrentGender ? "selected" : null)"
-                    title="@label"
-                    @onclick="() => Session.Edit(_ => Species.Gender = key)">
-                @if (Session.Data.Database.Icons.GetValueOrDefault(icon) is { Length: > 0 } path)
-                {
-                    <img src="@Session.Data.AssetUrl(path)" alt="@label">
-                }
-                else
-                {
-                    <span>@label</span>
-                }
-            </button>
-        }
-    </div>
+    <GenderPicker Value="@Species.Gender" OnChange="key => Session.Edit(_ => Species.Gender = key)" />
 </div>
 
 @*
@@ -101,23 +84,6 @@
 
     private IEnumerable<OptionState> ClassOptions =>
         Session.Rules.GetSpeciesClassOptions(Context).Where(o => o.Visible);
-
-    /// <summary>
-    /// The gender settings the game offers, with the icons it uses for them.
-    /// </summary>
-    /// <remarks>
-    /// Four, in the game's own order: no preference, male, female, and a species that has no gender
-    /// at all. The first is what a design holds when it says nothing.
-    /// </remarks>
-    private static readonly (string Key, string Label, string Icon)[] Genders =
-    [
-        ("not_set", "Both", "GFX_button_gender_all"),
-        ("male", "Male", "GFX_button_male"),
-        ("female", "Female", "GFX_button_female"),
-        ("indeterminable", "None", "GFX_button_no_gender"),
-    ];
-
-    private string CurrentGender => Species.Gender is { Length: > 0 } set ? set : "not_set";
 
     /// <summary>
     /// Something to read aloud or hover over.

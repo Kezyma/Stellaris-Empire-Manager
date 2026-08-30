@@ -61,6 +61,10 @@
     }
 </div>
 
+<BiographyField Value="@Species.Biography"
+                Placeholder="What this species is, and where it came from."
+                OnChange="text => Session.Edit(_ => Species.Biography = text is { Length: > 0 } ? text : null)" />
+
 @code {
     /// <summary>How many leader names to assemble, where a list builds them from parts.</summary>
     private const int AssembledLeaderNames = 60;
@@ -135,42 +139,37 @@
         {
             var list = Session.Data.Database.NameLists.FirstOrDefault(n => n.Key == Species.NameList);
 
-            yield return ("Leaders", list is null ? [] : LeaderNames(list));
+            yield return ("Leaders", list is null ? [] : list.CharacterNames.Assembled(AssembledLeaderNames));
             yield return ("Ships", list?.ShipNames ?? []);
-            yield return ("Fleets", list?.FleetNames ?? []);
+            yield return ("Fleets", Fleets(list));
             yield return ("Colonies", list?.PlanetNames ?? []);
         }
     }
 
     /// <summary>
-    /// Leader names as they would actually appear.
+    /// The fleet names a list offers, or the pattern it numbers them by.
     /// </summary>
     /// <remarks>
-    /// A list either names its leaders outright or gives first and family names to be joined. Where
-    /// it does the second, showing the two pools side by side reads as a jumble, so they are put
-    /// together — which is what the game does in its own descriptions of these lists.
+    /// Sixteen lists name no fleets and count instead — Toxoid 3 and 4 among them, and the default
+    /// human list too. Showing an empty box made that look like something missing from the game's
+    /// data rather than a choice the game made, so the first few of the series are shown as the
+    /// game would number them.
     /// </remarks>
-    private static IReadOnlyList<string> LeaderNames(NameListDefinition list)
+    private static IReadOnlyList<string> Fleets(NameListDefinition? list)
     {
-        var names = list.CharacterNames;
-        var whole = names.FullNames.All;
-        var firsts = names.FirstNames.All;
-        var seconds = names.SecondNames.All;
-
-        if (firsts.Count == 0)
+        if (list is null || list.FleetNames.Count > 0)
         {
-            return whole;
+            return list?.FleetNames ?? [];
         }
 
-        var joined = new List<string>(whole);
-
-        for (var i = 0; i < firsts.Count && joined.Count < AssembledLeaderNames; i++)
-        {
-            joined.Add(seconds.Count == 0 ? firsts[i] : $"{firsts[i]} {seconds[i % seconds.Count]}");
-        }
-
-        return joined;
+        return list.FleetPattern is { Length: > 0 } pattern
+            ? [.. Enumerable.Range(1, NumberedFleets)
+                .Select(n => pattern.Replace("$R$", n.ToString(System.Globalization.CultureInfo.CurrentCulture), StringComparison.Ordinal))]
+            : [];
     }
+
+    /// <summary>How many of a numbered series to show, which is enough to see that it is one.</summary>
+    private const int NumberedFleets = 5;
 
     /// <summary>A stored name as a reader should see it, rather than as the file holds it.</summary>
     private string Shown(LocRef name) => Session.Localizer.Name(name);

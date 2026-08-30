@@ -1,0 +1,91 @@
+@*
+    What the empire's fleet looks like, and what it names its ships.
+
+    Shown as ships rather than as a list of names, because that is the choice being made. The game
+    has no artwork for this and spins the models instead; each of these is one of the set's own
+    corvettes, drawn during extraction.
+*@
+
+@foreach (var group in ShipSetGroups)
+{
+    @*
+        Grouped as the game groups them — a fleet is built or it is grown, and common/ship_sets
+        exists to sort the browser by exactly that.
+    *@
+    <h5 class="sem-subhead">@Session.Localizer.Text(group.Key.NameKey)</h5>
+
+    <div class="sem-thumbs">
+        @foreach (var culture in group.Value)
+        {
+            <button type="button"
+                    class="sem-thumb-option @(culture.Key == Design.GraphicalCulture ? "selected" : null)"
+                    title="@Session.Localizer.Text(culture.DescriptionKey, string.Empty)"
+                    @onclick="() => Session.Edit(d => d.GraphicalCulture = culture.Key)">
+                @if (culture.ShipPreview is { Length: > 0 } ship)
+                {
+                    <img class="sem-thumb" src="@Session.Data.AssetUrl(ship)"
+                         alt="@ShipSetName(culture)" loading="lazy" />
+                }
+                <span class="caption">@ShipSetName(culture)</span>
+            </button>
+        }
+    </div>
+}
+
+<div class="sem-field" style="margin-top:var(--gap)">
+    <label for="ship-prefix">@Session.Localizer.Label("SHIP_PREFIX", "Ship Prefix")</label>
+    <input id="ship-prefix" type="text" value="@Session.Localizer.Name(Design.ShipPrefix)"
+           @onchange="e => Session.Edit(d => d.ShipPrefix.SetLiteral(e.Value?.ToString() ?? string.Empty))" />
+</div>
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    private EmpireDesign Design => Session.Current!;
+
+    private readonly RequirementEvaluator _evaluator = new();
+
+    /// <summary>
+    /// What the game calls a shipset.
+    /// </summary>
+    /// <remarks>
+    /// It names them by their key shouted — <c>BIOGENESIS_01</c> is "Spinovore" — and only names
+    /// two, the pair Biogenesis added. Every other set has no entry under any spelling, so the
+    /// readable key stands in. That is a gap in the game's own text rather than one here.
+    /// </remarks>
+    private string ShipSetName(GraphicalCultureDefinition culture) =>
+        Session.Localizer.Text(culture.NameKey, Localizer.Prettify(culture.Key));
+
+    /// <summary>
+    /// The shipsets, in the game's own two groups.
+    /// </summary>
+    /// <remarks>
+    /// A set that models no ships of its own is not a shipset. Solarpunk and Wilderness are the two:
+    /// they dress cities, and the game flies them in whatever their fallback builds — which is why
+    /// Wilderness showed a Biogenesis corvette, being a Biogenesis corvette. Both keep their place
+    /// in the city list under Room, which is what they are actually for.
+    /// </remarks>
+    private IEnumerable<KeyValuePair<ShipSetDefinition, IReadOnlyList<GraphicalCultureDefinition>>> ShipSetGroups
+    {
+        get
+        {
+            var sets = Session.Data.Database.GraphicalCultures
+                .Where(c => Session.Rules.Database.GraphicalCultures.Contains(c))
+                .Where(c => _evaluator.IsSatisfied(c.Selectable, Session.Context!))
+                .Where(c => c.ShipCategory is not null)
+                .OrderBy(c => c.Key, StringComparer.Ordinal)
+                .ToList();
+
+            foreach (var group in Session.Data.Database.ShipSets)
+            {
+                var members = sets.Where(c => group.Includes(c.ShipCategory)).ToList();
+
+                if (members.Count > 0)
+                {
+                    yield return new(group, members);
+                }
+            }
+        }
+    }
+}

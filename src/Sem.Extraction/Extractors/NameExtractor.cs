@@ -15,7 +15,11 @@ public sealed record NamePools(
     NameSet Characters,
     IReadOnlyList<string> Planets,
     IReadOnlyList<string> Ships,
-    IReadOnlyList<string> Fleets);
+    IReadOnlyList<string> Fleets)
+{
+    /// <summary>The pattern a list numbers its fleets by, where it names none.</summary>
+    public string? FleetPattern { get; init; }
+}
 
 /// <summary>
 /// Reads the pools of names the game draws on when a player presses randomise.
@@ -94,11 +98,16 @@ public static class NameExtractor
         ArgumentNullException.ThrowIfNull(body);
         ArgumentNullException.ThrowIfNull(text);
 
+        var fleets = body.GetBlock("fleet_names");
+
         return new NamePools(
             ReadCharacterNames(body, text),
             ReadNames(body.GetBlock("planet_names"), text),
             ReadNames(body.GetBlock("ship_names"), text),
-            ReadNames(body.GetBlock("fleet_names"), text));
+            ReadNames(fleets, text))
+        {
+            FleetPattern = Sequential(fleets, text),
+        };
     }
 
     /// <summary>
@@ -224,5 +233,25 @@ public static class NameExtractor
         }
 
         return key.Contains('_') ? null : key;
+    }
+
+    /// <summary>
+    /// The pattern a list numbers a pool by, rather than naming it.
+    /// </summary>
+    /// <remarks>
+    /// Sixteen lists name no fleets at all and give a template instead — Toxoid 3 carries
+    /// <c>sequential_name = TOX3_fleet_names</c>, which reads "Tähtaailaivasto $R$" and comes out as
+    /// a numbered series. Reading only the random pool left those lists looking empty when the game
+    /// simply counts rather than invents. The <c>$R$</c> is the running number and is left in place;
+    /// what fills it is a matter for whoever shows it.
+    /// </remarks>
+    private static string? Sequential(CwBlock? section, IReadOnlyDictionary<string, string> text)
+    {
+        if (section?.GetString("sequential_name") is not { Length: > 0 } key)
+        {
+            return null;
+        }
+
+        return text.TryGetValue(key, out var value) && value is { Length: > 0 } ? value : key;
     }
 }

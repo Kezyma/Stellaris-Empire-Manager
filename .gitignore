@@ -6,11 +6,20 @@
 sandbox/
 
 # ---------------------------------------------------------------------------
-# Extracted game data and baked assets. These are derived from a local Stellaris
-# install and are © Paradox Interactive - they must not enter the public repo.
+# Extracted game data and baked assets, derived from a local Stellaris install
+# and © Paradox Interactive.
+#
+# The web app's copy is committed deliberately. No hosted runner has a Stellaris
+# installation, so without it in the repository the site can only ever be built
+# by hand on a machine that does; with it, a push builds and publishes on its
+# own. It is 173 MB across 11,800 files, and it stays that size rather than
+# growing: extraction is byte-for-byte deterministic, so re-running it after an
+# unrelated change produces identical files and adds nothing to history. Only a
+# game update or a change to the extractor itself costs anything.
+#
+# The other copies are still ignored: they are scratch output of the same thing.
 # ---------------------------------------------------------------------------
 artifacts/gamedata/
-**/wwwroot/gamedata/
 *.gamedb.json
 
 # .NET build output

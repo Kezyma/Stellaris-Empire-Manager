@@ -97,7 +97,11 @@ public static class ExtractCommand
         Console.WriteLine(
             $"  {result.Portraits.Rendered,6}  {result.Portraits.Bytes / 1024.0 / 1024.0,6:F1} MB  portraits");
 
+        Console.WriteLine(
+            $"  {result.Ships.Rendered,6}  {result.Ships.Bytes / 1024.0 / 1024.0,6:F1} MB  ships");
+
         WriteFailures("portrait(s) could not be drawn", result.Portraits.Failures);
+        WriteFailures("shipset(s) could not be drawn", result.Ships.Failures);
         WriteFailures("image(s) could not be converted", result.Images.Failures);
 
         if (result.MissingImages.Count > 0)

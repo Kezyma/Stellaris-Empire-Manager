@@ -104,6 +104,8 @@ public sealed class GameDataExtractor(LayeredContent content)
         Report("Reading appearance options");
         var rooms = CosmeticsExtractor.ExtractRooms(loader, assets);
         var graphicalCultures = CosmeticsExtractor.ExtractGraphicalCultures(loader, requirements, assets);
+        var shipSets = CosmeticsExtractor.ExtractShipSets(loader);
+        var leaderClasses = CosmeticsExtractor.ExtractLeaderClasses(loader, assets);
         var advisorVoices = CosmeticsExtractor.ExtractAdvisorVoices(loader, requirements, assets);
         Report("Reading names");
         var nameLists = CosmeticsExtractor.ExtractNameLists(loader, requirements, Localisation);
@@ -112,6 +114,8 @@ public sealed class GameDataExtractor(LayeredContent content)
         Report("Reading flags");
         var flagCategories = FlagExtractor.ExtractCategories(loader, assets);
         var flagColors = FlagExtractor.ExtractColors(loader);
+        var flagFrames = FlagExtractor.ExtractFrames(loader, assets);
+        var arkships = CosmeticsExtractor.ExtractArkships(loader);
 
         Report("Reading built-in empires");
         var prescripted = MetadataExtractor.ExtractPrescriptedEmpires(loader, requirements);
@@ -122,7 +126,7 @@ public sealed class GameDataExtractor(LayeredContent content)
         var textIcons = ExtractTextIcons(sprites, assets);
         var icons = ExtractInterfaceIcons(assets);
 
-        return new GameDatabase
+        var database = new GameDatabase
         {
             SchemaVersion = SchemaVersion,
             GameVersion = ReadGameVersion() ?? "unknown",
@@ -139,6 +143,7 @@ public sealed class GameDataExtractor(LayeredContent content)
             TextIcons = textIcons,
             Icons = icons,
             ScriptedValues = ScriptedValues(loader),
+            ScriptedText = ScriptedText(loader),
             Ethics = ethics,
             Authorities = authorities,
             Civics = civics,
@@ -152,8 +157,12 @@ public sealed class GameDataExtractor(LayeredContent content)
             AdvisorVoices = advisorVoices,
             Rooms = rooms,
             GraphicalCultures = graphicalCultures,
+            ShipSets = shipSets,
+            LeaderClasses = leaderClasses,
             FlagCategories = flagCategories,
             FlagColors = flagColors,
+            FlagFrames = flagFrames,
+            Arkships = arkships,
             PrescriptedEmpires = prescripted,
             EmpireFlagSets = CosmeticsExtractor.ExtractEmpireFlagSets(loader, prescripted),
             NewEmpireTemplate = template,
@@ -165,7 +174,30 @@ public sealed class GameDataExtractor(LayeredContent content)
                 .ToDictionary(p => p.Key, p => p.Value, StringComparer.Ordinal),
         };
 
+        // Which packs decide anything can only be answered once every rule has been compiled, so it
+        // is settled here rather than where the packs themselves are read.
+        return database with { Dlc = MarkDecidingPacks(database) };
+
         void Report(string message) => progress?.Report(message);
+    }
+
+    /// <summary>
+    /// Says of each content pack whether owning it changes anything the designer offers.
+    /// </summary>
+    /// <remarks>
+    /// A pack decides something when some condition, anywhere in the compiled rules, asks for it.
+    /// Answering it here rather than in the interface means the interface has only to read a flag,
+    /// and means the answer is settled against the same installation the rest of the data came from.
+    /// </remarks>
+    private static List<DlcDefinition> MarkDecidingPacks(GameDatabase database)
+    {
+        var named = database.Requirements()
+            .SelectMany(r => r.AndNested())
+            .OfType<DlcRequirement>()
+            .Select(r => r.Name)
+            .ToHashSet(StringComparer.Ordinal);
+
+        return [.. database.Dlc.Select(d => d with { Decides = named.Contains(d.Name) })];
     }
 
     /// <summary>
@@ -203,6 +235,32 @@ public sealed class GameDataExtractor(LayeredContent content)
         }
 
         return values;
+    }
+
+    /// <summary>
+    /// What each scripted phrase in the game's display text falls back to.
+    /// </summary>
+    /// <remarks>
+    /// A <c>defined_text</c> is a name, a list of conditional branches, and a default. Every branch
+    /// asks about a game in progress — whether a patron has been met, whether a war is on — so at
+    /// design time the default is the one that applies, and it is a localisation key like any
+    /// other. Entries with no default are left out: the game shows nothing for those either.
+    /// </remarks>
+    private static Dictionary<string, string> ScriptedText(ScriptLoader loader)
+    {
+        var texts = new Dictionary<string, string>(StringComparer.Ordinal);
+
+        foreach (var entry in loader.LoadEntries("common/scripted_loc", recursive: true))
+        {
+            if (entry.Key == "defined_text" &&
+                entry.Body.GetString("name") is { Length: > 0 } name &&
+                entry.Body.GetString("default") is { Length: > 0 } fallback)
+            {
+                texts[name] = fallback;
+            }
+        }
+
+        return texts;
     }
 
     private Dictionary<string, string> ExtractTextIcons(SpriteCatalog sprites, AssetCatalog assets)
@@ -273,8 +331,35 @@ public sealed class GameDataExtractor(LayeredContent content)
             }
         }
 
+        // Whether an empire may turn up in a game as somebody else's neighbour is a button rather
+        // than a list: one picture of three, clicked round. The game keys a frame of a sprite by
+        // putting the number after a bar, as its own text does, so the three are keyed that way and
+        // a control asks for the one matching the state it is drawing.
+        for (var frame = 1; frame <= SpawnSettingFrames; frame++)
+        {
+            var key = $"{SpawnSetting}|{frame}";
+
+            if (assets.RegisterSprite(SpawnSetting, $"icons/ui/{SpawnSetting}_{frame}.png", frame: frame) is { } path)
+            {
+                icons[key] = path;
+            }
+        }
+
         return icons;
     }
+
+    /// <summary>The button the game's setup screen puts the spawn setting on.</summary>
+    private const string SpawnSetting = "GFX_button_empire_spawn_setting";
+
+    /// <summary>
+    /// How many pictures that button has, being its three states.
+    /// </summary>
+    /// <remarks>
+    /// <c>noOfFrames = 3</c> in <c>interface/game_setup/main.gfx</c>. Which frame stands for which
+    /// state is not written anywhere: the game picks by index in code. Taken here in the order the
+    /// game words them — allowed, forbidden, forced — and confirmed by looking.
+    /// </remarks>
+    private const int SpawnSettingFrames = 3;
 
     /// <summary>
     /// Every icon code the game's text refers to.

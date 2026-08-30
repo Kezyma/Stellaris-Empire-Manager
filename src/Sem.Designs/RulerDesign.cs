@@ -14,8 +14,14 @@ public sealed class RulerDesign(CwBlock block) : CwView(block, FieldOrder)
         "evolution_mask",
         "attachment",
         "clothes",
+        "custom_biography",
+
+        // The order the game's own editor shows them in: a title, its heir, then the same pair again
+        // in their female forms.
         "ruler_title",
+        "heir_title",
         "ruler_title_female",
+        "heir_title_female",
         "trait",
         "leader_class",
     ];
@@ -68,6 +74,21 @@ public sealed class RulerDesign(CwBlock block) : CwView(block, FieldOrder)
         set => SetInt("clothes", value);
     }
 
+    /// <summary>
+    /// The ruler's own story, as the player wrote it, or null when they wrote none.
+    /// </summary>
+    /// <remarks>
+    /// Written as a block with the text under <c>key</c> and <c>literal=yes</c> beside it, the same
+    /// shape as a name — and worth noting because the species' biography, which the game presents
+    /// as the matching field, is a plain quoted string instead. That asymmetry is the game's, not a
+    /// choice made here.
+    /// </remarks>
+    public LocRef? CustomBiography =>
+        GetBlock("custom_biography") is { } biography ? new LocRef(biography) : null;
+
+    /// <summary>Returns the biography, adding it in canonical position when absent.</summary>
+    public LocRef GetOrAddCustomBiography() => new(GetOrAddBlock("custom_biography"));
+
     /// <summary>Custom ruler title, or null to use the one the government implies.</summary>
     public LocRef? Title => GetBlock("ruler_title") is { } title ? new LocRef(title) : null;
 
@@ -75,11 +96,33 @@ public sealed class RulerDesign(CwBlock block) : CwView(block, FieldOrder)
     public LocRef? TitleFemale =>
         GetBlock("ruler_title_female") is { } title ? new LocRef(title) : null;
 
+    /// <summary>
+    /// What the ruler's successor is called, or null.
+    /// </summary>
+    /// <remarks>
+    /// The game's own editor keeps a box for this and for its female form beside the two ruler
+    /// titles, and shows "N/A" where a government has no heir. Rare in practice: no design in the
+    /// player's own file carries one, and of the game's fifty-two empires only the Infernals'
+    /// Pyrragthul does. Modelled because the editor offers it, and written only when something is
+    /// typed — a design that never had one must not grow one.
+    /// </remarks>
+    public LocRef? HeirTitle => GetBlock("heir_title") is { } title ? new LocRef(title) : null;
+
+    /// <summary>What the ruler's successor is called, in its female form, or null.</summary>
+    public LocRef? HeirTitleFemale =>
+        GetBlock("heir_title_female") is { } title ? new LocRef(title) : null;
+
     /// <summary>Returns the ruler title, adding it in canonical position when absent.</summary>
     public LocRef GetOrAddTitle() => new(GetOrAddBlock("ruler_title"));
 
     /// <summary>Returns the female ruler title, adding it in canonical position when absent.</summary>
     public LocRef GetOrAddTitleFemale() => new(GetOrAddBlock("ruler_title_female"));
+
+    /// <summary>Returns the heir title, adding it in canonical position when absent.</summary>
+    public LocRef GetOrAddHeirTitle() => new(GetOrAddBlock("heir_title"));
+
+    /// <summary>Returns the female heir title, adding it in canonical position when absent.</summary>
+    public LocRef GetOrAddHeirTitleFemale() => new(GetOrAddBlock("heir_title_female"));
 
     /// <summary>
     /// The ruler's traits. Note the keys use two different prefixes, <c>leader_trait_*</c> and
@@ -123,6 +166,20 @@ public sealed class RulerName(CwBlock block) : CwView(block, FieldOrder)
 
     /// <summary>Returns the name, adding it in canonical position when absent.</summary>
     public LocRef GetOrAddFullNames() => new(GetOrAddBlock("full_names"));
+
+    /// <summary>
+    /// Drops the split form of the name.
+    /// </summary>
+    /// <remarks>
+    /// For when a whole name is written over one the game had stored in pieces. Left in place, the
+    /// two forms both describe the ruler and the game reads whichever it prefers, so the player's
+    /// own name would sit beside a name they had replaced.
+    /// </remarks>
+    public void RemoveParts()
+    {
+        RemoveAll("first_name");
+        RemoveAll("second_name");
+    }
 
     /// <summary>Whether the full regnal form is used. Written only when true.</summary>
     public bool UseFullRegnalName

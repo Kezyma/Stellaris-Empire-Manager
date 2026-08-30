@@ -44,15 +44,15 @@
                     </DesignerSection>
                 }
 
-                <DesignerSection Title="Ethics"
-                                 Summary="@Names(Session.Current.Ethics)"
-                                 Problems="@Problems(ValidationArea.Ethics)">
-                    <EthicsSection />
-                </DesignerSection>
-
+                @*
+                    Ethics, authority and civics together. The game treats them as one decision — an
+                    empire's ethics rule out most of its authorities and a good half of its civics,
+                    and the government it ends up called is derived from all three at once — so
+                    splitting them across two sections meant scrolling between halves of one choice.
+                *@
                 <DesignerSection Title="Government"
                                  Summary="@GovernmentSummary"
-                                 Problems="@Problems(ValidationArea.Authority, ValidationArea.Civics)">
+                                 Problems="@Problems(ValidationArea.Ethics, ValidationArea.Authority, ValidationArea.Civics)">
                     <GovernmentTab />
                 </DesignerSection>
 
@@ -69,13 +69,31 @@
                 </DesignerSection>
 
                 <DesignerSection Title="Ruler"
-                                 Summary="@Session.Current.Ruler.Name.FullNames?.Key"
+                                 Summary="@RulerSummary"
                                  Problems="@Problems(ValidationArea.Ruler)">
                     <RulerTab />
                 </DesignerSection>
 
-                <DesignerSection Title="Appearance">
-                    <AppearanceTab />
+                @*
+                    Four panels rather than one drawer called "Appearance". They have nothing to do
+                    with each other — a flag, a room, a fleet and a voice — and the game keeps them as
+                    four tabs of its own editor for the same reason. The city sits under Room because
+                    the two are one picture, which is how the game has it too.
+                *@
+                <DesignerSection Title="Flag" Summary="@FlagSummary">
+                    <FlagTab />
+                </DesignerSection>
+
+                <DesignerSection Title="Room" Summary="@RoomSummary">
+                    <RoomTab />
+                </DesignerSection>
+
+                <DesignerSection Title="Shipset" Summary="@ShipsetSummary">
+                    <ShipsetTab />
+                </DesignerSection>
+
+                <DesignerSection Title="Advisor Voice" Summary="@AdvisorSummary">
+                    <AdvisorTab />
                 </DesignerSection>
             </div>
 
@@ -111,17 +129,92 @@
         }
     }
 
+    /// <summary>
+    /// The whole of an empire's politics in one line: what it believes, how it is run, and how much
+    /// of the rest it has settled.
+    /// </summary>
     private string? GovernmentSummary
     {
         get
         {
             var design = Session.Current!;
-            var authority = Name(design.Authority);
             var civics = design.Civics.Count;
 
-            return civics == 0 ? authority : $"{authority} · {civics} civic{(civics == 1 ? string.Empty : "s")}";
+            var parts = new[]
+            {
+                Names(design.Ethics),
+                Name(design.Authority),
+                civics == 0 ? null : $"{civics} civic{(civics == 1 ? string.Empty : "s")}",
+            };
+
+            return parts.OfType<string>().ToList() is { Count: > 0 } written
+                ? string.Join(" · ", written)
+                : null;
         }
     }
+
+    /// <summary>
+    /// The ruler's name, read rather than shown as it is stored.
+    /// </summary>
+    /// <remarks>
+    /// This read the key straight off the design, which is why every one of the game's own empires
+    /// announced its ruler as <c>PRESCRIPTED_ruler_name_humans1</c>. A design holds a name either as
+    /// a key or as text the player typed, and only the localiser knows which — the same reason every
+    /// other name on this page goes through it.
+    /// </remarks>
+    private string? RulerSummary =>
+        Session.Localizer.RulerName(Session.Current!.Ruler) is { Length: > 0 } name ? name : null;
+
+    /// <summary>
+    /// What a shut Flag panel says: the pattern and the emblem, since neither alone identifies it.
+    /// </summary>
+    /// <remarks>
+    /// The file names rather than any friendlier word, because the game gives these none: a pattern
+    /// is <c>stripe.dds</c> and an emblem is <c>flag_pointy_14.dds</c> and there is nothing else to
+    /// call them.
+    /// </remarks>
+    private string? FlagSummary
+    {
+        get
+        {
+            var parts = new[] { Session.Current!.Flag.Background.File, Session.Current.Flag.Icon.File }
+                .OfType<string>()
+                .Select(file => Localizer.Prettify(System.IO.Path.GetFileNameWithoutExtension(file)))
+                .Where(name => name.Length > 0)
+                .ToList();
+
+            return parts.Count > 0 ? string.Join(" · ", parts) : null;
+        }
+    }
+
+    private string? RoomSummary
+    {
+        get
+        {
+            var room = Session.Current!.Room is { Length: > 0 } key
+                ? Localizer.Prettify(key.Replace("_room", string.Empty, StringComparison.Ordinal))
+                : null;
+
+            return string.Join(" · ", new[] { room, CultureName(Session.Current.CityGraphicalCulture) }
+                .OfType<string>()) is { Length: > 0 } summary
+                ? summary
+                : null;
+        }
+    }
+
+    private string? ShipsetSummary => CultureName(Session.Current!.GraphicalCulture);
+
+    private string? AdvisorSummary => Session.Current!.AdvisorVoiceType is { Length: > 0 } voice
+        ? Session.Localizer.Text(voice, Localizer.Prettify(voice))
+        : null;
+
+    /// <summary>
+    /// What the game calls a set of artwork. It names them by their key shouted and names only the
+    /// two Biogenesis added, so the readable key stands in for the rest.
+    /// </summary>
+    private string? CultureName(string? key) => key is { Length: > 0 }
+        ? Session.Localizer.Text(key.ToUpperInvariant(), Localizer.Prettify(key))
+        : null;
 
     private string? Name(string? key) =>
         string.IsNullOrEmpty(key) ? null : Session.Localizer.Text(key);

@@ -38,7 +38,7 @@
             @Row("Civics", string.Join(", ", Design.Civics.Select(c => Session.Localizer.Text(c))))
             @Row("Origin", Session.Localizer.Text(Design.Origin))
             @Row("Homeworld", Session.Localizer.Text(Design.PlanetClass))
-            @Row("Ruler", Session.Localizer.Name(Design.Ruler.Name.FullNames, "unnamed"))
+            @Row("Ruler", Ruler)
         </dl>
 
         @if (Session.Report.IsValid && Session.Report.Warnings.Count == 0)
@@ -89,6 +89,30 @@
         Session.Rules.DeriveGovernment(Session.Context!) is { } government
             ? Session.Localizer.Text(government.Key)
             : "No government";
+
+    /// <summary>
+    /// The ruler, and what the government styles them.
+    /// </summary>
+    /// <remarks>
+    /// The style used to have a panel of its own on the government tab, which was a section to hold
+    /// one line. It belongs with the ruler it describes, and the government the design derives its
+    /// name from is already the line above.
+    /// </remarks>
+    private string Ruler
+    {
+        get
+        {
+            var name = Session.Localizer.RulerName(Design.Ruler, "unnamed");
+
+            var title = Design.Ruler.Title is { } held
+                ? Session.Localizer.Name(held, string.Empty)
+                : Session.Rules.DeriveGovernment(Session.Context!)?.RulerTitleKey is { } style
+                    ? Session.Localizer.Text(style)
+                    : string.Empty;
+
+            return title.Length > 0 ? $"{name}, {title}" : name;
+        }
+    }
 
     /// <summary>
     /// A species as the preview shows it: its likeness, what it is, and what it is good at.

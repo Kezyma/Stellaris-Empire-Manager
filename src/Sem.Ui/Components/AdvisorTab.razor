@@ -1,0 +1,27 @@
+@*
+    The voice that narrates an empire's game.
+
+    A tab of its own in the game's editor, and short enough here to be one panel rather than a corner
+    of another. The game frames it as a choice between letting the empire pick a voice for itself and
+    naming one; a design that names none is the first of those, which is what an empty selection means
+    here.
+*@
+
+<div class="sem-options">
+    @foreach (var voice in Voices)
+    {
+        <OptionCard Name="@Session.Localizer.Text(voice.NameKey, Localizer.Prettify(voice.Key))"
+                    Icon="@voice.Icon"
+                    Selected="@(voice.Key == Design.AdvisorVoiceType)"
+                    OnSelect="() => Session.Edit(d => d.AdvisorVoiceType = voice.Key)" />
+    }
+</div>
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    private EmpireDesign Design => Session.Current!;
+
+    private IEnumerable<AdvisorVoiceDefinition> Voices => Session.Data.Database.AdvisorVoices;
+}

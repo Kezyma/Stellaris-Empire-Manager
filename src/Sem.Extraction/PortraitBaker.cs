@@ -456,7 +456,18 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
 
                 if (layers.Count > 0)
                 {
-                    outfits.Add(new PortraitOutfit(portrait.Key, layers));
+                    outfits.Add(new PortraitOutfit(portrait.Key, layers)
+                    {
+                        // The same lists the drawing above walked, published whole. A design stores
+                        // its choices as numbers into these, and a number only means something if
+                        // the choices that drew nothing keep their places.
+                        Variants =
+                        [
+                            new PortraitVariants(PortraitSlot.Character, wardrobe.Character),
+                            new PortraitVariants(PortraitSlot.Clothes, wardrobe.Clothes),
+                            new PortraitVariants(PortraitSlot.Attachment, wardrobe.Attachment),
+                        ],
+                    });
                 }
             }
             catch (Exception ex) when (ex is InvalidDataException or NotSupportedException or IOException)

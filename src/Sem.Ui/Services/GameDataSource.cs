@@ -23,6 +23,16 @@ public interface IGameDataSource
 {
     /// <summary>Loads the data, or returns what was loaded before.</summary>
     Task<GameData> LoadAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Loads the pieces a portrait is drawn from, or nothing where this host publishes none.
+    /// </summary>
+    /// <remarks>
+    /// Kept apart from the rest and fetched only when something asks. It is a couple of megabytes
+    /// describing eight thousand pictures, and reading that in a browser is not free — nobody who
+    /// never opens the ruler's appearance should pay for it.
+    /// </remarks>
+    Task<IReadOnlyList<PortraitOutfit>> LoadWardrobeAsync(CancellationToken cancellationToken = default);
 }
 
 /// <summary>
@@ -37,8 +47,10 @@ public sealed class HttpGameDataSource(HttpClient client, string baseUrl = "game
     private readonly HttpClient _client = client ?? throw new ArgumentNullException(nameof(client));
     private readonly string _baseUrl = baseUrl.TrimEnd('/');
     private readonly SemaphoreSlim _gate = new(1, 1);
+    private readonly SemaphoreSlim _wardrobeGate = new(1, 1);
 
     private GameData? _loaded;
+    private IReadOnlyList<PortraitOutfit>? _wardrobe;
 
     /// <inheritdoc />
     public async Task<GameData> LoadAsync(CancellationToken cancellationToken = default)
@@ -73,6 +85,43 @@ public sealed class HttpGameDataSource(HttpClient client, string baseUrl = "game
         finally
         {
             _gate.Release();
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<PortraitOutfit>> LoadWardrobeAsync(
+        CancellationToken cancellationToken = default)
+    {
+        if (_wardrobe is not null)
+        {
+            return _wardrobe;
+        }
+
+        await _wardrobeGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+        try
+        {
+            if (_wardrobe is not null)
+            {
+                return _wardrobe;
+            }
+
+            // A host that did not publish one is not a fault: the desktop builds its cache without
+            // the wardrobe, and the section that wants it says so rather than failing.
+            _wardrobe = await ReadAsync(
+                "wardrobe.json", GameDataJsonContext.Default.IReadOnlyListPortraitOutfit, cancellationToken)
+                .ConfigureAwait(false) ?? [];
+
+            return _wardrobe;
+        }
+        catch (HttpRequestException)
+        {
+            _wardrobe = [];
+            return _wardrobe;
+        }
+        finally
+        {
+            _wardrobeGate.Release();
         }
     }
 

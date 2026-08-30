@@ -11,6 +11,7 @@ namespace Sem.Extraction;
 /// <param name="LocalisationBytes">Size of the written text.</param>
 /// <param name="Images">What came of converting the game's images.</param>
 /// <param name="Portraits">What came of drawing the portraits.</param>
+/// <param name="Ships">What came of drawing one ship for each appearance set.</param>
 /// <param name="MissingImages">Images the data referred to that the installation does not have.</param>
 public sealed record ExtractionResult(
     GameDatabase Database,
@@ -19,6 +20,7 @@ public sealed record ExtractionResult(
     int LocalisationBytes,
     BakeReport Images,
     PortraitBakeReport Portraits,
+    ShipBakeReport Ships,
     IReadOnlyList<string> MissingImages);
 
 /// <summary>
@@ -64,8 +66,12 @@ public static class GameDataWriter
         var (portraits, portraitReport) = new PortraitBaker(content, file)
             .Bake(database.Portraits, assets, progress);
 
+        // So are ships, and for the same reason: the game shows a shipset by spinning it.
+        var (sets, shipReport) = new ShipBaker(content, file)
+            .Bake(database.GraphicalCultures, assets, progress);
+
         // Written last, once every image path it refers to is known.
-        database = database with { Portraits = portraits };
+        database = database with { Portraits = portraits, GraphicalCultures = sets };
         var json = JsonSerializer.SerializeToUtf8Bytes(database, GameDataJsonContext.Default.GameDatabase);
         file.WriteAllBytes(Path.Combine(outputDirectory, DatabaseFileName), json);
 
@@ -76,6 +82,7 @@ public static class GameDataWriter
             localisationJson.Length,
             images,
             portraitReport,
+            shipReport,
             extractor.Assets.Missing);
     }
 }

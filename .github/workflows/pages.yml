@@ -1,0 +1,64 @@
+# Builds the site and publishes it, on every push to main.
+#
+# This is only possible because the extracted game data is committed. Extraction itself cannot run
+# here — it reads a Stellaris installation and no hosted runner has one — so the data is in the
+# repository and the runner does the rest: restore, publish, deploy. Re-extracting is something you
+# do locally when the game updates or the extractor changes, and the result is committed like any
+# other change.
+#
+# Only the web app is built. The desktop shell targets net10.0-windows and would need a Windows
+# runner, and it is not what is being published.
+
+name: Pages
+
+on:
+  push:
+    branches: [main]
+
+  # So the site can be republished without a commit, after changing a Pages setting say.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never two at once, and a newer publish wins rather than queueing behind an older one.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      # The base path has to match where the site is served from, or every asset resolves against
+      # the domain root and the page comes up blank. The project defaults to the repository's name;
+      # a custom domain would want "/" passed here instead.
+      - name: Publish
+        run: dotnet publish src/Sem.Web --configuration Release --output artifacts/pages
+
+      # Without this GitHub Pages runs the output through Jekyll, which drops every folder whose
+      # name begins with an underscore — _framework among them, which is the whole application.
+      - name: Check the site will not be run through Jekyll
+        run: test -f artifacts/pages/wwwroot/.nojekyll || { echo "::error::No .nojekyll in the published site; Pages would drop _framework."; exit 1; }
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: artifacts/pages/wwwroot
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

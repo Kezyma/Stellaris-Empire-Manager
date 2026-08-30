@@ -22,24 +22,21 @@
         <div class="sem-empires">
             @foreach (var design in Session.File.Designs)
             {
-                var report = Session.Validate(design);
+                @*
+                    One context, used for both questions asked of each empire — what its government
+                    turned out to be, and whether the game would accept it. Validating built one of
+                    its own before.
+                *@
+                var context = Session.Rules.CreateContext(design, Session.OwnedDlc);
 
-                <button type="button"
-                        class="sem-empire @(ReferenceEquals(design, Session.Current) ? "selected" : null)"
-                        @onclick="() => Choose(design)">
-
-                    <FlagPreview Flag="@design.Flag" Class="small" />
-
-                    <span class="body">
-                        <span class="name">@Session.Localizer.Name(design.Name, design.Key)</span>
-                        <span class="sub">@Describe(design)</span>
-
-                        @if (!report.IsValid)
-                        {
-                            <span class="sem-status bad">@report.Errors.Count problem@(report.Errors.Count == 1 ? "" : "s")</span>
-                        }
-                    </span>
-                </button>
+                <EmpireCard Flag="@design.Flag"
+                            Portrait="@Thumbnail(design)"
+                            Name="@Session.Localizer.Name(design.Name, design.Key)"
+                            Government="@Government(design, context)"
+                            SpeciesClass="@Session.Localizer.Text(design.Species.Class)"
+                            Selected="@ReferenceEquals(design, Session.Current)"
+                            Broken="@(!Session.Rules.Validate(context, design).IsValid)"
+                            OnClick="() => Choose(design)" />
             }
         </div>
     }
@@ -65,26 +62,21 @@
         await OnSelected.InvokeAsync(design);
     }
 
-    /// <summary>A one-line description, the way the game lists an empire.</summary>
-    private string Describe(EmpireDesign design)
-    {
-        var parts = new List<string>();
+    /// <summary>
+    /// What the game would call this empire's government.
+    /// </summary>
+    /// <remarks>
+    /// Derived rather than stored — the game names a government after the authority, ethics and
+    /// civics an empire holds. An empire too incomplete for any government to fit falls back to its
+    /// authority, so the line is never blank.
+    /// </remarks>
+    private string Government(EmpireDesign design, DesignContext context) =>
+        Session.Rules.DeriveGovernment(context) is { } government
+            ? Session.Localizer.Text(government.Key)
+            : Session.Localizer.Text(design.Authority);
 
-        if (design.Species.Class is { Length: > 0 } speciesClass)
-        {
-            parts.Add(Session.Localizer.Text(speciesClass));
-        }
-
-        if (design.Authority is { Length: > 0 } authority)
-        {
-            parts.Add(Session.Localizer.Text(authority));
-        }
-
-        if (design.Origin is { Length: > 0 } origin)
-        {
-            parts.Add(Session.Localizer.Text(origin));
-        }
-
-        return string.Join(" · ", parts);
-    }
+    /// <summary>The ruler's likeness, falling back to the species' own.</summary>
+    private string? Thumbnail(EmpireDesign design) =>
+        PortraitArtwork.For(Session.Data.Database, design.Ruler.Portrait, design.Ruler.Gender)
+        ?? PortraitArtwork.For(Session.Data.Database, design.Species.Portrait, design.Species.Gender);
 }

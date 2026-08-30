@@ -71,48 +71,92 @@ else
         exactly as they were.
     </p>
 
-    <EmpireBrowser Session="_session" OnSelected="OpenDesigner" />
-
     @*
-        The game's own empires, for everyone. They are worth reading on their own — a good deal of
-        the game's writing is in them — and worth copying, since starting from one that already works
-        beats starting from a blank slate.
+        The select screen: the empires to choose from on one side, and whichever one is highlighted
+        shown in full on the other. On a narrow screen the preview comes first, as it does in the
+        designer — it is the answer, and the lists are the way to change the question.
     *@
-    <div class="sem-panel" style="margin-top:16px">
-        <div class="sem-row">
-            <div>
-                <h2 style="margin:0">The game's empires</h2>
-                <span class="sem-hint">@Prescripted.Count built in. Take a copy to make it your own.</span>
+    <CascadingValue Value="_session">
+        <div class="sem-select">
+            <div class="preview">
+                @if (Previewed is { } previewed)
+                {
+                    <EmpireShowcase Design="previewed" Lore="@_previewSource?.DescriptionKey">
+                        <Actions>
+                            @if (_previewOwn)
+                            {
+                                <button type="button" class="primary" @onclick="() => OpenDesigner(previewed)">
+                                    Edit
+                                </button>
+                            }
+                            else if (_previewSource is { } source)
+                            {
+                                <button type="button" class="primary" @onclick="() => Duplicate(source)">
+                                    Duplicate
+                                </button>
+                            }
+                        </Actions>
+                    </EmpireShowcase>
+                }
+                else
+                {
+                    <div class="sem-empty">
+                        <p>Pick an empire to see it here.</p>
+                    </div>
+                }
+            </div>
+
+            <div class="lists">
+                <EmpireBrowser Session="_session" OnSelected="PreviewOwn" />
+
+                @*
+                    The game's own empires, for everyone. They are worth reading on their own — a
+                    good deal of the game's writing is in them — and worth copying, since starting
+                    from one that already works beats starting from a blank slate.
+                *@
+                @*
+                    A section rather than a card: there are fifty-two of these and a panel drawn
+                    round them made one very large box on a page that is already boxes. The heading
+                    is enough to say where the list starts.
+                *@
+                <div class="sem-prescripted">
+                    <h2 style="margin:0">The game's empires</h2>
+                    <span class="sem-hint">
+                        @Prescripted.Count built in. Take a copy to make it your own.
+                    </span>
+
+                    <div class="sem-empires sem-empires-preset">
+                        @foreach (var empire in Prescripted)
+                        {
+                            var read = Read(empire);
+
+                            <EmpireCard Flag="@read?.Design.Flag"
+                                        Portrait="@Thumbnail(empire)"
+                                        Name="@_session.Localizer.Text(empire.NameKey, empire.Key)"
+                                        Government="@read?.Government"
+                                        SpeciesClass="@ClassOf(empire)"
+                                        Selected="@ReferenceEquals(empire, _previewSource)"
+                                        Disabled="@(read is null)"
+                                        OnClick="() => PreviewPrescripted(empire)" />
+                        }
+                    </div>
+                </div>
             </div>
         </div>
-
-        <div class="sem-preset-list">
-            @foreach (var empire in Prescripted)
-            {
-                <div class="sem-preset">
-                    @if (Thumbnail(empire) is { Length: > 0 } portrait)
-                    {
-                        <img src="@_session.Data.AssetUrl(portrait)" alt="" loading="lazy">
-                    }
-
-                    <div class="detail">
-                        <span class="name">@_session.Localizer.Text(empire.NameKey, empire.Key)</span>
-                        <span class="sem-hint">@Summary(empire)</span>
-                    </div>
-
-                    <button type="button" disabled="@(empire.Design is not { Length: > 0 })"
-                            @onclick="() => Duplicate(empire)">
-                        Duplicate
-                    </button>
-                </div>
-            }
-        </div>
-    </div>
+    </CascadingValue>
 }
 
 @code {
     private DesignSession? _session;
     private string? _error;
+
+    /// <summary>Whether the panel is showing one of the player's own empires or one of the game's.</summary>
+    private bool _previewOwn;
+
+    /// <summary>The built-in empire being shown, and the design read out of it.</summary>
+    private PrescriptedEmpireSummary? _previewSource;
+
+    private EmpireDesign? _previewDesign;
 
     protected override async Task OnInitializedAsync()
     {
@@ -124,7 +168,52 @@ else
         if (_session is not null)
         {
             _session.Changed += OnChanged;
+
+            // Coming back from the designer, the empire that was being edited is the one to show.
+            _previewDesign = _session.Current;
+            _previewOwn = _previewDesign is not null;
         }
+    }
+
+    /// <summary>
+    /// The empire the panel is showing, whichever list it came from.
+    /// </summary>
+    /// <remarks>
+    /// It stops being shown once it leaves the list beside it: one of the player's own when a
+    /// different file is opened, one of the game's when the content pack it needs is turned off.
+    /// A panel describing an empire that is no longer there would be describing nothing.
+    /// </remarks>
+    private EmpireDesign? Previewed => _previewDesign is { } design && StillListed ? design : null;
+
+    private bool StillListed =>
+        _previewOwn
+            ? _session?.File?.Designs.Contains(_previewDesign!) is true
+            : _previewSource is { } source && Prescripted.Contains(source);
+
+    private void PreviewOwn(EmpireDesign design)
+    {
+        _previewDesign = design;
+        _previewOwn = true;
+        _previewSource = null;
+    }
+
+    /// <summary>
+    /// Shows one of the game's own empires without copying it into the player's file.
+    /// </summary>
+    /// <remarks>
+    /// Read into a file of its own, which nothing ever saves — the same reading the list beside it
+    /// already did to learn what the empire's government is called, so it costs nothing here.
+    /// </remarks>
+    private void PreviewPrescripted(PrescriptedEmpireSummary empire)
+    {
+        if (Read(empire) is not { } preset)
+        {
+            return;
+        }
+
+        _previewDesign = preset.Design;
+        _previewSource = empire;
+        _previewOwn = false;
     }
 
     public void Dispose()
@@ -229,14 +318,70 @@ else
     private string? Thumbnail(PrescriptedEmpireSummary empire) =>
         PortraitArtwork.For(_session!.Data.Database, empire.Portrait, gender: null);
 
-    private string Summary(PrescriptedEmpireSummary empire)
-    {
-        var parts = new[] { empire.SpeciesClass, empire.Authority, empire.Origin }
-            .OfType<string>()
-            .Where(p => p.Length > 0)
-            .Select(p => _session!.Localizer.Text(p));
+    /// <summary>The third line of the game's own list entry: what kind of thing lives there.</summary>
+    private string? ClassOf(PrescriptedEmpireSummary empire) =>
+        empire.SpeciesClass is { Length: > 0 } kind ? _session!.Localizer.Text(kind) : null;
 
-        return string.Join(" · ", parts);
+    /// <summary>One of the game's empires, read out of its stored text.</summary>
+    private sealed record Preset(EmpireDesign Design, string Government);
+
+    /// <summary>
+    /// The game's own empires as designs, read once and held.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A built-in empire's flag and its government are both inside the stored text rather than
+    /// beside it in the summary, so showing either means parsing the empire. Fifty-two of them, and
+    /// the list draws on every keystroke elsewhere on the page — so they are read once.
+    /// </para>
+    /// <para>
+    /// Never cleared, unlike the list of which empires are offered. What an empire's government is
+    /// called depends on its authority, ethics and civics, and not one of the game's hundred and
+    /// seventy government types asks about a content pack — so turning a pack off can change which
+    /// of these are listed but never what any of them is called.
+    /// </para>
+    /// </remarks>
+    private Preset? Read(PrescriptedEmpireSummary empire)
+    {
+        if (_presets.TryGetValue(empire.Key, out var known))
+        {
+            return known;
+        }
+
+        var preset = Parse(empire);
+        _presets[empire.Key] = preset;
+        return preset;
+    }
+
+    private readonly Dictionary<string, Preset?> _presets = new(StringComparer.Ordinal);
+
+    private Preset? Parse(PrescriptedEmpireSummary empire)
+    {
+        if (empire.Design is not { Length: > 0 } text)
+        {
+            return null;
+        }
+
+        try
+        {
+            if (EmpireDesignsFile.LoadText(text).Designs.FirstOrDefault() is not { } design)
+            {
+                return null;
+            }
+
+            var context = _session!.Rules.CreateContext(design, _session.OwnedDlc);
+
+            return new Preset(
+                design,
+                _session.Rules.DeriveGovernment(context) is { } government
+                    ? _session.Localizer.Text(government.Key)
+                    : _session.Localizer.Text(design.Authority));
+        }
+        catch (Sem.Clausewitz.CwSyntaxException)
+        {
+            // One unreadable built-in empire should not take the page down with it.
+            return null;
+        }
     }
 
     /// <summary>
@@ -283,7 +428,11 @@ else
         }
     }
 
-    private void OpenDesigner(EmpireDesign design) => Navigation.NavigateTo("designer");
+    private void OpenDesigner(EmpireDesign design)
+    {
+        _session!.Select(design);
+        Navigation.NavigateTo("designer");
+    }
 
     private async Task Export()
     {

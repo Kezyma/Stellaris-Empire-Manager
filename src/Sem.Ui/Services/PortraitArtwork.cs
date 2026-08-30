@@ -14,6 +14,31 @@ namespace Sem.Ui.Services;
 public static class PortraitArtwork
 {
     /// <summary>
+    /// The key of the likeness actually worn, which for a group is one of its faces.
+    /// </summary>
+    /// <remarks>
+    /// The picture is not always what a caller wants. Anything keyed by the likeness rather than by
+    /// the group — the wardrobe is, since a group has no pieces of its own — needs the name of the
+    /// face, not the path of its thumbnail.
+    /// </remarks>
+    public static string? Resolve(GameDatabase database, string? key, string? gender)
+    {
+        ArgumentNullException.ThrowIfNull(database);
+
+        if (key is not { Length: > 0 })
+        {
+            return null;
+        }
+
+        var portrait = database.Portraits.FirstOrDefault(p =>
+            string.Equals(p.Key, key, StringComparison.Ordinal));
+
+        // A key naming no portrait at all is still worth returning: a design may name a likeness
+        // from a version we did not read, and the caller's own lookup will say so.
+        return portrait is null ? key : portrait.For(gender) ?? portrait.Key;
+    }
+
+    /// <summary>
     /// The rendered likeness for a portrait key, given the gender of the species wearing it.
     /// </summary>
     public static string? For(GameDatabase database, string? key, string? gender)

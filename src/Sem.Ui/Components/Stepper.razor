@@ -1,0 +1,70 @@
+@*
+    One of the game's spinners: a value with an arrow either side.
+
+    A stepper rather than a slider because the values are ordinals, not amounts — hairstyle
+    forty-one is not more of anything than hairstyle forty — and because a spinner is what the game
+    puts here. The stored number is shown as well as the position in the list, since it is the
+    number that has to be reconciled with the game by hand if anything ever disagrees.
+*@
+
+<div class="sem-field sem-stepper">
+    <label>@Label</label>
+
+    <div class="control">
+        <button type="button" title="Previous" disabled="@(Count <= 1)" @onclick="() => Step(-1)">‹</button>
+
+        <span class="value">
+            @if (Caption is { Length: > 0 } caption)
+            {
+                <span class="caption">@caption</span>
+            }
+
+            <span class="count">@(Count == 0 ? "—" : $"{Value + 1} / {Count}")</span>
+        </span>
+
+        <button type="button" title="Next" disabled="@(Count <= 1)" @onclick="() => Step(1)">›</button>
+    </div>
+</div>
+
+@code {
+    /// <summary>What the control is called.</summary>
+    [Parameter, EditorRequired]
+    public required string Label { get; set; }
+
+    /// <summary>Which choice is made, counting from zero as the design stores it.</summary>
+    [Parameter]
+    public int Value { get; set; }
+
+    /// <summary>How many choices there are.</summary>
+    [Parameter]
+    public int Count { get; set; }
+
+    /// <summary>A name for the current choice, where there is one worth showing.</summary>
+    [Parameter]
+    public string? Caption { get; set; }
+
+    /// <summary>Called with the new value.</summary>
+    [Parameter]
+    public EventCallback<int> OnChange { get; set; }
+
+    /// <summary>
+    /// Moves one along, wrapping.
+    /// </summary>
+    /// <remarks>
+    /// Wrapping rather than stopping at the ends, as the game's own spinners do — a hundred
+    /// hairstyles is a long way back to the first one.
+    /// </remarks>
+    private Task Step(int by)
+    {
+        if (Count <= 0)
+        {
+            return Task.CompletedTask;
+        }
+
+        // A design may hold a number past the end of what we counted, and stepping from there must
+        // land somewhere real rather than further out.
+        var from = Value < 0 || Value >= Count ? 0 : Value;
+
+        return OnChange.InvokeAsync(((from + by) % Count + Count) % Count);
+    }
+}

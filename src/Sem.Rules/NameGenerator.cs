@@ -67,18 +67,19 @@ public sealed class NameGenerator(GameDatabase database, Random? random = null)
         var canCombine = firsts.Count > 0;
         var useFull = full.Count > 0 && (!canCombine || _random.Next(2) == 0);
 
-        if (useFull)
-        {
-            return Pick(full);
-        }
+        var gender = female ? "female" : "male";
 
-        if (!canCombine)
+        if (useFull || !canCombine)
         {
-            return Pick(full);
+            return LeaderName.Variant(Pick(full), gender) is { Length: > 0 } one ? one : null;
         }
 
         // A list may give first names and no family names, in which case the first name is the name.
-        return seconds.Count > 0 ? $"{Pick(firsts)} {Pick(seconds)}" : Pick(firsts);
+        // Put together rather than set side by side: a family name is as often a frame written round
+        // the given one — "$1$ Aburia" — as a word to follow it.
+        return seconds.Count > 0
+            ? LeaderName.Compose(Pick(firsts), Pick(seconds), gender)
+            : LeaderName.Variant(Pick(firsts), gender) is { Length: > 0 } only ? only : null;
     }
 
     /// <summary>Suggests a planet name from a name list.</summary>
@@ -93,16 +94,21 @@ public sealed class NameGenerator(GameDatabase database, Random? random = null)
     /// form of government, which is what this produces; the "Empire of Sol" constructions are not
     /// reproduced.
     /// </remarks>
-    public string? Empire(string? speciesName, string? authority)
-    {
-        if (speciesName is not { Length: > 0 })
-        {
-            return null;
-        }
+    public string? Empire(string? speciesName, string? authority) =>
+        Pick(EmpireNames(speciesName, authority));
 
-        var suffixes = SuffixesFor(authority);
-        return $"{Adjective(speciesName)} {Pick(suffixes)}";
-    }
+    /// <summary>
+    /// Every name the suggestion above would choose between, so a list can offer them all.
+    /// </summary>
+    /// <remarks>
+    /// The same construction, held still: four to six for an authority, which is short enough to
+    /// read at a glance rather than scroll. Suggesting is picking one of these, so the two cannot
+    /// drift apart.
+    /// </remarks>
+    public static IReadOnlyList<string> EmpireNames(string? speciesName, string? authority) =>
+        speciesName is { Length: > 0 }
+            ? [.. SuffixesFor(authority).Select(suffix => $"{Adjective(speciesName)} {suffix}")]
+            : [];
 
     /// <summary>
     /// Turns a species name into an adjective the way the game's naming rules do.

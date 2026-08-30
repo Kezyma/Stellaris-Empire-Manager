@@ -148,6 +148,94 @@ public sealed class NameTests
         Assert.Equal("Lawrence Whitfield", localizer.Name(design.Ruler.Name.FullNames));
     }
 
+    [Theory]
+    [InlineData("%LEADER_1%")]
+    [InlineData("%LEADER_2%")]
+    public void EitherLeaderTemplateWearsBothHalvesOfTheName(string template)
+    {
+        // Both forms hold a given name and a family name, and both mean the whole name. Reading only
+        // the first variable of %LEADER_1% cost twelve of the player's own rulers their surname.
+        var design = EmpireDesignsFile.LoadText(
+            BlessedOxanalytoranUnion.Replace("%LEADER_2%", template, StringComparison.Ordinal)).Designs[0];
+
+        var localizer = new Localizer(new Dictionary<string, string>
+        {
+            ["HUMAN1_CHR_Lawrence"] = "Lawrence",
+            ["HUMAN1_CHR_Whitfield"] = "Whitfield",
+        });
+
+        Assert.Equal("Lawrence Whitfield", localizer.Name(design.Ruler.Name.FullNames));
+    }
+
+    [Fact]
+    public void AFamilyNameWrittenRoundAGivenOneWrapsIt()
+    {
+        // Six hundred and thirty-six of the game's name parts are frames rather than words: the
+        // family name HUMAN3_CHR_Aburius is "$1$ Aburia", and the given name goes in the hole. Set
+        // side by side with the hole deleted, which is what happened before, this read
+        // "Lawrence Aburia" with a stray space, or worse.
+        var design = EmpireDesignsFile.LoadText(BlessedOxanalytoranUnion).Designs[0];
+
+        var localizer = new Localizer(new Dictionary<string, string>
+        {
+            ["HUMAN1_CHR_Lawrence"] = "Gaius",
+            ["HUMAN1_CHR_Whitfield"] = "$1$ Aburia",
+        });
+
+        Assert.Equal("Gaius Aburia", localizer.Name(design.Ruler.Name.FullNames));
+    }
+
+    [Fact]
+    public void AGivenNameWrittenRoundAFamilyOneWrapsItToo()
+    {
+        // The other seventy-four hold the hole at the end instead: "Feathers of $1$" over "Silver".
+        var design = EmpireDesignsFile.LoadText(BlessedOxanalytoranUnion).Designs[0];
+
+        var localizer = new Localizer(new Dictionary<string, string>
+        {
+            ["HUMAN1_CHR_Lawrence"] = "Feathers of $1$",
+            ["HUMAN1_CHR_Whitfield"] = "Silver",
+        });
+
+        Assert.Equal("Feathers of Silver", localizer.Name(design.Ruler.Name.FullNames));
+    }
+
+    [Theory]
+    [InlineData("male", "Gaius Aburius")]
+    [InlineData("female", "Gaius Aburia")]
+    [InlineData(null, "Gaius Aburia")]
+    public void ANameWrittenInTwoFormsPicksTheOneThatSuits(string? gender, string expected)
+    {
+        // Four hundred and sixty-three name parts carry two forms, and the game picks by gender.
+        // Nothing here knew the syntax, so the bars and the tag were shown to the player as though
+        // they were part of the name.
+        var design = EmpireDesignsFile.LoadText(BlessedOxanalytoranUnion).Designs[0];
+
+        var localizer = new Localizer(new Dictionary<string, string>
+        {
+            ["HUMAN1_CHR_Lawrence"] = "Gaius",
+            ["HUMAN1_CHR_Whitfield"] = "$1$ Aburia|||masc:$1$ Aburius",
+        });
+
+        Assert.Equal(expected, localizer.Name(design.Ruler.Name.FullNames, gender: gender));
+    }
+
+    [Fact]
+    public void ARulersNameIsReadTheSameWayWhicheverShapeHoldsIt()
+    {
+        // A design copied out of a running game keeps the name in two parts rather than one, and
+        // half the screens that showed a ruler had forgotten that case.
+        var design = EmpireDesignsFile.LoadText(BlessedOxanalytoranUnion).Designs[0];
+
+        var localizer = new Localizer(new Dictionary<string, string>
+        {
+            ["HUMAN1_CHR_Lawrence"] = "Lawrence",
+            ["HUMAN1_CHR_Whitfield"] = "Whitfield",
+        });
+
+        Assert.Equal("Lawrence Whitfield", localizer.RulerName(design.Ruler));
+    }
+
     [Fact]
     public void ANamePartWithNoTextIsShownAsTheWordsItSpells()
     {

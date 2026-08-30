@@ -3,32 +3,42 @@
     the starting system and call for a second species, so what it changes is spelled out.
 *@
 
-<div class="sem-panel">
-    <h3>Origin</h3>
+<div class="sem-subsections">
+    <section>
+        <h4>@Session.Localizer.Label("ORIGIN", "Origin")</h4>
 
-    @if (Selected is { } origin)
-    {
-        <div class="sem-hint">
-            @if (origin.ForcedTraits.Count > 0)
-            {
-                <p>Grants @string.Join(", ", origin.ForcedTraits.Select(t => Session.Localizer.Text(t))).</p>
-            }
+        @*
+            Taller than the rest, because these are the only choices whose detail carries a picture,
+            and the game sells an origin on that picture as much as on what it does.
+        *@
+        <OptionGrid Options="@Origins"
+                    DetailHeight="460"
+                    EmptyHint="Hover an origin to see where it starts the empire."
+                    OnSelect="Choose" />
 
-            @if (origin.HabitabilityPreference is { } climate || origin.StartingColony is { } colony)
-            {
-                <p>Starts the empire on @Session.Localizer.Text(origin.HabitabilityPreference ?? origin.StartingColony!).</p>
-            }
+        @*
+            What the chosen origin changes elsewhere in the design, below the choices rather than
+            above them: above the grid, picking one shifted every icon out from under the pointer.
 
-            @if (origin.RequiresSecondarySpecies)
-            {
-                <p>Needs a second species, which the game gives @string.Join(", ", origin.SecondarySpeciesTraits.Select(t => Session.Localizer.Text(t))).</p>
-            }
-        </div>
-    }
+            The traits it forces are not listed here. They are already in the species' trait list,
+            marked as forced and naming this origin as the cause, and saying so twice made the
+            second saying look like a different fact.
+        *@
+        @if (Selected is { } origin)
+        {
+            <div class="sem-hint" style="margin-top:var(--gap)">
+                @if (origin.HabitabilityPreference is { } climate || origin.StartingColony is { } colony)
+                {
+                    <p>Starts the empire on @Session.Localizer.Text(origin.HabitabilityPreference ?? origin.StartingColony!).</p>
+                }
 
-    <OptionGrid Options="@Origins"
-                EmptyHint="Hover an origin to see where it starts the empire."
-                OnSelect="Choose" />
+                @if (origin.RequiresSecondarySpecies)
+                {
+                    <p>Needs a second species, which the game gives @string.Join(", ", origin.SecondarySpeciesTraits.Select(t => Session.Localizer.Text(t))).</p>
+                }
+            </div>
+        }
+    </section>
 </div>
 
 @code {

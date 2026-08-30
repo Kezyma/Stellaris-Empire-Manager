@@ -72,6 +72,109 @@ internal static class FlagExtractor
         return results;
     }
 
+    /// <summary>Where the game declares how a flag is framed.</summary>
+    private const string FrameDeclarations = "interface/game_setup/customization.gfx";
+
+    /// <summary>
+    /// The sizes the game actually draws a flag at, and nothing else.
+    /// </summary>
+    /// <remarks>
+    /// The file declares more than these. Some are variants for a particular kind of empire — the
+    /// traders, the curators — which frame the same field identically and would only be duplicates
+    /// here. Three others, <c>_large</c>, <c>_medium</c> and <c>_small</c>, are leftovers no
+    /// interface file refers to, and one of them puts a symbol larger than the field it sits in, so
+    /// taking them would be taking a mistake.
+    /// </remarks>
+    private static readonly string[] FramedSizes =
+    [
+        "GFX_empire_flag_200",
+        "GFX_empire_flag_128",
+        "GFX_empire_flag_64",
+        "GFX_empire_flag_48",
+        "GFX_empire_flag_32",
+    ];
+
+    /// <summary>
+    /// Reads how the game frames a flag, and the pictures it frames one with.
+    /// </summary>
+    /// <remarks>
+    /// The measurements are read rather than written down here because there are five sets of them
+    /// and they do not follow a rule: the emblem is 130 of a 186 field at the largest size and 24 of
+    /// 30 at the smallest. Only the width is kept — every one of them is square, and a flag that
+    /// stopped being square would be a bigger change than a field.
+    /// </remarks>
+    public static List<FlagFrameDefinition> ExtractFrames(ScriptLoader loader, AssetCatalog assets)
+    {
+        var results = new List<FlagFrameDefinition>();
+
+        if (loader.Load(FrameDeclarations) is not { } document)
+        {
+            return results;
+        }
+
+        var declarations = document.Nodes
+            .Where(n => n.Key == "spriteTypes")
+            .SelectMany(n => n.Block?.Nodes ?? [])
+            .Where(n => n.Key == "flagSpriteType");
+
+        foreach (var node in declarations)
+        {
+            if (node.Block is not { } body ||
+                body.GetString("name") is not { Length: > 0 } key ||
+                !FramedSizes.Contains(key, StringComparer.Ordinal) ||
+                body.GetString("textureFile") is not { Length: > 0 } frame ||
+                Extent(body, "bg_size") is not { } fieldSize ||
+                Offset(body, "bg_position") is not { } fieldOffset ||
+                Extent(body, "symbol_size") is not { } emblemSize ||
+                Offset(body, "symbol_position") is not { } emblemOffset)
+            {
+                continue;
+            }
+
+            // The frame's own texture settles the size of the whole thing, which the file says
+            // outright: "this one will determine the size of the sprite".
+            var stem = Path.GetFileNameWithoutExtension(frame);
+
+            results.Add(new FlagFrameDefinition(
+                key,
+                Measure(loader, frame),
+                fieldOffset,
+                fieldSize,
+                emblemOffset,
+                emblemSize)
+            {
+                FrameImage = assets.Register(frame, $"flags/frames/{stem}.png"),
+                MaskImage = body.GetString("masking_texture") is { Length: > 0 } mask
+                    ? assets.Register(mask, $"flags/frames/{Path.GetFileNameWithoutExtension(mask)}.png")
+                    : null,
+            });
+        }
+
+        return results;
+    }
+
+    /// <summary>How wide a texture is, which is the only way to know how big a frame is.</summary>
+    /// <remarks>
+    /// The sprite's name is nominal rather than a measurement — the one called 128 is 131 pixels
+    /// across — so the number has to come from the picture. Five small textures, decoded once.
+    /// </remarks>
+    private static double Measure(ScriptLoader loader, string texture) =>
+        loader.Content.Contains(texture) ? DdsReader.Read(loader.Content.Read(texture)).Width : 0;
+
+    /// <summary>A width from a <c>{ width = n height = n }</c> pair.</summary>
+    private static double? Extent(CwBlock body, string key) =>
+        body.GetBlock(key)?.GetString("width") is { } width &&
+        double.TryParse(width, System.Globalization.CultureInfo.InvariantCulture, out var value)
+            ? value
+            : null;
+
+    /// <summary>An x from an <c>{ x = n y = n }</c> pair.</summary>
+    private static double? Offset(CwBlock body, string key) =>
+        body.GetBlock(key)?.GetString("x") is { } x &&
+        double.TryParse(x, System.Globalization.CultureInfo.InvariantCulture, out var value)
+            ? value
+            : null;
+
     /// <summary>
     /// Reads the named colours a flag can be tinted with.
     /// </summary>

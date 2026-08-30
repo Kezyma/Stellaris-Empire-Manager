@@ -1,68 +1,66 @@
 ﻿@*
-    Authority and civics. The government's name is not chosen: the game works it out from these
-    and the empire's ethics, so it is shown rather than offered.
+    An empire's politics: what it believes, how it is run, and what it does with the room that
+    leaves. The government's name is not chosen — the game works it out from all three — so it is
+    shown in the preview rather than given a panel of its own here.
 *@
 
-<div class="sem-columns">
-    <div>
-        <div class="sem-panel">
-            <h3>@Session.Localizer.Label("GOVERNMENT_AUTHORITY_AND_TYPE", "Authority and Type")</h3>
+<div class="sem-subsections">
+    <section>
+        <h4>@Session.Localizer.Label("ETHICS", "Ethics")</h4>
 
-            <OptionGrid Options="@Authorities"
-                        EmptyHint="Hover an authority to see how it governs."
-                        OnSelect="key => Session.Edit(d => d.Authority = key)" />
+        <EthicsSection />
+    </section>
 
-            @*
-                Not an authority, but the game puts it beside them, and it belongs there: it changes
-                what an empire may govern with, ruling out a good many civics on its own.
-            *@
-            <button type="button"
-                    class="sem-toggle @(Design.IsNomadic == true ? "selected" : null)"
-                    title="@NomadicLabel"
-                    @onclick="() => Session.Edit(d => d.IsNomadic = d.IsNomadic != true)">
+    <section>
+        <h4>@Session.Localizer.Label("GOVERNMENT_AUTHORITY_AND_TYPE", "Authority and Type")</h4>
 
-                @if (Session.Data.Database.Icons.GetValueOrDefault(NomadSprite) is { Length: > 0 } icon)
-                {
-                    <img src="@Session.Data.AssetUrl(icon)" alt="">
-                }
+        @*
+            As short as the ethics above it. There are eight authorities and the nomad toggle, which
+            is a row or two of icons — a panel four hundred deep to describe them left most of
+            itself empty.
+        *@
+        <OptionGrid Options="@Authorities"
+                    DetailHeight="178"
+                    EmptyHint="Hover an authority to see how it governs."
+                    OnSelect="key => Session.Edit(d => d.Authority = key)">
+            <Aside>
+                @*
+                    Nomadic is not an authority, but the game puts it beside them and it belongs
+                    there: it changes what an empire may govern with, ruling out a good many
+                    civics on its own. Beside the grid rather than in it, as the game also has
+                    it — a container of its own next to the authorities, so that it does not
+                    read as one more of them — and an icon rather than a labelled row, which
+                    read as a section.
+                *@
+                <button type="button"
+                        class="sem-icon-option sem-nomad @(Design.IsNomadic == true ? "selected" : null)"
+                        title="@NomadicLabel"
+                        aria-pressed="@(Design.IsNomadic == true)"
+                        @onclick="() => Session.Edit(d => d.IsNomadic = d.IsNomadic != true)">
 
-                <span>@NomadicLabel</span>
-            </button>
-        </div>
+                    @if (Session.Data.Database.Icons.GetValueOrDefault(NomadSprite) is { Length: > 0 } icon)
+                    {
+                        <img src="@Session.Data.AssetUrl(icon)" alt="@NomadicLabel">
+                    }
+                    else
+                    {
+                        <span class="initials">@NomadicLabel</span>
+                    }
+                </button>
+            </Aside>
+        </OptionGrid>
+    </section>
 
-        <div class="sem-panel">
-            <h3>@Session.Localizer.Label("GOVERNMENT_LABEL", "Government")</h3>
+    <section>
+        <h4>@Session.Localizer.Heading("CIVICS_LABEL", "Civics")</h4>
 
-            @if (Government is { } government)
-            {
-                <p><strong>@Session.Localizer.Text(government.Key)</strong></p>
-
-                @if (government.RulerTitleKey is { } title)
-                {
-                    <p class="sem-hint">Ruler is styled @Session.Localizer.Text(title).</p>
-                }
-            }
-            else
-            {
-                <p class="sem-hint">No government fits this combination yet.</p>
-            }
-
-            <p class="sem-hint">
-                The game names a government after the authority, ethics and civics an empire holds,
-                so this changes as those do.
-            </p>
-        </div>
-    </div>
-
-    <div class="sem-panel">
-        <h3>Civics</h3>
-
-        <BudgetBar Key="POINTS_LEFT_CIVICS" Fallback="Civic Picks Left: $POINTS|H$" Value="@Session.Rules.GetCivicsBudget(Context)" />
+        <BudgetBar Key="POINTS_LEFT_CIVICS" Fallback="Civic Picks Left: $POINTS|H$"
+                   Label="CIVICS_LABEL" LabelFallback="Civics" Value="@Session.Rules.GetCivicsBudget(Context)" />
 
         <OptionGrid Options="@Civics"
                     EmptyHint="Hover a civic to see what it changes."
                     OnSelect="Toggle" />
-    </div>
+    </section>
 </div>
 
 @code {
@@ -77,8 +75,6 @@
     private string NomadicLabel => Session.Localizer.Text("IS_NOMADIC", "Is a Nomadic Empire");
 
     private DesignContext Context => Session.Context!;
-
-    private GovernmentTypeDefinition? Government => Session.Rules.DeriveGovernment(Context);
 
     private IReadOnlyList<OptionGrid.GridOption> Authorities
     {

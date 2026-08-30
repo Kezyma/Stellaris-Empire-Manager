@@ -45,10 +45,51 @@ internal static class WorldExtractor
                            body.GetString("icon_large"), $"icons/planets/{entry.Key}.png")
                        ?? assets.RegisterSprite(
                            body.GetString("icon"), $"icons/planets/{entry.Key}.png"),
+
+                Sky = loader.Content.Contains($"gfx/portraits/environments/{entry.Key}_sky.dds")
+                    ? assets.Register(
+                        $"gfx/portraits/environments/{entry.Key}_sky.dds",
+                        $"worlds/{entry.Key}_sky.png",
+                        maxDimension: 800)
+                    : null,
+
+                Scenery = Scenery(entry.Key, loader, assets),
             });
         }
 
         return results;
+    }
+
+    /// <summary>
+    /// How many bands of landscape a world can have in front of its sky.
+    /// </summary>
+    /// <remarks>
+    /// Four, as the portrait layout describes: the game paints them from the horizon forwards with
+    /// the empire's own city between them.
+    /// </remarks>
+    private const int SceneryBands = 4;
+
+    /// <summary>The landscape of one world, furthest band first.</summary>
+    private static IReadOnlyList<SceneryBand> Scenery(string key, ScriptLoader loader, AssetCatalog assets)
+    {
+        var layers = new List<SceneryBand>();
+
+        for (var band = 1; band <= SceneryBands; band++)
+        {
+            var source = $"gfx/portraits/environments/{key}_l{band:00}.dds";
+
+            // Not every world has every band — an arctic world has no second one — and a gap is
+            // not a fault. Asking for a picture that is not there is what fills the missing-image
+            // report with noise, so it is not asked for. The band each one is keeps the gap from
+            // shifting the rest forward when the city is interleaved with them.
+            if (loader.Content.Contains(source) &&
+                assets.Register(source, $"worlds/{key}_l{band:00}.png", maxDimension: 800) is { } image)
+            {
+                layers.Add(new SceneryBand(band, image));
+            }
+        }
+
+        return layers;
     }
 
     /// <summary>

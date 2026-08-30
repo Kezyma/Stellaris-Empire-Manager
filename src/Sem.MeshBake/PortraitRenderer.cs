@@ -148,7 +148,7 @@ public sealed class PortraitRenderer(RenderSettings? settings = null)
             DrawPart(part, texture, pixels, width, height, scale, offset);
         }
 
-        return Downsample(pixels, width, height, _settings.Supersample);
+        return Raster.Downsample(pixels, width, height, _settings.Supersample);
     }
 
     /// <summary>
@@ -285,7 +285,7 @@ public sealed class PortraitRenderer(RenderSettings? settings = null)
         var minY = Math.Max(0, (int)MathF.Floor(Math.Min(screen[0].Y, Math.Min(screen[1].Y, screen[2].Y))));
         var maxY = Math.Min(height - 1, (int)MathF.Ceiling(Math.Max(screen[0].Y, Math.Max(screen[1].Y, screen[2].Y))));
 
-        var area = Edge(screen[0], screen[1], screen[2]);
+        var area = Raster.Edge(screen[0], screen[1], screen[2]);
         if (Math.Abs(area) < 1e-6f)
         {
             return;
@@ -297,16 +297,16 @@ public sealed class PortraitRenderer(RenderSettings? settings = null)
             {
                 var point = new Vector3(x + 0.5f, y + 0.5f, 0);
 
-                var w0 = Edge(screen[1], screen[2], point) / area;
-                var w1 = Edge(screen[2], screen[0], point) / area;
-                var w2 = Edge(screen[0], screen[1], point) / area;
+                var w0 = Raster.Edge(screen[1], screen[2], point) / area;
+                var w1 = Raster.Edge(screen[2], screen[0], point) / area;
+                var w2 = Raster.Edge(screen[0], screen[1], point) / area;
 
                 if (w0 < 0 || w1 < 0 || w2 < 0)
                 {
                     continue;
                 }
 
-                var (r, g, b, a) = Sample(texture, (w0 * uv[0]) + (w1 * uv[1]) + (w2 * uv[2]));
+                var (r, g, b, a) = Raster.Sample(texture, (w0 * uv[0]) + (w1 * uv[1]) + (w2 * uv[2]));
 
                 // A part's shape comes from its texture's transparency, not its geometry, so a
                 // transparent sample means there is nothing here to draw.
@@ -319,76 +319,11 @@ public sealed class PortraitRenderer(RenderSettings? settings = null)
                 var offset = ((y * width) + x) * 4;
                 var alpha = a / 255f;
 
-                pixels[offset] = Blend(pixels[offset], b * shade, alpha);
-                pixels[offset + 1] = Blend(pixels[offset + 1], g * shade, alpha);
-                pixels[offset + 2] = Blend(pixels[offset + 2], r * shade, alpha);
+                pixels[offset] = Raster.Blend(pixels[offset], b * shade, alpha);
+                pixels[offset + 1] = Raster.Blend(pixels[offset + 1], g * shade, alpha);
+                pixels[offset + 2] = Raster.Blend(pixels[offset + 2], r * shade, alpha);
                 pixels[offset + 3] = (byte)Math.Min(255, pixels[offset + 3] + a);
             }
         }
-    }
-
-    private static float Edge(Vector3 a, Vector3 b, Vector3 c) =>
-        ((c.X - a.X) * (b.Y - a.Y)) - ((c.Y - a.Y) * (b.X - a.X));
-
-    private static (byte R, byte G, byte B, byte A) Sample(DdsImage texture, Vector2 uv)
-    {
-        // Both the coordinates and the image rows run downwards, so nothing is flipped: these
-        // models follow the same convention their textures are stored in.
-        var x = (int)(Wrap(uv.X) * (texture.Width - 1));
-        var y = (int)(Wrap(uv.Y) * (texture.Height - 1));
-
-        var (b, g, r, a) = texture[Math.Clamp(x, 0, texture.Width - 1), Math.Clamp(y, 0, texture.Height - 1)];
-        return (r, g, b, a);
-    }
-
-    private static float Wrap(float value)
-    {
-        var wrapped = value - MathF.Floor(value);
-        return float.IsFinite(wrapped) ? wrapped : 0f;
-    }
-
-    private static byte Blend(byte existing, float incoming, float alpha) =>
-        (byte)Math.Clamp((existing * (1 - alpha)) + (incoming * alpha), 0, 255);
-
-    /// <summary>Averages each block of pixels down to one, which softens the edges.</summary>
-    private static DdsImage Downsample(byte[] pixels, int width, int height, int factor)
-    {
-        if (factor <= 1)
-        {
-            return new DdsImage(width, height, pixels);
-        }
-
-        var outWidth = width / factor;
-        var outHeight = height / factor;
-        var result = new byte[outWidth * outHeight * 4];
-
-        for (var y = 0; y < outHeight; y++)
-        {
-            for (var x = 0; x < outWidth; x++)
-            {
-                int b = 0, g = 0, r = 0, a = 0;
-
-                for (var sy = 0; sy < factor; sy++)
-                {
-                    for (var sx = 0; sx < factor; sx++)
-                    {
-                        var source = ((((y * factor) + sy) * width) + (x * factor) + sx) * 4;
-                        b += pixels[source];
-                        g += pixels[source + 1];
-                        r += pixels[source + 2];
-                        a += pixels[source + 3];
-                    }
-                }
-
-                var samples = factor * factor;
-                var target = ((y * outWidth) + x) * 4;
-                result[target] = (byte)(b / samples);
-                result[target + 1] = (byte)(g / samples);
-                result[target + 2] = (byte)(r / samples);
-                result[target + 3] = (byte)(a / samples);
-            }
-        }
-
-        return new DdsImage(outWidth, outHeight, result);
     }
 }

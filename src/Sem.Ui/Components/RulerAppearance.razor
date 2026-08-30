@@ -1,0 +1,242 @@
+@inject IGameDataSource Source
+
+@*
+    The ruler's likeness, and the four things about it a design can hold.
+
+    The game's leader editor offers six controls. Four of them map onto something a design stores and
+    are here. Phenotype picks which likeness of the portrait's group is worn; the other three are
+    numbers into lists the portrait offers. The remaining two — the ascension stage and its variant —
+    are two controls against a design's single evolution_mask, whose value is decided in play rather
+    than here, so there is a sentence in their place rather than an invented control.
+*@
+
+<div class="sem-appearance">
+    <div class="figure">
+        @if (_loading)
+        {
+            <p class="sem-hint">Drawing…</p>
+        }
+        else if (Outfit is { } outfit)
+        {
+            <PortraitFigure Outfit="outfit"
+                            Character="@TextureFor(PortraitSlot.Character)"
+                            Clothes="@TextureFor(PortraitSlot.Clothes)"
+                            Attachment="@TextureFor(PortraitSlot.Attachment)" />
+        }
+        else if (Thumbnail is { Length: > 0 } thumbnail)
+        {
+            @*
+                No wardrobe published by this host — the desktop builds its cache without one — so
+                the portrait's own flat picture stands in and the controls that need the pieces are
+                left out rather than shown doing nothing.
+            *@
+            <img class="sem-thumb" src="@Session.Data.AssetUrl(thumbnail)" alt="">
+        }
+    </div>
+
+    <div class="controls">
+        @if (Members.Count > 1)
+        {
+            <Stepper Label="@Session.Localizer.Label("LEADER_SUB_PORTRAIT", "Phenotype")"
+                     Value="@PhenotypeIndex" Count="@Members.Count"
+                     Caption="@PhenotypeName"
+                     OnChange="ChoosePhenotype" />
+        }
+
+        @*
+            A control is shown only where there is something to choose between. On a host that
+            publishes no wardrobe the portrait still knows how many skins it has, so the colour
+            variant survives and the other two are absent rather than present and inert.
+        *@
+        @if (Count(PortraitSlot.Character) > 0)
+        {
+            <Stepper Label="@Session.Localizer.Label("VARIATION", "Color Variant")"
+                     Value="@(Design.Ruler.Texture ?? 0)" Count="@Count(PortraitSlot.Character)"
+                     OnChange="value => Session.Edit(d => d.Ruler.Texture = value)" />
+        }
+
+        @if (Count(PortraitSlot.Clothes) > 0)
+        {
+            <Stepper Label="@Session.Localizer.Label("CLOTHES", "Clothes")"
+                     Value="@(Design.Ruler.Clothes ?? 0)" Count="@Count(PortraitSlot.Clothes)"
+                     OnChange="value => Session.Edit(d => d.Ruler.Clothes = value)" />
+        }
+
+        @if (Count(PortraitSlot.Attachment) > 0)
+        {
+            <Stepper Label="@AttachmentLabel"
+                     Value="@(Design.Ruler.Attachment ?? 0)" Count="@Count(PortraitSlot.Attachment)"
+                     OnChange="value => Session.Edit(d => d.Ruler.Attachment = value)" />
+        }
+
+        @if (!_loading && Outfit is null)
+        {
+            <p class="sem-hint">
+                This build's data has no wardrobe, so the ruler is shown as a fixed portrait and
+                their outfit cannot be changed here. The numbers a design already holds are kept.
+            </p>
+        }
+
+        <p class="sem-hint">
+            @* Heading rather than Label: some of the game's labels carry their colon. *@
+            @Session.Localizer.Heading("EVOLUTION_STAGE", "Evolution Stage") is decided in play rather
+            than here: a portrait's ascended forms are gated on what the empire has become, so a
+            design holds one value for it and this one holds @(Design.Ruler.EvolutionMask ?? 0).
+        </p>
+
+        @if (Outfit is not null)
+        {
+            <p class="sem-hint">
+                Clothing and attachment are numbered from the game's own selector files, which do not
+                state what order they are counted in. A saved empire may open in the game wearing
+                something else; the number is written back exactly as it was read.
+            </p>
+        }
+    </div>
+</div>
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    private EmpireDesign Design => Session.Current!;
+
+    /// <summary>The pieces for the portrait now being worn, once they have been fetched.</summary>
+    private PortraitOutfit? _outfit;
+
+    /// <summary>Which portrait <see cref="_outfit"/> is for, so a change of face refetches nothing.</summary>
+    private string? _outfitFor;
+
+    private bool _loading;
+
+    /// <summary>
+    /// The whole wardrobe, held for the life of the component.
+    /// </summary>
+    /// <remarks>
+    /// The source memoises this, so opening the section a second time costs nothing; holding the
+    /// reference here only saves going back through the gate on every keystroke.
+    /// </remarks>
+    private IReadOnlyList<PortraitOutfit>? _wardrobe;
+
+    private PortraitOutfit? Outfit => _outfit;
+
+    /// <summary>
+    /// The likeness actually worn, which for a group is one of its members.
+    /// </summary>
+    /// <remarks>
+    /// A design stores the group — the game's own United Nations of Earth records
+    /// <c>portrait = "human"</c> — and the group picks a face by gender. The wardrobe is keyed by
+    /// the face rather than the group, so it is the face that has to be looked up.
+    /// </remarks>
+    private string? Likeness => PortraitArtwork.Resolve(
+        Session.Data.Database, Design.Ruler.Portrait, Design.Ruler.Gender);
+
+    private PortraitDefinition? Portrait => Session.Data.Database.Portraits
+        .FirstOrDefault(p => p.Key == Design.Ruler.Portrait);
+
+    /// <summary>
+    /// The group the worn likeness belongs to, whether the design named the group or the face.
+    /// </summary>
+    /// <remarks>
+    /// A design may hold either. The game's own empires hold the group and let gender decide; one
+    /// saved after a player used the appearance controls holds the face — <c>human_female_05</c> —
+    /// and the shelf it came off is the group that lists it.
+    /// </remarks>
+    private PortraitDefinition? Group => Portrait is { IsGroup: true }
+        ? Portrait
+        : Session.Data.Database.Portraits.FirstOrDefault(p =>
+            p.IsGroup && p.Phenotypes.Values.Any(faces => faces.Contains(Design.Ruler.Portrait!)));
+
+    private string? Thumbnail => Session.Data.Database.Portraits
+        .FirstOrDefault(p => p.Key == Likeness)?.Thumbnail;
+
+    /// <summary>
+    /// What this portrait calls the thing on its head.
+    /// </summary>
+    /// <remarks>
+    /// The game lets a portrait rename the control, and forty-six do: a human's is a hairstyle, a
+    /// reptilian's a hat, and three wear masks. One that renames nothing keeps the general word.
+    /// </remarks>
+    private string AttachmentLabel => Session.Localizer.Label(
+        Portrait?.AttachmentLabelKey ?? "ATTACHMENTS",
+        Portrait?.AttachmentLabelKey is null ? "Attachments" : "Attachment");
+
+    /// <summary>
+    /// The faces the phenotype control steps through, which are the group's for this gender.
+    /// </summary>
+    /// <remarks>
+    /// Gender-dependent because the game's are: the human group lists five male faces and five
+    /// female ones, and its editor offers whichever run matches the ruler. A ruler of no stated
+    /// gender is offered everything the group has.
+    /// </remarks>
+    private IReadOnlyList<string> Members
+    {
+        get
+        {
+            if (Group is not { } group)
+            {
+                return [];
+            }
+
+            return group.PhenotypesFor(Design.Ruler.Gender) is { Count: > 0 } forGender
+                ? forGender
+                : [.. group.Phenotypes.Values.SelectMany(f => f).Distinct(StringComparer.Ordinal)];
+        }
+    }
+
+    private int PhenotypeIndex => Likeness is { } face
+        ? Math.Max(0, Members.ToList().IndexOf(face))
+        : 0;
+
+    private string? PhenotypeName => Members.Count > PhenotypeIndex
+        ? Localizer.Prettify(Members[PhenotypeIndex])
+        : null;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Likeness is not { Length: > 0 } face || face == _outfitFor)
+        {
+            return;
+        }
+
+        _outfitFor = face;
+        _loading = true;
+
+        _wardrobe ??= await Source.LoadWardrobeAsync().ConfigureAwait(true);
+        _outfit = _wardrobe.FirstOrDefault(o => o.Portrait == face);
+        _loading = false;
+    }
+
+    /// <summary>
+    /// How many choices a slot offers.
+    /// </summary>
+    /// <remarks>
+    /// From the wardrobe where there is one. Failing that the portrait's own count of body textures
+    /// still stands, so the colour variant works on a host with no wardrobe published; the other two
+    /// have nothing to count and offer nothing.
+    /// </remarks>
+    private int Count(PortraitSlot slot) => Outfit?.CountFor(slot)
+        ?? (slot == PortraitSlot.Character ? Portrait?.TextureCount ?? 0 : 0);
+
+    private string? TextureFor(PortraitSlot slot) => Outfit?.TextureFor(slot, slot switch
+    {
+        PortraitSlot.Clothes => Design.Ruler.Clothes,
+        PortraitSlot.Attachment => Design.Ruler.Attachment,
+        _ => Design.Ruler.Texture,
+    });
+
+    /// <summary>
+    /// Wears a different face of the group.
+    /// </summary>
+    /// <remarks>
+    /// Writes the face rather than the group, which is what a player choosing one means. A design
+    /// that held the group and let gender decide keeps doing so until this is touched.
+    /// </remarks>
+    private void ChoosePhenotype(int index)
+    {
+        if (index >= 0 && index < Members.Count)
+        {
+            Session.Edit(d => d.Ruler.Portrait = Members[index]);
+        }
+    }
+}

@@ -9,70 +9,88 @@
 
 @using Sem.GameData
 
-<div class="sem-grid-and-detail">
-    <div class="sem-icon-grid" style="@GridStyle">
-        @foreach (var option in Options)
-        {
-            <button type="button"
-                    class="@ClassFor(option)"
-                    disabled="@(!option.Enabled && !option.Selected)"
-                    title="@option.Name"
-                    @onmouseenter="() => _hovered = option.Key"
-                    @onfocus="() => _hovered = option.Key"
-                    @onmouseleave="() => Unhover(option.Key)"
-                    @onblur="() => Unhover(option.Key)"
-                    @onclick="() => OnSelect.InvokeAsync(option.Key)">
-                @if (option.Icon is { Length: > 0 } icon)
-                {
-                    <img src="@Session.Data.AssetUrl(icon)" alt="@option.Name" loading="lazy">
-                }
-                else
-                {
-                    <span class="initials">@Initials(option.Name)</span>
-                }
+<div class="sem-grid-and-detail" style="@RowStyle">
+    <div class="sem-grid-column">
+        <div class="sem-icon-grid">
+            @foreach (var option in Options)
+            {
+                <button type="button"
+                        class="@ClassFor(option)"
+                        disabled="@(!option.Enabled && !option.Selected)"
+                        title="@option.Name"
+                        @onmouseenter="() => _hovered = option.Key"
+                        @onfocus="() => _hovered = option.Key"
+                        @onmouseleave="() => Unhover(option.Key)"
+                        @onblur="() => Unhover(option.Key)"
+                        @onclick="() => OnSelect.InvokeAsync(option.Key)">
+                    @if (option.Icon is { Length: > 0 } icon)
+                    {
+                        <img src="@Session.Data.AssetUrl(icon)" alt="@option.Name" loading="lazy">
+                    }
+                    else
+                    {
+                        <span class="initials">@Initials(option.Name)</span>
+                    }
 
-                @if (option.Cost is { } cost && cost != 0)
-                {
-                    <span class="cost @(cost < 0 ? "gain" : string.Empty)">@(cost > 0 ? "+" : string.Empty)@cost</span>
-                }
-            </button>
+                    @if (option.Cost is { } cost && cost != 0)
+                    {
+                        <span class="cost @(cost < 0 ? "gain" : string.Empty)">@(cost > 0 ? "+" : string.Empty)@cost</span>
+                    }
+                </button>
+            }
+        </div>
+
+        @*
+            Something that belongs beside the choices without being one of them — the nomad toggle
+            beside the authorities, which the game also keeps in a container of its own rather than
+            as a cell in its grid, so that it does not read as one more authority.
+        *@
+        @if (Aside is not null)
+        {
+            <div class="sem-grid-aside">@Aside</div>
         }
     </div>
 
     <div class="sem-detail">
         @if (Shown is { } shown)
         {
-            <h4>@shown.Name</h4>
-
             @*
                 Some options carry a picture as well as an icon — an origin has a whole scene, which
-                is most of how the game sells it. Shown at the top, where the game shows it.
+                is most of how the game sells it. Above the words and outside what scrolls: it is
+                what the option looks like, and scrolling past it to read about it loses the thing
+                being read about.
             *@
             @if (shown.Picture is { Length: > 0 } picture)
             {
                 <img class="sem-detail-picture" src="@Session.Data.AssetUrl(picture)" alt="" loading="lazy">
             }
 
-            @if (shown.Description is { Length: > 0 } description)
-            {
-                <div class="sem-detail-lore">@((MarkupString)description)</div>
-            }
+            <div class="body">
+                <h4>@shown.Name</h4>
 
-            <EffectsList Effects="@shown.Effects" />
+                @if (shown.Description is { Length: > 0 } description)
+                {
+                    <div class="sem-detail-lore">@((MarkupString)description)</div>
+                }
 
-            @if (!shown.Enabled && shown.Reasons.Count > 0)
-            {
-                <ul class="sem-blocked">
-                    @foreach (var reason in shown.Reasons)
-                    {
-                        <li>@reason</li>
-                    }
-                </ul>
-            }
+                <EffectsList Effects="@shown.Effects" />
+
+                @if (!shown.Enabled && shown.Reasons.Count > 0)
+                {
+                    <ul class="sem-blocked">
+                        @foreach (var reason in shown.Reasons)
+                        {
+                            <li>@reason</li>
+                        }
+                    </ul>
+                }
+            </div>
         }
         else
         {
-            <p class="sem-hint">@EmptyHint</p>
+            <div class="body">
+                <p class="sem-hint">@EmptyHint</p>
+            </div>
         }
     </div>
 </div>
@@ -102,6 +120,22 @@
     [Parameter]
     public string EmptyHint { get; set; } = "Hover an option to see what it does.";
 
+    /// <summary>Something to place beside the icons that is not one of the choices.</summary>
+    [Parameter]
+    public RenderFragment? Aside { get; set; }
+
+    /// <summary>
+    /// How tall the detail panel is.
+    /// </summary>
+    /// <remarks>
+    /// Fixed, and every caller gets the same unless it asks otherwise. Left to size itself the panel
+    /// grew and shrank as the pointer crossed the grid, which moved the icons out from under it —
+    /// what a reader was reaching for was not where they had seen it. Origins want more than the
+    /// rest, being the only choices whose detail carries a picture.
+    /// </remarks>
+    [Parameter]
+    public int DetailHeight { get; set; } = 320;
+
     /// <summary>
     /// The option the detail panel describes: whatever the pointer is over, or failing that the
     /// first one selected.
@@ -109,7 +143,10 @@
     private GridOption? Shown =>
         Options.FirstOrDefault(o => o.Key == _hovered) ?? Options.FirstOrDefault(o => o.Selected);
 
-    private string GridStyle => $"--sem-icon-size:{Math.Max(20, IconSize)}px";
+    // Both on the row rather than on the grid, because a custom property is inherited and the
+    // detail panel is the grid's sibling rather than its child.
+    private string RowStyle =>
+        $"--sem-icon-size:{Math.Max(20, IconSize)}px;--sem-detail-height:{Math.Max(80, DetailHeight)}px";
 
     private void Unhover(string key)
     {

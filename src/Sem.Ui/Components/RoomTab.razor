@@ -1,0 +1,127 @@
+@*
+    Where the empire's leader stands, and what its cities look like from that window.
+
+    The two belong together because the picture makes them one: the city is painted into the world
+    seen through the room's window, so choosing a city with no room in view would be choosing blind.
+    The game agrees — its own editor has them as two tabs of one panel, headed "City Graphics".
+
+    The scene at the top is every appearance choice at once. The room comes from the list below, the
+    city from the dropdown beside it, and the world from the homeworld the empire actually starts on,
+    so each is chosen against the thing it changes.
+*@
+
+<div class="sem-scene">
+    <RoomScene Room="@ChosenRoom" World="@Homeworld" City="@ChosenCity" Flag="@Design.Flag"
+               Portrait="@RulerPortrait"
+               Alt="@Session.Localizer.Name(Design.Name, Design.Key)" />
+</div>
+
+<div class="sem-field" style="margin-top:var(--gap)">
+    <label for="city-set">@Session.Localizer.Label("EMPIRE_CREATION_CITY_APPEARANCE", "City")</label>
+    <select id="city-set" @onchange="e => Session.Edit(d => d.CityGraphicalCulture = e.Value?.ToString())">
+        @foreach (var culture in CitySets)
+        {
+            <option value="@culture.Key" selected="@(culture.Key == Design.CityGraphicalCulture)">
+                @Localizer.Prettify(culture.Key)
+            </option>
+        }
+    </select>
+</div>
+
+@*
+    Two lists, deliberately apart. The game's own designer offers the first; the second are rooms it
+    hands out during play, to a fallen empire or a galactic emperor or a world that never left its own
+    atmosphere. A design may name any of them and the game draws it — one of the game's own empires
+    sits in an ancient brick room this way — but choosing one is stepping outside what the designer
+    offers, and should feel like it.
+*@
+<label>@Session.Localizer.Label("EMPIRE_CREATION_ROOM_APPEARANCE", "Room")</label>
+
+<p class="sem-hint">The game gives these no names, so they are shown as they look.</p>
+
+@Rooms(Offered)
+
+@if (Unlisted.Count > 0)
+{
+    <h5 class="sem-subhead">Rooms the game assigns rather than offers</h5>
+    <p class="sem-hint">
+        Not in the game's own designer. A design may still hold one, as its own empires do.
+    </p>
+
+    @Rooms(Unlisted)
+}
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    private EmpireDesign Design => Session.Current!;
+
+    private readonly RequirementEvaluator _evaluator = new();
+
+    /// <summary>The rooms the game's own designer lists.</summary>
+    private IReadOnlyList<RoomDefinition> Offered =>
+        [.. Session.Data.Database.Rooms.Where(r => r.IsOffered)];
+
+    /// <summary>
+    /// The rest: rooms the game gives out during play rather than at design time.
+    /// </summary>
+    /// <remarks>
+    /// Their conditions in the room selector are things a designer cannot answer — a fallen empire,
+    /// a galactic emperor, a pre-FTL world — and some of them, the pre-FTL rooms among them, name a
+    /// country type a player can never be. That does not put them out of reach: the selector decides
+    /// what to pick when a design names nothing, and a design that names a room gets that room.
+    /// </remarks>
+    private IReadOnlyList<RoomDefinition> Unlisted =>
+        [.. Session.Data.Database.Rooms.Where(r => !r.IsOffered)];
+
+    private RenderFragment Rooms(IReadOnlyList<RoomDefinition> rooms) =>
+        @<div class="sem-thumbs">
+            @foreach (var room in rooms)
+            {
+                <button type="button"
+                        class="sem-thumb-option @(room.Key == Design.Room ? "selected" : null)"
+                        @onclick="() => Session.Edit(d => d.Room = room.Key)">
+                    @if (room.Image is not null)
+                    {
+                        <img class="sem-thumb" src="@Session.Data.AssetUrl(room.Image)" alt="@room.Key" loading="lazy" />
+                    }
+                    <span class="caption">@Localizer.Prettify(room.Key.Replace("_room", string.Empty, StringComparison.Ordinal))</span>
+                </button>
+            }
+        </div>;
+
+    /// <summary>
+    /// The sets that dress a city, which is not the same list as the ones that build ships.
+    /// </summary>
+    /// <remarks>
+    /// Solarpunk and Wilderness model no ships at all and belong only here; several shipsets have no
+    /// city artwork and belong only in the other list.
+    /// </remarks>
+    private IEnumerable<GraphicalCultureDefinition> CitySets =>
+        Session.Data.Database.GraphicalCultures
+            .Where(c => Session.Rules.Database.GraphicalCultures.Contains(c))
+            .Where(c => _evaluator.IsSatisfied(c.Selectable, Session.Context!))
+            .Where(c => c.HasCityArt)
+            .OrderBy(c => c.Key, StringComparer.Ordinal);
+
+    /// <summary>The pieces of the scene at the top: what has been chosen, drawn together.</summary>
+    private RoomDefinition? ChosenRoom =>
+        Session.Data.Database.Rooms.FirstOrDefault(r => r.Key == Design.Room);
+
+    private GraphicalCultureDefinition? ChosenCity =>
+        Session.Data.Database.GraphicalCultures
+            .FirstOrDefault(c => c.Key == Design.CityGraphicalCulture);
+
+    /// <summary>
+    /// The world the scene looks out on: where the empire actually begins, which an origin can
+    /// decide for itself whatever the homeworld picker was left saying.
+    /// </summary>
+    private PlanetClassDefinition? Homeworld =>
+        Session.Data.Database.PlanetClasses
+            .FirstOrDefault(p => p.Key == Session.Context!.EffectivePlanetClass);
+
+    private string? RulerPortrait =>
+        PortraitArtwork.For(Session.Data.Database, Design.Ruler.Portrait, Design.Ruler.Gender)
+        ?? PortraitArtwork.For(Session.Data.Database, Design.Species.Portrait, Design.Species.Gender);
+}

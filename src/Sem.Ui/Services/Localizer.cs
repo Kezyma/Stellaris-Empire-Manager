@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using Sem.Designs;
+using Sem.GameData;
 using Sem.Rules;
 
 namespace Sem.Ui.Services;
@@ -19,7 +20,8 @@ public sealed partial class Localizer(
     IReadOnlyDictionary<string, string> entries,
     IReadOnlyDictionary<string, string>? textIcons = null,
     Func<string, string>? assetUrl = null,
-    IReadOnlyDictionary<string, double>? scriptedValues = null)
+    IReadOnlyDictionary<string, double>? scriptedValues = null,
+    IReadOnlyDictionary<string, string>? scriptedText = null)
 {
     /// <summary>How deep a chain of variables standing for other entries is followed.</summary>
     private const int MaxSubstitutionDepth = 8;
@@ -29,6 +31,10 @@ public sealed partial class Localizer(
     /// <summary>The numbers the script names rather than writes.</summary>
     private readonly IReadOnlyDictionary<string, double> _scriptedValues =
         scriptedValues ?? new Dictionary<string, double>();
+
+    /// <summary>What each phrase the text calls into script for falls back to, as a key.</summary>
+    private readonly IReadOnlyDictionary<string, string> _scriptedText =
+        scriptedText ?? new Dictionary<string, string>();
 
     /// <summary>Where each inline picture lives, by the code that stands for it.</summary>
     private readonly IReadOnlyDictionary<string, string> _textIcons =
@@ -68,6 +74,16 @@ public sealed partial class Localizer(
     public string Label(string key, string fallback) => Text(key, fallback);
 
     /// <summary>
+    /// A heading in the game's own words.
+    /// </summary>
+    /// <remarks>
+    /// Some of the game's labels carry their colon, because it uses them mid-sentence — "Civics:" is
+    /// one. A heading has its own punctuation, so a trailing colon is dropped rather than a separate
+    /// English word being invented for it.
+    /// </remarks>
+    public string Heading(string key, string fallback) => Label(key, fallback).TrimEnd(':', ' ');
+
+    /// <summary>
     /// One of the counters the designer keeps, as the game words it.
     /// </summary>
     /// <remarks>
@@ -76,6 +92,25 @@ public sealed partial class Localizer(
     /// </remarks>
     public string Counter(string key, string fallback, int points) =>
         Text(key, fallback).Replace("$POINTS|H$", points.ToString(CultureInfo.CurrentCulture), StringComparison.Ordinal);
+
+    /// <summary>
+    /// A counter written as a spend against an allowance rather than as a number left.
+    /// </summary>
+    /// <remarks>
+    /// The game words some of these as a sentence with the figure inside — <c>TRAIT_POINTS</c> is
+    /// "Points: 2" — and others as a bare noun, since it puts the figure elsewhere. Both are wanted
+    /// here as one line, so a sentence has the reading substituted into it and a noun has it added
+    /// after a colon. Only punctuation is ever added, so nothing is written in English that the
+    /// game did not write.
+    /// </remarks>
+    public string Gauge(string key, string fallback, string reading)
+    {
+        var text = Text(key, fallback);
+
+        return text.Contains("$POINTS|H$", StringComparison.Ordinal)
+            ? text.Replace("$POINTS|H$", reading, StringComparison.Ordinal)
+            : $"{text.TrimEnd(':', ' ')}: {reading}";
+    }
 
     /// <summary>
     /// The plain text for a key, with variables resolved and markup stripped. Falls back to the
@@ -93,7 +128,7 @@ public sealed partial class Localizer(
             return fallback ?? Prettify(key);
         }
 
-        return StripMarkup(ScriptedToken().Replace(ResolveConcepts(Substitute(value, 0)), string.Empty));
+        return StripMarkup(ResolveScripted(ResolveConcepts(Substitute(value, 0))));
     }
 
     /// <summary>
@@ -143,17 +178,58 @@ public sealed partial class Localizer(
     /// name.
     /// </para>
     /// </remarks>
-    public string Name(LocRef? name, string? fallback = null)
+    /// <param name="gender">
+    /// The gender of whoever is being named, where the caller knows it. Some name parts are written
+    /// in two forms and the game picks between them; nothing else in a name depends on it.
+    /// </param>
+    public string Name(LocRef? name, string? fallback = null, string? gender = null)
     {
         if (name is null || name.IsEmpty)
         {
             return fallback ?? string.Empty;
         }
 
-        return Name(name, 0) is { Length: > 0 } text ? text : fallback ?? string.Empty;
+        // Applied over the whole answer as well as inside it, because a name that is one plain key
+        // rather than two parts can still resolve to text written in two forms.
+        return LeaderName.Variant(Name(name, 0, gender), gender) is { Length: > 0 } text
+            ? text
+            : fallback ?? string.Empty;
     }
 
-    private string Name(LocRef name, int depth)
+    /// <summary>
+    /// A ruler's name as it should be read, whichever way the design holds it.
+    /// </summary>
+    /// <remarks>
+    /// One place rather than four. A design usually keeps the whole name under <c>full_names</c>,
+    /// but one copied out of a running game keeps it in two parts instead, and half the screens that
+    /// showed a ruler had quietly forgotten the second case. The gender is passed because some name
+    /// parts are written in two forms.
+    /// </remarks>
+    public string RulerName(RulerDesign? ruler, string? fallback = null)
+    {
+        if (ruler is null)
+        {
+            return fallback ?? string.Empty;
+        }
+
+        var names = ruler.Name;
+
+        if (Name(names.FullNames, null, ruler.Gender) is { Length: > 0 } whole)
+        {
+            return whole;
+        }
+
+        var parts = new[] { names.FirstName, names.SecondName }
+            .Select(part => Name(part, null, ruler.Gender))
+            .Where(part => part.Length > 0)
+            .ToList();
+
+        return parts.Count > 0
+            ? LeaderName.Compose(parts[0], parts.Count > 1 ? parts[1] : null, ruler.Gender)
+            : fallback ?? string.Empty;
+    }
+
+    private string Name(LocRef name, int depth, string? gender = null)
     {
         if (name.IsLiteral || depth >= MaxSubstitutionDepth)
         {
@@ -165,11 +241,14 @@ public sealed partial class Localizer(
         switch (name.Key)
         {
             case AdjWrapper:
-            case LeaderOnePart:
                 return Words(name, depth, "1");
 
+            // Both leader forms carry a given name and a family name, and both mean the whole name:
+            // %LEADER_1% over Lucius and Salazar is Lucius Salazar. Reading only the first of them,
+            // which is what happened before, dropped twelve rulers' surnames.
+            case LeaderOnePart:
             case LeaderTwoParts:
-                return Words(name, depth, "1", "2");
+                return LeaderName.Compose(Part(name, "1", depth), Part(name, "2", depth), gender);
 
             case LocRef.AdjectiveTemplate:
                 // "Oxanalytor" becomes "Oxanalytoran", and whatever follows it follows it: the
@@ -216,6 +295,34 @@ public sealed partial class Localizer(
     /// <summary>The named variables of a name, in order, as words with spaces between them.</summary>
     private string Words(LocRef name, int depth, params string[] keys) =>
         Join([.. keys.Select(k => Variable(name, k, depth))]);
+
+    /// <summary>
+    /// One part of a leader's name, still carrying its hole and its forms.
+    /// </summary>
+    /// <remarks>
+    /// A part is not a name and must not be tidied into one. Half of these are frames — a family
+    /// name written <c>"$1$ Aburia"</c> to be wrapped round a given name — and the ordinary path
+    /// deletes a hole nothing filled, which would throw away the very thing the parts are joined by.
+    /// A part that carries variables of its own is not a leaf and goes back through the ordinary
+    /// path, which no name list does today but nothing prevents.
+    /// </remarks>
+    private string Part(LocRef name, string key, int depth)
+    {
+        if (name.Variables.FirstOrDefault(v => string.Equals(v.Key, key, StringComparison.OrdinalIgnoreCase))
+                ?.Value is not { } value)
+        {
+            return string.Empty;
+        }
+
+        if (value.IsLiteral || value.Variables.Count > 0 || depth + 1 >= MaxSubstitutionDepth)
+        {
+            return Name(value, depth + 1);
+        }
+
+        return _entries.TryGetValue(value.Key, out var template)
+            ? StripMarkup(Substitute(template, 0))
+            : Prettify(value.Key);
+    }
 
     /// <summary>One variable of a name, resolved, or nothing where the name has no such variable.</summary>
     private string Variable(LocRef name, string key, int depth) =>
@@ -381,8 +488,7 @@ public sealed partial class Localizer(
     /// <summary>Converts the game's markup into HTML, escaping everything else.</summary>
     private string ToHtml(string value)
     {
-        value = ResolveConcepts(value);
-        value = ScriptedToken().Replace(value, string.Empty);
+        value = ResolveScripted(ResolveConcepts(value));
 
         var builder = new StringBuilder(value.Length + 32);
         var openSpans = 0;
@@ -474,20 +580,37 @@ public sealed partial class Localizer(
     /// Written as <c>['concept_pop']</c>, or with the text to show given after the concept, as in
     /// <c>['concept_habitat_1', $tech_habitat_1$]</c>. The link itself has nowhere to go in a
     /// designer, so only the words survive.
+    ///
+    /// A link may also name what it points at by scope — <c>['building:building_ranger_lodge']</c> —
+    /// and then it is the thing after the colon that has the words. Insisting on a bare name left
+    /// sixty-nine civic and origin tooltips listing their buildings as raw script.
     /// </remarks>
-    private string ResolveConcepts(string value) =>
-        !value.Contains("['", StringComparison.Ordinal)
-            ? value
-            : ConceptLink().Replace(value, match =>
-            {
-                if (match.Groups[2].Success && match.Groups[2].Value.Trim() is { Length: > 0 } shown)
-                {
-                    return shown;
-                }
+    private string ResolveConcepts(string value, int depth = 0)
+    {
+        if (!value.Contains('[', StringComparison.Ordinal) || depth >= MaxSubstitutionDepth)
+        {
+            return value;
+        }
 
-                var key = match.Groups[1].Value;
-                return _entries.TryGetValue(key, out var text) ? text : Prettify(key);
-            });
+        return ConceptLink().Replace(value, match =>
+        {
+            if (match.Groups[2].Success && match.Groups[2].Value.Trim() is { Length: > 0 } shown)
+            {
+                return shown;
+            }
+
+            var key = match.Groups[1].Value;
+
+            // What a link resolves to is text like any other and may name further entries of its
+            // own, so it goes back through the same passes. Returned as it stood, which is what
+            // happened before, a concept whose text is a single variable arrived after substitution
+            // had already run and stayed a variable: "District Specializations" read as
+            // $planet_zones$ in seventy of the game's civic tooltips.
+            return _entries.TryGetValue(key, out var text)
+                ? ResolveConcepts(Substitute(text, depth + 1), depth + 1)
+                : Prettify(key);
+        });
+    }
 
     /// <summary>
     /// A variable standing for another entry, or — with a leading <c>@</c> — for a number the script
@@ -501,13 +624,54 @@ public sealed partial class Localizer(
     [GeneratedRegex(@"\$(@?[A-Za-z0-9_][A-Za-z0-9_.]*)(?:\|([^$]*))?\$")]
     private static partial Regex VariableReference();
 
-    [GeneratedRegex(@"\['([A-Za-z0-9_]+)'(?:\s*,\s*([^\]]*))?\]")]
+    /// <summary>
+    /// A link to the game's glossary, in every spacing its own text uses.
+    /// </summary>
+    /// <remarks>
+    /// The whitespace is allowed because the game's files are not consistent: nearly every link is
+    /// written <c>['concept_pop']</c>, but the riftworld origin has <c>[ 'concept_astral_rift',…]</c>
+    /// and the fruitful one has <c>['concept_seed_bombing' ]</c>. Those are two typos in the game's
+    /// text, and they were the last two tooltips in the designer still showing raw script.
+    /// </remarks>
+    [GeneratedRegex(@"\[\s*'(?:[a-z_]+:)?([A-Za-z0-9_]+)'\s*(?:,\s*([^\]]*?))?\s*\]")]
     private static partial Regex ConceptLink();
 
     /// <summary>
-    /// A value only a running game could supply, such as the name of a faction that does not exist
-    /// while an empire is being designed. Removed rather than shown.
+    /// Replaces each call into the game's script with what it falls back to.
     /// </summary>
-    [GeneratedRegex(@"\[[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)+\]")]
+    /// <remarks>
+    /// A scripted phrase is a list of conditions and a default, and every condition asks about a
+    /// game in progress — so at design time the default is the answer, and it is the same answer
+    /// the game would give. One with no default, or one this installation does not declare, is
+    /// removed as it was before: showing the call itself would be worse than showing nothing.
+    /// </remarks>
+    private string ResolveScripted(string value, int depth = 0)
+    {
+        if (depth >= MaxSubstitutionDepth)
+        {
+            // A phrase that resolves to itself would otherwise never finish.
+            return ScriptedToken().Replace(value, string.Empty);
+        }
+
+        return ScriptedToken().Replace(
+            value,
+            match => _scriptedText.GetValueOrDefault(match.Groups[1].Value) is { Length: > 0 } key
+                     && _entries.TryGetValue(key, out var text)
+                ? ResolveScripted(ResolveConcepts(Substitute(text, 0)), depth + 1)
+                : string.Empty);
+    }
+
+    /// <summary>
+    /// A value only a running game could supply, such as the name of a faction that does not exist
+    /// while an empire is being designed.
+    /// </summary>
+    /// <remarks>
+    /// The scope in front is optional, and insisting on one was a real fault: the game writes both
+    /// <c>[Root.GetName]</c> and a bare <c>[GetPriest]</c>, and only the first was ever matched. The
+    /// bare form is the commoner of the two in the text a designer shows — four traits announced
+    /// themselves as <c>[triggered_imperial_name]</c> — even though every one of them was in the
+    /// table of answers all along.
+    /// </remarks>
+    [GeneratedRegex(@"\[(?:[A-Za-z][A-Za-z0-9_]*\.)*([A-Za-z][A-Za-z0-9_]*)\]")]
     private static partial Regex ScriptedToken();
 }

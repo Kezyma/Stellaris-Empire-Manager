@@ -32,7 +32,8 @@ public sealed class DesignSession
             data.Localisation,
             data.Database.TextIcons,
             data.AssetUrl,
-            data.Database.ScriptedValues);
+            data.Database.ScriptedValues,
+            data.Database.ScriptedText);
         Reasons = new ReasonWriter(Localizer);
         Rules = new EmpireRules(data.Database);
         Modifiers = new ModifierFormatter(Localizer, data.Database);

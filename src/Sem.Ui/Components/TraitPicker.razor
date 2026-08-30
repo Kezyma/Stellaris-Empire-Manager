@@ -3,12 +3,15 @@
     on the right, and what the pointer is over described below. Clicking on the right removes.
 
     Two allowances are spent at once — points, which drawbacks give back, and a limit on how many
-    traits may be held at all — so both counters sit above.
+    traits may be held at all — so both counters sit above, side by side across the panel.
 *@
 
-<div class="sem-row" style="gap:20px">
-    <BudgetBar Key="POINTS_LEFT" Fallback="Trait Points Left: $POINTS|H$" Value="@Budget.Points" />
-    <BudgetBar Key="PICKS_LEFT" Fallback="Trait Picks Left: $POINTS|H$" Value="@Budget.Picks" />
+<div class="sem-budgets">
+    <BudgetBar Key="POINTS_LEFT" Fallback="Trait Points Left: $POINTS|H$"
+               Label="TRAIT_POINTS" LabelFallback="Points: $POINTS|H$" Value="@Budget.Points" />
+
+    <BudgetBar Key="PICKS_LEFT" Fallback="Trait Picks Left: $POINTS|H$"
+               Label="TRAITS" LabelFallback="Traits" Value="@Budget.Picks" />
 </div>
 
 @*
@@ -161,10 +164,17 @@
     /// The budget reasons, which say only that a trait cannot be afforded right now.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Kept apart from the rest because they are temporary: clearing another trait or choosing a
     /// different civic makes them go away, where a species class never will. They also do not stop
     /// a trait being taken — a player building a species works towards a total rather than sideways
     /// up to it, and being unable to try the expensive trait first is worse than briefly overspending.
+    /// </para>
+    /// <para>
+    /// So they are not written out either. "Not enough trait points" told the player something the
+    /// two counters above already say, and said it in the box that changes height as the pointer
+    /// moves. The trait is still marked as overspending, and the counters still go red.
+    /// </para>
     /// </remarks>
     private static readonly string[] BudgetReasons = [RuleReasons.NotEnoughPoints, RuleReasons.NoPicksLeft];
 
@@ -175,7 +185,7 @@
         var definition = ByKey.GetValueOrDefault(state.Key);
         var forcedBy = ForcedBy(state.Key);
         var forced = forcedBy is not null;
-        var reasons = Session.Reasons.Describe(state.Reasons).ToList();
+        var reasons = Session.Reasons.Describe([.. state.Reasons.Where(r => !IsBudget(r))]).ToList();
 
         if (forcedBy is not null)
         {

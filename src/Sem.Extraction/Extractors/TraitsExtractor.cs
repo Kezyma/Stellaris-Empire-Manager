@@ -27,6 +27,7 @@ internal static class TraitsExtractor
         AssetCatalog assets)
     {
         var traits = new List<TraitDefinition>();
+        var colors = TraitIconComposer.ReadNamedColors(loader);
 
         foreach (var entry in loader.LoadDefinitions("common/traits"))
         {
@@ -59,17 +60,19 @@ internal static class TraitsExtractor
                 // displays are the separate localized_tags field.
                 Effects = EffectsReader.Read(body, loader, requirements, tagsKey: "localized_tags"),
 
-                // A trait that borrows another's artwork says so outright, and fifty-three do —
-                // Jinxed wears trait_jinxed, the Lithoid traits wear their organic counterparts'.
-                // Most say nothing and follow the naming convention instead; what does neither
-                // falls back to the game's own unknown-trait icon.
-                Icon = assets.RegisterFirst(
-                    [
-                        .. Declared(body),
-                        $"gfx/interface/icons/traits/{entry.Key}.dds",
-                        "gfx/interface/icons/traits/trait_unknown.dds",
-                    ],
-                    $"icons/traits/{entry.Key}.png"),
+                // A leader trait describes its icon rather than naming one, and is built from that
+                // description. The species traits name theirs outright — fifty-three borrow
+                // another's, Jinxed wearing trait_jinxed and the Lithoid traits their organic
+                // counterparts' — and most say nothing and follow the naming convention instead.
+                // What does none of these falls back to the game's own unknown-trait icon.
+                Icon = TraitIconComposer.Compose(body, entry.Key, loader, assets, colors)
+                    ?? assets.RegisterFirst(
+                        [
+                            .. Declared(body),
+                            $"gfx/interface/icons/traits/{entry.Key}.dds",
+                            "gfx/interface/icons/traits/trait_unknown.dds",
+                        ],
+                        $"icons/traits/{entry.Key}.png"),
             });
         }
 

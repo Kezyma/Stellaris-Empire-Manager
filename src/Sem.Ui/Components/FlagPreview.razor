@@ -1,6 +1,16 @@
 @*
     An empire flag, drawn the way the game draws it.
 
+    Three pieces, not one. An ornamental frame sets the size; the coloured field is inset inside it
+    under a mask that rounds its corners; and the emblem is inset smaller still, to about three
+    quarters of the field. Drawn edge to edge with the emblem stretched over all of it, which is what
+    this did before, every emblem came out a third too large and no flag had a border at all.
+
+    The proportions are not fixed, so they are read rather than assumed: the emblem is seven tenths
+    of the field on the largest flag and four fifths on the smallest, which is how a small one stays
+    legible. This picks whichever of the game's five sizes is closest to the size it is being drawn
+    at, and lays everything out as a fraction of that frame.
+
     A background is not a picture and not a shade: it is three separate shapes packed into one file's
     red, green and blue channels, each multiplied by one of the chosen colours and the three added
     together. The horizontal background, for instance, is six bands — the three colours and the three
@@ -12,17 +22,34 @@
 *@
 
 <div class="sem-flag @Class" title="@Title">
-    <div class="field">
-        @foreach (var (channel, color) in Layers)
-        {
-            <div class="layer"
-                 style="background:@color;-webkit-mask-image:url('@channel');mask-image:url('@channel');-webkit-mask-size:100% 100%;mask-size:100% 100%;mask-mode:alpha"></div>
-        }
+    @*
+        The cut covers the whole frame and carries the game's own mask, which is what rounds the
+        field's corners. It has to sit in the frame's coordinates rather than the field's, because
+        that is the space the mask is drawn in — it cuts a rounded square noticeably smaller than the
+        field rectangle, and putting it on the field itself would scale it wrongly.
+    *@
+    <div class="cut" style="@CutStyle">
+        <div class="field" style="@FieldStyle">
+            @foreach (var (channel, color) in Layers)
+            {
+                <div class="layer"
+                     style="background:@color;-webkit-mask-image:url('@channel');mask-image:url('@channel');-webkit-mask-size:100% 100%;mask-size:100% 100%;mask-mode:alpha"></div>
+            }
+        </div>
     </div>
 
-    @if (EmblemUrl is { Length: > 0 })
+    @if (!HideEmblem && EmblemUrl is { Length: > 0 })
     {
-        <img class="emblem" src="@EmblemUrl" alt="" loading="lazy">
+        <img class="emblem" src="@EmblemUrl" style="@EmblemStyle" alt="" loading="lazy">
+    }
+
+    @*
+        Last, because it is a border drawn over the edges of what it frames. Left out when the data
+        has no frames in it, which leaves the flag as it was drawn before rather than as nothing.
+    *@
+    @if (Frame?.FrameImage is { Length: > 0 } border)
+    {
+        <img class="border" src="@Session.Data.AssetUrl(border)" alt="" loading="lazy">
     }
 </div>
 
@@ -41,6 +68,100 @@
     /// <summary>Tooltip text.</summary>
     [Parameter]
     public string? Title { get; set; }
+
+    /// <summary>
+    /// A pattern to draw instead of the flag's own, and whether to leave the emblem off.
+    /// </summary>
+    /// <remarks>
+    /// For showing what a pattern would look like. A pattern cannot be shown as a picture of itself
+    /// — the file is three shapes packed into a red, a green and a blue channel, and looks like
+    /// nothing at all — so it is previewed by drawing the flag it would make, in the empire's own
+    /// colours. Which is what the game's own pattern list shows too.
+    /// </remarks>
+    [Parameter]
+    public string? BackgroundFile { get; set; }
+
+    /// <summary>Whether to leave the emblem off, so a pattern is shown on its own.</summary>
+    [Parameter]
+    public bool HideEmblem { get; set; }
+
+    /// <summary>
+    /// How wide this flag is drawn, so the closest of the game's sizes can be chosen.
+    /// </summary>
+    /// <remarks>
+    /// The class names carry it because the stylesheet does: a flag is only ever drawn at one of the
+    /// four named sizes, or at whatever a container gives it, and a component cannot measure itself
+    /// without reaching into the browser.
+    /// </remarks>
+    private static readonly Dictionary<string, double> Sizes = new(StringComparer.Ordinal)
+    {
+        ["tiny"] = 24,
+        ["small"] = 44,
+        ["medium"] = 72,
+        ["large"] = 160,
+    };
+
+    /// <summary>What a flag with no size class is assumed to be, which is the room's banner.</summary>
+    private const double DefaultSize = 128;
+
+    /// <summary>
+    /// The game's frame nearest the size this is drawn at.
+    /// </summary>
+    /// <remarks>
+    /// Nearest by the field's width rather than the frame's, since the field is the part whose size
+    /// a caller is really asking for. Null where the data carries no frames — an older extraction —
+    /// and everything then falls back to the flat square it used to be.
+    /// </remarks>
+    private FlagFrameDefinition? Frame
+    {
+        get
+        {
+            var frames = Session.Data.Database.FlagFrames;
+
+            if (frames.Count == 0)
+            {
+                return null;
+            }
+
+            var wanted = Class is { Length: > 0 } name && Sizes.TryGetValue(name, out var size)
+                ? size
+                : DefaultSize;
+
+            return frames.MinBy(f => Math.Abs(f.BackgroundSize - wanted));
+        }
+    }
+
+    /// <summary>Where the coloured field sits inside the frame, as fractions of it.</summary>
+    private string? FieldStyle => Frame is { FrameSize: > 0 } frame
+        ? Inset(frame.BackgroundOffset, frame.BackgroundSize, frame.FrameSize)
+        : null;
+
+    /// <summary>Where the emblem sits inside the frame, as fractions of it.</summary>
+    private string? EmblemStyle => Frame is { FrameSize: > 0 } frame
+        ? Inset(frame.EmblemOffset, frame.EmblemSize, frame.FrameSize)
+        : null;
+
+    /// <summary>The shape the field is cut to, drawn over the whole frame.</summary>
+    private string? CutStyle => Frame?.MaskImage is { Length: > 0 } mask
+        ? $"-webkit-mask-image:url('{Session.Data.AssetUrl(mask)}');" +
+          $"mask-image:url('{Session.Data.AssetUrl(mask)}');" +
+          "-webkit-mask-size:100% 100%;mask-size:100% 100%;mask-mode:alpha"
+        : null;
+
+    /// <summary>
+    /// One inset piece of a flag, positioned and sized as a fraction of the whole.
+    /// </summary>
+    /// <remarks>
+    /// Fractions rather than pixels so a flag keeps its proportions at whatever size it is drawn,
+    /// which is the same reason the room scene places everything this way. The offsets are square —
+    /// every one of the game's flags is — so one number does for both axes.
+    /// </remarks>
+    private static string Inset(double offset, double size, double frame) =>
+        $"left:{Percent(offset / frame)};top:{Percent(offset / frame)};" +
+        $"width:{Percent(size / frame)};height:{Percent(size / frame)}";
+
+    private static string Percent(double fraction) =>
+        (fraction * 100).ToString("0.####", System.Globalization.CultureInfo.InvariantCulture) + "%";
 
     private IReadOnlyDictionary<string, FlagColorDefinition> Palette =>
         _palette ??= Session.Data.Database.FlagColors.ToDictionary(c => c.Key, StringComparer.Ordinal);
@@ -71,7 +192,7 @@
     private string? MaskUrl(string channel)
     {
         if (Flag.Background.Category is not { Length: > 0 } category ||
-            Flag.Background.File is not { Length: > 0 } file)
+            (BackgroundFile ?? Flag.Background.File) is not { Length: > 0 } file)
         {
             return null;
         }

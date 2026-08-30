@@ -8,7 +8,8 @@
     visibly rules out the three beneath it. Gestalt belongs to no argument and stands apart.
 *@
 
-<BudgetBar Key="POINTS_LEFT_ETHICS" Fallback="Ethic Points Left: $POINTS|H$" Value="@Session.Rules.GetEthicsBudget(Context)" />
+<BudgetBar Key="POINTS_LEFT_ETHICS" Fallback="Ethic Points Left: $POINTS|H$"
+           Label="ETHICS" LabelFallback="Ethics" Value="@Session.Rules.GetEthicsBudget(Context)" />
 
 <div class="sem-grid-and-detail">
     <div class="sem-ethics-grid">
@@ -38,31 +39,33 @@
     </div>
 
     <div class="sem-detail">
-        @if (Described is { } shown)
-        {
-            <h4>@shown.Name</h4>
-
-            @if (shown.Description is { Length: > 0 } description)
+        <div class="body">
+            @if (Described is { } shown)
             {
-                <div class="sem-detail-lore">@((MarkupString)description)</div>
+                <h4>@shown.Name</h4>
+
+                @if (shown.Description is { Length: > 0 } description)
+                {
+                    <div class="sem-detail-lore">@((MarkupString)description)</div>
+                }
+
+                <EffectsList Effects="@shown.Effects" />
+
+                @if (!shown.Enabled && shown.Reasons.Count > 0)
+                {
+                    <ul class="sem-blocked">
+                        @foreach (var reason in shown.Reasons)
+                        {
+                            <li>@reason</li>
+                        }
+                    </ul>
+                }
             }
-
-            <EffectsList Effects="@shown.Effects" />
-
-            @if (!shown.Enabled && shown.Reasons.Count > 0)
+            else
             {
-                <ul class="sem-blocked">
-                    @foreach (var reason in shown.Reasons)
-                    {
-                        <li>@reason</li>
-                    }
-                </ul>
+                <p class="sem-hint">Hover a conviction to see what it believes and what it grants.</p>
             }
-        }
-        else
-        {
-            <p class="sem-hint">Hover a conviction to see what it believes and what it grants.</p>
-        }
+        </div>
     </div>
 </div>
 

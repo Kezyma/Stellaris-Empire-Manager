@@ -59,21 +59,31 @@ internal static class MetadataExtractor
     /// <remarks>
     /// <para>
     /// The game keeps these as sprites named after the pack with its spaces and punctuation taken
-    /// out — <c>GFX_themachineage</c> for The Machine Age — which covers three packs in four.
+    /// out — <c>GFX_themachineage</c> for The Machine Age. Most declare that name outright; the two
+    /// species packs that came before the rest declare a matched pair instead,
+    /// <c>GFX_plantoidsspeciespack_small</c> and <c>_big</c>, and looking only for the bare name left
+    /// Plantoids without a badge although it decides twenty-seven of the designer's options.
     /// </para>
     /// <para>
-    /// The rest are the old portrait packs, which predate the icon set. The game gives them no icon
-    /// either, and the store thumbnail in each pack's folder is a wide banner rather than a badge,
-    /// so those go without and are shown by name instead.
+    /// What is left after all three are tried is the old portrait packs, which predate the icon set.
+    /// The game gives them no icon either, and the store thumbnail in each pack's folder is a wide
+    /// banner rather than a badge, so those go without and are shown by name instead.
     /// </para>
     /// </remarks>
     private static string? PackIcon(DlcDefinition pack, AssetCatalog assets)
     {
-        var sprite = "GFX_" + new string([.. pack.Name.Where(char.IsLetterOrDigit)]).ToLowerInvariant();
+        var stem = "GFX_" + new string([.. pack.Name.Where(char.IsLetterOrDigit)]).ToLowerInvariant();
 
-        return assets.Sprites.Resolve(sprite) is null
-            ? null
-            : assets.RegisterSprite(sprite, $"icons/dlc/{pack.Folder}.png", maxDimension: 64);
+        // The small one first: this is drawn at the size of a letter, and the big one is a banner.
+        foreach (var sprite in new[] { stem, $"{stem}_small", $"{stem}_big" })
+        {
+            if (assets.Sprites.Resolve(sprite) is not null)
+            {
+                return assets.RegisterSprite(sprite, $"icons/dlc/{pack.Folder}.png", maxDimension: 64);
+            }
+        }
+
+        return null;
     }
 
     /// <summary>Reads the values from the game's defines that constrain empire creation.</summary>
@@ -99,6 +109,10 @@ internal static class MetadataExtractor
             CivicPoints = FindInt(defines, "GOVERNMENT_CIVIC_POINTS_BASE") ?? 2,
             DefaultCityPreviewPlanetClass =
                 Find(defines, "CITY_SELECTION_DEFAULT_PLANET_CLASS")?.Trim('"'),
+
+            // The game says outright which of the six city bands its own designer draws, and marks
+            // the line "Shown in empire designer". Four: everything but the ecumenopolis.
+            CityPopLevel = FindInt(defines, "DEFAULT_CITY_POP_LEVEL") ?? 4,
         };
     }
 

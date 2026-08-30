@@ -49,9 +49,9 @@ internal static class CosmeticsExtractor
                 continue;
             }
 
-            // Rooms are 952 by 340 and the picker shows them at about a third of that, so half size
-            // is still sharper than anything the interface will draw.
-            if (assets.Register($"gfx/portraits/city_sets/{key}.dds", $"rooms/{key}.png", maxDimension: 480)
+            // Rooms are 952 by 340. The picker shows them small, but the empire preview shows one at
+            // the width of a panel, so they are kept at three quarters rather than a third.
+            if (assets.Register($"gfx/portraits/city_sets/{key}.dds", $"rooms/{key}.png", maxDimension: 720)
                 is { } image)
             {
                 results.Add(new RoomDefinition(key)
@@ -141,6 +141,7 @@ internal static class CosmeticsExtractor
         AssetCatalog assets)
     {
         var results = new List<GraphicalCultureDefinition>();
+        var bands = CityBands(loader);
 
         foreach (var entry in loader.LoadDefinitions("common/graphical_culture"))
         {
@@ -154,13 +155,189 @@ internal static class CosmeticsExtractor
                     : new AlwaysRequirement(true),
                 Fallback = body.GetString("fallback"),
 
-                // A set with no city artwork can still dress ships, but cannot be a city choice.
+                // A set with no city artwork can still dress ships, but cannot be a city choice —
+                // and asking for the picture anyway is what put two dozen entries in the report of
+                // images the installation is missing.
                 HasCityArt = loader.Content.Contains(citySource),
-                CityPreview = assets.Register(citySource, $"cities/{entry.Key}.png", maxDimension: 400),
+                CityPreview = loader.Content.Contains(citySource)
+                    ? assets.Register(citySource, $"cities/{entry.Key}.png", maxDimension: 400)
+                    : null,
+                CityLayers = CityLayers(entry.Key, bands, loader, assets),
+
+                // The first kind a set builds is what the game's own browser sorts it by. A set
+                // that names none builds nothing and flies its fallback's ships.
+                ShipCategory = body.GetBlock("ship_kinds")?.Nodes
+                    .Select(n => n.ScalarValue)
+                    .FirstOrDefault(v => v is { Length: > 0 }),
             });
         }
 
         return results;
+    }
+
+    /// <summary>
+    /// Reads the kinds of leader the game defines.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A class names its own display text. Its icon is one slice of a strip: the game keeps all four
+    /// in <c>leaders_medium.dds</c> as a single sprite of four frames and picks the frame in code,
+    /// so the frame is the class's own position in this file.
+    /// </para>
+    /// <para>
+    /// Not <c>GFX_leader_bg_official</c>, which the name invites and which is wrong. That is a
+    /// painted city — the backdrop a leader's portrait is shown against — and using it gave every
+    /// class a landscape where its icon should be.
+    /// </para>
+    /// </remarks>
+    public static List<LeaderClassDefinition> ExtractLeaderClasses(ScriptLoader loader, AssetCatalog assets)
+    {
+        var results = new List<LeaderClassDefinition>();
+
+        foreach (var entry in loader.LoadDefinitions("common/leader_classes"))
+        {
+            results.Add(new LeaderClassDefinition(entry.Key, entry.Body.GetString("name") ?? entry.Key)
+            {
+                // The game says a class may rule unless it says otherwise, and only the envoy does.
+                CanRule = entry.Body.GetBool("can_rule_empire", defaultValue: true),
+                Icon = assets.RegisterSprite(
+                    LeaderIcons,
+                    $"icons/leaders/{entry.Key}.png",
+                    frame: loader.ResolveInt(entry.Body.GetString("icon"))),
+            });
+        }
+
+        return results;
+    }
+
+    /// <summary>
+    /// The strip holding one icon per kind of leader.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Which slice belongs to which class is the class's own business and it says so: the file
+    /// carries the comment "1-based index in the icon file" against the field, and the four base
+    /// classes claim 1, 3, 4 and 5 — commander, scientist, official and envoy. That is not the
+    /// order they are written in, so counting them out would have given the official the
+    /// commander's badge.
+    /// </para>
+    /// <para>
+    /// The strip has four slices, and the envoy asks for a fifth that is not in it. Asking for a
+    /// slice the sheet does not have yields nothing rather than a stray cut of the picture, and
+    /// costs nothing here since an envoy may not rule and so is never offered.
+    /// </para>
+    /// <para>
+    /// Not <c>GFX_leader_bg_official</c> and its fellows, which are painted cities a portrait is
+    /// shown against rather than badges.
+    /// </para>
+    /// </remarks>
+    private const string LeaderIcons = "GFX_leader_icons_medium";
+
+    /// <summary>
+    /// Reads the ships a nomadic empire may begin as.
+    /// </summary>
+    /// <remarks>
+    /// Found by the flag the game marks them with rather than by name. Nine arkships exist across
+    /// three families and three tiers, but only the first tier of each is something a player starts
+    /// with — the rest are built later — and <c>is_starting_arkship</c> is how the game itself says
+    /// which. Declaration order is the order its own panel lists them in: civilian, science,
+    /// military.
+    /// </remarks>
+    public static List<ArkshipDefinition> ExtractArkships(ScriptLoader loader)
+    {
+        var results = new List<ArkshipDefinition>();
+
+        foreach (var entry in loader.LoadDefinitions("common/ship_sizes"))
+        {
+            if (entry.Body.GetBool("is_starting_arkship"))
+            {
+                results.Add(new ArkshipDefinition(entry.Key));
+            }
+        }
+
+        return results;
+    }
+
+    /// <summary>
+    /// Reads the groups the game sorts its shipset browser into.
+    /// </summary>
+    /// <remarks>
+    /// <c>common/ship_sets</c> exists for exactly this and says so: it is there "to categorize the
+    /// list of ship graphics cultures in the ship set browser within the empire editor". Each group
+    /// names itself and carries a condition on the kind of ship a set builds — biological gathers
+    /// <c>bio_ship</c>, mechanical gathers everything that is not — so the headings and the sorting
+    /// are both the game's rather than ours.
+    /// </remarks>
+    public static List<ShipSetDefinition> ExtractShipSets(ScriptLoader loader)
+    {
+        var results = new List<ShipSetDefinition>();
+
+        foreach (var entry in loader.LoadDefinitions("common/ship_sets"))
+        {
+            var potential = entry.Body.GetBlock("potential");
+            var inverted = potential?.GetBlock("NOT");
+
+            results.Add(new ShipSetDefinition(entry.Key, entry.Body.GetString("name") ?? entry.Key)
+            {
+                Category = (inverted ?? potential)?.GetString("uses_ship_category"),
+                Inverted = inverted is not null,
+            });
+        }
+
+        return results;
+    }
+
+    /// <summary>
+    /// How built-up a world each band of city belongs to, in the order the game paints them.
+    /// </summary>
+    /// <remarks>
+    /// Read rather than written down, because the bounds are the whole point: the last band is an
+    /// ecumenopolis and painting it over a designer's homeworld hides the world. The game lists the
+    /// bands as repeated <c>city</c> entries in the <c>planet</c> block, interleaved with the
+    /// <c>environment</c> ones, so their order in the file is their order on the screen.
+    /// </remarks>
+    private static IReadOnlyList<(int Min, int? Max)> CityBands(ScriptLoader loader)
+    {
+        var planet = loader.Load("gfx/portraits/portraits/00_portraits_main.txt")?.Nodes
+            .FirstOrDefault(n => n.Key == "planet")?.Block;
+
+        if (planet is null)
+        {
+            return [];
+        }
+
+        return
+        [
+            .. planet.Nodes
+                .Where(n => n.Key == "city" && n.Block is not null)
+                .Select(n => (
+                    Min: loader.ResolveInt(n.Block!.GetString("min_pop")) ?? 0,
+                    Max: loader.ResolveInt(n.Block!.GetString("max_pop"))))
+        ];
+    }
+
+    /// <summary>One empire's city, band by band, furthest from the viewer first.</summary>
+    private static IReadOnlyList<CityLayer> CityLayers(
+        string key,
+        IReadOnlyList<(int Min, int? Max)> bands,
+        ScriptLoader loader,
+        AssetCatalog assets)
+    {
+        var layers = new List<CityLayer>();
+
+        for (var band = 1; band <= bands.Count; band++)
+        {
+            var source = $"gfx/portraits/city_sets/{key}_city_l{band:00}.dds";
+
+            if (loader.Content.Contains(source) &&
+                assets.Register(source, $"cities/{key}_l{band:00}.png", maxDimension: 800) is { } image)
+            {
+                var (min, max) = bands[band - 1];
+                layers.Add(new CityLayer(band, image, min, max));
+            }
+        }
+
+        return layers;
     }
 
     /// <summary>Reads the advisor voices, in the order the game lists them.</summary>
@@ -221,6 +398,7 @@ internal static class CosmeticsExtractor
                 PlanetNames = pools.Planets,
                 ShipNames = pools.Ships,
                 FleetNames = pools.Fleets,
+                FleetPattern = pools.FleetPattern,
             });
         }
 

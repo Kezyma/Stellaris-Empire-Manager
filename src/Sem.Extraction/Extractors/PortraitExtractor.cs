@@ -95,8 +95,13 @@ internal static class PortraitExtractor
     {
         var results = new List<PortraitDefinition>();
         var textureCounts = new Dictionary<string, int>(StringComparer.Ordinal);
+        var attachmentLabels = new Dictionary<string, string>(StringComparer.Ordinal);
         var seen = new HashSet<string>(StringComparer.Ordinal);
-        var groups = new List<(string Key, string Default, Dictionary<string, string> Members)>();
+        var groups = new List<(
+            string Key,
+            string Default,
+            Dictionary<string, string> Members,
+            Dictionary<string, IReadOnlyList<string>> Phenotypes)>();
 
         foreach (var (_, document) in loader.LoadDirectory("gfx/portraits/portraits"))
         {
@@ -115,9 +120,21 @@ internal static class PortraitExtractor
                             var textures = CountTextures(portrait.Block);
                             textureCounts[key] = textures;
 
+                            // What this likeness wears on its head is not always an attachment: the
+                            // game lets a portrait rename the control, and calls it a hairstyle for
+                            // a human and a hat for a reptilian.
+                            if (portrait.Block.GetString("custom_attachment_label") is { Length: > 0 } label)
+                            {
+                                attachmentLabels[key] = label;
+                            }
+
                             if (seen.Add(key))
                             {
-                                results.Add(new PortraitDefinition(key) { TextureCount = textures });
+                                results.Add(new PortraitDefinition(key)
+                                {
+                                    TextureCount = textures,
+                                    AttachmentLabelKey = attachmentLabels.GetValueOrDefault(key),
+                                });
                             }
                         }
 
@@ -132,7 +149,7 @@ internal static class PortraitExtractor
                             if (group.Key is { Length: > 0 } key && group.Block is { } body &&
                                 body.GetString("default") is { Length: > 0 } fallback)
                             {
-                                groups.Add((key, fallback, ReadMembers(body)));
+                                groups.Add((key, fallback, ReadMembers(body), ReadPhenotypes(body)));
                             }
                         }
 
@@ -141,7 +158,7 @@ internal static class PortraitExtractor
             }
         }
 
-        foreach (var (key, fallback, members) in groups)
+        foreach (var (key, fallback, members, phenotypes) in groups)
         {
             if (seen.Add(key))
             {
@@ -149,7 +166,12 @@ internal static class PortraitExtractor
                 {
                     ResolvesTo = fallback,
                     Members = members,
+                    Phenotypes = phenotypes,
                     TextureCount = textureCounts.GetValueOrDefault(fallback),
+
+                    // A group is what a design stores, and it is the group's control the player
+                    // uses, so it takes the word its default likeness uses.
+                    AttachmentLabelKey = attachmentLabels.GetValueOrDefault(fallback),
                 });
             }
         }
@@ -192,6 +214,54 @@ internal static class PortraitExtractor
         }
 
         return members;
+    }
+
+    /// <summary>
+    /// Every likeness a group offers for each gender, rather than only the first.
+    /// </summary>
+    /// <remarks>
+    /// The same <c>game_setup</c> block read whole. Each addition names a run of portraits and the
+    /// genders it is for, and the human group's two runs are five faces each — which is what the
+    /// game's own appearance control steps through, and what a design naming
+    /// <c>human_female_05</c> is pointing into.
+    /// </remarks>
+    private static Dictionary<string, IReadOnlyList<string>> ReadPhenotypes(CwBlock group)
+    {
+        var phenotypes = new Dictionary<string, List<string>>(StringComparer.Ordinal);
+
+        if (group.GetBlock("game_setup") is not { } scope)
+        {
+            return [];
+        }
+
+        foreach (var addition in scope.Nodes)
+        {
+            if (addition.Key != "add" || addition.Block is not { } body)
+            {
+                continue;
+            }
+
+            var portraits = body.GetList("portraits");
+
+            if (portraits.Count == 0)
+            {
+                continue;
+            }
+
+            foreach (var gender in Genders(body.GetBlock("trigger")))
+            {
+                // A face offered to more than one gender — the indeterminate case takes both runs —
+                // belongs in each of their lists, and only once in each.
+                var faces = phenotypes.TryGetValue(gender, out var existing) ? existing : phenotypes[gender] = [];
+
+                faces.AddRange(portraits.Where(p => !faces.Contains(p, StringComparer.Ordinal)));
+            }
+        }
+
+        return phenotypes.ToDictionary(
+            p => p.Key,
+            p => (IReadOnlyList<string>)p.Value,
+            StringComparer.Ordinal);
     }
 
     /// <summary>

@@ -169,6 +169,68 @@ public sealed class ImagePipelineTests
     }
 
     [Fact]
+    public void TintingMultipliesRatherThanReplaces()
+    {
+        // The game colours one shared shape many ways, which is how one trait background is mint for
+        // a benefit and red for a drawback. Multiplying is what its own colour does; on the white
+        // artwork these shapes are drawn in it comes out as the colour itself, and on anything
+        // shaded it goes on behaving.
+        var tinted = DdsImageOps.Tint(Solid(2, 2, 255, 255, 255, 255), (48, 223, 185, 255));
+
+        Assert.Equal([185, 223, 48, 255], tinted.Pixels[..4]);
+
+        var halved = DdsImageOps.Tint(Solid(1, 1, 128, 128, 128, 255), (255, 255, 255, 128));
+
+        Assert.Equal(128, halved.Pixels[3]);
+        Assert.Equal(128, halved.Pixels[2]);
+    }
+
+    [Fact]
+    public void StackingCentresTheLayersAndKeepsWhatShowsThrough()
+    {
+        // Trait layers are authored at their own sizes — the background is 29 across and the
+        // councillor badge 32 — and the game centres them on each other, so a stack is as big as
+        // its largest layer rather than as its first.
+        var under = Solid(4, 4, 0, 0, 255, 255);
+        var over = Solid(2, 2, 255, 0, 0, 255);
+
+        var stacked = DdsImageOps.Over(under, over);
+
+        Assert.Equal((4, 4), (stacked.Width, stacked.Height));
+
+        // The middle is the top layer; the corner is still the bottom one. Read out by name, since
+        // a pixel comes back blue first.
+        var (_, _, middleRed, _) = stacked[1, 1];
+        var (cornerBlue, _, _, _) = stacked[0, 0];
+
+        Assert.Equal(255, middleRed);
+        Assert.Equal(255, cornerBlue);
+    }
+
+    [Fact]
+    public void ATransparentLayerLeavesWhatIsBeneathIt()
+    {
+        var stacked = DdsImageOps.Over(Solid(2, 2, 10, 20, 30, 255), Solid(2, 2, 0, 0, 0, 0));
+        var (blue, green, red, alpha) = stacked[0, 0];
+
+        Assert.Equal((10, 20, 30, 255), (red, green, blue, alpha));
+    }
+
+    /// <summary>A picture of one colour, for testing the operations rather than the decoder.</summary>
+    private static DdsImage Solid(int width, int height, byte r, byte g, byte b, byte a)
+    {
+        var pixels = new byte[width * height * 4];
+
+        for (var i = 0; i < pixels.Length; i += 4)
+        {
+            // Stored blue, green, red, alpha.
+            (pixels[i], pixels[i + 1], pixels[i + 2], pixels[i + 3]) = (b, g, r, a);
+        }
+
+        return new DdsImage(width, height, pixels);
+    }
+
+    [Fact]
     public void RejectsAnExtendedHeaderClearlyRatherThanReadingRubbish()
     {
         // Stellaris ships none of these, but a mod might, and a wrong picture is worse than none.

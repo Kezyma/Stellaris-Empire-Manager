@@ -32,7 +32,13 @@ else
                 @(_session.Report.IsValid ? "Valid" : $"{_session.Report.Errors.Count} problem(s)")
             </span>
 
-            <button type="button" @onclick="CopyLink">@(_copied ? "Link copied" : "Copy link")</button>
+            @*
+                Kept even though the address bar now carries the same link: it saves selecting the
+                bar, and it is the only thing that says out loud that the link was taken.
+            *@
+            <button type="button" @onclick="CopyLink" title="The address bar carries this link too">
+                @(_copied ? "Link copied" : "Copy link")
+            </button>
             <button type="button" class="danger" @onclick="Delete">Delete</button>
             <button type="button" class="primary" @onclick="Export">@Files.SaveVerb</button>
         </div>
@@ -51,6 +57,11 @@ else
         ? _session.Localizer.Name(design.Name, design.Key)
         : "Designer";
 
+    /// <summary>
+    /// The empire the address bar is currently showing, so it is only rewritten when it changes.
+    /// </summary>
+    private string? _shown;
+
     protected override async Task OnInitializedAsync()
     {
         _session = await Host.GetAsync();
@@ -59,6 +70,7 @@ else
         {
             _session.Changed += OnChanged;
             OpenSharedDesign();
+            ShowInAddressBar();
         }
     }
 
@@ -66,8 +78,15 @@ else
     /// Opens an empire someone sent a link to, adding it to whatever file is already open.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Added rather than swapped in: the link is a gift, not a replacement for the empires the
     /// player already has. A name already taken gets a number after it, as a copy would.
+    /// </para>
+    /// <para>
+    /// An empire the file already holds is selected instead of copied. That matters now that the
+    /// address bar always carries the empire being edited: without it, every reload of an ordinary
+    /// editing session would add another copy of the same empire.
+    /// </para>
     /// </remarks>
     private void OpenSharedDesign()
     {
@@ -79,7 +98,16 @@ else
             return;
         }
 
-        _session!.EditFile(file =>
+        // Compared as encoded text because that is exactly what a link carries: two designs with the
+        // same encoding are the same empire down to the byte, and no field has to be named here.
+        if (_session!.File?.Designs.FirstOrDefault(d => DesignLink.Encode(d) == shared) is { } already)
+        {
+            _session.Select(already);
+            _shown = shared;
+            return;
+        }
+
+        _session.EditFile(file =>
         {
             var key = design.Key;
 
@@ -90,9 +118,32 @@ else
 
             _session.Select(file.AddCopy(design, key));
         });
+    }
 
-        // Taken out of the address bar once it has been opened, so a reload does not add it twice.
-        Navigation.NavigateTo("designer", replace: true);
+    /// <summary>
+    /// Puts the empire being edited in the address bar, so it can be shared by copying it.
+    /// </summary>
+    /// <remarks>
+    /// Replacing rather than pushing, so that editing an empire does not fill the back button with
+    /// one entry per keystroke. Only written when it actually changed, since navigating is not free
+    /// and this runs on every edit.
+    /// </remarks>
+    private void ShowInAddressBar()
+    {
+        if (_session?.Current is not { } design)
+        {
+            return;
+        }
+
+        var encoded = DesignLink.Encode(design);
+
+        if (encoded == _shown)
+        {
+            return;
+        }
+
+        _shown = encoded;
+        Navigation.NavigateTo($"designer?{DesignLink.Parameter}={encoded}", replace: true);
     }
 
     private async Task CopyLink()
@@ -115,7 +166,11 @@ else
         }
     }
 
-    private void OnChanged() => InvokeAsync(StateHasChanged);
+    private void OnChanged() => InvokeAsync(() =>
+    {
+        ShowInAddressBar();
+        StateHasChanged();
+    });
 
     private void Delete()
     {

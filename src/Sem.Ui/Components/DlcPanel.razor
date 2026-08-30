@@ -47,8 +47,18 @@
     [CascadingParameter]
     public required DesignSession Session { get; set; }
 
+    /// <summary>
+    /// The packs worth a switch.
+    /// </summary>
+    /// <remarks>
+    /// Eleven of the thirty-six decide nothing an empire is built from — a soundtrack, a set of
+    /// forum avatars, and three expansions whose content this designer never reaches. Turning one
+    /// off changed nothing on the page, which is a worse thing for a switch to do than to be absent.
+    /// </remarks>
     private IEnumerable<DlcDefinition> Packs =>
-        Session.Data.Database.Dlc.OrderBy(d => d.Name, StringComparer.CurrentCulture);
+        Session.Data.Database.Dlc
+            .Where(d => d.Decides)
+            .OrderBy(d => Name(d), StringComparer.CurrentCulture);
 
     private string Name(DlcDefinition pack) => Session.Localizer.Text(pack.NameKey, pack.Name);
 

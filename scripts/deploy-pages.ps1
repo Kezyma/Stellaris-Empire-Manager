@@ -37,8 +37,10 @@ Push-Location $repo
 
 try {
     if (-not $SkipExtract) {
+        # The wardrobe is the pieces a ruler's likeness is drawn from. It is the largest thing here
+        # by count and the site cannot draw a face without it, so it goes up with the rest.
         Write-Host 'Reading the game installation...' -ForegroundColor Cyan
-        dotnet run --project src/Sem.Cli -- extract --web
+        dotnet run --project src/Sem.Cli -- extract --web --wardrobe
         if ($LASTEXITCODE -ne 0) { throw 'Extraction failed.' }
     }
 
@@ -86,6 +88,8 @@ try {
     Write-Host 'This carries Stellaris artwork and text. Publishing it makes that public.'
     Write-Host ''
     Write-Host "  git -C .pages push --force origin $Branch"
+    Write-Host ''
+    Write-Host 'The push is the last manual step: .github/workflows/pages.yml takes it from there.'
 }
 finally {
     Pop-Location

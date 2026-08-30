@@ -1,0 +1,392 @@
+@*
+    An empire as the game presents one on the select screen, with everything the game leaves out.
+
+    The game's own preview is two boxes, laid out in interface/game_setup/setup.gui: a flag beside
+    the empire's name, and a framed portrait beside the species name, its class, its authority and
+    its origin. That is the shape this keeps, because it is the shape a player recognises. What the
+    game has no room for — the ethics, the civics, the traits, the homeworld, the appearance, and
+    what all of it adds up to — follows underneath.
+
+    Above both sits the scene the game builds elsewhere: the ruler in their room with their own world
+    through the window. The select screen shows a bare portrait; there is room here for the whole
+    thing, and it is the same empire either way.
+*@
+
+@using Sem.Rules
+
+<div class="sem-showcase">
+    <RoomScene Room="Room" World="World" City="City" Portrait="@RulerPortrait" Flag="@Design.Flag"
+               Alt="@Session.Localizer.Name(Design.Species.Name, string.Empty)" />
+
+    @* The game's own header: flag, empire name, and who is in charge. *@
+    <div class="identity">
+        <FlagPreview Flag="@Design.Flag" Class="medium" />
+
+        <div class="titles">
+            <div class="name">@Session.Localizer.Name(Design.Name, Design.Key)</div>
+            <div class="sub">@Government</div>
+            <div class="sub faint">@Ruler</div>
+        </div>
+
+        @if (Actions is not null)
+        {
+            <div class="actions">@Actions</div>
+        }
+    </div>
+
+    @* And its second box: the species, framed, with the authority and origin beside it. *@
+    <div class="species">
+        @if (SpeciesPortrait is { Length: > 0 } face)
+        {
+            <img class="face" src="@Session.Data.AssetUrl(face)" alt="" loading="lazy">
+        }
+
+        <div class="about">
+            <div class="name">@Session.Localizer.Name(Design.Species.Name, Design.Species.Class)</div>
+            <div class="kind">@Session.Localizer.Text(Design.Species.Class)</div>
+
+            <div class="line">
+                <GameIcon Path="@AuthorityIcon" Size="small"
+                          Alt="@Session.Localizer.Text(Design.Authority)" />
+                <span>@Session.Localizer.Text(Design.Authority)</span>
+            </div>
+
+            @if (Design.Origin is { Length: > 0 } origin)
+            {
+                <div class="line">
+                    <GameIcon Path="@OriginIcon" Size="small" Alt="@Session.Localizer.Text(origin)" />
+                    <span>@Session.Localizer.Text(origin)</span>
+                </div>
+            }
+        </div>
+    </div>
+
+    @*
+        The blurb the game writes for one of its own empires. It exists only as localisation — no
+        prescripted country file carries it — so it belongs to the game's empire rather than to a
+        copy of it, and is shown here rather than written into a design. Written in, it would bake
+        one language permanently into a file the game would otherwise have shown in the player's own.
+    *@
+    @*
+        Passed an empty fallback so an empire the game wrote nothing about shows nothing: five of its
+        fifty-two have no description at all, and without this they showed their own key made
+        readable, which reads as a paragraph that failed to load.
+    *@
+    @if (Session.Localizer.Html(Lore, string.Empty) is { Length: > 0 } lore)
+    {
+        <p class="sem-lore">@((MarkupString)lore)</p>
+    }
+
+    @if (Biography is { Length: > 0 } biography)
+    {
+        <p class="sem-lore">@biography</p>
+    }
+
+    @* From here down is ours: everything the game's preview has no space for. *@
+    @Chips(Session.Localizer.Heading("ETHICS", "Ethics"), Ethics)
+    @Chips(Session.Localizer.Heading("CIVICS_LABEL", "Civics"), Civics)
+    @Chips(Session.Localizer.Heading("TRAITS", "Traits"), Traits)
+
+    @if (Design.SecondarySpecies is { } second)
+    {
+        @Chips(SecondName(second), TraitsOf(second))
+    }
+
+    <dl class="sem-summary">
+        @Row(Session.Localizer.Heading("HOMEWORLD_CLASS_LABEL", "Homeworld Class"), Homeworld)
+        @Row(Session.Localizer.Heading("SELECT_SYSTEM_INITIALIZER_LABEL", "Starting Solar System"), StartingSystem)
+        @Row(Session.Localizer.Heading("NAME_LIST", "Name List"), Session.Localizer.Text(Design.Species.NameList))
+        @Row(Session.Localizer.Heading("SHIP_PREFIX", "Ship Prefix"), Session.Localizer.Name(Design.ShipPrefix, string.Empty))
+        @Row(Session.Localizer.Heading("SHIPSETS_LABEL", "Shipsets"), CultureName(Design.GraphicalCulture))
+        @Row(Session.Localizer.Heading("EMPIRE_CREATION_CITY_APPEARANCE", "City"), CultureName(Design.CityGraphicalCulture))
+        @Row(Session.Localizer.Heading("EMPIRE_ADVISOR", "Advisor Voice"), Session.Localizer.Text(Design.AdvisorVoiceType))
+        @Row(Session.Localizer.Heading("EMPIRE_FLAG", "Flag"), FlagSet is { } flags ? string.Join(", ", flags.Flags) : null)
+    </dl>
+
+    @foreach (var problem in Report.Errors)
+    {
+        <div class="sem-problem">
+            <div class="area">@problem.Area</div>
+            <div>@problem.Message</div>
+        </div>
+    }
+
+    @foreach (var problem in Report.Warnings)
+    {
+        <div class="sem-problem warning">
+            <div class="area">@problem.Area</div>
+            <div>@problem.Message</div>
+        </div>
+    }
+
+    <div class="sem-showcase-effects">
+        <h4>@Session.Localizer.Heading("SUMMARY_EMPIRE_MODIFIERS", "Empire Modifiers")</h4>
+
+        @if (Combined.Count == 0)
+        {
+            <p class="sem-hint">Nothing this empire chose carries a modifier.</p>
+        }
+        else
+        {
+            <ul class="sem-modifiers">
+                @foreach (var modifier in Combined)
+                {
+                    var formatted = Session.Modifiers.Format(modifier.Key, modifier.Total);
+
+                    <li title="@SourceSummary(modifier)">
+                        <span class="label">@((MarkupString)Session.Modifiers.LabelHtml(modifier.Key))</span>
+                        <span class="value @ToneClass(formatted.Tone)">@formatted.Value</span>
+                        @if (modifier.Sources.Count > 1)
+                        {
+                            <span class="sources">@modifier.Sources.Count</span>
+                        }
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+</div>
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>The empire being shown. Never edited here.</summary>
+    [Parameter, EditorRequired]
+    public required EmpireDesign Design { get; set; }
+
+    /// <summary>Whatever the host wants to offer for this empire — opening it, or copying it.</summary>
+    [Parameter]
+    public RenderFragment? Actions { get; set; }
+
+    /// <summary>
+    /// The localisation key of the blurb the game writes for one of its own empires, where this is
+    /// one of them.
+    /// </summary>
+    [Parameter]
+    public string? Lore { get; set; }
+
+    /// <summary>
+    /// The species' own story, where the player wrote one.
+    /// </summary>
+    /// <remarks>
+    /// Unlike the blurb above it this really is part of the design — a copy of one of the game's
+    /// empires carries the species biography across as plain text — so it is read from the design
+    /// rather than passed in.
+    /// </remarks>
+    private string? Biography => Design.Species.Biography;
+
+    /// <summary>
+    /// The design read against the rules, worked out once per empire shown.
+    /// </summary>
+    /// <remarks>
+    /// The session keeps a context for the empire being edited, and this is not necessarily that
+    /// one: the select screen shows empires the player has not opened, and the game's own, which are
+    /// not in their file at all. So it builds its own, and holds it until the empire changes.
+    /// </remarks>
+    private DesignContext Context => _cached ??= Session.Rules.CreateContext(Design, Session.OwnedDlc);
+
+    private DesignContext? _cached;
+
+    private ValidationReport Report => _report ??= Session.Rules.Validate(Context, Design);
+
+    private ValidationReport? _report;
+
+    /// <summary>
+    /// Forgets what was worked out, so the next render works it out again.
+    /// </summary>
+    /// <remarks>
+    /// Both a different empire and an edit to the same one arrive here, and both invalidate
+    /// everything derived. The holding is not to survive a render but to survive one: a context
+    /// is read a dozen times while the panel draws, and building it a dozen times was the mistake
+    /// the empire list made before.
+    /// </remarks>
+    protected override void OnParametersSet()
+    {
+        _cached = null;
+        _report = null;
+    }
+
+    private GameDatabase Database => Session.Data.Database;
+
+    private RoomDefinition? Room =>
+        Database.Rooms.FirstOrDefault(r => r.Key == Design.Room);
+
+    /// <summary>
+    /// The world through the window: the homeworld the empire actually starts on.
+    /// </summary>
+    /// <remarks>
+    /// An origin can override the choice — Void Dwellers begin on a habitat whatever the picker
+    /// said — and the context has already worked that out.
+    /// </remarks>
+    private PlanetClassDefinition? World =>
+        Database.PlanetClasses.FirstOrDefault(p => p.Key == Context.EffectivePlanetClass);
+
+    private GraphicalCultureDefinition? City =>
+        Database.GraphicalCultures.FirstOrDefault(c => c.Key == Design.CityGraphicalCulture);
+
+    /// <summary>
+    /// What the game calls a set of artwork, falling back to its readable key.
+    /// </summary>
+    /// <remarks>
+    /// The game names a set by its key shouted, and names only the two Biogenesis added. Read the
+    /// stored key directly and the row shows <c>mammalian_01</c>.
+    /// </remarks>
+    private string? CultureName(string? key) => key is { Length: > 0 }
+        ? Session.Localizer.Text(key.ToUpperInvariant(), Localizer.Prettify(key))
+        : null;
+
+    private string? RulerPortrait =>
+        PortraitArtwork.For(Database, Design.Ruler.Portrait, Design.Ruler.Gender)
+        ?? SpeciesPortrait;
+
+    private string? SpeciesPortrait =>
+        PortraitArtwork.For(Database, Design.Species.Portrait, Design.Species.Gender);
+
+    private string? AuthorityIcon =>
+        Database.Authorities.FirstOrDefault(a => a.Key == Design.Authority)?.Icon;
+
+    private string? OriginIcon =>
+        Database.Civics.FirstOrDefault(c => c.Key == Design.Origin)?.Icon;
+
+    /// <summary>The government the game would name this empire's, derived rather than stored.</summary>
+    private string Government =>
+        Session.Rules.DeriveGovernment(Context) is { } government
+            ? Session.Localizer.Text(government.Key)
+            : Session.Localizer.Text(Design.Authority);
+
+    private string Ruler
+    {
+        get
+        {
+            var name = Session.Localizer.RulerName(Design.Ruler, string.Empty);
+
+            var title = Design.Ruler.Title is { } held
+                ? Session.Localizer.Name(held, string.Empty)
+                : string.Empty;
+
+            return string.Join(", ", new[] { name, title }.Where(p => p.Length > 0));
+        }
+    }
+
+    /// <summary>The homeworld: what the player called it, and what kind of world it is.</summary>
+    private string Homeworld =>
+        string.Join(
+            " · ",
+            new[]
+            {
+                Session.Localizer.Name(Design.PlanetName, string.Empty),
+                Session.Localizer.Text(Context.EffectivePlanetClass),
+            }.Where(p => p.Length > 0));
+
+    /// <summary>The starting system, which most empires leave to the galaxy generator.</summary>
+    private string StartingSystem =>
+        Design.Initializer is { Length: > 0 } initializer
+            ? Session.Localizer.Text(
+                Database.Initializers.FirstOrDefault(i => i.Key == initializer)?.NameKey ?? initializer)
+            : string.Empty;
+
+    /// <summary>The named set of country flags a built-in empire carries, when it carries one.</summary>
+    private EmpireFlagSet? FlagSet =>
+        Design.PrescriptedFlag is { Length: > 0 } key
+            ? Database.EmpireFlagSets.FirstOrDefault(f => f.Key == key)
+            : null;
+
+    private IReadOnlyList<CombinedModifier> Combined => DesignEffects.Combine(Context);
+
+    private IEnumerable<(string Key, string? Icon)> Ethics =>
+        Design.Ethics.Select(e => (e, Database.Ethics.FirstOrDefault(d => d.Key == e)?.Icon));
+
+    private IEnumerable<(string Key, string? Icon)> Civics =>
+        Design.Civics.Select(c => (c, Database.Civics.FirstOrDefault(d => d.Key == c)?.Icon));
+
+    private IEnumerable<(string Key, string? Icon)> Traits => TraitsOf(Design.Species);
+
+    private IEnumerable<(string Key, string? Icon)> TraitsOf(SpeciesDesign species) =>
+        species.Traits.Select(t => (t, Database.Traits.FirstOrDefault(d => d.Key == t)?.Icon));
+
+    /// <summary>What to call the second species' traits, since two rows of "Traits" would not say.</summary>
+    private string SecondName(SpeciesDesign species) =>
+        $"{Session.Localizer.Name(species.Name, Session.Localizer.Text(species.Class))} · " +
+        Session.Localizer.Heading("TRAITS", "Traits");
+
+    /// <summary>
+    /// A labelled row of icons with their names, which is how the game shows a set of choices.
+    /// </summary>
+    /// <remarks>
+    /// Nothing is drawn for an empty set. A gestalt empire has no civics until it has an authority,
+    /// and an empty heading would read as a fault rather than as a stage.
+    /// </remarks>
+    private RenderFragment Chips(string label, IEnumerable<(string Key, string? Icon)> items) => builder =>
+    {
+        var listed = items.ToList();
+
+        if (listed.Count == 0)
+        {
+            return;
+        }
+
+        builder.OpenElement(0, "div");
+        builder.AddAttribute(1, "class", "sem-showcase-chips");
+
+        builder.OpenElement(2, "div");
+        builder.AddAttribute(3, "class", "heading");
+        builder.AddContent(4, label);
+        builder.CloseElement();
+
+        foreach (var (key, icon) in listed)
+        {
+            var name = Session.Localizer.Text(key);
+
+            builder.OpenElement(5, "span");
+            builder.AddAttribute(6, "class", "chip");
+            builder.SetKey(key);
+
+            if (icon is { Length: > 0 })
+            {
+                builder.OpenElement(7, "img");
+                builder.AddAttribute(8, "src", Session.Data.AssetUrl(icon));
+                builder.AddAttribute(9, "alt", string.Empty);
+                builder.AddAttribute(10, "loading", "lazy");
+                builder.CloseElement();
+            }
+
+            builder.OpenElement(11, "span");
+            builder.AddContent(12, name);
+            builder.CloseElement();
+
+            builder.CloseElement();
+        }
+
+        builder.CloseElement();
+    };
+
+    private RenderFragment Row(string label, string? value) => builder =>
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return;
+        }
+
+        builder.OpenElement(0, "dt");
+        builder.AddContent(1, label);
+        builder.CloseElement();
+
+        builder.OpenElement(2, "dd");
+        builder.AddContent(3, value);
+        builder.CloseElement();
+    };
+
+    private string SourceSummary(CombinedModifier modifier) =>
+        string.Join(
+            ", ",
+            modifier.Sources.Select(s =>
+                $"{Session.Localizer.Text(s.SourceKey)} {Session.Modifiers.Format(modifier.Key, s.Value).Value}"));
+
+    private static string ToneClass(ModifierTone tone) => tone switch
+    {
+        ModifierTone.Good => "good",
+        ModifierTone.Bad => "bad",
+        _ => string.Empty,
+    };
+}

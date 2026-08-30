@@ -30,18 +30,44 @@ internal static partial class LocalisationPruner
         "EMPIRE_NAME", "EMPIRE_ADJECTIVE", "SHIP_PREFIX",
         "SPECIES_NAME", "SPECIES_PLURAL", "SPECIES_ADJECTIVE", "SPECIES_CLASS_LABEL",
         "NAME_LIST", "PORTRAIT", "GENDER",
-        "TRAITS", "POINTS_LEFT", "PICKS_LEFT",
+        "TRAITS", "TRAIT_POINTS", "POINTS_LEFT", "PICKS_LEFT",
         "ETHICS", "POINTS_LEFT_ETHICS",
-        "GOVERNMENT_AUTHORITY_AND_TYPE", "GOVERNMENT_LABEL", "POINTS_LEFT_CIVICS",
+        "GOVERNMENT_AUTHORITY_AND_TYPE", "GOVERNMENT_LABEL", "CIVICS_LABEL", "POINTS_LEFT_CIVICS",
         "ORIGIN",
         "HOMEWORLD_CLASS_LABEL", "HOMEWORLD_NAME",
         "SELECT_SYSTEM_INITIALIZER_LABEL", "SYSTEM_NAME",
         "RANDOM_FRONTEND_NAME", "random_system_initializer_DESC",
         "EMPIRE_ADVISOR", "EMPIRE_CREATION_ROOM_APPEARANCE", "EMPIRE_CREATION_CITY_APPEARANCE", "SHIPSETS_LABEL",
+        "SHIPSET_MECHANICAL", "SHIPSET_BIOLOGICAL",
         "EMPIRE_FLAG", "CHOOSE_SYMBOL", "EMBLEM_BACKGROUND_PATTERN",
         "PRIMARY_COLOR", "SECONDARY_COLOR", "TERTIARY_COLOR",
-        "RULER_CLASS", "LEADER_NAME",
+        // The game words its four title boxes as a pair of headings over a pair of genders: "Ruler
+        // Title" and "Heir Title" each over "Male" and "Female".
+        "RULER_CLASS", "RULER_TITLE", "HEIR_TITLE",
+        "RULER_TITLE_MALE", "RULER_TITLE_FEMALE", "HEIR_TITLE_MALE", "HEIR_TITLE_FEMALE",
+        "LEADER_NAME",
+
+        // What the game's own empire list puts on its third line, under the government.
+        "SPECIES_CLASS_LABEL",
         "IS_NOMADIC",
+        "SUMMARY_EMPIRE_MODIFIERS",
+
+        // The words on the ruler's appearance, which the game's own leader editor uses.
+        // EVOLUTION_VARIANT is deliberately absent: the game offers two controls for it and a design
+        // holds one number, decided in play, so there is nothing here to label.
+        "LEADER_SUB_PORTRAIT", "VARIATION", "ATTACHMENTS", "CLOTHES",
+        "EVOLUTION_STAGE", "CHOOSE_SEX",
+
+        // What a portrait may call its attachment instead, by its custom_attachment_label.
+        "HAIR_STYLE", "HAT", "MASK",
+
+        // The box a player writes an empire's or a ruler's own story in.
+        "BIOGRAPHY",
+
+        // The three states of the spawn button, and the sentence each shows on hovering.
+        "EMPIRE_SPAWN_ALLOWED", "EMPIRE_SPAWN_ALLOWED_DESC",
+        "EMPIRE_SPAWN_DISALLOWED", "EMPIRE_SPAWN_DISALLOWED_DESC",
+        "EMPIRE_SPAWN_ALWAYS", "EMPIRE_SPAWN_ALWAYS_DESC",
     ];
 
     /// <summary>Keeps only the entries the database can reach, following references between them.</summary>
@@ -71,7 +97,7 @@ internal static partial class LocalisationPruner
 
                 // A displayed string can name other entries, and those have to travel with it or
                 // the player sees a raw key where a word should be.
-                foreach (var referenced in FindReferences(value))
+                foreach (var referenced in FindReferences(value, database.ScriptedText))
                 {
                     if (!kept.ContainsKey(referenced))
                     {
@@ -206,15 +232,33 @@ internal static partial class LocalisationPruner
             AddRequirement(voice.Playable);
         }
 
+        foreach (var group in database.ShipSets)
+        {
+            Add(group.NameKey);
+        }
+
+        foreach (var leaderClass in database.LeaderClasses)
+        {
+            Add(leaderClass.NameKey);
+        }
+
         foreach (var culture in database.GraphicalCultures)
         {
             Add(culture.NameKey);
+            Add(culture.DescriptionKey);
             AddRequirement(culture.Selectable);
         }
 
         foreach (var category in database.FlagCategories)
         {
             Add(category.NameKey);
+        }
+
+        // An arkship's name is built from two other entries — a class word and the word "Arkship" —
+        // so both have to travel with it. The reference-following pass finds them from the name.
+        foreach (var arkship in database.Arkships)
+        {
+            Add(arkship.NameKey);
         }
 
         foreach (var empire in database.PrescriptedEmpires)
@@ -295,29 +339,11 @@ internal static partial class LocalisationPruner
 
         void AddRequirement(Requirement requirement)
         {
-            Add(requirement.FailureText);
-
-            switch (requirement)
+            // A blocked option shows the explanation of whichever condition turned it down, and a
+            // condition nested three deep is as able to be the one that did.
+            foreach (var nested in requirement.AndNested())
             {
-                case AllRequirement all:
-                    foreach (var item in all.Items)
-                    {
-                        AddRequirement(item);
-                    }
-
-                    break;
-
-                case AnyRequirement any:
-                    foreach (var item in any.Items)
-                    {
-                        AddRequirement(item);
-                    }
-
-                    break;
-
-                case NotRequirement not:
-                    AddRequirement(not.Item);
-                    break;
+                Add(nested.FailureText);
             }
         }
     }
@@ -327,7 +353,9 @@ internal static partial class LocalisationPruner
     /// and bracketed references such as <c>['trait:trait_adaptive']</c> that render another entry's
     /// name inline.
     /// </summary>
-    private static IEnumerable<string> FindReferences(string value)
+    private static IEnumerable<string> FindReferences(
+        string value,
+        IReadOnlyDictionary<string, string> scriptedText)
     {
         foreach (Match match in VariableReference().Matches(value))
         {
@@ -338,14 +366,41 @@ internal static partial class LocalisationPruner
         {
             yield return match.Groups[1].Value;
         }
+
+        // A call into the game's script shows its default branch at design time, and that branch
+        // is an entry like any other — dropped, the sentence around it stops mid-phrase.
+        foreach (Match match in ScriptedCall().Matches(value))
+        {
+            if (scriptedText.GetValueOrDefault(match.Groups[1].Value) is { Length: > 0 } key)
+            {
+                yield return key;
+            }
+        }
     }
 
     /// <summary>Matches <c>$KEY$</c> and <c>$KEY|format$</c>.</summary>
     [GeneratedRegex(@"\$([A-Za-z_][A-Za-z0-9_.]*)(?:\|[^$]*)?\$")]
     private static partial Regex VariableReference();
 
-    /// <summary>Matches <c>['scope:key']</c>, capturing the key.</summary>
-    [GeneratedRegex(@"\['[a-z_]+:([A-Za-z0-9_.]+)'\]")]
+    /// <summary>
+    /// Matches <c>[Scope.Name]</c> and the bare <c>[Name]</c>, capturing the scripted phrase.
+    /// </summary>
+    /// <remarks>
+    /// The scope is optional, and has to be: the bare form is the commoner one in what a designer
+    /// shows. Requiring it meant the entries those phrases resolve to were never followed and so
+    /// never kept, which is half of why they showed as raw script.
+    /// </remarks>
+    [GeneratedRegex(@"\[(?:[A-Za-z][A-Za-z0-9_]*\.)*([A-Za-z][A-Za-z0-9_]*)\]")]
+    private static partial Regex ScriptedCall();
+
+    /// <summary>
+    /// Matches <c>['scope:key']</c> and the bare <c>['key']</c>, capturing the key.
+    /// </summary>
+    /// <remarks>
+    /// Space after the bracket allowed, because the game's own text has it in places — the riftworld
+    /// origin writes <c>[ 'concept_astral_rift'</c> — and a key not matched here is a key not kept.
+    /// </remarks>
+    [GeneratedRegex(@"\[\s*'(?:[a-z_]+:)?([A-Za-z0-9_.]+)'")]
     private static partial Regex ScopedReference();
 
     /// <summary>

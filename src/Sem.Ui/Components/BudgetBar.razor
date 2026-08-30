@@ -2,19 +2,17 @@
     Points spent against points available, which is the thing a player checks most often while
     building an empire.
 
-    The caption is the game's own — "Trait Points Left: 2" — since the game writes the label and the
-    figure as one sentence and translating half of it would read oddly. The spend against the
-    allowance is ours, and stays: knowing there are two points left is less use than knowing they are
-    two of five.
+    The reading sits on the bar rather than above it, so the bar is the whole of the control and a
+    row of them lines up across the panel. The words are the game's — "Points", "Traits", "Ethics" —
+    and the spend against the allowance is ours: knowing there are two points left is less use than
+    knowing they are two of five. The game's own full sentence, "Trait Points Left: 2", is the bar's
+    title, so nothing it says has been thrown away.
 *@
 
-<div class="sem-budget @StateClass">
-    <div class="head">
-        <span>@Session.Localizer.Counter(Key, Fallback, Value.Remaining)</span>
-        <span class="value">@Value.Spent / @Value.Available</span>
-    </div>
+<div class="sem-budget @StateClass" title="@Session.Localizer.Counter(Key, Fallback, Value.Remaining)">
     <div class="track">
         <div class="fill" style="width:@(Percent)%"></div>
+        <span class="reading">@Session.Localizer.Gauge(Label, LabelFallback, $"{Value.Spent}/{Value.Available}")</span>
     </div>
 </div>
 
@@ -22,13 +20,21 @@
     [CascadingParameter]
     public required DesignSession Session { get; set; }
 
-    /// <summary>The game's key for this counter, such as <c>POINTS_LEFT</c>.</summary>
+    /// <summary>The game's key for the full sentence, such as <c>POINTS_LEFT</c>, shown on hover.</summary>
     [Parameter, EditorRequired]
     public required string Key { get; set; }
 
-    /// <summary>What to say if a patch ever drops the key.</summary>
+    /// <summary>What that sentence says if a patch ever drops the key.</summary>
     [Parameter, EditorRequired]
     public required string Fallback { get; set; }
+
+    /// <summary>The game's key for the short words on the bar, such as <c>TRAIT_POINTS</c>.</summary>
+    [Parameter, EditorRequired]
+    public required string Label { get; set; }
+
+    /// <summary>What those words say if a patch ever drops the key.</summary>
+    [Parameter, EditorRequired]
+    public required string LabelFallback { get; set; }
 
     /// <summary>The spend and the allowance.</summary>
     [Parameter, EditorRequired]
