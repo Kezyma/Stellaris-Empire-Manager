@@ -1,0 +1,36 @@
+@*
+    A story a player may write, for an empire's species or for its ruler.
+
+    Folded away by default. The game offers both and most players fill in neither, so an open box
+    six rows deep would push everything that is used below the fold to make room for something that
+    is usually empty.
+*@
+
+<details class="sem-bio" open="@(Value is { Length: > 0 })">
+    <summary>@Session.Localizer.Label("BIOGRAPHY", "Biography")</summary>
+
+    @*
+        Capped where the game caps it. The game's own writer cuts at a thousand characters, so
+        anything past that would come back mid-sentence rather than come back long.
+    *@
+    <textarea rows="6" maxlength="1000" placeholder="@Placeholder"
+              value="@Value"
+              @onchange="e => OnChange.InvokeAsync(e.Value?.ToString() ?? string.Empty)"></textarea>
+</details>
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>What is written now, if anything.</summary>
+    [Parameter]
+    public string? Value { get; set; }
+
+    /// <summary>Grey text for an empty box, saying whose story this is.</summary>
+    [Parameter]
+    public string? Placeholder { get; set; }
+
+    /// <summary>Called with the whole text whenever the box is left.</summary>
+    [Parameter]
+    public EventCallback<string> OnChange { get; set; }
+}

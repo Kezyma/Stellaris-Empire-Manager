@@ -37,6 +37,33 @@ public abstract record Requirement
     /// blocked option in the player's own language rather than inventing wording.
     /// </summary>
     public string? FailureText { get; init; }
+
+    /// <summary>
+    /// This condition and every one nested inside it.
+    /// </summary>
+    /// <remarks>
+    /// Conditions nest three ways and only three — all of, any of, and not — so walking them is a
+    /// small thing, but it was written twice before it was written here. Anything that asks a
+    /// question about the whole of a design's rules needs it: which content packs decide anything,
+    /// which localisation keys a blocked option might show.
+    /// </remarks>
+    public IEnumerable<Requirement> AndNested()
+    {
+        yield return this;
+
+        var children = this switch
+        {
+            AllRequirement all => all.Items,
+            AnyRequirement any => any.Items,
+            NotRequirement not => [not.Item],
+            _ => (IReadOnlyList<Requirement>)[],
+        };
+
+        foreach (var nested in children.SelectMany(c => c.AndNested()))
+        {
+            yield return nested;
+        }
+    }
 }
 
 /// <summary>A condition that is always true or always false.</summary>

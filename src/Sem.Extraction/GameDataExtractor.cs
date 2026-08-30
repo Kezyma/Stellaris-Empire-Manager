@@ -19,9 +19,28 @@ public sealed class GameDataExtractor(LayeredContent content)
     /// Version of the produced database's shape. Raise it when the shape changes, so a cache built
     /// by an older version is rebuilt rather than misread.
     /// </summary>
-    public const int SchemaVersion = 1;
+    public const int SchemaVersion = 2;
 
     private readonly LayeredContent _content = content ?? throw new ArgumentNullException(nameof(content));
+
+    /// <summary>The installation this reads from, when a layer is backed by one.</summary>
+    private string? InstallRoot =>
+        _content.Layers.OfType<DirectoryContentSource>().LastOrDefault()?.Root;
+
+    /// <summary>
+    /// The game's text, read once and shared.
+    /// </summary>
+    /// <remarks>
+    /// Extraction needs this before the database exists, because the random name pools are stored as
+    /// the words themselves rather than as keys. Ten thousand names would otherwise appear twice,
+    /// once as a key in the database and again as text beside it, for no benefit — nothing ever
+    /// needs a name's key once it has the name.
+    /// </remarks>
+    private Dictionary<string, string> Localisation =>
+        _localisation ??= LocalisationExtractor.Extract(_content, _language);
+
+    private Dictionary<string, string>? _localisation;
+    private string _language = "english";
 
     /// <summary>
     /// The images the last extraction referred to, ready to be converted by
@@ -45,7 +64,11 @@ public sealed class GameDataExtractor(LayeredContent content)
     {
         var loader = new ScriptLoader(_content);
         var requirements = new RequirementCompiler();
-        var assets = new AssetCatalog(_content);
+
+        Report("Reading sprite definitions");
+        var sprites = SpriteCatalog.Read(_content);
+
+        var assets = new AssetCatalog(_content, sprites);
         Assets = assets;
 
         Report("Reading shared variables and triggers");
@@ -53,7 +76,7 @@ public sealed class GameDataExtractor(LayeredContent content)
         requirements.LoadScriptedTriggers(loader);
 
         Report("Reading content packs and defines");
-        var dlc = MetadataExtractor.ExtractDlc(loader);
+        var dlc = MetadataExtractor.ExtractDlc(loader, assets);
         var defines = MetadataExtractor.ExtractDefines(loader);
 
         Report("Reading species");
@@ -61,8 +84,8 @@ public sealed class GameDataExtractor(LayeredContent content)
         var speciesClasses = SpeciesExtractor.ExtractSpeciesClasses(loader, requirements);
 
         Report("Reading ethics and traits");
-        var ethics = EthicsExtractor.Extract(loader, assets);
-        var traits = TraitsExtractor.Extract(loader, assets);
+        var ethics = EthicsExtractor.Extract(loader, requirements, assets);
+        var traits = TraitsExtractor.Extract(loader, requirements, assets);
 
         Report("Reading governments");
         var authorities = GovernmentExtractor.ExtractAuthorities(loader, requirements, assets);
@@ -81,18 +104,29 @@ public sealed class GameDataExtractor(LayeredContent content)
         Report("Reading appearance options");
         var rooms = CosmeticsExtractor.ExtractRooms(loader, assets);
         var graphicalCultures = CosmeticsExtractor.ExtractGraphicalCultures(loader, requirements, assets);
+        var shipSets = CosmeticsExtractor.ExtractShipSets(loader);
+        var leaderClasses = CosmeticsExtractor.ExtractLeaderClasses(loader, assets);
         var advisorVoices = CosmeticsExtractor.ExtractAdvisorVoices(loader, requirements, assets);
-        var nameLists = CosmeticsExtractor.ExtractNameLists(loader, requirements);
+        Report("Reading names");
+        var nameLists = CosmeticsExtractor.ExtractNameLists(loader, requirements, Localisation);
+        var speciesNames = NameExtractor.ExtractSpeciesNames(loader, Localisation);
 
         Report("Reading flags");
         var flagCategories = FlagExtractor.ExtractCategories(loader, assets);
         var flagColors = FlagExtractor.ExtractColors(loader);
+        var flagFrames = FlagExtractor.ExtractFrames(loader, assets);
+        var arkships = CosmeticsExtractor.ExtractArkships(loader);
 
         Report("Reading built-in empires");
         var prescripted = MetadataExtractor.ExtractPrescriptedEmpires(loader, requirements);
         var template = MetadataExtractor.ExtractNewEmpireTemplate(loader);
 
-        return new GameDatabase
+        Report("Reading modifier display settings");
+        var modifiers = DescribeModifiers(ethics, traits, authorities, civics);
+        var textIcons = ExtractTextIcons(sprites, assets);
+        var icons = ExtractInterfaceIcons(assets);
+
+        var database = new GameDatabase
         {
             SchemaVersion = SchemaVersion,
             GameVersion = ReadGameVersion() ?? "unknown",
@@ -104,6 +138,12 @@ public sealed class GameDataExtractor(LayeredContent content)
             Archetypes = archetypes,
             SpeciesClasses = speciesClasses,
             Traits = traits,
+            Modifiers = modifiers,
+            SpeciesNames = speciesNames,
+            TextIcons = textIcons,
+            Icons = icons,
+            ScriptedValues = ScriptedValues(loader),
+            ScriptedText = ScriptedText(loader),
             Ethics = ethics,
             Authorities = authorities,
             Civics = civics,
@@ -117,16 +157,295 @@ public sealed class GameDataExtractor(LayeredContent content)
             AdvisorVoices = advisorVoices,
             Rooms = rooms,
             GraphicalCultures = graphicalCultures,
+            ShipSets = shipSets,
+            LeaderClasses = leaderClasses,
             FlagCategories = flagCategories,
             FlagColors = flagColors,
+            FlagFrames = flagFrames,
+            Arkships = arkships,
             PrescriptedEmpires = prescripted,
+            EmpireFlagSets = CosmeticsExtractor.ExtractEmpireFlagSets(loader, prescripted),
             NewEmpireTemplate = template,
             UnrecognisedTriggers = requirements.Unrecognised
                 .OrderByDescending(p => p.Value)
                 .ToDictionary(p => p.Key, p => p.Value, StringComparer.Ordinal),
+            UnrecognisedEffectConditions = requirements.UnrecognisedInEffects
+                .OrderByDescending(p => p.Value)
+                .ToDictionary(p => p.Key, p => p.Value, StringComparer.Ordinal),
         };
 
+        // Which packs decide anything can only be answered once every rule has been compiled, so it
+        // is settled here rather than where the packs themselves are read.
+        return database with { Dlc = MarkDecidingPacks(database) };
+
         void Report(string message) => progress?.Report(message);
+    }
+
+    /// <summary>
+    /// Says of each content pack whether owning it changes anything the designer offers.
+    /// </summary>
+    /// <remarks>
+    /// A pack decides something when some condition, anywhere in the compiled rules, asks for it.
+    /// Answering it here rather than in the interface means the interface has only to read a flag,
+    /// and means the answer is settled against the same installation the rest of the data came from.
+    /// </remarks>
+    private static List<DlcDefinition> MarkDecidingPacks(GameDatabase database)
+    {
+        var named = database.Requirements()
+            .SelectMany(r => r.AndNested())
+            .OfType<DlcRequirement>()
+            .Select(r => r.Name)
+            .ToHashSet(StringComparer.Ordinal);
+
+        return [.. database.Dlc.Select(d => d with { Decides = named.Contains(d.Name) })];
+    }
+
+    /// <summary>
+    /// Collects the pictures that appear inline in the game's sentences.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The game writes these as a code between pound signs — <c>£energy£</c> — and the code names a
+    /// sprite. Most are the dedicated <c>GFX_text_</c> ones, but a sentence may equally call for a
+    /// modifier's own icon, so the code is tried both ways.
+    /// </para>
+    /// <para>
+    /// Which codes exist is decided by reading the text rather than by taking every sprite in the
+    /// game: the codes are what has to be resolved, and the text is where they are.
+    /// </para>
+    /// </remarks>
+    /// <summary>
+    /// The numbers the script names rather than writes, which the text refers to as well.
+    /// </summary>
+    /// <remarks>
+    /// The loader has already gathered them, since a cost or a weight is as often a variable as a
+    /// literal. Only the ones that resolve to a number are kept: a few name a whole block or another
+    /// piece of script, and those mean nothing in a sentence.
+    /// </remarks>
+    private static Dictionary<string, double> ScriptedValues(ScriptLoader loader)
+    {
+        var values = new Dictionary<string, double>(StringComparer.Ordinal);
+
+        foreach (var (name, _) in loader.Variables)
+        {
+            if (loader.ResolveNumber(name) is { } number)
+            {
+                values[name.TrimStart('@')] = number;
+            }
+        }
+
+        return values;
+    }
+
+    /// <summary>
+    /// What each scripted phrase in the game's display text falls back to.
+    /// </summary>
+    /// <remarks>
+    /// A <c>defined_text</c> is a name, a list of conditional branches, and a default. Every branch
+    /// asks about a game in progress — whether a patron has been met, whether a war is on — so at
+    /// design time the default is the one that applies, and it is a localisation key like any
+    /// other. Entries with no default are left out: the game shows nothing for those either.
+    /// </remarks>
+    private static Dictionary<string, string> ScriptedText(ScriptLoader loader)
+    {
+        var texts = new Dictionary<string, string>(StringComparer.Ordinal);
+
+        foreach (var entry in loader.LoadEntries("common/scripted_loc", recursive: true))
+        {
+            if (entry.Key == "defined_text" &&
+                entry.Body.GetString("name") is { Length: > 0 } name &&
+                entry.Body.GetString("default") is { Length: > 0 } fallback)
+            {
+                texts[name] = fallback;
+            }
+        }
+
+        return texts;
+    }
+
+    private Dictionary<string, string> ExtractTextIcons(SpriteCatalog sprites, AssetCatalog assets)
+    {
+        var icons = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var code in IconCodes(Localisation.Values))
+        {
+            var destination = $"icons/text/{code}.png";
+
+            // Shown at the size of a letter, so there is no reason to carry a large picture.
+            const int LetterHeight = 32;
+
+            var path = assets.RegisterSprite($"GFX_text_{code}", destination, LetterHeight)
+                       ?? assets.RegisterSprite($"GFX_{code}", destination, LetterHeight)
+
+                       // Not every icon is declared as a sprite. A modifier's own picture is found
+                       // by its name, which is how the game finds it when nothing declares one.
+                       ?? assets.RegisterFirst(
+                           [
+                               $"gfx/interface/icons/modifiers/{code}.dds",
+                               $"gfx/interface/icons/modifiers/mod_{code}.dds",
+                               $"gfx/interface/icons/resources/{code}.dds",
+                           ],
+                           destination,
+                           LetterHeight);
+
+            if (path is { Length: > 0 })
+            {
+                icons[code] = path;
+            }
+        }
+
+        return icons;
+    }
+
+    /// <summary>
+    /// Pictures the designer's own controls borrow from the game.
+    /// </summary>
+    /// <remarks>
+    /// Named one at a time rather than swept up wholesale: these belong to no option, so nothing
+    /// else would ever ask for them, and a control that wants one should have to say so.
+    /// </remarks>
+    private static Dictionary<string, string> ExtractInterfaceIcons(AssetCatalog assets)
+    {
+        string[] wanted =
+        [
+            // The four the species editor offers for gender.
+            "GFX_button_gender_all",
+            "GFX_button_male",
+            "GFX_button_female",
+            "GFX_button_no_gender",
+
+            // The die the game puts beside every name it will suggest one of.
+            "GFX_button_randomize",
+
+            // The toggle that makes an empire nomadic, which sits beside its authority.
+            "GFX_toggle_nomad",
+        ];
+
+        var icons = new Dictionary<string, string>(StringComparer.Ordinal);
+
+        foreach (var sprite in wanted)
+        {
+            if (assets.RegisterSprite(sprite, $"icons/ui/{sprite}.png", maxDimension: 32) is { } path)
+            {
+                icons[sprite] = path;
+            }
+        }
+
+        // Whether an empire may turn up in a game as somebody else's neighbour is a button rather
+        // than a list: one picture of three, clicked round. The game keys a frame of a sprite by
+        // putting the number after a bar, as its own text does, so the three are keyed that way and
+        // a control asks for the one matching the state it is drawing.
+        for (var frame = 1; frame <= SpawnSettingFrames; frame++)
+        {
+            var key = $"{SpawnSetting}|{frame}";
+
+            if (assets.RegisterSprite(SpawnSetting, $"icons/ui/{SpawnSetting}_{frame}.png", frame: frame) is { } path)
+            {
+                icons[key] = path;
+            }
+        }
+
+        return icons;
+    }
+
+    /// <summary>The button the game's setup screen puts the spawn setting on.</summary>
+    private const string SpawnSetting = "GFX_button_empire_spawn_setting";
+
+    /// <summary>
+    /// How many pictures that button has, being its three states.
+    /// </summary>
+    /// <remarks>
+    /// <c>noOfFrames = 3</c> in <c>interface/game_setup/main.gfx</c>. Which frame stands for which
+    /// state is not written anywhere: the game picks by index in code. Taken here in the order the
+    /// game words them — allowed, forbidden, forced — and confirmed by looking.
+    /// </remarks>
+    private const int SpawnSettingFrames = 3;
+
+    /// <summary>
+    /// Every icon code the game's text refers to.
+    /// </summary>
+    /// <remarks>
+    /// A code may carry a frame number after a vertical bar, naming a variant of the same picture,
+    /// which is the same icon as far as this is concerned.
+    /// </remarks>
+    private static IEnumerable<string> IconCodes(IEnumerable<string> text)
+    {
+        var codes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var value in text)
+        {
+            var start = value.IndexOf('£');
+
+            while (start >= 0)
+            {
+                var end = value.IndexOf('£', start + 1);
+
+                if (end < 0)
+                {
+                    break;
+                }
+
+                var code = value[(start + 1)..end].Split('|')[0];
+
+                if (code.Length > 0)
+                {
+                    codes.Add(code);
+                }
+
+                start = value.IndexOf('£', end + 1);
+            }
+        }
+
+        return codes;
+    }
+
+    /// <summary>
+    /// Works out how to display every modifier the options actually use.
+    /// </summary>
+    /// <remarks>
+    /// Only the modifiers reachable from the designer are described, which is a few hundred rather
+    /// than the several thousand the game defines. That keeps the database small and, more usefully,
+    /// makes the number of them that had to be guessed at a figure small enough to act on.
+    /// </remarks>
+    private Dictionary<string, ModifierInfo> DescribeModifiers(
+        IEnumerable<EthicDefinition> ethics,
+        IEnumerable<TraitDefinition> traits,
+        IEnumerable<AuthorityDefinition> authorities,
+        IEnumerable<CivicDefinition> civics)
+    {
+        var catalog = ModifierCatalog.Read(_content, InstallRoot);
+        var observed = new Dictionary<string, List<double>>(StringComparer.Ordinal);
+
+        foreach (var effects in ethics.Select(e => e.Effects)
+                     .Concat(traits.Select(t => t.Effects))
+                     .Concat(authorities.Select(a => a.Effects))
+                     .Concat(civics.Select(c => c.Effects)))
+        {
+            Record(effects.Modifiers);
+
+            foreach (var conditional in effects.Conditional)
+            {
+                Record(conditional.Modifiers);
+            }
+        }
+
+        return observed.ToDictionary(
+            p => p.Key,
+            p => catalog.Describe(p.Key, p.Value),
+            StringComparer.Ordinal);
+
+        void Record(IReadOnlyDictionary<string, double> modifiers)
+        {
+            foreach (var (key, value) in modifiers)
+            {
+                if (!observed.TryGetValue(key, out var values))
+                {
+                    observed[key] = values = [];
+                }
+
+                values.Add(value);
+            }
+        }
     }
 
     /// <summary>
@@ -146,7 +465,13 @@ public sealed class GameDataExtractor(LayeredContent content)
         string language = "english",
         GameDatabase? reachableFrom = null)
     {
-        var all = LocalisationExtractor.Extract(_content, language);
+        if (!string.Equals(language, _language, StringComparison.OrdinalIgnoreCase))
+        {
+            _language = language;
+            _localisation = null;
+        }
+
+        var all = Localisation;
         return reachableFrom is null ? all : LocalisationPruner.Prune(reachableFrom, all);
     }
 

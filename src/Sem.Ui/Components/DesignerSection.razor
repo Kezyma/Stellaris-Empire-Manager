@@ -1,0 +1,56 @@
+@*
+    One part of the designer, collapsible.
+
+    Sections start closed. Eight of them open at once is a page taller than any screen, and the
+    header carries what is chosen in it, so a closed designer still reads as a summary of the whole
+    empire — which is the thing worth seeing first.
+*@
+
+<section class="sem-section @(_open ? "open" : "closed")">
+    <button type="button" class="head" @onclick="() => _open = !_open">
+        <span class="chevron">@(_open ? "▾" : "▸")</span>
+        <span class="title">@Title</span>
+
+        @if (Summary is { Length: > 0 })
+        {
+            <span class="summary">@Summary</span>
+        }
+
+        @if (Problems > 0)
+        {
+            <span class="count">@Problems</span>
+        }
+    </button>
+
+    @if (_open)
+    {
+        <div class="body">
+            @ChildContent
+        </div>
+    }
+</section>
+
+@code {
+    private bool _open = true;
+
+    /// <summary>The section's name.</summary>
+    [Parameter, EditorRequired]
+    public required string Title { get; set; }
+
+    /// <summary>What is currently chosen, shown in the header so a closed section still says so.</summary>
+    [Parameter]
+    public string? Summary { get; set; }
+
+    /// <summary>How many problems belong to this section.</summary>
+    [Parameter]
+    public int Problems { get; set; }
+
+    /// <summary>Whether it begins open.</summary>
+    [Parameter]
+    public bool StartOpen { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    protected override void OnInitialized() => _open = StartOpen;
+}

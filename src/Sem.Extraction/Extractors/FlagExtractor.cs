@@ -1,3 +1,4 @@
+using Sem.Assets;
 using Sem.Clausewitz;
 using Sem.GameData;
 
@@ -45,7 +46,17 @@ internal static class FlagExtractor
                 // Backgrounds and emblems are shipped as ingredients rather than finished flags:
                 // the colours a player picks are applied when the flag is drawn, and pre-baking
                 // every combination of seventy-two colours is not worth contemplating.
-                assets.Register(source, $"flags/{category}/{Path.GetFileNameWithoutExtension(name)}.png");
+                var stem = Path.GetFileNameWithoutExtension(name);
+
+                if (isBackground)
+                {
+                    RegisterBackgroundChannels(assets, source, category, stem);
+                }
+                else
+                {
+                    assets.Register(source, $"flags/{category}/{stem}.png");
+                }
+
                 files.Add(name);
             }
 
@@ -61,13 +72,117 @@ internal static class FlagExtractor
         return results;
     }
 
+    /// <summary>Where the game declares how a flag is framed.</summary>
+    private const string FrameDeclarations = "interface/game_setup/customization.gfx";
+
+    /// <summary>
+    /// The sizes the game actually draws a flag at, and nothing else.
+    /// </summary>
+    /// <remarks>
+    /// The file declares more than these. Some are variants for a particular kind of empire — the
+    /// traders, the curators — which frame the same field identically and would only be duplicates
+    /// here. Three others, <c>_large</c>, <c>_medium</c> and <c>_small</c>, are leftovers no
+    /// interface file refers to, and one of them puts a symbol larger than the field it sits in, so
+    /// taking them would be taking a mistake.
+    /// </remarks>
+    private static readonly string[] FramedSizes =
+    [
+        "GFX_empire_flag_200",
+        "GFX_empire_flag_128",
+        "GFX_empire_flag_64",
+        "GFX_empire_flag_48",
+        "GFX_empire_flag_32",
+    ];
+
+    /// <summary>
+    /// Reads how the game frames a flag, and the pictures it frames one with.
+    /// </summary>
+    /// <remarks>
+    /// The measurements are read rather than written down here because there are five sets of them
+    /// and they do not follow a rule: the emblem is 130 of a 186 field at the largest size and 24 of
+    /// 30 at the smallest. Only the width is kept — every one of them is square, and a flag that
+    /// stopped being square would be a bigger change than a field.
+    /// </remarks>
+    public static List<FlagFrameDefinition> ExtractFrames(ScriptLoader loader, AssetCatalog assets)
+    {
+        var results = new List<FlagFrameDefinition>();
+
+        if (loader.Load(FrameDeclarations) is not { } document)
+        {
+            return results;
+        }
+
+        var declarations = document.Nodes
+            .Where(n => n.Key == "spriteTypes")
+            .SelectMany(n => n.Block?.Nodes ?? [])
+            .Where(n => n.Key == "flagSpriteType");
+
+        foreach (var node in declarations)
+        {
+            if (node.Block is not { } body ||
+                body.GetString("name") is not { Length: > 0 } key ||
+                !FramedSizes.Contains(key, StringComparer.Ordinal) ||
+                body.GetString("textureFile") is not { Length: > 0 } frame ||
+                Extent(body, "bg_size") is not { } fieldSize ||
+                Offset(body, "bg_position") is not { } fieldOffset ||
+                Extent(body, "symbol_size") is not { } emblemSize ||
+                Offset(body, "symbol_position") is not { } emblemOffset)
+            {
+                continue;
+            }
+
+            // The frame's own texture settles the size of the whole thing, which the file says
+            // outright: "this one will determine the size of the sprite".
+            var stem = Path.GetFileNameWithoutExtension(frame);
+
+            results.Add(new FlagFrameDefinition(
+                key,
+                Measure(loader, frame),
+                fieldOffset,
+                fieldSize,
+                emblemOffset,
+                emblemSize)
+            {
+                FrameImage = assets.Register(frame, $"flags/frames/{stem}.png"),
+                MaskImage = body.GetString("masking_texture") is { Length: > 0 } mask
+                    ? assets.Register(mask, $"flags/frames/{Path.GetFileNameWithoutExtension(mask)}.png")
+                    : null,
+            });
+        }
+
+        return results;
+    }
+
+    /// <summary>How wide a texture is, which is the only way to know how big a frame is.</summary>
+    /// <remarks>
+    /// The sprite's name is nominal rather than a measurement — the one called 128 is 131 pixels
+    /// across — so the number has to come from the picture. Five small textures, decoded once.
+    /// </remarks>
+    private static double Measure(ScriptLoader loader, string texture) =>
+        loader.Content.Contains(texture) ? DdsReader.Read(loader.Content.Read(texture)).Width : 0;
+
+    /// <summary>A width from a <c>{ width = n height = n }</c> pair.</summary>
+    private static double? Extent(CwBlock body, string key) =>
+        body.GetBlock(key)?.GetString("width") is { } width &&
+        double.TryParse(width, System.Globalization.CultureInfo.InvariantCulture, out var value)
+            ? value
+            : null;
+
+    /// <summary>An x from an <c>{ x = n y = n }</c> pair.</summary>
+    private static double? Offset(CwBlock body, string key) =>
+        body.GetBlock(key)?.GetString("x") is { } x &&
+        double.TryParse(x, System.Globalization.CultureInfo.InvariantCulture, out var value)
+            ? value
+            : null;
+
     /// <summary>
     /// Reads the named colours a flag can be tinted with.
     /// </summary>
     /// <remarks>
-    /// Each colour carries three tints, for the flag, the galaxy map and ship trails. Only the
-    /// flag tint matters here. The file also holds suggested colour combinations at its top level,
-    /// outside the colours block, which are only used when the game invents an empire.
+    /// Each colour carries three tints — flag, galaxy map and ship trails — and all three are kept,
+    /// because the designer offers a map colour as well as the two flag colours and a swatch showing
+    /// the wrong one of the three would be misleading. The file also holds suggested combinations at
+    /// its top level, outside the colours block, used when the game invents an empire.
     /// </remarks>
     public static List<FlagColorDefinition> ExtractColors(ScriptLoader loader)
     {
@@ -83,19 +198,71 @@ internal static class FlagExtractor
 
         foreach (var node in colors.Nodes)
         {
-            if (node.Key is not { Length: > 0 } key || node.Block is null)
+            if (node.Key is not { Length: > 0 } key || node.Block is not { } body)
             {
                 continue;
             }
 
-            if (ReadRgb(node.Block, "flag") is { } rgb)
+            if (ReadRgb(body, "flag") is not { } flag)
             {
-                results.Add(new FlagColorDefinition(key, rgb.R, rgb.G, rgb.B));
+                continue;
             }
+
+            // A colour that names no map or ship tint uses its flag tint for them.
+            var map = ReadRgb(body, "map") ?? flag;
+            var ship = ReadRgb(body, "ship") ?? flag;
+
+            results.Add(new FlagColorDefinition(key, flag.R, flag.G, flag.B)
+            {
+                MapRed = map.R,
+                MapGreen = map.G,
+                MapBlue = map.B,
+                ShipRed = ship.R,
+                ShipGreen = ship.G,
+                ShipBlue = ship.B,
+            });
         }
 
         return results;
     }
+
+    /// <summary>
+    /// Writes a background out as three separate shapes, one per colour channel.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A flag background is not a picture and not a brightness ramp. It is three independent shapes
+    /// packed into one file's red, green and blue, which the game's shader multiplies by the three
+    /// chosen colours and adds together. The horizontal background, for instance, holds six equal
+    /// bands: the three colours and the three pairs of them added.
+    /// </para>
+    /// <para>
+    /// Separating them here is what lets the flag be drawn correctly with no code at all at display
+    /// time — three stacked layers, each stencilled by its own shape, added together.
+    /// </para>
+    /// </remarks>
+    private static void RegisterBackgroundChannels(
+        AssetCatalog assets,
+        string source,
+        string category,
+        string stem)
+    {
+        foreach (var (channel, suffix) in ChannelSuffixes)
+        {
+            // Every channel is written even where a background leaves one empty. An empty one costs
+            // almost nothing compressed, and a mask that fails to load does not hide its layer — it
+            // reveals all of it, which would be a solid block of colour across the flag.
+            assets.RegisterChannel(source, $"flags/{category}/{stem}.{suffix}.png", channel);
+        }
+    }
+
+    /// <summary>The colour channels of a flag background, and how their files are named.</summary>
+    private static readonly (ColorChannel Channel, string Suffix)[] ChannelSuffixes =
+    [
+        (ColorChannel.Red, "r"),
+        (ColorChannel.Green, "g"),
+        (ColorChannel.Blue, "b"),
+    ];
 
     private static IEnumerable<string> EnumerateCategories(LayeredContent content)
     {

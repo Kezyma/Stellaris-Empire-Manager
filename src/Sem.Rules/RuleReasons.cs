@@ -14,10 +14,14 @@ public static class RuleReasons
     /// <summary>Separates a reason from the thing it refers to.</summary>
     public const char Separator = ':';
 
-    /// <summary>The species' archetype cannot take this trait.</summary>
+    /// <summary>
+    /// The species' archetype cannot take this trait. Followed by the archetypes it allows.
+    /// </summary>
     public const string WrongArchetype = "sem.trait.archetype";
 
-    /// <summary>The species' class cannot take this trait.</summary>
+    /// <summary>
+    /// The species' class cannot take this trait. Followed by the classes it allows.
+    /// </summary>
     public const string WrongSpeciesClass = "sem.trait.species_class";
 
     /// <summary>The trait needs a different homeworld. Followed by the classes it allows.</summary>

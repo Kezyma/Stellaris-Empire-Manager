@@ -1,0 +1,75 @@
+@*
+    Everything the empire's choices add up to.
+
+    Modifiers are summed rather than listed per source, because an empire whose ethic and whose civic
+    both raise ship fire rate has one fire rate. Where more than one choice contributes, the panel
+    says which — that is usually the interesting part.
+*@
+
+@using Sem.Rules
+
+<div class="sem-combined">
+    <h4>@Session.Localizer.Label("SUMMARY_EMPIRE_MODIFIERS", "Empire Modifiers")</h4>
+
+    @if (Combined.Count == 0)
+    {
+        <p class="sem-hint">
+            Nothing yet. Ethics, an authority, civics, an origin and species traits all contribute.
+        </p>
+    }
+    else
+    {
+        <ul class="sem-modifiers">
+            @foreach (var modifier in Combined)
+            {
+                var formatted = Session.Modifiers.Format(modifier.Key, modifier.Total);
+
+                <li title="@SourceSummary(modifier)">
+                    <span class="label">@((MarkupString)Session.Modifiers.LabelHtml(modifier.Key))</span>
+                    <span class="value @ToneClass(formatted.Tone)">@formatted.Value</span>
+                    @if (modifier.Sources.Count > 1)
+                    {
+                        <span class="sources">@modifier.Sources.Count</span>
+                    }
+                </li>
+            }
+        </ul>
+
+        <p class="sem-hint">
+            Conditional bonuses are left out, since they depend on a game already in progress.
+        </p>
+    }
+</div>
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>
+    /// The empire to add up, where it is not the one being edited.
+    /// </summary>
+    /// <remarks>
+    /// The select screen shows empires nobody has opened — the player's other designs, and the
+    /// game's own — and each of those has a context of its own. Without this the panel could only
+    /// ever describe whatever happened to be open, which on that screen is the wrong empire or none.
+    /// </remarks>
+    [Parameter]
+    public DesignContext? Context { get; set; }
+
+    private IReadOnlyList<CombinedModifier> Combined =>
+        (Context ?? Session.Context) is { } context ? DesignEffects.Combine(context) : [];
+
+    /// <summary>Names the choices behind a total, for the reader who wonders where it came from.</summary>
+    private string SourceSummary(CombinedModifier modifier) =>
+        string.Join(
+            ", ",
+            modifier.Sources.Select(s =>
+                $"{Session.Localizer.Text(s.SourceKey)} {Session.Modifiers.Format(modifier.Key, s.Value).Value}"));
+
+    private static string ToneClass(ModifierTone tone) => tone switch
+    {
+        ModifierTone.Good => "good",
+        ModifierTone.Bad => "bad",
+        _ => string.Empty,
+    };
+}

@@ -16,7 +16,17 @@ builder.Services.AddScoped<IGameDataSource>(services =>
 
 builder.Services.AddScoped<IFileExchange, BrowserFileExchange>();
 
+// A tab that is closed should not take an evening's work with it, so the designs are kept in the
+// browser between visits.
+builder.Services.AddScoped<IDesignStore, BrowserDesignStore>();
+
 // One session for the whole app, so moving between the list and the designer keeps unsaved work.
-builder.Services.AddScoped<SessionHost>();
+// Every content pack is assumed: the installation the data was read from is not the player's, and a
+// designer that hides half the game until a setting is found is worse than one that offers too much.
+builder.Services.AddScoped(services => new SessionHost(
+    services.GetRequiredService<IGameDataSource>(),
+    services.GetRequiredService<IFileExchange>(),
+    services.GetRequiredService<IDesignStore>(),
+    assumeAllPacks: true));
 
 await builder.Build().RunAsync();

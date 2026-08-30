@@ -17,6 +17,59 @@ internal static partial class LocalisationPruner
     /// <summary>How far to follow references between entries before giving up.</summary>
     private const int MaxExpansionRounds = 8;
 
+    /// <summary>
+    /// The words the game's own empire creation screen puts on its fields.
+    /// </summary>
+    /// <remarks>
+    /// Taken from the <c>text = </c> attributes in <c>interface/customize_species_editors.gui</c>
+    /// and <c>interface/game_setup</c>, so a label reads as the game words it rather than as
+    /// whatever English seemed reasonable — and reads in the player's language when they have one.
+    /// </remarks>
+    internal static readonly string[] DesignerLabels =
+    [
+        "EMPIRE_NAME", "EMPIRE_ADJECTIVE", "SHIP_PREFIX",
+        "SPECIES_NAME", "SPECIES_PLURAL", "SPECIES_ADJECTIVE", "SPECIES_CLASS_LABEL",
+        "NAME_LIST", "PORTRAIT", "GENDER",
+        "TRAITS", "TRAIT_POINTS", "POINTS_LEFT", "PICKS_LEFT",
+        "ETHICS", "POINTS_LEFT_ETHICS",
+        "GOVERNMENT_AUTHORITY_AND_TYPE", "GOVERNMENT_LABEL", "CIVICS_LABEL", "POINTS_LEFT_CIVICS",
+        "ORIGIN",
+        "HOMEWORLD_CLASS_LABEL", "HOMEWORLD_NAME",
+        "SELECT_SYSTEM_INITIALIZER_LABEL", "SYSTEM_NAME",
+        "RANDOM_FRONTEND_NAME", "random_system_initializer_DESC",
+        "EMPIRE_ADVISOR", "EMPIRE_CREATION_ROOM_APPEARANCE", "EMPIRE_CREATION_CITY_APPEARANCE", "SHIPSETS_LABEL",
+        "SHIPSET_MECHANICAL", "SHIPSET_BIOLOGICAL",
+        "EMPIRE_FLAG", "CHOOSE_SYMBOL", "EMBLEM_BACKGROUND_PATTERN",
+        "PRIMARY_COLOR", "SECONDARY_COLOR", "TERTIARY_COLOR",
+        // The game words its four title boxes as a pair of headings over a pair of genders: "Ruler
+        // Title" and "Heir Title" each over "Male" and "Female".
+        "RULER_CLASS", "RULER_TITLE", "HEIR_TITLE",
+        "RULER_TITLE_MALE", "RULER_TITLE_FEMALE", "HEIR_TITLE_MALE", "HEIR_TITLE_FEMALE",
+        "LEADER_NAME",
+
+        // What the game's own empire list puts on its third line, under the government.
+        "SPECIES_CLASS_LABEL",
+        "IS_NOMADIC",
+        "SUMMARY_EMPIRE_MODIFIERS",
+
+        // The words on the ruler's appearance, which the game's own leader editor uses.
+        // EVOLUTION_VARIANT is deliberately absent: the game offers two controls for it and a design
+        // holds one number, decided in play, so there is nothing here to label.
+        "LEADER_SUB_PORTRAIT", "VARIATION", "ATTACHMENTS", "CLOTHES",
+        "EVOLUTION_STAGE", "CHOOSE_SEX",
+
+        // What a portrait may call its attachment instead, by its custom_attachment_label.
+        "HAIR_STYLE", "HAT", "MASK",
+
+        // The box a player writes an empire's or a ruler's own story in.
+        "BIOGRAPHY",
+
+        // The three states of the spawn button, and the sentence each shows on hovering.
+        "EMPIRE_SPAWN_ALLOWED", "EMPIRE_SPAWN_ALLOWED_DESC",
+        "EMPIRE_SPAWN_DISALLOWED", "EMPIRE_SPAWN_DISALLOWED_DESC",
+        "EMPIRE_SPAWN_ALWAYS", "EMPIRE_SPAWN_ALWAYS_DESC",
+    ];
+
     /// <summary>Keeps only the entries the database can reach, following references between them.</summary>
     public static Dictionary<string, string> Prune(
         GameDatabase database,
@@ -44,7 +97,7 @@ internal static partial class LocalisationPruner
 
                 // A displayed string can name other entries, and those have to travel with it or
                 // the player sees a raw key where a word should be.
-                foreach (var referenced in FindReferences(value))
+                foreach (var referenced in FindReferences(value, database.ScriptedText))
                 {
                     if (!kept.ContainsKey(referenced))
                     {
@@ -81,13 +134,14 @@ internal static partial class LocalisationPruner
         {
             Add(trait.NameKey);
             Add(trait.DescriptionKey);
-            AddModifiers(trait.Modifiers);
+            AddEffects(trait.Effects);
         }
 
         foreach (var ethic in database.Ethics)
         {
             Add(ethic.NameKey);
             Add(ethic.DescriptionKey);
+            AddEffects(ethic.Effects);
         }
 
         foreach (var authority in database.Authorities)
@@ -96,7 +150,7 @@ internal static partial class LocalisationPruner
             Add(authority.DescriptionKey);
             AddRequirement(authority.Possible);
             AddRequirement(authority.Playable);
-            AddModifiers(authority.Modifiers);
+            AddEffects(authority.Effects);
         }
 
         foreach (var civic in database.Civics)
@@ -108,7 +162,7 @@ internal static partial class LocalisationPruner
             AddRequirement(civic.Potential);
             AddRequirement(civic.Possible);
             AddRequirement(civic.Playable);
-            AddModifiers(civic.Modifiers);
+            AddEffects(civic.Effects);
         }
 
         foreach (var government in database.GovernmentTypes)
@@ -152,6 +206,24 @@ internal static partial class LocalisationPruner
         foreach (var initializer in database.Initializers)
         {
             Add(initializer.NameKey);
+            Add(initializer.DescriptionKey);
+        }
+
+        // The designer's own furniture: every label the game's empire creation screen puts on a
+        // field, so this one reads as the game reads and translates with it. Named one at a time
+        // because nothing in the database refers to them, and anything unreferenced is pruned.
+        foreach (var label in DesignerLabels)
+        {
+            Add(label);
+        }
+
+        // A ready-made species is stored in a design by its key, so the key has to be readable.
+        foreach (var species in database.SpeciesNames)
+        {
+            Add(species.NameKey);
+            Add(species.PluralKey);
+            Add(species.HomePlanetKey);
+            Add(species.HomeSystemKey);
         }
 
         foreach (var voice in database.AdvisorVoices)
@@ -160,9 +232,20 @@ internal static partial class LocalisationPruner
             AddRequirement(voice.Playable);
         }
 
+        foreach (var group in database.ShipSets)
+        {
+            Add(group.NameKey);
+        }
+
+        foreach (var leaderClass in database.LeaderClasses)
+        {
+            Add(leaderClass.NameKey);
+        }
+
         foreach (var culture in database.GraphicalCultures)
         {
             Add(culture.NameKey);
+            Add(culture.DescriptionKey);
             AddRequirement(culture.Selectable);
         }
 
@@ -171,10 +254,26 @@ internal static partial class LocalisationPruner
             Add(category.NameKey);
         }
 
+        // An arkship's name is built from two other entries — a class word and the word "Arkship" —
+        // so both have to travel with it. The reference-following pass finds them from the name.
+        foreach (var arkship in database.Arkships)
+        {
+            Add(arkship.NameKey);
+        }
+
         foreach (var empire in database.PrescriptedEmpires)
         {
             Add(empire.NameKey);
+            Add($"{empire.NameKey}_desc");
             AddRequirement(empire.Playable);
+
+            // Everything the empire itself names — its species, its ship prefix, its ruler. These
+            // are keys the design holds rather than anything the database refers to, so without
+            // reading them out of the design they are pruned and the empire reads as its own keys.
+            foreach (Match match in StoredKey().Matches(empire.Design ?? string.Empty))
+            {
+                Add(match.Groups[1].Value);
+            }
         }
 
         foreach (var pack in database.Dlc)
@@ -206,40 +305,45 @@ internal static partial class LocalisationPruner
         {
             foreach (var key in modifiers.Keys)
             {
-                // The game names a modifier either with a lowercase override or an uppercase
-                // hand-written label, so both spellings have to be looked for.
+                // A modifier's label is written one of three ways and the three barely overlap: a
+                // lowercase prefixed key, an uppercase one, or the modifier's own name with no
+                // prefix at all. Dropping any of them leaves effects lines with no label.
                 Add($"mod_{key}");
                 Add($"mod_{key}_desc");
                 Add($"MOD_{key.ToUpperInvariant()}");
                 Add($"MOD_{key.ToUpperInvariant()}_DESC");
+                Add(key);
+                Add($"{key}_tt");
             }
+        }
+
+        void AddEffects(EffectSet effects)
+        {
+            AddModifiers(effects.Modifiers);
+
+            foreach (var conditional in effects.Conditional)
+            {
+                AddModifiers(conditional.Modifiers);
+                AddRequirement(conditional.When);
+            }
+
+            foreach (var tag in effects.TagKeys)
+            {
+                Add(tag);
+            }
+
+            Add(effects.DescriptionKey);
+            Add(effects.PenaltyKey);
+            Add(effects.TooltipKey);
         }
 
         void AddRequirement(Requirement requirement)
         {
-            Add(requirement.FailureText);
-
-            switch (requirement)
+            // A blocked option shows the explanation of whichever condition turned it down, and a
+            // condition nested three deep is as able to be the one that did.
+            foreach (var nested in requirement.AndNested())
             {
-                case AllRequirement all:
-                    foreach (var item in all.Items)
-                    {
-                        AddRequirement(item);
-                    }
-
-                    break;
-
-                case AnyRequirement any:
-                    foreach (var item in any.Items)
-                    {
-                        AddRequirement(item);
-                    }
-
-                    break;
-
-                case NotRequirement not:
-                    AddRequirement(not.Item);
-                    break;
+                Add(nested.FailureText);
             }
         }
     }
@@ -249,7 +353,9 @@ internal static partial class LocalisationPruner
     /// and bracketed references such as <c>['trait:trait_adaptive']</c> that render another entry's
     /// name inline.
     /// </summary>
-    private static IEnumerable<string> FindReferences(string value)
+    private static IEnumerable<string> FindReferences(
+        string value,
+        IReadOnlyDictionary<string, string> scriptedText)
     {
         foreach (Match match in VariableReference().Matches(value))
         {
@@ -260,13 +366,50 @@ internal static partial class LocalisationPruner
         {
             yield return match.Groups[1].Value;
         }
+
+        // A call into the game's script shows its default branch at design time, and that branch
+        // is an entry like any other — dropped, the sentence around it stops mid-phrase.
+        foreach (Match match in ScriptedCall().Matches(value))
+        {
+            if (scriptedText.GetValueOrDefault(match.Groups[1].Value) is { Length: > 0 } key)
+            {
+                yield return key;
+            }
+        }
     }
 
     /// <summary>Matches <c>$KEY$</c> and <c>$KEY|format$</c>.</summary>
     [GeneratedRegex(@"\$([A-Za-z_][A-Za-z0-9_.]*)(?:\|[^$]*)?\$")]
     private static partial Regex VariableReference();
 
-    /// <summary>Matches <c>['scope:key']</c>, capturing the key.</summary>
-    [GeneratedRegex(@"\['[a-z_]+:([A-Za-z0-9_.]+)'\]")]
+    /// <summary>
+    /// Matches <c>[Scope.Name]</c> and the bare <c>[Name]</c>, capturing the scripted phrase.
+    /// </summary>
+    /// <remarks>
+    /// The scope is optional, and has to be: the bare form is the commoner one in what a designer
+    /// shows. Requiring it meant the entries those phrases resolve to were never followed and so
+    /// never kept, which is half of why they showed as raw script.
+    /// </remarks>
+    [GeneratedRegex(@"\[(?:[A-Za-z][A-Za-z0-9_]*\.)*([A-Za-z][A-Za-z0-9_]*)\]")]
+    private static partial Regex ScriptedCall();
+
+    /// <summary>
+    /// Matches <c>['scope:key']</c> and the bare <c>['key']</c>, capturing the key.
+    /// </summary>
+    /// <remarks>
+    /// Space after the bracket allowed, because the game's own text has it in places — the riftworld
+    /// origin writes <c>[ 'concept_astral_rift'</c> — and a key not matched here is a key not kept.
+    /// </remarks>
+    [GeneratedRegex(@"\[\s*'(?:[a-z_]+:)?([A-Za-z0-9_.]+)'")]
     private static partial Regex ScopedReference();
+
+    /// <summary>
+    /// Matches a name a design stores by key, as <c>key="SPEC_Oxanalytor"</c>.
+    /// </summary>
+    /// <remarks>
+    /// The percent-wrapped templates are skipped: the engine builds those and the game's text has no
+    /// entry for any of them.
+    /// </remarks>
+    [GeneratedRegex(@"key=""([A-Za-z_][A-Za-z0-9_.]*)""")]
+    private static partial Regex StoredKey();
 }

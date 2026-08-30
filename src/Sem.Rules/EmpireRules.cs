@@ -142,17 +142,33 @@ public sealed class EmpireRules(GameDatabase database)
         return best;
     }
 
+    /// <summary>The world a nomadic empire begins on, which is its ship.</summary>
+    private const string Arkship = "pc_ark";
+
+    private bool HasPlanetClass(string key) =>
+        _database.PlanetClasses.Any(p => string.Equals(p.Key, key, StringComparison.Ordinal));
+
     /// <summary>
     /// The homeworld types this empire may start on.
     /// </summary>
     /// <remarks>
     /// Normally the classes the game flags as starting worlds, but an origin can replace that
     /// outright, which is how Void Dwellers begin on a habitat, and civics, origins and species
-    /// classes can each add or remove types.
+    /// classes can each add or remove types. A nomadic empire has no world at all and begins on its
+    /// ship.
     /// </remarks>
     public IReadOnlyList<string> GetHomeworldOptions(DesignContext context)
     {
         ArgumentNullException.ThrowIfNull(context);
+
+        // A nomadic empire lives aboard an arkship, whatever else it chose. Nothing in the script
+        // says so — the arkship class is marked as no starting planet, and no origin or civic names
+        // it — but the game's own nomadic empires all begin there, and the toggle is what puts them
+        // there.
+        if (context.IsNomadic && HasPlanetClass(Arkship))
+        {
+            return [Arkship];
+        }
 
         // An origin that supplies its own world leaves nothing to choose.
         if (OriginOf(context) is { } chosen &&
@@ -208,15 +224,26 @@ public sealed class EmpireRules(GameDatabase database)
     }
 
     /// <summary>Traits the design forces onto the founder species and the player cannot remove.</summary>
-    public IReadOnlyList<string> GetForcedTraits(DesignContext context)
+    public IReadOnlyList<string> GetForcedTraits(DesignContext context) =>
+        [.. GetForcedTraitSources(context).Select(f => f.Trait).Distinct(StringComparer.Ordinal)];
+
+    /// <summary>
+    /// The same traits, each with whatever put it there.
+    /// </summary>
+    /// <remarks>
+    /// A player told only that a trait is "fixed by the species class, authority, civics or origin"
+    /// is being asked to work out which, from a list of four things any of which might be to blame.
+    /// The answer is known here, where the list is built, and costs nothing to carry out.
+    /// </remarks>
+    public IReadOnlyList<ForcedTrait> GetForcedTraitSources(DesignContext context)
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        var forced = new List<string>();
+        var forced = new List<ForcedTrait>();
 
-        if (SpeciesClassOf(context)?.ForcedTrait is { Length: > 0 } classTrait)
+        if (SpeciesClassOf(context) is { ForcedTrait: { Length: > 0 } classTrait } speciesClass)
         {
-            forced.Add(classTrait);
+            forced.Add(new ForcedTrait(classTrait, speciesClass.Key, ForcedTraitSource.SpeciesClass));
         }
 
         if (context.Authority is { } authorityKey)
@@ -224,13 +251,84 @@ public sealed class EmpireRules(GameDatabase database)
             var authority = _database.Authorities
                 .FirstOrDefault(a => string.Equals(a.Key, authorityKey, StringComparison.Ordinal));
 
-            forced.AddRange(authority?.ForcedTraits ?? []);
+            forced.AddRange((authority?.ForcedTraits ?? [])
+                .Select(t => new ForcedTrait(t, authorityKey, ForcedTraitSource.Authority)));
         }
 
-        forced.AddRange(SelectedCivicsAndOrigin(context).SelectMany(c => c.ForcedTraits));
+        foreach (var civic in SelectedCivicsAndOrigin(context))
+        {
+            var kind = civic.IsOrigin ? ForcedTraitSource.Origin : ForcedTraitSource.Civic;
+            forced.AddRange(civic.ForcedTraits.Select(t => new ForcedTrait(t, civic.Key, kind)));
+        }
 
-        return [.. forced.Distinct(StringComparer.Ordinal)];
+        if (HabitabilityTraitFor(context) is { Length: > 0 } preference)
+        {
+            forced.Add(new ForcedTrait(preference, context.EffectivePlanetClass, ForcedTraitSource.Homeworld));
+        }
+
+        // First claim wins, so a trait held for two reasons names the more specific of them.
+        return [.. forced
+            .GroupBy(f => f.Trait, StringComparer.Ordinal)
+            .Select(g => g.First())];
     }
+
+    /// <summary>
+    /// The habitability preference the homeworld gives the species.
+    /// </summary>
+    /// <remarks>
+    /// A species does not choose what it is suited to; the world it evolved on decides. The game
+    /// names these traits after the thing that grants them — <c>trait_pc_continental_preference</c>
+    /// for a planet class, or <c>trait_auto_wet_preference</c> for a climate where several classes
+    /// share one — so the trait is found by name rather than by a list that would need maintaining.
+    /// </remarks>
+    public string? HabitabilityTraitFor(DesignContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        return HabitabilityTraitFor(context.EffectivePlanetClass);
+    }
+
+    /// <summary>
+    /// The habitability preference a given world would give, whether or not it is the one chosen.
+    /// </summary>
+    /// <remarks>
+    /// Asked of every world in the picker, so that hovering one says what living there does to a
+    /// species — which is the only thing a planet class has to say for itself. The game writes no
+    /// description for them at all.
+    /// </remarks>
+    public string? HabitabilityTraitFor(string? planetClassKey)
+    {
+        if (planetClassKey is not { Length: > 0 } planetClass)
+        {
+            return null;
+        }
+
+        if (Trait($"trait_{planetClass}_preference") is { } exact)
+        {
+            return exact;
+        }
+
+        var climate = _database.PlanetClasses
+            .FirstOrDefault(p => string.Equals(p.Key, planetClass, StringComparison.Ordinal))?.Climate;
+
+        return climate is { Length: > 0 } ? Trait($"trait_auto_{climate}_preference") : null;
+
+        string? Trait(string key) =>
+            _database.Traits.Any(t => string.Equals(t.Key, key, StringComparison.Ordinal)) ? key : null;
+    }
+
+    /// <summary>
+    /// Whether a trait is one the homeworld decides rather than one the player picks.
+    /// </summary>
+    /// <remarks>
+    /// Offering these would be offering a choice the game does not have. They are shown among what
+    /// the species already has, so a player can see what it is suited to.
+    /// </remarks>
+    public static bool IsHabitabilityPreference(string traitKey) =>
+        traitKey is { Length: > 0 } &&
+        traitKey.EndsWith("_preference", StringComparison.Ordinal) &&
+        (traitKey.StartsWith("trait_pc_", StringComparison.Ordinal) ||
+         traitKey.StartsWith("trait_auto_", StringComparison.Ordinal));
 
     /// <summary>
     /// The portraits this species may wear, grouped as the game's picker groups them.
@@ -296,13 +394,30 @@ public sealed class EmpireRules(GameDatabase database)
     // ---------------------------------------------------------------------------------------
 
     /// <summary>The species classes the player may choose from.</summary>
+    /// <summary>
+    /// The species classes the player may choose from.
+    /// </summary>
+    /// <remarks>
+    /// A class needs both an archetype and a face. The archetype rules out the several classes that
+    /// exist only to carry a ship or city set — the game says as much in its own comments — but two
+    /// that have one, Spinovore and Solarpunk, still have no portraits anywhere, and a species with
+    /// no possible likeness is not a choice. Requiring a portrait set also keeps out AI, which has
+    /// portraits but no archetype and is nobody's species.
+    /// </remarks>
     public IReadOnlyList<OptionState> GetSpeciesClassOptions(DesignContext context) =>
         Options(
-            _database.SpeciesClasses.Where(c => !c.IsAppearanceOnly),
+            _database.SpeciesClasses.Where(c => !c.IsAppearanceOnly && HasPortraits(c.Key)),
             c => c.Key,
             c => c.Playable,
             c => c.Possible,
             context);
+
+    private bool HasPortraits(string speciesClass) =>
+        (_classesWithPortraits ??= [.. _database.PortraitSets
+            .Select(s => s.SpeciesClass)
+            .OfType<string>()]).Contains(speciesClass);
+
+    private HashSet<string>? _classesWithPortraits;
 
     /// <summary>The authorities the player may choose from.</summary>
     public IReadOnlyList<OptionState> GetAuthorityOptions(DesignContext context) =>
@@ -687,7 +802,7 @@ public sealed class EmpireRules(GameDatabase database)
         if (trait.AllowedArchetypes.Count > 0 &&
             (context.SpeciesArchetype is null || !trait.AllowedArchetypes.Contains(context.SpeciesArchetype)))
         {
-            reasons.Add(RuleReasons.WrongArchetype);
+            reasons.Add(RuleReasons.For(RuleReasons.WrongArchetype, string.Join(", ", trait.AllowedArchetypes)));
         }
 
         // A portrait in the override list lifts the class restriction, which is how the game's own
@@ -696,7 +811,9 @@ public sealed class EmpireRules(GameDatabase database)
             (context.SpeciesClass is null || !trait.AllowedSpeciesClasses.Contains(context.SpeciesClass)) &&
             (context.Portrait is null || !trait.PortraitOverride.Contains(context.Portrait)))
         {
-            reasons.Add(RuleReasons.WrongSpeciesClass);
+            reasons.Add(RuleReasons.For(
+                RuleReasons.WrongSpeciesClass,
+                string.Join(", ", trait.AllowedSpeciesClasses)));
         }
 
         // Aquatic needs an ocean world, and a few others are tied to a homeworld in the same way.

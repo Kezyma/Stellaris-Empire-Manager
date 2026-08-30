@@ -1,0 +1,192 @@
+@*
+    The empire's flag: its colours, the pattern behind them, and the emblem over them.
+
+    Its own panel rather than a quarter of one called "Appearance", which is how the game has it —
+    the flag is a tab of its own in the game's editor, beside the room and the ships rather than
+    inside a drawer with them.
+*@
+
+<div class="sem-row" style="align-items:flex-start">
+    <FlagPreview Flag="@Design.Flag" Class="large" />
+
+    @*
+        Three colours, not four. The first two are the flag's, as the game's own editor offers. The
+        third is the empire's colour on the galaxy map, which the game fills in for itself and never
+        lets you choose. The fourth slot the file stores does nothing — the line that would have used
+        it is commented out in the game's own shader — so it is left exactly as it was found.
+
+        One block of the game's palette per slot, headed by the game's own word for it. The dropdown
+        that stood over each block listed the same colours by name and did the same thing, so the
+        reader was told twice which colour is which.
+    *@
+    <div class="sem-colors">
+        @for (var slot = 0; slot < EditableColorSlots; slot++)
+        {
+            var index = slot;
+
+            <div class="sem-field">
+                <label>@ColorLabel(index)</label>
+
+                <div class="sem-swatches">
+                    @foreach (var color in Session.Data.Database.FlagColors)
+                    {
+                        <button type="button"
+                                class="sem-swatch @(color.Key == ColorAt(index) ? "selected" : null)"
+                                style="background:@Swatch(index, color)"
+                                title="@Localizer.Prettify(color.Key)"
+                                @onclick="() => SetColor(index, color.Key)"></button>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@*
+    Patterns as pictures, drawn in the empire's own colours. The pattern files themselves cannot be
+    shown — each is three shapes packed into a red, a green and a blue channel and reads as coloured
+    wedges — so each tile is the flag that pattern would make.
+*@
+<label>@Session.Localizer.Label("EMBLEM_BACKGROUND_PATTERN", "Patterns")</label>
+
+<div class="sem-thumbs sem-patterns">
+    @foreach (var file in BackgroundFiles)
+    {
+        <button type="button"
+                class="sem-thumb-option @(file == Design.Flag.Background.File ? "selected" : null)"
+                title="@System.IO.Path.GetFileNameWithoutExtension(file)"
+                @onclick="() => SetBackground(file)">
+            <FlagPreview Flag="@Design.Flag" BackgroundFile="@file" HideEmblem="true" />
+        </button>
+    }
+</div>
+
+<div class="sem-field">
+    <label for="emblem-category">@Session.Localizer.Label("CHOOSE_SYMBOL", "Choose Symbol")</label>
+    <select id="emblem-category" @onchange="e => _emblemCategory = e.Value?.ToString() ?? _emblemCategory">
+        @foreach (var category in EmblemCategories)
+        {
+            <option value="@category.Key" selected="@(category.Key == EmblemCategory)">
+                @Session.Localizer.Text(category.NameKey, Localizer.Prettify(category.Key))
+            </option>
+        }
+    </select>
+</div>
+
+<div class="sem-thumbs" style="grid-template-columns:repeat(auto-fill,minmax(52px,1fr))">
+    @foreach (var file in EmblemFiles)
+    {
+        var name = System.IO.Path.GetFileNameWithoutExtension(file);
+
+        <button type="button"
+                class="sem-thumb-option @(file == Design.Flag.Icon.File && EmblemCategory == Design.Flag.Icon.Category ? "selected" : null)"
+                title="@name"
+                @onclick="() => SetEmblem(file)">
+            <img class="sem-thumb"
+                 src="@Session.Data.AssetUrl($"flags/{EmblemCategory}/{name}.png")"
+                 alt="@name" loading="lazy" />
+        </button>
+    }
+</div>
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    private EmpireDesign Design => Session.Current!;
+
+    private string? _emblemCategory;
+
+    private string EmblemCategory =>
+        _emblemCategory ?? Design.Flag.Icon.Category ?? EmblemCategories.FirstOrDefault()?.Key ?? "pointy";
+
+    private IReadOnlyList<FlagCategoryDefinition> EmblemCategories =>
+        [.. Session.Data.Database.FlagCategories.Where(c => !c.IsBackground)];
+
+    private IReadOnlyList<string> EmblemFiles =>
+        Session.Data.Database.FlagCategories.FirstOrDefault(c => c.Key == EmblemCategory)?.Files ?? [];
+
+    private IReadOnlyList<string> BackgroundFiles =>
+        Session.Data.Database.FlagCategories.FirstOrDefault(c => c.IsBackground)?.Files ?? [];
+
+    /// <summary>The slot holding the empire's colour on the galaxy map.</summary>
+    private const int MapColorSlot = 2;
+
+    /// <summary>
+    /// How many colours are worth offering. The fourth slot the file stores is inert — the shader
+    /// line that would have used it is commented out — so it is preserved rather than edited.
+    /// </summary>
+    private const int EditableColorSlots = 3;
+
+    /// <summary>
+    /// What the game calls each colour slot.
+    /// </summary>
+    /// <remarks>
+    /// The game's own words, which its flag editor puts on the first two as buttons. It offers no
+    /// third — that one it fills in itself and uses for the empire's colour on the galaxy map —
+    /// but it has a word for it all the same, so the word is the game's even where the control is
+    /// ours.
+    /// </remarks>
+    private string ColorLabel(int slot) => slot switch
+    {
+        0 => Session.Localizer.Label("PRIMARY_COLOR", "Primary Colors"),
+        1 => Session.Localizer.Label("SECONDARY_COLOR", "Secondary Colors"),
+        MapColorSlot => Session.Localizer.Label("TERTIARY_COLOR", "Tertiary Colors"),
+        _ => string.Empty,
+    };
+
+    /// <summary>
+    /// A swatch in the colour it will actually appear in. Each named colour has a different shade
+    /// for a flag and for the map, so a map swatch showing the flag shade would mislead.
+    /// </summary>
+    private static string Swatch(int slot, FlagColorDefinition color) =>
+        slot == MapColorSlot
+            ? $"rgb({color.MapRed},{color.MapGreen},{color.MapBlue})"
+            : $"rgb({color.Red},{color.Green},{color.Blue})";
+
+    private string? ColorAt(int slot)
+    {
+        var colors = Design.Flag.Colors;
+        return slot < colors.Count && colors[slot] != EmpireFlag.EmptyColor ? colors[slot] : null;
+    }
+
+    private void SetColor(int slot, string? value)
+    {
+        Session.Edit(d =>
+        {
+            var colors = d.Flag.Colors.ToList();
+            while (colors.Count < EmpireFlag.ColorSlots)
+            {
+                colors.Add(EmpireFlag.EmptyColor);
+            }
+
+            colors[slot] = string.IsNullOrEmpty(value) ? EmpireFlag.EmptyColor : value;
+            d.Flag.SetColors(colors);
+        });
+    }
+
+    private void SetBackground(string? file)
+    {
+        if (file is null)
+        {
+            return;
+        }
+
+        Session.Edit(d =>
+        {
+            d.Flag.Background.Category = "backgrounds";
+            d.Flag.Background.File = file;
+        });
+    }
+
+    private void SetEmblem(string file)
+    {
+        var category = EmblemCategory;
+
+        Session.Edit(d =>
+        {
+            d.Flag.Icon.Category = category;
+            d.Flag.Icon.File = file;
+        });
+    }
+}

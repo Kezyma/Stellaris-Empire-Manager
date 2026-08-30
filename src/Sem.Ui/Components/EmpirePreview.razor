@@ -1,0 +1,171 @@
+@*
+    The empire as it currently stands. Nothing here can be edited: it is the answer to "what have I
+    built", which is a different question from "what shall I change", and the two read better apart.
+
+    On a narrow screen this sits above the choices rather than beside them, and starts collapsed —
+    the header alone answers the question at a glance, and the rest is a tap away instead of a
+    screenful of scrolling between the reader and the options.
+*@
+
+<div class="sem-preview @(_expanded ? "expanded" : "collapsed")">
+    <button type="button" class="head" @onclick="() => _expanded = !_expanded">
+        <FlagPreview Flag="@Design.Flag" Class="small" />
+
+        <span class="titles">
+            <span class="name">@Session.Localizer.Name(Design.Name, Design.Key)</span>
+            <span class="government">@GovernmentName</span>
+        </span>
+
+        @if (ProblemCount > 0)
+        {
+            <span class="count">@ProblemCount</span>
+        }
+
+        <span class="chevron" aria-hidden="true">@(_expanded ? "▾" : "▸")</span>
+    </button>
+
+    <div class="body">
+        @Species(Design.Species)
+
+        @if (Design.SecondarySpecies is { } second)
+        {
+            @Species(second)
+        }
+
+        <dl class="sem-summary">
+            @Row("Ethics", string.Join(", ", Design.Ethics.Select(e => Session.Localizer.Text(e))))
+            @Row("Authority", Session.Localizer.Text(Design.Authority))
+            @Row("Civics", string.Join(", ", Design.Civics.Select(c => Session.Localizer.Text(c))))
+            @Row("Origin", Session.Localizer.Text(Design.Origin))
+            @Row("Homeworld", Session.Localizer.Text(Design.PlanetClass))
+            @Row("Ruler", Ruler)
+        </dl>
+
+        @if (Session.Report.IsValid && Session.Report.Warnings.Count == 0)
+        {
+            <p class="sem-status ok">This empire is ready to play.</p>
+        }
+
+        @foreach (var problem in Session.Report.Errors)
+        {
+            <div class="sem-problem">
+                <div class="area">@problem.Area</div>
+                <div>@problem.Message</div>
+
+                @foreach (var reason in problem.Reasons.Distinct())
+                {
+                    <div class="why">@Session.Localizer.Text(reason)</div>
+                }
+            </div>
+        }
+
+        @foreach (var problem in Session.Report.Warnings)
+        {
+            <div class="sem-problem warning">
+                <div class="area">@problem.Area</div>
+                <div>@problem.Message</div>
+            </div>
+        }
+
+        <CombinedEffects />
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// Whether the detail is showing. Only consulted on a narrow screen: the stylesheet shows the
+    /// body regardless once there is room for it beside the choices.
+    /// </summary>
+    private bool _expanded;
+
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    private EmpireDesign Design => Session.Current!;
+
+    private int ProblemCount => Session.Report.Errors.Count;
+
+    private string GovernmentName =>
+        Session.Rules.DeriveGovernment(Session.Context!) is { } government
+            ? Session.Localizer.Text(government.Key)
+            : "No government";
+
+    /// <summary>
+    /// The ruler, and what the government styles them.
+    /// </summary>
+    /// <remarks>
+    /// The style used to have a panel of its own on the government tab, which was a section to hold
+    /// one line. It belongs with the ruler it describes, and the government the design derives its
+    /// name from is already the line above.
+    /// </remarks>
+    private string Ruler
+    {
+        get
+        {
+            var name = Session.Localizer.RulerName(Design.Ruler, "unnamed");
+
+            var title = Design.Ruler.Title is { } held
+                ? Session.Localizer.Name(held, string.Empty)
+                : Session.Rules.DeriveGovernment(Session.Context!)?.RulerTitleKey is { } style
+                    ? Session.Localizer.Text(style)
+                    : string.Empty;
+
+            return title.Length > 0 ? $"{name}, {title}" : name;
+        }
+    }
+
+    /// <summary>
+    /// A species as the preview shows it: its likeness, what it is, and what it is good at.
+    /// </summary>
+    /// <remarks>
+    /// The traits carry their icons because that is how they are recognised — a row of names reads
+    /// as a list, where a row of icons reads as a species.
+    /// </remarks>
+    private RenderFragment Species(SpeciesDesign species) =>
+        @<div class="sem-preview-species">
+            @if (Thumbnail(species) is { Length: > 0 } portrait)
+            {
+                <img class="portrait" src="@Session.Data.AssetUrl(portrait)" alt="" loading="lazy">
+            }
+
+            <div class="about">
+                <div class="name">@Session.Localizer.Name(species.Name, "Unnamed species")</div>
+                <div class="kind">@Session.Localizer.Text(species.Class)</div>
+
+                <div class="traits">
+                    @foreach (var trait in species.Traits)
+                    {
+                        var definition = Session.Data.Database.Traits.FirstOrDefault(t => t.Key == trait);
+
+                        <span class="trait" title="@Session.Localizer.Text(trait)">
+                            @if (definition?.Icon is { Length: > 0 } icon)
+                            {
+                                <img src="@Session.Data.AssetUrl(icon)" alt="" loading="lazy">
+                            }
+                            <span>@Session.Localizer.Text(trait)</span>
+                        </span>
+                    }
+                </div>
+            </div>
+        </div>;
+
+    /// <summary>The rendered likeness, following a group to the face its gender calls for.</summary>
+    private string? Thumbnail(SpeciesDesign species) =>
+        PortraitArtwork.For(Session.Data.Database, species.Portrait, species.Gender);
+
+    private RenderFragment Row(string label, string? value) => builder =>
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return;
+        }
+
+        builder.OpenElement(0, "dt");
+        builder.AddContent(1, label);
+        builder.CloseElement();
+
+        builder.OpenElement(2, "dd");
+        builder.AddContent(3, value);
+        builder.CloseElement();
+    };
+}

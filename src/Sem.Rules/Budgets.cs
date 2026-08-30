@@ -1,5 +1,30 @@
 namespace Sem.Rules;
 
+/// <summary>What put a trait on a species without the player choosing it.</summary>
+public enum ForcedTraitSource
+{
+    /// <summary>The species class, which is what carries Organic, Lithoid and Machine.</summary>
+    SpeciesClass,
+
+    /// <summary>The empire's authority.</summary>
+    Authority,
+
+    /// <summary>One of its civics.</summary>
+    Civic,
+
+    /// <summary>Its origin.</summary>
+    Origin,
+
+    /// <summary>The world it evolved on, which decides what it is suited to.</summary>
+    Homeworld,
+}
+
+/// <summary>A trait the design holds whether the player wants it or not.</summary>
+/// <param name="Trait">The trait's key.</param>
+/// <param name="Cause">The key of whatever put it there — a class, a civic, a planet class.</param>
+/// <param name="Source">Which kind of thing that is.</param>
+public sealed record ForcedTrait(string Trait, string? Cause, ForcedTraitSource Source);
+
 /// <summary>Points spent against points available.</summary>
 /// <param name="Spent">How much the current selections cost.</param>
 /// <param name="Available">How much there is to spend.</param>

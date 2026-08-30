@@ -1,0 +1,74 @@
+@*
+    Type anything, or choose from a list that always opens.
+
+    The browser's own datalist cannot do the second part: it filters itself by whatever is in the
+    box, so the moment a name is entered the list shrinks to that one entry and appears to stop
+    working. There is no way to turn that off, hence this.
+*@
+
+<div class="sem-combo @(_open ? "open" : null)">
+    <input type="text"
+           id="@Id"
+           value="@Value"
+           placeholder="@Placeholder"
+           @onchange="e => Commit(e.Value?.ToString())"
+           @onfocus="() => _open = false"
+           @onblur="() => _open = false" />
+
+    <button type="button"
+            class="toggle"
+            tabindex="-1"
+            title="@(_open ? "Close the list" : "Show every option")"
+            aria-expanded="@(_open ? "true" : "false")"
+            @onmousedown:preventDefault="true"
+            @onclick="() => _open = !_open">▾</button>
+
+    @if (_open && Options.Count > 0)
+    {
+        <ul class="options">
+            @foreach (var option in Options)
+            {
+                @*
+                    Suppressing the mousedown keeps the input from losing focus before the click
+                    lands, which is what would otherwise close the list out from under the pointer.
+                *@
+                <li>
+                    <button type="button"
+                            class="@(option == Value ? "selected" : null)"
+                            @onmousedown:preventDefault="true"
+                            @onclick="() => Commit(option)">@option</button>
+                </li>
+            }
+        </ul>
+    }
+</div>
+
+@code {
+    private bool _open;
+
+    /// <summary>The identifier a label points at.</summary>
+    [Parameter]
+    public string? Id { get; set; }
+
+    /// <summary>What the box currently holds.</summary>
+    [Parameter]
+    public string? Value { get; set; }
+
+    /// <summary>Everything the list offers, shown in full however much has been typed.</summary>
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<string> Options { get; set; }
+
+    /// <summary>Text shown while the box is empty.</summary>
+    [Parameter]
+    public string? Placeholder { get; set; }
+
+    /// <summary>Called with whatever was typed or chosen.</summary>
+    [Parameter]
+    public EventCallback<string> OnChange { get; set; }
+
+    private async Task Commit(string? value)
+    {
+        _open = false;
+        await OnChange.InvokeAsync(value ?? string.Empty);
+    }
+}

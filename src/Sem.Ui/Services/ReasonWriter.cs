@@ -31,8 +31,8 @@ public sealed class ReasonWriter(Localizer localizer)
 
         return kind switch
         {
-            RuleReasons.WrongArchetype => "Not for this kind of species",
-            RuleReasons.WrongSpeciesClass => "Not for this species class",
+            RuleReasons.WrongArchetype => Requires(subject, "Not for this kind of species"),
+            RuleReasons.WrongSpeciesClass => Requires(subject, "Not for this species class"),
             RuleReasons.WrongPlanetClass => $"Needs a {Names(subject)} homeworld",
             RuleReasons.WrongOrigin => $"Only with {Names(subject)}",
             RuleReasons.ForbiddenByOrigin => $"Not with {Names(subject)}",
@@ -50,6 +50,54 @@ public sealed class ReasonWriter(Localizer localizer)
             // Anything else is a localisation key the game supplied with the condition itself.
             _ => _localizer.Text(reason),
         };
+    }
+
+    /// <summary>
+    /// Says what is holding a trait on a species.
+    /// </summary>
+    /// <remarks>
+    /// "Fixed by the species class, authority, civics or origin" named four things and blamed none
+    /// of them, leaving the player to work out which by removing things until it went away. The
+    /// rules know the answer.
+    /// </remarks>
+    public string Fixed(ForcedTrait forced)
+    {
+        ArgumentNullException.ThrowIfNull(forced);
+
+        var cause = forced.Cause is { Length: > 0 } key ? _localizer.Text(key) : null;
+
+        return forced.Source switch
+        {
+            // "a Continental World homeworld" says world twice; what it means is where they evolved.
+            ForcedTraitSource.Homeworld when cause is { Length: > 0 } => $"Fixed by starting on a {cause}.",
+            ForcedTraitSource.Homeworld => "Fixed by the homeworld.",
+            _ when cause is { Length: > 0 } => $"Fixed by {cause}.",
+            ForcedTraitSource.SpeciesClass => "Fixed by the species class.",
+            ForcedTraitSource.Authority => "Fixed by the authority.",
+            ForcedTraitSource.Civic => "Fixed by a civic.",
+            _ => "Fixed by the origin.",
+        };
+    }
+
+    /// <summary>
+    /// Says which species a trait wants, rather than only that this one will not do.
+    /// </summary>
+    /// <remarks>
+    /// A player told "not for this species class" has to go and find out which class would take it.
+    /// The rules have the list, so it is named. The fallback is for a definition that restricts a
+    /// trait without saying to what, which the game's own files do not currently do.
+    /// </remarks>
+    private string Requires(string? subject, string fallback)
+    {
+        if (string.IsNullOrEmpty(subject))
+        {
+            return fallback;
+        }
+
+        var names = Names(subject);
+        var article = names.Length > 0 && "AEIOU".Contains(char.ToUpperInvariant(names[0])) ? "an" : "a";
+
+        return $"Requires {article} {names} species";
     }
 
     /// <summary>Names the things a reason refers to, which may be a list.</summary>

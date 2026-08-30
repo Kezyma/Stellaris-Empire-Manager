@@ -1,0 +1,254 @@
+@*
+    The empire's own name, as distinct from its species'. A human empire is not called "Human", and
+    the two are changed independently, so they sit in different places.
+
+    This is the only place the empire is named. The file keys an empire by its name and stores that
+    name again inside the block, and for an empire a player made the game writes the same words to
+    both — so asking for it twice was asking twice for one thing.
+*@
+
+@*
+    Name, adjective and flags on one row with the die at the end, which is the arrangement the
+    species and the ruler already use. The country flags are markers rather than pictures: the game's
+    own empires use them to claim their bespoke opening screens and their own events, and a custom
+    empire may take a set, which is how it inherits them.
+*@
+<div class="sem-name-row">
+    <div class="sem-field">
+        <label for="empire-name">@Session.Localizer.Label("EMPIRE_NAME", "Empire Name")</label>
+        <ComboBox Id="empire-name" Value="@Session.Localizer.Name(Design.Name, Design.Key)"
+                  Options="@NameSuggestions" OnChange="Rename" />
+    </div>
+
+    <div class="sem-field">
+        <label for="empire-adjective">@Session.Localizer.Label("EMPIRE_ADJECTIVE", "Empire Adjective")</label>
+        <ComboBox Id="empire-adjective" Value="@Session.Localizer.Name(Design.Adjective)"
+                  Options="@AdjectiveSuggestions"
+                  OnChange="value => Session.Edit(d => d.Adjective.SetLiteral(value))" />
+    </div>
+
+    <div class="sem-field">
+        <label for="empire-flag-set">Special empire flags</label>
+        <select id="empire-flag-set" @onchange="e => Session.Edit(d => d.PrescriptedFlag = Chosen(e.Value?.ToString()))">
+            <option value="" selected="@string.IsNullOrEmpty(Design.PrescriptedFlag)">None</option>
+
+            @foreach (var set in FlagSets)
+            {
+                <option value="@set.Key" selected="@(set.Key == Design.PrescriptedFlag)">@FlagSetName(set)</option>
+            }
+        </select>
+    </div>
+
+    <div class="sem-field">
+        <label>&nbsp;</label>
+        <RandomiseButton Title="The species adjective and a form of government"
+                         OnClick="RandomiseName" />
+    </div>
+</div>
+
+@if (_clash)
+{
+    <p class="sem-status bad">Another empire in this file already has that name.</p>
+}
+
+@*
+    Whether this empire may turn up in somebody else's game. The game makes this one button that
+    cycles rather than a list, and wears one of three pictures for it, so this does the same — with
+    the state named beside it, since a picture alone is a puzzle.
+*@
+<div class="sem-spawn-row">
+    <button type="button" class="sem-spawn" title="@SpawnDescription" @onclick="CycleSpawn">
+        @if (SpawnIcon is { Length: > 0 } icon)
+        {
+            <img src="@Session.Data.AssetUrl(icon)" alt="@SpawnName">
+        }
+        else
+        {
+            <span class="initials">@SpawnName</span>
+        }
+    </button>
+
+    <div>
+        <div class="name">@SpawnName</div>
+        <p class="sem-hint">@SpawnDescription</p>
+    </div>
+</div>
+
+@code {
+    /// <summary>Whether the last name typed was already taken by another empire.</summary>
+    private bool _clash;
+
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    private EmpireDesign Design => Session.Current!;
+
+    private IReadOnlyList<EmpireFlagSet> FlagSets => Session.Data.Database.EmpireFlagSets;
+
+    /// <summary>The empty choice writes nothing rather than an empty string.</summary>
+    private static string? Chosen(string? key) => key is { Length: > 0 } ? key : null;
+
+    /// <summary>
+    /// The names the die would choose between, offered as a list instead.
+    /// </summary>
+    private IReadOnlyList<string> NameSuggestions =>
+        NameGenerator.EmpireNames(Session.Localizer.Name(Design.Species.Name), Design.Authority);
+
+    /// <summary>
+    /// What the empire might be called as an adjective.
+    /// </summary>
+    /// <remarks>
+    /// The game fills this from the species adjective and its randomiser writes nothing else, so
+    /// there is no list to read. Offered instead are the same answer reached three ways — what the
+    /// species is currently called, what its name would make, and the word the empire's own name
+    /// begins with — which differ only once a player has typed something of their own.
+    /// </remarks>
+    private IReadOnlyList<string> AdjectiveSuggestions
+    {
+        get
+        {
+            var species = Session.Localizer.Name(Design.Species.Name);
+            var empire = Session.Localizer.Name(Design.Name, Design.Key);
+
+            return
+            [
+                .. new[]
+                {
+                    Session.Localizer.Name(Design.Species.Adjective),
+                    species is { Length: > 0 } ? NameGenerator.Adjective(species) : null,
+                    empire?.Split(' ') is [{ Length: > 0 } first, ..] ? first : null,
+                }
+                .OfType<string>()
+                .Where(name => name.Length > 0)
+                .Distinct(StringComparer.CurrentCulture),
+            ];
+        }
+    }
+
+    /// <summary>
+    /// The three states the spawn button cycles through, in the order the game's pictures run.
+    /// </summary>
+    /// <remarks>
+    /// The design stores <c>yes</c>, <c>no</c> or <c>always</c>, and a design that says nothing is
+    /// treated as <c>no</c>, which is what the game does with a blank. The frame numbers are the
+    /// button's own, and nothing in the game's files states which frame means which state — it picks
+    /// by index in code. The pictures settle it: all three are the same phoenix, the first unlit,
+    /// the second alight, and the third alight with a padlock over it. Dark is off, lit is may, and
+    /// locked is must.
+    /// </remarks>
+    private static readonly (string Value, string NameKey, int Frame)[] SpawnStates =
+    [
+        ("no", "EMPIRE_SPAWN_DISALLOWED", 1),
+        ("yes", "EMPIRE_SPAWN_ALLOWED", 2),
+        ("always", "EMPIRE_SPAWN_ALWAYS", 3),
+    ];
+
+    private (string Value, string NameKey, int Frame) SpawnState =>
+        SpawnStates.FirstOrDefault(s => s.Value == Design.SpawnEnabled, SpawnStates[0]);
+
+    private string SpawnName => Session.Localizer.Text(SpawnState.NameKey, "Empire Spawning Forbidden");
+
+    /// <summary>
+    /// The sentence under the button, which names the empire it is about.
+    /// </summary>
+    /// <remarks>
+    /// The game writes the empire in as <c>$TEMPLATE$</c> and fills it at the moment of showing.
+    /// Nothing here defines that, so left alone the player would read the placeholder.
+    /// </remarks>
+    private string SpawnDescription => Session.Localizer
+        .Text($"{SpawnState.NameKey}_DESC", string.Empty)
+        .Replace("$TEMPLATE$", Session.Localizer.Name(Design.Name, Design.Key), StringComparison.Ordinal);
+
+    private string? SpawnIcon => Session.Data.Database.Icons
+        .GetValueOrDefault($"GFX_button_empire_spawn_setting|{SpawnState.Frame}");
+
+    private void CycleSpawn()
+    {
+        var next = SpawnStates[(Array.IndexOf(SpawnStates, SpawnState) + 1) % SpawnStates.Length];
+        Session.Edit(d => d.SpawnEnabled = next.Value);
+    }
+
+    /// <summary>
+    /// What to call a set of flags.
+    /// </summary>
+    /// <remarks>
+    /// The game gives these no names at all, and "Empire Human 1" says nothing. What does say
+    /// something is whose flags they are, so the empires that carry the set name it.
+    /// </remarks>
+    private string FlagSetName(EmpireFlagSet set)
+    {
+        // Two of the game's empires may share both a set and a name — a species and its machine
+        // counterpart — and naming the set after both says it twice.
+        var empires = set.Empires
+            .Select(e => Session.Localizer.Text(EmpireNameKey(e), Localizer.Prettify(e)))
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
+
+        return empires.Count == 0
+            ? Localizer.Prettify(set.Key)
+            : string.Join(", ", empires);
+    }
+
+    private string? EmpireNameKey(string key) =>
+        Session.Data.Database.PrescriptedEmpires
+            .FirstOrDefault(e => string.Equals(e.Key, key, StringComparison.Ordinal))?.NameKey;
+
+    /// <summary>
+    /// Names the empire, and renames the design with it.
+    /// </summary>
+    /// <remarks>
+    /// The file keys empires by name, so two of a name would make one of them unreachable. Rather
+    /// than silently keeping the old key — which left the two disagreeing with no sign of it — the
+    /// clash is said out loud and the name is left alone until it is resolved.
+    /// </remarks>
+    private void Rename(string? value)
+    {
+        var name = value ?? string.Empty;
+
+        if (name.Length == 0)
+        {
+            return;
+        }
+
+        var taken = Session.File?.Find(name);
+        _clash = taken is not null && !ReferenceEquals(taken, Design);
+
+        if (_clash)
+        {
+            return;
+        }
+
+        Session.Edit(d =>
+        {
+            d.Name.SetLiteral(name);
+            d.Rename(name);
+        });
+    }
+
+    /// <summary>
+    /// Names an empire the way the game most often does: the species adjective followed by a form of
+    /// government that suits its authority.
+    /// </summary>
+    private void RandomiseName()
+    {
+        var species = Session.Localizer.Name(Design.Species.Name);
+
+        if (Session.Names.Empire(species, Design.Authority) is not { Length: > 0 } name)
+        {
+            return;
+        }
+
+        _clash = Session.File?.Find(name) is { } taken && !ReferenceEquals(taken, Design);
+
+        Session.Edit(d =>
+        {
+            d.Name.SetLiteral(name);
+            d.Adjective.SetLiteral(NameGenerator.Adjective(species));
+
+            if (!_clash)
+            {
+                d.Rename(name);
+            }
+        });
+    }
+}

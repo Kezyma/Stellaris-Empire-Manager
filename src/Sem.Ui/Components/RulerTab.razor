@@ -2,69 +2,141 @@
     The empire's first ruler.
 *@
 
-<div class="sem-columns">
-    <div class="sem-panel">
-        <h3>Ruler</h3>
+<div class="sem-subsections">
+    <section>
+        <h4>@Session.Localizer.Label("LEADER_NAME", "Leader Name")</h4>
 
-        <div class="sem-field">
-            <label for="ruler-name">Name</label>
-            <input id="ruler-name" type="text" value="@RulerName"
-                   @onchange="e => SetName(e.Value?.ToString())" />
+        @*
+            Name and title on one row, as they read: a ruler is a name and what they are called. Both
+            are comboboxes rather than plain boxes, so the empire's own name list is offered rather
+            than left to the randomise button to reach one at a time — the same arrangement the
+            species names use.
+        *@
+        <div class="sem-name-row">
+            <div class="sem-field">
+                <label for="ruler-name">@Session.Localizer.Label("LEADER_NAME", "Leader Name")</label>
+                <ComboBox Id="ruler-name" Value="@RulerName" Options="@LeaderNames" OnChange="SetName" />
+            </div>
+
+            <div class="sem-field">
+                <label for="ruler-title">@Session.Localizer.Label("RULER_TITLE", "Title")</label>
+                <ComboBox Id="ruler-title" Value="@RulerTitle" Options="@Titles"
+                          Placeholder="@DefaultTitle" OnChange="SetTitle" />
+            </div>
+
+            <div class="sem-field">
+                <label>&nbsp;</label>
+                <RandomiseButton Title="A name from the empire's name list" OnClick="RandomiseName" />
+            </div>
         </div>
 
-        <div class="sem-field">
-            <label for="ruler-title">Title</label>
-            <input id="ruler-title" type="text" value="@Design.Ruler.Title?.Key"
-                   placeholder="@DefaultTitle"
-                   @onchange="e => SetTitle(e.Value?.ToString())" />
-            <span class="sem-hint">Left empty, the government supplies one.</span>
+        @*
+            The other three titles, folded away. The game's editor keeps four boxes side by side — a
+            ruler's title and an heir's, each in a male and a female form — but only the first is
+            ever filled in by most players, and an heir title means nothing at all unless the
+            government has heirs. Rare enough to fold, real enough to offer: four of the player's own
+            empires carry a female ruler title they previously had no way to see.
+        *@
+        <details class="sem-bio">
+            <summary>@Session.Localizer.Heading("RULER_TITLE", "Title") &amp; @Session.Localizer.Heading("HEIR_TITLE", "Heir Title")</summary>
+
+            <div class="sem-name-row">
+                <div class="sem-field">
+                    <label for="ruler-title-female">
+                        @Session.Localizer.Heading("RULER_TITLE", "Ruler Title")
+                        (@Session.Localizer.Heading("RULER_TITLE_FEMALE", "Female"))
+                    </label>
+                    <ComboBox Id="ruler-title-female" Value="@Read(Design.Ruler.TitleFemale)" Options="@Titles"
+                              OnChange="SetTitleFemale" />
+                </div>
+
+                <div class="sem-field">
+                    <label for="heir-title">
+                        @Session.Localizer.Heading("HEIR_TITLE", "Heir Title")
+                        (@Session.Localizer.Heading("HEIR_TITLE_MALE", "Male"))
+                    </label>
+                    <ComboBox Id="heir-title" Value="@Read(Design.Ruler.HeirTitle)" Options="@Titles"
+                              OnChange="SetHeirTitle" />
+                </div>
+
+                <div class="sem-field">
+                    <label for="heir-title-female">
+                        @Session.Localizer.Heading("HEIR_TITLE", "Heir Title")
+                        (@Session.Localizer.Heading("HEIR_TITLE_FEMALE", "Female"))
+                    </label>
+                    <ComboBox Id="heir-title-female" Value="@Read(Design.Ruler.HeirTitleFemale)" Options="@Titles"
+                              OnChange="SetHeirTitleFemale" />
+                </div>
+            </div>
+        </details>
+
+        @*
+            Gender and class as icons on one row. The class decides nothing else in the designer, but
+            it decides the ruler's portrait frame and their traits in a running game, and a dropdown
+            hid three choices behind a click.
+        *@
+        <div class="sem-row" style="align-items:flex-start;gap:24px">
+            <div class="sem-field" style="margin-bottom:0">
+                <label>@Session.Localizer.Label("GENDER", "Gender")</label>
+                <GenderPicker Value="@Design.Ruler.Gender"
+                              OnChange="key => Session.Edit(d => d.Ruler.Gender = key)" />
+            </div>
+
+            <div class="sem-field" style="margin-bottom:0">
+                <label>@Session.Localizer.Label("RULER_CLASS", "Leader Class")</label>
+
+                <div class="sem-genders">
+                    @foreach (var leaderClass in LeaderClasses)
+                    {
+                        var name = Session.Localizer.Text(leaderClass.NameKey, Localizer.Prettify(leaderClass.Key));
+
+                        <button type="button"
+                                class="sem-gender @(leaderClass.Key == CurrentClass ? "selected" : null)"
+                                title="@name"
+                                aria-pressed="@(leaderClass.Key == CurrentClass)"
+                                @onclick="() => Session.Edit(d => d.Ruler.LeaderClass = leaderClass.Key)">
+
+                            @if (leaderClass.Icon is { Length: > 0 } icon)
+                            {
+                                <img src="@Session.Data.AssetUrl(icon)" alt="@name">
+                            }
+                            else
+                            {
+                                <span>@name</span>
+                            }
+                        </button>
+                    }
+                </div>
+            </div>
         </div>
 
-        <div class="sem-field">
-            <label for="ruler-gender">Gender</label>
-            <select id="ruler-gender" @onchange="e => Session.Edit(d => d.Ruler.Gender = e.Value?.ToString())">
-                @foreach (var gender in (string[])["not_set", "male", "female", "indeterminable"])
-                {
-                    <option value="@gender" selected="@(gender == Design.Ruler.Gender)">
-                        @Localizer.Prettify(gender)
-                    </option>
-                }
-            </select>
-        </div>
+        <BiographyField Value="@RulerBiography"
+                        Placeholder="Who this ruler is, and how they came to rule."
+                        OnChange="SetBiography" />
+    </section>
 
-        <div class="sem-field">
-            <label for="ruler-class">Leader class</label>
-            <select id="ruler-class" @onchange="e => Session.Edit(d => d.Ruler.LeaderClass = e.Value?.ToString())">
-                @foreach (var leaderClass in (string[])["official", "commander", "scientist"])
-                {
-                    <option value="@leaderClass" selected="@(leaderClass == Design.Ruler.LeaderClass)">
-                        @Localizer.Prettify(leaderClass)
-                    </option>
-                }
-            </select>
-        </div>
-    </div>
+    <section>
+        @*
+            Titled in plain words rather than the game's, because the game has none for this. Its
+            PORTRAIT reads "Species & Portrait" and belongs to the species editor; the ruler's
+            appearance is a screen of its own with no heading, only the labels on its controls.
+        *@
+        <h4>Appearance</h4>
 
-    <div class="sem-panel">
-        <h3>Traits</h3>
+        <RulerAppearance />
+    </section>
+
+    <section>
+        <h4>@Session.Localizer.Label("TRAITS", "Traits")</h4>
 
         <p class="sem-hint">
             A ruler begins with one of these, and the government's own bonuses come on top.
         </p>
 
-        <div class="sem-options">
-            @foreach (var trait in RulerTraits)
-            {
-                <OptionCard Name="@Session.Localizer.Text(trait.Key)"
-                            Description="@Session.Localizer.Text($"{trait.Key}_desc", string.Empty)"
-                            Icon="@trait.Icon"
-                            Selected="@Design.Ruler.Traits.Contains(trait.Key)"
-                            Enabled="@IsAllowed(trait)"
-                            Reasons="@Blockers(trait)"
-                            OnSelect="() => Toggle(trait.Key)" />
-            }
-        </div>
-    </div>
+        <OptionGrid Options="@TraitOptions"
+                    EmptyHint="Hover a trait to see what the ruler brings."
+                    OnSelect="Toggle" />
+    </section>
 </div>
 
 @code {
@@ -75,16 +147,63 @@
 
     private DesignContext Context => Session.Context!;
 
+    /// <summary>How many assembled names to offer, where a list holds them in parts.</summary>
+    private const int Suggestions = 60;
+
+    private string RulerName => Session.Localizer.RulerName(Design.Ruler);
+
+    private string RulerTitle => Session.Localizer.Name(Design.Ruler.Title);
+
     /// <summary>
-    /// The name as stored. A ruler's name is normally a template the game fills from the species'
-    /// name list, and typing over it replaces the whole thing with plain text.
+    /// The names the empire's own list offers.
     /// </summary>
-    private string RulerName => Design.Ruler.Name.FullNames?.Key ?? string.Empty;
+    /// <remarks>
+    /// The list the species draws its random names from, which for the game's human empires is a
+    /// pool of ordinary human names rather than the empire's own — the same redirection the
+    /// homeworld naming already follows.
+    /// </remarks>
+    private IReadOnlyList<string> LeaderNames =>
+        Session.Data.Database.NameLists
+            .FirstOrDefault(l => l.Key == (Session.Names.SpeciesNameSourceFor(Design.Species.NameList)
+                                           ?? Design.Species.NameList))
+            ?.CharacterNames.Assembled(Suggestions) ?? [];
+
+    /// <summary>
+    /// The titles a government would give a ruler, so the field offers the game's own words.
+    /// </summary>
+    /// <remarks>
+    /// Every government type names one, and which government an empire ends up with depends on
+    /// choices made elsewhere — so offering only the current one would hide the rest of the game's
+    /// vocabulary from someone naming their own.
+    /// </remarks>
+    private IReadOnlyList<string> Titles =>
+        [.. Session.Data.Database.GovernmentTypes
+            .Select(g => g.RulerTitleKey)
+            .OfType<string>()
+            .Select(key => Session.Localizer.Text(key))
+            .Where(title => title.Length > 0)
+            .Distinct(StringComparer.CurrentCulture)
+            .Order(StringComparer.CurrentCulture)];
+
+    /// <summary>The kinds of leader that may rule an empire.</summary>
+    private IEnumerable<LeaderClassDefinition> LeaderClasses =>
+        Session.Data.Database.LeaderClasses.Where(c => c.CanRule);
+
+    private string? CurrentClass => Design.Ruler.LeaderClass;
 
     private string DefaultTitle =>
         Session.Rules.DeriveGovernment(Context)?.RulerTitleKey is { } key
             ? Session.Localizer.Text(key)
             : "chosen by the government";
+
+    private IReadOnlyList<OptionGrid.GridOption> TraitOptions =>
+        GridOptions.Build(
+            Session,
+            RulerTraits.Select(t => new OptionState(t.Key, true, IsAllowed(t), Blockers(t))),
+            key => RulerTraits.FirstOrDefault(t => t.Key == key) is { } trait
+                ? (trait.Icon, trait.Effects)
+                : (null, null),
+            Design.Ruler.Traits.Contains);
 
     private IEnumerable<TraitDefinition> RulerTraits =>
         Session.Data.Database.Traits
@@ -126,26 +245,103 @@
         return reasons;
     }
 
+    /// <summary>
+    /// Writes the ruler's name.
+    /// </summary>
+    /// <remarks>
+    /// Always as text, unlike a species name, which can be stored as one of the game's keys. The
+    /// character name pools are extracted as the words themselves rather than as keys — ten thousand
+    /// names would otherwise be carried twice — so there is no key to write even when the name came
+    /// from the list. Writing one part clears the other two, so a name held in pieces does not
+    /// reappear beside the new one.
+    /// </remarks>
     private void SetName(string? value)
     {
         Session.Edit(d =>
         {
-            var names = d.Ruler.Name.GetOrAddFullNames();
-            names.SetLiteral(value ?? string.Empty);
+            d.Ruler.Name.GetOrAddFullNames().SetLiteral(value ?? string.Empty);
+            d.Ruler.Name.RemoveParts();
         });
     }
 
-    private void SetTitle(string? value)
+    /// <summary>
+    /// A name from the empire's own name list, matched to the ruler's gender where the list draws
+    /// that distinction.
+    /// </summary>
+    private void RandomiseName()
+    {
+        var female = string.Equals(Design.Ruler.Gender, "female", StringComparison.Ordinal);
+        var list = Session.Names.SpeciesNameSourceFor(Design.Species.NameList) ?? Design.Species.NameList;
+
+        if (Session.Names.Ruler(list, female) is { Length: > 0 } name)
+        {
+            SetName(name);
+        }
+    }
+
+    private void SetTitle(string? value) =>
+        SetLocRef(value, "ruler_title", d => d.Ruler.GetOrAddTitle());
+
+    private void SetTitleFemale(string? value) =>
+        SetLocRef(value, "ruler_title_female", d => d.Ruler.GetOrAddTitleFemale());
+
+    private void SetHeirTitle(string? value) =>
+        SetLocRef(value, "heir_title", d => d.Ruler.GetOrAddHeirTitle());
+
+    private void SetHeirTitleFemale(string? value) =>
+        SetLocRef(value, "heir_title_female", d => d.Ruler.GetOrAddHeirTitleFemale());
+
+    /// <summary>What a title currently reads as, or nothing where the design holds none.</summary>
+    private string Read(LocRef? title) => title is null ? string.Empty : Session.Localizer.Name(title);
+
+    /// <summary>
+    /// Writes one of the ruler's titles, or takes it out.
+    /// </summary>
+    /// <remarks>
+    /// Emptying a box removes the block rather than leaving an empty one. That matters most for the
+    /// heir titles: no design of the player's carries one, and a design that never had one must not
+    /// grow a field the game did not write there.
+    /// </remarks>
+    private void SetLocRef(string? value, string field, Func<EmpireDesign, LocRef> add)
     {
         Session.Edit(d =>
         {
             if (string.IsNullOrWhiteSpace(value))
             {
-                d.Ruler.Block.Remove(d.Ruler.Block.Nodes.FirstOrDefault(n => n.Key == "ruler_title")!);
+                if (d.Ruler.Block.Nodes.FirstOrDefault(n => n.Key == field) is { } existing)
+                {
+                    d.Ruler.Block.Remove(existing);
+                }
+
                 return;
             }
 
-            d.Ruler.GetOrAddTitle().SetLiteral(value);
+            add(d).SetLiteral(value);
+        });
+    }
+
+    /// <summary>
+    /// The ruler's own story, which the game keeps as a name rather than as plain text.
+    /// </summary>
+    /// <remarks>
+    /// Written <c>custom_biography = { key="…" literal=yes }</c>, the same shape as a name, while
+    /// the species' biography beside it is a bare quoted string. That asymmetry is the game's.
+    /// </remarks>
+    private string? RulerBiography => Session.Localizer.Name(Design.Ruler.CustomBiography, string.Empty);
+
+    private void SetBiography(string? value)
+    {
+        Session.Edit(d =>
+        {
+            // An emptied box takes the block out rather than leaving an empty one, so a design
+            // nobody wrote a biography for stays as it was.
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                d.Ruler.Block.Remove(d.Ruler.Block.Nodes.FirstOrDefault(n => n.Key == "custom_biography")!);
+                return;
+            }
+
+            d.Ruler.GetOrAddCustomBiography().SetLiteral(value);
         });
     }
 

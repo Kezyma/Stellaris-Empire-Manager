@@ -393,4 +393,82 @@ public sealed class EmpireDesignTests
         Assert.Throws<ArgumentException>(
             () => file.Designs[0].Flag.SetColors(["a", "b", "c", "d", "e"]));
     }
+
+    [Fact]
+    public void ARulersBiographyIsWrittenWhereTheGameWritesIt()
+    {
+        var file = EmpireDesignsFile.LoadText(Sample);
+
+        file.Designs[0].Ruler.GetOrAddCustomBiography().SetLiteral("Raised by machines.");
+
+        var text = file.Document.ToText();
+        var clothes = text.IndexOf("clothes", StringComparison.Ordinal);
+        var biography = text.IndexOf("custom_biography", StringComparison.Ordinal);
+
+        // The ruler's own trait by name, since the species above it has traits indented the same.
+        var trait = text.IndexOf("trait_ruler_", StringComparison.Ordinal);
+
+        Assert.True(clothes < biography, "custom_biography should follow clothes.");
+        Assert.True(biography < trait, "custom_biography should precede the ruler's trait.");
+    }
+
+    [Fact]
+    public void ARulersBiographyIsAName()
+    {
+        // The ruler's is a name block — key and literal — while the species' biography beside it is
+        // a bare quoted string. The asymmetry is the game's, and writing the ruler's the species'
+        // way would produce a file the game reads differently from the one it wrote.
+        var file = EmpireDesignsFile.LoadText(Sample);
+
+        file.Designs[0].Ruler.GetOrAddCustomBiography().SetLiteral("Raised by machines.");
+
+        Assert.Contains("literal=yes", file.Document.ToText(), StringComparison.Ordinal);
+        Assert.Equal("Raised by machines.", file.Designs[0].Ruler.CustomBiography?.Key);
+    }
+
+    [Fact]
+    public void AnHeirTitleIsWrittenWhereTheGamesOwnEditorPutsIt()
+    {
+        var file = EmpireDesignsFile.LoadText(Sample);
+
+        file.Designs[0].Ruler.GetOrAddTitle().SetLiteral("Surveyor");
+        file.Designs[0].Ruler.GetOrAddHeirTitle().SetLiteral("Surveyor Apparent");
+        file.Designs[0].Ruler.GetOrAddTitleFemale().SetLiteral("Matriarch");
+
+        // Searched for with their line endings, since "ruler_title" is also the start of
+        // "ruler_title_female" and would otherwise find whichever of them came first.
+        var text = file.Document.ToText();
+        var title = text.IndexOf("ruler_title=", StringComparison.Ordinal);
+        var heir = text.IndexOf("heir_title=", StringComparison.Ordinal);
+        var female = text.IndexOf("ruler_title_female=", StringComparison.Ordinal);
+
+        // The game's editor shows a title, its heir, then the same pair again in their female forms.
+        Assert.True(title < heir, "heir_title should follow ruler_title.");
+        Assert.True(heir < female, "ruler_title_female should follow heir_title.");
+        Assert.Equal("Surveyor Apparent", file.Designs[0].Ruler.HeirTitle?.Key);
+        Assert.Equal("Matriarch", file.Designs[0].Ruler.TitleFemale?.Key);
+    }
+
+    [Fact]
+    public void ADesignWithNoHeirTitleStaysAsItWas()
+    {
+        // No design of the player's carries one, and the field is rare enough in the game's own
+        // empires that reading it must not be what puts it there.
+        var file = EmpireDesignsFile.LoadText(Sample);
+
+        Assert.Null(file.Designs[0].Ruler.HeirTitle);
+        Assert.Null(file.Designs[0].Ruler.HeirTitleFemale);
+        Assert.Equal(Sample, file.Document.ToText());
+    }
+
+    [Fact]
+    public void ADesignWithNoRulerBiographyStaysAsItWas()
+    {
+        // Reading one that has none must not add an empty block, or every design opened would come
+        // back changed.
+        var file = EmpireDesignsFile.LoadText(Sample);
+
+        Assert.Null(file.Designs[0].Ruler.CustomBiography);
+        Assert.Equal(Sample, file.Document.ToText());
+    }
 }

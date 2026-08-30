@@ -1,0 +1,259 @@
+@*
+    The empire as the game shows it: its leader standing in a room, with their own world through the
+    window behind them.
+
+    Built the way the game builds it rather than as one picture, because it cannot be one. The world
+    is a sky with bands of landscape in front of it, and the empire's city is painted between those
+    bands so the hills sit behind one row of towers and in front of another. Every combination of
+    room, world and city would be thousands of images; stacked, it is a few dozen.
+
+    The numbers are the game's own, from gfx/portraits/portraits/00_portraits_main.txt: a room is 952
+    by 340, the world hangs in it at seven tenths scale from the upper right, twenty-three down, and
+    the character stands at the lower left, seventy-five in.
+*@
+
+<div class="sem-room @Class">
+    @*
+        The world first, because the room is painted over it: a room's artwork has its window cut
+        out of it — a third of every one of them is transparent — and the view shows through. Placed
+        as a fraction of the room so it keeps its position at whatever size the page draws this.
+    *@
+    <div class="world" style="@WorldStyle">
+        @foreach (var layer in Backdrop)
+        {
+            <img src="@Session.Data.AssetUrl(layer)" alt="" loading="lazy">
+        }
+    </div>
+
+    @if (Room?.Image is { Length: > 0 } room)
+    {
+        <img class="room" src="@Session.Data.AssetUrl(room)" alt="" loading="lazy">
+    }
+
+    @*
+        The flag on the wall, painted after the room because the room is the wall.
+
+        The game hangs one in more than one place and not the same way twice, so this is a choice
+        between two of its own answers. Taken from interface/diplomacy_view.gui, the empire's
+        dossier, which holds a room in a 964 by 350 container at (17, 45) and puts a flag at
+        (30, 235) — thirteen in from the room's left edge and a hundred and ninety down, well clear
+        of the figure, whose middle is at 362.5.
+
+        The other answer is game_setup/species.gui, the screen where an empire is actually made: a
+        smaller flag at (370, 50) of a 468 by 180 window, upper right, over the figure's shoulder.
+        Nearer to what this scene is a picture of, and it looks worse — the flag ends up floating in
+        the view through the window rather than hanging on anything. The wall was chosen by eye.
+    *@
+    @if (Flag is not null)
+    {
+        <div class="banner" style="@BannerStyle">
+            <FlagPreview Flag="@Flag" />
+        </div>
+    }
+
+    @if (Portrait is { Length: > 0 } portrait)
+    {
+        <img class="figure" style="@FigureStyle" src="@Session.Data.AssetUrl(portrait)"
+             alt="@Alt" loading="lazy">
+    }
+</div>
+
+@code {
+    /// <summary>The game's own room frame, in pixels.</summary>
+    private const double RoomWidth = 952;
+
+    private const double RoomHeight = 340;
+
+    /// <summary>The world's own frame, and where the room hangs it.</summary>
+    private const double WorldWidth = 800;
+
+    private const double WorldHeight = 400;
+
+    private const double WorldScale = 0.714;
+
+    /// <summary>
+    /// How far below the room's ceiling the world hangs.
+    /// </summary>
+    /// <remarks>
+    /// The game writes <c>y = -23</c> against an <c>upper_right</c> anchor, which reads as
+    /// twenty-three upwards; it is not. Hung upwards the world's bottom edge stops short of the
+    /// window and leaves a strip of nothing along the sill of every room, and hung downwards it
+    /// fills the window exactly. The artwork settles it, so the sign is taken from the artwork.
+    /// </remarks>
+    private const double WorldTop = 23;
+
+    /// <summary>The game's character frame, and how far in from the left edge it stands.</summary>
+    private const double FigureFrameWidth = 575;
+
+    private const double FigureFrameHeight = 380;
+
+    private const double FigureInset = 75;
+
+    /// <summary>
+    /// How tall the figure is drawn against the room.
+    /// </summary>
+    /// <remarks>
+    /// The game composites a character into a room at its own scale, but its portrait frame shows
+    /// 15.83 units of model where ours shows 19.65 — ours is taller so that nothing is cut off the
+    /// top. Drawn at the game's scale the figure would stand too small by exactly that ratio, so it
+    /// is drawn larger by exactly that ratio. What that puts above the room's ceiling is clipped,
+    /// as the game clips its own frame's top forty pixels.
+    /// </remarks>
+    private const double FigureHeight = FigureFrameHeight / RoomHeight * (19.65 / 15.833);
+
+    /// <summary>
+    /// Where the figure's middle goes.
+    /// </summary>
+    /// <remarks>
+    /// Not the frame's left edge, which is what the game gives, because our frame is not the game's
+    /// width: showing more of the model vertically at the same picture shape shows more of it
+    /// horizontally too. What both frames agree on is the model's own origin, which each puts at its
+    /// centre — so the centres are lined up and the browser works the width out from the picture.
+    /// Aligning the left edges instead stood every species some sixty pixels too far right.
+    /// </remarks>
+    private const double FigureCentre = FigureInset + (FigureFrameWidth / 2);
+
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>The room the empire's leader stands in.</summary>
+    [Parameter]
+    public RoomDefinition? Room { get; set; }
+
+    /// <summary>The world seen through the window.</summary>
+    [Parameter]
+    public PlanetClassDefinition? World { get; set; }
+
+    /// <summary>The empire's own city, built on that world.</summary>
+    [Parameter]
+    public GraphicalCultureDefinition? City { get; set; }
+
+    /// <summary>The leader's portrait, already drawn.</summary>
+    [Parameter]
+    public string? Portrait { get; set; }
+
+    /// <summary>The empire's flag, hung on the wall.</summary>
+    [Parameter]
+    public EmpireFlag? Flag { get; set; }
+
+    /// <summary>
+    /// How built-up the world through the window is, on the game's own nought-to-five scale.
+    /// </summary>
+    /// <remarks>
+    /// The game's own <c>DEFAULT_CITY_POP_LEVEL</c> unless a host says otherwise, whose line in the
+    /// defines is commented "Shown in empire designer". It comes to four, which draws every band the
+    /// game has except the last — that one wants a world at five and is a city from edge to edge.
+    /// </remarks>
+    [Parameter]
+    public int? Development { get; set; }
+
+    private int Level => Development ?? Session.Data.Database.Defines.CityPopLevel;
+
+    /// <summary>What to call the figure for a reader who cannot see it.</summary>
+    [Parameter]
+    public string Alt { get; set; } = string.Empty;
+
+    /// <summary>Extra classes, for sizing.</summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>
+    /// The world and the city interleaved, furthest from the viewer first.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Sky, then a band of landscape, then a band of city, and so on — which is the order the game's
+    /// own layout lists them in, and the reason a city cannot simply be painted on top. A world with
+    /// fewer bands than the city has, or the other way about, keeps whatever is left over rather
+    /// than dropping it.
+    /// </para>
+    /// <para>
+    /// Only the city bands belonging to a world of <see cref="Development"/> are drawn. Painting all
+    /// of them put an ecumenopolis over every homeworld — the last band alone covers nearly half the
+    /// frame — and left nothing of the planet to see.
+    /// </para>
+    /// <para>
+    /// Paired by the band each picture is rather than by its place in the list, because two worlds
+    /// are missing a band: an arctic and a desert world have no second one, and matched by position
+    /// their hills came out in front of the towers they belong behind.
+    /// </para>
+    /// </remarks>
+    private IEnumerable<string> Backdrop
+    {
+        get
+        {
+            if (World?.Sky is { Length: > 0 } sky)
+            {
+                yield return sky;
+            }
+
+            var scenery = World?.Scenery ?? [];
+            var city = City?.CityLayers ?? [];
+
+            var bands = Math.Max(
+                scenery.Count > 0 ? scenery.Max(s => s.Band) : 0,
+                city.Count > 0 ? city.Max(c => c.Band) : 0);
+
+            for (var band = 1; band <= bands; band++)
+            {
+                if (scenery.FirstOrDefault(s => s.Band == band) is { } hills)
+                {
+                    yield return hills.Image;
+                }
+
+                if (city.FirstOrDefault(c => c.Band == band) is { } towers && towers.AppearsAt(Level))
+                {
+                    yield return towers.Image;
+                }
+            }
+        }
+    }
+
+    /// <summary>Where the world hangs, as fractions of the room, so it scales with it.</summary>
+    private string WorldStyle =>
+        $"width:{Percent(WorldWidth * WorldScale / RoomWidth)};" +
+        $"height:{Percent(WorldHeight * WorldScale / RoomHeight)};" +
+        $"right:0;top:{Percent(WorldTop / RoomHeight)}";
+
+    /// <summary>
+    /// The room the dossier measures its flag against, which is near enough ours to use directly.
+    /// </summary>
+    /// <remarks>
+    /// 964 by 350 against the room artwork's 952 by 340 — the same picture with its border — so
+    /// unlike the creation screen's 468 by 180 window there is no proportion to convert.
+    /// </remarks>
+    private const double BannerFrameWidth = 964;
+
+    private const double BannerFrameHeight = 350;
+
+    /// <summary>
+    /// The whole framed flag, border included.
+    /// </summary>
+    /// <remarks>
+    /// 131 rather than the 128 its sprite is named for. The name is nominal: the frame's own texture
+    /// is 131 across with the coloured field 111 of it, and the frame is what the game positions.
+    /// </remarks>
+    private const double BannerSize = 131;
+
+    private const double BannerLeft = 30 - 17;
+
+    private const double BannerTop = 235 - 45;
+
+    private string BannerStyle =>
+        $"left:{Percent(BannerLeft / BannerFrameWidth)};top:{Percent(BannerTop / BannerFrameHeight)};" +
+        $"width:{Percent(BannerSize / BannerFrameWidth)}";
+
+    private string FigureStyle =>
+        $"left:{Percent(FigureCentre / RoomWidth)};height:{Percent(FigureHeight)};" +
+        "transform:translateX(-50%)";
+
+    /// <summary>
+    /// A fraction as a CSS percentage.
+    /// </summary>
+    /// <remarks>
+    /// Written invariantly on purpose: a machine set to a comma decimal separator would otherwise
+    /// produce a stylesheet the browser silently ignores.
+    /// </remarks>
+    private static string Percent(double fraction) =>
+        (fraction * 100).ToString("0.####", System.Globalization.CultureInfo.InvariantCulture) + "%";
+}

@@ -1,0 +1,96 @@
+@*
+    A ruler drawn from the pieces the game draws them from.
+
+    The portrait is not a picture. It is a model wearing three textures — a body, an outfit, and
+    whatever is on its head — and the game paints it live. Each of those textures has been drawn
+    once per layer of the model, so a figure is those pictures stacked back up in painting order:
+    outfit-back, body, outfit-front, head, hair. The order matters, and it is the order the layers
+    arrive in; any other puts the coat's back over the chest.
+
+    The rule that makes the stacking work is that a layer is chosen by TEXTURE, never by number.
+    It is tempting to think one number per slot indexes every layer of that slot alike, and for most
+    portraits it happens to. It is not true: the human male portrait draws its beard from a run of
+    forty textures and its hair from a run of eighty-five, so number twelve is two different things
+    in the two runs, and a figure picked by number comes out with a black beard under blonde hair.
+    A layer that has nothing for the chosen texture simply does not draw — a beard layer against a
+    beardless hairstyle — which is exactly right.
+*@
+
+<div class="sem-figure" style="width:@(Width)px;height:@(Height)px">
+    @foreach (var image in Pieces)
+    {
+        <img src="@Session.Data.AssetUrl(image.Image)" alt=""
+             style="left:@(image.Left)px;top:@(image.Top)px" loading="lazy">
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// The frame a portrait is drawn in, which is the size the game's own pictures come out at.
+    /// </summary>
+    /// <remarks>
+    /// Every layer's position is recorded against this, so the box has to be exactly it and the
+    /// pieces are placed inside rather than scaled to fit. A caller wanting it smaller scales the
+    /// whole box.
+    /// </remarks>
+    private const int Width = 332;
+
+    private const int Height = 220;
+
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>The portrait's pieces, as extracted.</summary>
+    [Parameter, EditorRequired]
+    public required PortraitOutfit Outfit { get; set; }
+
+    /// <summary>The body texture to wear, by name.</summary>
+    [Parameter]
+    public string? Character { get; set; }
+
+    /// <summary>The outfit to wear, by name.</summary>
+    [Parameter]
+    public string? Clothes { get; set; }
+
+    /// <summary>What is on the head, by name.</summary>
+    [Parameter]
+    public string? Attachment { get; set; }
+
+    /// <summary>
+    /// The pictures to stack, in painting order.
+    /// </summary>
+    private IEnumerable<PortraitLayerImage> Pieces => Outfit.Layers
+        .Select(Piece)
+        .OfType<PortraitLayerImage>();
+
+    /// <summary>
+    /// Which form of a layer to draw, or none.
+    /// </summary>
+    /// <remarks>
+    /// Three cases, and the difference between the last two matters. A layer that has only the one
+    /// form the mesh names — written as the texture <c>default</c> — wears it whatever is chosen,
+    /// and always draws. A layer that offers real choices draws the one matching the chosen texture,
+    /// and where it offers nothing for that texture it draws nothing: a beard layer against a
+    /// beardless hairstyle is meant to be absent, not to fall back to some other beard. And a slot
+    /// with no choice made at all shows its first form, which is what the empire designer shows,
+    /// since the extractor writes each layer's forms with the designer's own first.
+    /// </remarks>
+    private PortraitLayerImage? Piece(PortraitLayer layer)
+    {
+        if (layer.Images is [{ Texture: "default" } only])
+        {
+            return only;
+        }
+
+        return Chosen(layer) is { } wanted
+            ? layer.Images.FirstOrDefault(i => string.Equals(i.Texture, wanted, StringComparison.OrdinalIgnoreCase))
+            : layer.Images.FirstOrDefault();
+    }
+
+    private string? Chosen(PortraitLayer layer) => layer.Slot switch
+    {
+        PortraitSlot.Clothes => Clothes,
+        PortraitSlot.Attachment => Attachment,
+        _ => Character,
+    };
+}

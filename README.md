@@ -14,6 +14,9 @@ game install, and as a browser app that never uploads your files anywhere.
 - Enforces the same rules the game does. Trait point and pick budgets, ethics costs, civic
   requirements, origin incompatibilities and DLC gating are all evaluated live, and blocked options
   explain themselves with the game's own tooltip text.
+- Says what every choice does. Modifiers, the conditional ones with the conditions that bring them,
+  and the capabilities an option grants, all rendered as the game renders them — down to the icons
+  that appear inside its sentences — with a running total of everything the empire has chosen.
 - Reads and writes `user_empire_designs_v3.4.txt` faithfully, preserving fields it does not
   understand so a future patch or a mod cannot silently cost you an empire.
 - Lets you start from any of the 53 built-in prescripted empires and save the result as your own.
@@ -33,6 +36,7 @@ Early development. See [the milestone plan](docs/) for what is built and what is
 | M6 — Designer UI and web app | Done |
 | M7 — Desktop application | Done |
 | M8 — Portrait rendering | Done |
+| M8b — Effects, compact designer, correct artwork | Done |
 | M9 — Hardening and first release | Next |
 
 ## Repository layout
@@ -112,6 +116,12 @@ attaches to that condition, so you read the same words the game would tell you.
 
 Portraits are models rather than pictures, so there is nothing to copy out. They are drawn during
 extraction by a small renderer that reads Paradox's model format.
+
+Artwork is rarely one picture per file. Planet types are frames of a shared strip, and a flag
+background is two shapes packed into one file's colour channels which the game tints separately and
+adds together. Both are referred to by sprite name rather than by path, so anything that guesses at
+a filename finds either nothing or the wrong picture. Extraction resolves the names and cuts the
+pieces out.
 
 Nothing is written back except by an explicit save, and only ever to your designs file.
 

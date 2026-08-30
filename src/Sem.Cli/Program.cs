@@ -7,6 +7,7 @@ var root = new RootCommand("Stellaris Empire Manager development tools.")
     ExtractCommand.Create(),
     ValidateCommand.Create(),
     MeshCommand.Create(),
+    PortraitBoundsCommand.Create(),
 };
 
 return root.Parse(args).Invoke();

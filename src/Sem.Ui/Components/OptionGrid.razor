@@ -1,0 +1,218 @@
+@*
+    A grid of icons with one panel of detail beside it, which is how the game fits a whole screen of
+    choices into a corner of one.
+
+    Hovering an icon shows everything about it. With nothing hovered the panel falls back to what is
+    currently selected, so the detail is never blank and never moves the layout when the pointer
+    passes over.
+*@
+
+@using Sem.GameData
+
+<div class="sem-grid-and-detail" style="@RowStyle">
+    <div class="sem-grid-column">
+        <div class="sem-icon-grid">
+            @foreach (var option in Options)
+            {
+                <button type="button"
+                        class="@ClassFor(option)"
+                        disabled="@(!option.Enabled && !option.Selected)"
+                        title="@option.Name"
+                        @onmouseenter="() => _hovered = option.Key"
+                        @onfocus="() => _hovered = option.Key"
+                        @onmouseleave="() => Unhover(option.Key)"
+                        @onblur="() => Unhover(option.Key)"
+                        @onclick="() => OnSelect.InvokeAsync(option.Key)">
+                    @if (option.Icon is { Length: > 0 } icon)
+                    {
+                        <img src="@Session.Data.AssetUrl(icon)" alt="@option.Name" loading="lazy">
+                    }
+                    else
+                    {
+                        <span class="initials">@Initials(option.Name)</span>
+                    }
+
+                    @if (option.Cost is { } cost && cost != 0)
+                    {
+                        <span class="cost @(cost < 0 ? "gain" : string.Empty)">@(cost > 0 ? "+" : string.Empty)@cost</span>
+                    }
+                </button>
+            }
+        </div>
+
+        @*
+            Something that belongs beside the choices without being one of them — the nomad toggle
+            beside the authorities, which the game also keeps in a container of its own rather than
+            as a cell in its grid, so that it does not read as one more authority.
+        *@
+        @if (Aside is not null)
+        {
+            <div class="sem-grid-aside">@Aside</div>
+        }
+    </div>
+
+    <div class="sem-detail">
+        @if (Shown is { } shown)
+        {
+            @*
+                Some options carry a picture as well as an icon — an origin has a whole scene, which
+                is most of how the game sells it. Above the words and outside what scrolls: it is
+                what the option looks like, and scrolling past it to read about it loses the thing
+                being read about.
+            *@
+            @if (shown.Picture is { Length: > 0 } picture)
+            {
+                <img class="sem-detail-picture" src="@Session.Data.AssetUrl(picture)" alt="" loading="lazy">
+            }
+
+            <div class="body">
+                <h4>@shown.Name</h4>
+
+                @if (shown.Description is { Length: > 0 } description)
+                {
+                    <div class="sem-detail-lore">@((MarkupString)description)</div>
+                }
+
+                <EffectsList Effects="@shown.Effects" />
+
+                @if (!shown.Enabled && shown.Reasons.Count > 0)
+                {
+                    <ul class="sem-blocked">
+                        @foreach (var reason in shown.Reasons)
+                        {
+                            <li>@reason</li>
+                        }
+                    </ul>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="body">
+                <p class="sem-hint">@EmptyHint</p>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private string? _hovered;
+
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>The choices to show.</summary>
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<GridOption> Options { get; set; }
+
+    /// <summary>Called with the key of the icon clicked.</summary>
+    [Parameter]
+    public EventCallback<string> OnSelect { get; set; }
+
+    /// <summary>
+    /// The smallest an icon may be drawn. The row length follows from it and the space available,
+    /// so a grid beside a narrow panel wraps sooner rather than shrinking its icons away.
+    /// </summary>
+    [Parameter]
+    public int IconSize { get; set; } = 40;
+
+    /// <summary>What to say when nothing is hovered and nothing is selected.</summary>
+    [Parameter]
+    public string EmptyHint { get; set; } = "Hover an option to see what it does.";
+
+    /// <summary>Something to place beside the icons that is not one of the choices.</summary>
+    [Parameter]
+    public RenderFragment? Aside { get; set; }
+
+    /// <summary>
+    /// How tall the detail panel is.
+    /// </summary>
+    /// <remarks>
+    /// Fixed, and every caller gets the same unless it asks otherwise. Left to size itself the panel
+    /// grew and shrank as the pointer crossed the grid, which moved the icons out from under it —
+    /// what a reader was reaching for was not where they had seen it. Origins want more than the
+    /// rest, being the only choices whose detail carries a picture.
+    /// </remarks>
+    [Parameter]
+    public int DetailHeight { get; set; } = 320;
+
+    /// <summary>
+    /// The option the detail panel describes: whatever the pointer is over, or failing that the
+    /// first one selected.
+    /// </summary>
+    private GridOption? Shown =>
+        Options.FirstOrDefault(o => o.Key == _hovered) ?? Options.FirstOrDefault(o => o.Selected);
+
+    // Both on the row rather than on the grid, because a custom property is inherited and the
+    // detail panel is the grid's sibling rather than its child.
+    private string RowStyle =>
+        $"--sem-icon-size:{Math.Max(20, IconSize)}px;--sem-detail-height:{Math.Max(80, DetailHeight)}px";
+
+    private void Unhover(string key)
+    {
+        if (_hovered == key)
+        {
+            _hovered = null;
+        }
+    }
+
+    private string ClassFor(GridOption option)
+    {
+        var classes = new List<string> { "sem-icon-option" };
+
+        if (option.Selected)
+        {
+            classes.Add("selected");
+        }
+
+        if (!option.Enabled && !option.Selected)
+        {
+            classes.Add("blocked");
+        }
+
+        return string.Join(' ', classes);
+    }
+
+    /// <summary>A stand-in for an option the installation has no picture for.</summary>
+    private static string Initials(string name)
+    {
+        var words = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        return words.Length switch
+        {
+            0 => "?",
+            1 => words[0][..Math.Min(2, words[0].Length)].ToUpperInvariant(),
+            _ => $"{words[0][0]}{words[1][0]}".ToUpperInvariant(),
+        };
+    }
+
+    /// <summary>One choice in a grid.</summary>
+    /// <param name="Key">Its key, returned when it is clicked.</param>
+    /// <param name="Name">Its display name.</param>
+    public sealed record GridOption(string Key, string Name)
+    {
+        /// <summary>Its lore, as HTML.</summary>
+        public string? Description { get; init; }
+
+        /// <summary>What it does.</summary>
+        public EffectSet? Effects { get; init; }
+
+        /// <summary>Path to its icon within the extracted assets.</summary>
+        public string? Icon { get; init; }
+
+        /// <summary>A larger picture, where the option has one, shown above its description.</summary>
+        public string? Picture { get; init; }
+
+        /// <summary>What it costs, where the choice is bought from a budget.</summary>
+        public int? Cost { get; init; }
+
+        /// <summary>Whether the empire has it.</summary>
+        public bool Selected { get; init; }
+
+        /// <summary>Whether it may be chosen.</summary>
+        public bool Enabled { get; init; } = true;
+
+        /// <summary>Why it may not be, in the game's own words.</summary>
+        public IReadOnlyList<string> Reasons { get; init; } = [];
+    }
+}

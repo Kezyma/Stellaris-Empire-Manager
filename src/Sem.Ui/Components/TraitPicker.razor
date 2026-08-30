@@ -1,0 +1,286 @@
+@*
+    Traits, arranged as the game arranges them: what may be taken on the left, what has been taken
+    on the right, and what the pointer is over described below. Clicking on the right removes.
+
+    Two allowances are spent at once — points, which drawbacks give back, and a limit on how many
+    traits may be held at all — so both counters sit above, side by side across the panel.
+*@
+
+<div class="sem-budgets">
+    <BudgetBar Key="POINTS_LEFT" Fallback="Trait Points Left: $POINTS|H$"
+               Label="TRAIT_POINTS" LabelFallback="Points: $POINTS|H$" Value="@Budget.Points" />
+
+    <BudgetBar Key="PICKS_LEFT" Fallback="Trait Picks Left: $POINTS|H$"
+               Label="TRAITS" LabelFallback="Traits" Value="@Budget.Picks" />
+</div>
+
+@*
+    What the pointer is over is described beneath the chosen traits rather than beneath both lists,
+    so reading about a trait and seeing what it would join happen in one place.
+*@
+<div class="sem-trait-lists">
+    <div class="sem-trait-list" role="listbox" aria-label="Available traits">
+        @foreach (var trait in Available)
+        {
+            @Row(trait, chosen: false)
+        }
+    </div>
+
+    <div class="chosen-column">
+        <div class="sem-trait-list chosen" role="listbox" aria-label="Chosen traits">
+            @if (Chosen.Count == 0)
+            {
+                <p class="sem-hint" style="padding:6px">Nothing chosen yet.</p>
+            }
+
+            @foreach (var trait in Chosen)
+            {
+                @Row(trait, chosen: true)
+            }
+        </div>
+
+        <div class="sem-trait-detail">
+            @if (Described is { } described)
+            {
+                <h4>@described.Name</h4>
+
+                @if (described.Lore is { Length: > 0 } lore)
+                {
+                    <div class="sem-detail-lore">@((MarkupString)lore)</div>
+                }
+
+                <EffectsList Effects="@described.Effects" ShowNothing="true" />
+
+                @if (described.Reasons.Count > 0)
+                {
+                    <ul class="sem-blocked">
+                        @foreach (var reason in described.Reasons)
+                        {
+                            <li>@reason</li>
+                        }
+                    </ul>
+                }
+            }
+            else
+            {
+                <p class="sem-hint">Hover a trait to see what it does.</p>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// What the detail box is describing. Kept after the pointer leaves rather than cleared, because
+    /// a box that empties between rows flickers as the pointer crosses the list.
+    /// </summary>
+    private string? _described;
+
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>The species whose traits these are, which may be the second one.</summary>
+    [Parameter, EditorRequired]
+    public required SpeciesDesign Species { get; set; }
+
+    private DesignContext Context => Session.Context!;
+
+    private TraitBudget Budget => Session.Rules.GetTraitBudget(Context);
+
+    private IReadOnlyList<ForcedTrait> Forced => Session.Rules.GetForcedTraitSources(Context);
+
+    private ForcedTrait? ForcedBy(string key) =>
+        Forced.FirstOrDefault(f => string.Equals(f.Trait, key, StringComparison.Ordinal));
+
+    private IReadOnlyDictionary<string, TraitDefinition> ByKey =>
+        _byKey ??= Session.Data.Database.Traits.ToDictionary(t => t.Key, StringComparer.Ordinal);
+
+    private IReadOnlyDictionary<string, TraitDefinition>? _byKey;
+
+    /// <summary>
+    /// Traits that may be taken, dearest first and alphabetically within a price.
+    /// </summary>
+    /// <remarks>
+    /// What cannot be taken sinks to the bottom — but only what cannot be taken for a reason that
+    /// will not change on its own. A trait merely unaffordable this moment keeps its place, since
+    /// hiding the expensive ones is exactly backwards while the player is deciding what to spend on.
+    /// </remarks>
+    private IReadOnlyList<TraitEntry> Available =>
+    [
+        .. Session.Rules.GetSpeciesTraitOptions(Context)
+            .Where(o => o.Visible
+                        && !Species.Traits.Contains(o.Key)
+                        && !EmpireRules.IsHabitabilityPreference(o.Key))
+            .Select(Entry)
+            .OrderBy(t => t.Unavailable)
+            .ThenByDescending(t => t.Cost)
+            .ThenBy(t => t.Name, StringComparer.CurrentCulture)
+    ];
+
+    /// <summary>
+    /// What the species has, in the order it was taken, so a trait does not move when another is
+    /// added beside it.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Traits something else decides are listed here too even though the design does not record
+    /// them. A habitability preference is the homeworld's doing and the game adds it when the game
+    /// begins — neither the player's own designs nor the game's built-in empires store one — so it
+    /// is shown rather than written.
+    /// </para>
+    /// <para>
+    /// Those come first, all of them together. Interleaved with the chosen ones by the order they
+    /// happen to sit in the file, a trait the player picked and a trait picked for them looked like
+    /// the same kind of thing, and the block of greyed rows at the top is what says they are not.
+    /// </para>
+    /// </remarks>
+    private IReadOnlyList<TraitEntry> Chosen
+    {
+        get
+        {
+            var held = Species.Traits.ToList();
+            var forced = Forced.Select(f => f.Trait).ToList();
+
+            var shown = forced.Concat(held.Where(t => !forced.Contains(t, StringComparer.Ordinal)));
+
+            return
+            [
+                .. shown.Select(key => Entry(new OptionState(
+                    key,
+                    true,
+                    Enabled: true,
+                    Reasons: [],
+                    Cost: ByKey.GetValueOrDefault(key)?.Cost ?? 0)))
+            ];
+        }
+    }
+
+    private TraitEntry? Described =>
+        _described is { } key
+            ? Available.Concat(Chosen).FirstOrDefault(t => t.Key == key)
+            : null;
+
+    /// <summary>
+    /// The budget reasons, which say only that a trait cannot be afforded right now.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Kept apart from the rest because they are temporary: clearing another trait or choosing a
+    /// different civic makes them go away, where a species class never will. They also do not stop
+    /// a trait being taken — a player building a species works towards a total rather than sideways
+    /// up to it, and being unable to try the expensive trait first is worse than briefly overspending.
+    /// </para>
+    /// <para>
+    /// So they are not written out either. "Not enough trait points" told the player something the
+    /// two counters above already say, and said it in the box that changes height as the pointer
+    /// moves. The trait is still marked as overspending, and the counters still go red.
+    /// </para>
+    /// </remarks>
+    private static readonly string[] BudgetReasons = [RuleReasons.NotEnoughPoints, RuleReasons.NoPicksLeft];
+
+    private static bool IsBudget(string reason) => BudgetReasons.Contains(reason);
+
+    private TraitEntry Entry(OptionState state)
+    {
+        var definition = ByKey.GetValueOrDefault(state.Key);
+        var forcedBy = ForcedBy(state.Key);
+        var forced = forcedBy is not null;
+        var reasons = Session.Reasons.Describe([.. state.Reasons.Where(r => !IsBudget(r))]).ToList();
+
+        if (forcedBy is not null)
+        {
+            reasons.Insert(0, Session.Reasons.Fixed(forcedBy));
+        }
+
+        if (state.RequiredDlc is { Length: > 0 } dlc)
+        {
+            reasons.Add($"Requires {dlc}.");
+        }
+
+        // Only the budget standing in the way is not a bar: the trait may be taken and the design
+        // then reads as overspent until something else gives way.
+        var overspends = !state.Enabled && state.Reasons.Count > 0 && state.Reasons.All(IsBudget);
+
+        return new TraitEntry(
+            state.Key,
+            Session.Localizer.Text(state.Key),
+            Session.Localizer.Html($"{state.Key}_desc", string.Empty),
+            definition?.Icon,
+            state.Cost,
+            definition?.Effects,
+            (state.Enabled || overspends) && !forced,
+            reasons,
+            Unavailable: !state.Enabled && state.Reasons.Any(r => !IsBudget(r)),
+            Overspends: overspends);
+    }
+
+    private void Toggle(TraitEntry trait, bool chosen)
+    {
+        // A forced trait is shown among the chosen so the player can see what they have, but it is
+        // not theirs to remove: something else in the design is holding it there.
+        if (!trait.Enabled)
+        {
+            return;
+        }
+
+        Session.Edit(_ =>
+        {
+            var traits = Species.Traits.ToList();
+
+            if (chosen)
+            {
+                traits.Remove(trait.Key);
+            }
+            else if (!traits.Contains(trait.Key))
+            {
+                traits.Add(trait.Key);
+            }
+
+            Species.SetTraits(traits);
+        });
+    }
+
+    private RenderFragment Row(TraitEntry trait, bool chosen) =>
+        @<button type="button"
+                 class="sem-trait-row @(trait.Enabled ? null : "blocked") @(trait.Overspends ? "overspends" : null)"
+                 title="@trait.Name"
+                 @onmouseenter="() => _described = trait.Key"
+                 @onfocus="() => _described = trait.Key"
+                 @onclick="() => Toggle(trait, chosen)">
+
+            @if (trait.Icon is { Length: > 0 } icon)
+            {
+                <img src="@Session.Data.AssetUrl(icon)" alt="" loading="lazy">
+            }
+            else
+            {
+                <span class="no-icon" aria-hidden="true"></span>
+            }
+
+            <span class="name">@trait.Name</span>
+
+            @if (trait.Cost != 0)
+            {
+                <span class="cost @(trait.Cost < 0 ? "gain" : null)">@(trait.Cost > 0 ? "+" : string.Empty)@trait.Cost</span>
+            }
+        </button>;
+
+    /// <summary>One trait as the two lists need it.</summary>
+    /// <param name="Unavailable">
+    /// Whether something other than the budget blocks it, which is what decides where it sorts.
+    /// </param>
+    /// <param name="Overspends">
+    /// Whether taking it would put the species over one of its allowances. It may still be taken.
+    /// </param>
+    private sealed record TraitEntry(
+        string Key,
+        string Name,
+        string? Lore,
+        string? Icon,
+        int Cost,
+        EffectSet? Effects,
+        bool Enabled,
+        IReadOnlyList<string> Reasons,
+        bool Unavailable = false,
+        bool Overspends = false);
+}

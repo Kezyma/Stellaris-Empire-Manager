@@ -1,38 +1,97 @@
 @*
-    Which content packs to judge availability against.
+    Which content packs to judge availability against, as a row of the game's own icons.
 
-    The desktop app knows this from the installation it read. The web app cannot, so it opens with
-    whatever the data was extracted from and lets the player correct it.
+    A page of its own was the wrong shape for this. It is not a setting a player sets once and
+    forgets: it decides half of what the designer will offer, so it belongs where the designer is,
+    and clicking a pack should visibly change the lists a moment later.
+
+    The desktop app knows the answer from the installation it read. The web app cannot, so it starts
+    with everything on and lets the player turn off what they do not own.
 *@
 
-<div class="sem-panel">
-    <h3>Content packs</h3>
-    <p class="sem-hint">
-        Options are shown or blocked according to what is ticked here.
-        <button type="button" class="sem-tab" @onclick="SelectAll">Select all</button>
-        <button type="button" class="sem-tab" @onclick="SelectNone">None</button>
-    </p>
+<div class="sem-dlc-bar">
+    @foreach (var pack in Packs)
+    {
+        var owned = Session.OwnedDlc.Contains(pack.Name);
 
-    <div class="sem-checklist">
-        @foreach (var pack in Packs)
-        {
-            var owned = Session.OwnedDlc.Contains(pack.Name);
+        <button type="button"
+                class="sem-dlc @(owned ? "on" : "off")"
+                title="@Name(pack)"
+                aria-pressed="@owned"
+                @onclick="() => Session.ToggleDlc(pack.Name, !owned)">
 
-            <label class="sem-check @(owned ? "on" : null)">
-                <input type="checkbox" checked="@owned"
-                       @onchange="e => Session.ToggleDlc(pack.Name, e.Value is true)" />
-                @Session.Localizer.Text(pack.NameKey, pack.Name)
-            </label>
-        }
-    </div>
+            @if (pack.Icon is { Length: > 0 } icon)
+            {
+                <img src="@Session.Data.AssetUrl(icon)" alt="@Name(pack)" loading="lazy">
+            }
+            else
+            {
+                <span class="initials">@Initials(Name(pack))</span>
+            }
+        </button>
+    }
+
+    <span class="spacer"></span>
+
+    <button type="button" class="sem-tab" @onclick="SelectAll">All</button>
+    <button type="button" class="sem-tab" @onclick="SelectNone">None</button>
+
+    @*
+        The version this was read from, and how much of it went unread. It has to live somewhere, and
+        somewhere it is seen occasionally beats a page nobody opens.
+    *@
+    <span class="sem-hint" title="@Provenance">@Session.Data.Database.GameVersion</span>
 </div>
 
 @code {
     [CascadingParameter]
     public required DesignSession Session { get; set; }
 
+    /// <summary>
+    /// The packs worth a switch.
+    /// </summary>
+    /// <remarks>
+    /// Eleven of the thirty-six decide nothing an empire is built from — a soundtrack, a set of
+    /// forum avatars, and three expansions whose content this designer never reaches. Turning one
+    /// off changed nothing on the page, which is a worse thing for a switch to do than to be absent.
+    /// </remarks>
     private IEnumerable<DlcDefinition> Packs =>
-        Session.Data.Database.Dlc.OrderBy(d => d.Name, StringComparer.CurrentCulture);
+        Session.Data.Database.Dlc
+            .Where(d => d.Decides)
+            .OrderBy(d => Name(d), StringComparer.CurrentCulture);
+
+    private string Name(DlcDefinition pack) => Session.Localizer.Text(pack.NameKey, pack.Name);
+
+    private string Provenance
+    {
+        get
+        {
+            var database = Session.Data.Database;
+            var unread = database.UnrecognisedTriggers.Count;
+
+            var read =
+                $"Read from Stellaris {database.GameVersion} by extractor {database.ExtractorVersion}. " +
+                $"{Session.Data.Localisation.Count:N0} pieces of text.";
+
+            return unread == 0
+                ? read
+                : $"{read} {unread} condition(s) were not understood; options relying on them are " +
+                  "offered rather than hidden.";
+        }
+    }
+
+    /// <summary>A stand-in for a pack the installation has no picture for.</summary>
+    private static string Initials(string name)
+    {
+        var words = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+        return words.Length switch
+        {
+            0 => "?",
+            1 => words[0][..Math.Min(2, words[0].Length)].ToUpperInvariant(),
+            _ => $"{words[0][0]}{words[1][0]}".ToUpperInvariant(),
+        };
+    }
 
     private void SelectAll() => Session.SetOwnedDlc(Session.Data.Database.Dlc.Select(d => d.Name));
 

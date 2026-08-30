@@ -93,10 +93,15 @@ code {
     margin-right: auto;
 }
 
+/*
+    Wide, because there is a lot to show and the page was leaving a third of a modern screen empty.
+    Capped rather than unbounded: prose still has to be readable, and every list inside is a grid
+    that would otherwise keep growing columns until a row of civics ran off the eye's reach.
+*/
 .sem-main {
     flex: 1;
     padding: 20px;
-    max-width: 1400px;
+    max-width: 1800px;
     width: 100%;
     margin: 0 auto;
 }
@@ -355,6 +360,60 @@ label {
 
 /* ---------------------------------------------------------------- portraits */
 
+/*
+    Classes on the left, their faces on the right — the game's own arrangement, and the one that
+    says the class is what decides the list rather than a filter applied to it afterwards.
+*/
+.sem-portrait-picker {
+    display: grid;
+    grid-template-columns: minmax(120px, 160px) 1fr;
+    gap: var(--gap);
+    align-items: start;
+}
+
+.sem-class-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    max-height: 460px;
+    overflow-y: auto;
+}
+
+.sem-class-list button {
+    padding: 6px 10px;
+    text-align: left;
+    background: none;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+}
+
+.sem-class-list button:hover:not(:disabled) {
+    background: var(--bg-hover);
+}
+
+.sem-class-list button.selected {
+    background: var(--bg-raised);
+    border-color: var(--gold);
+    color: var(--gold);
+}
+
+.sem-class-list button.blocked {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+@media (max-width: 720px) {
+    .sem-portrait-picker {
+        grid-template-columns: 1fr;
+    }
+
+    .sem-class-list {
+        flex-direction: row;
+        flex-wrap: wrap;
+        max-height: none;
+    }
+}
+
 .sem-portraits {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
@@ -421,12 +480,41 @@ label {
 
 /* ---------------------------------------------------------------- flags */
 
+/* The box is the whole framed flag, border included — which is what the game's own sprite measures,
+   so a flag drawn at 128 is 131 across and its colour only fills the middle of that. No background
+   of its own: the frame's artwork is the edge, and anything painted behind it shows in the corners
+   the mask cuts away. */
 .sem-flag {
     position: relative;
     width: 100%;
     aspect-ratio: 1;
-    overflow: hidden;
-    border-radius: 3px;
+}
+
+/* The shape the field is cut to, in the frame's own coordinates. Covers the whole flag because the
+   game's mask does; it rounds the corners well inside the field rectangle. */
+.sem-flag .cut {
+    position: absolute;
+    inset: 0;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+}
+
+/* The three coloured shapes add together and clip at white, which is what the game's shader does.
+   Isolating them keeps that addition inside the flag rather than blending it with the page. */
+.sem-flag .field {
+    position: absolute;
+    inset: 0;
+    isolation: isolate;
+    background: #000;
+}
+
+/* Over everything, because a frame is a border drawn on top of what it frames. */
+.sem-flag .border {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
 }
 
 .sem-flag .layer {
@@ -436,10 +524,21 @@ label {
     mask-size: 100% 100%;
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
+    mix-blend-mode: plus-lighter;
+}
+
+/* Drawn as it was painted: the artwork carries its own colours and the game never tints it. The
+   inset comes from the game's own numbers and is set inline, since it differs by size — seven tenths
+   of the field on the largest flag, four fifths on the smallest. */
+.sem-flag .emblem {
+    position: absolute;
+    inset: 0;
+    object-fit: contain;
 }
 
 .sem-flag.tiny { width: 24px; height: 24px; }
 .sem-flag.small { width: 44px; height: 44px; }
+.sem-flag.medium { width: 72px; height: 72px; }
 .sem-flag.large { width: 160px; height: 160px; }
 
 /* ---------------------------------------------------------------- budgets */
@@ -448,34 +547,66 @@ label {
     margin-bottom: var(--gap);
 }
 
-.sem-budget .head {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.85rem;
-    color: var(--text-dim);
-    margin-bottom: 4px;
+/* Several counters across the panel, each taking an equal share of it. */
+.sem-budgets {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--gap);
 }
 
-.sem-budget .value { color: var(--text); font-variant-numeric: tabular-nums; }
-.sem-budget.over .value { color: var(--bad); }
+.sem-budgets > .sem-budget { margin-bottom: var(--gap); }
 
+/*
+    The reading sits on the bar. The fill is behind it rather than around it, so the words stay put
+    as the bar fills and stay legible over either side of it.
+*/
 .sem-budget .track {
-    height: 6px;
+    position: relative;
+    height: 22px;
     background: var(--bg);
+    border: 1px solid var(--border);
     border-radius: 3px;
     overflow: hidden;
 }
 
 .sem-budget .fill {
-    height: 100%;
-    background: var(--accent);
+    position: absolute;
+    inset: 0 auto 0 0;
+    background: var(--accent-dim);
     transition: width 0.15s;
+}
+
+.sem-budget .reading {
+    position: relative;
+    display: block;
+    padding: 0 8px;
+    line-height: 20px;
+    font-size: 0.82rem;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-variant-numeric: tabular-nums;
 }
 
 .sem-budget.over .fill { background: var(--bad); }
 .sem-budget.full .fill { background: var(--gold); }
 
+/* Gold is bright enough that the words need the dark side of the palette to stay readable. */
+.sem-budget.full .reading { color: #0d1117; }
+
 /* ---------------------------------------------------------------- status */
+
+/* The empire's name in the designer's top bar, shown rather than edited. */
+.sem-title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 1.05rem;
+    font-weight: 600;
+}
 
 .sem-status {
     display: inline-flex;
@@ -530,41 +661,91 @@ label {
 
 /* ---------------------------------------------------------------- empire list */
 
+/*
+    Both lists on the front page use this: the player's own empires and the game's. The game's entry
+    is 200 by 65 with a 60 by 62 face, and these keep those proportions with a flag added.
+*/
 .sem-empires {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 10px;
+}
+
+/* The game's own empires, in three columns and staying three. The shared rule above fits as many
+   300px columns as it can, which came out at three on a wide screen and four on a narrow one — an
+   accident of the page being 1400 with a 420 preview beside it rather than anything chosen. */
+.sem-empires-preset {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 900px) {
+    .sem-empires-preset { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 640px) {
+    .sem-empires-preset { grid-template-columns: 1fr; }
+}
+
+/* A section rather than a panel: a heading, a line of hint, and the list. */
+.sem-prescripted {
+    margin-top: 24px;
+}
+
+.sem-prescripted > .sem-empires {
+    margin-top: 12px;
 }
 
 .sem-empire {
     display: flex;
     gap: 10px;
     align-items: center;
-    padding: 10px;
+    padding: 8px 10px;
     background: var(--bg-panel);
     border: 1px solid var(--border);
     border-radius: var(--radius);
+    color: inherit;
+    font: inherit;
     cursor: pointer;
     text-align: left;
     width: 100%;
 }
 
-.sem-empire:hover {
+.sem-empire:hover:not(:disabled) {
     background: var(--bg-hover);
     border-color: var(--accent-dim);
 }
 
 .sem-empire.selected { border-color: var(--accent); }
 
-.sem-empire .flag {
-    width: 44px;
-    height: 44px;
-    border-radius: 3px;
-    flex-shrink: 0;
-    border: 1px solid var(--border);
+/* An empire the game would refuse, said without spending a line of the card on saying it. */
+.sem-empire.broken { border-color: var(--bad); }
+
+/* An empire the game keeps but stores nothing readable for cannot be shown, so it is not offered. */
+.sem-empire:disabled {
+    cursor: default;
+    opacity: 0.5;
 }
 
-.sem-empire .body { flex: 1; min-width: 0; }
+/* The face, cropped to the head as the game crops it. */
+.sem-empire .face {
+    width: 46px;
+    height: 58px;
+    object-fit: cover;
+    object-position: top center;
+    flex-shrink: 0;
+    border-radius: var(--radius);
+}
+
+/* Three lines stacked, as the game's own entry has them: the name, the government it turned out to
+   be, and the species class, at (65,6), (65,24) and (65,42) of a 200 by 65 tile. Set side by side,
+   which is what a plain block did, the government read as part of the name. */
+.sem-empire .body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
 
 .sem-empire .name {
     font-weight: 600;
@@ -620,4 +801,1459 @@ label {
 
 .sem-summary dd {
     margin: 0;
+}
+
+/* ---------------------------------------------------------------- icon grids
+
+   The game fits a whole screen of choices into a corner of one by showing icons and putting the
+   words in a panel beside them. These do the same: a grid that stays the same size however many
+   options it holds, and one detail panel that describes whatever the pointer is over. */
+
+.sem-grid-and-detail {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(240px, 2fr);
+    gap: var(--gap);
+    align-items: start;
+}
+
+@media (max-width: 900px) {
+    .sem-grid-and-detail { grid-template-columns: 1fr; }
+}
+
+/* Icons are a fixed size and the row length follows the space available. Letting them stretch to
+   fill the row would make the same trait a different size in two places, and would waste the height
+   that the compact layout exists to save. */
+.sem-icon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, var(--sem-icon-size, 40px));
+    gap: 6px;
+}
+
+.sem-icon-option {
+    position: relative;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: border-color 0.12s, background 0.12s;
+}
+
+.sem-icon-option:hover:not(.blocked),
+.sem-icon-option:focus-visible {
+    background: var(--bg-hover);
+    border-color: var(--border-strong);
+    outline: none;
+}
+
+.sem-icon-option.selected {
+    border-color: var(--accent);
+    background: var(--bg-hover);
+    box-shadow: inset 0 0 0 1px var(--accent-dim);
+}
+
+/* Still legible, and still hoverable: a blocked option has to be able to explain itself. */
+.sem-icon-option.blocked {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.sem-icon-option img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.sem-icon-option .initials {
+    font-size: 0.75rem;
+    color: var(--text-faint);
+    letter-spacing: 0.05em;
+}
+
+.sem-icon-option .cost {
+    position: absolute;
+    right: 2px;
+    bottom: 1px;
+    font-size: 0.65rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-dim);
+    text-shadow: 0 0 3px var(--bg);
+}
+
+.sem-icon-option .cost.gain { color: var(--good); }
+
+/* The icons, and beside them whatever belongs with them without being one of them. */
+.sem-grid-column {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    min-width: 0;
+}
+
+.sem-grid-column > .sem-icon-grid { flex: 1; min-width: 0; }
+
+.sem-grid-aside { flex-shrink: 0; }
+
+/*
+    One height whatever is being described. Left to size itself the panel grew and shrank as the
+    pointer crossed the grid, moving the icons out from under it — what a reader was reaching for
+    was no longer where they had seen it. Each caller sets its own figure on the row.
+
+    A column rather than one scrolling box, so that a picture can sit above the words and stay put
+    while they scroll: an origin's scene is what it looks like, and scrolling past it to read about
+    it loses the thing being read about.
+*/
+.sem-detail {
+    display: flex;
+    flex-direction: column;
+    height: var(--sem-detail-height, 320px);
+    overflow: hidden;
+    padding: 10px 12px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.sem-detail > .body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+@media (max-width: 700px) {
+    .sem-detail { height: min(var(--sem-detail-height, 320px), 240px); }
+}
+
+.sem-detail h4 {
+    margin: 0 0 6px;
+    font-size: 0.95rem;
+}
+
+/*
+    The content packs, across the top of every page. A pack that is off is dimmed rather than hidden,
+    because knowing what is being left out is the point of having them visible at all.
+*/
+.sem-dlc-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 16px;
+    background: var(--bg-raised);
+    border-bottom: 1px solid var(--border);
+}
+
+.sem-dlc-bar .spacer { flex: 1; }
+
+.sem-dlc {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    background: none;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+}
+
+.sem-dlc img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+.sem-dlc .initials {
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.sem-dlc.on { border-color: var(--border-strong); }
+
+.sem-dlc.off {
+    opacity: 0.3;
+    filter: grayscale(1);
+}
+
+.sem-dlc:hover { background: var(--bg-hover); }
+
+/*
+    The ethics, as arguments rather than as a list. One column per opposition, read top to bottom
+    from the fanatic form of one side to the fanatic form of the other, so what a conviction rules
+    out is directly beneath it.
+*/
+/*
+    One column per opposition, each a fixed width. Sized in fractions of the panel they stretched to
+    fill it, and since an option is square that made every conviction a hundred-pixel tile. A column
+    per track rather than a wrapping row, so the two halves of an argument never come apart.
+*/
+.sem-ethics-grid {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: var(--sem-icon-size, 40px);
+    justify-content: start;
+    gap: 6px;
+    align-items: start;
+}
+
+.sem-ethics-grid .column {
+    display: grid;
+    gap: 6px;
+}
+
+/*
+    The ethics panel writes its own grid rather than using OptionGrid, so it carries the detail
+    height the rest get from that component. Sized to the grid beside it — four rows of forty with
+    three gaps of six — so the panel is as tall as the choices it describes and no taller. Most
+    convictions overflow that and scroll, which is the trade: a compact section that is read into
+    rather than a tall one that is mostly empty.
+*/
+.sem-grid-and-detail:has(> .sem-ethics-grid) { --sem-detail-height: 178px; }
+
+/*
+    The grid is now as wide as its columns make it rather than as wide as the panel, so the detail
+    beside it takes the rest. Written as a minimum width rather than beside the rule above, because
+    a selector carrying :has() outranks the breakpoint that stacks these on a narrow screen, and
+    unqualified it forced two columns into a space with room for one.
+*/
+@media (min-width: 901px) {
+    .sem-grid-and-detail:has(> .sem-ethics-grid) {
+        grid-template-columns: auto minmax(240px, 1fr);
+    }
+}
+
+/*
+    The nomad toggle. Square like the authorities it sits beside, but kept out of their grid and
+    marked in gold rather than the selection blue, because it is not one of them — the game does the
+    same, giving it a container of its own and a highlight of its own.
+*/
+.sem-nomad {
+    width: var(--sem-icon-size, 40px);
+}
+
+.sem-nomad.selected {
+    border-color: var(--gold);
+    box-shadow: inset 0 0 0 1px var(--gold);
+}
+
+.sem-nomad .initials {
+    font-size: 0.6rem;
+    text-align: center;
+    line-height: 1.1;
+}
+
+
+/*
+    The empire as the game shows it: a leader in a room with their own world behind them. Everything
+    inside is placed as a fraction of the whole, so the scene keeps its composition at any width the
+    page gives it. The aspect is the game's own room, 952 by 340.
+*/
+.sem-room {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 952 / 340;
+    overflow: hidden;
+    border-radius: var(--radius);
+    background: #05070c;
+}
+
+.sem-room > .room {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* The world through the window, painted before the room and so showing through its cut-out. */
+.sem-room > .world {
+    position: absolute;
+    overflow: hidden;
+}
+
+.sem-room > .world img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* The figure stands on the floor, whatever height the room is drawn at. */
+.sem-room > .figure {
+    position: absolute;
+    bottom: 0;
+    width: auto;
+    object-fit: contain;
+}
+
+/*
+    The flag on the wall. Placed and sized in the markup as fractions of the room, so it keeps the
+    game's own geometry at whatever width the page draws the scene at.
+*/
+.sem-room > .banner {
+    position: absolute;
+    filter: drop-shadow(0 2px 6px rgb(0 0 0 / 0.55));
+}
+
+
+/*
+    A second list within a panel, set apart from the first — the rooms the game hands out rather
+    than offers. The rule above it is the point: these are not more of the same.
+*/
+.sem-subhead {
+    margin: 16px 0 2px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    font-size: 0.9rem;
+    color: var(--text-dim);
+}
+
+.sem-hint.unlisted { color: var(--warn); }
+
+/* The scene an origin opens on, above whatever is written about it and fixed while that scrolls. */
+.sem-detail-picture {
+    display: block;
+    width: 100%;
+    max-height: 160px;
+    flex-shrink: 0;
+    object-fit: cover;
+    border-radius: var(--radius);
+    margin-bottom: 8px;
+}
+
+.sem-detail-lore {
+    margin-bottom: 8px;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+}
+
+.sem-blocked {
+    margin: 8px 0 0;
+    padding-left: 16px;
+    color: var(--bad);
+    font-size: 0.8rem;
+}
+
+/* ---------------------------------------------------------------- effects */
+
+.sem-effects { font-size: 0.85rem; }
+
+.sem-effects-none {
+    margin: 0;
+    color: var(--text-faint);
+    font-size: 0.85rem;
+}
+
+.sem-effects-text {
+    margin-bottom: 6px;
+    color: var(--text-dim);
+}
+
+.sem-modifiers {
+    margin: 0 0 6px;
+    padding: 0;
+    list-style: none;
+}
+
+.sem-modifiers li {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 1px 0;
+}
+
+.sem-modifiers .label {
+    flex: 1;
+    min-width: 0;
+    color: var(--text-dim);
+}
+
+.sem-modifiers .value {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.sem-modifiers .value.good { color: var(--good); }
+.sem-modifiers .value.bad { color: var(--bad); }
+
+.sem-modifiers .sources {
+    min-width: 16px;
+    padding: 0 4px;
+    border-radius: 8px;
+    background: var(--bg-raised);
+    color: var(--text-faint);
+    font-size: 0.7rem;
+    text-align: center;
+}
+
+/* A bonus that only applies in some empires is set apart rather than mixed in with the rest, so it
+   cannot be mistaken for something the empire starts with. */
+.sem-effects-when {
+    margin: 6px 0;
+    padding-left: 8px;
+    border-left: 2px solid var(--border);
+}
+
+.sem-effects-when .when {
+    color: var(--text-faint);
+    font-size: 0.75rem;
+    font-style: italic;
+}
+
+.sem-effects-penalty .heading {
+    margin-top: 6px;
+    color: var(--warn);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+/* An icon standing in for a word, so it sits on the text baseline at the height of a capital. */
+.sem-text-icon {
+    height: 1em;
+    width: auto;
+    vertical-align: -0.12em;
+    margin: 0 1px;
+}
+
+.sem-combined h4 {
+    margin: 0 0 8px;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+}
+
+/* ---------------------------------------------------------------- designer
+
+   Two panes: the choices on the left, what the empire amounts to on the right. The right pane
+   follows the page so the running total and the problem list stay in view while choices are made
+   further down. */
+
+.sem-designer {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+    gap: var(--gap);
+    align-items: start;
+}
+
+/* One column, and the preview leads. Grid children follow source order, so without this the panel
+   would sit under every section — past the point where it answers anything. */
+@media (max-width: 1100px) {
+    .sem-designer { grid-template-columns: 1fr; }
+
+    .sem-summary-pane {
+        position: static !important;
+        order: -1;
+        max-height: none;
+    }
+}
+
+.sem-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.sem-summary-pane {
+    position: sticky;
+    top: var(--gap);
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+    max-height: calc(100vh - 2 * var(--gap));
+    overflow-y: auto;
+}
+
+.sem-section {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.sem-section > .head {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    width: 100%;
+    padding: 8px 12px;
+    background: none;
+    border: none;
+    color: var(--text);
+    font: inherit;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+}
+
+.sem-section > .head:hover { background: var(--bg-hover); }
+
+.sem-section > .head .chevron {
+    width: 12px;
+    color: var(--text-faint);
+}
+
+/* What is chosen, so a collapsed section still answers the question it asks. */
+.sem-section > .head .summary {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text-dim);
+    font-weight: 400;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.sem-section > .head .count {
+    padding: 0 6px;
+    border-radius: 8px;
+    background: var(--bad);
+    color: var(--bg);
+    font-size: 0.7rem;
+}
+
+.sem-section > .body {
+    padding: 0 12px 12px;
+    border-top: 1px solid var(--border);
+    padding-top: 10px;
+}
+
+/* The sections supply their own frame, so the panels inside them must not draw a second one. */
+.sem-section > .body > .sem-panel {
+    padding: 0;
+    background: none;
+    border: none;
+}
+
+.sem-section > .body > .sem-panel > h3 { display: none; }
+
+/* The page is already two columns. A section dividing itself again leaves the icon grids a few
+   icons wide, which is how a compact grid turns back into a long list. */
+.sem-section .sem-columns {
+    grid-template-columns: 1fr;
+}
+
+/* ---------------------------------------------------------------- swatches */
+
+/* The three slots side by side, each a square block of the game's palette under its own heading. */
+.sem-colors {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--gap);
+    flex: 1;
+    min-width: 200px;
+}
+
+/* Eight across and 28 to a side, which is the shape the game's own colour picker uses. */
+.sem-swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 28px);
+    gap: 3px;
+    margin-top: 4px;
+}
+
+.sem-swatch {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.sem-swatch:hover { border-color: var(--border-strong); }
+
+.sem-swatch.selected {
+    border-color: var(--text);
+    box-shadow: 0 0 0 1px var(--text);
+}
+
+/* ---------------------------------------------------------------- preview
+
+   What the empire currently is. Beside the choices there is room to show all of it at once; above
+   them, on a narrow screen, the header alone answers the question and the rest waits for a tap. */
+
+.sem-preview {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.sem-preview > .head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    background: none;
+    border: none;
+    border-radius: 0;
+    color: var(--text);
+    font: inherit;
+    text-align: left;
+    /* Wide enough for the panel, and the toggle is inert there, so it should not invite a click. */
+    cursor: default;
+}
+
+.sem-preview > .head .titles {
+    flex: 1;
+    min-width: 0;
+}
+
+.sem-preview > .head .name {
+    display: block;
+    font-weight: 600;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.sem-preview > .head .government {
+    display: block;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+}
+
+.sem-preview > .head .count {
+    padding: 0 6px;
+    border-radius: 8px;
+    background: var(--bad);
+    color: var(--bg);
+    font-size: 0.75rem;
+}
+
+/* Only meaningful where the panel collapses, so it is not shown where it is not. */
+.sem-preview > .head .chevron { display: none; }
+
+.sem-preview > .body {
+    padding: 0 12px 12px;
+}
+
+.sem-summary {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 2px 10px;
+    margin: 0 0 12px;
+    font-size: 0.85rem;
+}
+
+.sem-summary dt {
+    color: var(--text-faint);
+    white-space: nowrap;
+}
+
+.sem-summary dd {
+    margin: 0;
+    color: var(--text-dim);
+}
+
+@media (max-width: 1100px) {
+    .sem-preview > .head { cursor: pointer; }
+    .sem-preview > .head:hover { background: var(--bg-hover); }
+    .sem-preview > .head .chevron { display: inline; color: var(--text-faint); }
+    .sem-preview.collapsed > .body { display: none; }
+}
+
+/* ---------------------------------------------------------------- subsections
+
+   Parts of one section, separated by a rule rather than another box: nesting a panel inside a panel
+   inside the page reads as three frames around one list. */
+
+.sem-subsections {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.sem-subsections > section + section {
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+}
+
+.sem-subsections > section > h4 {
+    margin: 0 0 10px;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+/* The names a list holds, shown rather than described. Read-only, and sized to hint at how many
+   there are without taking the page over. */
+.sem-name-set label {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.sem-name-set label .count {
+    color: var(--text-faint);
+    font-variant-numeric: tabular-nums;
+}
+
+.sem-name-set textarea {
+    resize: vertical;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    line-height: 1.45;
+}
+
+/* ---------------------------------------------------------------- traits
+
+   The game's own arrangement: what may be taken, what has been taken, and what the pointer is over
+   described underneath. */
+
+/*
+    Both columns are exactly as tall as each other and never change height. The box on the right
+    describes whatever the pointer is over, and its contents run from a line to a paragraph and a
+    list of conditions — left to size itself it grew and shrank as the pointer crossed the list,
+    which moved every trait under the pointer and the rest of the page with them. So the height is
+    fixed and the overflow scrolls.
+*/
+.sem-trait-lists {
+    --trait-column: 440px;
+    --trait-detail: 210px;
+
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--gap);
+    margin-top: 4px;
+}
+
+/* What is chosen, and beneath it what the pointer is over: reading about a trait and seeing what
+   it would join belong together. */
+.sem-trait-lists .chosen-column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+    min-width: 0;
+    height: var(--trait-column);
+}
+
+/* The chosen list takes whatever the detail box leaves, so the two columns end level. */
+.sem-trait-lists .chosen-column .sem-trait-list {
+    flex: 1;
+    height: auto;
+    min-height: 0;
+}
+
+.sem-trait-lists .chosen-column .sem-trait-detail {
+    flex: 0 0 var(--trait-detail);
+    margin-top: 0;
+    overflow-y: auto;
+}
+
+@media (max-width: 700px) {
+    .sem-trait-lists {
+        --trait-column: 340px;
+        --trait-detail: 170px;
+
+        grid-template-columns: 1fr;
+    }
+}
+
+.sem-trait-list {
+    height: var(--trait-column);
+    overflow-y: auto;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.sem-trait-list.chosen {
+    background: var(--bg-raised);
+}
+
+.sem-trait-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 3px 8px;
+    background: none;
+    border: none;
+    border-radius: 0;
+    color: var(--text);
+    font: inherit;
+    text-align: left;
+}
+
+.sem-trait-row:hover:not(.blocked) {
+    background: var(--bg-hover);
+    border-color: transparent;
+}
+
+.sem-trait-row.blocked {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/*
+    A trait there is no room for yet is still a trait the player may take: it is marked rather than
+    put out of reach, so building towards a total works from either direction.
+*/
+.sem-trait-row.overspends {
+    color: var(--warn);
+}
+
+.sem-trait-row.overspends .cost,
+.sem-trait-row.overspends .cost.gain {
+    color: var(--warn);
+    font-weight: 600;
+}
+
+.sem-trait-row img,
+.sem-trait-row .no-icon {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    object-fit: contain;
+}
+
+.sem-trait-row .name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.sem-trait-row .cost {
+    color: var(--gold);
+    font-variant-numeric: tabular-nums;
+}
+
+.sem-trait-row .cost.gain { color: var(--good); }
+
+.sem-trait-detail {
+    margin-top: var(--gap);
+    padding: 10px 12px;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.sem-trait-detail h4 {
+    margin: 0 0 6px;
+    font-size: 0.95rem;
+}
+
+/* ---------------------------------------------------------------- combobox
+
+   Type anything, or open the list. The browser's own datalist filters itself by what has been
+   typed, so it empties as soon as a name is entered; this does not. */
+
+.sem-combo {
+    position: relative;
+    display: flex;
+}
+
+.sem-combo input[type="text"] {
+    padding-right: 28px;
+}
+
+.sem-combo .toggle {
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    bottom: 1px;
+    width: 26px;
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    color: var(--text-dim);
+    line-height: 1;
+}
+
+.sem-combo .toggle:hover { background: var(--bg-hover); color: var(--text); }
+
+.sem-combo .options {
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0;
+    right: 0;
+    z-index: 20;
+    max-height: 260px;
+    overflow-y: auto;
+    margin: 0;
+    padding: 2px;
+    list-style: none;
+    background: var(--bg-panel);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+}
+
+.sem-combo .options button {
+    display: block;
+    width: 100%;
+    padding: 4px 8px;
+    background: none;
+    border: none;
+    border-radius: 3px;
+    color: var(--text);
+    font: inherit;
+    text-align: left;
+}
+
+.sem-combo .options button:hover { background: var(--bg-hover); }
+.sem-combo .options button.selected { color: var(--accent); }
+
+/* ---------------------------------------------------------------- name fields
+
+   Three names and the button that fills them, side by side, because they are one answer given three
+   ways rather than three separate questions. */
+
+.sem-name-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+    gap: var(--gap);
+    align-items: end;
+}
+
+.sem-name-row > .sem-field { margin-bottom: 0; }
+
+/* The class and gender pair sits in the same grid but wants only two columns. */
+.sem-name-row:has(.sem-genders) {
+    grid-template-columns: minmax(0, 1fr) auto;
+}
+
+@media (max-width: 700px) {
+    .sem-name-row,
+    .sem-name-row:has(.sem-genders) {
+        grid-template-columns: 1fr;
+    }
+}
+
+/*
+    The ruler's likeness beside the controls that change it. The figure keeps its own width so the
+    controls take whatever is left; below the breakpoint they stack instead, since a 332px portrait
+    and a column of steppers do not both fit on a phone.
+*/
+.sem-appearance {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+.sem-appearance > .figure {
+    flex: none;
+    width: 332px;
+    min-height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.sem-appearance > .controls {
+    flex: 1;
+    min-width: 0;
+}
+
+@media (max-width: 800px) {
+    .sem-appearance { flex-direction: column; }
+    .sem-appearance > .figure { width: 100%; }
+}
+
+/*
+    A portrait rebuilt from its pieces. Every layer was trimmed to its own content and remembers
+    where it came from, so each is placed at its own offset inside a box the size of the original
+    frame rather than stretched to fill anything.
+*/
+.sem-figure {
+    position: relative;
+    flex: none;
+}
+
+.sem-figure img {
+    position: absolute;
+    image-rendering: auto;
+}
+
+/* One of the game's spinners: arrows either side of where you are in a list. */
+.sem-stepper > .control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sem-stepper button {
+    flex: none;
+    width: 28px;
+    padding: 4px 0;
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.sem-stepper .value {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 0 4px;
+}
+
+.sem-stepper .caption {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.85rem;
+}
+
+.sem-stepper .count {
+    flex: none;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+}
+
+/* The paragraph the game writes about an empire, and the one a player writes about their species. */
+.sem-lore {
+    margin: var(--gap) 0 0;
+    padding: 0 2px;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--text-dim);
+    white-space: pre-wrap;
+}
+
+/*
+    A biography, folded away. The summary is styled as a field label so a shut one reads as one more
+    field rather than as a control of a different kind.
+*/
+.sem-bio {
+    margin-top: var(--gap);
+}
+
+.sem-bio > summary {
+    display: block;
+    cursor: pointer;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    list-style: none;
+}
+
+.sem-bio > summary::-webkit-details-marker { display: none; }
+
+/* A caret of its own, since the native marker was hidden to keep the label aligned. */
+.sem-bio > summary::before {
+    content: "▸ ";
+    color: var(--text-faint);
+}
+
+.sem-bio[open] > summary::before { content: "▾ "; }
+
+.sem-bio > summary:hover { color: var(--text); }
+
+.sem-bio > textarea {
+    width: 100%;
+    margin-top: 6px;
+    resize: vertical;
+}
+
+/*
+    The spawn setting: the game's own cycling button, with the state it is showing named beside it.
+    The picture alone is a puzzle — three lit variants of one shape — so the words carry the meaning
+    and the button carries the recognition.
+*/
+.sem-spawn-row {
+    display: flex;
+    align-items: center;
+    gap: var(--gap);
+    margin-top: var(--gap);
+}
+
+.sem-spawn {
+    flex: none;
+    width: 74px;
+    height: 58px;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sem-spawn img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.sem-spawn:hover img { filter: brightness(1.15); }
+
+.sem-spawn:focus-visible {
+    outline: 1px solid var(--accent);
+    border-radius: var(--radius);
+}
+
+.sem-spawn-row .name {
+    font-size: 0.9rem;
+    color: var(--text);
+}
+
+.sem-spawn-row .sem-hint { margin: 2px 0 0; }
+
+button.small {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+}
+
+/*
+    The game's randomise button: a die, sized to sit level with the field beside it. Square, because
+    the sprite is, and because four of these in a row read as a set only if they match.
+*/
+.sem-randomise {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+}
+
+.sem-randomise img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+}
+
+/* Four sets of names, side by side where there is room for them. */
+.sem-name-sets {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--gap);
+    margin-top: var(--gap);
+}
+
+@media (max-width: 1100px) {
+    .sem-name-sets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 700px) {
+    .sem-name-sets { grid-template-columns: 1fr; }
+}
+
+/* ---------------------------------------------------------------- gender */
+
+.sem-genders {
+    display: flex;
+    gap: 4px;
+}
+
+.sem-gender {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 4px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    font-size: 0.7rem;
+}
+
+.sem-gender.selected {
+    border-color: var(--accent);
+    background: var(--bg-hover);
+}
+
+.sem-gender img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* ---------------------------------------------------------------- preview species */
+
+.sem-preview-species {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.sem-preview-species .portrait {
+    width: 56px;
+    flex-shrink: 0;
+    border-radius: var(--radius);
+    background: var(--bg-raised);
+    object-fit: contain;
+    object-position: bottom;
+}
+
+.sem-preview-species .about {
+    min-width: 0;
+    flex: 1;
+}
+
+.sem-preview-species .name { font-weight: 600; }
+
+.sem-preview-species .kind {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+}
+
+.sem-preview-species .traits {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+    margin-top: 5px;
+}
+
+.sem-preview-species .trait {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 1px 5px 1px 2px;
+    border-radius: 9px;
+    background: var(--bg-raised);
+    color: var(--text-dim);
+    font-size: 0.72rem;
+}
+
+.sem-preview-species .trait img { width: 14px; height: 14px; object-fit: contain; }
+
+/* ---------------------------------------------------------------- the select screen */
+
+/*
+    Empires to choose from on one side, the chosen one in full on the other. The preview is written
+    first in the markup so that a single-column screen puts it at the top, which is the same rule
+    the designer follows: the answer above the ways of changing the question.
+*/
+.sem-select {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--gap);
+    align-items: start;
+}
+
+@media (min-width: 1100px) {
+    .sem-select {
+        /* The lists take the room they need for their cards; the preview takes the rest. */
+        grid-template-columns: minmax(0, 1fr) 420px;
+    }
+
+    .sem-select > .preview {
+        grid-column: 2;
+        position: sticky;
+        top: var(--gap);
+    }
+
+    .sem-select > .lists { grid-column: 1; grid-row: 1; }
+}
+
+/*
+    Past this width the preview stops being a narrow column and becomes the thing worth looking at:
+    a room, a species, its politics and everything it adds up to, side by side rather than stacked
+    into a strip. The lists keep their three columns and the preview takes what is left.
+*/
+@media (min-width: 1500px) {
+    .sem-select {
+        grid-template-columns: minmax(0, 1fr) 620px;
+    }
+}
+
+/* ---------------------------------------------------------------- empire showcase */
+
+/*
+    An empire shown the way the game shows one on its select screen: a flag beside the name, then a
+    framed portrait beside the species and its government. Everything below that is ours.
+*/
+.sem-showcase {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: var(--gap);
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.sem-showcase > .identity {
+    display: flex;
+    align-items: center;
+    gap: var(--gap);
+}
+
+.sem-showcase > .identity .titles { flex: 1; min-width: 0; }
+
+.sem-showcase > .identity .name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.sem-showcase > .identity .sub {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+}
+
+.sem-showcase > .identity .sub.faint { color: var(--text-faint); }
+
+.sem-showcase > .identity .actions { flex-shrink: 0; }
+
+/* The game frames the portrait and sets the species beside it; so does this. */
+.sem-showcase > .species {
+    display: flex;
+    gap: 10px;
+    padding: 8px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.sem-showcase > .species .face {
+    width: 84px;
+    height: 100px;
+    object-fit: cover;
+    object-position: top center;
+    flex-shrink: 0;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    background: #05070c;
+}
+
+.sem-showcase > .species .about {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.sem-showcase > .species .name { font-weight: 600; }
+
+.sem-showcase > .species .kind {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+}
+
+.sem-showcase > .species .line {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+}
+
+/*
+    A set of choices as a heading and a row of named icons. Wrapping rather than scrolling: an
+    empire has at most a handful of each, and a reader wants to see all of them at once.
+*/
+.sem-showcase-chips {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.sem-showcase-chips .heading {
+    width: 100%;
+    color: var(--text-faint);
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.sem-showcase-chips .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 8px 2px 3px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 0.85rem;
+}
+
+.sem-showcase-chips .chip img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+}
+
+/*
+    Everything the empire adds up to, ruled off at the foot of the panel as the game rules it off.
+    Shared with the designer's own pane, so the rule is written against the component rather than
+    against a wrapper only one of them has.
+*/
+.sem-showcase > .sem-combined {
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+}
+
+.sem-showcase > .sem-combined h4 { margin: 0 0 6px; }
+
+/*
+    The effects can run long, so they scroll within the panel rather than stretching it. Given more
+    room they get more of it: a preview 620 wide can afford to show twice as many at once, and the
+    list is the part a reader actually dwells on.
+*/
+.sem-showcase > .sem-combined .sem-modifiers {
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+@media (min-width: 1500px) {
+    /*
+        Two columns of modifiers rather than one long scroll. They are short rows — a label and a
+        number — and stacking them singly in a panel this wide wasted most of it.
+    */
+    .sem-showcase > .sem-combined .sem-modifiers {
+        max-height: 420px;
+        columns: 2;
+        column-gap: var(--gap);
+    }
+
+    .sem-showcase > .sem-combined .sem-modifiers li {
+        break-inside: avoid;
+    }
+}
+
+/* ---------------------------------------------------------------- appearance */
+
+/*
+    The scene at the top of the appearance tab, where every choice on it lands. Capped at the room's
+    own 952 pixels so it is never drawn larger than the artwork behind it.
+*/
+.sem-scene {
+    max-width: 952px;
+    margin-bottom: var(--gap);
+}
+
+/*
+    The flag patterns, at the seventy pixels the game's own pattern list uses. Each tile is a live
+    flag rather than a picture, and there are sixty-three of them — masks are not lazily fetched the
+    way images are, so the rows out of sight are told not to render until they are scrolled to.
+*/
+.sem-patterns {
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: var(--gap);
+}
+
+.sem-patterns > .sem-thumb-option {
+    content-visibility: auto;
+    contain-intrinsic-size: 70px;
 }

@@ -21,9 +21,13 @@ internal static class TraitsExtractor
     /// directions and the designer has to block the pairing either way round.
     /// </para>
     /// </remarks>
-    public static List<TraitDefinition> Extract(ScriptLoader loader, AssetCatalog assets)
+    public static List<TraitDefinition> Extract(
+        ScriptLoader loader,
+        RequirementCompiler requirements,
+        AssetCatalog assets)
     {
         var traits = new List<TraitDefinition>();
+        var colors = TraitIconComposer.ReadNamedColors(loader);
 
         foreach (var entry in loader.LoadDefinitions("common/traits"))
         {
@@ -51,15 +55,24 @@ internal static class TraitsExtractor
                 Category = body.GetString("category"),
                 SortingPriority = loader.ResolveInt(body.GetString("sorting_priority")) ?? 0,
                 Tags = body.GetList("tags"),
-                Modifiers = body.GetModifiers("modifier", loader),
-                // Most traits follow the naming convention; the ones that do not are aliases of
-                // another trait and fall back to the game's own unknown-trait icon.
-                Icon = assets.RegisterFirst(
-                    [
-                        $"gfx/interface/icons/traits/{entry.Key}.dds",
-                        "gfx/interface/icons/traits/trait_unknown.dds",
-                    ],
-                    $"icons/traits/{entry.Key}.png"),
+
+                // A trait's own tags group it for filtering and have no text; the categories it
+                // displays are the separate localized_tags field.
+                Effects = EffectsReader.Read(body, loader, requirements, tagsKey: "localized_tags"),
+
+                // A leader trait describes its icon rather than naming one, and is built from that
+                // description. The species traits name theirs outright — fifty-three borrow
+                // another's, Jinxed wearing trait_jinxed and the Lithoid traits their organic
+                // counterparts' — and most say nothing and follow the naming convention instead.
+                // What does none of these falls back to the game's own unknown-trait icon.
+                Icon = TraitIconComposer.Compose(body, entry.Key, loader, assets, colors)
+                    ?? assets.RegisterFirst(
+                        [
+                            .. Declared(body),
+                            $"gfx/interface/icons/traits/{entry.Key}.dds",
+                            "gfx/interface/icons/traits/trait_unknown.dds",
+                        ],
+                        $"icons/traits/{entry.Key}.png"),
             });
         }
 
@@ -78,6 +91,19 @@ internal static class TraitsExtractor
             ? TraitKind.Leader
             : TraitKind.Species;
     }
+
+    /// <summary>
+    /// The icon a trait names for itself, if it names one.
+    /// </summary>
+    /// <remarks>
+    /// Galactic Paragons added a layered form — <c>icon = { ... }</c> stacking a frame, a background
+    /// and a symbol — used by the unplugged leader traits. There is nothing here that draws layers,
+    /// so a block yields nothing and those keep the ordinary fallback.
+    /// </remarks>
+    private static IEnumerable<string> Declared(CwBlock body) =>
+        body.GetBlock("icon") is null && body.GetString("icon") is { Length: > 0 } icon
+            ? [icon.Replace('\\', '/')]
+            : [];
 
     /// <summary>
     /// Reads the species classes a trait is limited to. The field is written either as a list or

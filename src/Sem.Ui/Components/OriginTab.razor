@@ -3,41 +3,42 @@
     the starting system and call for a second species, so what it changes is spelled out.
 *@
 
-<div class="sem-panel">
-    <h3>Origin</h3>
+<div class="sem-subsections">
+    <section>
+        <h4>@Session.Localizer.Label("ORIGIN", "Origin")</h4>
 
-    @if (Selected is { } origin)
-    {
-        <div class="sem-hint">
-            @if (origin.ForcedTraits.Count > 0)
-            {
-                <p>Grants @string.Join(", ", origin.ForcedTraits.Select(t => Session.Localizer.Text(t))).</p>
-            }
+        @*
+            Taller than the rest, because these are the only choices whose detail carries a picture,
+            and the game sells an origin on that picture as much as on what it does.
+        *@
+        <OptionGrid Options="@Origins"
+                    DetailHeight="460"
+                    EmptyHint="Hover an origin to see where it starts the empire."
+                    OnSelect="Choose" />
 
-            @if (origin.HabitabilityPreference is { } climate || origin.StartingColony is { } colony)
-            {
-                <p>Starts the empire on @Session.Localizer.Text(origin.HabitabilityPreference ?? origin.StartingColony!).</p>
-            }
+        @*
+            What the chosen origin changes elsewhere in the design, below the choices rather than
+            above them: above the grid, picking one shifted every icon out from under the pointer.
 
-            @if (origin.RequiresSecondarySpecies)
-            {
-                <p>Needs a second species, which the game gives @string.Join(", ", origin.SecondarySpeciesTraits.Select(t => Session.Localizer.Text(t))).</p>
-            }
-        </div>
-    }
-
-    <div class="sem-options">
-        @foreach (var option in Origins)
+            The traits it forces are not listed here. They are already in the species' trait list,
+            marked as forced and naming this origin as the cause, and saying so twice made the
+            second saying look like a different fact.
+        *@
+        @if (Selected is { } origin)
         {
-            <OptionCard Name="@Session.Localizer.Text(option.Key)"
-                        Description="@Description(option.Key)"
-                        Icon="@IconFor(option.Key)"
-                        Selected="@(option.Key == Design.Origin)"
-                        Enabled="@option.Enabled"
-                        Reasons="@Explain(option.Reasons)"
-                        OnSelect="() => Choose(option.Key)" />
+            <div class="sem-hint" style="margin-top:var(--gap)">
+                @if (origin.HabitabilityPreference is { } climate || origin.StartingColony is { } colony)
+                {
+                    <p>Starts the empire on @Session.Localizer.Text(origin.HabitabilityPreference ?? origin.StartingColony!).</p>
+                }
+
+                @if (origin.RequiresSecondarySpecies)
+                {
+                    <p>Needs a second species, which the game gives @string.Join(", ", origin.SecondarySpeciesTraits.Select(t => Session.Localizer.Text(t))).</p>
+                }
+            </div>
         }
-    </div>
+    </section>
 </div>
 
 @code {
@@ -51,21 +52,23 @@
     private CivicDefinition? Selected =>
         Session.Data.Database.Civics.FirstOrDefault(c => c.IsOrigin && c.Key == Design.Origin);
 
-    private IEnumerable<OptionState> Origins =>
-        Session.Rules.GetOriginOptions(Context)
-            .Where(o => o.Visible)
-            .OrderBy(o => Session.Localizer.Text(o.Key), StringComparer.CurrentCulture);
-
-    private string? IconFor(string key) =>
-        Session.Data.Database.Civics.FirstOrDefault(c => c.Key == key)?.Icon;
-
-    private string Description(string key)
+    private IReadOnlyList<OptionGrid.GridOption> Origins
     {
-        var origin = Session.Data.Database.Civics.FirstOrDefault(c => c.Key == key);
-        return Session.Localizer.Text(origin?.EffectsKey ?? $"{key}_desc", string.Empty);
-    }
+        get
+        {
+            var byKey = Session.Data.Database.Civics.ToDictionary(c => c.Key, StringComparer.Ordinal);
 
-    private IReadOnlyList<string> Explain(IReadOnlyList<string> reasons) => Session.Reasons.Describe(reasons);
+            var states = Session.Rules.GetOriginOptions(Context)
+                .OrderBy(o => Session.Localizer.Text(o.Key), StringComparer.CurrentCulture);
+
+            return GridOptions.Build(
+                Session,
+                states,
+                key => (byKey.GetValueOrDefault(key)?.Icon, byKey.GetValueOrDefault(key)?.Effects),
+                key => key == Design.Origin,
+                key => byKey.GetValueOrDefault(key)?.Picture);
+        }
+    }
 
     private void Choose(string key)
     {

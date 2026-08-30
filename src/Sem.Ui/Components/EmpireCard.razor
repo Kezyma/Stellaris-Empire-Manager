@@ -1,0 +1,83 @@
+@*
+    One empire in a list, as the game lists one.
+
+    The game's entry is in interface/select_empire_design.gui — 200 by 65, a clipped close-up of the
+    ruler's face at the left, then three lines stacked beside it at (65,6), (65,24) and (65,42): the
+    empire's name, the government it turned out to be, and the species class. Followed here, three
+    lines and all. The one departure is the flag, which the game's own entry does not carry.
+
+    Both lists on the front page use this, so "the same card" means the same component rather than
+    two that resemble each other.
+*@
+
+<button type="button" class="sem-empire @(Selected ? "selected" : null) @(Broken ? "broken" : null)"
+        disabled="@Disabled" @onclick="OnClick">
+
+    @if (Flag is not null)
+    {
+        <FlagPreview Flag="@Flag" Class="small" />
+    }
+
+    @if (Portrait is { Length: > 0 } face)
+    {
+        <img class="face" src="@Session.Data.AssetUrl(face)" alt="" loading="lazy">
+    }
+
+    <span class="body">
+        <span class="name">@Name</span>
+        <span class="sub">@Government</span>
+
+        @if (SpeciesClass is { Length: > 0 } kind)
+        {
+            <span class="sub">@kind</span>
+        }
+    </span>
+</button>
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>The empire's flag, drawn as the game draws one.</summary>
+    [Parameter]
+    public EmpireFlag? Flag { get; set; }
+
+    /// <summary>The ruler's likeness, already drawn.</summary>
+    [Parameter]
+    public string? Portrait { get; set; }
+
+    /// <summary>What the empire is called.</summary>
+    [Parameter, EditorRequired]
+    public required string Name { get; set; }
+
+    /// <summary>What the game would call its government, such as "Representative Democracy".</summary>
+    [Parameter]
+    public string? Government { get; set; }
+
+    /// <summary>
+    /// What kind of thing lives there, such as "Humanoid". The game's own third line.
+    /// </summary>
+    [Parameter]
+    public string? SpeciesClass { get; set; }
+
+    [Parameter]
+    public bool Selected { get; set; }
+
+    /// <summary>
+    /// Whether the game would refuse this empire.
+    /// </summary>
+    /// <remarks>
+    /// Marked rather than counted. The card carries four things and a fifth line saying "2 problems"
+    /// was the one the list could least afford, but it was also the only place a player learned an
+    /// empire was broken without opening it — so the fact stays and only the sentence goes.
+    /// </remarks>
+    [Parameter]
+    public bool Broken { get; set; }
+
+    /// <summary>Whether there is nothing to show, as for a built-in empire stored unreadably.</summary>
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+}

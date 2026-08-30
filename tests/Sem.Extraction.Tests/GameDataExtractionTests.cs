@@ -43,10 +43,20 @@ public sealed class GameDataExtractionTests
             ("portrait sets", 67, database.PortraitSets.Count),
             ("portraits", 496, database.Portraits.Count(p => !p.IsGroup)),
             ("portrait groups", 50, database.Portraits.Count(p => p.IsGroup)),
-            ("starting worlds", 11, database.PlanetClasses.Count(p => p.IsStartingWorld)),
+            // Nine, not eleven: a volcanic world and an arkship are each flagged initial, and each
+            // is also flagged starting_planet = no. Neither is a world a player may simply pick —
+            // an Infernal species class adds the first, and being nomadic puts you on the second.
+            ("starting worlds", 9, database.PlanetClasses.Count(p => p.IsStartingWorld)),
             ("starting systems", 23, database.Initializers.Count),
             ("advisor voices", 27, database.AdvisorVoices.Count),
-            ("rooms", 41, database.Rooms.Count),
+            // Sixty-six: the forty-one the game's own designer offers, plus twenty-five it hands out
+            // during play and has artwork for. The selector names one more, synth_queen_room, which
+            // no installation has a picture for.
+            ("rooms", 66, database.Rooms.Count),
+            ("rooms the designer offers", 41, database.Rooms.Count(r => r.IsOffered)),
+
+            // Twenty-one named sets of country flags, carried by the game's own empires.
+            ("empire flag sets", 21, database.EmpireFlagSets.Count),
             ("flag categories", 19, database.FlagCategories.Count),
             ("flag colours", 72, database.FlagColors.Count),
             ("built-in empires", 52, database.PrescriptedEmpires.Count),
@@ -140,6 +150,101 @@ public sealed class GameDataExtractionTests
         Assert.True(
             Single(database.Traits, t => t.Key == "trait_deviants").Cost < 0,
             "Deviants is a drawback and should give points back.");
+    }
+
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void RoomsTheGameAssignsAreKeptApartFromTheOnesItOffers()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        // The brick room one of the game's own empires sits in. Its condition in the selector names
+        // a country type a player can never be — the same kind of guard the fallen empires have — so
+        // it is not something the designer offers. But a design that names a room gets that room,
+        // which is exactly how that empire comes to be in it.
+        var brick = Single(database.Rooms, r => r.Key == "pre_ftl_ancient_room");
+
+        Assert.False(brick.IsOffered);
+        Assert.NotNull(brick.Image);
+
+        Assert.True(Single(database.Rooms, r => r.Key == "default_room").IsOffered);
+
+        // A room the selector names but no installation has a picture for is left out entirely:
+        // naming one would be the one way to ask for something that cannot be drawn.
+        Assert.DoesNotContain(database.Rooms, r => r.Key == "synth_queen_room");
+        Assert.All(database.Rooms, r => Assert.NotNull(r.Image));
+    }
+
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void TheGamesOwnEmpiresTravelInTheFormatAPlayerCanEdit()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        // A browser has no installation to convert them with, so the conversion has to have happened
+        // already. Without it there is nothing to take a copy of.
+        Assert.All(database.PrescriptedEmpires, e => Assert.False(string.IsNullOrEmpty(e.Design)));
+
+        var une = Single(database.PrescriptedEmpires, e => e.Key == "humans1");
+
+        Assert.Equal("empire_human_1", une.FlagSet);
+
+        // And it parses back as a design, which is what taking a copy does with it.
+        var reopened = Sem.Designs.EmpireDesignsFile.LoadText(une.Design!);
+        var design = Assert.Single(reopened.Designs);
+
+        Assert.Equal("auth_democratic", design.Authority);
+        Assert.Equal("empire_human_1", design.PrescriptedFlag);
+    }
+
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void ATraitBorrowingAnothersArtworkSaysSoAndIsBelieved()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var extractor = new GameDataExtractor(LayeredContent.ForInstall(InstallRoot!));
+        extractor.Extract();
+
+        var sources = extractor.Assets.Requests.ToDictionary(
+            r => r.Destination,
+            r => r.Source,
+            StringComparer.OrdinalIgnoreCase);
+
+        // Fifty-three traits have no artwork of their own and name a another trait's. Ignoring that
+        // left them on the game's unknown-trait placeholder, so two drawbacks were wearing what
+        // reads as an ordinary trait's badge.
+        Assert.Equal(
+            "gfx/interface/icons/traits/trait_jinxed.dds",
+            sources["icons/traits/trait_humanoid_jinxed.png"]);
+
+        Assert.Equal(
+            "gfx/interface/icons/traits/trait_psychological_infertility.dds",
+            sources["icons/traits/trait_humanoid_psychological_infertility.png"]);
+
+        // The Lithoid traits do the same, wearing their organic counterparts' artwork.
+        Assert.Equal(
+            "gfx/interface/icons/traits/trait_adaptive.dds",
+            sources["icons/traits/trait_adaptive_lithoid.png"]);
+
+        // A trait that names nothing still follows the naming convention.
+        Assert.Equal(
+            "gfx/interface/icons/traits/trait_adaptive.dds",
+            sources["icons/traits/trait_adaptive.png"]);
+
+        // Galactic Paragons stacks layers into an icon block, which the leader traits use. Nothing
+        // here draws layers, so those fall back rather than reaching into the block for a value that
+        // is only one of several stacked pictures.
+        Assert.Equal(
+            "gfx/interface/icons/traits/trait_unknown.dds",
+            sources["icons/traits/leader_trait_unplugged_cybernetic_positives_1.png"]);
+
+        // Its species-trait twin writes the same artwork as a plain path, and that is honoured.
+        Assert.Equal(
+            "gfx/interface/icons/traits/trait_unplugged_positive_1.dds",
+            sources["icons/traits/trait_unplugged_cybernetic_positives_1.png"]);
     }
 
     [SkippableFact]
@@ -276,6 +381,303 @@ public sealed class GameDataExtractionTests
         {
             Assert.True(pruned.ContainsKey(key), $"Pruning dropped '{key}', which the designer shows.");
         }
+    }
+
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void AFlagIsFramedWithTheGamesOwnMeasurements()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        var frames = database.FlagFrames.ToDictionary(f => f.Key, StringComparer.Ordinal);
+
+        // The five the game's interface actually uses, and not the three dead ones beside them.
+        Assert.Equal(5, frames.Count);
+        Assert.DoesNotContain("GFX_empire_flag_medium", frames.Keys);
+
+        // The room's banner, whose numbers were checked by hand against the file.
+        var banner = frames["GFX_empire_flag_128"];
+
+        Assert.Equal(131, banner.FrameSize);
+        Assert.Equal(111, banner.BackgroundSize);
+        Assert.Equal(83, banner.EmblemSize);
+        Assert.Equal(10, banner.BackgroundOffset);
+        Assert.Equal(24, banner.EmblemOffset);
+
+        // The emblem is never the whole flag, and never the same fraction of it twice: the point of
+        // reading these rather than picking one number is that they run from seven tenths to four
+        // fifths as the flag gets smaller.
+        Assert.All(frames.Values, frame =>
+        {
+            Assert.InRange(frame.EmblemSize / frame.BackgroundSize, 0.6, 0.85);
+            Assert.True(frame.FrameSize > frame.BackgroundSize, $"{frame.Key} has no border.");
+            Assert.False(string.IsNullOrEmpty(frame.FrameImage), $"{frame.Key} has no frame picture.");
+            Assert.False(string.IsNullOrEmpty(frame.MaskImage), $"{frame.Key} has no mask.");
+        });
+
+        Assert.True(
+            frames["GFX_empire_flag_32"].EmblemSize / frames["GFX_empire_flag_32"].BackgroundSize >
+            frames["GFX_empire_flag_200"].EmblemSize / frames["GFX_empire_flag_200"].BackgroundSize,
+            "A small flag should carry a proportionally larger emblem, so that it stays legible.");
+    }
+
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void ANomadBeginsAboardOneOfThreeArkships()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        // Nine arkships exist across three families and three tiers; only the first tier of each is
+        // something an empire starts with, and the game marks exactly those three.
+        Assert.Equal(3, database.Arkships.Count);
+        Assert.All(database.Arkships, a => Assert.EndsWith("_tier_1", a.Key, StringComparison.Ordinal));
+
+        // In declaration order, which is the order the game's own panel stacks its three tiles.
+        Assert.Equal(
+            ["civilian_arkship_name", "science_arkship_name", "military_arkship_name"],
+            database.Arkships.Select(a => a.NameKey));
+    }
+
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void NoNameListOffersATemplateAsThoughItWereAName()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        // A family name is often a frame written round a given one — "$1$ Aburia" — and some carry a
+        // second form after a run of bars. Joined with a space rather than composed, a third of the
+        // game's lists offered the player names with the machinery still in them.
+        foreach (var list in database.NameLists)
+        {
+            foreach (var name in list.CharacterNames.Assembled(20))
+            {
+                Assert.True(
+                    name.IndexOfAny(['$', '|']) < 0,
+                    $"{list.Key} offers \"{name}\".");
+            }
+        }
+    }
+
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void AShipsetIsCalledWhatTheGameCallsIt()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var extractor = new GameDataExtractor(LayeredContent.ForInstall(InstallRoot!));
+        var database = Database.Value;
+        var text = extractor.ExtractLocalisation(reachableFrom: database);
+
+        var sets = database.GraphicalCultures.ToDictionary(c => c.Key, StringComparer.Ordinal);
+
+        // The game names a shipset by its key shouted, under a "Graphical Cultures" heading, and
+        // names only the pair Biogenesis added. Reading the key as written gave "biogenesis_01".
+        Assert.Equal("Spinovore", text.GetValueOrDefault(sets["biogenesis_01"].NameKey));
+        Assert.Equal("Shellcraft", text.GetValueOrDefault(sets["biogenesis_02"].NameKey));
+
+        // Everything else has no entry under any spelling, which is a gap in the game's own text
+        // rather than one here — the caller falls back to the readable key.
+        Assert.False(text.ContainsKey(sets["mammalian_01"].NameKey));
+
+        // Descriptions, unlike names, are there for all of them.
+        Assert.All(
+            database.GraphicalCultures.Where(c => sets.ContainsKey(c.Key) && c.ShipPreview is not null),
+            culture => Assert.True(
+                text.ContainsKey(culture.DescriptionKey),
+                $"{culture.Key} has no description under {culture.DescriptionKey}."));
+    }
+
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void CityBandsCarryThePopulationTheyBelongTo()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        var humanoid = Single(database.GraphicalCultures, c => c.Key == "humanoid_01");
+
+        Assert.Equal(6, humanoid.CityLayers.Count);
+
+        // The last band is an ecumenopolis, which the game draws only on a world at five. Nothing
+        // in the designer reaches that, and drawing it anyway is what hid the planet.
+        var ecumenopolis = humanoid.CityLayers[humanoid.CityLayers.Count - 1];
+
+        Assert.Equal(5, ecumenopolis.MinPop);
+        Assert.Null(ecumenopolis.MaxPop);
+        Assert.False(ecumenopolis.AppearsAt(database.Defines.CityPopLevel));
+
+        // Every other band does belong on the world the designer shows.
+        Assert.All(
+            humanoid.CityLayers.Take(humanoid.CityLayers.Count - 1),
+            band => Assert.True(band.AppearsAt(database.Defines.CityPopLevel), $"Band {band.Band} is not drawn."));
+    }
+
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void TheDesignerDrawsTheWorldTheGameSaysItDoes()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        // DEFAULT_CITY_POP_LEVEL, whose line in the defines is commented "Shown in empire designer".
+        Assert.Equal(4, Database.Value.Defines.CityPopLevel);
+    }
+
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void ASceneryBandKnowsWhichBandItIs()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        // An arctic world has a first, third and fourth band and no second. Held as a plain list its
+        // third took the second's place and every row of hills after the gap was drawn a row forward.
+        var arctic = Single(database.PlanetClasses, p => p.Key == "pc_arctic");
+
+        Assert.Equal([1, 3, 4], arctic.Scenery.Select(s => s.Band));
+    }
+
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void ASetThatModelsNoShipsOfItsOwnIsNotAShipset()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        Assert.Equal(2, database.ShipSets.Count);
+
+        var biological = Single(database.ShipSets, s => s.NameKey == "SHIPSET_BIOLOGICAL");
+        var mechanical = Single(database.ShipSets, s => s.NameKey == "SHIPSET_MECHANICAL");
+
+        Assert.True(biological.Includes("bio_ship"));
+        Assert.False(mechanical.Includes("bio_ship"));
+        Assert.True(mechanical.Includes("default_ship"));
+
+        Assert.Equal("bio_ship", Single(database.GraphicalCultures, c => c.Key == "biogenesis_01").ShipCategory);
+        Assert.Equal("default_ship", Single(database.GraphicalCultures, c => c.Key == "humanoid_01").ShipCategory);
+
+        // These two dress cities and fly whatever their fallback builds, which is why Wilderness
+        // showed a Biogenesis corvette — it was one.
+        Assert.Null(Single(database.GraphicalCultures, c => c.Key == "wilderness_01").ShipCategory);
+        Assert.Null(Single(database.GraphicalCultures, c => c.Key == "solarpunk_01").ShipCategory);
+    }
+
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void EveryRulerTraitWearsItsOwnIcon()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        // Its own extractor, because the asset requests are needed and the shared one has been
+        // read from more than once by the time this runs.
+        var extractor = new GameDataExtractor(LayeredContent.ForInstall(InstallRoot!));
+        var rulers = extractor.Extract().Traits.Where(t => t.Kind == TraitKind.StartingRuler).ToList();
+
+        // A ruler trait does not name a picture, it describes one: an inline script stacking a
+        // coloured background, the trait's own glyph over it, and whatever markers its rarity and
+        // council seat call for. Missing that, all thirty-four fell through to the unknown-trait
+        // icon and were one picture; taking only the glyph out of the description made them
+        // thirty-four near-black marks on nothing.
+        Assert.All(rulers, t => Assert.False(string.IsNullOrEmpty(t.Icon), $"{t.Key} has no icon."));
+
+        var stacks = extractor.Assets.Composites
+            .ToDictionary(c => c.Destination, c => c.Layers, StringComparer.Ordinal);
+
+        var drawn = rulers
+            .Select(t => stacks.GetValueOrDefault(t.Icon!))
+            .OfType<IReadOnlyList<AssetLayer>>()
+            .ToList();
+
+        Assert.Equal(rulers.Count, drawn.Count);
+
+        // Every one is a stack rather than a lone picture, and its background is painted — that
+        // colour is the whole reason these read as icons instead of as smudges.
+        Assert.All(drawn, layers =>
+        {
+            Assert.True(layers.Count > 1, "A composed icon of one layer is just the glyph again.");
+            Assert.Contains(layers, l => l.Tint is not null);
+        });
+
+        Assert.DoesNotContain(
+            drawn.SelectMany(layers => layers).Select(l => l.Source),
+            source => source.EndsWith("trait_unknown.dds", StringComparison.OrdinalIgnoreCase));
+
+        // Asserted on what each stack is made of rather than on the path it will be written to,
+        // which is the trait's own key and so distinct however the icon was found. Comparing those
+        // said nothing, and hid seven traits that were still falling back. On the whole stack rather
+        // than on one layer of it, because where the glyph sits depends on the recipe: a rarity puts
+        // a glow and a frame in ahead of it.
+        var stacked = drawn
+            .Select(layers => string.Join(
+                "|",
+                layers.Select(l => $"{l.Source}#{l.Frame?.Frame}#{l.Tint}")))
+            .ToList();
+
+        Assert.Equal(rulers.Count, stacked.Distinct(StringComparer.OrdinalIgnoreCase).Count());
+    }
+
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void AListThatNumbersItsFleetsSaysSo()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        // Toxoid 3 names no fleets. It gives a template and counts, which is not the same as
+        // holding nothing.
+        var toxoid = Single(database.NameLists, n => n.Key == "TOX3");
+
+        Assert.Empty(toxoid.FleetNames);
+        Assert.Contains("$R$", toxoid.FleetPattern);
+
+        // And a list that does name them still does.
+        Assert.NotEmpty(Single(database.NameLists, n => n.Key == "TOX1").FleetNames);
+    }
+
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void OnlyThePacksThatDecideSomethingAreMarkedAsDeciding()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        // Plantoids gates a species class, its portraits, its traits and its shipset.
+        Assert.True(Single(database.Dlc, d => d.Name == "Plantoids Species Pack").Decides);
+
+        // Utopia is a real expansion, but nothing an empire is built from asks about it.
+        Assert.False(Single(database.Dlc, d => d.Name == "Utopia").Decides);
+        Assert.False(Single(database.Dlc, d => d.Name == "Original Game Soundrack").Decides);
+    }
+
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void TheTwoSpeciesPacksWithSuffixedSpritesGetTheirIcons()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        // These declare GFX_plantoidsspeciespack_small and _big but no bare name, so looking only
+        // for the bare one left the pack that gates the most options without a badge.
+        foreach (var name in (string[])["Plantoids Species Pack", "Humanoids Species Pack"])
+        {
+            Assert.False(string.IsNullOrEmpty(Single(database.Dlc, d => d.Name == name).Icon), name);
+        }
+    }
+
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void OnlyTheLeadersThatMayRuleAreOfferedAsRulers()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        Assert.Equal(4, database.LeaderClasses.Count);
+
+        // An envoy is a leader but never an empire's ruler, and the game says so outright.
+        Assert.False(Single(database.LeaderClasses, c => c.Key == "envoy").CanRule);
+        Assert.Equal(3, database.LeaderClasses.Count(c => c.CanRule));
     }
 
     private static T Single<T>(IEnumerable<T> items, Predicate<T> predicate) => Assert.Single(items, predicate);

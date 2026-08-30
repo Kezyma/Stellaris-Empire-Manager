@@ -15,7 +15,10 @@ internal static class EthicsExtractor
     /// Whether an ethic is fanatic is not a flag in the files. The game marks it by omission: an
     /// ethic that has no fanatic form already is one.
     /// </remarks>
-    public static List<EthicDefinition> Extract(ScriptLoader loader, AssetCatalog assets)
+    public static List<EthicDefinition> Extract(
+        ScriptLoader loader,
+        RequirementCompiler requirements,
+        AssetCatalog assets)
     {
         var results = new List<EthicDefinition>();
 
@@ -35,6 +38,11 @@ internal static class EthicsExtractor
                 FanaticVariant = body.GetString("fanatic_variant"),
                 RegularVariant = body.GetString("regular_variant"),
                 IsGestalt = entry.Key == GestaltKey,
+
+                // An ethic's tags are capability sentences, unlike a trait's, which are grouping
+                // labels with no text of their own.
+                Effects = EffectsReader.Read(body, loader, requirements, tagsKey: "tags"),
+
                 Icon = assets.Register(
                     $"gfx/interface/icons/ethics/{entry.Key}.dds",
                     $"icons/ethics/{entry.Key}.png"),

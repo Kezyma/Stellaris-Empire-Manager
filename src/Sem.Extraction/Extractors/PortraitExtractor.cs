@@ -95,8 +95,13 @@ internal static class PortraitExtractor
     {
         var results = new List<PortraitDefinition>();
         var textureCounts = new Dictionary<string, int>(StringComparer.Ordinal);
+        var attachmentLabels = new Dictionary<string, string>(StringComparer.Ordinal);
         var seen = new HashSet<string>(StringComparer.Ordinal);
-        var groups = new List<(string Key, string Default)>();
+        var groups = new List<(
+            string Key,
+            string Default,
+            Dictionary<string, string> Members,
+            Dictionary<string, IReadOnlyList<string>> Phenotypes)>();
 
         foreach (var (_, document) in loader.LoadDirectory("gfx/portraits/portraits"))
         {
@@ -115,9 +120,21 @@ internal static class PortraitExtractor
                             var textures = CountTextures(portrait.Block);
                             textureCounts[key] = textures;
 
+                            // What this likeness wears on its head is not always an attachment: the
+                            // game lets a portrait rename the control, and calls it a hairstyle for
+                            // a human and a hat for a reptilian.
+                            if (portrait.Block.GetString("custom_attachment_label") is { Length: > 0 } label)
+                            {
+                                attachmentLabels[key] = label;
+                            }
+
                             if (seen.Add(key))
                             {
-                                results.Add(new PortraitDefinition(key) { TextureCount = textures });
+                                results.Add(new PortraitDefinition(key)
+                                {
+                                    TextureCount = textures,
+                                    AttachmentLabelKey = attachmentLabels.GetValueOrDefault(key),
+                                });
                             }
                         }
 
@@ -129,10 +146,10 @@ internal static class PortraitExtractor
                     case "portrait_groups" when node.Block is not null:
                         foreach (var group in node.Block.Nodes)
                         {
-                            if (group.Key is { Length: > 0 } key &&
-                                group.Block?.GetString("default") is { Length: > 0 } fallback)
+                            if (group.Key is { Length: > 0 } key && group.Block is { } body &&
+                                body.GetString("default") is { Length: > 0 } fallback)
                             {
-                                groups.Add((key, fallback));
+                                groups.Add((key, fallback, ReadMembers(body), ReadPhenotypes(body)));
                             }
                         }
 
@@ -141,19 +158,140 @@ internal static class PortraitExtractor
             }
         }
 
-        foreach (var (key, fallback) in groups)
+        foreach (var (key, fallback, members, phenotypes) in groups)
         {
             if (seen.Add(key))
             {
                 results.Add(new PortraitDefinition(key)
                 {
                     ResolvesTo = fallback,
+                    Members = members,
+                    Phenotypes = phenotypes,
                     TextureCount = textureCounts.GetValueOrDefault(fallback),
+
+                    // A group is what a design stores, and it is the group's control the player
+                    // uses, so it takes the word its default likeness uses.
+                    AttachmentLabelKey = attachmentLabels.GetValueOrDefault(fallback),
                 });
             }
         }
 
         return results;
+    }
+
+    /// <summary>
+    /// Which likeness a group shows for each gender.
+    /// </summary>
+    /// <remarks>
+    /// Written as a list of additions, each gated on a trigger, under the scope for the situation
+    /// being asked about — and one of those scopes is the empire designer, which the game names
+    /// <c>game_setup</c> and comments as running with a species and a government but no country. A
+    /// portrait offered for more than one gender, as these are for the indeterminate case, is left
+    /// to whichever claims it first, since either answer is one the game would give.
+    /// </remarks>
+    private static Dictionary<string, string> ReadMembers(CwBlock group)
+    {
+        var members = new Dictionary<string, string>(StringComparer.Ordinal);
+
+        if (group.GetBlock("game_setup") is not { } scope)
+        {
+            return members;
+        }
+
+        foreach (var addition in scope.Nodes)
+        {
+            if (addition.Key != "add" || addition.Block is not { } body ||
+                body.GetBlock("portraits")?.Nodes.FirstOrDefault(n => n.Scalar is not null)?.ScalarValue
+                    is not { Length: > 0 } portrait)
+            {
+                continue;
+            }
+
+            foreach (var gender in Genders(body.GetBlock("trigger")))
+            {
+                members.TryAdd(gender, portrait);
+            }
+        }
+
+        return members;
+    }
+
+    /// <summary>
+    /// Every likeness a group offers for each gender, rather than only the first.
+    /// </summary>
+    /// <remarks>
+    /// The same <c>game_setup</c> block read whole. Each addition names a run of portraits and the
+    /// genders it is for, and the human group's two runs are five faces each — which is what the
+    /// game's own appearance control steps through, and what a design naming
+    /// <c>human_female_05</c> is pointing into.
+    /// </remarks>
+    private static Dictionary<string, IReadOnlyList<string>> ReadPhenotypes(CwBlock group)
+    {
+        var phenotypes = new Dictionary<string, List<string>>(StringComparer.Ordinal);
+
+        if (group.GetBlock("game_setup") is not { } scope)
+        {
+            return [];
+        }
+
+        foreach (var addition in scope.Nodes)
+        {
+            if (addition.Key != "add" || addition.Block is not { } body)
+            {
+                continue;
+            }
+
+            var portraits = body.GetList("portraits");
+
+            if (portraits.Count == 0)
+            {
+                continue;
+            }
+
+            foreach (var gender in Genders(body.GetBlock("trigger")))
+            {
+                // A face offered to more than one gender — the indeterminate case takes both runs —
+                // belongs in each of their lists, and only once in each.
+                var faces = phenotypes.TryGetValue(gender, out var existing) ? existing : phenotypes[gender] = [];
+
+                faces.AddRange(portraits.Where(p => !faces.Contains(p, StringComparer.Ordinal)));
+            }
+        }
+
+        return phenotypes.ToDictionary(
+            p => p.Key,
+            p => (IReadOnlyList<string>)p.Value,
+            StringComparer.Ordinal);
+    }
+
+    /// <summary>
+    /// The genders a trigger accepts.
+    /// </summary>
+    /// <remarks>
+    /// The condition is nested — a ruler scope holding an <c>OR</c> of gender comparisons — and the
+    /// only part of it that matters here is which genders are named, so the tree is searched for
+    /// them rather than compiled. Compiling it would ask the rules engine about a ruler that does
+    /// not exist yet.
+    /// </remarks>
+    private static IEnumerable<string> Genders(CwBlock? trigger)
+    {
+        if (trigger is null)
+        {
+            yield break;
+        }
+
+        foreach (var node in trigger.Nodes)
+        {
+            if (node.Key == "gender" && node.ScalarValue is { Length: > 0 } gender)
+            {
+                yield return gender;
+            }
+
+            foreach (var nested in Genders(node.Block))
+            {
+                yield return nested;
+            }
+        }
     }
 
     private static int CountTextures(CwBlock portrait) =>
