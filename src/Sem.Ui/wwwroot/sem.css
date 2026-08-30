@@ -93,10 +93,15 @@ code {
     margin-right: auto;
 }
 
+/*
+    Wide, because there is a lot to show and the page was leaving a third of a modern screen empty.
+    Capped rather than unbounded: prose still has to be readable, and every list inside is a grid
+    that would otherwise keep growing columns until a row of civics ran off the eye's reach.
+*/
 .sem-main {
     flex: 1;
     padding: 20px;
-    max-width: 1400px;
+    max-width: 1800px;
     width: 100%;
     margin: 0 auto;
 }
@@ -2045,7 +2050,7 @@ button.small {
 
 @media (min-width: 1100px) {
     .sem-select {
-        /* The lists take the room they need for two columns of cards; the preview takes the rest. */
+        /* The lists take the room they need for their cards; the preview takes the rest. */
         grid-template-columns: minmax(0, 1fr) 420px;
     }
 
@@ -2056,6 +2061,17 @@ button.small {
     }
 
     .sem-select > .lists { grid-column: 1; grid-row: 1; }
+}
+
+/*
+    Past this width the preview stops being a narrow column and becomes the thing worth looking at:
+    a room, a species, its politics and everything it adds up to, side by side rather than stacked
+    into a strip. The lists keep their three columns and the preview takes what is left.
+*/
+@media (min-width: 1500px) {
+    .sem-select {
+        grid-template-columns: minmax(0, 1fr) 620px;
+    }
 }
 
 /* ---------------------------------------------------------------- empire showcase */
@@ -2176,17 +2192,42 @@ button.small {
     object-fit: contain;
 }
 
-.sem-showcase-effects {
+/*
+    Everything the empire adds up to, ruled off at the foot of the panel as the game rules it off.
+    Shared with the designer's own pane, so the rule is written against the component rather than
+    against a wrapper only one of them has.
+*/
+.sem-showcase > .sem-combined {
     padding-top: 10px;
     border-top: 1px solid var(--border);
 }
 
-.sem-showcase-effects h4 { margin: 0 0 6px; }
+.sem-showcase > .sem-combined h4 { margin: 0 0 6px; }
 
-/* The effects can run long, so they scroll within the panel rather than stretching it. */
-.sem-showcase-effects .sem-modifiers {
+/*
+    The effects can run long, so they scroll within the panel rather than stretching it. Given more
+    room they get more of it: a preview 620 wide can afford to show twice as many at once, and the
+    list is the part a reader actually dwells on.
+*/
+.sem-showcase > .sem-combined .sem-modifiers {
     max-height: 320px;
     overflow-y: auto;
+}
+
+@media (min-width: 1500px) {
+    /*
+        Two columns of modifiers rather than one long scroll. They are short rows — a label and a
+        number — and stacking them singly in a panel this wide wasted most of it.
+    */
+    .sem-showcase > .sem-combined .sem-modifiers {
+        max-height: 420px;
+        columns: 2;
+        column-gap: var(--gap);
+    }
+
+    .sem-showcase > .sem-combined .sem-modifiers li {
+        break-inside: avoid;
+    }
 }
 
 /* ---------------------------------------------------------------- appearance */

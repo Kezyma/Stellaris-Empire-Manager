@@ -119,32 +119,13 @@
         </div>
     }
 
-    <div class="sem-showcase-effects">
-        <h4>@Session.Localizer.Heading("SUMMARY_EMPIRE_MODIFIERS", "Empire Modifiers")</h4>
-
-        @if (Combined.Count == 0)
-        {
-            <p class="sem-hint">Nothing this empire chose carries a modifier.</p>
-        }
-        else
-        {
-            <ul class="sem-modifiers">
-                @foreach (var modifier in Combined)
-                {
-                    var formatted = Session.Modifiers.Format(modifier.Key, modifier.Total);
-
-                    <li title="@SourceSummary(modifier)">
-                        <span class="label">@((MarkupString)Session.Modifiers.LabelHtml(modifier.Key))</span>
-                        <span class="value @ToneClass(formatted.Tone)">@formatted.Value</span>
-                        @if (modifier.Sources.Count > 1)
-                        {
-                            <span class="sources">@modifier.Sources.Count</span>
-                        }
-                    </li>
-                }
-            </ul>
-        }
-    </div>
+    @*
+        Everything the empire adds up to, at the foot of the panel as the game has it. The same
+        component the designer's own pane uses rather than a second copy of it — the two had drifted
+        into being the same forty lines twice, and a modifier shown one way here and another there is
+        the sort of difference nobody notices until it matters.
+    *@
+    <CombinedEffects Context="@Context" />
 </div>
 
 @code {
@@ -292,8 +273,6 @@
             ? Database.EmpireFlagSets.FirstOrDefault(f => f.Key == key)
             : null;
 
-    private IReadOnlyList<CombinedModifier> Combined => DesignEffects.Combine(Context);
-
     private IEnumerable<(string Key, string? Icon)> Ethics =>
         Design.Ethics.Select(e => (e, Database.Ethics.FirstOrDefault(d => d.Key == e)?.Icon));
 
@@ -377,16 +356,4 @@
         builder.CloseElement();
     };
 
-    private string SourceSummary(CombinedModifier modifier) =>
-        string.Join(
-            ", ",
-            modifier.Sources.Select(s =>
-                $"{Session.Localizer.Text(s.SourceKey)} {Session.Modifiers.Format(modifier.Key, s.Value).Value}"));
-
-    private static string ToneClass(ModifierTone tone) => tone switch
-    {
-        ModifierTone.Good => "good",
-        ModifierTone.Bad => "bad",
-        _ => string.Empty,
-    };
 }

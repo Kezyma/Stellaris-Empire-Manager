@@ -45,8 +45,19 @@
     [CascadingParameter]
     public required DesignSession Session { get; set; }
 
+    /// <summary>
+    /// The empire to add up, where it is not the one being edited.
+    /// </summary>
+    /// <remarks>
+    /// The select screen shows empires nobody has opened — the player's other designs, and the
+    /// game's own — and each of those has a context of its own. Without this the panel could only
+    /// ever describe whatever happened to be open, which on that screen is the wrong empire or none.
+    /// </remarks>
+    [Parameter]
+    public DesignContext? Context { get; set; }
+
     private IReadOnlyList<CombinedModifier> Combined =>
-        Session.Context is { } context ? DesignEffects.Combine(context) : [];
+        (Context ?? Session.Context) is { } context ? DesignEffects.Combine(context) : [];
 
     /// <summary>Names the choices behind a total, for the reader who wonders where it came from.</summary>
     private string SourceSummary(CombinedModifier modifier) =>
