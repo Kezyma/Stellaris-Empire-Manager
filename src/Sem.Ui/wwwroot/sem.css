@@ -923,9 +923,31 @@ label {
 .sem-grid-aside { flex-shrink: 0; }
 
 /*
-    One height whatever is being described. Left to size itself the panel grew and shrank as the
-    pointer crossed the grid, moving the icons out from under it — what a reader was reaching for
-    was no longer where they had seen it. Each caller sets its own figure on the row.
+    How deep a surface is, and what that means. This panel is the first case of it.
+
+      the page                         --bg
+      a card framing a region          --bg-panel with a border
+      a readout set apart inside one   --bg again, recessed
+      a tile you can click             --bg-raised with a border, which carries the selected state
+
+    The readout panels had been --bg-panel like the card containing them, so two boxes sat one
+    inside the other in the same colour, told apart by a single hairline. Recessing them means the
+    border is doing something.
+
+    Sized to what it is describing, between a floor and a ceiling.
+
+    This had been one fixed height per caller — 178, 320 or 460, each picked for the longest thing
+    that panel might have to show — so a one-line civic description sat in a box three times its own
+    size. The reason given was that a self-sizing panel moved the icons out from under the pointer.
+    Measured, that is no longer true: with align-items:start on the row, sweeping the pointer across
+    eighty-one civics leaves every icon exactly where it was.
+
+    What a self-sizing panel does still move is everything below the grid, since the section grows
+    with it. Hence the ceiling, and hence 300 rather than the 460 the tallest description would ask
+    for. Measuring every option in every grid, three quarters of them fit inside 300 — the medians
+    are 234 for the ethics, 238 for the civics, 180 for the traditions — so the common case is a
+    panel that fits its contents exactly and a page that does not move at all beneath it. The long
+    tail scrolls, which is what the ceiling buys.
 
     A column rather than one scrolling box, so that a picture can sit above the words and stay put
     while they scroll: an origin's scene is what it looks like, and scrolling past it to read about
@@ -934,12 +956,25 @@ label {
 .sem-detail {
     display: flex;
     flex-direction: column;
-    height: var(--sem-detail-height, 320px);
+    min-height: 180px;
+    max-height: 300px;
     overflow: hidden;
     padding: 10px 12px;
-    background: var(--bg-panel);
+    background: var(--bg);
     border: 1px solid var(--border);
     border-radius: var(--radius);
+}
+
+/*
+    Origins are the exception, and say so themselves rather than being told by a parameter: they are
+    the only choices whose detail carries a picture. That picture costs 160 of the 300 before a word
+    is read, and their descriptions are the longest in the game — half of the fifty-four run past
+    418 pixels where three quarters of every other kind fit in 300. Keyed on the picture so the
+    reason travels with the rule; the numbers used to live in three call sites that could not say why.
+*/
+.sem-detail:has(> .sem-detail-picture) {
+    min-height: 320px;
+    max-height: 460px;
 }
 
 .sem-detail > .body {
@@ -948,8 +983,14 @@ label {
     overflow-y: auto;
 }
 
+/*
+    On a phone the grid and the panel are stacked rather than side by side, so the panel's height is
+    taken out of the same scroll the grid is in. Both selectors, because :has() outranks the bare
+    class and the origin panel would otherwise keep its desktop 460 here.
+*/
 @media (max-width: 700px) {
-    .sem-detail { height: min(var(--sem-detail-height, 320px), 240px); }
+    .sem-detail,
+    .sem-detail:has(> .sem-detail-picture) { min-height: 0; max-height: 240px; }
 }
 
 .sem-detail h4 {
@@ -1028,15 +1069,6 @@ label {
     display: grid;
     gap: 6px;
 }
-
-/*
-    The ethics panel writes its own grid rather than using OptionGrid, so it carries the detail
-    height the rest get from that component. Sized to the grid beside it — four rows of forty with
-    three gaps of six — so the panel is as tall as the choices it describes and no taller. Most
-    convictions overflow that and scroll, which is the trade: a compact section that is read into
-    rather than a tall one that is mostly empty.
-*/
-.sem-grid-and-detail:has(> .sem-ethics-grid) { --sem-detail-height: 178px; }
 
 /*
     The grid is now as wide as its columns make it rather than as wide as the panel, so the detail
@@ -1643,10 +1675,11 @@ label {
 
 .sem-trait-row .cost.gain { color: var(--good); }
 
+/* Recessed inside the card holding it, by the rule written above .sem-detail. */
 .sem-trait-detail {
     margin-top: var(--gap);
     padding: 10px 12px;
-    background: var(--bg-panel);
+    background: var(--bg);
     border: 1px solid var(--border);
     border-radius: var(--radius);
 }
@@ -2139,12 +2172,17 @@ label {
 
 .sem-showcase > .identity .actions { flex-shrink: 0; }
 
-/* The game frames the portrait and sets the species beside it; so does this. */
+/*
+   The game frames the portrait and sets the species beside it; so does this.
+
+   Recessed rather than raised: this is a readout inside the showcase card, and --bg-raised with a
+   border is what a tile you can click looks like everywhere else in the sheet.
+*/
 .sem-showcase > .species {
     display: flex;
     gap: 10px;
     padding: 8px;
-    background: var(--bg-raised);
+    background: var(--bg);
     border: 1px solid var(--border);
     border-radius: var(--radius);
 }

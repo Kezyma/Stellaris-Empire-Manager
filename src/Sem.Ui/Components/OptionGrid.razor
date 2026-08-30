@@ -1,4 +1,4 @@
-@*
+﻿@*
     A grid of icons with one panel of detail beside it, which is how the game fits a whole screen of
     choices into a corner of one.
 
@@ -93,9 +93,10 @@
             </div>
         }
         @*
-            Nothing when nothing is described. There had been a sentence here saying to hover an
-            option — the same sentence, differently worded, in seven other grids — which told a
-            player who had already hovered something what they had just done.
+            No else. Shown falls back as far as the first option, so the only way here is a grid with
+            no options at all, and an empty box is the honest picture of that. There had been a
+            sentence saying to hover an option — the same sentence, differently worded, in seven
+            other grids — which told a player who had already hovered one what they had just done.
         *@
     </div>
 </div>
@@ -126,28 +127,24 @@
     public RenderFragment? Aside { get; set; }
 
     /// <summary>
-    /// How tall the detail panel is.
+    /// The option the detail panel describes: whatever the pointer is over, failing that the first
+    /// one selected, failing that the first there is.
     /// </summary>
     /// <remarks>
-    /// Fixed, and every caller gets the same unless it asks otherwise. Left to size itself the panel
-    /// grew and shrank as the pointer crossed the grid, which moved the icons out from under it —
-    /// what a reader was reaching for was not where they had seen it. Origins want more than the
-    /// rest, being the only choices whose detail carries a picture.
+    /// The last of those three is what keeps the panel from ever being blank. A grid nothing has
+    /// been chosen from yet — the civics of a fresh empire — otherwise opened as a bordered box
+    /// with nothing in it, which is a worse answer to "what is a civic" than showing one. Nothing
+    /// here claims the option is taken; that is said in the grid, by the marked tile.
     /// </remarks>
-    [Parameter]
-    public int DetailHeight { get; set; } = 320;
-
-    /// <summary>
-    /// The option the detail panel describes: whatever the pointer is over, or failing that the
-    /// first one selected.
-    /// </summary>
     private GridOption? Shown =>
-        Options.FirstOrDefault(o => o.Key == _hovered) ?? Options.FirstOrDefault(o => o.Selected);
+        Options.FirstOrDefault(o => o.Key == _hovered)
+        ?? Options.FirstOrDefault(o => o.Selected)
+        ?? Options.FirstOrDefault();
 
     // Both on the row rather than on the grid, because a custom property is inherited and the
     // detail panel is the grid's sibling rather than its child.
     private string RowStyle =>
-        $"--sem-icon-size:{Math.Max(20, IconSize)}px;--sem-detail-height:{Math.Max(80, DetailHeight)}px";
+        $"--sem-icon-size:{Math.Max(20, IconSize)}px";
 
     private void Unhover(string key)
     {
