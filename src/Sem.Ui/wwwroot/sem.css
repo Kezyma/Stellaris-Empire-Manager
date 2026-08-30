@@ -1766,7 +1766,31 @@ label {
 
 @media (max-width: 800px) {
     .sem-appearance { flex-direction: column; }
-    .sem-appearance > .figure { width: 100%; }
+
+    /*
+        The figure cannot be reflowed, only scaled: every layer of it is placed at an offset
+        measured against a 332 by 220 picture, so narrowing the box just cut the ruler's shoulder
+        off — on a 375-wide phone, 23 pixels of them, quietly, behind the box's own clipping.
+
+        So the box becomes as wide as there is room for and the figure is scaled into it. The
+        aspect ratio keeps the box the height the scaled figure actually needs rather than the
+        height the unscaled one would have wanted; the max-width stops it growing past the size the
+        artwork was drawn at, which would only blur it. A browser that cannot divide one length by
+        another leaves the scale unset and clips exactly as before, which is a worse picture rather
+        than a broken one.
+    */
+    .sem-appearance > .figure {
+        width: 100%;
+        max-width: 332px;
+        min-height: 0;
+        aspect-ratio: 332 / 220;
+        container-type: inline-size;
+    }
+
+    .sem-appearance > .figure .sem-figure {
+        transform-origin: top left;
+        scale: min(1, calc(100cqw / 332px));
+    }
 }
 
 /*
