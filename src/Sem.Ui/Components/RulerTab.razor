@@ -1,4 +1,4 @@
-@*
+﻿@*
     The empire's first ruler.
 *@
 
@@ -110,7 +110,7 @@
             </div>
         </div>
 
-        <BiographyField Value="@RulerBiography"
+        <BiographyField Value="@RulerBiography" For="@Session.Localizer.Heading("RULER_TITLE", "Ruler")"
                         Placeholder="Who this ruler is, and how they came to rule."
                         OnChange="SetBiography" />
     </section>

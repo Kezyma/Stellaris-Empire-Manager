@@ -13,7 +13,12 @@
         Capped where the game caps it. The game's own writer cuts at a thousand characters, so
         anything past that would come back mid-sentence rather than come back long.
     *@
-    <textarea rows="6" maxlength="1000" placeholder="@Placeholder"
+    @*
+        Named out loud as well as headed. A summary is not a label, so without this a reader using
+        the keyboard alone reaches an unnamed box — and there are two of these on the page, one for
+        the species and one for the ruler, which the heading alone does not tell apart.
+    *@
+    <textarea rows="6" maxlength="1000" placeholder="@Placeholder" aria-label="@Named"
               value="@Value"
               @onchange="e => OnChange.InvokeAsync(e.Value?.ToString() ?? string.Empty)"></textarea>
 </details>
@@ -29,6 +34,26 @@
     /// <summary>Grey text for an empty box, saying whose story this is.</summary>
     [Parameter]
     public string? Placeholder { get; set; }
+
+    /// <summary>Whose biography this is, for a reader who cannot see which panel it sits in.</summary>
+    [Parameter]
+    public string? For { get; set; }
+
+    /// <summary>
+    /// What the box is called out loud.
+    /// </summary>
+    /// <remarks>
+    /// Two of these appear on the page — the species' and the ruler's — so the heading alone does
+    /// not tell them apart for anyone who cannot see which panel they sit in.
+    /// </remarks>
+    private string Named
+    {
+        get
+        {
+            var heading = Session.Localizer.Heading("BIOGRAPHY", "Biography");
+            return For is { Length: > 0 } whose ? $"{heading} — {whose}" : heading;
+        }
+    }
 
     /// <summary>Called with the whole text whenever the box is left.</summary>
     [Parameter]

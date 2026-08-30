@@ -81,6 +81,7 @@
             {
                 <button type="button"
                         class="sem-thumb-option @(room.Key == Design.Room ? "selected" : null)"
+                        aria-pressed="@(room.Key == Design.Room)"
                         @onclick="() => Session.Edit(d => d.Room = room.Key)">
                     @if (room.Image is not null)
                     {

@@ -19,6 +19,7 @@
         {
             <button type="button"
                     class="sem-thumb-option @(culture.Key == Design.GraphicalCulture ? "selected" : null)"
+                    aria-pressed="@(culture.Key == Design.GraphicalCulture)"
                     title="@Session.Localizer.Text(culture.DescriptionKey, string.Empty)"
                     @onclick="() => Session.Edit(d => d.GraphicalCulture = culture.Key)">
                 @if (culture.ShipPreview is { Length: > 0 } ship)

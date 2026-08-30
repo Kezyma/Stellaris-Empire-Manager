@@ -1,4 +1,4 @@
-@*
+﻿@*
     What the species is called, and where its other names come from.
 
     Each of the three name fields offers the ready-made species the game itself would draw on for
@@ -54,14 +54,19 @@
 <div class="sem-name-sets">
     @foreach (var (label, names) in Sets)
     {
+        @*
+            The label is beside the box rather than tied to it, because it carries a count as well
+            as a word; the box says what it is itself so a reader who cannot see the pairing is not
+            left at four unnamed boxes in a row.
+        *@
         <div class="sem-field sem-name-set">
             <label>@label <span class="count">@names.Count</span></label>
-            <textarea readonly rows="4">@string.Join(", ", names)</textarea>
+            <textarea readonly rows="4" aria-label="@($"{label} this name list offers")">@string.Join(", ", names)</textarea>
         </div>
     }
 </div>
 
-<BiographyField Value="@Species.Biography"
+<BiographyField Value="@Species.Biography" For="@Session.Localizer.Heading("SPECIES_NAME", "Species")"
                 Placeholder="What this species is, and where it came from."
                 OnChange="text => Session.Edit(_ => Species.Biography = text is { Length: > 0 } ? text : null)" />
 

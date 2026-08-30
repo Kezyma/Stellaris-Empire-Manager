@@ -14,8 +14,14 @@
         <div class="sem-icon-grid">
             @foreach (var option in Options)
             {
+                @*
+                    Whether an option is taken is said as well as shown. The class draws a border,
+                    which is nothing at all to a reader who cannot see it, and these grids are the
+                    whole of choosing an ethic, an authority or a civic.
+                *@
                 <button type="button"
                         class="@ClassFor(option)"
+                        aria-pressed="@option.Selected"
                         disabled="@(!option.Enabled && !option.Selected)"
                         title="@option.Name"
                         @onmouseenter="() => _hovered = option.Key"

@@ -243,6 +243,7 @@
     private RenderFragment Row(TraitEntry trait, bool chosen) =>
         @<button type="button"
                  class="sem-trait-row @(trait.Enabled ? null : "blocked") @(trait.Overspends ? "overspends" : null)"
+                 aria-pressed="@chosen"
                  title="@trait.Name"
                  @onmouseenter="() => _described = trait.Key"
                  @onfocus="() => _described = trait.Key"
