@@ -426,6 +426,50 @@ public sealed class EmpireDesignTests
         Assert.Equal("Raised by machines.", file.Designs[0].Ruler.CustomBiography?.Key);
     }
 
+    /// <summary>Every way the designer has of putting a new empire into a file.</summary>
+    public static TheoryData<string> WaysToAdd => new("blank", "copy-first", "copy-last", "template");
+
+    [Theory]
+    [MemberData(nameof(WaysToAdd))]
+    public void AnAddedEmpireStartsOnItsOwnLine(string how)
+    {
+        // The game always writes an empire's closing brace and the next empire's name on separate
+        // lines. An entry copied from the top of another file remembered having nothing in front of
+        // it, so appending it ran the two together as }"New Empire"= — which is what the designer
+        // wrote for every empire it created, since both the "New empire" button and duplicating the
+        // first empire copy an entry that sat at the top of something.
+        var file = EmpireDesignsFile.LoadText(Sample);
+        var second = file.AddCopy(file.Designs[0], "Second Empire");
+
+        _ = how switch
+        {
+            "blank" => file.Add("Added"),
+            "copy-first" => file.AddCopy(file.Designs[0], "Added"),
+            "copy-last" => file.AddCopy(second, "Added"),
+            _ => file.AddFromTemplate(Sample, "Added"),
+        };
+
+        var lines = file.Document.ToText().Split("\r\n");
+
+        Assert.DoesNotContain(lines, line => line.StartsWith("}\"", StringComparison.Ordinal));
+
+        // And the entry really is there, rather than the check passing because nothing was added.
+        Assert.Contains(lines, line => line == "\"Added\"=");
+    }
+
+    [Fact]
+    public void AddingAnEmpireLeavesEveryOtherByteAlone()
+    {
+        // The strongest thing that can be said about an edit: the empires nobody touched come back
+        // exactly as they were, and the new one is written after them.
+        var original = EmpireDesignsFile.LoadText(Sample).Document.ToText();
+
+        var file = EmpireDesignsFile.LoadText(Sample);
+        file.Add("Added");
+
+        Assert.StartsWith(original, file.Document.ToText(), StringComparison.Ordinal);
+    }
+
     [Fact]
     public void AnHeirTitleIsWrittenWhereTheGamesOwnEditorPutsIt()
     {
