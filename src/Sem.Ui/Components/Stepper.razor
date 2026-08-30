@@ -1,4 +1,4 @@
-@*
+﻿@*
     One of the game's spinners: a value with an arrow either side.
 
     A stepper rather than a slider because the values are ordinals, not amounts — hairstyle
@@ -11,7 +11,7 @@
     <label>@Label</label>
 
     <div class="control">
-        <button type="button" title="Previous" disabled="@(Count <= 1)" @onclick="() => Step(-1)">‹</button>
+        <button type="button" title="Previous" aria-label="Previous" disabled="@(Count <= 1)" @onclick="() => Step(-1)">‹</button>
 
         <span class="value">
             @if (Caption is { Length: > 0 } caption)
@@ -22,7 +22,7 @@
             <span class="count">@(Count == 0 ? "—" : $"{Value + 1} / {Count}")</span>
         </span>
 
-        <button type="button" title="Next" disabled="@(Count <= 1)" @onclick="() => Step(1)">›</button>
+        <button type="button" title="Next" aria-label="Next" disabled="@(Count <= 1)" @onclick="() => Step(1)">›</button>
     </div>
 </div>
 

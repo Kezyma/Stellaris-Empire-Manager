@@ -216,9 +216,30 @@ button.primary:hover:not(:disabled) {
     background: var(--accent);
 }
 
-button.danger:hover:not(:disabled) {
+/*
+    Marked at rest, not only under the pointer. There is one of these — Delete — and it was
+    indistinguishable from "← Empires" and "Copy link" beside it until the cursor was already on
+    top of it, which is the wrong moment to find out.
+*/
+button.danger {
     border-color: var(--bad);
     color: var(--bad);
+}
+
+button.danger:hover:not(:disabled) {
+    background: var(--bad);
+    border-color: var(--bad);
+    color: var(--bg);
+}
+
+/*
+    One focus ring for everything. There had been two rules across some eight hundred buttons, and
+    one of them turned the outline off and substituted a background identical to :hover — so a
+    keyboard user could not tell where they were from where the mouse had last been.
+*/
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
 }
 
 input[type="text"], select, textarea {
@@ -297,9 +318,28 @@ label {
     border-color: var(--accent-dim);
 }
 
-.sem-option.selected {
+/*
+   One way of saying "this is the one you picked", for every grid of tiles in the app.
+
+   There had been five treatments across three colours, three of which changed only the border from
+   #2a3543 to #4a9fd4 — a one-pixel hue shift that is genuinely hard to find in a grid of a hundred
+   icons. This is the treatment the busiest grids already used, so unifying on it moves the fewest
+   pixels on the screens that matter most.
+
+   Two rules deliberately stay out of this and say why where they are: the colour swatches, and the
+   current value in a dropdown.
+*/
+.sem-option.selected,
+.sem-thumb-option.selected,
+.sem-portrait.selected,
+.sem-empire.selected,
+.sem-class-list button.selected,
+.sem-gender.selected,
+.sem-nomad.selected,
+.sem-icon-option.selected {
     border-color: var(--accent);
     background: var(--bg-hover);
+    box-shadow: inset 0 0 0 1px var(--accent-dim);
 }
 
 .sem-option.blocked {
@@ -380,10 +420,6 @@ label {
     cursor: pointer;
 }
 
-.sem-thumb-option.selected {
-    border-color: var(--accent);
-}
-
 .sem-thumb-option .caption {
     display: block;
     padding: 4px 2px 0;
@@ -428,12 +464,6 @@ label {
     background: var(--bg-hover);
 }
 
-.sem-class-list button.selected {
-    background: var(--bg-raised);
-    border-color: var(--gold);
-    color: var(--gold);
-}
-
 .sem-class-list button.blocked {
     opacity: 0.4;
     cursor: not-allowed;
@@ -476,7 +506,6 @@ label {
     border-color: var(--accent-dim);
 }
 
-.sem-portrait.selected { border-color: var(--accent); }
 
 .sem-portrait.blocked {
     opacity: 0.4;
@@ -750,7 +779,6 @@ label {
     border-color: var(--accent-dim);
 }
 
-.sem-empire.selected { border-color: var(--accent); }
 
 /* An empire the game would refuse, said without spending a line of the card on saying it. */
 .sem-empire.broken { border-color: var(--bad); }
@@ -847,17 +875,9 @@ label {
     transition: border-color 0.12s, background 0.12s;
 }
 
-.sem-icon-option:hover:not(.blocked),
-.sem-icon-option:focus-visible {
+.sem-icon-option:hover:not(.blocked) {
     background: var(--bg-hover);
     border-color: var(--border-strong);
-    outline: none;
-}
-
-.sem-icon-option.selected {
-    border-color: var(--accent);
-    background: var(--bg-hover);
-    box-shadow: inset 0 0 0 1px var(--accent-dim);
 }
 
 /* Still legible, and still hoverable: a blocked option has to be able to explain itself. */
@@ -1031,17 +1051,16 @@ label {
 }
 
 /*
-    The nomad toggle. Square like the authorities it sits beside, but kept out of their grid and
-    marked in gold rather than the selection blue, because it is not one of them — the game does the
-    same, giving it a container of its own and a highlight of its own.
+    The nomad toggle. Square like the authorities it sits beside, and kept out of their grid because
+    it is not one of them — which is what the game does too, giving it a container of its own.
+
+    It had also been marked in gold rather than the selection blue, on the same reasoning. That was
+    a colour saying two things: gold means cost everywhere else in this sheet, and a toggle that
+    costs nothing wearing it made the palette contradict itself. Position already carries the
+    distinction, so the colour no longer has to.
 */
 .sem-nomad {
     width: var(--sem-icon-size, 40px);
-}
-
-.sem-nomad.selected {
-    border-color: var(--gold);
-    box-shadow: inset 0 0 0 1px var(--gold);
 }
 
 .sem-nomad .initials {
@@ -1359,6 +1378,12 @@ label {
 
 .sem-swatch:hover { border-color: var(--border-strong); }
 
+/*
+   The one grid that cannot use the shared treatment. A swatch's fill is an arbitrary colour from
+   the game's palette, so an accent-blue marker disappears on a blue swatch, and a ring drawn inside
+   would be read as part of the colour rather than as a mark on it. Hence the brightest colour in
+   the palette, drawn outside the tile.
+*/
 .sem-swatch.selected {
     border-color: var(--text);
     box-shadow: 0 0 0 1px var(--text);
@@ -1691,6 +1716,7 @@ label {
 }
 
 .sem-combo .options button:hover { background: var(--bg-hover); }
+/* A menu's current value, not a chosen tile: it wants marking, not framing. */
 .sem-combo .options button.selected { color: var(--accent); }
 
 /* ---------------------------------------------------------------- name fields
@@ -1908,10 +1934,8 @@ label {
 
 .sem-spawn:hover img { filter: brightness(1.15); }
 
-.sem-spawn:focus-visible {
-    outline: 1px solid var(--accent);
-    border-radius: var(--radius);
-}
+/* The ring itself is global now; this only rounds it to the button it is drawn around. */
+.sem-spawn:focus-visible { border-radius: var(--radius); }
 
 /*
     The state's own word, and the thing the button is actually saying. Weight rather than size:
@@ -1979,11 +2003,6 @@ label {
     background: var(--bg-raised);
     border: 1px solid var(--border);
     font-size: var(--text-xs);
-}
-
-.sem-gender.selected {
-    border-color: var(--accent);
-    background: var(--bg-hover);
 }
 
 .sem-gender img {
