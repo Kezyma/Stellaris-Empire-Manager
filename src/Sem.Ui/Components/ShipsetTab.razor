@@ -1,9 +1,12 @@
 @*
-    What the empire's fleet looks like, and what it names its ships.
+    What the empire's fleet looks like.
 
     Shown as ships rather than as a list of names, because that is the choice being made. The game
     has no artwork for this and spins the models instead; each of these is one of the set's own
     corvettes, drawn during extraction.
+
+    What the ships are called is not here. The prefix is a name the empire carries whatever its
+    fleet is modelled on, so it sits with the empire's other names.
 *@
 
 @foreach (var group in ShipSetGroups)
@@ -32,12 +35,6 @@
         }
     </div>
 }
-
-<div class="sem-field spaced">
-    <label for="ship-prefix">@Session.Localizer.Label("SHIP_PREFIX", "Ship Prefix")</label>
-    <input id="ship-prefix" type="text" value="@Session.Localizer.Name(Design.ShipPrefix)"
-           @onchange="e => Session.Edit(d => d.ShipPrefix.SetLiteral(e.Value?.ToString() ?? string.Empty))" />
-</div>
 
 @code {
     [CascadingParameter]

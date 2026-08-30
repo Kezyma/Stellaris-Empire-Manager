@@ -27,6 +27,18 @@
                   OnChange="value => Session.Edit(d => d.Adjective.SetLiteral(value))" />
     </div>
 
+    @*
+        The prefix its ships wear — UNS Enterprise. It had sat under the shipset, which is what the
+        fleet looks like rather than what it is called; a design that changes its shipset keeps its
+        prefix, and one that never touches its shipset still has one. It is a name, so it belongs
+        with the other two.
+    *@
+    <div class="sem-field">
+        <label for="ship-prefix">@Session.Localizer.Label("SHIP_PREFIX", "Ship Prefix")</label>
+        <input id="ship-prefix" type="text" value="@Session.Localizer.Name(Design.ShipPrefix)"
+               @onchange="e => Session.Edit(d => d.ShipPrefix.SetLiteral(e.Value?.ToString() ?? string.Empty))" />
+    </div>
+
     <div class="sem-field">
         <label for="empire-flag-set">Special empire flags</label>
         <select id="empire-flag-set" @onchange="e => Session.Edit(d => d.PrescriptedFlag = Chosen(e.Value?.ToString()))">

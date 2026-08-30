@@ -1904,6 +1904,15 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 
 .sem-name-row > .sem-field { margin-bottom: 0; }
 
+/*
+    A fourth field where there is one — the empire carries a ship prefix as well as a name and an
+    adjective. Counted from the children rather than named by a class, so the row follows what it
+    actually holds instead of being told twice.
+*/
+.sem-name-row:has(> :nth-child(5)) {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+}
+
 /* The class and gender pair sits in the same grid but wants only two columns. */
 .sem-name-row:has(.sem-genders) {
     grid-template-columns: minmax(0, 1fr) auto;
@@ -2439,6 +2448,46 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 .sem-scene {
     max-width: 952px;
     margin-bottom: var(--gap);
+}
+
+/*
+    A list that scrolls in its own box rather than down the page, so whatever it is changing stays
+    on screen while it is being changed. The rooms are the case that needs it: choosing one is
+    choosing what the scene above looks like, and the scene had scrolled out of sight long before
+    the list ran out.
+
+    Sized against the window rather than in pixels, because what has to fit is the scene plus this,
+    and the scene is a picture that scales. A third of the window: measured at 1440x900 the section
+    above this comes to 481px — its heading, the 340px scene, the city field and the room label —
+    which leaves 307 of the 788 the page chrome does not take. The floor keeps two rows of
+    thumbnails visible on a short window, where a proportional height alone would leave a slot.
+*/
+.sem-scroll-list {
+    max-height: clamp(240px, 34vh, 560px);
+    overflow-y: auto;
+    padding: var(--space-md);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+/* The first heading inside the box has the box's own padding above it already. */
+.sem-scroll-list > .sem-subhead:first-child { margin-top: 0; }
+
+/*
+    On a phone the box is the tighter of the two constraints, so its contents pack rather than fill.
+    At the default two-hundred-pixel track a 375px screen fits one room per row, which put exactly
+    one of sixty-six in a 276px box — scrolling a list one item at a time is not choosing from it.
+    Half the track fits two, and the scene here is only 113px tall, so the box can take more of what
+    is left as well.
+*/
+@media (max-width: 700px) {
+    .sem-scroll-list { max-height: clamp(240px, 48vh, 560px); }
+
+    .sem-scroll-list .sem-thumbs {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: var(--space-sm);
+    }
 }
 
 /*

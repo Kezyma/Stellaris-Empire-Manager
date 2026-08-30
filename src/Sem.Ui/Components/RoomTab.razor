@@ -1,3 +1,6 @@
+@using Microsoft.JSInterop
+@inject IJSRuntime Js
+
 @*
     Where the empire's leader stands, and what its cities look like from that window.
 
@@ -29,6 +32,11 @@
 </div>
 
 @*
+    The rooms scroll inside their own box rather than down the page, so the scene above stays on
+    screen while they are being picked. Choosing a room is choosing what the scene looks like, and
+    the list is long enough that the scene had scrolled away by the time you reached the room you
+    wanted — you were choosing a picture you could not see.
+
     Two lists, deliberately apart. The game's own designer offers the first; the second are rooms it
     hands out during play, to a fallen empire or a galactic emperor or a world that never left its own
     atmosphere. A design may name any of them and the game draws it — one of the game's own empires
@@ -37,15 +45,16 @@
 *@
 <label>@Session.Localizer.Label("EMPIRE_CREATION_ROOM_APPEARANCE", "Room")</label>
 
-@Rooms(Offered)
+<div class="sem-scroll-list" @ref="_list">
+    @Rooms(Offered)
 
-@if (Unlisted.Count > 0)
-{
-    <h5 class="sem-subhead">Rooms the game assigns rather than offers</h5>
-    <p class="sem-hint">A design may still hold one.</p>
+    @if (Unlisted.Count > 0)
+    {
+        <h5 class="sem-subhead">Rooms the game assigns rather than offers</h5>
 
-    @Rooms(Unlisted)
-}
+        @Rooms(Unlisted)
+    }
+</div>
 
 @code {
     [CascadingParameter]
@@ -54,6 +63,32 @@
     private EmpireDesign Design => Session.Current!;
 
     private readonly RequirementEvaluator _evaluator = new();
+
+    /// <summary>The scrolling box the rooms live in, so the chosen one can be brought into it.</summary>
+    private ElementReference _list;
+
+    private IJSObjectReference? _module;
+
+    /// <summary>
+    /// Opens the list on the room the design already has.
+    /// </summary>
+    /// <remarks>
+    /// Once only. Scrolling on every render would drag the list back under anyone reading further
+    /// down it, and after the first render the reason to move is a click, which is already in view.
+    /// </remarks>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        _module ??= await Js.InvokeAsync<IJSObjectReference>(
+            "import", "./_content/Sem.Ui/sem.js").ConfigureAwait(true);
+
+        await _module.InvokeVoidAsync("revealSelected", _list, ".sem-thumb-option.selected")
+            .ConfigureAwait(true);
+    }
 
     /// <summary>The rooms the game's own designer lists.</summary>
     private IReadOnlyList<RoomDefinition> Offered =>

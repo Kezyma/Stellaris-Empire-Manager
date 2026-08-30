@@ -5,9 +5,8 @@
 
     The game's leader editor offers six controls. Four of them map onto something a design stores and
     are here. Phenotype picks which likeness of the portrait's group is worn; the other three are
-    numbers into lists the portrait offers. The remaining two — the ascension stage and its variant —
-    are two controls against a design's single evolution_mask, whose value is decided in play rather
-    than here, so there is a sentence in their place rather than an invented control.
+    numbers into lists the portrait offers. The remaining two are the ascension stage and its
+    variant; see the note beside them below.
 *@
 
 <div class="sem-appearance">
@@ -78,23 +77,11 @@
         }
 
         @*
-            The stored value and where it is set, and nothing about why — a player of this game
-            already knows that an ascended form follows from what the empire became. Heading rather
-            than Label: some of the game's labels carry their colon.
+            The game's editor has two more spinners here, Evolution Stage and Evolution Variant,
+            against a design's single evolution_mask. How that one number carries both is not stated
+            in any of the game's script files — every one of the sixty-four designs to hand holds
+            zero — so there is nothing here rather than a control writing a guess into a save.
         *@
-        <p class="sem-hint">
-            @Session.Localizer.Heading("EVOLUTION_STAGE", "Evolution Stage"):
-            @(Design.Ruler.EvolutionMask ?? 0), set in play rather than here.
-        </p>
-
-        @if (Outfit is not null)
-        {
-            <p class="sem-hint">
-                Clothing and attachment are numbered from the game's own selector files, which do not
-                state what order they are counted in. A saved empire may open in the game wearing
-                something else; the number is written back exactly as it was read.
-            </p>
-        }
     </div>
 </div>
 

@@ -48,6 +48,35 @@ export function writeStored(key, value) {
 }
 
 /**
+ * Brings the chosen item of a scrolling list into view without scrolling the page.
+ *
+ * A list that scrolls inside its own box opens showing its first rows, which for a design already
+ * holding the twenty-eighth room means opening on rooms it does not have. Only the box is scrolled —
+ * scrollIntoView would take the page with it and undo the point of the box, which is to keep the
+ * scene above on screen.
+ *
+ * @param {HTMLElement} list the scrolling container
+ * @param {string} selector what marks the chosen item within it
+ */
+export function revealSelected(list, selector) {
+    const chosen = list?.querySelector(selector);
+
+    if (!chosen) {
+        return;
+    }
+
+    // Measured between the two boxes rather than from offsetTop, which is counted from whichever
+    // ancestor happens to be positioned and put the first room 492 pixels down a list it starts.
+    const listBox = list.getBoundingClientRect();
+    const box = chosen.getBoundingClientRect();
+
+    // Centred rather than merely brought inside the edge, so what surrounds it is visible too: the
+    // choice next to the one you have is most of why you are looking.
+    const delta = (box.top - listBox.top) - (list.clientHeight - box.height) / 2;
+    list.scrollTop = Math.max(0, list.scrollTop + delta);
+}
+
+/**
  * Puts text on the clipboard.
  *
  * The clipboard needs a secure context and a recent gesture, and a browser may refuse for either
