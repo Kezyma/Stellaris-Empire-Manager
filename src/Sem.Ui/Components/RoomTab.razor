@@ -1,4 +1,4 @@
-@*
+﻿@*
     Where the empire's leader stands, and what its cities look like from that window.
 
     The two belong together because the picture makes them one: the city is painted into the world
@@ -37,16 +37,12 @@
 *@
 <label>@Session.Localizer.Label("EMPIRE_CREATION_ROOM_APPEARANCE", "Room")</label>
 
-<p class="sem-hint">The game gives these no names, so they are shown as they look.</p>
-
 @Rooms(Offered)
 
 @if (Unlisted.Count > 0)
 {
     <h5 class="sem-subhead">Rooms the game assigns rather than offers</h5>
-    <p class="sem-hint">
-        Not in the game's own designer. A design may still hold one, as its own empires do.
-    </p>
+    <p class="sem-hint">A design may still hold one.</p>
 
     @Rooms(Unlisted)
 }

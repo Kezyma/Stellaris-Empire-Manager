@@ -1,4 +1,4 @@
-@*
+﻿@*
     The homeworld and the system it sits in.
 
     A world says nothing about itself in the game's files — no description, no effects — so what is
@@ -69,10 +69,7 @@
         <section>
             <h4>@Session.Localizer.Heading("arkship_cap", "Arkship")</h4>
 
-            <p class="sem-hint">
-                A nomadic empire begins aboard a ship rather than on a world. The planet it names is
-                kept as it was and used again if it stops being nomadic.
-            </p>
+            <p class="sem-hint">The world it named is kept, and used again if it stops being nomadic.</p>
 
             <div class="sem-options">
                 @foreach (var arkship in Arkships)
@@ -91,7 +88,7 @@
 
             @if (Options.Count == 1)
             {
-                <p class="sem-hint">The chosen origin decides where this empire begins.</p>
+                <p class="sem-hint">Fixed by the origin.</p>
             }
 
             @*
@@ -102,7 +99,6 @@
             <OptionGrid Options="@WorldOptions"
                         IconSize="56"
                         DetailHeight="178"
-                        EmptyHint="Hover a world to see what kind of home it makes."
                         OnSelect="key => Session.Edit(d => d.PlanetClass = key)" />
         </section>
     }

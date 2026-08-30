@@ -77,11 +77,14 @@
             </p>
         }
 
+        @*
+            The stored value and where it is set, and nothing about why — a player of this game
+            already knows that an ascended form follows from what the empire became. Heading rather
+            than Label: some of the game's labels carry their colon.
+        *@
         <p class="sem-hint">
-            @* Heading rather than Label: some of the game's labels carry their colon. *@
-            @Session.Localizer.Heading("EVOLUTION_STAGE", "Evolution Stage") is decided in play rather
-            than here: a portrait's ascended forms are gated on what the empire has become, so a
-            design holds one value for it and this one holds @(Design.Ruler.EvolutionMask ?? 0).
+            @Session.Localizer.Heading("EVOLUTION_STAGE", "Evolution Stage"):
+            @(Design.Ruler.EvolutionMask ?? 0), set in play rather than here.
         </p>
 
         @if (Outfit is not null)

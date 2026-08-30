@@ -92,12 +92,11 @@
                 }
             </div>
         }
-        else
-        {
-            <div class="body">
-                <p class="sem-hint">@EmptyHint</p>
-            </div>
-        }
+        @*
+            Nothing when nothing is described. There had been a sentence here saying to hover an
+            option — the same sentence, differently worded, in seven other grids — which told a
+            player who had already hovered something what they had just done.
+        *@
     </div>
 </div>
 
@@ -121,10 +120,6 @@
     /// </summary>
     [Parameter]
     public int IconSize { get; set; } = 40;
-
-    /// <summary>What to say when nothing is hovered and nothing is selected.</summary>
-    [Parameter]
-    public string EmptyHint { get; set; } = "Hover an option to see what it does.";
 
     /// <summary>Something to place beside the icons that is not one of the choices.</summary>
     [Parameter]
