@@ -1,4 +1,4 @@
-/*
+﻿/*
    Only what the host itself needs: the loading indicator that runs before any of the app has
    started, and the error bar. Everything else is in the shared stylesheet.
 */
@@ -6,8 +6,8 @@
 .loading-progress {
     position: absolute;
     display: block;
-    width: 8rem;
-    height: 8rem;
+    width: 128px;
+    height: 128px;
     inset: 20vh 0 auto 0;
     margin: 0 auto;
 }
@@ -15,7 +15,7 @@
 .loading-progress circle {
     fill: none;
     stroke: #2a3543;
-    stroke-width: 0.5rem;
+    stroke-width: 8px;
     transform-origin: 50% 50%;
     transform: rotate(-90deg);
 }
@@ -30,7 +30,7 @@
     position: absolute;
     text-align: center;
     color: #8b97a6;
-    inset: calc(20vh + 3.25rem) 0 auto 0;
+    inset: calc(20vh + 52px) 0 auto 0;
 }
 
 .loading-progress-text:after {
@@ -44,7 +44,7 @@
     left: 0;
     width: 100%;
     z-index: 1000;
-    padding: 0.7rem 1.25rem;
+    padding: 11px 20px;
     background: #4a1f1f;
     color: #f0dede;
     border-top: 1px solid #d95c5c;
@@ -53,12 +53,12 @@
 #blazor-error-ui .dismiss {
     cursor: pointer;
     position: absolute;
-    right: 0.75rem;
-    top: 0.6rem;
+    right: 12px;
+    top: 10px;
 }
 
 .blazor-error-boundary {
-    padding: 1rem;
+    padding: 16px;
     background: #4a1f1f;
     color: #f0dede;
     border-radius: 6px;
