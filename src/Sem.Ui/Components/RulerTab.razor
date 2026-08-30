@@ -1,4 +1,4 @@
-﻿@*
+@*
     The empire's first ruler.
 *@
 
@@ -75,14 +75,14 @@
             it decides the ruler's portrait frame and their traits in a running game, and a dropdown
             hid three choices behind a click.
         *@
-        <div class="sem-row" style="align-items:flex-start;gap:24px">
-            <div class="sem-field" style="margin-bottom:0">
+        <div class="sem-row top wide">
+            <div class="sem-field flush">
                 <label>@Session.Localizer.Label("GENDER", "Gender")</label>
                 <GenderPicker Value="@Design.Ruler.Gender"
                               OnChange="key => Session.Edit(d => d.Ruler.Gender = key)" />
             </div>
 
-            <div class="sem-field" style="margin-bottom:0">
+            <div class="sem-field flush">
                 <label>@Session.Localizer.Label("RULER_CLASS", "Leader Class")</label>
 
                 <div class="sem-genders">

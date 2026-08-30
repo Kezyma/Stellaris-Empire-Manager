@@ -6,7 +6,7 @@
     inside a drawer with them.
 *@
 
-<div class="sem-row" style="align-items:flex-start">
+<div class="sem-row top">
     <FlagPreview Flag="@Design.Flag" Class="large" />
 
     @*
@@ -74,7 +74,7 @@
     </select>
 </div>
 
-<div class="sem-thumbs" style="grid-template-columns:repeat(auto-fill,minmax(52px,1fr))">
+<div class="sem-thumbs emblems">
     @foreach (var file in EmblemFiles)
     {
         var name = System.IO.Path.GetFileNameWithoutExtension(file);

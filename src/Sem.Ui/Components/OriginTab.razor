@@ -1,4 +1,4 @@
-﻿@*
+@*
     Where the empire's story begins. An origin can force traits, replace the homeworld, restrict
     the starting system and call for a second species, so what it changes is spelled out.
 *@
@@ -24,7 +24,7 @@
         *@
         @if (Selected is { } origin)
         {
-            <div class="sem-hint" style="margin-top:var(--gap)">
+            <div class="sem-hint">
                 @if (origin.HabitabilityPreference is { } climate || origin.StartingColony is { } colony)
                 {
                     <p>Starts the empire on @Session.Localizer.Text(origin.HabitabilityPreference ?? origin.StartingColony!).</p>

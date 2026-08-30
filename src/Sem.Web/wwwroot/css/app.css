@@ -1,4 +1,4 @@
-﻿/*
+/*
    Only what the host itself needs: the loading indicator that runs before any of the app has
    started, and the error bar. Everything else is in the shared stylesheet.
 */

@@ -33,7 +33,7 @@
     </div>
 }
 
-<div class="sem-field" style="margin-top:var(--gap)">
+<div class="sem-field spaced">
     <label for="ship-prefix">@Session.Localizer.Label("SHIP_PREFIX", "Ship Prefix")</label>
     <input id="ship-prefix" type="text" value="@Session.Localizer.Name(Design.ShipPrefix)"
            @onchange="e => Session.Edit(d => d.ShipPrefix.SetLiteral(e.Value?.ToString() ?? string.Empty))" />

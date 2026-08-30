@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -8,10 +8,23 @@
     <base href="/" />
     <link rel="stylesheet" href="_content/Sem.Ui/sem.css" />
     <style>
-        /* The window itself is the chrome here, so the page fills it with nothing of its own. */
+        /*
+            The window itself is the chrome here, so the page fills it with nothing of its own.
+
+            .sem-main takes whatever the header and the content bar leave, by the flex:1 it already
+            carries, rather than by subtracting their height. It had subtracted 49px, which was the
+            header alone and had since become 60, and never counted the 52px content bar at all — so
+            the scrolling region ran 63px past the bottom of the window.
+
+            #app has to carry the height too. Blazor's root div sits between body and .sem-app, and a
+            percentage height against an auto-height parent is auto — so without this line .sem-app
+            grows to its content, body clips it, and nothing scrolls at all. min-height:0 for the
+            same family of reason: a flex item will not shrink below its content without it, which is
+            what makes .sem-main scroll rather than push.
+        */
         html, body { height: 100%; overflow: hidden; }
-        .sem-app { height: 100%; }
-        .sem-main { overflow-y: auto; height: calc(100vh - 49px); }
+        #app, .sem-app { height: 100%; }
+        .sem-main { overflow-y: auto; min-height: 0; }
     </style>
 </head>
 

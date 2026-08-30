@@ -29,7 +29,7 @@ else
     <div class="sem-panel">
         <div class="sem-row">
             <div>
-                <h2 style="margin:0">Your empires</h2>
+                <h2>Your empires</h2>
                 <span class="sem-hint">
                     @if (_session.File is { } file && file.Designs.Count > 0)
                     {
@@ -62,11 +62,11 @@ else
 
         @if (_error is { } message)
         {
-            <p class="sem-status bad" style="margin-top:10px">@message</p>
+            <p class="sem-status bad">@message</p>
         }
     </div>
 
-    <p class="sem-hint" style="margin-bottom:16px">
+    <p class="sem-hint">
         Your file is read in this tab and never uploaded. Empires you do not touch are written back
         exactly as they were.
     </p>
@@ -120,7 +120,7 @@ else
                     is enough to say where the list starts.
                 *@
                 <div class="sem-prescripted">
-                    <h2 style="margin:0">The game's empires</h2>
+                    <h2>The game's empires</h2>
                     <span class="sem-hint">@Prescripted.Count built in.</span>
 
                     <div class="sem-empires sem-empires-preset">

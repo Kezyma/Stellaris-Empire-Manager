@@ -1,4 +1,4 @@
-﻿using Sem.Clausewitz;
+using Sem.Clausewitz;
 using Sem.GameData;
 
 namespace Sem.Extraction;

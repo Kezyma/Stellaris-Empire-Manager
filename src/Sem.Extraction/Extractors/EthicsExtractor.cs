@@ -1,4 +1,4 @@
-﻿using Sem.GameData;
+using Sem.GameData;
 
 namespace Sem.Extraction.Extractors;
 

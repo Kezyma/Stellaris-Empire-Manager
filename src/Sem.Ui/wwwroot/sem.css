@@ -1,8 +1,13 @@
-﻿/*
+/*
    Stellaris Empire Manager.
 
    A dark palette in the game's register, without imitating its interface: this is a tool for
    working on empires, not a reproduction of the game's own designer.
+
+   Everything that can live here does. The fourteen style attributes left in the components are all
+   geometry computed at render — a flag's cut and emblem placement, a portrait's layer offsets, a
+   room's banner, a budget bar's fill, an icon grid's track size — numbers that come from the game's
+   own files per empire and cannot be written down in advance. They are not leftovers to tidy away.
 */
 
 :root {
@@ -24,8 +29,48 @@
     --bad: #d95c5c;
     --warn: #d9a45c;
 
-    --radius: 6px;
-    --gap: 12px;
+    /*
+       Three radii, which is one per kind of thing rather than one per author. The badges had been
+       8px, 8px, 8px, 9px and 999px — five roundings for one shape, of which only the last was
+       actually a pill. --radius-pill makes them all one, and makes them right.
+    */
+    --radius-sm: 3px;      /* a swatch, a pip, anything under about twenty pixels */
+    --radius: 6px;         /* a card, a panel, a tile */
+    --radius-pill: 999px;  /* a badge or a chip, rounded to its own height */
+
+    /*
+       Spacing, named the way the type scale is so the two read alike.
+
+       The set is closed: a value that is not on it is either an optical adjustment below eight
+       pixels — the 1px that centres a chip's text against its dot, the 3px between two hundred and
+       sixteen colour swatches — or a control's own geometry, like the 28px of clearance the combo
+       box leaves for its arrow. Those stay literal, because they are answers to a specific shape
+       rather than steps in a rhythm, and rounding them costs density exactly where density is the
+       point.
+
+       Ten was the odd one out and is gone: nineteen declarations used it for the same job twelve
+       does — the gap between cards, the padding inside a panel — for no reason beyond having been
+       typed. The page gutter comes in from twenty to sixteen, which the wider container can afford.
+    */
+    --space-2xs: 2px;
+    --space-xs: 4px;
+    --space-sm: 6px;
+    --space-md: 8px;
+    --space-lg: 12px;
+    --space-xl: 16px;
+    --space-2xl: 24px;
+    --space-3xl: 40px;
+
+    /* The distance between one section and the next, and the most-used spacing in the sheet. */
+    --gap: var(--space-lg);
+
+    /*
+       Two more surfaces that are not steps in the elevation ladder. --bg-void is below the page
+       rather than on it: the empty space behind a portrait or a room, where the game shows nothing
+       at all. --shadow-popup lifts a menu off whatever it covers.
+    */
+    --bg-void: #05070c;
+    --shadow-popup: 0 6px 20px rgba(0, 0, 0, 0.45);
 
     /*
        Six steps, and every one an integer number of pixels at the default root. A ratio would be
@@ -138,7 +183,7 @@ code {
     display: flex;
     align-items: center;
     gap: var(--gap);
-    padding: 10px 20px;
+    padding: var(--space-lg) var(--space-xl);
     background: var(--bg-panel);
     border-bottom: 1px solid var(--border);
     position: sticky;
@@ -160,7 +205,7 @@ code {
 */
 .sem-main {
     flex: 1;
-    padding: 20px;
+    padding: var(--space-xl);
     max-width: 1800px;
     width: 100%;
     margin: 0 auto;
@@ -170,7 +215,7 @@ code {
     background: var(--bg-panel);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 16px;
+    padding: var(--space-xl);
     margin-bottom: var(--gap);
 }
 
@@ -181,6 +226,22 @@ code {
     flex-wrap: wrap;
 }
 
+/*
+    Two things a row is asked for often enough to be worth naming.
+
+    .top for a row whose items are different heights and should line up along their tops rather than
+    their middles — a portrait beside a column of fields. .nowrap for a pair that means nothing apart
+    and should overflow together rather than stack: the two halves of a homeworld's coordinates.
+*/
+.sem-row.top { align-items: flex-start; }
+.sem-row.nowrap { flex-wrap: nowrap; }
+
+/*
+    A wider gap where the row holds two labelled groups of controls rather than two controls. The
+    space between the groups has to beat the space inside them or they read as one long strip of
+    buttons — gender and leader class, side by side, are six icons that mean two different things.
+*/
+.sem-row.wide { gap: var(--space-2xl); }
 
 .sem-spacer { flex: 1; }
 
@@ -192,7 +253,7 @@ button, .sem-button {
     background: var(--bg-raised);
     border: 1px solid var(--border-strong);
     border-radius: var(--radius);
-    padding: 6px 14px;
+    padding: var(--space-sm) 14px;
     cursor: pointer;
     transition: background 0.12s, border-color 0.12s;
 }
@@ -248,31 +309,50 @@ input[type="text"], select, textarea {
     background: var(--bg);
     border: 1px solid var(--border-strong);
     border-radius: var(--radius);
-    padding: 6px 10px;
+    padding: var(--space-sm) var(--space-lg);
     width: 100%;
 }
 
+/*
+    A field lights its own border when focused, which is the convention and reads better on a box
+    that is already outlined than a second line drawn around the first.
+
+    The ring is dropped only for a pointer. Written as :not(:focus-visible) rather than as a plain
+    outline:none, because that suppressed it for the keyboard too — and these selectors outrank the
+    global rule, so a text field was the one place tabbing left no mark beyond a one-pixel hue.
+*/
 input[type="text"]:focus, select:focus, textarea:focus {
-    outline: none;
     border-color: var(--accent);
+}
+
+input[type="text"]:focus:not(:focus-visible),
+select:focus:not(:focus-visible),
+textarea:focus:not(:focus-visible) {
+    outline: none;
 }
 
 label {
     display: block;
     color: var(--text-dim);
     font-size: var(--text-sm);
-    margin-bottom: 4px;
+    margin-bottom: var(--space-xs);
 }
 
 .sem-field {
     margin-bottom: var(--gap);
 }
 
+/* The last field in a row, or one whose spacing its container is already providing. */
+.sem-field.flush { margin-bottom: 0; }
+
+/* A field set off from whatever it follows, where it is not one of a stack that already spaces. */
+.sem-field.spaced { margin-top: var(--gap); }
+
 /* ---------------------------------------------------------------- tabs */
 
 
 .sem-tab {
-    padding: 8px 16px;
+    padding: var(--space-md) var(--space-xl);
     background: none;
     border: none;
     border-bottom: 2px solid transparent;
@@ -297,14 +377,14 @@ label {
 .sem-options {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-    gap: 8px;
+    gap: var(--space-md);
 }
 
 .sem-option {
     display: flex;
-    gap: 10px;
+    gap: var(--space-lg);
     align-items: flex-start;
-    padding: 8px 10px;
+    padding: var(--space-md) var(--space-lg);
     background: var(--bg-raised);
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -355,7 +435,7 @@ label {
 .sem-option .name {
     font-weight: 600;
     display: flex;
-    gap: 6px;
+    gap: var(--space-sm);
     align-items: baseline;
 }
 
@@ -393,7 +473,7 @@ label {
 
 .sem-icon-placeholder {
     display: inline-block;
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
     background: var(--bg-hover);
     border: 1px solid var(--border);
     flex-shrink: 0;
@@ -409,11 +489,18 @@ label {
 .sem-thumbs {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 8px;
+    gap: var(--space-md);
 }
 
+/*
+    Emblems are square and read at a glance, so they pack far tighter than the wide pictures the
+    default track is sized for — there are hundreds of them and a 200px column would put a dozen on
+    a screen where a 52px one puts a hundred.
+*/
+.sem-thumbs.emblems { grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); }
+
 .sem-thumb-option {
-    padding: 4px;
+    padding: var(--space-xs);
     background: var(--bg-raised);
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -422,7 +509,7 @@ label {
 
 .sem-thumb-option .caption {
     display: block;
-    padding: 4px 2px 0;
+    padding: var(--space-xs) var(--space-2xs) 0;
     color: var(--text-dim);
     font-size: var(--text-sm);
     text-align: center;
@@ -447,13 +534,13 @@ label {
 .sem-class-list {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: var(--space-2xs);
     max-height: 460px;
     overflow-y: auto;
 }
 
 .sem-class-list button {
-    padding: 6px 10px;
+    padding: var(--space-sm) var(--space-lg);
     text-align: left;
     background: none;
     border: 1px solid transparent;
@@ -484,7 +571,7 @@ label {
 .sem-portraits {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
-    gap: 8px;
+    gap: var(--space-md);
     max-height: 460px;
     overflow-y: auto;
 }
@@ -493,8 +580,8 @@ label {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
-    padding: 6px 4px;
+    gap: var(--space-xs);
+    padding: var(--space-sm) var(--space-xs);
     background: var(--bg-raised);
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -516,7 +603,7 @@ label {
     width: 100%;
     aspect-ratio: 3 / 4;
     object-fit: cover;
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
     background: var(--bg);
 }
 
@@ -527,7 +614,7 @@ label {
 .sem-portrait .silhouette {
     width: 100%;
     aspect-ratio: 3 / 4;
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
     background:
         radial-gradient(circle at 50% 34%, var(--border-strong) 0 18%, transparent 19%),
         radial-gradient(ellipse at 50% 92%, var(--border-strong) 0 34%, transparent 35%),
@@ -631,7 +718,7 @@ label {
     height: 22px;
     background: var(--bg);
     border: 1px solid var(--border);
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
     overflow: hidden;
 }
 
@@ -645,7 +732,7 @@ label {
 .sem-budget .reading {
     position: relative;
     display: block;
-    padding: 0 8px;
+    padding: 0 var(--space-md);
     line-height: 20px;
     font-size: var(--text-sm);
     color: var(--text);
@@ -659,7 +746,7 @@ label {
 .sem-budget.full .fill { background: var(--gold); }
 
 /* Gold is bright enough that the words need the dark side of the palette to stay readable. */
-.sem-budget.full .reading { color: #0d1117; }
+.sem-budget.full .reading { color: var(--bg); }
 
 /* ---------------------------------------------------------------- status */
 
@@ -674,6 +761,17 @@ label {
     font-weight: 600;
 }
 
+/*
+    On a narrow screen the name takes its own line rather than being squeezed onto the button row.
+    flex:1 with a zero basis makes it the first thing to give up space, so at 411px the bar read
+    "← Empires  Ne…  2 problem(s)  Copy link" — the one label saying what is being edited, crushed
+    to two letters by buttons that are the same width whatever the screen is. The row already wraps;
+    this only decides what wraps first.
+*/
+@media (max-width: 700px) {
+    .sem-title { flex-basis: 100%; }
+}
+
 .sem-status {
     display: inline-flex;
     align-items: center;
@@ -685,12 +783,19 @@ label {
 .sem-status.bad { color: var(--bad); }
 .sem-status.warn { color: var(--warn); }
 
+/*
+    As a paragraph it is a message rather than a label beside something, so it is set off above and
+    sits flush below. Left to the browser it took a margin measured from its own font size, which is
+    how a status line ended up 14px from what it was reporting on where everything else is 12.
+*/
+p.sem-status { margin: var(--gap) 0 0; }
+
 .sem-problem {
-    padding: 8px 12px;
+    padding: var(--space-md) var(--space-lg);
     border-left: 3px solid var(--bad);
     background: var(--bg-raised);
     border-radius: 0 var(--radius) var(--radius) 0;
-    margin-bottom: 6px;
+    margin-bottom: var(--space-sm);
 }
 
 .sem-problem.warning { border-left-color: var(--warn); }
@@ -703,24 +808,50 @@ label {
 .sem-problem .why {
     color: var(--text-dim);
     font-size: var(--text-sm);
-    margin-top: 2px;
+    margin-top: var(--space-2xs);
 }
 
 .sem-empty {
-    padding: 40px 20px;
+    padding: var(--space-3xl) var(--space-xl);
     text-align: center;
     color: var(--text-dim);
 }
 
+/*
+    A hint carries no spacing of its own. It had none declared, so it inherited the browser's 1em
+    top and bottom — a margin measured from the font size rather than from the spacing scale, which
+    is why three call sites had inline styles arguing with it and why the seven hints on the
+    designer sat at three different distances from their neighbours.
+
+    A hint that follows something is set off from it; one that opens a block is not. That is what
+    those three inline styles were each saying separately.
+*/
 .sem-hint {
+    margin: 0;
     color: var(--text-dim);
     font-size: var(--text-sm);
 }
 
+* + .sem-hint { margin-top: var(--gap); }
+
+/*
+    A heading with a line under it saying how many, or from where. The heading gives up its own
+    bottom margin because the line below already brings a top one, and two margins between two lines
+    of the same thing is one too many.
+*/
+h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hint) { margin-bottom: 0; }
+
+/* An empty state standing in for a list, which wants the padding the list would have had. */
+.sem-hint.padded { padding: var(--space-sm); }
+
+/* In a row the flex gap already spaces it, and a margin would be added on top of that. */
+.sem-row > .sem-hint,
+.sem-dlc-bar > .sem-hint { margin-top: 0; }
+
 .sem-desc {
     color: var(--text-dim);
     font-size: var(--text-sm);
-    margin-top: 6px;
+    margin-top: var(--space-sm);
 }
 
 /* ---------------------------------------------------------------- empire list */
@@ -732,7 +863,7 @@ label {
 .sem-empires {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 10px;
+    gap: var(--space-lg);
 }
 
 /* The game's own empires, in three columns and staying three. The shared rule above fits as many
@@ -752,18 +883,18 @@ label {
 
 /* A section rather than a panel: a heading, a line of hint, and the list. */
 .sem-prescripted {
-    margin-top: 24px;
+    margin-top: var(--space-2xl);
 }
 
 .sem-prescripted > .sem-empires {
-    margin-top: 12px;
+    margin-top: var(--space-lg);
 }
 
 .sem-empire {
     display: flex;
-    gap: 10px;
+    gap: var(--space-lg);
     align-items: center;
-    padding: 8px 10px;
+    padding: var(--space-md) var(--space-lg);
     background: var(--bg-panel);
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -807,7 +938,7 @@ label {
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: var(--space-2xs);
 }
 
 .sem-empire .name {
@@ -829,7 +960,7 @@ label {
 
 
 .sem-loading {
-    padding: 60px 20px;
+    padding: var(--space-3xl) var(--space-xl);
     text-align: center;
     color: var(--text-dim);
 }
@@ -858,7 +989,7 @@ label {
 .sem-icon-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, var(--sem-icon-size, 40px));
-    gap: 6px;
+    gap: var(--space-sm);
 }
 
 .sem-icon-option {
@@ -867,7 +998,7 @@ label {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 4px;
+    padding: var(--space-xs);
     background: var(--bg-raised);
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -914,7 +1045,7 @@ label {
 .sem-grid-column {
     display: flex;
     align-items: flex-start;
-    gap: 6px;
+    gap: var(--space-sm);
     min-width: 0;
 }
 
@@ -959,7 +1090,7 @@ label {
     min-height: 180px;
     max-height: 300px;
     overflow: hidden;
-    padding: 10px 12px;
+    padding: var(--space-lg) var(--space-lg);
     background: var(--bg);
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -994,7 +1125,7 @@ label {
 }
 
 .sem-detail h4 {
-    margin: 0 0 6px;
+    margin: 0 0 var(--space-sm);
     font-size: var(--text-lg);
 }
 
@@ -1006,8 +1137,8 @@ label {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 4px;
-    padding: 6px 16px;
+    gap: var(--space-xs);
+    padding: var(--space-sm) var(--space-xl);
     background: var(--bg-raised);
     border-bottom: 1px solid var(--border);
 }
@@ -1061,13 +1192,13 @@ label {
     grid-auto-flow: column;
     grid-auto-columns: var(--sem-icon-size, 40px);
     justify-content: start;
-    gap: 6px;
+    gap: var(--space-sm);
     align-items: start;
 }
 
 .sem-ethics-grid .column {
     display: grid;
-    gap: 6px;
+    gap: var(--space-sm);
 }
 
 /*
@@ -1113,7 +1244,7 @@ label {
     aspect-ratio: 952 / 340;
     overflow: hidden;
     border-radius: var(--radius);
-    background: #05070c;
+    background: var(--bg-void);
 }
 
 .sem-room > .room {
@@ -1161,8 +1292,8 @@ label {
     than offers. The rule above it is the point: these are not more of the same.
 */
 .sem-subhead {
-    margin: 16px 0 2px;
-    padding-top: 12px;
+    margin: var(--space-xl) 0 var(--space-2xs);
+    padding-top: var(--space-lg);
     border-top: 1px solid var(--border);
     font-size: var(--text-sm);
     color: var(--text-dim);
@@ -1178,18 +1309,25 @@ label {
     flex-shrink: 0;
     object-fit: cover;
     border-radius: var(--radius);
-    margin-bottom: 8px;
+    margin-bottom: var(--space-md);
 }
 
+/*
+    Capped at a readable measure rather than at the width of its box. Most of these panels are about
+    400px and were never near it, but the ethics row gives its detail whatever the narrow grid of
+    convictions does not use — 779px on a wide screen, which is something like a hundred and ten
+    characters a line, far past the point where the eye starts losing its place on the way back.
+*/
 .sem-detail-lore {
-    margin-bottom: 8px;
+    max-width: 68ch;
+    margin-bottom: var(--space-md);
     color: var(--text-dim);
     font-size: var(--text-sm);
 }
 
 .sem-blocked {
-    margin: 8px 0 0;
-    padding-left: 16px;
+    margin: var(--space-md) 0 0;
+    padding-left: var(--space-xl);
     color: var(--bad);
     font-size: var(--text-sm);
 }
@@ -1205,12 +1343,12 @@ label {
 }
 
 .sem-effects-text {
-    margin-bottom: 6px;
+    margin-bottom: var(--space-sm);
     color: var(--text-dim);
 }
 
 .sem-modifiers {
-    margin: 0 0 6px;
+    margin: 0 0 var(--space-sm);
     padding: 0;
     list-style: none;
 }
@@ -1218,7 +1356,7 @@ label {
 .sem-modifiers li {
     display: flex;
     align-items: baseline;
-    gap: 8px;
+    gap: var(--space-md);
     padding: 1px 0;
 }
 
@@ -1238,8 +1376,8 @@ label {
 
 .sem-modifiers .sources {
     min-width: 16px;
-    padding: 0 4px;
-    border-radius: 8px;
+    padding: 0 var(--space-xs);
+    border-radius: var(--radius-pill);
     background: var(--bg-raised);
     color: var(--text-faint);
     font-size: var(--text-xs);
@@ -1249,8 +1387,8 @@ label {
 /* A bonus that only applies in some empires is set apart rather than mixed in with the rest, so it
    cannot be mistaken for something the empire starts with. */
 .sem-effects-when {
-    margin: 6px 0;
-    padding-left: 8px;
+    margin: var(--space-sm) 0;
+    padding-left: var(--space-md);
     border-left: 2px solid var(--border);
 }
 
@@ -1262,7 +1400,7 @@ label {
 
 /* Warned rather than dimmed: this heading introduces what an option costs you. */
 .sem-effects-penalty .heading {
-    margin-top: 6px;
+    margin-top: var(--space-sm);
     color: var(--warn);
 }
 
@@ -1275,7 +1413,7 @@ label {
 }
 
 .sem-combined h4 {
-    margin: 0 0 8px;
+    margin: 0 0 var(--space-md);
 }
 
 /* ---------------------------------------------------------------- designer
@@ -1306,7 +1444,7 @@ label {
 .sem-sections {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: var(--space-md);
     min-width: 0;
 }
 
@@ -1330,9 +1468,9 @@ label {
 .sem-section > .head {
     display: flex;
     align-items: baseline;
-    gap: 8px;
+    gap: var(--space-md);
     width: 100%;
-    padding: 8px 12px;
+    padding: var(--space-md) var(--space-lg);
     background: none;
     border: none;
     color: var(--text);
@@ -1362,17 +1500,17 @@ label {
 }
 
 .sem-section > .head .count {
-    padding: 0 6px;
-    border-radius: 8px;
+    padding: 0 var(--space-sm);
+    border-radius: var(--radius-pill);
     background: var(--bad);
     color: var(--bg);
     font-size: var(--text-xs);
 }
 
 .sem-section > .body {
-    padding: 0 12px 12px;
+    padding: 0 var(--space-lg) var(--space-lg);
     border-top: 1px solid var(--border);
-    padding-top: 10px;
+    padding-top: var(--space-lg);
 }
 
 /* The sections supply their own frame, so the panels inside them must not draw a second one. */
@@ -1396,7 +1534,7 @@ label {
     display: grid;
     grid-template-columns: repeat(auto-fill, 28px);
     gap: 3px;
-    margin-top: 4px;
+    margin-top: var(--space-xs);
 }
 
 .sem-swatch {
@@ -1404,7 +1542,7 @@ label {
     height: 28px;
     padding: 0;
     border: 1px solid var(--border);
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
 }
 
@@ -1436,9 +1574,9 @@ label {
 .sem-preview > .head {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--space-lg);
     width: 100%;
-    padding: 10px 12px;
+    padding: var(--space-lg) var(--space-lg);
     background: none;
     border: none;
     border-radius: 0;
@@ -1469,8 +1607,8 @@ label {
 }
 
 .sem-preview > .head .count {
-    padding: 0 6px;
-    border-radius: 8px;
+    padding: 0 var(--space-sm);
+    border-radius: var(--radius-pill);
     background: var(--bad);
     color: var(--bg);
     font-size: var(--text-xs);
@@ -1480,14 +1618,14 @@ label {
 .sem-preview > .head .chevron { display: none; }
 
 .sem-preview > .body {
-    padding: 0 12px 12px;
+    padding: 0 var(--space-lg) var(--space-lg);
 }
 
 .sem-summary {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
-    gap: 2px 10px;
-    margin: 0 0 12px;
+    gap: var(--space-2xs) var(--space-lg);
+    margin: 0 0 var(--space-lg);
     font-size: var(--text-sm);
 }
 
@@ -1516,16 +1654,16 @@ label {
 .sem-subsections {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: var(--space-xl);
 }
 
 .sem-subsections > section + section {
-    padding-top: 16px;
+    padding-top: var(--space-xl);
     border-top: 1px solid var(--border);
 }
 
 .sem-subsections > section > h4 {
-    margin: 0 0 10px;
+    margin: 0 0 var(--space-lg);
 }
 
 /* The names a list holds, shown rather than described. Read-only, and sized to hint at how many
@@ -1533,7 +1671,7 @@ label {
 .sem-name-set label {
     display: flex;
     align-items: baseline;
-    gap: 6px;
+    gap: var(--space-sm);
 }
 
 .sem-name-set label .count {
@@ -1567,7 +1705,7 @@ label {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: var(--gap);
-    margin-top: 4px;
+    margin-top: var(--space-xs);
 }
 
 /* What is chosen, and beneath it what the pointer is over: reading about a trait and seeing what
@@ -1617,9 +1755,9 @@ label {
 .sem-trait-row {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-md);
     width: 100%;
-    padding: 3px 8px;
+    padding: 3px var(--space-md);
     background: none;
     border: none;
     border-radius: 0;
@@ -1678,14 +1816,14 @@ label {
 /* Recessed inside the card holding it, by the rule written above .sem-detail. */
 .sem-trait-detail {
     margin-top: var(--gap);
-    padding: 10px 12px;
+    padding: var(--space-lg) var(--space-lg);
     background: var(--bg);
     border: 1px solid var(--border);
     border-radius: var(--radius);
 }
 
 .sem-trait-detail h4 {
-    margin: 0 0 6px;
+    margin: 0 0 var(--space-sm);
     font-size: var(--text-lg);
 }
 
@@ -1728,21 +1866,21 @@ label {
     max-height: 260px;
     overflow-y: auto;
     margin: 0;
-    padding: 2px;
+    padding: var(--space-2xs);
     list-style: none;
     background: var(--bg-panel);
     border: 1px solid var(--border-strong);
     border-radius: var(--radius);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+    box-shadow: var(--shadow-popup);
 }
 
 .sem-combo .options button {
     display: block;
     width: 100%;
-    padding: 4px 8px;
+    padding: var(--space-xs) var(--space-md);
     background: none;
     border: none;
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
     color: var(--text);
     font: inherit;
     text-align: left;
@@ -1785,7 +1923,7 @@ label {
 */
 .sem-appearance {
     display: flex;
-    gap: 24px;
+    gap: var(--space-2xl);
     align-items: flex-start;
 }
 
@@ -1855,13 +1993,13 @@ label {
 .sem-stepper > .control {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-md);
 }
 
 .sem-stepper button {
     flex: none;
     width: 28px;
-    padding: 4px 0;
+    padding: var(--space-xs) 0;
 
     /* The glyphs are a single chevron each and want to be bigger than the label beside them. */
     font-size: var(--text-lg);
@@ -1874,8 +2012,8 @@ label {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    gap: 8px;
-    padding: 0 4px;
+    gap: var(--space-md);
+    padding: 0 var(--space-xs);
 }
 
 .sem-stepper .caption {
@@ -1895,7 +2033,7 @@ label {
 /* The paragraph the game writes about an empire, and the one a player writes about their species. */
 .sem-lore {
     margin: var(--gap) 0 0;
-    padding: 0 2px;
+    padding: 0 var(--space-2xs);
     font-size: var(--text-sm);
     line-height: 1.5;
     color: var(--text-dim);
@@ -1930,7 +2068,7 @@ label {
 
 .sem-bio > textarea {
     width: 100%;
-    margin-top: 6px;
+    margin-top: var(--space-sm);
     resize: vertical;
 }
 
@@ -1980,7 +2118,7 @@ label {
     color: var(--text);
 }
 
-.sem-spawn-row .sem-hint { margin: 2px 0 0; }
+.sem-spawn-row .sem-hint { margin: var(--space-2xs) 0 0; }
 
 
 /*
@@ -2023,7 +2161,7 @@ label {
 
 .sem-genders {
     display: flex;
-    gap: 4px;
+    gap: var(--space-xs);
 }
 
 .sem-gender {
@@ -2032,7 +2170,7 @@ label {
     justify-content: center;
     width: 34px;
     height: 34px;
-    padding: 4px;
+    padding: var(--space-xs);
     background: var(--bg-raised);
     border: 1px solid var(--border);
     font-size: var(--text-xs);
@@ -2048,8 +2186,8 @@ label {
 
 .sem-preview-species {
     display: flex;
-    gap: 10px;
-    margin-bottom: 12px;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-lg);
 }
 
 .sem-preview-species .portrait {
@@ -2084,8 +2222,8 @@ label {
     display: flex;
     align-items: center;
     gap: 3px;
-    padding: 1px 5px 1px 2px;
-    border-radius: 9px;
+    padding: 1px 5px 1px var(--space-2xs);
+    border-radius: var(--radius-pill);
     background: var(--bg-raised);
     color: var(--text-dim);
     font-size: var(--text-xs);
@@ -2142,7 +2280,7 @@ label {
 .sem-showcase {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: var(--space-lg);
     padding: var(--gap);
     background: var(--bg-panel);
     border: 1px solid var(--border);
@@ -2180,8 +2318,8 @@ label {
 */
 .sem-showcase > .species {
     display: flex;
-    gap: 10px;
-    padding: 8px;
+    gap: var(--space-lg);
+    padding: var(--space-md);
     background: var(--bg);
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -2195,13 +2333,13 @@ label {
     flex-shrink: 0;
     border: 1px solid var(--border-strong);
     border-radius: var(--radius);
-    background: #05070c;
+    background: var(--bg-void);
 }
 
 .sem-showcase > .species .about {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: var(--space-2xs);
     min-width: 0;
 }
 
@@ -2210,13 +2348,13 @@ label {
 .sem-showcase > .species .kind {
     color: var(--text-dim);
     font-size: var(--text-sm);
-    margin-bottom: 4px;
+    margin-bottom: var(--space-xs);
 }
 
 .sem-showcase > .species .line {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: var(--space-sm);
     font-size: var(--text-sm);
 }
 
@@ -2228,7 +2366,7 @@ label {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 6px;
+    gap: var(--space-sm);
 }
 
 /* Fainter, because these headings repeat down a dense column of chips. */
@@ -2241,10 +2379,10 @@ label {
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    padding: 2px 8px 2px 3px;
+    padding: var(--space-2xs) var(--space-md) var(--space-2xs) 3px;
     background: var(--bg-raised);
     border: 1px solid var(--border);
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     font-size: var(--text-sm);
 }
 
@@ -2260,11 +2398,11 @@ label {
     against a wrapper only one of them has.
 */
 .sem-showcase > .sem-combined {
-    padding-top: 10px;
+    padding-top: var(--space-lg);
     border-top: 1px solid var(--border);
 }
 
-.sem-showcase > .sem-combined h4 { margin: 0 0 6px; }
+.sem-showcase > .sem-combined h4 { margin: 0 0 var(--space-sm); }
 
 /*
     The effects can run long, so they scroll within the panel rather than stretching it. Given more
@@ -2318,4 +2456,37 @@ label {
 .sem-patterns > .sem-thumb-option {
     content-visibility: auto;
     contain-intrinsic-size: 70px;
+}
+
+/* ------------------------------------------------------- a finger, not a pointer */
+
+/*
+    Desktop density is the point of this application, so nothing here changes for a mouse. What
+    changes is what a finger can reliably hit.
+
+    36px for a swatch rather than the 44 the accessibility guidance asks for, and the reason is
+    arithmetic rather than preference: there are two hundred and sixteen of them. At 44 plus a gap
+    the palette runs past the bottom of a phone and choosing a colour becomes scrolling for one. 36
+    with a 4px gap is the practical floor for a grid that dense, and the honest number to claim.
+
+    The trait rows and the content chips have no such constraint — there are a couple of dozen of
+    each — so they go to a comfortable size outright.
+*/
+@media (pointer: coarse) {
+    .sem-swatches {
+        grid-template-columns: repeat(auto-fill, 36px);
+        gap: var(--space-xs);
+    }
+
+    .sem-swatch {
+        width: 36px;
+        height: 36px;
+    }
+
+    .sem-trait-row { padding: var(--space-md); }
+
+    .sem-dlc {
+        width: 40px;
+        height: 40px;
+    }
 }

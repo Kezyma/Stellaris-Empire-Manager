@@ -1,4 +1,4 @@
-﻿using Sem.Extraction;
+using Sem.Extraction;
 using Sem.GameData;
 using Sem.Io;
 

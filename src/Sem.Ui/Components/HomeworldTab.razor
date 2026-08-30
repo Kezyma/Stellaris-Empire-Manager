@@ -1,4 +1,4 @@
-﻿@*
+@*
     The homeworld and the system it sits in.
 
     A world says nothing about itself in the game's files — no description, no effects — so what is
@@ -18,7 +18,7 @@
         <div class="sem-name-row">
             <div class="sem-field">
                 <label for="planet-name">@Session.Localizer.Label("HOMEWORLD_NAME", "Homeworld Name")</label>
-                <div class="sem-row" style="flex-wrap:nowrap">
+                <div class="sem-row nowrap">
                     <ComboBox Id="planet-name" Value="@Session.Localizer.Name(Design.PlanetName)"
                               Options="@PlanetNames" OnChange="ChoosePlanetName" />
                     <RandomiseButton Title="A world from the empire's name list" OnClick="RandomisePlanetName" />
@@ -27,7 +27,7 @@
 
             <div class="sem-field">
                 <label for="system-name">@Session.Localizer.Text("SYSTEM_NAME", "Star name")</label>
-                <div class="sem-row" style="flex-wrap:nowrap">
+                <div class="sem-row nowrap">
                     <ComboBox Id="system-name" Value="@Session.Localizer.Name(Design.SystemName)"
                               Options="@SystemNames" OnChange="ChooseSystemName" />
                     <RandomiseButton Title="A star from the species the game suggests" OnClick="RandomiseSystemName" />
