@@ -28,6 +28,25 @@ public sealed class CwNode
     /// <summary>The key token, or null when this is a bare element.</summary>
     public CwToken? KeyToken { get; private set; }
 
+    /// <summary>
+    /// Forgets the whitespace that used to sit in front of this entry, so that a writer places it
+    /// where it is now rather than where it came from.
+    /// </summary>
+    /// <remarks>
+    /// A token read from a file remembers its own leading whitespace, which is what lets an
+    /// untouched file be written back byte for byte. A copied entry remembers it too, and then it
+    /// is wrong: an entry cloned from the top of a file remembers having nothing in front of it,
+    /// and appending it to another file ran it onto the end of the previous line — which is how
+    /// every empire the designer created came to be written as <c>}"New Empire"=</c>.
+    /// </remarks>
+    public void ForgetPlacement()
+    {
+        if (KeyToken is { } key)
+        {
+            KeyToken = key with { LeadingTrivia = null };
+        }
+    }
+
     /// <summary>The operator token, or null when this is a bare element.</summary>
     public CwToken? OperatorToken { get; }
 

@@ -54,10 +54,20 @@ public sealed class CwDocument
         return new CwDocument(nodes, lexer.TrailingTrivia, encoding ?? CwEncodingInfo.Default);
     }
 
-    /// <summary>Appends a top-level entry.</summary>
+    /// <summary>
+    /// Appends a top-level entry.
+    /// </summary>
+    /// <remarks>
+    /// The entry is made to forget where it used to sit. Parsing does not come through here — a
+    /// document read from a file keeps every token's own whitespace, which is what makes an
+    /// untouched file write back byte for byte — so this only affects entries being placed anew,
+    /// and those should be laid out by the writer rather than by wherever they were copied from.
+    /// </remarks>
     public void Add(CwNode node)
     {
         ArgumentNullException.ThrowIfNull(node);
+
+        node.ForgetPlacement();
         _nodes.Add(node);
     }
 
@@ -65,6 +75,8 @@ public sealed class CwDocument
     public void Insert(int index, CwNode node)
     {
         ArgumentNullException.ThrowIfNull(node);
+
+        node.ForgetPlacement();
         _nodes.Insert(index, node);
     }
 
