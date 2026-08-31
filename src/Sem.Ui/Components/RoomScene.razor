@@ -30,8 +30,14 @@
         <img class="room" src="@Session.Data.AssetUrl(room)" alt="" loading="lazy">
     }
 
+    @if (Portrait is { Length: > 0 } portrait)
+    {
+        <img class="figure" style="@FigureStyle" src="@Session.Data.AssetUrl(portrait)"
+             alt="@Alt" loading="lazy">
+    }
+
     @*
-        The flag on the wall, painted after the room because the room is the wall.
+        The flag on the wall, painted last so that it stays visible where it and the figure meet.
 
         The game hangs one in more than one place and not the same way twice, so this is a choice
         between two of its own answers. Taken from interface/diplomacy_view.gui, the empire's
@@ -43,18 +49,17 @@
         smaller flag at (370, 50) of a 468 by 180 window, upper right, over the figure's shoulder.
         Nearer to what this scene is a picture of, and it looks worse — the flag ends up floating in
         the view through the window rather than hanging on anything. The wall was chosen by eye.
+
+        Clear of the figure at the game's own numbers, but not at every size this is drawn: a broad
+        species at a small scale reaches it, and painted first the flag went behind a shoulder. It is
+        the empire's own mark and the one thing in the scene that identifies it, so where the two
+        overlap the flag wins.
     *@
     @if (Flag is not null)
     {
         <div class="banner" style="@BannerStyle">
             <FlagPreview Flag="@Flag" />
         </div>
-    }
-
-    @if (Portrait is { Length: > 0 } portrait)
-    {
-        <img class="figure" style="@FigureStyle" src="@Session.Data.AssetUrl(portrait)"
-             alt="@Alt" loading="lazy">
     }
 </div>
 

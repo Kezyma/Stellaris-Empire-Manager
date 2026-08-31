@@ -94,8 +94,8 @@
     --track-h: 18px;        /* the bar a budget is drawn in */
     --face-w: 40px;         /* a species' portrait in the empire list */
     --face-h: 50px;
-    --face-lg-w: 72px;      /* and in the panel that shows one empire */
-    --face-lg-h: 86px;
+    --face-lg-w: 80px;      /* and in the panel that shows one empire, where it stretches to the text */
+    --face-lg-h: 96px;
 
     /* The distance between one section and the next, and the most-used spacing in the sheet. */
     --gap: var(--space-lg);
@@ -1826,9 +1826,29 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 
 .sem-designer {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
     gap: var(--gap);
     align-items: start;
+}
+
+/*
+    The preview takes more of the width as there is more of it to take.
+
+    The choices on the left stopped needing the room once everything on them came in a step: an
+    option grid wraps to whatever it is given and reads the same at 900 pixels as at 1100. The panel
+    on the right does not — it holds the scene, the chips and the whole modifier list, all of which
+    are better bigger, and it was the pane doing the scrolling. So the extra width goes there rather
+    than into a column of half-empty option rows.
+
+    Stated as a fixed width above 1500 rather than a range, because past that point the left pane has
+    long since stopped improving and the only question is how much the preview gets.
+*/
+@media (min-width: 1500px) {
+    .sem-designer { grid-template-columns: minmax(0, 1fr) 440px; }
+}
+
+@media (min-width: 1800px) {
+    .sem-designer { grid-template-columns: minmax(0, 1fr) 520px; }
 }
 
 /* One column, and the preview leads. Grid children follow source order, so without this the panel
@@ -2879,9 +2899,20 @@ button.icon .sem-action-icon { display: block; }
     border-radius: var(--radius);
 }
 
+/*
+    As tall as what it stands beside, rather than a number of its own. The species name, its kind
+    and the two lines of government and origin come to whatever they come to — four lines here, and
+    fewer for an empire with no origin worth naming — so a stated height left a band of empty panel
+    under the portrait whenever the text ran longer, which after the compaction it always did.
+
+    The minimum is what a portrait needs to be recognised at all, for the case where the text is
+    shorter than the picture rather than longer.
+*/
 .sem-showcase .species .face {
+    align-self: stretch;
     width: var(--face-lg-w);
-    height: var(--face-lg-h);
+    height: auto;
+    min-height: var(--face-lg-h);
     object-fit: cover;
     object-position: top center;
     flex-shrink: 0;
@@ -3080,11 +3111,16 @@ button.icon .sem-action-icon { display: block; }
 /* ---------------------------------------------------------------- appearance */
 
 /*
-    The scene at the top of the appearance tab, where every choice on it lands. Capped at the room's
-    own 952 pixels so it is never drawn larger than the artwork behind it.
+    The scene at the top of the appearance tab, where every choice on it lands.
+
+    Two thirds of the room's own 952 pixels rather than all of it. At full size the picture pushed
+    the list of rooms it is a preview of past the bottom of the screen, so choosing one meant
+    scrolling away from the thing that was changing — and the room, the city and the world are all
+    recognisable well before the artwork's own width. Still capped, so it is never drawn larger than
+    the picture behind it.
 */
 .sem-scene {
-    max-width: 952px;
+    max-width: 640px;
     margin-bottom: var(--gap);
 }
 
@@ -3268,4 +3304,72 @@ button.icon .sem-action-icon { display: block; }
     .sem-showcase-problems > summary { padding: 12px 10px; }
 
     .sem-dlc-summary { padding: 12px 10px; }
+}
+
+/* ---------------------------------------------------------------- a question
+
+   A question that stops everything until it is answered: deleting an empire, throwing away an
+   evening's edits, walking away from unsaved ones.
+
+   Fixed rather than absolute, so it covers the viewport however far down the page the scroll has
+   got — an overlay measured from the document would sit at the top of a page the reader is halfway
+   down. The sheet is capped at 30rem because these are one sentence and a row of buttons, and a
+   question that stretches to a 1800px panel reads as an announcement rather than a question.
+
+   These rules sat between two blocks belonging to the game-layout page and went out with it, which
+   left every confirmation rendering inline near the top of the page: no overlay, nothing stopped,
+   and the buttons somewhere above whatever the reader was looking at. They are here now, under
+   their own heading, because a modal is not a page's furniture — it belongs to the application.
+*/
+.sem-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    padding: var(--space-xl);
+    background: rgb(0 0 0 / 0.6);
+}
+
+.sem-modal > .sheet {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    padding: var(--space-2xl);
+    width: min(30rem, 100%);
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+}
+
+.sem-modal h2 {
+    margin: 0;
+    font-size: var(--text-lg);
+}
+
+.sem-modal p {
+    margin: 0;
+    color: var(--text-dim);
+}
+
+/*
+   The answers run to the right and in increasing order of consequence, so the destructive one is
+   never where the harmless one was a moment ago. They wrap to full width on a narrow screen rather
+   than being squeezed to three unreadable words each.
+*/
+.sem-modal .choices {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--space-md);
+}
+
+.sem-modal .choices > button {
+    flex: 0 1 auto;
+}
+
+@media (max-width: 420px) {
+    .sem-modal .choices > button {
+        flex: 1 1 100%;
+    }
 }
