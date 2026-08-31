@@ -9,9 +9,56 @@
 @using Sem.Rules
 
 <div class="sem-combined">
-    <h4>@Session.Localizer.Label("SUMMARY_EMPIRE_MODIFIERS", "Empire Modifiers")</h4>
+    <div class="heading">
+        <h4>@Session.Localizer.Label("SUMMARY_EMPIRE_MODIFIERS", "Empire Modifiers")</h4>
 
-    @if (Combined.Count == 0)
+        @*
+            Only where there is something to compare with: an empire nobody is editing, or one
+            created and never saved, was never anything other than what it is.
+        *@
+        @if (Baseline is not null)
+        {
+            <button type="button" class="sem-tab compare" aria-pressed="@(_changes ? "true" : "false")"
+                    title="@(_changes ? "Show what the empire comes to" : "Show what your edits changed")"
+                    @onclick="() => _changes = !_changes">
+                @(_changes ? "Totals" : "Changes")
+            </button>
+        }
+    </div>
+
+    @if (_changes && Baseline is not null)
+    {
+        @if (Changes.Count == 0)
+        {
+            <p class="sem-hint">Nothing has changed since you saved.</p>
+        }
+        else
+        {
+            @*
+                Both numbers, not only the difference. "-10%" says how far something moved and not
+                what it moved from, and the whole point of the view is comparing the two.
+            *@
+            <ul class="sem-modifiers changes">
+                @foreach (var change in Changes)
+                {
+                    var was = Session.Modifiers.Format(change.Key, change.Before);
+                    var now = Session.Modifiers.Format(change.Key, change.After);
+                    var delta = Session.Modifiers.Format(change.Key, change.After - change.Before);
+
+                    <li>
+                        <span class="label">@((MarkupString)Session.Modifiers.LabelHtml(change.Key))</span>
+
+                        @* A plain hyphen for "it was not there", since em-dashes are not used in this interface. *@
+                        <span class="was">@(change.Before == 0 ? "-" : was.Value)</span>
+                        <span class="arrow" aria-hidden="true">→</span>
+                        <span class="value @ToneClass(now.Tone)">@(change.After == 0 ? "-" : now.Value)</span>
+                        <span class="delta @ToneClass(delta.Tone)">@delta.Value</span>
+                    </li>
+                }
+            </ul>
+        }
+    }
+    else if (Combined.Count == 0)
     {
         <p class="sem-hint">Nothing yet.</p>
     }
@@ -68,6 +115,58 @@
     /// </remarks>
     [Parameter]
     public DesignContext? Context { get; set; }
+
+    /// <summary>
+    /// The same empire as it was when it was last saved, where there is such a thing.
+    /// </summary>
+    /// <remarks>
+    /// Supplied by the designer and by nothing else, the way <c>ShowProblems</c> is: the select
+    /// screen shows empires nobody is editing, and an empire that has never been saved has no
+    /// earlier self to be compared against.
+    /// </remarks>
+    [Parameter]
+    public DesignContext? Baseline { get; set; }
+
+    /// <summary>Whether the panel is showing what changed rather than what the empire comes to.</summary>
+    private bool _changes;
+
+    /// <summary>One modifier that is not what it was.</summary>
+    /// <param name="Key">The modifier.</param>
+    /// <param name="Before">What it came to when the empire was last saved; zero if it was absent.</param>
+    /// <param name="After">What it comes to now; zero if it has gone.</param>
+    private sealed record Change(string Key, double Before, double After);
+
+    /// <summary>
+    /// Every modifier the edits since the last save have moved.
+    /// </summary>
+    /// <remarks>
+    /// A modifier missing from one side counts as zero on that side rather than being skipped, so a
+    /// bonus that has appeared or vanished entirely is a change like any other and reads as one.
+    /// </remarks>
+    private IReadOnlyList<Change> Changes
+    {
+        get
+        {
+            if (Baseline is not { } baseline)
+            {
+                return [];
+            }
+
+            var before = DesignEffects.Combine(baseline).ToDictionary(m => m.Key, m => m.Total, StringComparer.Ordinal);
+            var after = Combined.ToDictionary(m => m.Key, m => m.Total, StringComparer.Ordinal);
+
+            return
+            [
+                .. before.Keys.Union(after.Keys, StringComparer.Ordinal)
+                    .Select(key => new Change(
+                        key,
+                        before.GetValueOrDefault(key),
+                        after.GetValueOrDefault(key)))
+                    .Where(c => c.Before != c.After)
+                    .OrderBy(c => Session.Modifiers.Label(c.Key), StringComparer.CurrentCulture)
+            ];
+        }
+    }
 
     private IReadOnlyList<CombinedModifier> Combined =>
         (Context ?? Session.Context) is { } context ? DesignEffects.Combine(context) : [];

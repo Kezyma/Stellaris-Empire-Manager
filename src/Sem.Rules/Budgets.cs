@@ -47,11 +47,7 @@ public readonly record struct Budget(int Spent, int Available)
 /// </remarks>
 /// <param name="Points">Trait points spent against those available.</param>
 /// <param name="Picks">Traits taken against the number allowed.</param>
-public readonly record struct TraitBudget(Budget Points, Budget Picks)
-{
-    /// <summary>Whether either limit has been exceeded.</summary>
-    public bool IsExceeded => Points.IsOverspent || Picks.IsOverspent;
-}
+public readonly record struct TraitBudget(Budget Points, Budget Picks);
 
 /// <summary>Where in a design a problem was found.</summary>
 public enum ValidationArea

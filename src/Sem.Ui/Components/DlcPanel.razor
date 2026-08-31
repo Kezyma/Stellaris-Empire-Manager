@@ -9,6 +9,19 @@
     with everything on and lets the player turn off what they do not own.
 *@
 
+@*
+    Folded away on a phone, where thirty icons wrap to four rows and take a fifth of the screen above
+    every page. A checkbox and its label rather than component state or a <details>: it needs no
+    script, it works before the app has loaded, and there is no portable way to force a <details>
+    open again at the width where this should simply be a bar. Above the breakpoint the toggle is not
+    drawn at all and the bar is exactly what it was.
+*@
+<input type="checkbox" id="dlc-bar" class="sem-dlc-toggle" />
+<label for="dlc-bar" class="sem-dlc-summary">
+    <span class="chevron" aria-hidden="true">▸</span>
+    <span>@Summary</span>
+</label>
+
 <div class="sem-dlc-bar">
     @foreach (var pack in Packs)
     {
@@ -61,6 +74,27 @@
             .OrderBy(d => Name(d), StringComparer.CurrentCulture);
 
     private string Name(DlcDefinition pack) => Session.Localizer.Text(pack.NameKey, pack.Name);
+
+    /// <summary>
+    /// What the folded bar says it is hiding.
+    /// </summary>
+    /// <remarks>
+    /// A row of icons that simply vanishes is worse than a line of text, and the count is the part
+    /// worth seeing without opening it: it says whether the designer is judging against everything
+    /// or against a subset, which decides half of what it offers.
+    /// </remarks>
+    private string Summary
+    {
+        get
+        {
+            var packs = Packs.ToList();
+            var owned = packs.Count(p => Session.OwnedDlc.Contains(p.Name));
+
+            return owned == packs.Count
+                ? $"Content packs · all {packs.Count}"
+                : $"Content packs · {owned} of {packs.Count}";
+        }
+    }
 
     private string Provenance
     {

@@ -87,6 +87,42 @@ public sealed class GameDataExtractionTests
 
     [SkippableFact]
     [Trait("Category", "RealData")]
+    public void OnlyTheConditionsThatNeedAGameInProgressGoUnread()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        // The conditions on a conditional modifier are a separate matter from the ones that gate an
+        // option: a modifier may well depend on something only a running game can answer, and
+        // RequirementEvaluator.CanDecide exists so those are left out of the totals rather than
+        // guessed at. These five are all of that kind — whether a tradition has been adopted,
+        // whether a scope exists.
+        //
+        // Pinned by name because a sixth would not be. A patch introducing one this app could
+        // answer, but does not, would quietly go on leaving a bonus out of every total.
+        string[] known =
+        [
+            "exists",
+            "has_active_tradition",
+            "has_tradition",
+            "is_species_class",
+            "is_scope_valid",
+        ];
+
+        var unexpected = database.UnrecognisedEffectConditions.Keys.Except(known, StringComparer.Ordinal);
+
+        Assert.True(
+            !unexpected.Any(),
+            "Conditions on modifiers that the compiler did not recognise, beyond the known five:\r\n" +
+            string.Join(
+                "\r\n",
+                database.UnrecognisedEffectConditions
+                    .Where(p => !known.Contains(p.Key, StringComparer.Ordinal))
+                    .Select(p => $"  {p.Value,5}  {p.Key}")));
+    }
+
+    [SkippableFact]
+    [Trait("Category", "RealData")]
     public void TraitBudgetsMatchTheArchetypesTheGameDefines()
     {
         Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");

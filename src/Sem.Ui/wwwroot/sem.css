@@ -1417,6 +1417,38 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     border-bottom: 1px solid var(--border);
 }
 
+/*
+   The bar folds away on a phone and is a bar everywhere else, so both the switch and the line that
+   stands in for it are absent above the breakpoint.
+*/
+.sem-dlc-toggle,
+.sem-dlc-summary { display: none; }
+
+@media (max-width: 720px) {
+    .sem-dlc-summary {
+        display: flex;
+        align-items: center;
+        gap: var(--space-md);
+        padding: var(--space-md) var(--space-lg);
+        background: var(--bg-raised);
+        border-bottom: 1px solid var(--border);
+        color: var(--text-dim);
+        font-size: var(--text-sm);
+        cursor: pointer;
+    }
+
+    .sem-dlc-summary:hover { color: var(--text); }
+
+    .sem-dlc-summary .chevron { color: var(--text-faint); }
+
+    .sem-dlc-toggle:checked + .sem-dlc-summary .chevron { rotate: 90deg; }
+
+    /* Thirty icons wrapping to four rows, above every page, is most of a phone screen. */
+    .sem-dlc-toggle:not(:checked) ~ .sem-dlc-bar { display: none; }
+
+    .sem-dlc-bar { padding: var(--space-sm) var(--space-lg); }
+}
+
 .sem-dlc-bar .spacer { flex: 1; }
 
 .sem-dlc {
@@ -2249,6 +2281,16 @@ button.icon .sem-action-icon { display: block; }
 
 .sem-combo .toggle:hover { background: var(--bg-hover); color: var(--text); }
 
+/*
+   Hidden whenever the keyboard and the pointer have both left the box.
+
+   This used to be done by closing the list when the input lost focus, which dismissed it the moment
+   anyone tabbed towards the options — so the list could be used with a mouse and by no other means.
+   Asking the stylesheet instead means focus moving onto an option counts as still being in the box,
+   which is exactly the distinction the blur handler could not draw.
+*/
+.sem-combo:not(:focus-within) .options { display: none; }
+
 .sem-combo .options {
     position: absolute;
     top: calc(100% + 2px);
@@ -2885,7 +2927,54 @@ button.icon .sem-action-icon { display: block; }
     border-top: 1px solid var(--border);
 }
 
-.sem-showcase .sem-combined h4 { margin: 0 0 var(--space-sm); }
+.sem-showcase .sem-combined h4 { margin: 0; }
+
+/* The heading and the switch that changes what is under it, on one line. */
+.sem-combined .heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-md);
+    margin-bottom: var(--space-sm);
+}
+
+.sem-combined .compare {
+    height: auto;
+    padding: 0 var(--space-sm);
+    font-size: var(--text-xs);
+}
+
+.sem-combined .compare[aria-pressed="true"] {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+}
+
+/*
+   What an edit changed: the old number, an arrow, the new one, and the difference. Both numbers are
+   shown because "-10%" says how far something moved without saying what it moved from, and comparing
+   the two is the whole point of the view.
+*/
+.sem-modifiers.changes .was,
+.sem-modifiers.changes .arrow {
+    color: var(--text-faint);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.sem-modifiers.changes .value {
+    min-width: 0;
+    text-align: left;
+}
+
+.sem-modifiers.changes .delta {
+    min-width: 3.5rem;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.sem-modifiers.changes .delta.good { color: var(--good); }
+.sem-modifiers.changes .delta.bad { color: var(--bad); }
 
 /*
     The effects can run long, so they scroll within the panel rather than stretching it. Given more

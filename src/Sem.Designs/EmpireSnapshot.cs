@@ -17,4 +17,15 @@ public sealed class EmpireSnapshot
 
     /// <summary>The copied entry, complete with its key and every field beneath it.</summary>
     internal CwNode Entry { get; }
+
+    /// <summary>
+    /// Reads the copy as an empire in its own right.
+    /// </summary>
+    /// <remarks>
+    /// For asking questions of the empire as it was rather than for putting it back: what its
+    /// modifiers came to before the last few edits, so the designer can show what those edits
+    /// changed. The design returned is not in any file and belongs to nobody — editing it would edit
+    /// the copy, which is why nothing here hands one out to be edited.
+    /// </remarks>
+    public EmpireDesign ToDesign() => new(Entry.Clone());
 }

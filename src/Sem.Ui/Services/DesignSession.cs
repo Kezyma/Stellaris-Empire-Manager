@@ -185,6 +185,7 @@ public sealed class DesignSession
 
         Current = design;
         _saved = design?.Snapshot();
+        _savedContext = null;
         IsModified = false;
         Recompute();
     }
@@ -264,6 +265,9 @@ public sealed class DesignSession
 
         _ownedDlc.Clear();
         _ownedDlc.AddRange(owned);
+
+        // The saved empire is read against the packs as well, so it is no longer the same reading.
+        _savedContext = null;
         Recompute();
     }
 
@@ -282,6 +286,7 @@ public sealed class DesignSession
             _ownedDlc.RemoveAll(d => string.Equals(d, name, StringComparison.Ordinal));
         }
 
+        _savedContext = null;
         Recompute();
     }
 
@@ -289,6 +294,29 @@ public sealed class DesignSession
     /// Writes the file back out. An empire nobody touched comes out byte for byte as it went in.
     /// </summary>
     public byte[] Save() => File?.Save() ?? [];
+
+    /// <summary>
+    /// The empire as it stood when it was last saved, read against the rules.
+    /// </summary>
+    /// <remarks>
+    /// Null where there is nothing to compare with: an empire created and never saved was never
+    /// anything else. Held rather than rebuilt, since the copy only changes when the empire is
+    /// saved and building a context walks every government the game defines.
+    /// </remarks>
+    public DesignContext? SavedContext
+    {
+        get
+        {
+            if (_saved is not { } stored)
+            {
+                return null;
+            }
+
+            return _savedContext ??= Rules.CreateContext(stored.ToDesign(), OwnedDlc);
+        }
+    }
+
+    private DesignContext? _savedContext;
 
     /// <summary>
     /// Records that the empire being edited is now the empire that is stored.
@@ -303,6 +331,7 @@ public sealed class DesignSession
         // Whatever was written is in the file now, including an empire that had only been created.
         _unsaved = null;
         _saved = Current?.Snapshot();
+        _savedContext = null;
         IsModified = false;
 
         // Saving writes the whole file, so whatever the list was owed is settled too.

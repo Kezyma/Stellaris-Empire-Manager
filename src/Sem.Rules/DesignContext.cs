@@ -187,26 +187,6 @@ public sealed class DesignContext
         };
     }
 
-    /// <summary>Returns a copy with a different set of content packs available.</summary>
-    public DesignContext WithOwnedDlc(IReadOnlySet<string> ownedDlc) =>
-        new(Database)
-        {
-            Ethics = Ethics,
-            Authority = Authority,
-            Civics = Civics,
-            Origin = Origin,
-            SpeciesClass = SpeciesClass,
-            Portrait = Portrait,
-            SpeciesArchetype = SpeciesArchetype,
-            Traits = Traits,
-            IsSecondarySpecies = IsSecondarySpecies,
-            PlanetClass = PlanetClass,
-            EffectivePlanetClass = EffectivePlanetClass,
-            GraphicalCulture = GraphicalCulture,
-            IsNomadic = IsNomadic,
-            OwnedDlc = ownedDlc,
-        };
-
     /// <summary>Whether the design has selected a given key in a given part of itself.</summary>
     public bool Has(SelectionCategory category, string key) => category switch
     {

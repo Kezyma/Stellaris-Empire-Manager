@@ -6,24 +6,34 @@
     working. There is no way to turn that off, hence this.
 *@
 
-<div class="sem-combo @(_open ? "open" : null)">
+@*
+    Closing is left to the stylesheet, which hides the list whenever focus is not inside the box.
+    Closing it on the input losing focus, as this did, meant tabbing towards the options dismissed
+    them on the way — so the list was reachable with a mouse and with nothing else. The toggle is
+    tabbable now for the same reason: it was the only way to open the list, and it could not be
+    reached.
+
+    The toggle also takes focus when it is pressed, where it used to refuse it to keep the input's.
+    That refusal is what the stylesheet cannot live with: pressed with nothing else in the box
+    focused, it would open a list that focus was not inside, and the rule below would hide it again
+    at once. The options still refuse focus, so choosing one leaves it on the toggle — inside the
+    box either way.
+*@
+<div class="sem-combo @(_open ? "open" : null)" @onkeydown="Dismiss">
     <input type="text"
            id="@Id"
            value="@Value"
            disabled="@Disabled"
            placeholder="@Placeholder"
            @onchange="e => Commit(e.Value?.ToString())"
-           @onfocus="() => _open = false"
-           @onblur="() => _open = false" />
+           @onfocus="() => _open = false" />
 
     <button type="button"
             class="toggle"
-            tabindex="-1"
             disabled="@Disabled"
             title="@(_open ? "Close the list" : "Show every option")"
             aria-label="@(_open ? "Close the list" : "Show every option")"
             aria-expanded="@(_open ? "true" : "false")"
-            @onmousedown:preventDefault="true"
             @onclick="() => _open = !_open">▾</button>
 
     @if (_open && Options.Count > 0)
@@ -48,6 +58,15 @@
 
 @code {
     private bool _open;
+
+    /// <summary>Escape closes the list, wherever inside the box the keyboard happens to be.</summary>
+    private void Dismiss(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape")
+        {
+            _open = false;
+        }
+    }
 
     /// <summary>The identifier a label points at.</summary>
     [Parameter]

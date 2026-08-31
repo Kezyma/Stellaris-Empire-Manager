@@ -151,7 +151,7 @@
         into being the same forty lines twice, and a modifier shown one way here and another there is
         the sort of difference nobody notices until it matters.
     *@
-    <CombinedEffects Context="@Context" />
+    <CombinedEffects Context="@Context" Baseline="@Baseline" />
 
     @*
         And under that, what is wrong with it, folded away.
@@ -231,6 +231,16 @@
     /// </remarks>
     [Parameter]
     public bool ShowProblems { get; set; }
+
+    /// <summary>
+    /// The same empire as it was when it was last saved, for comparing the totals against.
+    /// </summary>
+    /// <remarks>
+    /// Passed through to the modifiers panel, and set by the designer alone — for the same reason as
+    /// the problems above: the select screen is showing empires nobody is editing.
+    /// </remarks>
+    [Parameter]
+    public DesignContext? Baseline { get; set; }
 
     private int Problems => Report.Errors.Count + Report.Warnings.Count;
 
