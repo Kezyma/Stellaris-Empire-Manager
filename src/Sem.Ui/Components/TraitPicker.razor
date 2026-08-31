@@ -79,7 +79,8 @@
     [Parameter, EditorRequired]
     public required SpeciesDesign Species { get; set; }
 
-    private DesignContext Context => Session.Context!;
+    /// <summary>The rules as they apply to the species this control is editing.</summary>
+    private DesignContext Context => Session.ContextFor(Species)!;
 
     private TraitBudget Budget => Session.Rules.GetTraitBudget(Context);
 

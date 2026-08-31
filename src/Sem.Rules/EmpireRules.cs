@@ -258,7 +258,15 @@ public sealed class EmpireRules(GameDatabase database)
         foreach (var civic in SelectedCivicsAndOrigin(context))
         {
             var kind = civic.IsOrigin ? ForcedTraitSource.Origin : ForcedTraitSource.Civic;
-            forced.AddRange(civic.ForcedTraits.Select(t => new ForcedTrait(t, civic.Key, kind)));
+
+            // An origin that calls for two species names a trait for each. Syncretic Evolution makes
+            // its founders Intelligent and its subjects Proles, and giving the second species the
+            // first one's trait would be the wrong answer rather than a missing one.
+            var traits = civic.IsOrigin && context.IsSecondarySpecies
+                ? civic.SecondarySpeciesTraits
+                : civic.ForcedTraits;
+
+            forced.AddRange(traits.Select(t => new ForcedTrait(t, civic.Key, kind)));
         }
 
         if (HabitabilityTraitFor(context) is { Length: > 0 } preference)
@@ -552,13 +560,26 @@ public sealed class EmpireRules(GameDatabase database)
         ValidateOrigin(context, problems);
         ValidateHomeworld(context, problems);
 
-        if (design is not null && RequiresSecondarySpecies(context) && design.SecondarySpecies is null)
+        if (design is not null && RequiresSecondarySpecies(context))
         {
-            problems.Add(new ValidationProblem(
-                ValidationArea.SecondarySpecies,
-                context.Origin,
-                "This origin needs a second species, and the design has none.",
-                []));
+            if (design.SecondarySpecies is not { } secondary)
+            {
+                problems.Add(new ValidationProblem(
+                    ValidationArea.SecondarySpecies,
+                    context.Origin,
+                    "This origin needs a second species, and the design has none.",
+                    []));
+            }
+            else
+            {
+                // Judged as its own species rather than as the founders. Nothing checked it before,
+                // so a second species could carry any number of traits at any cost and the design
+                // still read as valid.
+                ValidateTraits(
+                    context.ForSpecies(secondary, secondary: true),
+                    problems,
+                    ValidationArea.SecondarySpecies);
+            }
         }
 
         return new ValidationReport(problems);
@@ -585,14 +606,17 @@ public sealed class EmpireRules(GameDatabase database)
         Check(ValidationArea.Species, key, speciesClass.Possible, "cannot be used by this empire", context, problems);
     }
 
-    private void ValidateTraits(DesignContext context, List<ValidationProblem> problems)
+    private void ValidateTraits(
+        DesignContext context,
+        List<ValidationProblem> problems,
+        ValidationArea area = ValidationArea.Traits)
     {
         var budget = GetTraitBudget(context);
 
         if (budget.Points.IsOverspent)
         {
             problems.Add(new ValidationProblem(
-                ValidationArea.Traits,
+                area,
                 null,
                 $"Traits cost {budget.Points.Spent} points but only {budget.Points.Available} are available.",
                 []));
@@ -601,7 +625,7 @@ public sealed class EmpireRules(GameDatabase database)
         if (budget.Picks.IsOverspent)
         {
             problems.Add(new ValidationProblem(
-                ValidationArea.Traits,
+                area,
                 null,
                 $"The species has {budget.Picks.Spent} traits but may have {budget.Picks.Available}.",
                 []));
@@ -612,14 +636,14 @@ public sealed class EmpireRules(GameDatabase database)
             if (!_traits.TryGetValue(key, out var trait))
             {
                 problems.Add(new ValidationProblem(
-                    ValidationArea.Traits, key, $"'{key}' is not a trait this game defines.", []));
+                    area, key, $"'{key}' is not a trait this game defines.", []));
                 continue;
             }
 
             foreach (var reason in TraitBlockers(trait, context, budget, ignoreBudget: true))
             {
                 problems.Add(new ValidationProblem(
-                    ValidationArea.Traits, key, $"'{key}' cannot be taken by this species.", [reason]));
+                    area, key, $"'{key}' cannot be taken by this species.", [reason]));
             }
         }
     }

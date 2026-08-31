@@ -129,6 +129,54 @@ public sealed class EmpireRulesTests
         Assert.Contains(problems, p => p.Area == ValidationArea.Traits && p.Message.Contains("traits but may have", StringComparison.Ordinal));
     }
 
+    /// <summary>
+    /// The second species is judged as itself, not as the founders.
+    /// </summary>
+    /// <remarks>
+    /// Nothing checked it at all before: an origin that calls for two species validated only that
+    /// the second one existed, so it could carry any number of traits at any cost and the design
+    /// still read as valid. In the designer the same fault showed as a trait counter that never
+    /// moved, because the budget it displayed was the founders'.
+    /// </remarks>
+    [Fact]
+    public void TheSecondSpeciesHasATraitBudgetOfItsOwn()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.Origin = "origin_syncretic_evolution";
+
+        var second = design.AddSecondarySpecies();
+        second.Class = design.Species.Class;
+
+        // Two points available, and these cost six between them.
+        second.SetTraits(["trait_organic", "trait_intelligent", "trait_aquatic", "trait_venerable"]);
+
+        var problems = Validate(design).Problems;
+
+        Assert.Contains(problems, p => p.Area == ValidationArea.SecondarySpecies);
+
+        // And the founders, who are within their allowance, are not blamed for it.
+        Assert.DoesNotContain(problems, p => p.Area == ValidationArea.Traits);
+    }
+
+    /// <summary>
+    /// An origin names a trait for each species, and they are not the same trait.
+    /// </summary>
+    [Fact]
+    public void TheSecondSpeciesIsForcedTheOriginsSecondaryTrait()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.Origin = "origin_syncretic_evolution";
+
+        var second = design.AddSecondarySpecies();
+        second.Class = design.Species.Class;
+
+        var rules = new EmpireRules(RulesTestData.Database);
+        var context = DesignContext.FromDesign(design, RulesTestData.Database);
+
+        Assert.Contains("trait_syncretic_proles", rules.GetForcedTraits(context.ForSpecies(second, secondary: true)));
+        Assert.DoesNotContain("trait_syncretic_proles", rules.GetForcedTraits(context));
+    }
+
     [Fact]
     public void TraitsCostingNothingDoNotCountTowardsThePickLimit()
     {

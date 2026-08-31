@@ -193,6 +193,27 @@ public sealed class DesignSession
     /// </summary>
     public byte[] Save() => File?.Save() ?? [];
 
+    /// <summary>
+    /// What the rules make of one of the empire's species, which is not always the founders.
+    /// </summary>
+    /// <remarks>
+    /// An origin may call for a second, and every control that edits a species — its traits, its
+    /// class, its portrait, its names — was judging whichever it was given by the founders' context.
+    /// The visible symptom was the trait budget: it counted the founders' traits, so adding to the
+    /// second species moved no counter and exceeded no limit.
+    /// </remarks>
+    public DesignContext? ContextFor(SpeciesDesign? species)
+    {
+        if (Context is not { } context || species is null)
+        {
+            return Context;
+        }
+
+        return ReferenceEquals(species, Current?.Species)
+            ? context
+            : context.ForSpecies(species, secondary: true);
+    }
+
     /// <summary>The report for any empire in the file, for showing status in a list.</summary>
     public ValidationReport Validate(EmpireDesign design) => Rules.Validate(design, OwnedDlc);
 

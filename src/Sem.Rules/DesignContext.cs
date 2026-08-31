@@ -47,6 +47,16 @@ public sealed class DesignContext
     /// <summary>The founder species' traits.</summary>
     public IReadOnlySet<string> Traits { get; private init; } = new HashSet<string>();
 
+    /// <summary>
+    /// Whether this context describes the empire's second species rather than its founder.
+    /// </summary>
+    /// <remarks>
+    /// An origin that calls for two species gives them different traits — Syncretic Evolution forces
+    /// its subject species to be Proles, not its founders — so which one is being asked about
+    /// changes the answer.
+    /// </remarks>
+    public bool IsSecondarySpecies { get; private init; }
+
     /// <summary>The homeworld's planet class as the design records it.</summary>
     public string? PlanetClass { get; private init; }
 
@@ -128,6 +138,41 @@ public sealed class DesignContext
         };
     }
 
+    /// <summary>
+    /// A copy describing another species of the same empire.
+    /// </summary>
+    /// <remarks>
+    /// Everything the empire decides — its ethics, its civics, its origin, the packs it owns —
+    /// belongs to both species and carries over; what changes is the species itself. An origin that
+    /// widens the trait allowance widens it for either of them, which is why the civics stay.
+    ///
+    /// Without this the designer judged the second species by the first: its budget counted the
+    /// founders' traits, so the counter never moved however many were added to it, and every
+    /// availability answer was about the wrong species.
+    /// </remarks>
+    public DesignContext ForSpecies(SpeciesDesign species, bool secondary = false)
+    {
+        ArgumentNullException.ThrowIfNull(species);
+
+        return new DesignContext(Database)
+        {
+            Ethics = Ethics,
+            Authority = Authority,
+            Civics = Civics,
+            Origin = Origin,
+            SpeciesClass = species.Class,
+            Portrait = species.Portrait,
+            SpeciesArchetype = ArchetypeOf(Database, species.Class),
+            Traits = new HashSet<string>(species.Traits, StringComparer.Ordinal),
+            IsSecondarySpecies = secondary,
+            PlanetClass = PlanetClass,
+            EffectivePlanetClass = EffectivePlanetClass,
+            GraphicalCulture = GraphicalCulture,
+            IsNomadic = IsNomadic,
+            OwnedDlc = OwnedDlc,
+        };
+    }
+
     /// <summary>Returns a copy with a different set of content packs available.</summary>
     public DesignContext WithOwnedDlc(IReadOnlySet<string> ownedDlc) =>
         new(Database)
@@ -140,6 +185,7 @@ public sealed class DesignContext
             Portrait = Portrait,
             SpeciesArchetype = SpeciesArchetype,
             Traits = Traits,
+            IsSecondarySpecies = IsSecondarySpecies,
             PlanetClass = PlanetClass,
             EffectivePlanetClass = EffectivePlanetClass,
             GraphicalCulture = GraphicalCulture,

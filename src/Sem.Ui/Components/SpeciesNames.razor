@@ -83,7 +83,8 @@
 
     private EmpireDesign Design => Session.Current!;
 
-    private DesignContext Context => Session.Context!;
+    /// <summary>The rules as they apply to the species this control is editing.</summary>
+    private DesignContext Context => Session.ContextFor(Species)!;
 
     private readonly RequirementEvaluator _evaluator = new();
 
