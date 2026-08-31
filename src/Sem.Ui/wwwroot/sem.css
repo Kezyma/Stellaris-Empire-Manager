@@ -1164,10 +1164,23 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 .sem-detail {
     display: flex;
     flex-direction: column;
-    min-height: 180px;
-    max-height: 300px;
+
+    /*
+       One height, not a range.
+
+       This was a floor and a ceiling, sized to what each option had to say, which fitted the panel
+       to its contents and made the page under it move as the pointer crossed the grid — up to 131
+       pixels of the sections below sliding about while reading. Fitting the box to the text was the
+       wrong trade: a reader looks at one description at a time, and a page that holds still while
+       they do is worth more than a box with no slack in it.
+
+       300 because three quarters of every option fits inside it, measured across all of them: the
+       medians are 234 for the ethics, 238 for the civics and 180 for the traditions. The rest
+       scroll, which is what the scrolling is for.
+    */
+    height: 300px;
+
     overflow: hidden;
-    padding: var(--space-lg) var(--space-lg);
     background: var(--bg);
     border: 1px solid var(--border);
     border-radius: var(--radius);
@@ -1181,14 +1194,31 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     reason travels with the rule; the numbers used to live in three call sites that could not say why.
 */
 .sem-detail:has(> .sem-detail-picture) {
-    min-height: 320px;
-    max-height: 460px;
+    height: 460px;
 }
 
+/*
+    The padding belongs to the scrolling part, not to the panel around it.
+
+    On the panel it inset the scroller, so the bar appeared a dozen pixels inside the border with the
+    text running right up against it. Here the bar sits on the panel's own edge and the padding keeps
+    the words off it.
+
+    scrollbar-gutter so the text does not shift sideways when a description is long enough to need a
+    bar and the next one is not.
+*/
 .sem-detail > .body {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
+    scrollbar-gutter: stable;
+    padding: var(--space-lg);
+}
+
+/* The picture is outside the scroller and needs the inset the scroller gives itself. */
+.sem-detail > .sem-detail-picture {
+    margin: var(--space-lg) var(--space-lg) 0;
+    width: auto;
 }
 
 /*
@@ -1197,8 +1227,14 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     class and the origin panel would otherwise keep its desktop 460 here.
 */
 @media (max-width: 700px) {
-    .sem-detail,
-    .sem-detail:has(> .sem-detail-picture) { min-height: 0; max-height: 240px; }
+    .sem-detail { height: 260px; }
+
+    /*
+        A picture at the game's ratio takes about 183 of a phone's width, so the 240 this used to be
+        left under sixty pixels to read the description in. The panel is taller here than the plain
+        one rather than shorter.
+    */
+    .sem-detail:has(> .sem-detail-picture) { height: 420px; }
 }
 
 .sem-detail h4 {
@@ -1379,10 +1415,17 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 .sem-hint.unlisted { color: var(--warn); }
 
 /* The scene an origin opens on, above whatever is written about it and fixed while that scrolls. */
+/*
+    Cropped the way the game crops it. Its own entry frames a picture at 216 by 115 with clipping on
+    — empire_origin_entry in customize_species_editors.gui — and the pictures are 220 by 115 apiece
+    but for one, which is 450 by 150. Against a max-height that one came out shorter than all the
+    others at the same width; against the game's own ratio every one of the sixty-six is identical.
+*/
 .sem-detail-picture {
     display: block;
     width: 100%;
-    max-height: 160px;
+    aspect-ratio: 216 / 115;
+    object-position: left top;
     flex-shrink: 0;
     object-fit: cover;
     border-radius: var(--radius);
