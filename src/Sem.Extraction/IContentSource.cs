@@ -142,7 +142,14 @@ public sealed class LayeredContent(IReadOnlyList<IContentSource> layers)
     /// is read; that is <see cref="Read"/>'s job, and it is the layer order that matters there.
     ///
     /// The two used different notions of the same path as well, gathering case-insensitively and
-    /// sorting case-sensitively. One comparer now does both.
+    /// sorting case-sensitively. One comparer now does both, and it is the case-insensitive one,
+    /// because that is how Windows lists a directory and so how the game reads one — an ordinal sort
+    /// puts every capital ahead of every lower-case letter, which no file system does.
+    ///
+    /// Changing the comparer reordered the extracted localisation, which is a dictionary and so
+    /// carries no meaning in its order. Worth knowing because the diff looked alarming and was not:
+    /// the same 40,525 keys with the same 40,525 values, none resolving differently. Anything that
+    /// changes this order costs a rewrite of the committed data once, and nothing after.
     /// </remarks>
     public IReadOnlyList<string> EnumerateFiles(
         string relativeDirectory,
