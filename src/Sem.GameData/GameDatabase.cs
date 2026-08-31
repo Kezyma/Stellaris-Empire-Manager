@@ -1076,6 +1076,20 @@ public sealed record NameSet
     /// <summary>Second names, always joined to a first.</summary>
     public GenderedNames SecondNames { get; init; } = new();
 
+    /// <summary>
+    /// The names a ruler who reigns under a regnal name is drawn from.
+    /// </summary>
+    /// <remarks>
+    /// Sixty-one of the game's seventy-one lists declare these, and none of them was read: the
+    /// extractor asked for full, first and second names and stopped. They are a pool of their own —
+    /// a list may offer names it uses only for a monarch — so they are kept apart rather than
+    /// folded into the ordinary ones.
+    /// </remarks>
+    public GenderedNames RegnalFirstNames { get; init; } = new();
+
+    /// <inheritdoc cref="RegnalFirstNames" />
+    public GenderedNames RegnalSecondNames { get; init; } = new();
+
     /// <summary>Whether there is anything here to build a name from.</summary>
     public bool IsEmpty => FullNames.IsEmpty && FirstNames.IsEmpty;
 
@@ -1119,7 +1133,19 @@ public sealed record NameSet
                 : LeaderName.Compose(firsts[i], seconds[i % seconds.Count], gender));
         }
 
-        return joined;
+        // The regnal pool after the ordinary one, since a ruler may be styled either way. Appended
+        // rather than mixed in, so what a list offers first is what it offered before.
+        var regnalFirsts = RegnalFirstNames.All;
+        var regnalSeconds = RegnalSecondNames.All;
+
+        for (var i = 0; i < regnalFirsts.Count && joined.Count < limit; i++)
+        {
+            joined.Add(regnalSeconds.Count == 0
+                ? LeaderName.Variant(regnalFirsts[i], gender)
+                : LeaderName.Compose(regnalFirsts[i], regnalSeconds[i % regnalSeconds.Count], gender));
+        }
+
+        return joined.Distinct(StringComparer.Ordinal).ToList();
     }
 }
 

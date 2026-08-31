@@ -112,6 +112,20 @@ public sealed record ValidationProblem(
     IReadOnlyList<string> Reasons,
     ValidationSeverity Severity = ValidationSeverity.Error)
 {
+    /// <summary>
+    /// The keys a message leaves blanks for, in the order it numbers them.
+    /// </summary>
+    /// <remarks>
+    /// These rules know nothing about language — that is the point of keeping them apart from the
+    /// interface — so a message that has to name something the game defines writes a numbered blank
+    /// and hands over the key. Otherwise the reader is told a homeworld is ignored in favour of
+    /// 'pc_volcanic', which is the name of a thing rather than the thing's name.
+    ///
+    /// Only for keys the game does define. "'x' is not a trait this game defines" is about a key
+    /// that has no name to look up, and printing the key is the whole of the message.
+    /// </remarks>
+    public IReadOnlyList<string> Arguments { get; init; } = [];
+
     public override string ToString() => Key is null ? $"{Area}: {Message}" : $"{Area} ({Key}): {Message}";
 }
 

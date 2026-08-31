@@ -111,11 +111,16 @@ public static class NameExtractor
     }
 
     /// <summary>
-    /// Reads the character names, taking the first culture a list defines.
+    /// Reads the character names out of every culture a list defines.
     /// </summary>
     /// <remarks>
-    /// A list may hold several cultures with weights, but every list the player can choose has only
-    /// the one, so the weighting is not worth reproducing to pick between a single option.
+    /// It used to take the first culture only, on the stated grounds that every list a player can
+    /// choose holds just one. That is untrue of the two that matter most: HUMAN1 and HUMAN2 each
+    /// hold eleven, weighted — names1 through names11 — with their own gendered first and second
+    /// names, so a human empire was being offered about a tenth of what the game has.
+    ///
+    /// The weights decide which culture the game draws from when it wants one name. A list of
+    /// suggestions is not drawing one, so the pools are simply added together.
     /// </remarks>
     private static NameSet ReadCharacterNames(CwBlock body, IReadOnlyDictionary<string, string> text)
     {
@@ -124,19 +129,26 @@ public static class NameExtractor
             return new NameSet();
         }
 
-        var culture = cultures.GetBlock("default")
-                      ?? cultures.Nodes.FirstOrDefault(n => n.Block is not null)?.Block;
+        var found = cultures.Nodes
+            .Select(n => n.Block)
+            .OfType<CwBlock>()
+            .ToList();
 
-        if (culture is null)
+        if (found.Count == 0)
         {
             return new NameSet();
         }
 
         return new NameSet
         {
-            FullNames = ReadGendered(culture, "full_names", text),
-            FirstNames = ReadGendered(culture, "first_names", text),
-            SecondNames = ReadGendered(culture, "second_names", text),
+            FullNames = ReadGendered(found, "full_names", text),
+            FirstNames = ReadGendered(found, "first_names", text),
+            SecondNames = ReadGendered(found, "second_names", text),
+
+            // The names a regnal ruler is drawn from, which sixty-one of the seventy-one lists
+            // declare and none of which was ever read.
+            RegnalFirstNames = ReadGendered(found, "regnal_first_names", text),
+            RegnalSecondNames = ReadGendered(found, "regnal_second_names", text),
         };
     }
 
@@ -150,15 +162,32 @@ public static class NameExtractor
     /// not — including the one a new human empire starts with.
     /// </remarks>
     private static GenderedNames ReadGendered(
-        CwBlock culture,
+        IReadOnlyList<CwBlock> cultures,
         string field,
         IReadOnlyDictionary<string, string> text) =>
         new()
         {
-            Any = ResolveAll(culture.GetList(field), text),
-            Male = ResolveAll(culture.GetList($"{field}_male"), text),
-            Female = ResolveAll(culture.GetList($"{field}_female"), text),
+            Any = Gather(cultures, field, text),
+            Male = Gather(cultures, $"{field}_male", text),
+            Female = Gather(cultures, $"{field}_female", text),
         };
+
+    /// <summary>
+    /// One field's names across every culture, in order and without repeats.
+    /// </summary>
+    /// <remarks>
+    /// Distinct because the cultures overlap: several of the human ones share a surname, and a list
+    /// offering the same name twice reads as a fault rather than as two cultures agreeing.
+    /// </remarks>
+    private static IReadOnlyList<string> Gather(
+        IReadOnlyList<CwBlock> cultures,
+        string field,
+        IReadOnlyDictionary<string, string> text) =>
+        [
+            .. cultures
+                .SelectMany(culture => ResolveAll(culture.GetList(field), text))
+                .Distinct(StringComparer.Ordinal),
+        ];
 
     /// <summary>
     /// Gathers names out of a section that groups them, such as planet names by planet class.

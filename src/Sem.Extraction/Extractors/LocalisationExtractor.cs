@@ -20,6 +20,26 @@ namespace Sem.Extraction.Extractors;
 /// </remarks>
 internal static class LocalisationExtractor
 {
+    /// <summary>
+    /// The files whose every entry is kept, whatever the database happens to refer to.
+    /// </summary>
+    /// <remarks>
+    /// Pruning asks what the game's own content can reach. A player's own empire is not part of that
+    /// content and may name any of thirty-two thousand character, planet and ship names, or wrap its
+    /// empire name in one of the name-system formats — and none of it survived, so a custom empire
+    /// read as its own keys. These two are kept whole instead of being reasoned about.
+    /// </remarks>
+    private static readonly string[] AlwaysKept =
+    [
+        "name_lists/",
+        "name_system",
+    ];
+
+    /// <summary>Whether a file's entries are kept regardless of what refers to them.</summary>
+    public static bool IsAlwaysKept(string path) =>
+        AlwaysKept.Any(part =>
+            path.Replace('\\', '/').Contains(part, StringComparison.OrdinalIgnoreCase));
+
     /// <summary>Reads one language folder into a flat lookup, with later files winning.</summary>
     public static Dictionary<string, string> Extract(LayeredContent content, string language = "english")
     {
@@ -41,6 +61,34 @@ internal static class LocalisationExtractor
         }
 
         return entries;
+    }
+
+    /// <summary>
+    /// The keys that come from a file whose entries are always kept.
+    /// </summary>
+    /// <remarks>
+    /// Read separately rather than recorded during <see cref="Extract"/>, so that the flat lookup
+    /// stays a flat lookup: nothing else in the app cares which file a word came from.
+    /// </remarks>
+    public static HashSet<string> AlwaysKeptKeys(LayeredContent content, string language = "english")
+    {
+        ArgumentNullException.ThrowIfNull(content);
+
+        var keys = new HashSet<string>(StringComparer.Ordinal);
+
+        foreach (var path in content.EnumerateFiles($"localisation/{language}", "*.yml", recursive: true)
+                     .Where(IsAlwaysKept))
+        {
+            foreach (var line in DecodeSkippingByteOrderMark(content.Read(path)).Split('\n'))
+            {
+                if (TryParseLine(line, out var key, out _))
+                {
+                    keys.Add(key);
+                }
+            }
+        }
+
+        return keys;
     }
 
     private static string DecodeSkippingByteOrderMark(byte[] bytes)

@@ -71,15 +71,25 @@ internal static partial class LocalisationPruner
     ];
 
     /// <summary>Keeps only the entries the database can reach, following references between them.</summary>
+    /// <param name="alwaysKept">
+    /// Entries to keep whatever refers to them — the name lists and the name-system formats, which a
+    /// player's own empire may use and no part of the game's own content points at.
+    /// </param>
     public static Dictionary<string, string> Prune(
         GameDatabase database,
-        IReadOnlyDictionary<string, string> all)
+        IReadOnlyDictionary<string, string> all,
+        IReadOnlySet<string>? alwaysKept = null)
     {
         ArgumentNullException.ThrowIfNull(database);
         ArgumentNullException.ThrowIfNull(all);
 
         var wanted = new HashSet<string>(StringComparer.Ordinal);
         CollectSeeds(database, wanted);
+
+        foreach (var key in alwaysKept ?? (IReadOnlySet<string>)new HashSet<string>())
+        {
+            wanted.Add(key);
+        }
 
         var kept = new Dictionary<string, string>(StringComparer.Ordinal);
         var frontier = wanted;
@@ -379,7 +389,7 @@ internal static partial class LocalisationPruner
     }
 
     /// <summary>Matches <c>$KEY$</c> and <c>$KEY|format$</c>.</summary>
-    [GeneratedRegex(@"\$([A-Za-z_][A-Za-z0-9_.]*)(?:\|[^$]*)?\$")]
+    [GeneratedRegex(@"\$([A-Za-z_][A-Za-z0-9_.\-]*)(?:\|[^$]*)?\$")]
     private static partial Regex VariableReference();
 
     /// <summary>
@@ -410,6 +420,6 @@ internal static partial class LocalisationPruner
     /// The percent-wrapped templates are skipped: the engine builds those and the game's text has no
     /// entry for any of them.
     /// </remarks>
-    [GeneratedRegex(@"key=""([A-Za-z_][A-Za-z0-9_.]*)""")]
+    [GeneratedRegex(@"key=""([A-Za-z_][A-Za-z0-9_.\-]*)""")]
     private static partial Regex StoredKey();
 }

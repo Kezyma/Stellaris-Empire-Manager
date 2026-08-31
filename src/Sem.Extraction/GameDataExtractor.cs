@@ -540,7 +540,10 @@ public sealed class GameDataExtractor(LayeredContent content)
         }
 
         var all = Localisation;
-        return reachableFrom is null ? all : LocalisationPruner.Prune(reachableFrom, all);
+        return reachableFrom is null
+            ? all
+            : LocalisationPruner.Prune(
+                reachableFrom, all, LocalisationExtractor.AlwaysKeptKeys(_content, _language));
     }
 
     /// <summary>Reads the game's version from the launcher settings the installation ships.</summary>

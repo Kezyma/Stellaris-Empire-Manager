@@ -327,6 +327,45 @@ public sealed class GameDataExtractionTests
     }
 
     /// <summary>
+    /// A name list's characters come from every culture it defines, and include its regnal names.
+    /// </summary>
+    /// <remarks>
+    /// Two gaps, both counted out of the game's files. The reader took the first culture only, on
+    /// the stated grounds that every list a player can choose holds one — but HUMAN1 and HUMAN2 each
+    /// hold eleven, weighted, so a human empire was offered about a tenth of the names the game has.
+    /// And regnal_first_names and regnal_second_names, which sixty-one of the seventy-one lists
+    /// declare, were never asked for at all.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void ANameListOffersEveryCultureItHoldsAndItsRegnalNamesToo()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        var human = Single(database.NameLists, l => l.Key == "HUMAN1").CharacterNames;
+
+        // Eleven cultures between them, and no single one of them holds anything like this many.
+        Assert.True(
+            human.FirstNames.All.Count > 1000,
+            $"HUMAN1 offers {human.FirstNames.All.Count} first names; one culture alone is about a tenth of that.");
+
+        Assert.True(human.SecondNames.All.Count > 900);
+
+        // The regnal pool is its own, and is not empty for a list that declares one.
+        Assert.NotEmpty(human.RegnalFirstNames.All);
+        Assert.NotEmpty(human.RegnalSecondNames.All);
+
+        // A list with one culture is unaffected by reading them all.
+        var plantoid = Single(database.NameLists, l => l.Key == "PLANT4").CharacterNames;
+        Assert.NotEmpty(plantoid.FirstNames.All);
+        Assert.NotEmpty(plantoid.RegnalFirstNames.All);
+
+        // And the assembled suggestions draw on both pools rather than the ordinary one alone.
+        Assert.True(plantoid.Assembled(500).Count > plantoid.FirstNames.All.Count);
+    }
+
+    /// <summary>
     /// The surfaces the game's own empire designer is drawn on.
     /// </summary>
     /// <remarks>
@@ -452,7 +491,20 @@ public sealed class GameDataExtractionTests
 
         // English in full is mostly event and dialogue text no empire designer will ever display.
         Assert.True(all.Count > 100_000, $"Expected the full localisation, got {all.Count} entries.");
-        Assert.True(pruned.Count < all.Count / 10, $"Pruning kept {pruned.Count} of {all.Count} entries.");
+
+        // A third rather than a tenth, and deliberately: the thirty-two thousand name-list entries
+        // are kept whole because a player's own empire may name any of them and nothing in the
+        // game's own content points at them. What is dropped is still three quarters of the file.
+        Assert.True(pruned.Count < all.Count / 3, $"Pruning kept {pruned.Count} of {all.Count} entries.");
+
+        // The names themselves, which were pruned and left custom empires reading as their own keys.
+        Assert.Contains("PLANT4_CHR_Cytophane", pruned);
+
+        // A key with a hyphen in it, which the reference pattern used to stop short of.
+        Assert.Contains("FUN3_CHR_uvi-Livve", pruned);
+
+        // And the name-system formats, which an empire's own name is built out of.
+        Assert.Contains("AofB", pruned);
 
         foreach (var key in (string[])
         [

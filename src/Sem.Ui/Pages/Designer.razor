@@ -74,8 +74,8 @@ else
             @foreach (var problem in _session.Report.Errors)
             {
                 <div class="sem-problem">
-                    <div class="area">@problem.Area</div>
-                    <div>@problem.Message</div>
+                    <div class="area">@AreaName(problem.Area)</div>
+                    <div>@Describe(problem)</div>
 
                     @foreach (var reason in problem.Reasons.Distinct())
                     {
@@ -87,8 +87,8 @@ else
             @foreach (var problem in _session.Report.Warnings)
             {
                 <div class="sem-problem warning">
-                    <div class="area">@problem.Area</div>
-                    <div>@problem.Message</div>
+                    <div class="area">@AreaName(problem.Area)</div>
+                    <div>@Describe(problem)</div>
                 </div>
             }
         </div>
@@ -135,6 +135,35 @@ else
             return string.Join(", ", parts);
         }
     }
+
+    /// <summary>
+    /// A problem's message with the things it names spelled out.
+    /// </summary>
+    /// <remarks>
+    /// The rules know nothing about language, so a message that has to name something the game
+    /// defines leaves a numbered blank and hands over the key. Filling them here is what turns
+    /// "This origin starts the empire on 'pc_volcanic'" into the words a player would recognise.
+    /// </remarks>
+    private string Describe(ValidationProblem problem) =>
+        problem.Arguments.Count == 0
+            ? problem.Message
+            : string.Format(
+                System.Globalization.CultureInfo.CurrentCulture,
+                problem.Message,
+                [.. problem.Arguments.Select(key => _session!.Localizer.Text(key))]);
+
+    /// <summary>
+    /// What to call the part of the empire a problem belongs to.
+    /// </summary>
+    /// <remarks>
+    /// The enum's own name is shouted and run together — SECONDARYSPECIES — which is the same fault
+    /// as printing a key.
+    /// </remarks>
+    private static string AreaName(ValidationArea area) => area switch
+    {
+        ValidationArea.SecondarySpecies => "Second species",
+        _ => Localizer.Prettify(area.ToString()),
+    };
 
     private string Title => _session?.Current is { } design
         ? _session.Localizer.Name(design.Name, design.Key)

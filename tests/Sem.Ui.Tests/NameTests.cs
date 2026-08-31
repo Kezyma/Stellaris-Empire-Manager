@@ -373,6 +373,73 @@ public sealed class NameTests
         Assert.Equal("Human", localizer.Name(species.Adjective));
     }
 
+    /// <summary>
+    /// A name built from one of the game's own formats reads as the format, not as its key.
+    /// </summary>
+    /// <remarks>
+    /// Exactly as the player's file stores it: AofB over two numbered variables. The format is
+    /// declared in name_system_l_english.yml as "$1$ of $2$" and is not reachable from anything the
+    /// game's own content refers to, so the pruner dropped it and the empire read as
+    /// "AofB Empire Pakshalika" — its key, then its parts, in the order they happened to be in.
+    ///
+    /// Neither part is an entry either; the game stores the words themselves as keys. Falling back
+    /// to the key is what makes them come out as words.
+    /// </remarks>
+    [Fact]
+    public void AnEmpireNamedByOneOfTheGamesFormatsReadsAsThatFormat()
+    {
+        var design = EmpireDesignsFile.LoadText("""
+            "Empire of Pakshalika"=
+            {
+            	key="Empire of Pakshalika"
+            	name=
+            	{
+            		key="AofB"
+            		variables=
+            		{
+            			{
+            				key="1"
+            				value=
+            				{
+            					key="Empire"
+            				}
+            			}
+            			{
+            				key="2"
+            				value=
+            				{
+            					key="Pakshalika"
+            				}
+            			}
+            		}
+            	}
+            }
+            """).Designs[0];
+
+        var localizer = new Localizer(new Dictionary<string, string>
+        {
+            ["AofB"] = "$1$ of $2$",
+        });
+
+        Assert.Equal("Empire of Pakshalika", localizer.Name(design.Name, design.Key));
+    }
+
+    /// <summary>
+    /// A key may contain a hyphen, and half a ruler's name went missing because the pattern said not.
+    /// </summary>
+    [Fact]
+    public void AReferenceToAHyphenatedKeyIsResolvedLikeAnyOther()
+    {
+        var localizer = new Localizer(new Dictionary<string, string>
+        {
+            ["PRESCRIPTED_ruler_name_zhardmehka"] = "$FUN3_CHR_Obanva$ $FUN3_CHR_uvi-Livve$",
+            ["FUN3_CHR_Obanva"] = "Obanva",
+            ["FUN3_CHR_uvi-Livve"] = "uvi-Livve",
+        });
+
+        Assert.Equal("Obanva uvi-Livve", localizer.Text("PRESCRIPTED_ruler_name_zhardmehka"));
+    }
+
     [Fact]
     public void TextThePlayerTypedIsShownBackUnchanged()
     {

@@ -469,6 +469,21 @@ public sealed class EmpireRulesTests
         var warning = Assert.Single(report.Warnings);
         Assert.Equal(ValidationArea.Homeworld, warning.Area);
         Assert.Contains("is ignored", warning.Message, StringComparison.Ordinal);
+
+        // The worlds are named by key rather than written into the sentence, so the interface can
+        // put their actual names there. It used to read "starts the empire on 'pc_habitat'", which
+        // is the name of a thing rather than the thing's name.
+        Assert.Equal(["pc_habitat", "pc_continental"], warning.Arguments);
+        Assert.DoesNotContain("pc_", warning.Message, StringComparison.Ordinal);
+
+        // And the sentence is one string.Format away from being readable.
+        Assert.Equal(
+            "This origin starts the empire on a habitat, so the continental world homeworld is ignored.",
+            string.Format(
+                System.Globalization.CultureInfo.InvariantCulture,
+                warning.Message,
+                "a habitat",
+                "continental world"));
     }
 
     [Fact]

@@ -620,8 +620,12 @@ public sealed partial class Localizer(
     /// A name may be a bare number. The game's own name templates are positional — "Blessed $1$" —
     /// and a pattern that insisted on a letter first could never fill one, which is why an empire
     /// built that way showed its template rather than its name.
+    ///
+    /// A hyphen is part of a key too. FUN3_CHR_uvi-Livve is one, and without it a prescripted
+    /// ruler's name came out half resolved — "Obanva $FUN3_CHR_uvi-Livve$" — with the first of two
+    /// references filled and the second printed as itself.
     /// </remarks>
-    [GeneratedRegex(@"\$(@?[A-Za-z0-9_][A-Za-z0-9_.]*)(?:\|([^$]*))?\$")]
+    [GeneratedRegex(@"\$(@?[A-Za-z0-9_][A-Za-z0-9_.\-]*)(?:\|([^$]*))?\$")]
     private static partial Regex VariableReference();
 
     /// <summary>

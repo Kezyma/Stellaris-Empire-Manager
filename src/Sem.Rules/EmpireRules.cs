@@ -643,7 +643,10 @@ public sealed class EmpireRules(GameDatabase database)
             foreach (var reason in TraitBlockers(trait, context, budget, ignoreBudget: true))
             {
                 problems.Add(new ValidationProblem(
-                    area, key, $"'{key}' cannot be taken by this species.", [reason]));
+                    area, key, "{0} cannot be taken by this species.", [reason])
+                {
+                    Arguments = [key],
+                });
             }
         }
     }
@@ -692,9 +695,12 @@ public sealed class EmpireRules(GameDatabase database)
             problems.Add(new ValidationProblem(
                 ValidationArea.Ethics,
                 group.Key,
-                $"Only one ethic may be taken from the '{group.Key}' group, but the empire has " +
-                $"{string.Join(" and ", group.Select(e => e.Key))}.",
-                []));
+                "Only one ethic may be taken from the {0} group, but the empire has " +
+                string.Join(" and ", group.Select((_, i) => $"{{{i + 1}}}")) + ".",
+                [])
+            {
+                Arguments = [group.Key, .. group.Select(e => e.Key)],
+            });
         }
     }
 
@@ -787,9 +793,12 @@ public sealed class EmpireRules(GameDatabase database)
                 problems.Add(new ValidationProblem(
                     ValidationArea.Homeworld,
                     key,
-                    $"This origin starts the empire on '{imposed}', so the '{key}' homeworld is ignored.",
+                    "This origin starts the empire on {0}, so the {1} homeworld is ignored.",
                     [],
-                    ValidationSeverity.Warning));
+                    ValidationSeverity.Warning)
+                {
+                    Arguments = [imposed, key],
+                });
             }
 
             return;
@@ -800,8 +809,11 @@ public sealed class EmpireRules(GameDatabase database)
             problems.Add(new ValidationProblem(
                 ValidationArea.Homeworld,
                 key,
-                $"'{key}' is not a homeworld this empire can start on.",
-                []));
+                "{0} is not a homeworld this empire can start on.",
+                [])
+            {
+                Arguments = [key],
+            });
         }
     }
 
@@ -943,7 +955,10 @@ public sealed class EmpireRules(GameDatabase database)
 
         if (!verdict.Passed)
         {
-            problems.Add(new ValidationProblem(area, key, $"'{key}' {description}.", verdict.Reasons));
+            problems.Add(new ValidationProblem(area, key, $"{{0}} {description}.", verdict.Reasons)
+            {
+                Arguments = [key],
+            });
         }
     }
 
