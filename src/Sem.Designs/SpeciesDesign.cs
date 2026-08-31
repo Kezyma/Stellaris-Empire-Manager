@@ -3,8 +3,20 @@ using Sem.Clausewitz;
 namespace Sem.Designs;
 
 /// <summary>The founder species of an empire design, or its secondary species.</summary>
-public sealed class SpeciesDesign(CwBlock block) : CwView(block, FieldOrder)
+public sealed class SpeciesDesign : CwView
 {
+    /// <summary>Views a block the design already has.</summary>
+    public SpeciesDesign(CwBlock block)
+        : base(block, FieldOrder)
+    {
+    }
+
+    /// <summary>Views a block that is made only when something is written to it.</summary>
+    public SpeciesDesign(CwView parent, string key)
+        : base(parent, key, FieldOrder)
+    {
+    }
+
     internal static readonly string[] FieldOrder =
     [
         "class",
@@ -33,13 +45,13 @@ public sealed class SpeciesDesign(CwBlock block) : CwView(block, FieldOrder)
     }
 
     /// <summary>The species name.</summary>
-    public LocRef Name => new(GetOrAddBlock("species_name"));
+    public LocRef Name => new(this, "species_name");
 
     /// <summary>The plural form of the species name.</summary>
-    public LocRef Plural => new(GetOrAddBlock("species_plural"));
+    public LocRef Plural => new(this, "species_plural");
 
     /// <summary>The adjectival form of the species name.</summary>
-    public LocRef Adjective => new(GetOrAddBlock("species_adjective"));
+    public LocRef Adjective => new(this, "species_adjective");
 
     /// <summary>
     /// Free-text species description. Added in 4.x and optional. The game's own writer truncates

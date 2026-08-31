@@ -129,12 +129,61 @@ internal static class RulesTestData
                 RequiresSecondarySpecies = true,
                 SecondarySpeciesTraits = ["trait_syncretic_proles"],
             },
+            // States its extra trait allowance in a plain modifier block, as most of them do.
             new CivicDefinition("civic_natural_design", IsOrigin: false)
             {
-                TraitBudgetModifiers = new Dictionary<string, double>
+                Effects = new EffectSet
                 {
-                    ["BIOLOGICAL_species_trait_points_add"] = 2,
-                    ["BIOLOGICAL_species_trait_picks_add"] = 2,
+                    Modifiers = new Dictionary<string, double>
+                    {
+                        ["BIOLOGICAL_species_trait_points_add"] = 2,
+                        ["BIOLOGICAL_species_trait_picks_add"] = 2,
+                    },
+                },
+            },
+
+            // States it only inside two mutually exclusive swaps, the way the game's hive-mind
+            // Innate Design does. The budget must take the one that applies and not both.
+            new CivicDefinition("civic_swapped_design", IsOrigin: false)
+            {
+                Effects = new EffectSet
+                {
+                    Conditional =
+                    [
+                        new ConditionalEffects(
+                            new PredicateRequirement(DesignPredicates.IsWildernessEmpire).Negated(),
+                            new Dictionary<string, double>
+                            {
+                                ["BIOLOGICAL_species_trait_points_add"] = 2,
+                                ["BIOLOGICAL_species_trait_picks_add"] = 2,
+                            }),
+                        new ConditionalEffects(
+                            new PredicateRequirement(DesignPredicates.IsWildernessEmpire),
+                            new Dictionary<string, double>
+                            {
+                                ["BIOLOGICAL_species_trait_points_add"] = 2,
+                                ["BIOLOGICAL_species_trait_picks_add"] = 2,
+                            }),
+                    ],
+                },
+            },
+
+            // States it behind a condition no design can settle. A bonus promised on evidence the
+            // designer does not have is not one to spend against.
+            new CivicDefinition("civic_undecidable_design", IsOrigin: false)
+            {
+                Effects = new EffectSet
+                {
+                    Conditional =
+                    [
+                        new ConditionalEffects(
+                            new UnknownRequirement("has_active_tradition"),
+                            new Dictionary<string, double>
+                            {
+                                ["BIOLOGICAL_species_trait_points_add"] = 5,
+                                ["BIOLOGICAL_species_trait_picks_add"] = 5,
+                            }),
+                    ],
                 },
             },
         ],

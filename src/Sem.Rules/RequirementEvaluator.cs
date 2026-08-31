@@ -97,6 +97,14 @@ public sealed class RequirementEvaluator
 
         AnyRequirement any => EvaluateAny(any, context),
 
+        // Negating a condition nobody could read does not make it readable, so the permissive
+        // assumption has to survive the negation. Without this, `unknown_trigger = no` — and the
+        // same trigger inside NOT or NOR — compiled to Not(Pass) and refused the option outright,
+        // turning the fail-open policy into fail-closed in about half of the positions a condition
+        // can appear in, and precisely when it matters: a patch introducing script this does not yet
+        // understand.
+        NotRequirement { Item: UnknownRequirement } => Verdict.Pass,
+
         // A negation that fails has nothing useful to report from inside it: the child succeeded,
         // and its reasons describe a failure that did not happen.
         NotRequirement not => Evaluate(not.Item, context).Passed ? Verdict.Fail : Verdict.Pass,

@@ -3,8 +3,20 @@ using Sem.Clausewitz;
 namespace Sem.Designs;
 
 /// <summary>The empire's starting ruler.</summary>
-public sealed class RulerDesign(CwBlock block) : CwView(block, FieldOrder)
+public sealed class RulerDesign : CwView
 {
+    /// <summary>Views a block the design already has.</summary>
+    public RulerDesign(CwBlock block)
+        : base(block, FieldOrder)
+    {
+    }
+
+    /// <summary>Views a block that is made only when something is written to it.</summary>
+    public RulerDesign(CwView parent, string key)
+        : base(parent, key, FieldOrder)
+    {
+    }
+
     internal static readonly string[] FieldOrder =
     [
         "gender",
@@ -34,7 +46,7 @@ public sealed class RulerDesign(CwBlock block) : CwView(block, FieldOrder)
     }
 
     /// <summary>The ruler's name, wrapped in the regnal-name structure the game uses.</summary>
-    public RulerName Name => new(GetOrAddBlock("name"));
+    public RulerName Name => new(this, "name");
 
     /// <summary>Portrait key. Usually, but not necessarily, one of the founder species' portraits.</summary>
     public string? Portrait
@@ -147,9 +159,21 @@ public sealed class RulerDesign(CwBlock block) : CwView(block, FieldOrder)
 /// A ruler's name. The game wraps the name itself in <c>full_names</c> and records separately
 /// whether the full regnal form should be displayed.
 /// </summary>
-public sealed class RulerName(CwBlock block) : CwView(block, FieldOrder)
+public sealed class RulerName : CwView
 {
     private static readonly string[] FieldOrder = ["full_names", "first_name", "second_name", "use_full_regnal_name"];
+
+    /// <summary>Views a block the ruler already has.</summary>
+    public RulerName(CwBlock block)
+        : base(block, FieldOrder)
+    {
+    }
+
+    /// <summary>Views a block that is made only when something is written to it.</summary>
+    public RulerName(CwView parent, string key)
+        : base(parent, key, FieldOrder)
+    {
+    }
 
     /// <summary>
     /// The name itself. Player-created designs always use this form; the game's own prescripted

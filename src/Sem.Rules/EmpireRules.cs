@@ -70,13 +70,29 @@ public sealed class EmpireRules(GameDatabase database)
         {
             // Natural Design, Overtuned, Shroud-Forged and Unplugged all widen the allowance, and
             // the budget is wrong before they are applied.
+            //
+            // Read from the option's own effects rather than from a list of just its always-on
+            // modifiers, because a civic may state the bonus inside a swap. The hive mind's Innate
+            // Design states it in nothing else: both its swaps grant two points and two picks and it
+            // has no top-level modifier block at all, so a budget built from the always-on numbers
+            // came to zero. Going through the same filter as the modifier panel also settles which
+            // of two mutually exclusive swaps applies, instead of summing both.
             var pointsKey = $"{archetypeKey}_species_trait_points_add";
             var picksKey = $"{archetypeKey}_species_trait_picks_add";
 
             foreach (var civic in SelectedCivicsAndOrigin(context))
             {
-                points += (int)civic.TraitBudgetModifiers.GetValueOrDefault(pointsKey);
-                picks += (int)civic.TraitBudgetModifiers.GetValueOrDefault(picksKey);
+                foreach (var (modifier, value) in DesignEffects.Applying(civic.Effects, context))
+                {
+                    if (string.Equals(modifier, pointsKey, StringComparison.Ordinal))
+                    {
+                        points += (int)value;
+                    }
+                    else if (string.Equals(modifier, picksKey, StringComparison.Ordinal))
+                    {
+                        picks += (int)value;
+                    }
+                }
             }
         }
 
@@ -304,25 +320,42 @@ public sealed class EmpireRules(GameDatabase database)
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        return HabitabilityTraitFor(context.EffectivePlanetClass);
+        return HabitabilityTraitFor(context.EffectivePlanetClass, context.SpeciesArchetype);
     }
 
     /// <summary>
     /// The habitability preference a given world would give, whether or not it is the one chosen.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Asked of every world in the picker, so that hovering one says what living there does to a
     /// species — which is the only thing a planet class has to say for itself. The game writes no
     /// description for them at all.
+    /// </para>
+    /// <para>
+    /// The archetype decides between traits that suit the same world, and leaving it out was wrong:
+    /// <c>trait_pc_desert_preference</c> is <c>allowed_archetypes = { BIOLOGICAL PRESAPIENT LITHOID
+    /// }</c>, so a machine empire on a desert world was shown a trait its species cannot hold. The
+    /// game gives it <c>trait_dry_planet_preference</c> instead, which is bound to the same three
+    /// classes and allowed to <c>{ MACHINE ROBOT }</c>.
+    /// </para>
     /// </remarks>
-    public string? HabitabilityTraitFor(string? planetClassKey)
+    /// <param name="planetClassKey">The world the species evolved on.</param>
+    /// <param name="archetype">
+    /// What the species is made of. Null asks only what the world offers, which is what a picker
+    /// wants before a species class has been chosen.
+    /// </param>
+    public string? HabitabilityTraitFor(string? planetClassKey, string? archetype = null)
     {
         if (planetClassKey is not { Length: > 0 } planetClass)
         {
             return null;
         }
 
-        if (Trait($"trait_{planetClass}_preference") is { } exact)
+        // The game names a preference after the thing that grants it: a planet class, or a climate
+        // where several classes share one. Those two answers are kept first so that a species the
+        // trait suits still gets the trait the game names after its world.
+        if (Named($"trait_{planetClass}_preference") is { } exact)
         {
             return exact;
         }
@@ -330,24 +363,64 @@ public sealed class EmpireRules(GameDatabase database)
         var climate = _database.PlanetClasses
             .FirstOrDefault(p => string.Equals(p.Key, planetClass, StringComparison.Ordinal))?.Climate;
 
-        return climate is { Length: > 0 } ? Trait($"trait_auto_{climate}_preference") : null;
+        if (climate is { Length: > 0 } && Named($"trait_auto_{climate}_preference") is { } shared)
+        {
+            return shared;
+        }
 
-        string? Trait(string key) =>
-            _database.Traits.Any(t => string.Equals(t.Key, key, StringComparison.Ordinal)) ? key : null;
+        // Nothing named for this world that this species may hold, so ask the data instead: of the
+        // preferences the archetype is allowed, whichever makes this world most habitable.
+        var wanted = $"{planetClass}_habitability";
+
+        return _database.Traits
+            .Where(t => IsPreference(t) && Allows(t, archetype))
+            .Select(t => (Key: t.Key, Habitability: t.Effects.Modifiers.GetValueOrDefault(wanted)))
+            .Where(candidate => candidate.Habitability > 0)
+            .OrderByDescending(candidate => candidate.Habitability)
+            .ThenBy(candidate => candidate.Key, StringComparer.Ordinal)
+            .Select(candidate => candidate.Key)
+            .FirstOrDefault();
+
+        string? Named(string key) =>
+            _traits.TryGetValue(key, out var trait) && Allows(trait, archetype) ? key : null;
     }
+
+    /// <summary>Whether a species of this archetype may hold the trait. An empty list allows any.</summary>
+    private static bool Allows(TraitDefinition trait, string? archetype) =>
+        archetype is null ||
+        trait.AllowedArchetypes.Count == 0 ||
+        trait.AllowedArchetypes.Contains(archetype, StringComparer.Ordinal);
+
+    /// <summary>
+    /// Whether a trait is one of the habitability preferences.
+    /// </summary>
+    /// <remarks>
+    /// Asked of the trait's own effects rather than of its name. The two prefixes this used —
+    /// <c>trait_pc_</c> and <c>trait_auto_</c> — matched 36 of the 48 the game defines and missed
+    /// the whole <c>trait_machine_pc_*</c> family along with the four
+    /// <c>trait_{cold,dry,wet,volcanic}_planet_preference</c>. All 48 grant a habitability modifier
+    /// and no other trait ending in <c>_preference</c> exists, so that pair of facts names them
+    /// exactly, and keeps naming them when the game adds another.
+    /// </remarks>
+    private static bool IsPreference(TraitDefinition trait) =>
+        trait.Key.EndsWith(PreferenceSuffix, StringComparison.Ordinal) &&
+        trait.Effects.Modifiers.Keys.Any(k => k.EndsWith(HabitabilitySuffix, StringComparison.Ordinal));
+
+    private const string PreferenceSuffix = "_preference";
+    private const string HabitabilitySuffix = "_habitability";
 
     /// <summary>
     /// Whether a trait is one the homeworld decides rather than one the player picks.
     /// </summary>
     /// <remarks>
-    /// Offering these would be offering a choice the game does not have. They are shown among what
-    /// the species already has, so a player can see what it is suited to.
+    /// Offering these would be offering a choice the game does not have, and 32 of the 48 are
+    /// <c>initial = yes</c> so they would otherwise reach the picker. They are shown among what the
+    /// species already has, so a player can see what it is suited to.
     /// </remarks>
-    public static bool IsHabitabilityPreference(string traitKey) =>
+    public bool IsHabitabilityPreference(string traitKey) =>
         traitKey is { Length: > 0 } &&
-        traitKey.EndsWith("_preference", StringComparison.Ordinal) &&
-        (traitKey.StartsWith("trait_pc_", StringComparison.Ordinal) ||
-         traitKey.StartsWith("trait_auto_", StringComparison.Ordinal));
+        _traits.TryGetValue(traitKey, out var trait) &&
+        IsPreference(trait);
 
     /// <summary>
     /// The portraits this species may wear, grouped as the game's picker groups them.

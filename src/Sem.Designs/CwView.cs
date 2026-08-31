@@ -22,20 +22,58 @@ public abstract class CwView
 {
     private readonly IReadOnlyList<string> _fieldOrder;
 
+    /// <summary>The block this view holds, once it is known to exist.</summary>
+    private CwBlock? _block;
+
+    /// <summary>Where to find or make the block, for a view that was given a place rather than one.</summary>
+    private readonly CwView? _parent;
+    private readonly string? _key;
+
     protected CwView(CwBlock block, IReadOnlyList<string>? fieldOrder = null)
     {
         ArgumentNullException.ThrowIfNull(block);
 
-        Block = block;
+        _block = block;
         _fieldOrder = fieldOrder ?? [];
     }
 
-    /// <summary>The underlying block. Exposed so callers can reach fields the model does not model.</summary>
-    public CwBlock Block { get; }
+    /// <summary>
+    /// A view over one of another block's fields, which is not created until something is written.
+    /// </summary>
+    /// <remarks>
+    /// An empire missing a field the model knows about — an older file, a mod's, a hand-edited one —
+    /// used to gain an empty block from being looked at, because the property that reads it made it
+    /// on the way. Merely listing the empires wrote into every design that lacked one, and the
+    /// promise that a file nobody touched comes back byte for byte was broken by reading it.
+    /// </remarks>
+    /// <param name="parent">The block this one sits inside.</param>
+    /// <param name="key">The field it is stored under.</param>
+    /// <param name="fieldOrder">The order the game writes this block's fields in.</param>
+    protected CwView(CwView parent, string key, IReadOnlyList<string>? fieldOrder = null)
+    {
+        ArgumentNullException.ThrowIfNull(parent);
+        ArgumentException.ThrowIfNullOrEmpty(key);
+
+        _parent = parent;
+        _key = key;
+        _fieldOrder = fieldOrder ?? [];
+    }
+
+    /// <summary>
+    /// The underlying block, made now if the design has not got one. Exposed so callers can reach
+    /// fields the model does not model, which is something only a writer needs.
+    /// </summary>
+    public CwBlock Block => _block ??= _parent!.GetOrAddBlock(_key!);
+
+    /// <summary>
+    /// The block as the design holds it, or null when the design has not got one. Every read goes
+    /// through this, so that reading writes nothing.
+    /// </summary>
+    private CwBlock? Existing => _block ??= _parent?.GetBlock(_key!);
 
     /// <summary>The first node with this key, or null.</summary>
     protected CwNode? FindNode(string key) =>
-        Block.Nodes.FirstOrDefault(n => string.Equals(n.Key, key, StringComparison.Ordinal));
+        Existing?.Nodes.FirstOrDefault(n => string.Equals(n.Key, key, StringComparison.Ordinal));
 
     /// <summary>The first value for this key, unquoted, or null when absent.</summary>
     protected string? GetString(string key) => FindNode(key)?.ScalarValue;
@@ -43,7 +81,7 @@ public abstract class CwView
     /// <summary>Every value for a repeated key, in source order.</summary>
     protected IReadOnlyList<string> GetStrings(string key) =>
     [
-        .. Block.Nodes
+        .. (Existing?.Nodes ?? [])
             .Where(n => string.Equals(n.Key, key, StringComparison.Ordinal) && n.Scalar is not null)
             .Select(n => n.ScalarValue!)
     ];

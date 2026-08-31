@@ -777,9 +777,9 @@ public sealed record CivicDefinition(string Key, bool IsOrigin)
     /// <summary>What this does, and how the game describes it.</summary>
     public EffectSet Effects { get; init; } = EffectSet.None;
 
-    /// <summary>Extra trait points or picks this grants, keyed by the modifier the game uses.</summary>
-    public IReadOnlyDictionary<string, double> TraitBudgetModifiers { get; init; } =
-        new Dictionary<string, double>();
+    // No separate list of trait-budget modifiers. There was one, copied out of the always-on
+    // modifiers at extraction, and it lost every bonus the game states inside a swap. The budget is
+    // worked out from Effects above, which holds the conditional ones too.
 
     /// <summary>The homeworld type an origin forces, such as a habitat for Void Dwellers.</summary>
     public string? StartingColony { get; init; }

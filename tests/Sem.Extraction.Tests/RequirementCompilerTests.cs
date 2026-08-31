@@ -201,6 +201,19 @@ public sealed class RequirementCompilerTests
         Assert.Equal(1, compiler.Unrecognised["some_future_trigger"]);
     }
 
+    /// <summary>
+    /// A negated unknown still carries the permissive assumption inside it. What the evaluator makes
+    /// of that shape is pinned in <c>RequirementEvaluatorTests</c>, where the evaluator lives.
+    /// </summary>
+    [Fact]
+    public void AnUnknownConditionWrittenAsNoIsNegatedRatherThanInverted()
+    {
+        var compiled = new RequirementCompiler().CompileTrigger(Block("some_future_trigger = no"));
+
+        var negated = Assert.IsType<NotRequirement>(compiled);
+        Assert.True(Assert.IsType<UnknownRequirement>(negated.Item).Assume);
+    }
+
     [Fact]
     public void AnAbsentConditionPermitsTheOption()
     {

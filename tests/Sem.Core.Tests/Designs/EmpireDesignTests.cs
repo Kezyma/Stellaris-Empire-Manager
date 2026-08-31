@@ -639,4 +639,67 @@ public sealed class EmpireDesignTests
         Walk(reference);
         return string.Join(';', parts);
     }
+
+    /// <summary>
+    /// An empire carrying none of the blocks the model knows about, which is what an older file, a
+    /// mod's, or a hand-edited one can look like.
+    /// </summary>
+    private const string Bare =
+        "\"Spare\"=\r\n" +
+        "{\r\n" +
+        "\tkey=\"Spare\"\r\n" +
+        "\tauthority=\"auth_democratic\"\r\n" +
+        "}\r\n";
+
+    /// <summary>
+    /// Reading has to leave the file alone. Eight properties made the block they read from, so an
+    /// empire missing one gained an empty block from being looked at — and merely listing the
+    /// empires touched every design that lacked one, which is the promise the whole model exists to
+    /// keep.
+    /// </summary>
+    [Fact]
+    public void ReadingAnEmpireThatHasNoneOfTheseBlocksAddsNoneOfThem()
+    {
+        var file = EmpireDesignsFile.LoadText(Bare);
+        var design = file.Designs[0];
+
+        // Every property that used to make its own block on the way past.
+        _ = design.ShipPrefix.Key;
+        _ = design.Name.Key;
+        _ = design.Adjective.Key;
+        _ = design.PlanetName.Key;
+        _ = design.SystemName.Key;
+        _ = design.Species.Class;
+        _ = design.Species.Name.Key;
+        _ = design.Species.Plural.Key;
+        _ = design.Species.Adjective.Key;
+        _ = design.Flag.Colors;
+        _ = design.Flag.Icon.File;
+        _ = design.Flag.Background.File;
+        _ = design.Ruler.Gender;
+        _ = design.Ruler.Name.FullNames;
+
+        Assert.Equal(Bare, file.Document.ToText());
+    }
+
+    /// <summary>
+    /// And writing still makes what it needs, in the place the game would have written it.
+    /// </summary>
+    [Fact]
+    public void WritingToOneOfThoseBlocksStillMakesIt()
+    {
+        var file = EmpireDesignsFile.LoadText(Bare);
+        var design = file.Designs[0];
+
+        design.Name.SetLiteral("Spare Parts");
+
+        Assert.Equal("Spare Parts", design.Name.Key);
+        Assert.True(design.Name.IsLiteral);
+        Assert.Contains("Spare Parts", file.Document.ToText(), StringComparison.Ordinal);
+
+        // Read back through a fresh parse, so this is what the game would find.
+        Assert.Equal(
+            "Spare Parts",
+            EmpireDesignsFile.LoadText(file.Document.ToText()).Designs[0].Name.Key);
+    }
 }

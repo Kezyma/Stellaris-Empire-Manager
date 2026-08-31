@@ -5,9 +5,21 @@ namespace Sem.Designs;
 /// <summary>
 /// An empire's flag: a background, an emblem laid over it, and the colours they are tinted with.
 /// </summary>
-public sealed class EmpireFlag(CwBlock block) : CwView(block, FieldOrder)
+public sealed class EmpireFlag : CwView
 {
     internal static readonly string[] FieldOrder = ["icon", "background", "colors"];
+
+    /// <summary>Views a block the design already has.</summary>
+    public EmpireFlag(CwBlock block)
+        : base(block, FieldOrder)
+    {
+    }
+
+    /// <summary>Views a block that is made only when something is written to it.</summary>
+    public EmpireFlag(CwView parent, string key)
+        : base(parent, key, FieldOrder)
+    {
+    }
 
     /// <summary>The number of colour slots the game always writes, padding unused ones.</summary>
     public const int ColorSlots = 4;
@@ -16,10 +28,10 @@ public sealed class EmpireFlag(CwBlock block) : CwView(block, FieldOrder)
     public const string EmptyColor = "null";
 
     /// <summary>The emblem laid over the background.</summary>
-    public FlagImage Icon => new(GetOrAddBlock("icon"));
+    public FlagImage Icon => new(this, "icon");
 
     /// <summary>The background shape the emblem sits on.</summary>
-    public FlagImage Background => new(GetOrAddBlock("background"));
+    public FlagImage Background => new(this, "background");
 
     /// <summary>
     /// The four colour slots, in order. Unused slots hold <see cref="EmptyColor"/> rather than
@@ -73,9 +85,21 @@ public sealed class EmpireFlag(CwBlock block) : CwView(block, FieldOrder)
 }
 
 /// <summary>One image making up a flag, identified by the folder it lives in and its file name.</summary>
-public sealed class FlagImage(CwBlock block) : CwView(block, FieldOrder)
+public sealed class FlagImage : CwView
 {
     private static readonly string[] FieldOrder = ["category", "file"];
+
+    /// <summary>Views a block the flag already has.</summary>
+    public FlagImage(CwBlock block)
+        : base(block, FieldOrder)
+    {
+    }
+
+    /// <summary>Views a block that is made only when something is written to it.</summary>
+    public FlagImage(CwView parent, string key)
+        : base(parent, key, FieldOrder)
+    {
+    }
 
     /// <summary>The folder under <c>flags/</c>, such as <c>zoological</c> or <c>backgrounds</c>.</summary>
     public string? Category

@@ -6,13 +6,6 @@ namespace Sem.Extraction.Extractors;
 /// <summary>Reads authorities, civics, origins and government types.</summary>
 internal static class GovernmentExtractor
 {
-    /// <summary>
-    /// Modifier keys granting extra species trait points or picks, which several civics and
-    /// origins do and which must be applied before a species' trait budget can be checked.
-    /// </summary>
-    private const string TraitPointsSuffix = "_species_trait_points_add";
-    private const string TraitPicksSuffix = "_species_trait_picks_add";
-
     /// <summary>Reads the government authorities.</summary>
     public static List<AuthorityDefinition> ExtractAuthorities(
         ScriptLoader loader,
@@ -73,7 +66,6 @@ internal static class GovernmentExtractor
                 ForcedTraits = ReadForcedTraits(body),
                 SoftTraits = ReadTraitList(body.GetBlock("soft_traits")),
                 Effects = effects,
-                TraitBudgetModifiers = ExtractTraitBudgetModifiers(effects.Modifiers),
                 StartingColony = body.GetString("starting_colony"),
                 HabitabilityPreference = body.GetString("habitability_preference"),
                 Initializers = body.GetList("initializers"),
@@ -172,27 +164,6 @@ internal static class GovernmentExtractor
 
     private static IReadOnlyList<string> ReadTraitList(CwBlock? block) =>
         block is null ? [] : block.GetStrings("trait");
-
-    /// <summary>
-    /// Picks out the modifiers that change how many traits a species may take, so the trait budget
-    /// can account for Natural Design, Overtuned and the like.
-    /// </summary>
-    private static Dictionary<string, double> ExtractTraitBudgetModifiers(
-        IReadOnlyDictionary<string, double> modifiers)
-    {
-        var budget = new Dictionary<string, double>(StringComparer.Ordinal);
-
-        foreach (var (key, value) in modifiers)
-        {
-            if (key.EndsWith(TraitPointsSuffix, StringComparison.Ordinal) ||
-                key.EndsWith(TraitPicksSuffix, StringComparison.Ordinal))
-            {
-                budget[key] = value;
-            }
-        }
-
-        return budget;
-    }
 
     /// <summary>
     /// Works out a civic or origin's icon. Origins state theirs outright, one of them without

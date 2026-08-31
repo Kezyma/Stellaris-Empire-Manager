@@ -106,7 +106,22 @@ public static class DesignEffects
     /// <summary>
     /// One option's modifiers, taking in the conditional ones whose condition is settled and met.
     /// </summary>
-    private static IEnumerable<KeyValuePair<string, double>> Applying(EffectSet effects, DesignContext context)
+    /// <remarks>
+    /// Public because the trait budget is worked out from the same numbers. It used to read a
+    /// separate flat list the extractor built from the always-on modifiers only, which silently lost
+    /// every bonus the game states inside a <c>swap_type</c> — and left the budget bar and the
+    /// modifier panel disagreeing on screen about the same civic. Reading both from here is what
+    /// makes that disagreement impossible rather than merely fixed.
+    /// </remarks>
+    public static IEnumerable<KeyValuePair<string, double>> Applying(EffectSet effects, DesignContext context)
+    {
+        ArgumentNullException.ThrowIfNull(effects);
+        ArgumentNullException.ThrowIfNull(context);
+
+        return ApplyingCore(effects, context);
+    }
+
+    private static IEnumerable<KeyValuePair<string, double>> ApplyingCore(EffectSet effects, DesignContext context)
     {
         foreach (var modifier in effects.Modifiers)
         {

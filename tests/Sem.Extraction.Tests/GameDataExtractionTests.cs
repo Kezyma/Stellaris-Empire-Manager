@@ -325,10 +325,26 @@ public sealed class GameDataExtractionTests
         Assert.True(syncretic.RequiresSecondarySpecies);
         Assert.Contains("trait_syncretic_proles", syncretic.SecondarySpeciesTraits);
 
-        // Several civics and origins change how many traits a species may take.
+        // Several civics and origins change how many traits a species may take. Natural Design says
+        // so in a plain modifier block.
         var naturalDesign = Single(database.Civics, c => c.Key == "civic_natural_design");
-        Assert.Contains("BIOLOGICAL_species_trait_points_add", naturalDesign.TraitBudgetModifiers.Keys);
-        Assert.Contains("BIOLOGICAL_species_trait_picks_add", naturalDesign.TraitBudgetModifiers.Keys);
+        Assert.Contains("BIOLOGICAL_species_trait_points_add", naturalDesign.Effects.Modifiers.Keys);
+        Assert.Contains("BIOLOGICAL_species_trait_picks_add", naturalDesign.Effects.Modifiers.Keys);
+
+        // The hive mind's version says so only inside its swaps, and has no plain modifier block at
+        // all. Reading the always-on modifiers alone lost it, which cost a hive mind two points and
+        // two picks in the designer while the modifier panel beside it showed the bonus.
+        var innateDesign = Single(database.Civics, c => c.Key == "civic_hive_natural_design");
+        Assert.Empty(innateDesign.Effects.Modifiers);
+        Assert.NotEmpty(innateDesign.Effects.Conditional);
+
+        Assert.All(
+            innateDesign.Effects.Conditional,
+            swap =>
+            {
+                Assert.Equal(2, swap.Modifiers["BIOLOGICAL_species_trait_points_add"]);
+                Assert.Equal(2, swap.Modifiers["BIOLOGICAL_species_trait_picks_add"]);
+            });
     }
 
     [SkippableFact]

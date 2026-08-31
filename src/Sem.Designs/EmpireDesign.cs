@@ -61,10 +61,10 @@ public sealed class EmpireDesign : CwView
     public string Key => GetString("key") ?? _node.Key ?? string.Empty;
 
     /// <summary>Fleet name prefix, such as <c>ISS</c>. Empty when the empire has none.</summary>
-    public LocRef ShipPrefix => new(GetOrAddBlock("ship_prefix"));
+    public LocRef ShipPrefix => new(this, "ship_prefix");
 
     /// <summary>The founder species.</summary>
-    public SpeciesDesign Species => new(GetOrAddBlock("species"));
+    public SpeciesDesign Species => new(this, "species");
 
     /// <summary>
     /// The second species some origins add, such as Syncretic Evolution. Null for most empires.
@@ -73,10 +73,10 @@ public sealed class EmpireDesign : CwView
         GetBlock("secondary_species") is { } block ? new SpeciesDesign(block) : null;
 
     /// <summary>The empire's name as displayed.</summary>
-    public LocRef Name => new(GetOrAddBlock("name"));
+    public LocRef Name => new(this, "name");
 
     /// <summary>The adjectival form of the empire's name.</summary>
-    public LocRef Adjective => new(GetOrAddBlock("adjective"));
+    public LocRef Adjective => new(this, "adjective");
 
     /// <summary>Authority key, such as <c>auth_corporate</c>.</summary>
     public string? Authority
@@ -120,7 +120,7 @@ public sealed class EmpireDesign : CwView
     }
 
     /// <summary>The homeworld's name.</summary>
-    public LocRef PlanetName => new(GetOrAddBlock("planet_name"));
+    public LocRef PlanetName => new(this, "planet_name");
 
     /// <summary>Homeworld planet class, such as <c>pc_tropical</c>.</summary>
     public string? PlanetClass
@@ -137,7 +137,7 @@ public sealed class EmpireDesign : CwView
     }
 
     /// <summary>The home system's name.</summary>
-    public LocRef SystemName => new(GetOrAddBlock("system_name"));
+    public LocRef SystemName => new(this, "system_name");
 
     /// <summary>
     /// Starting system initializer. Empty is normal and means the game generates a system rather
@@ -164,10 +164,10 @@ public sealed class EmpireDesign : CwView
     }
 
     /// <summary>The empire's flag.</summary>
-    public EmpireFlag Flag => new(GetOrAddBlock("empire_flag"));
+    public EmpireFlag Flag => new(this, "empire_flag");
 
     /// <summary>The starting ruler.</summary>
-    public RulerDesign Ruler => new(GetOrAddBlock("ruler"));
+    public RulerDesign Ruler => new(this, "ruler");
 
     /// <summary>Whether the empire spawns as a fallen empire.</summary>
     public bool? SpawnAsFallen

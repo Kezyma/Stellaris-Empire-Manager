@@ -29,6 +29,66 @@ public sealed class RulesCorpusTests
 
     private static readonly Lazy<EmpireRules> Rules = new(() => new EmpireRules(Database.Value));
 
+    /// <summary>
+    /// Every habitability preference the game defines has to be recognised as one, or the trait
+    /// picker offers it as a choice the game does not have. Two name prefixes recognised 36 of the
+    /// 48 and missed the whole machine family; asking the trait what it does instead catches all of
+    /// them, and keeps catching them when the game adds another.
+    /// </summary>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void EveryHabitabilityPreferenceIsRecognisedAsOne()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var preferences = Database.Value.Traits
+            .Where(t => t.Key.EndsWith("_preference", StringComparison.Ordinal))
+            .ToList();
+
+        Assert.Equal(48, preferences.Count);
+
+        var unrecognised = preferences
+            .Where(t => !Rules.Value.IsHabitabilityPreference(t.Key))
+            .Select(t => t.Key)
+            .ToList();
+
+        Assert.True(
+            unrecognised.Count == 0,
+            "Habitability preferences the picker would offer as choices:\r\n" + string.Join("\r\n", unrecognised));
+    }
+
+    /// <summary>
+    /// A species is only ever suited to its world by a trait its archetype can actually hold. The
+    /// world alone decided this, so a machine empire on a desert world was told it had
+    /// <c>trait_pc_desert_preference</c>, whose game definition allows
+    /// <c>{ BIOLOGICAL PRESAPIENT LITHOID }</c> and nothing else.
+    /// </summary>
+    [SkippableTheory]
+    [Trait("Category", "RealData")]
+    [InlineData("pc_desert")]
+    [InlineData("pc_arctic")]
+    [InlineData("pc_ocean")]
+    [InlineData("pc_continental")]
+    public void AHabitabilityPreferenceIsOneTheSpeciesArchetypeMayHold(string planetClass)
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var byKey = Database.Value.Traits.ToDictionary(t => t.Key, StringComparer.Ordinal);
+
+        foreach (var archetype in new[] { "BIOLOGICAL", "LITHOID", "MACHINE", "ROBOT" })
+        {
+            var key = Rules.Value.HabitabilityTraitFor(planetClass, archetype);
+            Assert.NotNull(key);
+
+            var trait = byKey[key!];
+
+            Assert.True(
+                trait.AllowedArchetypes.Count == 0 || trait.AllowedArchetypes.Contains(archetype),
+                $"{planetClass} gave a {archetype} species {key}, which allows " +
+                $"[{string.Join(' ', trait.AllowedArchetypes)}].");
+        }
+    }
+
     [SkippableFact]
     [Trait("Category", "RealData")]
     public void EveryBuiltInEmpireTheGameOffersValidates()

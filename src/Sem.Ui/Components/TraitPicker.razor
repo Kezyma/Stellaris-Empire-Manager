@@ -107,7 +107,7 @@
         .. Session.Rules.GetSpeciesTraitOptions(Context)
             .Where(o => o.Visible
                         && !Species.Traits.Contains(o.Key)
-                        && !EmpireRules.IsHabitabilityPreference(o.Key))
+                        && !Session.Rules.IsHabitabilityPreference(o.Key))
             .Select(Entry)
             .OrderBy(t => t.Unavailable)
             .ThenByDescending(t => t.Cost)

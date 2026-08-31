@@ -19,9 +19,21 @@ namespace Sem.Designs;
 /// <c>AVI3_CHR_Silver</c>, and the displayed name comes from the game's localisation files.
 /// </para>
 /// </remarks>
-public sealed class LocRef(CwBlock block) : CwView(block, FieldOrder)
+public sealed class LocRef : CwView
 {
     private static readonly string[] FieldOrder = ["key", "literal", "variables"];
+
+    /// <summary>Views a block the design already has.</summary>
+    public LocRef(CwBlock block)
+        : base(block, FieldOrder)
+    {
+    }
+
+    /// <summary>Views a block that is made only when something is written to it.</summary>
+    public LocRef(CwView parent, string key)
+        : base(parent, key, FieldOrder)
+    {
+    }
 
     /// <summary>
     /// The localisation key, or the literal text when <see cref="IsLiteral"/> is true. Empty is

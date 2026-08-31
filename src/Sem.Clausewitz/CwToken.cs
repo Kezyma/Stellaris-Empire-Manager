@@ -57,10 +57,16 @@ public sealed record CwToken(CwTokenKind Kind, string Text, string? LeadingTrivi
     /// well as into a link, that was the player's own file being written malformed.
     /// </para>
     /// <para>
-    /// Only a quote is escaped, and only a backslash that would otherwise change what the quote
-    /// after it means. Paradox script has no general escape mechanism — <c>gfx\models\ship.mesh</c>
-    /// is a path and not an escape of anything — so treating every backslash as one would corrupt
-    /// far more than it fixed.
+    /// Both the quote and the backslash are escaped, because the lexer reads a backslash as taking
+    /// the character after it whatever that character is. Escaping only some of them left the rest
+    /// pairing with whatever followed: <c>a\\b</c> came back as <c>a\b</c>, one backslash shorter on
+    /// every save, and a value ending <c>\\</c> ate its own closing quote and ran the string into
+    /// the rest of the file.
+    /// </para>
+    /// <para>
+    /// This applies to values this library writes, which are names, keys and descriptions. Paths
+    /// like <c>gfx\models\ship.mesh</c> live in the game's own script, which is read and re-emitted
+    /// from the bytes it arrived as rather than being written through here.
     /// </para>
     /// </remarks>
     public static string Quote(string value)
@@ -69,22 +75,29 @@ public sealed record CwToken(CwTokenKind Kind, string Text, string? LeadingTrivi
 
         var escaped = new System.Text.StringBuilder(value.Length + 2).Append('"');
 
-        for (var i = 0; i < value.Length; i++)
+        foreach (var character in value)
         {
-            var protectable = value[i] == '\\' && (i + 1 == value.Length || value[i + 1] == '"');
-
-            if (protectable || value[i] == '"')
+            if (character is '"' or '\\')
             {
                 escaped.Append('\\');
             }
 
-            escaped.Append(value[i]);
+            escaped.Append(character);
         }
 
         return escaped.Append('"').ToString();
     }
 
-    /// <summary>Puts back what <see cref="Quote"/> protected.</summary>
+    /// <summary>
+    /// Puts back exactly what <see cref="Quote"/> protected, and nothing else.
+    /// </summary>
+    /// <remarks>
+    /// The pair has to be inverses, or a value loses a character every time it is read and written
+    /// and loses another on the next save. A backslash before a quote or another backslash is
+    /// dropped, matching what <see cref="Quote"/> writes; anything else after a backslash is left
+    /// alone, backslash and all, because the game's own files hold lone backslashes in paths that
+    /// escape nothing.
+    /// </remarks>
     private static string Unescape(string text)
     {
         if (!text.Contains('\\', StringComparison.Ordinal))
@@ -96,8 +109,6 @@ public sealed record CwToken(CwTokenKind Kind, string Text, string? LeadingTrivi
 
         for (var i = 0; i < text.Length; i++)
         {
-            // Anything else after a backslash is left alone, backslash and all, because in this
-            // format it is not an escape and never was.
             if (text[i] == '\\' && i + 1 < text.Length && text[i + 1] is '"' or '\\')
             {
                 i++;

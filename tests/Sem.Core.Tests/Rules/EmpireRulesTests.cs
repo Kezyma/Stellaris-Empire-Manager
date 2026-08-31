@@ -202,6 +202,58 @@ public sealed class EmpireRulesTests
         Assert.Equal(7, budget.Picks.Available);
     }
 
+    /// <summary>
+    /// The game's hive-mind Innate Design states its allowance only inside two swaps and carries no
+    /// plain modifier block at all, so a budget read from the always-on modifiers came to nothing.
+    /// A hive mind was given two points and five picks where the game allows four and seven, and the
+    /// modifier panel beside the counter showed the bonus the counter refused.
+    /// </summary>
+    [Fact]
+    public void AnAllowanceStatedOnlyInsideASwapStillCounts()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.SetCivics(["civic_swapped_design", "civic_functional_architecture"]);
+
+        var budget = Rules.GetTraitBudget(Context(design));
+
+        Assert.Equal(4, budget.Points.Available);
+        Assert.Equal(7, budget.Picks.Available);
+    }
+
+    /// <summary>
+    /// Both of that civic's swaps grant the same two points, one for a wilderness empire and one for
+    /// everything else. Only the swap that applies may be counted; adding them together would hand
+    /// out the bonus twice.
+    /// </summary>
+    [Fact]
+    public void OnlyTheSwapThatAppliesWidensTheAllowance()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.SetCivics(["civic_swapped_design", "civic_functional_architecture"]);
+
+        var budget = Rules.GetTraitBudget(Context(design));
+
+        Assert.NotEqual(6, budget.Points.Available);
+        Assert.NotEqual(9, budget.Picks.Available);
+    }
+
+    /// <summary>
+    /// An allowance behind a condition only a game in progress could settle is not spendable. This
+    /// is the same rule the modifier totals follow, and for the same reason: a bonus folded in on
+    /// the strength of an unread condition is one the empire has been promised without evidence.
+    /// </summary>
+    [Fact]
+    public void AnAllowanceBehindAnUnreadableConditionIsNotGranted()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.SetCivics(["civic_undecidable_design", "civic_functional_architecture"]);
+
+        var budget = Rules.GetTraitBudget(Context(design));
+
+        Assert.Equal(2, budget.Points.Available);
+        Assert.Equal(5, budget.Picks.Available);
+    }
+
     [Fact]
     public void OpposingTraitsCannotBothBeTaken()
     {

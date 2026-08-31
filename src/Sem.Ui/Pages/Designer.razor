@@ -129,6 +129,9 @@ else
     /// which, in the middle of a navigation this page is holding open, replaced the destination with
     /// the designer's own address. Discarding a new empire and pressing Empires left you looking at
     /// the designer.
+    ///
+    /// Raised by the navigation guard alone, and lowered again if the answer was to stay. Nothing
+    /// else raises it, because nothing else is leaving.
     /// </remarks>
     private bool _leaving;
 
@@ -181,11 +184,23 @@ else
             return;
         }
 
+        // From here the address bar is no longer this page's business. Answering the question may
+        // put the empire back, and the change that comes with it would rewrite the address and
+        // supersede the very navigation being waited on. The page is unmounted a moment later, so
+        // nothing has to undo this.
+        //
+        // Set here rather than when the question is answered, because the header asks the same
+        // question through the guard and then does not navigate. Setting it there latched it on for
+        // good: Create or Import from the header on an edited empire left the page mounted with the
+        // address frozen, and the share link never updated again.
+        _leaving = true;
+
         // The navigation waits here while the dialog is on screen. Holding it open is what lets the
         // answer decide, rather than cancelling the move and then having to remember where it was
         // going in order to make it again.
         if (!await AskAboutUnsavedWork())
         {
+            _leaving = false;
             context.PreventNavigation();
         }
     }
@@ -213,10 +228,13 @@ else
     }
 
     /// <summary>Answers the question above, and takes the dialog down.</summary>
+    /// <remarks>
+    /// Says nothing about the address bar. Whether this page is being left is the caller's to know:
+    /// a navigation is leaving, and the header asking before it starts an empire or opens a file is
+    /// not.
+    /// </remarks>
     private void Answer(bool proceed)
     {
-        // Staying means the address bar is this page's business again.
-        _leaving = proceed;
         _confirming = Asking.None;
         _answer?.TrySetResult(proceed);
         _answer = null;
@@ -242,7 +260,6 @@ else
 
     private async Task SaveAndLeave()
     {
-        _leaving = true;
         _saveError = await Host.SaveAsync();
 
         // A save that did not happen is not a reason to go anyway: that would be leaving the work
@@ -261,7 +278,6 @@ else
     /// </remarks>
     private void DiscardAndLeave()
     {
-        _leaving = true;
         _session?.Revert();
         Answer(true);
     }

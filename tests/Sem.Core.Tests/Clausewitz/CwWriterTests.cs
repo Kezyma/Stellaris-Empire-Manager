@@ -161,4 +161,53 @@ public sealed class CwWriterTests
             "\"First\"=\r\n{\r\n\tkey=\"First\"\r\n}\r\n\"Second\"=\r\n{\r\n\tkey=\"Second\"\r\n}\r\n",
             document.ToText());
     }
+
+    /// <summary>
+    /// Quoting and unquoting have to be inverses, or a value loses a character each time it is
+    /// written and read again. Unquoting treated a doubled backslash as an escape while quoting only
+    /// ever writes one at the very end, so <c>a\\b</c> came back as <c>a\b</c>, and shorter again on
+    /// the next save. Written as a round trip rather than against expected bytes, because the
+    /// property that matters is that nothing is lost, not which of the two is adjusted to meet it.
+    /// </summary>
+    [Theory]
+    [InlineData("plain")]
+    [InlineData("The \"Peacock\" Dynamics")]
+    [InlineData("gfx\\models\\ship.mesh")]
+    [InlineData("a\\\\b")]
+    [InlineData("\\\\[prev.solar_system.GetName]")]
+    [InlineData("ends with a backslash\\")]
+    [InlineData("ends with two\\\\")]
+    [InlineData("\\\"")]
+    [InlineData("\\")]
+    [InlineData("")]
+    public void AQuotedValueSurvivesBeingWrittenAndReadBack(string value)
+    {
+        var document = new CwDocument();
+        document.Add(CwNode.QuotedAssignment("name", value));
+
+        var reparsed = CwDocument.ParseText(document.ToText());
+
+        Assert.Equal(value, reparsed.Nodes[0].ScalarValue);
+    }
+
+    /// <summary>
+    /// And twice, because the loss compounded: each save took one more backslash off, so a value
+    /// that merely looked wrong after one round trip was steadily destroyed over a session.
+    /// </summary>
+    [Theory]
+    [InlineData("a\\\\b")]
+    [InlineData("\\\\[prev.solar_system.GetName]")]
+    [InlineData("ends with two\\\\")]
+    public void AndSurvivesBeingWrittenAndReadBackAgain(string value)
+    {
+        var once = new CwDocument();
+        once.Add(CwNode.QuotedAssignment("name", value));
+
+        var read = CwDocument.ParseText(once.ToText()).Nodes[0].ScalarValue!;
+
+        var twice = new CwDocument();
+        twice.Add(CwNode.QuotedAssignment("name", read));
+
+        Assert.Equal(value, CwDocument.ParseText(twice.ToText()).Nodes[0].ScalarValue);
+    }
 }
