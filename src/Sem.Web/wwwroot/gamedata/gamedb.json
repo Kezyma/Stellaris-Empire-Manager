@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "gameVersion": "v4.4.6",
-  "extractorVersion": "0.1.0\u002B7a073f27d5fcd60e9e4e93d44c29bd3207617bfb",
+  "extractorVersion": "0.1.0\u002Bc066f53ac653907b3779ae608b2cea91b0549ad3",
   "defines": {
     "ethicsPoints": 3,
     "civicPoints": 2,
@@ -60042,6 +60042,123 @@
     "GFX_button_empire_spawn_setting|1": "icons/ui/GFX_button_empire_spawn_setting_1.png",
     "GFX_button_empire_spawn_setting|2": "icons/ui/GFX_button_empire_spawn_setting_2.png",
     "GFX_button_empire_spawn_setting|3": "icons/ui/GFX_button_empire_spawn_setting_3.png"
+  },
+  "chrome": {
+    "GFX_tiles_dark_area_cut_8": {
+      "image": "icons/chrome/GFX_tiles_dark_area_cut_8.png",
+      "borderX": 8,
+      "borderY": 8
+    },
+    "GFX_subwindow_tile_plain_solid": {
+      "image": "icons/chrome/GFX_subwindow_tile_plain_solid.png",
+      "borderX": 80,
+      "borderY": 80
+    },
+    "GFX_clean_frame_area": {
+      "image": "icons/chrome/GFX_clean_frame_area.png",
+      "borderX": 10,
+      "borderY": 10
+    },
+    "GFX_planet_bg_tile": {
+      "image": "icons/chrome/GFX_planet_bg_tile.png",
+      "borderX": 1,
+      "borderY": 1
+    },
+    "gfx_message_bg": {
+      "image": "icons/chrome/gfx_message_bg.png",
+      "borderX": 13,
+      "borderY": 13
+    },
+    "GFX_tiles_frame": {
+      "image": "icons/chrome/GFX_tiles_frame.png",
+      "borderX": 4,
+      "borderY": 4
+    },
+    "GFX_tiles_frame_extra_light": {
+      "image": "icons/chrome/GFX_tiles_frame_extra_light.png",
+      "borderX": 2,
+      "borderY": 2
+    },
+    "GFX_orange_frame_tile": {
+      "image": "icons/chrome/GFX_orange_frame_tile.png",
+      "borderX": 2,
+      "borderY": 2
+    },
+    "GFX_glow_tile_orange": {
+      "image": "icons/chrome/GFX_glow_tile_orange.png",
+      "borderX": 12,
+      "borderY": 12
+    },
+    "GFX_glow_tile_orange_no_padding": {
+      "image": "icons/chrome/GFX_glow_tile_orange_no_padding.png",
+      "borderX": 12,
+      "borderY": 12
+    },
+    "GFX_galactic_object_button": {
+      "image": "icons/chrome/GFX_galactic_object_button.png",
+      "borderX": 0,
+      "borderY": 0
+    },
+    "GFX_standard_button_142_34_button": {
+      "image": "icons/chrome/GFX_standard_button_142_34_button.png",
+      "borderX": 0,
+      "borderY": 0
+    },
+    "GFX_standard_button_240_24": {
+      "image": "icons/chrome/GFX_standard_button_240_24.png",
+      "borderX": 0,
+      "borderY": 0
+    },
+    "GFX_dropdown_button_104": {
+      "image": "icons/chrome/GFX_dropdown_button_104.png",
+      "borderX": 0,
+      "borderY": 0
+    },
+    "GFX_dropdown_item_104": {
+      "image": "icons/chrome/GFX_dropdown_item_104.png",
+      "borderX": 0,
+      "borderY": 0
+    },
+    "GFX_button_left": {
+      "image": "icons/chrome/GFX_button_left.png",
+      "borderX": 0,
+      "borderY": 0
+    },
+    "GFX_button_right": {
+      "image": "icons/chrome/GFX_button_right.png",
+      "borderX": 0,
+      "borderY": 0
+    },
+    "GFX_line": {
+      "image": "icons/chrome/GFX_line.png",
+      "borderX": 0,
+      "borderY": 0
+    },
+    "GFX_line_medium": {
+      "image": "icons/chrome/GFX_line_medium.png",
+      "borderX": 0,
+      "borderY": 0
+    },
+    "GFX_hex_bg": {
+      "image": "icons/chrome/GFX_hex_bg.png",
+      "borderX": 0,
+      "borderY": 0
+    },
+    "GFX_ship_design_entry_bg_arkships": {
+      "image": "icons/chrome/GFX_ship_design_entry_bg_arkships.png",
+      "borderX": 0,
+      "borderY": 0
+    },
+    "GFX_ethic_selected": {
+      "image": "icons/chrome/GFX_ethic_selected.png",
+      "borderX": 0,
+      "borderY": 0
+    },
+    "GFX_gamesetup_gov_sel": {
+      "image": "icons/chrome/GFX_gamesetup_gov_sel.png",
+      "borderX": 0,
+      "borderY": 0
+    }
   },
   "scriptedValues": {
     "discovery_weight": 3,

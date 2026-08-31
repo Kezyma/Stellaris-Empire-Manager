@@ -39,6 +39,14 @@ else
             <button type="button" @onclick="CopyLink" title="The address bar carries this link too">
                 @(_copied ? "Link copied" : "Copy link")
             </button>
+            @*
+                The same empire in the game's own arrangement. One session behind both, so this is
+                a change of view rather than a change of empire.
+            *@
+            <button type="button" @onclick="@(() => Navigation.NavigateTo("designer/classic"))"
+                    title="The same empire, laid out the way the game lays it out">
+                Game layout
+            </button>
             <button type="button" class="danger" @onclick="Delete">Delete</button>
             <button type="button" class="primary" @onclick="Export">@Files.SaveVerb</button>
         </div>

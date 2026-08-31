@@ -1,0 +1,197 @@
+@*
+    The game's own flag editor, in its own arrangement.
+
+    Every number here is read out of interface/customize_species_editors.gui, from the
+    empire_flag_editor window beginning at line 3758, and is the game's own pixel offset inside a
+    window of 1040 by 405. The categories run down the left at 10,45; the emblems fill the middle at
+    180,45 in a grid of sixty-pixel slots six across; the colours sit at 566,112 in twenty-eight
+    pixel slots eight across, under the two buttons that choose which colour they set; and the
+    patterns are a scrolling column at 802,40 in seventy-pixel slots three across.
+
+    What the window does not hold is a picture of the flag being edited. The game shows that behind
+    it, on the creation screen the sub-window opens over, and so does the page around this.
+*@
+
+@*
+    Two pieces of decoration, at the size their own textures are: the game places these as iconType
+    rather than as a sized container, which means drawn at their natural size wherever they are put.
+*@
+<GuiSurface Name="GFX_hex_bg" X="-10" Y="-8" Width="340" Height="68" Class="decoration" />
+<GuiSurface Name="GFX_line" X="6" Y="26" Width="316" Height="17" Class="decoration" />
+
+<div class="sem-gui-label" style="left:16px;top:7px">
+    @Session.Localizer.Heading("empire_flag_editor", "Flag")
+</div>
+
+@* The emblem categories. The game draws no frame around the chosen one; it lights it. *@
+<GuiSurface Name="GFX_tiles_dark_area_cut_8" X="10" Y="45" Width="154" Height="320" Class="scroll">
+    @foreach (var category in EmblemCategories)
+    {
+        var chosen = category.Key == EmblemCategory;
+
+        <GuiSurface Name="@(chosen ? "GFX_glow_tile_orange" : "GFX_invisible")"
+                    Class="entry" Width="150" Height="30" Pressed="chosen"
+                    OnClick="() => _emblemCategory = category.Key">
+            <span class="name">@Session.Localizer.Text(category.NameKey, Localizer.Prettify(category.Key))</span>
+        </GuiSurface>
+    }
+</GuiSurface>
+
+@* The emblems themselves, at the sixty-pixel slot the game gives them. *@
+<GuiSurface Name="GFX_tiles_dark_area_cut_8" X="180" Y="45" Width="372" Height="321" Class="scroll">
+    <div class="sem-gui-grid" style="--slot:60px;--across:6;left:6px;top:4px;width:364px">
+        @foreach (var file in EmblemFiles)
+        {
+            var chosen = file == Design.Flag.Icon.File && EmblemCategory == Design.Flag.Icon.Category;
+
+            <button type="button" class="sem-gui-slot @(chosen ? "selected" : null)"
+                    aria-pressed="@chosen"
+                    title="@Localizer.Prettify(System.IO.Path.GetFileNameWithoutExtension(file))"
+                    @onclick="() => SetEmblem(file)">
+                <img src="@Session.Data.AssetUrl(EmblemPath(file))" alt="" loading="lazy">
+            </button>
+        }
+    </div>
+</GuiSurface>
+
+@*
+    Which colour the swatches below are setting. The game has these as two buttons and keeps a third
+    colour it never offers, which it uses for the empire on the galaxy map; that one is offered here
+    because a design stores it and a player may want it.
+*@
+@for (var slot = 0; slot < EditableColorSlots; slot++)
+{
+    var which = slot;
+
+    <GuiSurface Name="GFX_standard_button_240_24" X="545" Y="@(34 + (which * 29))" Width="264" Height="26"
+                Class="@(which == _colorSlot ? "text-button selected" : "text-button")"
+                Pressed="@(which == _colorSlot)"
+                OnClick="() => _colorSlot = which">
+            <span class="label">@ColorLabel(which)</span>
+    </GuiSurface>
+}
+
+<GuiSurface Name="GFX_tiles_dark_area_cut_8" X="556" Y="102" Width="260" Height="285" Class="scroll">
+    <div class="sem-gui-grid" style="--slot:28px;--across:8;left:10px;top:10px;width:240px">
+        @foreach (var color in Session.Data.Database.FlagColors)
+        {
+            var chosen = color.Key == ColorAt(_colorSlot);
+
+            <button type="button" class="sem-gui-swatch @(chosen ? "selected" : null)"
+                    aria-pressed="@chosen" title="@Localizer.Prettify(color.Key)"
+                    style="background:@Swatch(_colorSlot, color)"
+                    @onclick="() => SetColor(_colorSlot, color.Key)"></button>
+        }
+    </div>
+</GuiSurface>
+
+@* The backgrounds, which the game calls patterns and lists three across. *@
+<GuiSurface Name="GFX_tiles_dark_area_cut_8" X="802" Y="40" Width="230" Height="327" Class="scroll">
+    <div class="sem-gui-grid" style="--slot:70px;--across:3;left:10px;top:10px;width:210px">
+        @foreach (var file in BackgroundFiles)
+        {
+            <button type="button" class="sem-gui-slot pattern @(file == Design.Flag.Background.File ? "selected" : null)"
+                    aria-pressed="@(file == Design.Flag.Background.File)"
+                    title="@Localizer.Prettify(System.IO.Path.GetFileNameWithoutExtension(file))"
+                    @onclick="() => SetBackground(file)">
+                @* The tile is the flag that pattern would make, which is what the game shows. *@
+                <FlagPreview Flag="@Design.Flag" BackgroundFile="@file" HideEmblem="true" />
+            </button>
+        }
+    </div>
+</GuiSurface>
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    private EmpireDesign Design => Session.Current!;
+
+    /// <summary>Which category of emblem the middle grid is showing.</summary>
+    private string? _emblemCategory;
+
+    /// <summary>Which colour the swatches are setting, as the game's two buttons choose.</summary>
+    private int _colorSlot;
+
+    private string EmblemCategory =>
+        _emblemCategory ?? Design.Flag.Icon.Category ?? EmblemCategories.FirstOrDefault()?.Key ?? "pointy";
+
+    private IReadOnlyList<FlagCategoryDefinition> EmblemCategories =>
+        [.. Session.Data.Database.FlagCategories.Where(c => !c.IsBackground)];
+
+    private IReadOnlyList<string> EmblemFiles =>
+        Session.Data.Database.FlagCategories.FirstOrDefault(c => c.Key == EmblemCategory)?.Files ?? [];
+
+    private IReadOnlyList<string> BackgroundFiles =>
+        Session.Data.Database.FlagCategories.FirstOrDefault(c => c.IsBackground)?.Files ?? [];
+
+    /// <summary>Where an emblem's picture lives within the extracted assets.</summary>
+    private string EmblemPath(string file) =>
+        $"flags/{EmblemCategory}/{System.IO.Path.GetFileNameWithoutExtension(file)}.png";
+
+    /// <summary>The slot holding the empire's colour on the galaxy map.</summary>
+    private const int MapColorSlot = 2;
+
+    /// <summary>
+    /// How many colours are worth offering. The fourth slot the file stores is inert — the shader
+    /// line that would have used it is commented out — so it is preserved rather than edited.
+    /// </summary>
+    private const int EditableColorSlots = 3;
+
+    /// <summary>The game's own words for the colour slots.</summary>
+    private string ColorLabel(int slot) => slot switch
+    {
+        0 => Session.Localizer.Label("PRIMARY_COLOR", "Primary Colors"),
+        1 => Session.Localizer.Label("SECONDARY_COLOR", "Secondary Colors"),
+        MapColorSlot => Session.Localizer.Label("TERTIARY_COLOR", "Tertiary Colors"),
+        _ => string.Empty,
+    };
+
+    /// <summary>
+    /// A swatch in the colour it will actually appear in. Each named colour has a different shade
+    /// for a flag and for the map, so a map swatch showing the flag shade would mislead.
+    /// </summary>
+    private static string Swatch(int slot, FlagColorDefinition color) =>
+        slot == MapColorSlot
+            ? $"rgb({color.MapRed},{color.MapGreen},{color.MapBlue})"
+            : $"rgb({color.Red},{color.Green},{color.Blue})";
+
+    private string? ColorAt(int slot)
+    {
+        var colors = Design.Flag.Colors;
+        return slot < colors.Count && colors[slot] != EmpireFlag.EmptyColor ? colors[slot] : null;
+    }
+
+    private void SetColor(int slot, string? value)
+    {
+        Session.Edit(d =>
+        {
+            var colors = d.Flag.Colors.ToList();
+            while (colors.Count < EmpireFlag.ColorSlots)
+            {
+                colors.Add(EmpireFlag.EmptyColor);
+            }
+
+            colors[slot] = string.IsNullOrEmpty(value) ? EmpireFlag.EmptyColor : value;
+            d.Flag.SetColors(colors);
+        });
+    }
+
+    private void SetBackground(string file) =>
+        Session.Edit(d =>
+        {
+            d.Flag.Background.Category = "backgrounds";
+            d.Flag.Background.File = file;
+        });
+
+    private void SetEmblem(string file)
+    {
+        var category = EmblemCategory;
+
+        Session.Edit(d =>
+        {
+            d.Flag.Icon.Category = category;
+            d.Flag.Icon.File = file;
+        });
+    }
+}

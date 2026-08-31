@@ -10,6 +10,18 @@ public sealed record SpriteFrame(string Texture, int Frame, int FrameCount)
 {
     /// <summary>Whether the whole texture is the picture, rather than a slice of it.</summary>
     public bool IsWholeTexture => FrameCount <= 1;
+
+    /// <summary>
+    /// How wide a border the sprite keeps unstretched when it is drawn at any size, or zero.
+    /// </summary>
+    /// <remarks>
+    /// The game's surfaces — the tiles a window or a button is drawn on — are declared as
+    /// <c>corneredTileSpriteType</c> with a <c>borderSize</c>, which means the corners are drawn as
+    /// they are and only the middle is stretched. That is nine-slicing, and it is the same number
+    /// CSS wants for <c>border-image-slice</c>, so it is carried through rather than recovered by
+    /// guessing at the texture.
+    /// </remarks>
+    public (int X, int Y) BorderSize { get; init; }
 }
 
 /// <summary>
@@ -115,7 +127,8 @@ public sealed class SpriteCatalog
                     Texture: texture?.Replace('\\', '/'),
                     Sheet: sheet,
                     Frames: Number(Property(body, "noOfFrames")),
-                    DefaultFrame: Number(Property(body, "default_frame"))));
+                    DefaultFrame: Number(Property(body, "default_frame")),
+                    Border: Border(body)));
             }
         }
 
@@ -152,7 +165,10 @@ public sealed class SpriteCatalog
 
         if (declaration.Texture is { Length: > 0 } texture)
         {
-            return new SpriteFrame(texture, declaration.DefaultFrame ?? 1, declaration.Frames ?? 1);
+            return new SpriteFrame(texture, declaration.DefaultFrame ?? 1, declaration.Frames ?? 1)
+            {
+                BorderSize = declaration.Border,
+            };
         }
 
         if (declaration.Sheet is not { Length: > 0 } sheet ||
@@ -165,6 +181,27 @@ public sealed class SpriteCatalog
         return parent with { Frame = declaration.DefaultFrame ?? 1 };
     }
 
+    /// <summary>
+    /// The unstretched border a tiled surface keeps, which most sprites do not declare.
+    /// </summary>
+    /// <remarks>
+    /// Written as <c>borderSize = { x = 8 y = 8 }</c>. Nothing in the installation gives one axis
+    /// without the other, but each is read on its own so that a file which did would still be
+    /// understood rather than silently losing half of it.
+    /// </remarks>
+    private static (int X, int Y) Border(CwBlock body)
+    {
+        var border = body.Nodes.FirstOrDefault(n =>
+            n.Key is { } k && string.Equals(k, "borderSize", StringComparison.OrdinalIgnoreCase))?.Block;
+
+        return border is null ? default : (Number(Property(border, "x")) ?? 0, Number(Property(border, "y")) ?? 0);
+    }
+
     /// <summary>What one sprite declaration said, before sheet references are followed.</summary>
-    private sealed record Declaration(string? Texture, string? Sheet, int? Frames, int? DefaultFrame);
+    private sealed record Declaration(
+        string? Texture,
+        string? Sheet,
+        int? Frames,
+        int? DefaultFrame,
+        (int X, int Y) Border);
 }

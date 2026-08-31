@@ -327,6 +327,46 @@ public sealed class GameDataExtractionTests
     }
 
     /// <summary>
+    /// The surfaces the game's own empire designer is drawn on.
+    /// </summary>
+    /// <remarks>
+    /// The borders below are read out of the game's <c>.gfx</c> files by hand, not from the
+    /// extractor: <c>dark_area_cut_8</c> declares 8 in fleet_view.gfx, <c>clean_frame_area</c>
+    /// declares 10 in planet_view.gfx. They are what CSS needs for <c>border-image-slice</c>, so a
+    /// wrong one would stretch a panel's corners rather than fail, and nothing else would say so.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void TheDesignersOwnSurfacesCarryTheBorderTheyAreSlicedAt()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        (string Sprite, int Border)[] cornered =
+        [
+            ("GFX_tiles_dark_area_cut_8", 8),
+            ("GFX_clean_frame_area", 10),
+            ("GFX_glow_tile_orange", 12),
+            ("GFX_tiles_frame", 4),
+            ("GFX_subwindow_tile_plain_solid", 80),
+        ];
+
+        foreach (var (sprite, border) in cornered)
+        {
+            var found = Assert.Contains(sprite, database.Chrome);
+            Assert.Equal(border, found.BorderX);
+            Assert.Equal(border, found.BorderY);
+            Assert.StartsWith("icons/chrome/", found.Image, StringComparison.Ordinal);
+        }
+
+        // A plain sprite is one picture used whole, and says so by declaring no border at all.
+        Assert.Equal(0, Assert.Contains("GFX_hex_bg", database.Chrome).BorderX);
+
+        // Every surface the designer's page asks for has to be here, or a panel comes up bare.
+        Assert.Equal(23, database.Chrome.Count);
+    }
+
+    /// <summary>
     /// The ascended forms a portrait can wear, which a design stores as <c>evolution_mask</c>.
     /// </summary>
     /// <remarks>

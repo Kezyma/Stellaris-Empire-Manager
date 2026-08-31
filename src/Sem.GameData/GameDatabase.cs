@@ -60,6 +60,18 @@ public sealed record GameDatabase
         new Dictionary<string, string>();
 
     /// <summary>
+    /// The surfaces the game's own empire designer is drawn on, by sprite name.
+    /// </summary>
+    /// <remarks>
+    /// Separate from <see cref="Icons"/> because they are not pictures of anything: they are the
+    /// panels, frames and buttons a window is made of, and most carry a border that must not stretch
+    /// when the surface does. Only the designer's own page asks for these; the rest of the app is a
+    /// tool in its own chrome and does not want the game's.
+    /// </remarks>
+    public IReadOnlyDictionary<string, ChromeSprite> Chrome { get; init; } =
+        new Dictionary<string, ChromeSprite>();
+
+    /// <summary>
     /// The numbers the game's script names rather than writes, by name without its <c>@</c>.
     /// </summary>
     /// <remarks>
@@ -335,6 +347,23 @@ public enum PortraitSlot
 /// <param name="Left">Where its left edge sits in the whole frame, since it has been trimmed.</param>
 /// <param name="Top">Where its top edge sits, likewise.</param>
 public sealed record PortraitLayerImage(string Texture, string Image, int Left, int Top);
+
+/// <summary>
+/// One surface the game draws a window on.
+/// </summary>
+/// <remarks>
+/// The game calls these cornered tiles: a picture drawn at any size by keeping its corners as they
+/// are, stretching its edges along one axis and its middle along both. That is nine-slicing, and
+/// <see cref="BorderX"/> and <see cref="BorderY"/> are the same numbers CSS wants for
+/// <c>border-image-slice</c> — so a surface can be drawn on the web exactly as the game draws it
+/// rather than approximated with a solid colour.
+///
+/// Zero on both means the picture is used whole, which is what a plain <c>spriteType</c> is.
+/// </remarks>
+/// <param name="Image">Where the picture went, within the extracted assets.</param>
+/// <param name="BorderX">How many pixels down each vertical edge are never stretched.</param>
+/// <param name="BorderY">How many pixels along each horizontal edge are never stretched.</param>
+public sealed record ChromeSprite(string Image, int BorderX, int BorderY);
 
 /// <summary>One layer of a portrait: a run of parts painted together, in every form it takes.</summary>
 /// <param name="Slot">Which of the three textures this run wears.</param>

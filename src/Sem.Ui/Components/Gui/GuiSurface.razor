@@ -1,0 +1,150 @@
+@*
+    One of the game's own surfaces, drawn the way the game draws it.
+
+    The game builds its windows out of cornered tiles: a small picture stretched to whatever size it
+    is given, with its corners left alone, its edges stretched along one axis and its middle along
+    both. That is nine-slicing, and CSS has it as border-image — so these are not approximations of
+    the game's panels, they are the game's panels, from the same textures, sliced at the same border
+    the game's own sprite declaration states.
+
+    A sprite that declares no border is drawn whole and stretched, which is what a plain spriteType
+    is and what the buttons and rules want.
+*@
+
+@*
+    Whether this is a button is decided by whether it does anything, never by whether it has a
+    picture. A surface with no sprite is drawn on nothing — a missing texture should cost a panel its
+    texture, not its keyboard.
+*@
+@if (OnClick.HasDelegate)
+{
+    <button type="button" class="@Classes" style="@Style" disabled="@Disabled"
+            title="@Title" aria-label="@Label" aria-pressed="@Pressed" @onclick="OnClick">
+        @ChildContent
+    </button>
+}
+else
+{
+    <div class="@Classes" style="@Style">@ChildContent</div>
+}
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>Which of the game's surfaces to paint this with, by sprite name.</summary>
+    [Parameter, EditorRequired]
+    public required string Name { get; set; }
+
+    /// <summary>Where it sits in the window, in the game's own pixels.</summary>
+    [Parameter]
+    public int X { get; set; }
+
+    /// <inheritdoc cref="X" />
+    [Parameter]
+    public int Y { get; set; }
+
+    /// <summary>How big it is, in the game's own pixels. Zero lets the contents decide.</summary>
+    [Parameter]
+    public int Width { get; set; }
+
+    /// <inheritdoc cref="Width" />
+    [Parameter]
+    public int Height { get; set; }
+
+    /// <summary>Extra classes, for the few surfaces that need behaviour of their own.</summary>
+    [Parameter]
+    public string? Class { get; set; }
+
+    /// <summary>Its accessible name, where the surface is a control and its content is a picture.</summary>
+    [Parameter]
+    public string? Label { get; set; }
+
+    /// <summary>Hover text.</summary>
+    [Parameter]
+    public string? Title { get; set; }
+
+    /// <summary>Whether a surface that is a toggle is currently on.</summary>
+    [Parameter]
+    public bool? Pressed { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    /// <summary>Given, the surface becomes a button.</summary>
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private ChromeSprite? Sprite =>
+        Bare ? null : Session.Data.Database.Chrome.GetValueOrDefault(Name);
+
+    /// <summary>A sprite that should have a picture and has none is marked, so that it is noticed.</summary>
+    private string Classes =>
+        $"sem-gui-surface {(Sprite is null && !Bare ? "missing " : string.Empty)}{Class}".TrimEnd();
+
+    /// <summary>
+    /// Whether this surface is meant to have no picture.
+    /// </summary>
+    /// <remarks>
+    /// The game has a sprite for exactly this, GFX_invisible, which it puts behind a list entry that
+    /// is not the chosen one. An empty name says the same thing without extracting a picture of
+    /// nothing, and keeps the missing-sprite marker for sprites that really are missing.
+    /// </remarks>
+    private bool Bare => Name.Length == 0 || Name == "GFX_invisible";
+
+    /// <summary>
+    /// Where it sits and how big it is, which is the same whether it has a picture or not.
+    /// </summary>
+    /// <remarks>
+    /// Absolute, because the game's layout is absolute: every position in its interface files is a
+    /// pixel offset within a window of a stated size. Reproducing that with flow layout would be
+    /// reproducing something else.
+    /// </remarks>
+    private string Geometry
+    {
+        get
+        {
+            var size = (Width > 0 ? $"width:{Width}px;" : string.Empty)
+                + (Height > 0 ? $"height:{Height}px;" : string.Empty);
+
+            return $"left:{X}px;top:{Y}px;{size}";
+        }
+    }
+
+    /// <summary>
+    /// The geometry, plus the picture and where to cut it.
+    /// </summary>
+    /// <remarks>
+    /// The picture is handed to the stylesheet as custom properties rather than painted here,
+    /// because it is painted on a layer of its own behind the contents. A border-image on the
+    /// surface itself would be a real border, and a real border moves everything inside it: the
+    /// window's own tile declares eighty pixels, so every child of the window came out eighty pixels
+    /// in and the right-hand column fell off the edge. The game's tiles are decoration, not
+    /// containers, and its coordinates are measured from the outer edge.
+    ///
+    /// <c>fill</c> keeps the middle of the picture, which border-image otherwise throws away, and
+    /// <c>repeat</c> tiles the edges rather than stretching them — a cornered tile is tiled in the
+    /// game too, and stretching a two-pixel edge across six hundred is a smear. A sprite declaring
+    /// no border is the whole picture, and is stretched to the surface.
+    /// </remarks>
+    private string Style
+    {
+        get
+        {
+            if (Sprite is not { } chrome)
+            {
+                return Geometry;
+            }
+
+            var image = $"url('{Session.Data.AssetUrl(chrome.Image)}')";
+
+            return chrome.BorderX <= 0 && chrome.BorderY <= 0
+                ? $"{Geometry}--gui-picture:{image};"
+                : $"{Geometry}--gui-picture:{image};--gui-slice:{chrome.BorderY} {chrome.BorderX};"
+                    + $"--gui-border:{chrome.BorderY}px {chrome.BorderX}px;";
+        }
+    }
+}
