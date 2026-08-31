@@ -14,11 +14,34 @@
 
 @using Sem.Rules
 
-<div class="sem-showcase">
+<div class="sem-showcase @(Collapsible ? "collapsible" : null) @(Collapsible && !_expanded ? "collapsed" : null)">
+    @*
+        Where the panel can be collapsed — the designer's pane on a narrow screen — the header is a
+        button and everything else folds behind it. The same three facts either way: the flag, the
+        name, and who is in charge.
+    *@
+    @if (Collapsible)
+    {
+        <button type="button" class="head" aria-expanded="@(_expanded ? "true" : "false")"
+                @onclick="() => _expanded = !_expanded">
+            <FlagPreview Flag="@Design.Flag" Class="small" />
+
+            <span class="titles">
+                <span class="name">@Session.Localizer.Name(Design.Name, Design.Key)</span>
+                <span class="government">@Government</span>
+            </span>
+
+            <span class="chevron" aria-hidden="true">@(_expanded ? "▾" : "▸")</span>
+        </button>
+    }
+
+    <div class="body">
     <RoomScene Room="Room" World="World" City="City" Portrait="@RulerPortrait" Flag="@Design.Flag"
                Alt="@Session.Localizer.Name(Design.Species.Name, string.Empty)" />
 
     @* The game's own header: flag, empire name, and who is in charge. *@
+    @if (!Collapsible)
+    {
     <div class="identity">
         <FlagPreview Flag="@Design.Flag" Class="medium" />
 
@@ -33,6 +56,7 @@
             <div class="actions">@Actions</div>
         }
     </div>
+    }
 
     @* And its second box: the species, framed, with the authority and origin beside it. *@
     <div class="species">
@@ -103,21 +127,12 @@
         @Row(Session.Localizer.Heading("EMPIRE_FLAG", "Flag"), FlagSet is { } flags ? string.Join(", ", flags.Flags) : null)
     </dl>
 
-    @foreach (var problem in Report.Errors)
-    {
-        <div class="sem-problem">
-            <div class="area">@problem.Area</div>
-            <div>@problem.Message</div>
-        </div>
-    }
-
-    @foreach (var problem in Report.Warnings)
-    {
-        <div class="sem-problem warning">
-            <div class="area">@problem.Area</div>
-            <div>@problem.Message</div>
-        </div>
-    }
+    @*
+        No list of problems. This panel answers "what have I built", and a column of red under the
+        answer made it read as a verdict instead. What is wrong is said where it is wrong — a blocked
+        civic explains itself where it is chosen — and the count in the designer's own header opens
+        the full list.
+    *@
 
     @*
         Everything the empire adds up to, at the foot of the panel as the game has it. The same
@@ -126,6 +141,7 @@
         the sort of difference nobody notices until it matters.
     *@
     <CombinedEffects Context="@Context" />
+    </div>
 </div>
 
 @code {
@@ -139,6 +155,21 @@
     /// <summary>Whatever the host wants to offer for this empire — opening it, or copying it.</summary>
     [Parameter]
     public RenderFragment? Actions { get; set; }
+
+    /// <summary>
+    /// Whether the panel folds behind its header.
+    /// </summary>
+    /// <remarks>
+    /// The designer's pane wants this and the select screen does not: on a narrow screen the pane
+    /// sits above the choices rather than beside them, and a screenful of summary between the reader
+    /// and the options is worse than a tap. The stylesheet shows the body regardless once there is
+    /// room for it beside the choices, so this only ever matters below the breakpoint.
+    /// </remarks>
+    [Parameter]
+    public bool Collapsible { get; set; }
+
+    /// <summary>Whether the detail is showing, where it can be folded away.</summary>
+    private bool _expanded;
 
     /// <summary>
     /// The localisation key of the blurb the game writes for one of its own empires, where this is

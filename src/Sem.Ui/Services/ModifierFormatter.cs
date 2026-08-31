@@ -94,11 +94,50 @@ public sealed class ModifierFormatter(Localizer localizer, GameDatabase database
         {
             if (_localizer.Has(candidate))
             {
-                return _localizer.Html(candidate);
+                return Named(key, _localizer.Html(candidate));
             }
         }
 
         return System.Net.WebUtility.HtmlEncode(Localizer.Prettify(Readable(key)));
+    }
+
+    /// <summary>The modifiers whose label hides a name their own key states.</summary>
+    private const string AttunementPrefix = "add_attunement_";
+
+    /// <summary>
+    /// Puts the entity's name into a label the game leaves anonymous.
+    /// </summary>
+    /// <remarks>
+    /// The shroud patrons are labelled <c>Add Attunement with [This.GetEaterColor]</c>, and that
+    /// scripted value answers <c>UNDISCOVERED_PATRON_ARTICLE</c> — "an Unknown Entity" — until a game
+    /// has met the patron. Faithful, and useless in a designer: five separate modifiers all read as
+    /// the same anonymous line.
+    ///
+    /// The key says which one it is. Strip the prefix from
+    /// <c>add_attunement_the_eater_of_worlds</c> and <c>the_eater_of_worlds</c> is itself an entry,
+    /// resolving through <c>$name_eater$</c> to "Eater of Worlds". Both halves of the swap are read
+    /// out of the localisation rather than written here, so this holds in any language.
+    /// </remarks>
+    private string Named(string key, string label)
+    {
+        if (!key.StartsWith(AttunementPrefix, StringComparison.Ordinal))
+        {
+            return label;
+        }
+
+        var entity = key[AttunementPrefix.Length..];
+
+        if (!_localizer.Has(entity))
+        {
+            return label;
+        }
+
+        var anonymous = _localizer.Html("UNDISCOVERED_PATRON_ARTICLE", string.Empty);
+        var named = _localizer.Html(entity, string.Empty);
+
+        return anonymous.Length > 0 && named.Length > 0
+            ? label.Replace(anonymous, named, StringComparison.Ordinal)
+            : label;
     }
 
     private static IEnumerable<string> Candidates(string key)

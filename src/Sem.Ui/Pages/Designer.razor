@@ -28,9 +28,25 @@ else
             @* Shown, not edited: the empire is named once, in its own section. *@
             <span class="sem-title">@Title</span>
 
-            <span class="sem-status @(_session.Report.IsValid ? "ok" : "bad")">
-                @(_session.Report.IsValid ? "Valid" : $"{_session.Report.Errors.Count} problem(s)")
-            </span>
+            @*
+                The count opens the list. It used to be a word beside the title while the problems
+                themselves were listed in the preview, which made that panel read as a verdict on the
+                empire rather than a description of it. Here the count is next to the empire it is
+                about, and the detail is one click away rather than always underfoot.
+            *@
+            @if (_session.Report.IsValid && _session.Report.Warnings.Count == 0)
+            {
+                <span class="sem-status ok">Valid</span>
+            }
+            else
+            {
+                <button type="button" class="sem-status-toggle @(_session.Report.IsValid ? "warn" : "bad")"
+                        aria-expanded="@(_showProblems ? "true" : "false")"
+                        @onclick="() => _showProblems = !_showProblems">
+                    @ProblemSummary
+                    <span class="chevron" aria-hidden="true">@(_showProblems ? "▾" : "▸")</span>
+                </button>
+            }
 
             @*
                 Kept even though the address bar now carries the same link: it saves selecting the
@@ -52,6 +68,32 @@ else
         </div>
     </div>
 
+    @if (_showProblems)
+    {
+        <div class="sem-problems">
+            @foreach (var problem in _session.Report.Errors)
+            {
+                <div class="sem-problem">
+                    <div class="area">@problem.Area</div>
+                    <div>@problem.Message</div>
+
+                    @foreach (var reason in problem.Reasons.Distinct())
+                    {
+                        <div class="why">@_session.Localizer.Text(reason)</div>
+                    }
+                </div>
+            }
+
+            @foreach (var problem in _session.Report.Warnings)
+            {
+                <div class="sem-problem warning">
+                    <div class="area">@problem.Area</div>
+                    <div>@problem.Message</div>
+                </div>
+            }
+        </div>
+    }
+
     <DesignerShell Session="_session" />
 }
 
@@ -60,6 +102,39 @@ else
 
     /// <summary>Whether the last thing the player did was copy the link, so the button can say so.</summary>
     private bool _copied;
+
+    /// <summary>Whether the list behind the problem count is open.</summary>
+    private bool _showProblems;
+
+    /// <summary>
+    /// What the count says, which is what there is rather than always "problems".
+    /// </summary>
+    /// <remarks>
+    /// An empire with nothing wrong but something worth mentioning was reading "Valid" while
+    /// carrying three warnings nobody could see.
+    /// </remarks>
+    private string ProblemSummary
+    {
+        get
+        {
+            var errors = _session!.Report.Errors.Count;
+            var warnings = _session.Report.Warnings.Count;
+
+            var parts = new List<string>();
+
+            if (errors > 0)
+            {
+                parts.Add($"{errors} problem{(errors == 1 ? string.Empty : "s")}");
+            }
+
+            if (warnings > 0)
+            {
+                parts.Add($"{warnings} warning{(warnings == 1 ? string.Empty : "s")}");
+            }
+
+            return string.Join(", ", parts);
+        }
+    }
 
     private string Title => _session?.Current is { } design
         ? _session.Localizer.Name(design.Name, design.Key)

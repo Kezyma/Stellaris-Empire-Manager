@@ -7,7 +7,7 @@
 *@
 
 <section class="sem-section @(IsOpen ? "open" : "closed")">
-    <button type="button" class="head" aria-expanded="@IsOpen" @onclick="Toggle">
+    <button type="button" class="head" aria-expanded="@(IsOpen ? "true" : "false")" @onclick="Toggle">
         <span class="chevron">@(IsOpen ? "▾" : "▸")</span>
         <span class="title">@Title</span>
 

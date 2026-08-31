@@ -77,6 +77,21 @@ public static class DesignEffects
     /// authority gives ten percent faction approval has it whether or not the authority chose to
     /// spell it out.
     /// </remarks>
+    /// <summary>
+    /// Whether any of the empire's choices carries a modifier that was left out of the totals.
+    /// </summary>
+    /// <remarks>
+    /// The panel says so when it is true, and said so always before — a footnote about conditional
+    /// bonuses under every empire, including the ones that have none. Conditional effects are the
+    /// only thing <see cref="Combine"/> leaves out, so this is the whole of what the note is about.
+    /// </remarks>
+    public static bool AnyConditional(DesignContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        return Selected(context).Any(o => o.Effects.Conditional.Count > 0);
+    }
+
     public static IEnumerable<(string Key, EffectSet Effects)> Selected(DesignContext context)
     {
         ArgumentNullException.ThrowIfNull(context);

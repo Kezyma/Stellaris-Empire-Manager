@@ -823,6 +823,43 @@ label {
 */
 p.sem-status { margin: var(--gap) 0 0; }
 
+/*
+    The problem count in the designer's top bar, which opens the list beneath it. A button rather
+    than a word, because it does something; coloured like the status it replaced so the bar still
+    reads at a glance.
+*/
+.sem-status-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-2xs) var(--space-md);
+    background: none;
+    border: 1px solid currentcolor;
+    font-size: var(--text-sm);
+}
+
+.sem-status-toggle.bad { color: var(--bad); }
+.sem-status-toggle.warn { color: var(--warn); }
+
+.sem-status-toggle:hover:not(:disabled) {
+    background: var(--bg-hover);
+    border-color: currentcolor;
+}
+
+.sem-status-toggle .chevron { color: var(--text-faint); }
+
+/* The list the count opens, between the bar it belongs to and the sections it is about. */
+.sem-problems {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    margin-bottom: var(--gap);
+    padding: var(--space-lg);
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
 .sem-problem {
     padding: var(--space-md) var(--space-lg);
     border-left: 3px solid var(--bad);
@@ -1626,35 +1663,36 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
    What the empire currently is. Beside the choices there is room to show all of it at once; above
    them, on a narrow screen, the header alone answers the question and the rest waits for a tap. */
 
-.sem-preview {
-    background: var(--bg-panel);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-}
+/*
+    The showcase folded behind its own header, which is what the designer's pane does on a narrow
+    screen. One component draws the empire in both places now; this is the only thing the pane wants
+    that the select screen does not.
+*/
+.sem-showcase.collapsible { padding: 0; }
 
-.sem-preview > .head {
+.sem-showcase.collapsible > .head {
     display: flex;
     align-items: center;
     gap: var(--space-lg);
     width: 100%;
-    padding: var(--space-lg) var(--space-lg);
+    padding: var(--space-lg);
     background: none;
     border: none;
     border-radius: 0;
     color: var(--text);
     font: inherit;
     text-align: left;
+
     /* Wide enough for the panel, and the toggle is inert there, so it should not invite a click. */
     cursor: default;
 }
 
-.sem-preview > .head .titles {
+.sem-showcase.collapsible > .head .titles {
     flex: 1;
     min-width: 0;
 }
 
-.sem-preview > .head .name {
+.sem-showcase.collapsible > .head .name {
     display: block;
     font-weight: 600;
     overflow: hidden;
@@ -1662,24 +1700,32 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     text-overflow: ellipsis;
 }
 
-.sem-preview > .head .government {
+.sem-showcase.collapsible > .head .government {
     display: block;
     color: var(--text-dim);
     font-size: var(--text-sm);
 }
 
-.sem-preview > .head .count {
-    padding: 0 var(--space-sm);
-    border-radius: var(--radius-pill);
-    background: var(--bad);
-    color: var(--bg);
-    font-size: var(--text-xs);
+/* Only meaningful where the panel collapses, so it is not shown where it is not. */
+.sem-showcase.collapsible > .head .chevron { display: none; }
+
+/*
+    The stack of everything the panel shows, which is the panel itself where there is no header.
+
+    Note that everything below is matched as a descendant rather than a child. The body is a wrapper
+    the panel did not used to have, and the child combinators that were written before it silently
+    stopped matching when it arrived — which drew the species portrait at the room scene's 332 by 220
+    instead of its own 84 by 100.
+*/
+.sem-showcase > .body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    min-width: 0;
 }
 
-/* Only meaningful where the panel collapses, so it is not shown where it is not. */
-.sem-preview > .head .chevron { display: none; }
-
-.sem-preview > .body {
+/* With a header above it the padding moves here, so the header can span the full width. */
+.sem-showcase.collapsible > .body {
     padding: 0 var(--space-lg) var(--space-lg);
 }
 
@@ -1702,10 +1748,10 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 }
 
 @media (max-width: 1100px) {
-    .sem-preview > .head { cursor: pointer; }
-    .sem-preview > .head:hover { background: var(--bg-hover); }
-    .sem-preview > .head .chevron { display: inline; color: var(--text-faint); }
-    .sem-preview.collapsed > .body { display: none; }
+    .sem-showcase.collapsible > .head { cursor: pointer; }
+    .sem-showcase.collapsible > .head:hover { background: var(--bg-hover); }
+    .sem-showcase.collapsible > .head .chevron { display: inline; color: var(--text-faint); }
+    .sem-showcase.collapsible.collapsed > .body { display: none; }
 }
 
 /* ---------------------------------------------------------------- subsections
@@ -2334,52 +2380,13 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 
 /* ---------------------------------------------------------------- preview species */
 
-.sem-preview-species {
-    display: flex;
-    gap: var(--space-lg);
-    margin-bottom: var(--space-lg);
-}
-
-.sem-preview-species .portrait {
-    width: 56px;
-    flex-shrink: 0;
-    border-radius: var(--radius);
-    background: var(--bg-raised);
-    object-fit: contain;
-    object-position: bottom;
-}
-
-.sem-preview-species .about {
-    min-width: 0;
-    flex: 1;
-}
-
-.sem-preview-species .name { font-weight: 600; }
-
-.sem-preview-species .kind {
-    color: var(--text-dim);
-    font-size: var(--text-sm);
-}
-
-.sem-preview-species .traits {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 3px;
-    margin-top: 5px;
-}
-
-.sem-preview-species .trait {
-    display: flex;
-    align-items: center;
-    gap: 3px;
-    padding: 1px 5px 1px var(--space-2xs);
-    border-radius: var(--radius-pill);
-    background: var(--bg-raised);
-    color: var(--text-dim);
-    font-size: var(--text-xs);
-}
-
-.sem-preview-species .trait img { width: 14px; height: 14px; object-fit: contain; }
+/*
+    The species block that used to live in a second preview component. That component is gone — one
+    showcase draws the empire in both places now — and its portrait is the reason worth recording:
+    it was 56px wide with no height, inside a flex row that stretched it to whatever the traits
+    beside it came to. Every trait added made the box taller and the picture, drawn to fit, smaller.
+    The showcase's own face is a fixed 84 by 100 and does not move.
+*/
 
 /* ---------------------------------------------------------------- the select screen */
 
@@ -2445,28 +2452,28 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     border-radius: var(--radius);
 }
 
-.sem-showcase > .identity {
+.sem-showcase .identity {
     display: flex;
     align-items: center;
     gap: var(--gap);
 }
 
-.sem-showcase > .identity .titles { flex: 1; min-width: 0; }
+.sem-showcase .identity .titles { flex: 1; min-width: 0; }
 
-.sem-showcase > .identity .name {
+.sem-showcase .identity .name {
     font-size: var(--text-xl);
     font-weight: 600;
     line-height: 1.2;
 }
 
-.sem-showcase > .identity .sub {
+.sem-showcase .identity .sub {
     color: var(--text-dim);
     font-size: var(--text-sm);
 }
 
-.sem-showcase > .identity .sub.faint { color: var(--text-faint); }
+.sem-showcase .identity .sub.faint { color: var(--text-faint); }
 
-.sem-showcase > .identity .actions { flex-shrink: 0; }
+.sem-showcase .identity .actions { flex-shrink: 0; }
 
 /*
    The game frames the portrait and sets the species beside it; so does this.
@@ -2474,7 +2481,7 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
    Recessed rather than raised: this is a readout inside the showcase card, and --bg-raised with a
    border is what a tile you can click looks like everywhere else in the sheet.
 */
-.sem-showcase > .species {
+.sem-showcase .species {
     display: flex;
     gap: var(--space-lg);
     padding: var(--space-md);
@@ -2483,7 +2490,7 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     border-radius: var(--radius);
 }
 
-.sem-showcase > .species .face {
+.sem-showcase .species .face {
     width: 84px;
     height: 100px;
     object-fit: cover;
@@ -2494,22 +2501,22 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     background: var(--bg-void);
 }
 
-.sem-showcase > .species .about {
+.sem-showcase .species .about {
     display: flex;
     flex-direction: column;
     gap: var(--space-2xs);
     min-width: 0;
 }
 
-.sem-showcase > .species .name { font-weight: 600; }
+.sem-showcase .species .name { font-weight: 600; }
 
-.sem-showcase > .species .kind {
+.sem-showcase .species .kind {
     color: var(--text-dim);
     font-size: var(--text-sm);
     margin-bottom: var(--space-xs);
 }
 
-.sem-showcase > .species .line {
+.sem-showcase .species .line {
     display: flex;
     align-items: center;
     gap: var(--space-sm);
@@ -2555,19 +2562,19 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     Shared with the designer's own pane, so the rule is written against the component rather than
     against a wrapper only one of them has.
 */
-.sem-showcase > .sem-combined {
+.sem-showcase .sem-combined {
     padding-top: var(--space-lg);
     border-top: 1px solid var(--border);
 }
 
-.sem-showcase > .sem-combined h4 { margin: 0 0 var(--space-sm); }
+.sem-showcase .sem-combined h4 { margin: 0 0 var(--space-sm); }
 
 /*
     The effects can run long, so they scroll within the panel rather than stretching it. Given more
     room they get more of it: a preview 620 wide can afford to show twice as many at once, and the
     list is the part a reader actually dwells on.
 */
-.sem-showcase > .sem-combined .sem-modifiers {
+.sem-showcase .sem-combined .sem-modifiers {
     max-height: 320px;
     overflow-y: auto;
 }
@@ -2577,13 +2584,13 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
         Two columns of modifiers rather than one long scroll. They are short rows — a label and a
         number — and stacking them singly in a panel this wide wasted most of it.
     */
-    .sem-showcase > .sem-combined .sem-modifiers {
+    .sem-showcase .sem-combined .sem-modifiers {
         max-height: 420px;
         columns: 2;
         column-gap: var(--gap);
     }
 
-    .sem-showcase > .sem-combined .sem-modifiers li {
+    .sem-showcase .sem-combined .sem-modifiers li {
         break-inside: avoid;
     }
 }
