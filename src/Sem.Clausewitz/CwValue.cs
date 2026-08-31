@@ -40,7 +40,7 @@ public sealed class CwScalar : CwValue
 
     /// <summary>Creates a quoted scalar to be formatted by the writer.</summary>
     public static CwScalar Quoted(string value) =>
-        new(CwToken.Synthetic(CwTokenKind.QuotedString, $"\"{value}\""));
+        new(CwToken.Synthetic(CwTokenKind.QuotedString, CwToken.Quote(value)));
 
     /// <summary>Creates an unquoted scalar to be formatted by the writer.</summary>
     public static CwScalar Bare(string value) =>

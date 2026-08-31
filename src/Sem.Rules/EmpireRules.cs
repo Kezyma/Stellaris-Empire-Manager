@@ -33,8 +33,19 @@ public sealed class EmpireRules(GameDatabase database)
     public GameDatabase Database => _database;
 
     /// <summary>Builds a context from a design.</summary>
-    public DesignContext CreateContext(EmpireDesign design, IReadOnlySet<string>? ownedDlc = null) =>
-        DesignContext.FromDesign(design, _database, ownedDlc);
+    public DesignContext CreateContext(EmpireDesign design, IReadOnlySet<string>? ownedDlc = null)
+    {
+        var context = DesignContext.FromDesign(design, _database, ownedDlc);
+
+        // Worked out here rather than inside the context, which has no rules of its own: the
+        // government follows from the authority, the ethics and the civics, and deriving it needs
+        // every government's conditions read against the empire. It stays null while that is
+        // happening, so a government whose own condition asked after the government would be told
+        // there is not one yet rather than being asked again for ever.
+        context.Government = DeriveGovernment(context)?.Key;
+
+        return context;
+    }
 
     // ---------------------------------------------------------------------------------------
     // Budgets

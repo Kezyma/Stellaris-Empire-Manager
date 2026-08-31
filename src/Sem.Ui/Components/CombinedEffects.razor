@@ -17,18 +17,25 @@
     }
     else
     {
+        @*
+            The count comes before the total, so that every value ends in the same column whether or
+            not a row has one. Behind it, the badge sat between the number and the panel's edge and
+            pushed each total left by however wide it was.
+        *@
         <ul class="sem-modifiers">
-            @foreach (var modifier in Combined)
+            @foreach (var modifier in Ordered)
             {
                 var formatted = Session.Modifiers.Format(modifier.Key, modifier.Total);
 
                 <li title="@SourceSummary(modifier)">
                     <span class="label">@((MarkupString)Session.Modifiers.LabelHtml(modifier.Key))</span>
-                    <span class="value @ToneClass(formatted.Tone)">@formatted.Value</span>
+
                     @if (modifier.Sources.Count > 1)
                     {
                         <span class="sources">@modifier.Sources.Count</span>
                     }
+
+                    <span class="value @ToneClass(formatted.Tone)">@formatted.Value</span>
                 </li>
             }
         </ul>
@@ -64,6 +71,28 @@
 
     private IReadOnlyList<CombinedModifier> Combined =>
         (Context ?? Session.Context) is { } context ? DesignEffects.Combine(context) : [];
+
+    /// <summary>
+    /// The totals in the order they will be read in.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// By the name shown, not by the key behind it. The rules sort by key because the rules have no
+    /// localiser, and the key is not what anybody sees: <c>country_claim_influence_cost_mult</c>
+    /// sorts under C and reads "Claim Influence Cost", <c>army_damage_mult</c> sorts under A and
+    /// reads "Army Damage". The result looked shuffled because it was sorted by a word that is not
+    /// on the screen.
+    /// </para>
+    /// <para>
+    /// Alphabetical and nothing more. A grouping was looked for first and there is none to read: the
+    /// game has no modifier categories, and of the 564 modifiers an empire's choices can reach, 269
+    /// begin with no scope word at all — so headings would have put half of them under "other".
+    /// Sorting by name gathers the families anyway, since the game's own labels lead with the thing
+    /// they are about: every "Job Efficiency for…" lands together, and so does every "Pop …".
+    /// </para>
+    /// </remarks>
+    private IReadOnlyList<CombinedModifier> Ordered =>
+        [.. Combined.OrderBy(m => Session.Modifiers.Label(m.Key), StringComparer.CurrentCulture)];
 
     /// <summary>Whether anything the empire has chosen carries a bonus the totals leave out.</summary>
     private bool AnyConditional =>

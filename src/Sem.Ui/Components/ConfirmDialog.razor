@@ -1,0 +1,72 @@
+@*
+    A question that has to be answered before anything else happens.
+
+    Two things in the app are worth stopping someone for: deleting an empire, and leaving one with
+    changes that have not been saved. Both are cheap to ask about and expensive to get wrong, and
+    neither has an undo behind it.
+
+    The buttons are the caller's, because the answers are not always yes and no — leaving with
+    unsaved work has three sensible ones, and calling any of them "Cancel" would be a poor
+    description of what it does.
+*@
+
+<div class="sem-modal" @onclick="Dismiss">
+    @*
+        Clicks inside the sheet are stopped from reaching the backdrop, which would otherwise read
+        every press of a button as a press on the backdrop as well and close the dialog underneath
+        whatever was clicked.
+    *@
+    <div class="sheet" role="alertdialog" aria-modal="true" aria-labelledby="@_titleId"
+         tabindex="-1" @ref="_sheet" @onkeydown="OnKey" @onclick:stopPropagation="true">
+        <h2 id="@_titleId">@Title</h2>
+
+        @if (Message is { Length: > 0 })
+        {
+            <p>@Message</p>
+        }
+
+        <div class="choices">
+            @ChildContent
+        </div>
+    </div>
+</div>
+
+@code {
+    private ElementReference _sheet;
+
+    /// <summary>Ties the sheet to its heading for a screen reader, uniquely on a page.</summary>
+    private readonly string _titleId = $"confirm-{Guid.NewGuid():N}";
+
+    /// <summary>The question, as a heading.</summary>
+    [Parameter, EditorRequired]
+    public required string Title { get; set; }
+
+    /// <summary>What the answer will mean, where that is not obvious from the question.</summary>
+    [Parameter]
+    public string? Message { get; set; }
+
+    /// <summary>The answers, which the caller supplies as buttons.</summary>
+    [Parameter, EditorRequired]
+    public required RenderFragment ChildContent { get; set; }
+
+    /// <summary>Called when the dialog is dismissed rather than answered.</summary>
+    [Parameter]
+    public EventCallback OnDismiss { get; set; }
+
+    /// <summary>
+    /// Takes the keyboard when the dialog appears, so that Escape reaches it and Tab stays among
+    /// the answers rather than wandering the page behind.
+    /// </summary>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await _sheet.FocusAsync();
+        }
+    }
+
+    private Task OnKey(KeyboardEventArgs e) =>
+        e.Key == "Escape" ? Dismiss() : Task.CompletedTask;
+
+    private Task Dismiss() => OnDismiss.InvokeAsync();
+}

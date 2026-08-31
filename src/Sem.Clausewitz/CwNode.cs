@@ -91,7 +91,7 @@ public sealed class CwNode
 
         KeyToken = new CwToken(
             quoted ? CwTokenKind.QuotedString : CwTokenKind.BareToken,
-            quoted ? $"\"{key}\"" : key,
+            quoted ? CwToken.Quote(key) : key,
             KeyToken.LeadingTrivia);
     }
 
@@ -100,7 +100,7 @@ public sealed class CwNode
         new(
             CwToken.Synthetic(
                 quoteKey ? CwTokenKind.QuotedString : CwTokenKind.BareToken,
-                quoteKey ? $"\"{key}\"" : key),
+                quoteKey ? CwToken.Quote(key) : key),
             CwToken.Synthetic(CwTokenKind.Operator, "="),
             value);
 

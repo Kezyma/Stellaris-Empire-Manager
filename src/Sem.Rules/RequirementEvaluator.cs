@@ -52,6 +52,43 @@ public sealed class RequirementEvaluator
     public bool IsSatisfied(Requirement requirement, DesignContext context) =>
         Evaluate(requirement, context).Passed;
 
+    /// <summary>
+    /// Whether a condition can be settled from the design alone.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Evaluating is not the same as deciding. Every method above answers yes to a condition it
+    /// cannot read, so that a game patch never hides an option the player should be able to choose.
+    /// That is the correct bias for gating and the wrong one for arithmetic: a modifier folded into
+    /// a total on the strength of an unread condition is a bonus the empire has been promised
+    /// without evidence.
+    /// </para>
+    /// <para>
+    /// So this asks the other question. A condition made only of content packs, of choices the
+    /// design has made, and of predicates about the design is answerable now; one that asks whether
+    /// a tradition has been adopted or a planet colonised is not, and belongs to a game already
+    /// under way.
+    /// </para>
+    /// </remarks>
+    public bool CanDecide(Requirement requirement, DesignContext context)
+    {
+        ArgumentNullException.ThrowIfNull(requirement);
+        ArgumentNullException.ThrowIfNull(context);
+
+        return requirement switch
+        {
+            AlwaysRequirement => true,
+            AllRequirement all => all.Items.All(item => CanDecide(item, context)),
+            AnyRequirement any => any.Items.All(item => CanDecide(item, context)),
+            NotRequirement not => CanDecide(not.Item, context),
+            SelectionRequirement => true,
+            DlcRequirement => true,
+            FieldRequirement field => context.Field(field.Field) is not null,
+            PredicateRequirement predicate => DesignContext.Knows(predicate.Name),
+            _ => false,
+        };
+    }
+
     private Verdict EvaluateCore(Requirement requirement, DesignContext context) => requirement switch
     {
         AlwaysRequirement always => always.Value ? Verdict.Pass : Verdict.Fail,

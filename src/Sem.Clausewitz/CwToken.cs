@@ -43,6 +43,69 @@ public sealed record CwToken(CwTokenKind Kind, string Text, string? LeadingTrivi
     /// else unchanged.
     /// </summary>
     public string Value => Kind == CwTokenKind.QuotedString && Text.Length >= 2
-        ? Text[1..^1]
+        ? Unescape(Text[1..^1])
         : Text;
+
+    /// <summary>
+    /// Wraps a value in quotes so that reading it back gives the same value.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Every synthesised string goes through here. Written without it, an empire named
+    /// <c>The "Peacock" Dynamics</c> produced <c>key="The "Peacock" Dynamics"</c>, which is a
+    /// different and largely nonsensical document — and since a name goes into the designs file as
+    /// well as into a link, that was the player's own file being written malformed.
+    /// </para>
+    /// <para>
+    /// Only a quote is escaped, and only a backslash that would otherwise change what the quote
+    /// after it means. Paradox script has no general escape mechanism — <c>gfx\models\ship.mesh</c>
+    /// is a path and not an escape of anything — so treating every backslash as one would corrupt
+    /// far more than it fixed.
+    /// </para>
+    /// </remarks>
+    public static string Quote(string value)
+    {
+        ArgumentNullException.ThrowIfNull(value);
+
+        var escaped = new System.Text.StringBuilder(value.Length + 2).Append('"');
+
+        for (var i = 0; i < value.Length; i++)
+        {
+            var protectable = value[i] == '\\' && (i + 1 == value.Length || value[i + 1] == '"');
+
+            if (protectable || value[i] == '"')
+            {
+                escaped.Append('\\');
+            }
+
+            escaped.Append(value[i]);
+        }
+
+        return escaped.Append('"').ToString();
+    }
+
+    /// <summary>Puts back what <see cref="Quote"/> protected.</summary>
+    private static string Unescape(string text)
+    {
+        if (!text.Contains('\\', StringComparison.Ordinal))
+        {
+            return text;
+        }
+
+        var value = new System.Text.StringBuilder(text.Length);
+
+        for (var i = 0; i < text.Length; i++)
+        {
+            // Anything else after a backslash is left alone, backslash and all, because in this
+            // format it is not an escape and never was.
+            if (text[i] == '\\' && i + 1 < text.Length && text[i + 1] is '"' or '\\')
+            {
+                i++;
+            }
+
+            value.Append(text[i]);
+        }
+
+        return value.ToString();
+    }
 }

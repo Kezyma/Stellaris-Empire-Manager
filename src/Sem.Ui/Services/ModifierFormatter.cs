@@ -78,7 +78,10 @@ public sealed class ModifierFormatter(Localizer localizer, GameDatabase database
         {
             if (_localizer.Has(candidate))
             {
-                return _localizer.Text(candidate);
+                // Named here as well as in the HTML form, so that sorting a list by this puts the
+                // rows in the order they will be read in rather than in the order of a word the
+                // reader is never shown.
+                return Named(key, _localizer.Text(candidate), html: false);
             }
         }
 
@@ -101,8 +104,23 @@ public sealed class ModifierFormatter(Localizer localizer, GameDatabase database
         return System.Net.WebUtility.HtmlEncode(Localizer.Prettify(Readable(key)));
     }
 
-    /// <summary>The modifiers whose label hides a name their own key states.</summary>
-    private const string AttunementPrefix = "add_attunement_";
+    /// <summary>
+    /// How a shroud patron's own key is dressed up into an attunement modifier's key.
+    /// </summary>
+    /// <remarks>
+    /// Three shapes, all of which read as the same anonymous line and all of which name the patron
+    /// in the key: <c>mod_add_attunement_the_eater_of_worlds</c> is "Add Attunement with […]",
+    /// <c>mod_the_eater_of_worlds_attunement_mult</c> is "Attunement with […]", and
+    /// <c>mod_eater_of_worlds_monthly_attunement_add</c> is "Monthly Attunement with […]". Only the
+    /// first was handled, so an empire could show one named row and two anonymous ones for the same
+    /// patron.
+    /// </remarks>
+    private static readonly (string Prefix, string Suffix)[] AttunementShapes =
+    [
+        ("add_attunement_", ""),
+        ("", "_attunement_mult"),
+        ("", "_monthly_attunement_add"),
+    ];
 
     /// <summary>
     /// Puts the entity's name into a label the game leaves anonymous.
@@ -113,31 +131,66 @@ public sealed class ModifierFormatter(Localizer localizer, GameDatabase database
     /// has met the patron. Faithful, and useless in a designer: five separate modifiers all read as
     /// the same anonymous line.
     ///
-    /// The key says which one it is. Strip the prefix from
+    /// The key says which one it is. Strip the affixes from
     /// <c>add_attunement_the_eater_of_worlds</c> and <c>the_eater_of_worlds</c> is itself an entry,
     /// resolving through <c>$name_eater$</c> to "Eater of Worlds". Both halves of the swap are read
     /// out of the localisation rather than written here, so this holds in any language.
     /// </remarks>
-    private string Named(string key, string label)
+    private string Named(string key, string label, bool html = true)
     {
-        if (!key.StartsWith(AttunementPrefix, StringComparison.Ordinal))
+        if (Patron(key) is not { } entity)
         {
             return label;
         }
 
-        var entity = key[AttunementPrefix.Length..];
+        // Both halves read the same way the label did, so the substitution matches what is in it.
+        var anonymous = html
+            ? _localizer.Html("UNDISCOVERED_PATRON_ARTICLE", string.Empty)
+            : _localizer.Text("UNDISCOVERED_PATRON_ARTICLE", string.Empty);
 
-        if (!_localizer.Has(entity))
-        {
-            return label;
-        }
-
-        var anonymous = _localizer.Html("UNDISCOVERED_PATRON_ARTICLE", string.Empty);
-        var named = _localizer.Html(entity, string.Empty);
+        var named = html
+            ? _localizer.Html(entity, string.Empty)
+            : _localizer.Text(entity, string.Empty);
 
         return anonymous.Length > 0 && named.Length > 0
             ? label.Replace(anonymous, named, StringComparison.Ordinal)
             : label;
+    }
+
+    /// <summary>
+    /// The patron a modifier's key names, where it names one.
+    /// </summary>
+    /// <remarks>
+    /// The monthly modifiers drop the article — <c>eater_of_worlds_monthly_attunement_add</c> against
+    /// the entry <c>the_eater_of_worlds</c> — so the stem is tried both ways. Anything that is not a
+    /// patron simply fails to be an entry and is left alone, and even a false match would be
+    /// harmless: the swap only touches a label that already says "an Unknown Entity".
+    /// </remarks>
+    private string? Patron(string key)
+    {
+        foreach (var (prefix, suffix) in AttunementShapes)
+        {
+            if (!key.StartsWith(prefix, StringComparison.Ordinal) ||
+                !key.EndsWith(suffix, StringComparison.Ordinal) ||
+                key.Length <= prefix.Length + suffix.Length)
+            {
+                continue;
+            }
+
+            var stem = key[prefix.Length..^suffix.Length];
+
+            if (_localizer.Has(stem))
+            {
+                return stem;
+            }
+
+            if (_localizer.Has($"the_{stem}"))
+            {
+                return $"the_{stem}";
+            }
+        }
+
+        return null;
     }
 
     private static IEnumerable<string> Candidates(string key)

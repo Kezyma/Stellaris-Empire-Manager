@@ -19,7 +19,7 @@ public sealed class DesktopFileExchange(SafeFile file, string designsPath) : IFi
     private readonly string _designsPath = designsPath ?? throw new ArgumentNullException(nameof(designsPath));
 
     /// <inheritdoc />
-    public string SaveVerb => "Save";
+    public bool SavesInPlace => true;
 
     /// <summary>The file being edited.</summary>
     public string DesignsPath => _designsPath;

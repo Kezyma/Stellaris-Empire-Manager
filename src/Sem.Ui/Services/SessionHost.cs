@@ -65,9 +65,10 @@ public sealed class SessionHost(
                 session.StartEmptyFile();
             }
 
-            // Kept from here on, so that what is in the tab and what is in the browser's store stay
-            // the same thing. Opening a file replaces the store, which is what opening a file means.
-            session.Changed += Keep;
+            // The list keeps itself: an empire added, duplicated or deleted is a decision already
+            // taken, and there is no Save button in front of it. Editing one is the thing that
+            // waits, and that goes through SaveAsync below.
+            session.FileChanged += Keep;
 
             _session = session;
             LoadError = null;
@@ -87,17 +88,65 @@ public sealed class SessionHost(
     }
 
     /// <summary>
-    /// Writes the whole designs file back to the store whenever anything changes.
+    /// Keeps the file in the browser's store when the list of empires changes.
     /// </summary>
     /// <remarks>
     /// Not awaited: this runs from a change notification during a render, and a save that takes a
-    /// moment must not hold one up. Failures are the store's own business and it swallows them.
+    /// moment must not hold one up. Failures are the store's own business — nobody asked for this
+    /// one, so nobody is waiting to be told. The desktop keeps nothing here, since the player's real
+    /// file is the one copy and it is written when they say so.
     /// </remarks>
     private void Keep()
     {
-        if (_session?.Save() is { } bytes)
+        if (!_files.SavesInPlace && _session?.Save() is { } bytes)
         {
             _ = _store.WriteAsync(System.Text.Encoding.UTF8.GetString(bytes));
+        }
+    }
+
+    /// <summary>
+    /// Saves the empire being edited, and returns what went wrong if anything did.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Where it goes is the difference between the two hosts and nothing else the designer sees. The
+    /// desktop app has the player's real file and writes it back; a browser has nowhere to write, so
+    /// it keeps the file in local storage and hands over a download separately. Either way the whole
+    /// file is written, because a file is what both of them store — it is the <em>deciding</em> that
+    /// is per empire, not the writing.
+    /// </para>
+    /// <para>
+    /// Awaited, and a store that refused is reported rather than shrugged at: the player pressed a
+    /// button, and a button that says "Saved" over a store that said no would be worse than useless.
+    /// </para>
+    /// </remarks>
+    public async Task<string?> SaveAsync()
+    {
+        if (_session is not { File: not null } session)
+        {
+            return "There is nothing open to save.";
+        }
+
+        try
+        {
+            var contents = session.Save();
+
+            if (_files.SavesInPlace)
+            {
+                await _files.SaveAsync(session.FileName ?? EmpireDesignsFile.FileName, contents)
+                    .ConfigureAwait(false);
+            }
+            else if (!await _store.WriteAsync(System.Text.Encoding.UTF8.GetString(contents)).ConfigureAwait(false))
+            {
+                return "Your browser would not keep the file. Download it to be sure of it.";
+            }
+
+            session.MarkSaved();
+            return null;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidOperationException)
+        {
+            return $"Your empires could not be saved: {ex.Message}";
         }
     }
 

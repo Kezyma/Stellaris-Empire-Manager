@@ -3,8 +3,9 @@
 @inject SessionHost Host
 @inject IFileExchange Files
 @inject NavigationManager Navigation
+@inject UnsavedWorkGuard Unsaved
 
-<PageTitle>@Title — Stellaris Empire Manager</PageTitle>
+<PageTitle>@Title - Stellaris Empire Manager</PageTitle>
 
 @if (_session is null)
 {
@@ -21,80 +22,73 @@ else if (_session.Current is null)
 }
 else
 {
-    <div class="sem-panel">
-        <div class="sem-row">
-            <button type="button" @onclick="@(() => Navigation.NavigateTo(""))">← Empires</button>
+    @if (_confirming == Asking.Delete)
+    {
+        <ConfirmDialog Title="@($"Delete {Title}?")"
+                       Message="The empire is removed from your file. There is no undo."
+                       OnDismiss="() => _confirming = Asking.None">
+            <button type="button" @onclick="() => _confirming = Asking.None">Keep it</button>
+            <button type="button" class="danger" @onclick="Delete">Delete</button>
+        </ConfirmDialog>
+    }
+    else if (_confirming == Asking.Revert)
+    {
+        <ConfirmDialog Title="Throw away your changes?"
+                       Message="@($"{Title} goes back to how it was when you opened it, or last saved it.")"
+                       OnDismiss="() => _confirming = Asking.None">
+            <button type="button" @onclick="() => _confirming = Asking.None">Keep editing</button>
+            <button type="button" class="danger" @onclick="RevertEdits">Throw them away</button>
+        </ConfirmDialog>
+    }
+    else if (_confirming == Asking.Leaving)
+    {
+        <ConfirmDialog Title="@($"Save your changes to {Title}?")"
+                       Message="Leaving without saving puts the empire back to how it was when you opened it."
+                       OnDismiss="() => _confirming = Asking.None">
+            <button type="button" @onclick="() => Answer(false)">Stay here</button>
+            <button type="button" class="danger" @onclick="DiscardAndLeave">Discard changes</button>
+            <button type="button" class="primary" @onclick="SaveAndLeave">Save and leave</button>
+        </ConfirmDialog>
+    }
 
-            @* Shown, not edited: the empire is named once, in its own section. *@
-            <span class="sem-title">@Title</span>
+    @if (_saveError is { } failure)
+    {
+        <p class="sem-status bad">@failure</p>
+    }
 
-            @*
-                The count opens the list. It used to be a word beside the title while the problems
-                themselves were listed in the preview, which made that panel read as a verdict on the
-                empire rather than a description of it. Here the count is next to the empire it is
-                about, and the detail is one click away rather than always underfoot.
-            *@
-            @if (_session.Report.IsValid && _session.Report.Warnings.Count == 0)
+    @*
+        The actions belong to the empire, so they are handed to the panel that shows it rather than
+        laid across the top of the page in a card of their own. Icons because there is room for three
+        of them beside a flag and not for three words.
+    *@
+    <DesignerShell Session="_session">
+        <Actions>
+            <button type="button" class="icon" title="@(_copied ? "Link copied" : "Copy a link to this empire")"
+                    aria-label="Copy a link to this empire" @onclick="CopyLink">
+                <ActionIcon Name="share" />
+            </button>
+
+            @if (_session.IsModified)
             {
-                <span class="sem-status ok">Valid</span>
-            }
-            else
-            {
-                <button type="button" class="sem-status-toggle @(_session.Report.IsValid ? "warn" : "bad")"
-                        aria-expanded="@(_showProblems ? "true" : "false")"
-                        @onclick="() => _showProblems = !_showProblems">
-                    @ProblemSummary
-                    <span class="chevron" aria-hidden="true">@(_showProblems ? "▾" : "▸")</span>
+                <button type="button" class="icon" title="Throw away your changes"
+                        aria-label="Throw away your changes" @onclick="() => _confirming = Asking.Revert">
+                    <ActionIcon Name="revert" />
                 </button>
             }
 
-            @*
-                Kept even though the address bar now carries the same link: it saves selecting the
-                bar, and it is the only thing that says out loud that the link was taken.
-            *@
-            <button type="button" @onclick="CopyLink" title="The address bar carries this link too">
-                @(_copied ? "Link copied" : "Copy link")
+            <button type="button" class="icon danger" title="Delete this empire"
+                    aria-label="Delete this empire" @onclick="() => _confirming = Asking.Delete">
+                <ActionIcon Name="delete" />
             </button>
-            @*
-                The same empire in the game's own arrangement. One session behind both, so this is
-                a change of view rather than a change of empire.
-            *@
-            <button type="button" @onclick="@(() => Navigation.NavigateTo("designer/classic"))"
-                    title="The same empire, laid out the way the game lays it out">
-                Game layout
+
+            <button type="button" class="icon primary" disabled="@(!_session.IsModified)"
+                    title="@(_session.IsModified ? "Save this empire" : "Saved")"
+                    aria-label="@(_session.IsModified ? "Save this empire" : "Saved")"
+                    @onclick="SaveEdits">
+                <ActionIcon Name="save" />
             </button>
-            <button type="button" class="danger" @onclick="Delete">Delete</button>
-            <button type="button" class="primary" @onclick="Export">@Files.SaveVerb</button>
-        </div>
-    </div>
-
-    @if (_showProblems)
-    {
-        <div class="sem-problems">
-            @foreach (var problem in _session.Report.Errors)
-            {
-                <div class="sem-problem">
-                    <div class="area">@AreaName(problem.Area)</div>
-                    <div>@Describe(problem)</div>
-
-                    @foreach (var reason in problem.Reasons.Distinct())
-                    {
-                        <div class="why">@_session.Localizer.Text(reason)</div>
-                    }
-                </div>
-            }
-
-            @foreach (var problem in _session.Report.Warnings)
-            {
-                <div class="sem-problem warning">
-                    <div class="area">@AreaName(problem.Area)</div>
-                    <div>@Describe(problem)</div>
-                </div>
-            }
-        </div>
-    }
-
-    <DesignerShell Session="_session" />
+        </Actions>
+    </DesignerShell>
 }
 
 @code {
@@ -103,67 +97,46 @@ else
     /// <summary>Whether the last thing the player did was copy the link, so the button can say so.</summary>
     private bool _copied;
 
-    /// <summary>Whether the list behind the problem count is open.</summary>
-    private bool _showProblems;
-
-    /// <summary>
-    /// What the count says, which is what there is rather than always "problems".
-    /// </summary>
-    /// <remarks>
-    /// An empire with nothing wrong but something worth mentioning was reading "Valid" while
-    /// carrying three warnings nobody could see.
-    /// </remarks>
-    private string ProblemSummary
+    /// <summary>The questions this page stops to ask.</summary>
+    private enum Asking
     {
-        get
-        {
-            var errors = _session!.Report.Errors.Count;
-            var warnings = _session.Report.Warnings.Count;
-
-            var parts = new List<string>();
-
-            if (errors > 0)
-            {
-                parts.Add($"{errors} problem{(errors == 1 ? string.Empty : "s")}");
-            }
-
-            if (warnings > 0)
-            {
-                parts.Add($"{warnings} warning{(warnings == 1 ? string.Empty : "s")}");
-            }
-
-            return string.Join(", ", parts);
-        }
+        None,
+        Delete,
+        Revert,
+        Leaving,
     }
 
-    /// <summary>
-    /// A problem's message with the things it names spelled out.
-    /// </summary>
-    /// <remarks>
-    /// The rules know nothing about language, so a message that has to name something the game
-    /// defines leaves a numbered blank and hands over the key. Filling them here is what turns
-    /// "This origin starts the empire on 'pc_volcanic'" into the words a player would recognise.
-    /// </remarks>
-    private string Describe(ValidationProblem problem) =>
-        problem.Arguments.Count == 0
-            ? problem.Message
-            : string.Format(
-                System.Globalization.CultureInfo.CurrentCulture,
-                problem.Message,
-                [.. problem.Arguments.Select(key => _session!.Localizer.Text(key))]);
+    /// <summary>Which of them is on screen.</summary>
+    private Asking _confirming;
+
+    /// <summary>Why the last save did not happen, where it did not.</summary>
+    private string? _saveError;
 
     /// <summary>
-    /// What to call the part of the empire a problem belongs to.
+    /// The unanswered question, where one is on screen.
     /// </summary>
     /// <remarks>
-    /// The enum's own name is shouted and run together — SECONDARYSPECIES — which is the same fault
-    /// as printing a key.
+    /// A navigation waits on this, and so does the header's Create or Import. One question with one
+    /// answer, rather than a dialog per way of asking it.
     /// </remarks>
-    private static string AreaName(ValidationArea area) => area switch
-    {
-        ValidationArea.SecondarySpecies => "Second species",
-        _ => Localizer.Prettify(area.ToString()),
-    };
+    private TaskCompletionSource<bool>? _answer;
+
+    /// <summary>
+    /// Set once the page is on its way out, so that nothing it does on the way rewrites the address.
+    /// </summary>
+    /// <remarks>
+    /// Saving and reverting both change the empire, and a change redraws the address bar to match —
+    /// which, in the middle of a navigation this page is holding open, replaced the destination with
+    /// the designer's own address. Discarding a new empire and pressing Empires left you looking at
+    /// the designer.
+    /// </remarks>
+    private bool _leaving;
+
+    /// <summary>What the host was last told about unsaved work, so it is only told when it changes.</summary>
+    private bool? _warned;
+
+    /// <summary>Removes the navigation guard when the page goes away.</summary>
+    private IDisposable? _guard;
 
     private string Title => _session?.Current is { } design
         ? _session.Localizer.Name(design.Name, design.Key)
@@ -183,7 +156,139 @@ else
             _session.Changed += OnChanged;
             OpenSharedDesign();
             ShowInAddressBar();
+
+            // Three ways out, one question. This catches the app's own links; the header asks the
+            // same question through the shared guard before it starts an empire or opens a file;
+            // and the browser's own warning covers the tab being closed.
+            _guard = Navigation.RegisterLocationChangingHandler(Leaving);
+            Unsaved.Ask = AskAboutUnsavedWork;
+            await SyncLeaveWarning();
         }
+    }
+
+    /// <summary>
+    /// Stops a move away from the designer while there is unsaved work, and asks about it.
+    /// </summary>
+    /// <remarks>
+    /// The designer rewrites its own address on every edit, to keep the shareable link current, so
+    /// the first thing to establish is whether this is a move at all. Without that check the page
+    /// would ask the player whether they meant to leave every time they picked a trait.
+    /// </remarks>
+    private async ValueTask Leaving(LocationChangingContext context)
+    {
+        if (StaysOnThisPage(context.TargetLocation))
+        {
+            return;
+        }
+
+        // The navigation waits here while the dialog is on screen. Holding it open is what lets the
+        // answer decide, rather than cancelling the move and then having to remember where it was
+        // going in order to make it again.
+        if (!await AskAboutUnsavedWork())
+        {
+            context.PreventNavigation();
+        }
+    }
+
+    /// <summary>
+    /// Puts the unsaved-work question on screen and waits for it to be answered.
+    /// </summary>
+    /// <remarks>
+    /// True to carry on, and by then the work has been dealt with: saved, or put back. False to
+    /// stay. With nothing unsaved it answers true without asking anything, which is what makes it
+    /// safe for the header to call before every Create and every Import.
+    /// </remarks>
+    private Task<bool> AskAboutUnsavedWork()
+    {
+        if (_session?.IsModified != true)
+        {
+            return Task.FromResult(true);
+        }
+
+        _answer = new TaskCompletionSource<bool>();
+        _confirming = Asking.Leaving;
+        StateHasChanged();
+
+        return _answer.Task;
+    }
+
+    /// <summary>Answers the question above, and takes the dialog down.</summary>
+    private void Answer(bool proceed)
+    {
+        // Staying means the address bar is this page's business again.
+        _leaving = proceed;
+        _confirming = Asking.None;
+        _answer?.TrySetResult(proceed);
+        _answer = null;
+    }
+
+    /// <summary>
+    /// Whether a destination is this same page under a different query.
+    /// </summary>
+    /// <remarks>
+    /// The destination arrives however it was written — "designer?d=…" from this page's own address
+    /// rewrite, "" from the Empires button, and an absolute address from a link. ToBaseRelativePath
+    /// looks like the tool for this and is not: it throws on anything already relative, and a guard
+    /// that throws is a guard that lets everything past.
+    /// </remarks>
+    private bool StaysOnThisPage(string target)
+    {
+        var path = target.StartsWith(Navigation.BaseUri, StringComparison.OrdinalIgnoreCase)
+            ? target[Navigation.BaseUri.Length..]
+            : target;
+
+        return path.Split('?')[0].Trim('/') == "designer";
+    }
+
+    private async Task SaveAndLeave()
+    {
+        _leaving = true;
+        _saveError = await Host.SaveAsync();
+
+        // A save that did not happen is not a reason to go anyway: that would be leaving the work
+        // behind with nothing said about it.
+        Answer(_saveError is null);
+    }
+
+    /// <summary>
+    /// Puts the empire back, then allows whatever was asking to go ahead.
+    /// </summary>
+    /// <remarks>
+    /// Reverted rather than merely left behind. Unsaved edits carried out of the designer would be
+    /// picked up as the empire's saved state the next time it was opened — the Save button would say
+    /// "Saved" over changes nothing had stored — and would show in the list as an empire that is not
+    /// the empire in the file. Leaving without saving means what it says.
+    /// </remarks>
+    private void DiscardAndLeave()
+    {
+        _leaving = true;
+        _session?.Revert();
+        Answer(true);
+    }
+
+    private async Task SaveEdits() => _saveError = await Host.SaveAsync();
+
+    private void RevertEdits()
+    {
+        _confirming = Asking.None;
+        _saveError = null;
+        _session?.Revert();
+    }
+
+    /// <summary>
+    /// Tells the host whether closing the tab would lose anything, when the answer changes.
+    /// </summary>
+    private async Task SyncLeaveWarning()
+    {
+        var unsaved = _session?.IsModified == true;
+
+        if (_warned == unsaved)
+        {
+            return;
+        }
+
+        _warned = unsaved;
+        await Files.WarnBeforeLeavingAsync(unsaved);
     }
 
     /// <summary>
@@ -219,6 +324,7 @@ else
             return;
         }
 
+
         _session.EditFile(file =>
         {
             var key = design.Key;
@@ -236,13 +342,24 @@ else
     /// Puts the empire being edited in the address bar, so it can be shared by copying it.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Replacing rather than pushing, so that editing an empire does not fill the back button with
     /// one entry per keystroke. Only written when it actually changed, since navigating is not free
     /// and this runs on every edit.
+    /// </para>
+    /// <para>
+    /// Only ever the saved empire. It used to follow every keystroke, which was fine while every
+    /// keystroke was also being stored — the address and the store agreed, so reloading the tab
+    /// found the empire the address named and simply opened it. Now that editing waits for Save,
+    /// a bar carrying unsaved work would not match anything stored, and a reload read its own
+    /// address as a stranger's link and added the half-finished empire to the file as a second
+    /// copy. Copy link builds its own address from what is on screen, so nothing is lost by this:
+    /// what changes is that the bar names the empire rather than the draft.
+    /// </para>
     /// </remarks>
     private void ShowInAddressBar()
     {
-        if (_session?.Current is not { } design)
+        if (_leaving || _session?.Current is not { } design || _session.IsModified)
         {
             return;
         }
@@ -276,24 +393,39 @@ else
         {
             _session.Changed -= OnChanged;
         }
+
+        // The question goes with the page that knew how to ask it.
+        if (Unsaved.Ask == AskAboutUnsavedWork)
+        {
+            Unsaved.Ask = null;
+        }
+
+        _guard?.Dispose();
     }
 
-    private void OnChanged() => InvokeAsync(() =>
+    private void OnChanged() => _ = InvokeAsync(async () =>
     {
         ShowInAddressBar();
         StateHasChanged();
+        await SyncLeaveWarning();
     });
 
     private void Delete()
     {
         if (_session?.Current is { } design)
         {
+            _confirming = Asking.None;
             _session.EditFile(file => file.Remove(design));
             _session.Select(_session.File?.Designs.FirstOrDefault());
-            Navigation.NavigateTo("");
+
+            // Selecting something else has already cleared the unsaved flag, so the guard on the way
+            // out finds nothing to ask about: there is no point asking whether to save an empire
+            // that no longer exists.
+            Navigation.NavigateTo(string.Empty);
         }
     }
 
+    /// <summary>Hands over a copy of the file, which is a different thing from saving it.</summary>
     private async Task Export()
     {
         var name = _session!.FileName is { Length: > 0 } existing ? existing : EmpireDesignsFile.FileName;

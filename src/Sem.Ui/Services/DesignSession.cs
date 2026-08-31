@@ -17,6 +17,29 @@ public sealed class DesignSession
 {
     private readonly List<string> _ownedDlc = [];
 
+    /// <summary>
+    /// The empire being edited, as it stood when it was opened or last saved.
+    /// </summary>
+    /// <remarks>
+    /// One empire, not the file. Editing an empire is the thing that has a Save button in front of
+    /// it, and the thing whose changes are worth warning somebody about; adding an empire to the
+    /// file or removing one from it is a list being managed, and those keep themselves.
+    /// </remarks>
+    private EmpireSnapshot? _saved;
+
+    /// <summary>
+    /// An empire created but not yet saved, which is in the file only because it has to live
+    /// somewhere.
+    /// </summary>
+    /// <remarks>
+    /// Pressing Create used to add an empire to the file there and then, and store it: going to the
+    /// designer, looking at what a new empire starts as and going back left "New Empire" behind for
+    /// good. So a new one is held here instead. It is in the file because the designer, the rules
+    /// and the preview all work on an empire that is in one — but it is not stored until it is
+    /// saved, and abandoning it takes it back out.
+    /// </remarks>
+    private EmpireDesign? _unsaved;
+
     /// <param name="data">The extracted game data.</param>
     /// <param name="assumeAllPacks">
     /// Whether to open with every content pack enabled rather than only those installed where the
@@ -47,6 +70,15 @@ public sealed class DesignSession
 
     /// <summary>Raised whenever anything an interface displays has changed.</summary>
     public event Action? Changed;
+
+    /// <summary>
+    /// Raised when the file gains or loses an empire, or a different one is opened.
+    /// </summary>
+    /// <remarks>
+    /// Separate from <see cref="Changed"/> because it means something different: this is the list
+    /// itself changing, which is kept as it happens, while an edit to one empire waits to be saved.
+    /// </remarks>
+    public event Action? FileChanged;
 
     /// <summary>The extracted game data.</summary>
     public GameData Data { get; }
@@ -84,8 +116,18 @@ public sealed class DesignSession
     /// <summary>What is wrong with the current empire, if anything.</summary>
     public ValidationReport Report { get; private set; } = new([]);
 
-    /// <summary>Whether anything has been changed since the file was opened.</summary>
+    /// <summary>Whether the empire being edited has changes that have not been saved.</summary>
     public bool IsModified { get; private set; }
+
+    /// <summary>
+    /// Whether the list of empires has changed since the file was last written.
+    /// </summary>
+    /// <remarks>
+    /// Only the desktop has anything to do with this. A browser stores the file as soon as the list
+    /// changes, so there is never anything outstanding; the desktop's one copy is the player's own
+    /// file, which is not written behind their back, so it can be out of date and should say so.
+    /// </remarks>
+    public bool HasUnwrittenFileChanges { get; private set; }
 
     /// <summary>The content packs to judge availability against.</summary>
     public IReadOnlySet<string> OwnedDlc => _ownedDlc.ToHashSet(StringComparer.Ordinal);
@@ -97,8 +139,9 @@ public sealed class DesignSession
 
         File = EmpireDesignsFile.Load(contents);
         FileName = fileName;
-        IsModified = false;
+        HasUnwrittenFileChanges = false;
         Select(File.Designs.FirstOrDefault());
+        FileChanged?.Invoke();
     }
 
     /// <summary>Opens a designs file already in hand as text.</summary>
@@ -108,8 +151,9 @@ public sealed class DesignSession
 
         File = EmpireDesignsFile.LoadText(contents);
         FileName = fileName;
-        IsModified = false;
+        HasUnwrittenFileChanges = false;
         Select(File.Designs.FirstOrDefault());
+        FileChanged?.Invoke();
     }
 
     /// <summary>Starts an empty file, for someone who has none yet.</summary>
@@ -117,15 +161,60 @@ public sealed class DesignSession
     {
         File = EmpireDesignsFile.CreateEmpty();
         FileName = EmpireDesignsFile.FileName;
-        IsModified = false;
+        HasUnwrittenFileChanges = false;
         Select(null);
+        FileChanged?.Invoke();
     }
 
-    /// <summary>Chooses which empire to edit.</summary>
+    /// <summary>
+    /// Chooses which empire to edit, taking the point a revert would come back to.
+    /// </summary>
+    /// <remarks>
+    /// Choosing a different empire abandons the copy held of the last one. Nothing is lost by that:
+    /// the only way to leave the designer is past a question about unsaved work.
+    /// </remarks>
     public void Select(EmpireDesign? design)
     {
+        // Turning to a different empire abandons one that was never saved, so it goes back out of
+        // the file. This is also what deleting one does, and what reverting one does.
+        if (_unsaved is { } pending && !ReferenceEquals(pending, design))
+        {
+            File?.Remove(pending);
+            _unsaved = null;
+        }
+
         Current = design;
+        _saved = design?.Snapshot();
+        IsModified = false;
         Recompute();
+    }
+
+    /// <summary>
+    /// Starts an empire that is not in the file until it is saved.
+    /// </summary>
+    /// <remarks>
+    /// Unlike <see cref="EditFile"/> this announces nothing, so the host does not store it. It
+    /// counts as unsaved from the first moment, which is what makes leaving the designer ask about
+    /// it exactly as it would for an empire somebody had edited.
+    /// </remarks>
+    public EmpireDesign? CreateEmpire(Func<EmpireDesignsFile, EmpireDesign> add)
+    {
+        ArgumentNullException.ThrowIfNull(add);
+
+        if (File is null)
+        {
+            StartEmptyFile();
+        }
+
+        var design = add(File!);
+
+        Select(design);
+
+        _unsaved = design;
+        IsModified = true;
+        Recompute();
+
+        return design;
     }
 
     /// <summary>
@@ -145,7 +234,14 @@ public sealed class DesignSession
         Recompute();
     }
 
-    /// <summary>Applies a change to the file itself, such as adding or removing an empire.</summary>
+    /// <summary>
+    /// Applies a change to the file itself, such as adding or removing an empire.
+    /// </summary>
+    /// <remarks>
+    /// Not an edit to the empire being designed, so it does not go behind the Save button — the list
+    /// of empires is managed directly, and a deletion the player confirmed is one they meant. It is
+    /// announced separately so the host can keep the file.
+    /// </remarks>
     public void EditFile(Action<EmpireDesignsFile> change)
     {
         ArgumentNullException.ThrowIfNull(change);
@@ -156,8 +252,9 @@ public sealed class DesignSession
         }
 
         change(File);
-        IsModified = true;
+        HasUnwrittenFileChanges = true;
         Recompute();
+        FileChanged?.Invoke();
     }
 
     /// <summary>Sets which content packs are available.</summary>
@@ -192,6 +289,49 @@ public sealed class DesignSession
     /// Writes the file back out. An empire nobody touched comes out byte for byte as it went in.
     /// </summary>
     public byte[] Save() => File?.Save() ?? [];
+
+    /// <summary>
+    /// Records that the empire being edited is now the empire that is stored.
+    /// </summary>
+    /// <remarks>
+    /// Called by whoever did the storing, since only they know whether it worked. The copy is taken
+    /// here rather than being passed in, so what is remembered is the state of the design and not
+    /// somebody's account of it.
+    /// </remarks>
+    public void MarkSaved()
+    {
+        // Whatever was written is in the file now, including an empire that had only been created.
+        _unsaved = null;
+        _saved = Current?.Snapshot();
+        IsModified = false;
+
+        // Saving writes the whole file, so whatever the list was owed is settled too.
+        HasUnwrittenFileChanges = false;
+        Changed?.Invoke();
+    }
+
+    /// <summary>
+    /// Puts the empire being edited back to how it was when it was opened or last saved.
+    /// </summary>
+    public void Revert()
+    {
+        // An empire that was never saved has nothing to go back to: it was not there before, so
+        // putting it back means taking it out. Selecting anything else does that.
+        if (_unsaved is { } pending && ReferenceEquals(pending, Current))
+        {
+            Select(File?.Designs.FirstOrDefault(d => !ReferenceEquals(d, pending)));
+            return;
+        }
+
+        if (_saved is not { } stored || Current is not { } design)
+        {
+            return;
+        }
+
+        design.Restore(stored);
+        IsModified = false;
+        Recompute();
+    }
 
     /// <summary>
     /// What the rules make of one of the empire's species, which is not always the founders.

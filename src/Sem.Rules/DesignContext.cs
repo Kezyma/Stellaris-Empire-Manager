@@ -26,6 +26,16 @@ public sealed class DesignContext
     /// <summary>The empire's authority.</summary>
     public string? Authority { get; private init; }
 
+    /// <summary>
+    /// The government the empire's choices add up to, such as <c>gov_star_empire</c>.
+    /// </summary>
+    /// <remarks>
+    /// Not a choice and not stored in the design: it is derived from the authority, the ethics and
+    /// the civics, so it is filled in by whoever built the context and is null until they have.
+    /// The game's empire-name formats are almost all gated on it, which is what it is here for.
+    /// </remarks>
+    public string? Government { get; internal set; }
+
     /// <summary>The empire's civics.</summary>
     public IReadOnlySet<string> Civics { get; private init; } = new HashSet<string>();
 
@@ -160,6 +170,10 @@ public sealed class DesignContext
             Authority = Authority,
             Civics = Civics,
             Origin = Origin,
+
+            // The same empire, so the same government: it follows from the choices above, none of
+            // which a second species changes.
+            Government = Government,
             SpeciesClass = species.Class,
             Portrait = species.Portrait,
             SpeciesArchetype = ArchetypeOf(Database, species.Class),
@@ -229,11 +243,33 @@ public sealed class DesignContext
         _ => true,
     };
 
+    /// <summary>
+    /// Whether a predicate is one this design can actually answer.
+    /// </summary>
+    /// <remarks>
+    /// <see cref="Evaluate"/> says yes to anything it does not recognise, which is the right answer
+    /// when the question is whether to let the player choose something: an unread condition must
+    /// never hide an option. It is the wrong answer when the question is whether a bonus applies,
+    /// because that would promise the empire something nobody has established. So the two questions
+    /// are asked separately, and this is the second one.
+    /// </remarks>
+    public static bool Knows(string predicate) => predicate is
+        DesignPredicates.IsGestalt or
+        DesignPredicates.IsHiveEmpire or
+        DesignPredicates.IsMachineEmpire or
+        DesignPredicates.IsIndividualMachine or
+        DesignPredicates.IsRobotEmpire or
+        DesignPredicates.IsMegacorp or
+        DesignPredicates.IsWildernessEmpire or
+        DesignPredicates.IsRegularEmpire or
+        DesignPredicates.IsNomadic;
+
     /// <summary>Reads a plain field of the design by the name the game's script uses.</summary>
     public string? Field(string name) => name switch
     {
         "is_nomadic" => IsNomadic ? "yes" : "no",
         "authority" => Authority,
+        "government" => Government,
         "origin" => Origin,
         "species_class" => SpeciesClass,
         "species_archetype" => SpeciesArchetype,

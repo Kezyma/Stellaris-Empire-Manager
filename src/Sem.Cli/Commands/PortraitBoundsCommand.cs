@@ -91,7 +91,7 @@ public static class PortraitBoundsCommand
 
         if (extents.Any(e => e.Clipped))
         {
-            Console.WriteLine("Larger than even the measuring frame — these report a floor, not a height:");
+            Console.WriteLine("Larger than even the measuring frame - these report a floor, not a height:");
             foreach (var extent in extents.Where(e => e.Clipped))
             {
                 Console.WriteLine($"  {extent.Key,-28} rise {extent.Rise,7:F2}  drop {extent.Drop,6:F2}");
@@ -124,7 +124,7 @@ public static class PortraitBoundsCommand
         Console.WriteLine("A frame standing every portrait on its bottom edge:");
         Console.WriteLine($"  VisibleHeight = {rise:F3}");
         Console.WriteLine("  BottomMargin  = 0");
-        Console.WriteLine($"  against the game's own 15.833 and -0.05263 — figures draw " +
+        Console.WriteLine($"  against the game's own 15.833 and -0.05263 - figures draw " +
                           $"{15.833 / rise:P0} of their present size.");
 
         return 0;

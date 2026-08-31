@@ -33,6 +33,16 @@
 
             <span class="chevron" aria-hidden="true">@(_expanded ? "▾" : "▸")</span>
         </button>
+
+        @*
+            Outside the body on purpose. Folded away on a phone, the body is what disappears, and
+            Save disappearing with it would leave no way to keep an empire without first reopening
+            the summary of it. The head above cannot hold them either: it is itself a button.
+        *@
+        @if (Actions is not null)
+        {
+            <div class="actions">@Actions</div>
+        }
     }
 
     <div class="body">
@@ -53,6 +63,7 @@
 
         @if (Actions is not null)
         {
+            @* Where the panel does not fold, they belong beside the name they act on. *@
             <div class="actions">@Actions</div>
         }
     </div>
@@ -69,17 +80,24 @@
             <div class="name">@Session.Localizer.Name(Design.Species.Name, Design.Species.Class)</div>
             <div class="kind">@Session.Localizer.Text(Design.Species.Class)</div>
 
-            <div class="line">
-                <GameIcon Path="@AuthorityIcon" Size="small"
-                          Alt="@Session.Localizer.Text(Design.Authority)" />
-                <span>@Session.Localizer.Text(Design.Authority)</span>
-            </div>
+            @*
+                The same chip as the rows further down, so that the two things the game's own header
+                names — the authority and the origin — describe themselves in the same way as
+                everything else and not by being the only two that do not.
+            *@
+            @if (Design.Authority is { Length: > 0 } authority)
+            {
+                <div class="line">
+                    <OptionChip Key="@authority" Name="@Session.Localizer.Text(authority)"
+                                Icon="@AuthorityIcon" Effects="@AuthorityEffects" />
+                </div>
+            }
 
             @if (Design.Origin is { Length: > 0 } origin)
             {
                 <div class="line">
-                    <GameIcon Path="@OriginIcon" Size="small" Alt="@Session.Localizer.Text(origin)" />
-                    <span>@Session.Localizer.Text(origin)</span>
+                    <OptionChip Key="@origin" Name="@Session.Localizer.Text(origin)"
+                                Icon="@OriginIcon" Effects="@OriginEffects" />
                 </div>
             }
         </div>
@@ -128,19 +146,51 @@
     </dl>
 
     @*
-        No list of problems. This panel answers "what have I built", and a column of red under the
-        answer made it read as a verdict instead. What is wrong is said where it is wrong — a blocked
-        civic explains itself where it is chosen — and the count in the designer's own header opens
-        the full list.
-    *@
-
-    @*
         Everything the empire adds up to, at the foot of the panel as the game has it. The same
         component the designer's own pane uses rather than a second copy of it — the two had drifted
         into being the same forty lines twice, and a modifier shown one way here and another there is
         the sort of difference nobody notices until it matters.
     *@
     <CombinedEffects Context="@Context" />
+
+    @*
+        And under that, what is wrong with it, folded away.
+
+        Only where someone is editing: the select screen's panel answers "what have I built", and a
+        column of red under that answer reads as a verdict on an empire rather than a description of
+        one. In the designer it is the opposite — the problems have to live somewhere, the sections
+        show only a count, and the messages exist nowhere else.
+    *@
+    @if (ShowProblems && Problems > 0)
+    {
+        <details class="sem-showcase-problems">
+            <summary>
+                <span class="chevron" aria-hidden="true">▸</span>
+                <span class="title">@ProblemSummary</span>
+            </summary>
+
+            @foreach (var problem in Report.Errors)
+            {
+                <div class="sem-problem">
+                    <div class="area">@AreaName(problem.Area)</div>
+                    <div>@Describe(problem)</div>
+
+                    @foreach (var reason in problem.Reasons.Distinct())
+                    {
+                        <div class="why">@Session.Localizer.Text(reason)</div>
+                    }
+                </div>
+            }
+
+            @foreach (var problem in Report.Warnings)
+            {
+                <div class="sem-problem warning">
+                    <div class="area">@AreaName(problem.Area)</div>
+                    <div>@Describe(problem)</div>
+                </div>
+            }
+        </details>
+    }
     </div>
 </div>
 
@@ -170,6 +220,71 @@
 
     /// <summary>Whether the detail is showing, where it can be folded away.</summary>
     private bool _expanded;
+
+    /// <summary>
+    /// Whether to list what is wrong with the empire under everything else.
+    /// </summary>
+    /// <remarks>
+    /// Set by the designer and by nothing else. The same panel serves the select screen, where an
+    /// empire is being read rather than built and a list of faults would be an opinion nobody asked
+    /// for — least of all about one of the game's own empires, which are not the player's to fix.
+    /// </remarks>
+    [Parameter]
+    public bool ShowProblems { get; set; }
+
+    private int Problems => Report.Errors.Count + Report.Warnings.Count;
+
+    /// <summary>
+    /// What the heading says, which is what there is rather than always "problems".
+    /// </summary>
+    private string ProblemSummary
+    {
+        get
+        {
+            var parts = new List<string>();
+
+            if (Report.Errors.Count is var errors and > 0)
+            {
+                parts.Add($"{errors} problem{(errors == 1 ? string.Empty : "s")}");
+            }
+
+            if (Report.Warnings.Count is var warnings and > 0)
+            {
+                parts.Add($"{warnings} warning{(warnings == 1 ? string.Empty : "s")}");
+            }
+
+            return string.Join(", ", parts);
+        }
+    }
+
+    /// <summary>
+    /// A problem's message with the things it names spelled out.
+    /// </summary>
+    /// <remarks>
+    /// The rules know nothing about language, so a message that has to name something the game
+    /// defines leaves a numbered blank and hands over the key. Filling them here is what turns
+    /// "This origin starts the empire on 'pc_volcanic'" into the words a player would recognise.
+    /// </remarks>
+    private string Describe(ValidationProblem problem) =>
+        problem.Arguments.Count == 0
+            ? problem.Message
+            : string.Format(
+                System.Globalization.CultureInfo.CurrentCulture,
+                problem.Message,
+                [.. problem.Arguments.Select(key => Session.Localizer.Text(key))]);
+
+    /// <summary>
+    /// What to call the part of the empire a problem belongs to.
+    /// </summary>
+    /// <remarks>
+    /// The enum's own name is shouted and run together — SECONDARYSPECIES — which is the same fault
+    /// as printing a key.
+    /// </remarks>
+    private static string AreaName(ValidationArea area) => area switch
+    {
+        ValidationArea.SecondarySpecies => "Second species",
+        _ => Localizer.Prettify(area.ToString()),
+    };
 
     /// <summary>
     /// The localisation key of the blurb the game writes for one of its own empires, where this is
@@ -255,11 +370,20 @@
     private string? SpeciesPortrait =>
         PortraitArtwork.For(Database, Design.Species.Portrait, Design.Species.Gender);
 
-    private string? AuthorityIcon =>
-        Database.Authorities.FirstOrDefault(a => a.Key == Design.Authority)?.Icon;
+    private AuthorityDefinition? AuthorityDefinition =>
+        Database.Authorities.FirstOrDefault(a => a.Key == Design.Authority);
 
-    private string? OriginIcon =>
-        Database.Civics.FirstOrDefault(c => c.Key == Design.Origin)?.Icon;
+    private string? AuthorityIcon => AuthorityDefinition?.Icon;
+
+    private EffectSet? AuthorityEffects => AuthorityDefinition?.Effects;
+
+    /// <summary>An origin is a civic, as the game files have it, so it is looked up among them.</summary>
+    private CivicDefinition? OriginDefinition =>
+        Database.Civics.FirstOrDefault(c => c.Key == Design.Origin);
+
+    private string? OriginIcon => OriginDefinition?.Icon;
+
+    private EffectSet? OriginEffects => OriginDefinition?.Effects;
 
     /// <summary>The government the game would name this empire's, derived rather than stored.</summary>
     private string Government =>
@@ -304,16 +428,25 @@
             ? Database.EmpireFlagSets.FirstOrDefault(f => f.Key == key)
             : null;
 
-    private IEnumerable<(string Key, string? Icon)> Ethics =>
-        Design.Ethics.Select(e => (e, Database.Ethics.FirstOrDefault(d => d.Key == e)?.Icon));
+    private IEnumerable<Choice> Ethics =>
+        Design.Ethics.Select(key => Described(key, Database.Ethics.FirstOrDefault(d => d.Key == key)));
 
-    private IEnumerable<(string Key, string? Icon)> Civics =>
-        Design.Civics.Select(c => (c, Database.Civics.FirstOrDefault(d => d.Key == c)?.Icon));
+    private IEnumerable<Choice> Civics =>
+        Design.Civics.Select(key => Described(key, Database.Civics.FirstOrDefault(d => d.Key == key)));
 
-    private IEnumerable<(string Key, string? Icon)> Traits => TraitsOf(Design.Species);
+    private IEnumerable<Choice> Traits => TraitsOf(Design.Species);
 
-    private IEnumerable<(string Key, string? Icon)> TraitsOf(SpeciesDesign species) =>
-        species.Traits.Select(t => (t, Database.Traits.FirstOrDefault(d => d.Key == t)?.Icon));
+    private IEnumerable<Choice> TraitsOf(SpeciesDesign species) =>
+        species.Traits.Select(key => Described(key, Database.Traits.FirstOrDefault(d => d.Key == key)));
+
+    private static Choice Described(string key, EthicDefinition? definition) =>
+        new(key, definition?.Icon, definition?.Effects);
+
+    private static Choice Described(string key, CivicDefinition? definition) =>
+        new(key, definition?.Icon, definition?.Effects);
+
+    private static Choice Described(string key, TraitDefinition? definition) =>
+        new(key, definition?.Icon, definition?.Effects);
 
     /// <summary>What to call the second species' traits, since two rows of "Traits" would not say.</summary>
     private string SecondName(SpeciesDesign species) =>
@@ -327,7 +460,7 @@
     /// Nothing is drawn for an empty set. A gestalt empire has no civics until it has an authority,
     /// and an empty heading would read as a fault rather than as a stage.
     /// </remarks>
-    private RenderFragment Chips(string label, IEnumerable<(string Key, string? Icon)> items) => builder =>
+    private RenderFragment Chips(string label, IEnumerable<Choice> items) => builder =>
     {
         var listed = items.ToList();
 
@@ -344,32 +477,28 @@
         builder.AddContent(4, label);
         builder.CloseElement();
 
-        foreach (var (key, icon) in listed)
+        foreach (var choice in listed)
         {
-            var name = Session.Localizer.Text(key);
-
-            builder.OpenElement(5, "span");
-            builder.AddAttribute(6, "class", "chip");
-            builder.SetKey(key);
-
-            if (icon is { Length: > 0 })
-            {
-                builder.OpenElement(7, "img");
-                builder.AddAttribute(8, "src", Session.Data.AssetUrl(icon));
-                builder.AddAttribute(9, "alt", string.Empty);
-                builder.AddAttribute(10, "loading", "lazy");
-                builder.CloseElement();
-            }
-
-            builder.OpenElement(11, "span");
-            builder.AddContent(12, name);
-            builder.CloseElement();
-
-            builder.CloseElement();
+            builder.OpenComponent<OptionChip>(5);
+            builder.SetKey(choice.Key);
+            builder.AddComponentParameter(6, nameof(OptionChip.Key), choice.Key);
+            builder.AddComponentParameter(7, nameof(OptionChip.Name), Session.Localizer.Text(choice.Key));
+            builder.AddComponentParameter(8, nameof(OptionChip.Icon), choice.Icon);
+            builder.AddComponentParameter(9, nameof(OptionChip.Effects), choice.Effects);
+            builder.CloseComponent();
         }
 
         builder.CloseElement();
     };
+
+    /// <summary>
+    /// One of the empire's choices, with everything needed to describe it.
+    /// </summary>
+    /// <remarks>
+    /// The icon was already being fetched out of the database for each of these; what it does was
+    /// sitting on the same record and being thrown away.
+    /// </remarks>
+    private sealed record Choice(string Key, string? Icon, EffectSet? Effects);
 
     private RenderFragment Row(string label, string? value) => builder =>
     {

@@ -15,8 +15,33 @@ public interface IFileExchange
     /// <summary>Gives the user a file under a suggested name.</summary>
     Task SaveAsync(string fileName, byte[] contents);
 
-    /// <summary>How saving is described to the user, which differs between the two hosts.</summary>
-    string SaveVerb { get; }
+    /// <summary>
+    /// Whether <see cref="SaveAsync"/> writes back over the file the session was opened from.
+    /// </summary>
+    /// <remarks>
+    /// True on the desktop, where saving means the player's real designs file is replaced, and that
+    /// is what the Save button should do. False in a browser, where the same call hands over a
+    /// download instead — which is a thing to offer, but not a thing to do every time somebody
+    /// presses Save.
+    /// </remarks>
+    bool SavesInPlace => false;
+
+    /// <summary>
+    /// What to call the button that hands the file over, which is a different act on each host: the
+    /// desktop writes the player's own file, and a browser can only offer a copy to download.
+    /// </summary>
+    string SaveVerb => SavesInPlace ? "Save file" : "Download";
+
+    /// <summary>
+    /// Asks the host to warn before the page is closed with work not yet saved.
+    /// </summary>
+    /// <remarks>
+    /// Only a browser can do anything here, and even then only by asking: the wording of the warning
+    /// belongs to the browser, and it will not show one at all unless the page has been interacted
+    /// with. Moving between the app's own pages is caught in the app instead, where a proper
+    /// question can be asked.
+    /// </remarks>
+    Task WarnBeforeLeavingAsync(bool unsaved) => Task.CompletedTask;
 
     /// <summary>
     /// The file this host already knows about, if any.
@@ -45,9 +70,6 @@ public sealed class BrowserFileExchange(IJSRuntime js) : IFileExchange, IAsyncDi
     private IJSObjectReference? _module;
 
     /// <inheritdoc />
-    public string SaveVerb => "Download";
-
-    /// <inheritdoc />
     public async Task SaveAsync(string fileName, byte[] contents)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(fileName);
@@ -68,6 +90,15 @@ public sealed class BrowserFileExchange(IJSRuntime js) : IFileExchange, IAsyncDi
             "import", "./_content/Sem.Ui/sem.js").ConfigureAwait(false);
 
         return await _module.InvokeAsync<bool>("copyText", text).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async Task WarnBeforeLeavingAsync(bool unsaved)
+    {
+        _module ??= await _js.InvokeAsync<IJSObjectReference>(
+            "import", "./_content/Sem.Ui/sem.js").ConfigureAwait(false);
+
+        await _module.InvokeVoidAsync("warnBeforeLeaving", unsaved).ConfigureAwait(false);
     }
 
     public async ValueTask DisposeAsync()

@@ -659,11 +659,55 @@ public sealed partial class Localizer(
 
         return ScriptedToken().Replace(
             value,
-            match => _scriptedText.GetValueOrDefault(match.Groups[1].Value) is { Length: > 0 } key
-                     && _entries.TryGetValue(key, out var text)
+            match => Answer(match.Groups[1].Value) is { Length: > 0 } text
                 ? ResolveScripted(ResolveConcepts(Substitute(text, 0)), depth + 1)
                 : string.Empty);
     }
+
+    /// <summary>
+    /// What one call into script falls back to.
+    /// </summary>
+    /// <remarks>
+    /// Two kinds. Most are <c>defined_text</c> entries, named without a scope, and the table of them
+    /// says what each answers. The rest are calls on a scope, and the scope is nearly always a job:
+    /// <c>[bureaucrat.GetNamePlural]</c> is the plural name of the bureaucrat job. Those were being
+    /// dropped, because only the method after the last dot was ever looked at and no table has a
+    /// <c>GetNamePlural</c> in it — so Dimensional Worship read "Physics Research produced per 100"
+    /// with nothing to say what was producing it.
+    /// </remarks>
+    private string? Answer(string path)
+    {
+        var scope = path.Split('.');
+        var method = scope[^1];
+
+        if (_scriptedText.GetValueOrDefault(method) is { Length: > 0 } key &&
+            _entries.TryGetValue(key, out var defined))
+        {
+            return defined;
+        }
+
+        return scope.Length > 1 ? OfJob(scope[0], method) : null;
+    }
+
+    /// <summary>
+    /// A job's own name or picture, where the scope names a job.
+    /// </summary>
+    /// <remarks>
+    /// The game swaps these per empire — a bureaucrat is a coordinator in a gestalt — and the swap
+    /// is itself a scripted phrase resolved above, which lands here having already chosen. What is
+    /// left is the plain job, which the localisation names by a key built from its own.
+    ///
+    /// The icon is answered with the game's own markup rather than a picture, so that it goes
+    /// through the same substitution as every other inline icon and comes out right in text and in
+    /// HTML alike.
+    /// </remarks>
+    private string? OfJob(string job, string method) => method switch
+    {
+        "GetName" => _entries.TryGetValue($"job_{job}", out var name) ? name : null,
+        "GetNamePlural" => _entries.TryGetValue($"job_{job}_plural", out var plural) ? plural : null,
+        "GetIcon" => _textIcons.ContainsKey($"job_{job}") ? $"£job_{job}£" : null,
+        _ => null,
+    };
 
     /// <summary>
     /// A value only a running game could supply, such as the name of a faction that does not exist
@@ -675,7 +719,10 @@ public sealed partial class Localizer(
     /// bare form is the commoner of the two in the text a designer shows — four traits announced
     /// themselves as <c>[triggered_imperial_name]</c> — even though every one of them was in the
     /// table of answers all along.
+    ///
+    /// The whole path is captured rather than the method at the end of it. Throwing the scope away
+    /// discarded the only thing that said which job <c>[bureaucrat.GetNamePlural]</c> was about.
     /// </remarks>
-    [GeneratedRegex(@"\[(?:[A-Za-z][A-Za-z0-9_]*\.)*([A-Za-z][A-Za-z0-9_]*)\]")]
+    [GeneratedRegex(@"\[([A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)*)\]")]
     private static partial Regex ScriptedToken();
 }

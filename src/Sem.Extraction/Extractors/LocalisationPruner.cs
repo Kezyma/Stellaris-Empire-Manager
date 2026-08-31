@@ -381,9 +381,21 @@ internal static partial class LocalisationPruner
         // is an entry like any other — dropped, the sentence around it stops mid-phrase.
         foreach (Match match in ScriptedCall().Matches(value))
         {
-            if (scriptedText.GetValueOrDefault(match.Groups[1].Value) is { Length: > 0 } key)
+            var path = match.Groups[1].Value.Split('.');
+
+            if (scriptedText.GetValueOrDefault(path[^1]) is { Length: > 0 } key)
             {
                 yield return key;
+            }
+
+            // A call on a scope, where the scope is a job: [bureaucrat.GetNamePlural] is that job's
+            // plural name, and the name lives under a key built from the job's own. Kept whether or
+            // not this installation has the job, since asking for an entry that is not there costs
+            // nothing and leaving one out shows a modifier with no subject.
+            if (path.Length > 1)
+            {
+                yield return $"job_{path[0]}";
+                yield return $"job_{path[0]}_plural";
             }
         }
     }
@@ -399,8 +411,11 @@ internal static partial class LocalisationPruner
     /// The scope is optional, and has to be: the bare form is the commoner one in what a designer
     /// shows. Requiring it meant the entries those phrases resolve to were never followed and so
     /// never kept, which is half of why they showed as raw script.
+    ///
+    /// The whole path is captured, since where there is a scope it is usually a job and the job is
+    /// the only thing that says which name to keep.
     /// </remarks>
-    [GeneratedRegex(@"\[(?:[A-Za-z][A-Za-z0-9_]*\.)*([A-Za-z][A-Za-z0-9_]*)\]")]
+    [GeneratedRegex(@"\[([A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z][A-Za-z0-9_]*)*)\]")]
     private static partial Regex ScriptedCall();
 
     /// <summary>

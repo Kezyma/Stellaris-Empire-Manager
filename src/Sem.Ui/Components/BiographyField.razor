@@ -6,8 +6,20 @@
     is usually empty.
 *@
 
+@*
+    Built like the designer's own section heads rather than as a line of small print. It had been an
+    uppercase micro-label in the dim colour, with a faint caret in front of it — which reads as a
+    heading for the box below rather than as a thing to press, so the box below looked absent rather
+    than folded away.
+*@
 <details class="sem-bio" open="@(Value is { Length: > 0 })">
-    <summary>@Session.Localizer.Label("BIOGRAPHY", "Biography")</summary>
+    <summary>
+        <span class="chevron" aria-hidden="true">▸</span>
+        <span class="title">@Session.Localizer.Label("BIOGRAPHY", "Biography")</span>
+
+        @* What is in there, so a folded box still answers the question of whether it holds anything. *@
+        <span class="state">@(Value is { Length: > 0 } written ? Preview(written) : "Not written")</span>
+    </summary>
 
     @*
         Capped where the game caps it. The game's own writer cuts at a thousand characters, so
@@ -51,8 +63,29 @@
         get
         {
             var heading = Session.Localizer.Heading("BIOGRAPHY", "Biography");
-            return For is { Length: > 0 } whose ? $"{heading} — {whose}" : heading;
+            return For is { Length: > 0 } whose ? $"{heading}: {whose}" : heading;
         }
+    }
+
+    /// <summary>
+    /// The opening words of what is written, for the folded head.
+    /// </summary>
+    /// <remarks>
+    /// Cut on a word rather than mid-syllable where there is one to cut on, since the head is one
+    /// line and a biography is up to a thousand characters.
+    /// </remarks>
+    private static string Preview(string written)
+    {
+        var text = written.ReplaceLineEndings(" ").Trim();
+
+        if (text.Length <= 60)
+        {
+            return text;
+        }
+
+        var cut = text[..60].LastIndexOf(' ');
+
+        return (cut > 30 ? text[..cut] : text[..60]) + "…";
     }
 
     /// <summary>Called with the whole text whenever the box is left.</summary>

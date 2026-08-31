@@ -27,10 +27,19 @@ public static class DesignEffects
     /// Adds up every modifier from the species, ethics, authority, civics, origin and traits.
     /// </summary>
     /// <remarks>
-    /// Conditional modifiers are deliberately left out of the totals. They apply only in a game
-    /// already under way — once a tradition is adopted, or where a planet exists — so counting them
-    /// would promise an empire bonuses it does not start with. They are listed against their own
-    /// option instead, where the condition can be shown alongside them.
+    /// <para>
+    /// A conditional modifier counts when its condition can be settled from the design and holds.
+    /// Half of them can be: a militarist empire's claim influence cost is conditional on not being
+    /// nomadic, and whether it is nomadic is a field of the design. Leaving those out understated
+    /// the totals for a great many empires — militarist and xenophobe between them account for most
+    /// of the conditions in the game — and printed a footnote apologising for it.
+    /// </para>
+    /// <para>
+    /// The rest genuinely belong to a game already under way: once a tradition is adopted, where a
+    /// planet exists. Those stay out, since counting them would promise an empire bonuses it does
+    /// not start with, and they are listed against their own option where the condition can be
+    /// shown alongside them.
+    /// </para>
     /// </remarks>
     public static IReadOnlyList<CombinedModifier> Combine(DesignContext context)
     {
@@ -40,7 +49,7 @@ public static class DesignEffects
 
         foreach (var (key, effects) in Selected(context))
         {
-            foreach (var (modifier, value) in effects.Modifiers)
+            foreach (var (modifier, value) in Applying(effects, context))
             {
                 if (value == 0)
                 {
@@ -81,16 +90,47 @@ public static class DesignEffects
     /// Whether any of the empire's choices carries a modifier that was left out of the totals.
     /// </summary>
     /// <remarks>
-    /// The panel says so when it is true, and said so always before — a footnote about conditional
-    /// bonuses under every empire, including the ones that have none. Conditional effects are the
-    /// only thing <see cref="Combine"/> leaves out, so this is the whole of what the note is about.
+    /// Not simply "has a conditional" — most conditions can be settled here and their modifiers are
+    /// counted. This is about the ones that cannot be, which are the whole of what the footnote is
+    /// for, and are rarer than the footnote's previous readings suggested.
     /// </remarks>
     public static bool AnyConditional(DesignContext context)
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        return Selected(context).Any(o => o.Effects.Conditional.Count > 0);
+        return Selected(context)
+            .SelectMany(o => o.Effects.Conditional)
+            .Any(group => !Evaluator.CanDecide(group.When, context) && group.Modifiers.Count > 0);
     }
+
+    /// <summary>
+    /// One option's modifiers, taking in the conditional ones whose condition is settled and met.
+    /// </summary>
+    private static IEnumerable<KeyValuePair<string, double>> Applying(EffectSet effects, DesignContext context)
+    {
+        foreach (var modifier in effects.Modifiers)
+        {
+            yield return modifier;
+        }
+
+        foreach (var group in effects.Conditional)
+        {
+            if (!Evaluator.CanDecide(group.When, context) || !Evaluator.IsSatisfied(group.When, context))
+            {
+                continue;
+            }
+
+            foreach (var modifier in group.Modifiers)
+            {
+                yield return modifier;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Reads conditions. Stateless, so one is enough for every design the app ever shows.
+    /// </summary>
+    private static readonly RequirementEvaluator Evaluator = new();
 
     public static IEnumerable<(string Key, EffectSet Effects)> Selected(DesignContext context)
     {

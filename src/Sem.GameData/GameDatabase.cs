@@ -157,6 +157,12 @@ public sealed record GameDatabase
     /// <summary>The ships a nomadic empire may begin as, in place of a homeworld.</summary>
     public IReadOnlyList<ArkshipDefinition> Arkships { get; init; } = [];
 
+    /// <summary>The weighted word lists the game's empire names are assembled from.</summary>
+    public IReadOnlyList<EmpireNamePartsList> EmpireNameParts { get; init; } = [];
+
+    /// <summary>The shapes those words are assembled into, and which empires each suits.</summary>
+    public IReadOnlyList<EmpireNameFormat> EmpireNameFormats { get; init; } = [];
+
     /// <summary>Sets of country flags the game's own empires carry.</summary>
     public IReadOnlyList<EmpireFlagSet> EmpireFlagSets { get; init; } = [];
 
@@ -1450,6 +1456,16 @@ public sealed record ArkshipDefinition(string Key)
     /// </remarks>
     public string NameKey =>
         $"{Key[..(Key.IndexOf("_tier_", StringComparison.Ordinal) is var t and >= 0 ? t : Key.Length)]}_name";
+
+    /// <summary>
+    /// The picture the game's own panel shows beside the name.
+    /// </summary>
+    /// <remarks>
+    /// One frame of the ship-size sheet rather than a file of its own, which is why it was missed:
+    /// the definition names a sprite, the sprite names a sheet, and the arkships sat as three
+    /// unillustrated cards in a panel where every other choice has a picture.
+    /// </remarks>
+    public string? Icon { get; init; }
 }
 
 /// <summary>

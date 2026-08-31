@@ -165,7 +165,6 @@ h5 { font-size: var(--text-sm); }
 .sem-effects-penalty .heading,
 .sem-combined h4,
 .sem-subsections > section > h4,
-.sem-bio > summary,
 .sem-showcase-chips .heading {
     font-size: var(--text-xs);
     text-transform: uppercase;
@@ -214,6 +213,89 @@ code {
     letter-spacing: 0.02em;
     color: var(--text);
     margin-right: auto;
+}
+
+/*
+   The file's own controls, at the end of the header.
+
+   They wrap rather than overflow, and the header grows with them: at a phone's width the brand takes
+   one line and four controls take the next, which is better than a row that scrolls sideways or one
+   that clips whichever button happens to be last.
+*/
+.sem-header-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--space-md);
+}
+
+.sem-header-file {
+    color: var(--text-dim);
+    font-size: var(--text-sm);
+    white-space: nowrap;
+}
+
+/* A file that would not open. Full width under the header, since it is a sentence and not a chip. */
+.sem-header-error {
+    margin: 0;
+    padding: var(--space-md) var(--space-xl);
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border);
+    color: var(--bad);
+}
+
+/*
+   The burger, which exists only on a narrow screen: four items and a brand do not fit one phone-wide
+   line, and wrapping them onto a second made the header two rows tall on every page.
+
+   A checkbox rather than a script. The menu has one piece of state, it is "open", and the platform
+   already has a control that holds exactly that — which means it works before the app has finished
+   loading and needs nothing torn down afterwards.
+*/
+.sem-header-toggle,
+.sem-header-burger { display: none; }
+
+@media (max-width: 720px) {
+    .sem-header {
+        height: auto;
+        flex-wrap: wrap;
+        padding: var(--space-md) var(--space-lg);
+
+        /* Two rows tall when open, so nothing below may stick to --header-height here. */
+        position: static;
+    }
+
+    .sem-header-burger {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        color: var(--text);
+        cursor: pointer;
+    }
+
+    .sem-header-burger:hover { background: var(--bg-hover); }
+
+    .sem-header-actions {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-xs);
+        padding-top: var(--space-md);
+    }
+
+    .sem-header-toggle:checked ~ .sem-header-actions { display: flex; }
+
+    /* Full-width rows, because a column of centred tabs reads as a list of one-word riddles. */
+    .sem-header-actions > * {
+        width: 100%;
+        text-align: left;
+    }
 }
 
 /*
@@ -384,20 +466,52 @@ label {
 /* ---------------------------------------------------------------- tabs */
 
 
-.sem-tab {
-    padding: var(--space-md) var(--space-xl);
+/*
+   A header item. Of the four, one is a link, two are buttons and the fourth is the label of a hidden
+   file input — a file picker cannot be opened from code, so that control has to be a label.
+
+   Every one of those is a different element with different defaults, so everything is stated rather
+   than inherited, and each selector is written to out-weigh the plain "button" rules above. Left as
+   they were, Create and Export took the button hover — a raised background and an accent border —
+   while Empires and Import took the tab hover, so two of the four lit up differently from the other
+   two. Flex with a centred cross axis for the same reason: a label and a button do not sit on the
+   same baseline by themselves.
+*/
+.sem-tab,
+button.sem-tab {
+    display: inline-flex;
+    align-items: center;
+    height: 2.5rem;
+
+    /* A label carries the four pixels every field's caption gets, and centring its margin box
+       lifted Import two pixels above the three items beside it. */
+    margin: 0;
+    padding: 0 var(--space-xl);
     background: none;
     border: none;
     border-bottom: 2px solid transparent;
     border-radius: 0;
     color: var(--text-dim);
+    font: inherit;
     white-space: nowrap;
+    cursor: pointer;
 }
 
-.sem-tab:hover {
+.sem-tab:hover,
+button.sem-tab:hover:not(:disabled) {
     background: var(--bg-panel);
+    border-color: transparent;
     color: var(--text);
 }
+
+.sem-tab:disabled,
+button.sem-tab:disabled {
+    opacity: 1;
+    color: var(--text-faint);
+    cursor: default;
+}
+
+button.sem-tab:disabled:hover { background: none; }
 
 .sem-tab.active {
     color: var(--accent);
@@ -858,6 +972,53 @@ p.sem-status { margin: var(--gap) 0 0; }
     background: var(--bg-panel);
     border: 1px solid var(--border);
     border-radius: var(--radius);
+}
+
+/*
+   What is wrong with the empire, folded away at the foot of the panel that describes it.
+
+   Built like the biography fields rather than like a heading, for the same reason: a dim label above
+   nothing reads as a section that failed to load. The colour is the report's — amber where there are
+   only warnings, red where something is actually wrong — so the strip says which before it is opened.
+*/
+.sem-showcase-problems {
+    margin-top: var(--gap);
+}
+
+.sem-showcase-problems > summary {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-md);
+    padding: var(--space-sm) var(--space-lg);
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--bad);
+    cursor: pointer;
+    list-style: none;
+}
+
+.sem-showcase-problems > summary::-webkit-details-marker { display: none; }
+
+.sem-showcase-problems > summary:hover { background: var(--bg-hover); }
+
+.sem-showcase-problems[open] > summary {
+    border-bottom-color: transparent;
+    border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.sem-showcase-problems > summary .chevron { color: var(--text-faint); }
+
+.sem-showcase-problems[open] > summary .chevron { rotate: 90deg; }
+
+.sem-showcase-problems > summary .title {
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.sem-showcase-problems > .sem-problem:last-child {
+    margin-bottom: 0;
 }
 
 .sem-problem {
@@ -1486,8 +1647,16 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     color: var(--text-dim);
 }
 
+/*
+   Last in the row and right-aligned, which is what makes a column of numbers readable. The count
+   badge used to follow it and pushed every total that had one left by its own width, so no two
+   values in the panel shared an edge; the badge now comes first and the numbers end where the panel
+   does. The minimum width keeps a lone "+2" from crowding the badge beside it.
+*/
 .sem-modifiers .value {
+    min-width: 3.5rem;
     font-variant-numeric: tabular-nums;
+    text-align: right;
     white-space: nowrap;
 }
 
@@ -1751,6 +1920,33 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 
 /* Only meaningful where the panel collapses, so it is not shown where it is not. */
 .sem-showcase.collapsible > .head .chevron { display: none; }
+
+/*
+   Save, share and delete, under the empire's name.
+
+   Outside the folding body, so they are still there when the panel is folded on a phone — which is
+   exactly when somebody is most likely to want Save and least likely to want the summary above it.
+*/
+.sem-showcase.collapsible > .actions {
+    display: flex;
+    gap: var(--space-md);
+    padding: 0 var(--space-lg) var(--space-lg);
+}
+
+/*
+   A button that is only a glyph. Square, so a row of them is even, and titled rather than labelled —
+   which is why every one of them carries an aria-label as well.
+*/
+button.icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+}
+
+button.icon .sem-action-icon { display: block; }
 
 /*
     The stack of everything the panel shows, which is the panel itself where there is no header.
@@ -2283,27 +2479,64 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     margin-top: var(--gap);
 }
 
+/*
+   Given the shape of a control rather than of a caption.
+
+   It had been an uppercase micro-label in --text-dim with a --text-faint caret, which is the styling
+   this sheet uses for the heading above a field — so it read as a label for a box that was not
+   there, and two of the designer's fields looked as though they had gone missing. A bordered strip
+   in the raised colour reads as a thing that opens, which is what it is.
+*/
 .sem-bio > summary {
-    display: block;
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-md);
+    padding: var(--space-sm) var(--space-lg);
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
     cursor: pointer;
     list-style: none;
 }
 
 .sem-bio > summary::-webkit-details-marker { display: none; }
 
-/* A caret of its own, since the native marker was hidden to keep the label aligned. */
-.sem-bio > summary::before {
-    content: "▸ ";
+.sem-bio > summary:hover { background: var(--bg-hover); }
+
+/* Squared off where the box below meets it, so open they read as one piece. */
+.sem-bio[open] > summary {
+    border-bottom-color: transparent;
+    border-radius: var(--radius) var(--radius) 0 0;
+}
+
+.sem-bio > summary .chevron {
+    width: 12px;
     color: var(--text-faint);
 }
 
-.sem-bio[open] > summary::before { content: "▾ "; }
+.sem-bio[open] > summary .chevron { rotate: 90deg; }
 
-.sem-bio > summary:hover { color: var(--text); }
+.sem-bio > summary .title {
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+/* The opening words of what is written, cut to one line. */
+.sem-bio > summary .state {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text-dim);
+    font-size: var(--text-sm);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
 
 .sem-bio > textarea {
     width: 100%;
-    margin-top: var(--space-sm);
+    border-radius: 0 0 var(--radius) var(--radius);
     resize: vertical;
 }
 
@@ -2583,7 +2816,12 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     color: var(--text-faint);
 }
 
-.sem-showcase-chips .chip {
+/*
+    A chip is a button now, because what it does is open the description of the thing it names. It
+    keeps the shape it had — the styling below is the old chip's, moved onto the button inside it —
+    since nothing about it should look newly clickable except the cursor and the hover.
+*/
+.sem-chip > button {
     display: inline-flex;
     align-items: center;
     gap: 5px;
@@ -2591,13 +2829,50 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     background: var(--bg-raised);
     border: 1px solid var(--border);
     border-radius: var(--radius-pill);
+    color: var(--text);
+    font: inherit;
     font-size: var(--text-sm);
+    text-align: left;
+    cursor: help;
 }
 
-.sem-showcase-chips .chip img {
+.sem-chip > button:hover { background: var(--bg-hover); }
+
+.sem-chip > button img {
     width: 20px;
     height: 20px;
     object-fit: contain;
+}
+
+/*
+    The description itself, drawn in the top layer.
+
+    Placed from sem.js rather than by the browser: the top layer has no idea what a popover was
+    opened from, and a panel that appeared in the middle of the screen would be describing a chip
+    the reader has to go looking for. Fixed at nothing in particular here, since those coordinates
+    are written in as it opens.
+*/
+.sem-chip-detail {
+    position: fixed;
+    margin: 0;
+    inset: auto;
+    width: min(22rem, calc(100vw - 2rem));
+    max-height: min(24rem, calc(100vh - 2rem));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: var(--space-lg);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    color: var(--text);
+}
+
+.sem-chip-detail h4 {
+    margin: 0 0 var(--space-sm);
+}
+
+.sem-chip-detail .sem-detail-lore {
+    margin-bottom: var(--space-md);
 }
 
 /*
@@ -2752,6 +3027,68 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     display: flex;
     flex-direction: column;
     gap: var(--gap);
+}
+
+/*
+   A question that stops everything until it is answered: deleting an empire, throwing away an
+   evening's edits, walking away from unsaved ones.
+
+   Fixed rather than absolute, so it covers the viewport however far down the page the scroll has
+   got — an overlay measured from the document would sit at the top of a page the reader is halfway
+   down. The sheet is capped at 30rem because these are one sentence and a row of buttons, and a
+   question that stretches to a 1800px panel reads as an announcement rather than a question.
+*/
+.sem-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    padding: var(--space-xl);
+    background: rgb(0 0 0 / 0.6);
+}
+
+.sem-modal > .sheet {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    padding: var(--space-2xl);
+    width: min(30rem, 100%);
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+}
+
+.sem-modal h2 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.sem-modal p {
+    margin: 0;
+    color: var(--text-dim);
+}
+
+/*
+   The answers run to the right and in increasing order of consequence, so the destructive one is
+   never where the harmless one was a moment ago. They wrap to full width on a narrow screen rather
+   than being squeezed to three unreadable words each.
+*/
+.sem-modal .choices {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--space-md);
+}
+
+.sem-modal .choices > button {
+    flex: 0 1 auto;
+}
+
+@media (max-width: 420px) {
+    .sem-modal .choices > button {
+        flex: 1 1 100%;
+    }
 }
 
 /*

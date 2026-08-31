@@ -1,12 +1,71 @@
 @inherits LayoutComponentBase
 @implements IDisposable
 @inject SessionHost Host
+@inject IFileExchange Files
+@inject NavigationManager Navigation
+@inject UnsavedWorkGuard Guard
+
+@*
+    The file lives in the header: the empire list, a new empire, the file in, the file out.
+
+    All four are about the file rather than about whichever page happens to be open, and both pages
+    used to carry their own card of them across the top. Two cards saying the same thing is one too
+    many, and on the designer it put a band of file management above the empire being designed. Here
+    they are once, reachable from anywhere, and both pages begin with their own content.
+
+    Create and Import both abandon whatever is being edited, so both ask first — through the guard,
+    since the question belongs to the designer and this is not it.
+*@
 
 <div class="sem-app">
     <header class="sem-header">
         <span class="brand">Stellaris Empire Manager</span>
-        <NavLink href="" Match="NavLinkMatch.All" class="sem-tab">Empires</NavLink>
+
+        @*
+            The menu on a narrow screen. A checkbox and its label rather than a scripted button: the
+            state is one boolean, the platform already has a control for exactly that, and it works
+            whether or not the app has finished loading. Hidden entirely above the breakpoint, where
+            the four items fit on the line beside the brand.
+        *@
+        <input type="checkbox" id="header-menu" class="sem-header-toggle" />
+        <label for="header-menu" class="sem-header-burger" aria-label="Menu" title="Menu">
+            <svg viewBox="0 0 24 24" width="1.25em" height="1.25em" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false">
+                <path d="M4 7h16M4 12h16M4 17h16" />
+            </svg>
+        </label>
+
+        <nav class="sem-header-actions">
+            @* Goes through the designer's own guard, since an anchor's navigation is one Blazor
+               routes through the NavigationManager like any other. *@
+            <NavLink href="" Match="NavLinkMatch.All" class="sem-tab">Empires</NavLink>
+
+            @if (_session is not null)
+            {
+                <button type="button" class="sem-tab" @onclick="Create">Create</button>
+
+                @*
+                    The picker is opened by the label rather than by the button beside it, because a
+                    file input cannot be opened from code. The click has to be allowed to reach it,
+                    so the question about unsaved work is asked when the file arrives instead — at
+                    which point declining simply drops it.
+                *@
+                <label class="sem-tab" for="designs-file">Import</label>
+                <InputFile id="designs-file" OnChange="Import" style="display:none" accept=".txt" />
+
+                <button type="button" class="sem-tab"
+                        disabled="@(_session.File is null || _session.File.Designs.Count == 0)"
+                        @onclick="Export">
+                    Export
+                </button>
+            }
+        </nav>
     </header>
+
+    @if (_error is { } message)
+    {
+        <p class="sem-header-error">@message</p>
+    }
 
     @*
         The content packs, across the top of every page. They decide what half the designer offers,
@@ -33,6 +92,9 @@
 @code {
     private DesignSession? _session;
 
+    /// <summary>Why the last file would not open, where one would not.</summary>
+    private string? _error;
+
     protected override async Task OnInitializedAsync()
     {
         _session = await Host.GetAsync();
@@ -55,4 +117,99 @@
     }
 
     private void OnChanged() => InvokeAsync(StateHasChanged);
+
+    /// <summary>
+    /// Opens a designs file in place of whatever is open.
+    /// </summary>
+    /// <remarks>
+    /// Asked about first, because this replaces the whole file and an empire being edited goes with
+    /// it. Declining drops the chosen file and leaves the session alone.
+    /// </remarks>
+    private async Task Import(InputFileChangeEventArgs e)
+    {
+        _error = null;
+
+        if (!await Guard.ConfirmAsync())
+        {
+            return;
+        }
+
+        try
+        {
+            // Generous enough for any real designs file; the player's own is about forty kilobytes.
+            await using var stream = e.File.OpenReadStream(maxAllowedSize: 16 * 1024 * 1024);
+            using var buffer = new MemoryStream();
+            await stream.CopyToAsync(buffer);
+
+            _session!.Load(buffer.ToArray(), e.File.Name);
+        }
+        catch (Exception ex) when (ex is Sem.Clausewitz.CwSyntaxException or IOException)
+        {
+            // Loading half a damaged file would be worse than refusing it.
+            _error = $"That file could not be read: {ex.Message}";
+        }
+    }
+
+    /// <summary>
+    /// Starts a new empire and opens it.
+    /// </summary>
+    /// <remarks>
+    /// Reachable from the designer as well as from the list, which means it can be pressed with
+    /// unsaved work in hand.
+    /// </remarks>
+    private async Task Create()
+    {
+        // Asked before anything is built. Adding the empire first and asking afterwards would leave
+        // a stray empire behind whenever the answer was no — and worse, selecting it would have
+        // taken the previous empire's unsaved changes as its saved state on the way past.
+        if (!await Guard.ConfirmAsync())
+        {
+            return;
+        }
+
+        var name = Available("New Empire");
+        var template = _session!.Data.Database.NewEmpireTemplate;
+
+        // Created rather than added: it belongs to the designer until it is saved, so that opening
+        // the page to look at what a new empire starts as and going back again leaves nothing
+        // behind. The game keeps a blank template of its own, which is what makes a new empire
+        // playable straight away rather than an empty shell.
+        _session.CreateEmpire(file => string.IsNullOrEmpty(template)
+            ? file.Add(name)
+            : file.AddFromTemplate(template, name));
+
+        Navigation.NavigateTo("designer");
+    }
+
+    /// <summary>A name nothing in the file has yet.</summary>
+    private string Available(string wanted)
+    {
+        if (_session?.File?.Find(wanted) is null)
+        {
+            return wanted;
+        }
+
+        for (var i = 2; ; i++)
+        {
+            var candidate = $"{wanted} {i}";
+            if (_session.File.Find(candidate) is null)
+            {
+                return candidate;
+            }
+        }
+    }
+
+    /// <summary>Hands the file over: a download in a browser, the player's own file on the desktop.</summary>
+    private async Task Export()
+    {
+        var name = _session!.FileName is { Length: > 0 } existing ? existing : EmpireDesignsFile.FileName;
+        await Files.SaveAsync(name, _session.Save());
+
+        // On the desktop that call replaced the player's own file, so nothing is outstanding any
+        // more. In a browser it handed over a copy, which settles nothing.
+        if (Files.SavesInPlace)
+        {
+            _session.MarkSaved();
+        }
+    }
 }

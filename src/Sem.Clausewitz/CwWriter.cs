@@ -23,6 +23,17 @@ public sealed record CwWriteOptions
     /// </summary>
     public bool BraceOnNewLine { get; init; } = true;
 
+    /// <summary>
+    /// Whether a parsed token keeps the whitespace it was parsed with.
+    /// </summary>
+    /// <remarks>
+    /// True everywhere that writes a file, and it is what makes an untouched document come back byte
+    /// for byte. False discards it and lays every token out afresh, which is only wanted where the
+    /// text is about to be compressed rather than read: the indentation is then pure cost. Comments
+    /// live in that whitespace and go with it, so this is not for anything anyone will read again.
+    /// </remarks>
+    public bool PreserveTrivia { get; init; } = true;
+
     /// <summary>Matches how Stellaris writes <c>user_empire_designs_v3.4.txt</c>.</summary>
     public static CwWriteOptions EmpireDesigns { get; } = new();
 
@@ -31,6 +42,18 @@ public sealed record CwWriteOptions
     {
         SpaceAroundOperator = true,
         BraceOnNewLine = false,
+    };
+
+    /// <summary>
+    /// The same script in as few bytes as it can be written in: one newline between entries and
+    /// nothing else. Every separator the format needs, and not one character more.
+    /// </summary>
+    public static CwWriteOptions Compact { get; } = new()
+    {
+        NewLine = "\n",
+        Indent = "",
+        BraceOnNewLine = false,
+        PreserveTrivia = false,
     };
 }
 
@@ -54,7 +77,12 @@ public sealed class CwWriter(CwWriteOptions? options = null)
 
         var builder = new StringBuilder();
         WriteNodes(builder, document.Nodes, depth: 0);
-        builder.Append(document.TrailingTrivia);
+
+        if (_options.PreserveTrivia)
+        {
+            builder.Append(document.TrailingTrivia);
+        }
+
         return builder.ToString();
     }
 
@@ -121,9 +149,10 @@ public sealed class CwWriter(CwWriteOptions? options = null)
     }
 
     /// <summary>Writes a token's original whitespace, or the supplied fallback when it has none.</summary>
-    private static void Emit(StringBuilder builder, CwToken token, string synthesized)
+    private void Emit(StringBuilder builder, CwToken token, string synthesized)
     {
-        builder.Append(token.LeadingTrivia ?? synthesized).Append(token.Text);
+        var trivia = _options.PreserveTrivia ? token.LeadingTrivia ?? synthesized : synthesized;
+        builder.Append(trivia).Append(token.Text);
     }
 
     /// <summary>Puts an entry on its own indented line, unless it opens the file.</summary>

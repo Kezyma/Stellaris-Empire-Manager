@@ -16,8 +16,14 @@ public interface IDesignStore
     /// <summary>The designs file kept from a previous visit, if there is one.</summary>
     Task<string?> ReadAsync() => Task.FromResult<string?>(null);
 
-    /// <summary>Keeps a designs file for next time.</summary>
-    Task WriteAsync(string contents) => Task.CompletedTask;
+    /// <summary>
+    /// Keeps a designs file for next time, saying whether it got there.
+    /// </summary>
+    /// <remarks>
+    /// The answer matters now that saving is something the player asks for: a button that says
+    /// "Saved" over a store that quietly refused would be worse than one that admits it.
+    /// </remarks>
+    Task<bool> WriteAsync(string contents) => Task.FromResult(false);
 }
 
 /// <summary>Keeps nothing, for a host with a real file of its own.</summary>
@@ -54,7 +60,7 @@ public sealed class BrowserDesignStore(IJSRuntime js) : IDesignStore, IAsyncDisp
     }
 
     /// <inheritdoc />
-    public async Task WriteAsync(string contents)
+    public async Task<bool> WriteAsync(string contents)
     {
         ArgumentNullException.ThrowIfNull(contents);
 
@@ -63,10 +69,13 @@ public sealed class BrowserDesignStore(IJSRuntime js) : IDesignStore, IAsyncDisp
             await (await ModuleAsync().ConfigureAwait(false))
                 .InvokeVoidAsync("writeStored", Key, contents)
                 .ConfigureAwait(false);
+
+            return true;
         }
         catch (JSException)
         {
-            // As above: a failed save is not worth interrupting the player for.
+            // Storage switched off, or full. The player is told, since they asked for this one.
+            return false;
         }
     }
 

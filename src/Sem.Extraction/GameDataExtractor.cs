@@ -19,7 +19,7 @@ public sealed class GameDataExtractor(LayeredContent content)
     /// Version of the produced database's shape. Raise it when the shape changes, so a cache built
     /// by an older version is rebuilt rather than misread.
     /// </summary>
-    public const int SchemaVersion = 2;
+    public const int SchemaVersion = 3;
 
     private readonly LayeredContent _content = content ?? throw new ArgumentNullException(nameof(content));
 
@@ -115,7 +115,11 @@ public sealed class GameDataExtractor(LayeredContent content)
         var flagCategories = FlagExtractor.ExtractCategories(loader, assets);
         var flagColors = FlagExtractor.ExtractColors(loader);
         var flagFrames = FlagExtractor.ExtractFrames(loader, assets);
-        var arkships = CosmeticsExtractor.ExtractArkships(loader);
+        var arkships = CosmeticsExtractor.ExtractArkships(loader, assets);
+
+        Report("Reading the empire name generator");
+        var empireNameParts = EmpireNameExtractor.ExtractParts(loader);
+        var empireNameFormats = EmpireNameExtractor.ExtractFormats(loader, requirements);
 
         Report("Reading built-in empires");
         var prescripted = MetadataExtractor.ExtractPrescriptedEmpires(loader, requirements);
@@ -165,6 +169,8 @@ public sealed class GameDataExtractor(LayeredContent content)
             FlagColors = flagColors,
             FlagFrames = flagFrames,
             Arkships = arkships,
+            EmpireNameParts = empireNameParts,
+            EmpireNameFormats = empireNameFormats,
             PrescriptedEmpires = prescripted,
             EmpireFlagSets = CosmeticsExtractor.ExtractEmpireFlagSets(loader, prescripted),
             NewEmpireTemplate = template,

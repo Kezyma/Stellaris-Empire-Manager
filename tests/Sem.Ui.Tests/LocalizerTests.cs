@@ -122,4 +122,36 @@ public sealed class LocalizerTests
         // own text from hanging the page.
         Assert.StartsWith("round", localizer.Text("k"), StringComparison.Ordinal);
     }
+
+    [Fact]
+    public void ACallOnAJobAnswersWithThatJobsName()
+    {
+        // "£physics£ produced per 100 [bureaucrat.GetNamePlural]" is how the game labels Dimensional
+        // Worship's research bonus. Only the word after the last dot used to be looked at, so the
+        // call answered nothing and the label read "produced per 100" with no subject at all.
+        var localizer = With(
+            new()
+            {
+                ["mod_planet_bureaucrats_physics_research_produces_add"] =
+                    "Physics Research per 100 $bureaucrat_type_plural_with_icon$",
+                ["bureaucrat_type_plural_with_icon"] = "[GetBureaucratSwapPluralWithIcon]",
+                ["job_bureaucrat_swap_plural_with_icon"] = "[bureaucrat.GetNamePlural]",
+                ["job_bureaucrat_plural"] = "Bureaucrats",
+            },
+            scripted: new() { ["GetBureaucratSwapPluralWithIcon"] = "job_bureaucrat_swap_plural_with_icon" });
+
+        Assert.Equal(
+            "Physics Research per 100 Bureaucrats",
+            localizer.Text("mod_planet_bureaucrats_physics_research_produces_add"));
+    }
+
+    [Fact]
+    public void ACallOnSomethingThatIsNotAJobStillDisappears()
+    {
+        // Only a running game can say what Root is called, and printing the call would be worse
+        // than printing nothing.
+        var localizer = With(new() { ["X"] = "Owned by [Root.GetName]." });
+
+        Assert.Equal("Owned by .", localizer.Text("X"));
+    }
 }

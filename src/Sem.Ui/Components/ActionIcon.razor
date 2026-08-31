@@ -1,0 +1,51 @@
+@*
+    The handful of glyphs the interface needs for itself.
+
+    Drawn here rather than fetched. Everything else in this app that shows a picture is showing the
+    game's artwork, and these are not that: they are save, share and delete, which the game has no
+    icons for. Inline so the page asks for nothing — the site is served from GitHub Pages with no
+    control over what it may request — and stroked in currentColor so a disabled button and a
+    dangerous one colour their own glyph without a second copy of it.
+
+    Sized in em, so a button's font size decides how big its icon is.
+*@
+
+<svg class="sem-action-icon" viewBox="0 0 24 24" width="1.15em" height="1.15em"
+     fill="none" stroke="currentColor" stroke-width="1.8"
+     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    @switch (Name)
+    {
+        case "save":
+            @* A disk: the shape everything still means "save" by. *@
+            <path d="M5 3h11l3 3v15H5z" />
+            <path d="M8 3v6h7V3" />
+            <path d="M8 14h8v7H8z" />
+            break;
+
+        case "share":
+            @* Two links of a chain, for a thing that becomes an address. *@
+            <path d="M10 14a4 4 0 0 0 6 .5l2.5-2.5a4 4 0 0 0-5.7-5.7L11.5 7.5" />
+            <path d="M14 10a4 4 0 0 0-6-.5L5.5 12a4 4 0 0 0 5.7 5.7l1.3-1.3" />
+            break;
+
+        case "delete":
+            @* A bin, with the lid raised so the shape reads at sixteen pixels. *@
+            <path d="M4 7h16" />
+            <path d="M9 7V4h6v3" />
+            <path d="M6 7l1 13h10l1-13" />
+            <path d="M10 11v6M14 11v6" />
+            break;
+
+        case "revert":
+            @* An arrow turning back on itself. *@
+            <path d="M4 9h9a5 5 0 0 1 0 10h-6" />
+            <path d="M7 5 3 9l4 4" />
+            break;
+    }
+</svg>
+
+@code {
+    /// <summary>Which glyph: <c>save</c>, <c>share</c>, <c>delete</c> or <c>revert</c>.</summary>
+    [Parameter, EditorRequired]
+    public required string Name { get; set; }
+}

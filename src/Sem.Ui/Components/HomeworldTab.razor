@@ -75,6 +75,7 @@
                 @foreach (var arkship in Arkships)
                 {
                     <OptionCard Name="@Session.Localizer.Text(arkship.NameKey, Localizer.Prettify(arkship.Key))"
+                                Icon="@arkship.Icon"
                                 Selected="@(arkship.Key == Design.ShipSize)"
                                 OnSelect="() => Session.Edit(d => d.ShipSize = arkship.Key)" />
                 }

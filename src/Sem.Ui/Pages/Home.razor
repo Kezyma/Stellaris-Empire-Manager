@@ -4,7 +4,7 @@
 @inject IFileExchange Files
 @inject NavigationManager Navigation
 
-<PageTitle>Empires — Stellaris Empire Manager</PageTitle>
+<PageTitle>Empires - Stellaris Empire Manager</PageTitle>
 
 @if (_session is null)
 {
@@ -26,45 +26,41 @@
 }
 else
 {
-    <div class="sem-panel">
-        <div class="sem-row">
-            <div>
-                <h2>Your empires</h2>
-                <span class="sem-hint">
-                    @if (_session.File is { } file && file.Designs.Count > 0)
-                    {
-                        @($"{file.Designs.Count} in {_session.FileName}")
-                        @if (_session.IsModified)
-                        {
-                            <text> · unsaved changes</text>
-                        }
-                    }
-                    else
-                    {
-                        <text>Open your empire designs file to begin.</text>
-                    }
-                </span>
-            </div>
+    @*
+        No card of file buttons here any more. Create, Import and Export are in the header, where
+        they are reachable from the designer too and are not written out twice.
+    *@
+    @if (_deleting is { } doomed)
+    {
+        <ConfirmDialog Title="@($"Delete {_session.Localizer.Name(doomed.Name, doomed.Key)}?")"
+                       Message="The empire is removed from your file. There is no undo."
+                       OnDismiss="() => _deleting = null">
+            <button type="button" @onclick="() => _deleting = null">Keep it</button>
+            <button type="button" class="danger" @onclick="() => Delete(doomed)">Delete</button>
+        </ConfirmDialog>
+    }
 
-            <span class="sem-spacer"></span>
-
-            <label class="sem-button" for="designs-file">Open designs file</label>
-            <InputFile id="designs-file" OnChange="OpenFile" style="display:none" accept=".txt" />
-
-            <button type="button" @onclick="AddEmpire">New empire</button>
-
-            <button type="button" class="primary"
-                    disabled="@(_session.File is null || _session.File.Designs.Count == 0)"
-                    @onclick="Export">
-                @Files.SaveVerb
-            </button>
-        </div>
-
-        @if (_error is { } message)
+    @*
+        What is open. It used to sit in the header beside the buttons that act on it, which made the
+        header four items and a sentence; this is the file's own page, so it says so here.
+    *@
+    <p class="sem-hint">
+        @if (_session.File is { } file && file.Designs.Count > 0)
         {
-            <p class="sem-status bad">@message</p>
+            @($"{file.Designs.Count} empires in {_session.FileName}.")
+
+            @* The desktop's alone: a browser stores the file as soon as the list changes, so
+               nothing is ever outstanding there. *@
+            @if (Files.SavesInPlace && _session.HasUnwrittenFileChanges)
+            {
+                <text> Not yet written back.</text>
+            }
         }
-    </div>
+        else
+        {
+            <text>No empires yet. Import a designs file, or create one.</text>
+        }
+    </p>
 
     <p class="sem-hint">
         Your file is read in this tab and never uploaded. Empires you do not touch are written back
@@ -85,6 +81,15 @@ else
                         <Actions>
                             @if (_previewOwn)
                             {
+                                @*
+                                    Beside Edit rather than inside the designer: opening an empire in
+                                    order to throw it away is a strange way round, and the list is
+                                    where you are when you decide you no longer want one.
+                                *@
+                                <button type="button" class="danger"
+                                        @onclick="() => _deleting = previewed">
+                                    Delete
+                                </button>
                                 <button type="button" class="primary" @onclick="() => OpenDesigner(previewed)">
                                     Edit
                                 </button>
@@ -146,7 +151,9 @@ else
 
 @code {
     private DesignSession? _session;
-    private string? _error;
+
+    /// <summary>The empire the delete question is about, and nothing when nothing is being asked.</summary>
+    private EmpireDesign? _deleting;
 
     /// <summary>Whether the panel is showing one of the player's own empires or one of the game's.</summary>
     private bool _previewOwn;
@@ -229,52 +236,23 @@ else
         InvokeAsync(StateHasChanged);
     }
 
-    private async Task OpenFile(InputFileChangeEventArgs e)
+    private void Delete(EmpireDesign design)
     {
-        _error = null;
+        _deleting = null;
 
-        try
-        {
-            // Generous enough for any real designs file; the player's own is about forty kilobytes.
-            await using var stream = e.File.OpenReadStream(maxAllowedSize: 16 * 1024 * 1024);
-            using var buffer = new MemoryStream();
-            await stream.CopyToAsync(buffer);
+        _session!.EditFile(file => file.Remove(design));
 
-            _session!.Load(buffer.ToArray(), e.File.Name);
-        }
-        catch (Exception ex) when (ex is Sem.Clausewitz.CwSyntaxException or IOException)
+        // The panel was showing this empire. Nothing else is obviously the one to show instead, and
+        // guessing at a neighbour would be a stranger answer than an empty panel.
+        if (ReferenceEquals(_previewDesign, design))
         {
-            // Loading half a damaged file would be worse than refusing it.
-            _error = $"That file could not be read: {ex.Message}";
-        }
-    }
-
-    private void AddEmpire()
-    {
-        if (_session?.File is null)
-        {
-            _session?.StartEmptyFile();
+            _previewDesign = null;
         }
 
-        var name = Available("New Empire");
-        var template = _session!.Data.Database.NewEmpireTemplate;
-
-        // The game keeps a blank template of its own; starting from it means a new empire is
-        // playable straight away rather than an empty shell.
-        _session.EditFile(file =>
+        if (ReferenceEquals(_session.Current, design))
         {
-            if (string.IsNullOrEmpty(template))
-            {
-                file.Add(name);
-            }
-            else
-            {
-                file.AddFromTemplate(template, name);
-            }
-        });
-
-        _session.Select(_session.File!.Find(name));
-        Navigation.NavigateTo("designer");
+            _session.Select(_session.File?.Designs.FirstOrDefault());
+        }
     }
 
     /// <summary>
@@ -396,15 +374,11 @@ else
             return;
         }
 
-        if (_session!.File is null)
-        {
-            _session.StartEmptyFile();
-        }
+        var name = Available(_session!.Localizer.Text(empire.NameKey, empire.Key));
 
-        var name = Available(_session.Localizer.Text(empire.NameKey, empire.Key));
-
-        _session.EditFile(file => file.AddFromTemplate(design, name));
-        _session.Select(_session.File!.Find(name));
+        // Held out of the file until it is saved, the same as a new empire: copying one of the
+        // game's in order to look at how it is put together should not leave a copy behind.
+        _session.CreateEmpire(file => file.AddFromTemplate(design, name));
         Navigation.NavigateTo("designer");
     }
 
@@ -430,11 +404,5 @@ else
     {
         _session!.Select(design);
         Navigation.NavigateTo("designer");
-    }
-
-    private async Task Export()
-    {
-        var name = _session!.FileName is { Length: > 0 } existing ? existing : EmpireDesignsFile.FileName;
-        await Files.SaveAsync(name, _session.Save());
     }
 }

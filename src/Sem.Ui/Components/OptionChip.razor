@@ -1,0 +1,106 @@
+@*
+    One of an empire's choices, named, with what it does behind it.
+
+    The preview lists an empire's ethics, civics, traits, authority and origin as icons and names,
+    while the designer shows the same option's description and effects in a panel beside the list it
+    was chosen from. Same data, and no reason it should only be readable in the place where it is
+    picked — reading an empire is exactly when someone wants to know what "Fanatic Militarist" is
+    actually doing for it.
+
+    The panel is a popover, so the browser puts it in the top layer and none of the scrolling,
+    sticky boxes it sits inside can cut it off. Where it lands is worked out in sem.js, which also
+    does the hovering: a chip is not worth a round trip into managed code on every mouse move.
+*@
+
+@using Microsoft.JSInterop
+@inject IJSRuntime Js
+@implements IAsyncDisposable
+
+<span class="sem-chip">
+    <button type="button" @ref="_anchor" popovertarget="@_id" aria-describedby="@_id">
+        @if (Icon is { Length: > 0 } icon)
+        {
+            <img src="@Session.Data.AssetUrl(icon)" alt="" loading="lazy">
+        }
+
+        <span>@Name</span>
+    </button>
+
+    @*
+        popover="auto" so the browser dismisses it on an outside click and closes whichever was open
+        when the next one opens. Only one of these is ever wanted at a time.
+    *@
+    <div id="@_id" popover="auto" role="tooltip" class="sem-chip-detail" @ref="_panel">
+        <h4>@Name</h4>
+
+        @if (Session.Localizer.Html($"{Key}_desc", string.Empty) is { Length: > 0 } lore)
+        {
+            <div class="sem-detail-lore">@((MarkupString)lore)</div>
+        }
+
+        <EffectsList Effects="@Effects" ShowNothing="true" />
+    </div>
+</span>
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>The option's key, which is also where its description is found.</summary>
+    [Parameter, EditorRequired]
+    public required string Key { get; set; }
+
+    /// <summary>What it is called.</summary>
+    [Parameter, EditorRequired]
+    public required string Name { get; set; }
+
+    /// <summary>Its picture, where it has one.</summary>
+    [Parameter]
+    public string? Icon { get; set; }
+
+    /// <summary>What it does, shown in the panel behind it.</summary>
+    [Parameter]
+    public Sem.GameData.EffectSet? Effects { get; set; }
+
+    private ElementReference _anchor;
+    private ElementReference _panel;
+
+    /// <summary>
+    /// Ties the panel to its button, uniquely on the page.
+    /// </summary>
+    /// <remarks>
+    /// A popover is addressed by id, and an empire's own traits appear beside a second species'
+    /// which may hold the same one — so the key alone is not unique enough to name it by.
+    /// </remarks>
+    private readonly string _id = $"chip-{Guid.NewGuid():N}";
+
+    private IJSObjectReference? _module;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        _module = await Js.InvokeAsync<IJSObjectReference>("import", "./_content/Sem.Ui/sem.js");
+        await _module.InvokeVoidAsync("bindPopover", _anchor, _panel);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_module is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await _module.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+            // The page went away first; there is nothing left to release.
+        }
+    }
+}

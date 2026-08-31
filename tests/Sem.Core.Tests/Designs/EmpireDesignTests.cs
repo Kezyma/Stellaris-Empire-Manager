@@ -542,4 +542,57 @@ public sealed class EmpireDesignTests
         Assert.Null(file.Designs[0].Ruler.CustomBiography);
         Assert.Equal(Sample, file.Document.ToText());
     }
+
+    [Fact]
+    public void AnEmpirePutBackFromASnapshotLeavesTheFileAsItFoundIt()
+    {
+        // What the designer's Revert has to amount to. Edited and then put back, the file must be
+        // the file it was — down to the whitespace, since every other empire in it is untouched and
+        // this one was only visited.
+        var file = EmpireDesignsFile.LoadText(Sample);
+        var design = file.Designs[0];
+        var saved = design.Snapshot();
+
+        design.Rename("Something Else");
+        design.SetEthics(["ethic_fanatic_pacifist", "ethic_egalitarian"]);
+        design.Species.SetTraits(["trait_intelligent"]);
+        design.Ruler.Gender = "female";
+
+        Assert.NotEqual(Sample, file.Document.ToText());
+
+        design.Restore(saved);
+
+        Assert.Equal(Sample, file.Document.ToText());
+        Assert.Equal("Peacock Dynamics", design.Key);
+    }
+
+    [Fact]
+    public void ASnapshotIsNotDisturbedByWhatHappensAfterIt()
+    {
+        // Taken as a copy, not as a view of the design. A snapshot that shared the design's own
+        // nodes would quietly become a copy of the edits it was supposed to undo.
+        var design = LoadSample();
+        var saved = design.Snapshot();
+
+        design.Species.SetTraits(["trait_intelligent", "trait_rapid_breeders"]);
+        design.Restore(saved);
+
+        Assert.Equal(["trait_aquatic", "trait_organic"], design.Species.Traits);
+    }
+
+    [Fact]
+    public void PuttingAnEmpireBackTwiceIsTheSameAsPuttingItBackOnce()
+    {
+        // Revert is a button, and buttons get pressed twice.
+        var file = EmpireDesignsFile.LoadText(Sample);
+        var design = file.Designs[0];
+        var saved = design.Snapshot();
+
+        design.SetCivics(["civic_beastmasters"]);
+
+        design.Restore(saved);
+        design.Restore(saved);
+
+        Assert.Equal(Sample, file.Document.ToText());
+    }
 }

@@ -131,6 +131,42 @@ public sealed class LocRef(CwBlock block) : CwView(block, FieldOrder)
         GetOrAddBlock("variables").Add(new CwNode(variable));
     }
 
+    /// <summary>
+    /// Makes this a name built from a format and the words that fill its blanks.
+    /// </summary>
+    /// <remarks>
+    /// How the game writes a name it generated: <c>key="AofB" variables={ { key="1" value={ key="Empire" } }
+    /// { key="2" value={ key="Pakshalika" } } }</c>, where <c>AofB</c> is the format "$1$ of $2$".
+    /// Storing the pieces rather than the finished words is what lets the same design read as
+    /// "Empire of Pakshalika" in English and as whatever that language would say elsewhere.
+    ///
+    /// The blanks are numbered from one, which is the game's own convention and is why they are
+    /// counted here rather than passed in.
+    /// </remarks>
+    public void SetFormat(string formatKey, IEnumerable<string> parts)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(formatKey);
+        ArgumentNullException.ThrowIfNull(parts);
+
+        RemoveAll("variables");
+        Key = formatKey;
+        IsLiteral = false;
+
+        var variables = GetOrAddBlock("variables");
+        var position = 1;
+
+        foreach (var part in parts)
+        {
+            var variable = new CwBlock();
+            variable.Add(CwNode.QuotedAssignment("key", position.ToString(System.Globalization.CultureInfo.InvariantCulture)));
+            variable.Add(CwNode.Assignment("value", CreateLiteralBlock(part)));
+
+            // Unkeyed, as the game writes the list.
+            variables.Add(new CwNode(variable));
+            position++;
+        }
+    }
+
     public override string ToString() => IsLiteral ? Key : $"[{Key}]";
 }
 

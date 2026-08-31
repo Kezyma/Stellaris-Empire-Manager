@@ -66,6 +66,10 @@ public static class DesignPredicates
         "is_pre_ftl_empire",
         "is_primitive",
         "has_been_the_crisis",
+
+        // Raiders the galaxy generates. The empire names are gated on not being one, which is a
+        // thing a player's empire never is.
+        "is_pirate",
         "is_country_type_awakened_fallen_empire",
 
         // Flags are set by events during a game. An empire being designed has none yet, so any

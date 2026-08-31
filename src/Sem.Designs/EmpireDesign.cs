@@ -237,6 +237,48 @@ public sealed class EmpireDesign : CwView
         _node.Rename(newKey, quoted: _node.KeyToken?.Kind != CwTokenKind.BareToken);
     }
 
+    /// <summary>
+    /// Takes a copy of this empire exactly as it stands, to be put back later.
+    /// </summary>
+    /// <remarks>
+    /// A clone of the entry rather than a note of its fields, for the same reason a shared link
+    /// carries the whole block: a snapshot that listed what it knew about would silently fail to
+    /// restore whatever was added to a design afterwards.
+    /// </remarks>
+    public EmpireSnapshot Snapshot() => new(_node.Clone());
+
+    /// <summary>
+    /// Puts this empire back to a copy taken earlier, in the place it already occupies.
+    /// </summary>
+    /// <remarks>
+    /// The entry itself is kept and its contents replaced, rather than the entry being swapped for
+    /// the copy. That keeps this design the same object — the designer is holding it, and would go
+    /// on editing the one it had — and keeps its position and its whitespace in the file, so an
+    /// empire edited and then put back leaves the file as it found it.
+    /// </remarks>
+    public void Restore(EmpireSnapshot snapshot)
+    {
+        ArgumentNullException.ThrowIfNull(snapshot);
+
+        if (_node.Value is not CwBlock live || snapshot.Entry.Value is not CwBlock stored)
+        {
+            return;
+        }
+
+        live.Clear();
+
+        foreach (var field in stored.Nodes)
+        {
+            live.Add(field.Clone());
+        }
+
+        // The entry's own key is not one of the fields inside it, and renaming changes both.
+        if (snapshot.Entry.KeyToken is { } key)
+        {
+            _node.Rename(key.Value, quoted: key.Kind == CwTokenKind.QuotedString);
+        }
+    }
+
     /// <summary>Adds a secondary species block, for origins that need one.</summary>
     public SpeciesDesign AddSecondarySpecies() => new(GetOrAddBlock("secondary_species"));
 

@@ -103,6 +103,9 @@ public partial class MainWindow : Window
         services.AddScoped<SessionHost>();
         services.AddScoped(_ => CreateFileExchange());
 
+        // Asked by the header before it starts an empire or opens a file, answered by the designer.
+        services.AddScoped<UnsavedWorkGuard>();
+
         WebView.Services = services.BuildServiceProvider();
         WebView.RootComponents.Add(new RootComponent
         {
@@ -126,7 +129,7 @@ public partial class MainWindow : Window
         WebView.Visibility = Visibility.Visible;
 
         Title = _designsPath is { Length: > 0 }
-            ? $"Stellaris Empire Manager — {Path.GetFileName(_designsPath)}"
+            ? $"Stellaris Empire Manager - {Path.GetFileName(_designsPath)}"
             : "Stellaris Empire Manager";
     }
 

@@ -242,17 +242,30 @@ internal static class CosmeticsExtractor
     /// with — the rest are built later — and <c>is_starting_arkship</c> is how the game itself says
     /// which. Declaration order is the order its own panel lists them in: civilian, science,
     /// military.
+    ///
+    /// Each names its own picture — <c>icon = ship_size_civilian_arkship_tier_1</c> — which resolves
+    /// to one frame of the ship-size sheet rather than to a file. Taking only the key left the
+    /// panel's three cards as the only ones in the designer with nothing to look at.
     /// </remarks>
-    public static List<ArkshipDefinition> ExtractArkships(ScriptLoader loader)
+    public static List<ArkshipDefinition> ExtractArkships(ScriptLoader loader, AssetCatalog assets)
     {
+        ArgumentNullException.ThrowIfNull(assets);
+
         var results = new List<ArkshipDefinition>();
 
         foreach (var entry in loader.LoadDefinitions("common/ship_sizes"))
         {
-            if (entry.Body.GetBool("is_starting_arkship"))
+            if (!entry.Body.GetBool("is_starting_arkship"))
             {
-                results.Add(new ArkshipDefinition(entry.Key));
+                continue;
             }
+
+            results.Add(new ArkshipDefinition(entry.Key)
+            {
+                Icon = assets.RegisterSprite(
+                    $"GFX_{entry.Body.GetString("icon")}",
+                    $"icons/arkships/{entry.Key}.png"),
+            });
         }
 
         return results;

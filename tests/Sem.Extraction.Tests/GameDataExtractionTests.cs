@@ -576,6 +576,15 @@ public sealed class GameDataExtractionTests
         Assert.Equal(
             ["civilian_arkship_name", "science_arkship_name", "military_arkship_name"],
             database.Arkships.Select(a => a.NameKey));
+
+        // Each names a sprite that is one frame of the ship-size sheet. Asserted because it was
+        // missed once already: the definitions were read for their key alone, and three cards in the
+        // designer sat blank beside a panel where everything else has a picture.
+        Assert.All(
+            database.Arkships,
+            a => Assert.False(
+                string.IsNullOrEmpty(a.Icon),
+                $"{a.Key} resolved no icon; the game declares one and it has evidently moved."));
     }
 
     [SkippableFact]

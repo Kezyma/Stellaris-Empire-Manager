@@ -281,6 +281,12 @@ public sealed class RequirementCompiler
             case "host_has_dlc" or "local_has_dlc" when node.ScalarValue is { } dlc:
                 return new DlcRequirement(dlc);
 
+            // The government is not a thing the design holds but a thing derived from what it holds,
+            // so it is asked for as a field rather than as a selection. Almost every empire name the
+            // game can generate is gated on one of these.
+            case "has_government" when node.ScalarValue is { } government:
+                return new FieldRequirement("government", government);
+
             case "OR" when node.Block is not null:
                 return new AnyRequirement(CompileTriggerChildren(node.Block, depth));
 

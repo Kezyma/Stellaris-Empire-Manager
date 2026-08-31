@@ -9,7 +9,7 @@ namespace Sem.Desktop;
 public sealed class UnavailableFileExchange : IFileExchange
 {
     /// <inheritdoc />
-    public string SaveVerb => "Save";
+    public bool SavesInPlace => true;
 
     /// <inheritdoc />
     public Task SaveAsync(string fileName, byte[] contents) =>
