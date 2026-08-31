@@ -96,7 +96,13 @@ internal static class PortraitExtractor
         var results = new List<PortraitDefinition>();
         var textureCounts = new Dictionary<string, int>(StringComparer.Ordinal);
         var attachmentLabels = new Dictionary<string, string>(StringComparer.Ordinal);
+        var evolutions = new Dictionary<string, IReadOnlyList<string>>(StringComparer.Ordinal);
         var seen = new HashSet<string>(StringComparer.Ordinal);
+
+        // The one a portrait falls back on when it names no stages of its own. There is exactly one
+        // of these across the whole directory, at the top level of 00_portraits_main.txt, and it is
+        // nested a level deeper than the per-portrait form.
+        IReadOnlyList<string> defaultStages = [];
         var groups = new List<(
             string Key,
             string Default,
@@ -120,6 +126,12 @@ internal static class PortraitExtractor
                             var textures = CountTextures(portrait.Block);
                             textureCounts[key] = textures;
 
+                            if (ReadEvolutionStages(portrait.Block.GetBlock("portrait_evolution"))
+                                is { Count: > 0 } stages)
+                            {
+                                evolutions[key] = stages;
+                            }
+
                             // What this likeness wears on its head is not always an attachment: the
                             // game lets a portrait rename the control, and calls it a hairstyle for
                             // a human and a hat for a reptilian.
@@ -138,6 +150,12 @@ internal static class PortraitExtractor
                             }
                         }
 
+                        break;
+
+                    // The directory-wide default, which sits beside the portraits rather than
+                    // inside one and wraps its list in an extra block.
+                    case "portrait_evolution" when node.Block is not null:
+                        defaultStages = ReadEvolutionStages(node.Block);
                         break;
 
                     // A group stands in for a portrait wherever one can be named, and picks a
@@ -176,7 +194,55 @@ internal static class PortraitExtractor
             }
         }
 
-        return results;
+        // Last, because the default is a sibling of the portraits it applies to and the file puts it
+        // after them. A group takes its default likeness's stages for the same reason it takes that
+        // likeness's word for an attachment: the group is what the design stores, but the artwork
+        // being evolved is the face underneath.
+        return
+        [
+            .. results.Select(portrait => portrait with
+            {
+                EvolutionStages = evolutions.GetValueOrDefault(
+                    portrait.ResolvesTo ?? portrait.Key,
+                    defaultStages),
+            }),
+        ];
+    }
+
+    /// <summary>
+    /// The ascended forms a <c>portrait_evolution</c> block describes, in the order it lists them.
+    /// </summary>
+    /// <remarks>
+    /// The block comes in two shapes. A portrait writes <c>variants</c> directly; the one directory
+    /// default wraps the same list in <c>evolution_stages</c> first, alongside the mask and decal it
+    /// falls back on. Both are read here, so a caller need not know which it holds.
+    ///
+    /// A stage names itself with an asset suffix — <c>_stage_1</c>, <c>_ascended</c> — where one
+    /// suffix dresses every likeness. Where the stage instead lists its own decal and mask paths, as
+    /// the Biogenesis portraits do with six coloured forms apiece, <c>value</c> is a block and there
+    /// is no name to take; the empty string keeps its place in the count.
+    /// </remarks>
+    private static IReadOnlyList<string> ReadEvolutionStages(CwBlock? evolution)
+    {
+        if (evolution is null)
+        {
+            return [];
+        }
+
+        var variants = evolution.GetBlock("variants")
+            ?? evolution.GetBlock("evolution_stages")?.GetBlock("variants");
+
+        if (variants is null)
+        {
+            return [];
+        }
+
+        return
+        [
+            .. variants.Nodes
+                .Where(stage => !stage.IsAssignment && stage.Block is not null)
+                .Select(stage => stage.Block!.GetString("value") ?? string.Empty),
+        ];
     }
 
     /// <summary>

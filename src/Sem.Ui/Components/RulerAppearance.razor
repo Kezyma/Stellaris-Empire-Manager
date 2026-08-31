@@ -3,10 +3,12 @@
 @*
     The ruler's likeness, and the four things about it a design can hold.
 
-    The game's leader editor offers six controls. Four of them map onto something a design stores and
-    are here. Phenotype picks which likeness of the portrait's group is worn; the other three are
-    numbers into lists the portrait offers. The remaining two are the ascension stage and its
-    variant; see the note beside them below.
+    The game's leader editor offers six spinners. Five are here. Phenotype picks which likeness of
+    the portrait's group is worn; the rest are numbers into lists the portrait offers.
+
+    The sixth, Evolution Variant, is not a value of its own. Every tied texture in the three files
+    that use them names exactly one variant, in file order, so the variant index is the texture
+    index — and that is what the colour control already writes.
 *@
 
 <div class="sem-appearance">
@@ -77,11 +79,22 @@
         }
 
         @*
-            The game's editor has two more spinners here, Evolution Stage and Evolution Variant,
-            against a design's single evolution_mask. How that one number carries both is not stated
-            in any of the game's script files — every one of the sixty-four designs to hand holds
-            zero — so there is nothing here rather than a control writing a guess into a save.
+            The ascended form the ruler wears, which is the last of the game's six spinners we can
+            offer. Its neighbour, Evolution Variant, is not a separate value: in all three files that
+            use tied textures each one names exactly one variant, in order, so the variant index is
+            the texture index — which the colour control above already writes.
+
+            The picture does not change with this. The game dresses an ascended portrait in a decal
+            and a mask this app does not composite, so the stepper says which form is stored and the
+            figure stays as it was.
         *@
+        @if (Stages.Count > 0)
+        {
+            <Stepper Label="@Session.Localizer.Label("EVOLUTION_STAGE", "Evolution Stage")"
+                     Value="@(Design.Ruler.EvolutionMask ?? 0)" Count="@(Stages.Count + 1)"
+                     Caption="@StageName"
+                     OnChange="value => Session.Edit(d => d.Ruler.EvolutionMask = value)" />
+        }
     </div>
 </div>
 
@@ -171,6 +184,46 @@
             return group.PhenotypesFor(Design.Ruler.Gender) is { Count: > 0 } forGender
                 ? forGender
                 : [.. group.Phenotypes.Values.SelectMany(f => f).Distinct(StringComparer.Ordinal)];
+        }
+    }
+
+    /// <summary>
+    /// The ascended forms this portrait can wear, which decide how far the stepper counts.
+    /// </summary>
+    /// <remarks>
+    /// From the face actually worn rather than the group a design may name, since it is the face
+    /// whose artwork has the stages. Most portraits take the directory's default of three — the two
+    /// stages of cybernetisation and psionic ascension — and fifty-nine name fewer of their own.
+    /// </remarks>
+    private IReadOnlyList<string> Stages =>
+        Session.Data.Database.Portraits.FirstOrDefault(p => p.Key == Likeness)?.EvolutionStages
+        ?? Portrait?.EvolutionStages
+        ?? [];
+
+    /// <summary>
+    /// What to call the stage now stored.
+    /// </summary>
+    /// <remarks>
+    /// Zero is the form the ruler starts in, which every design to hand holds. Above that a stage
+    /// takes the name of the asset suffix that dresses it where it has one — <c>_ascended</c> — and
+    /// its number where the stage is written as decal paths instead. A design holding a stage this
+    /// portrait does not have keeps the number rather than being silently corrected: it came from
+    /// the file and goes back to it.
+    /// </remarks>
+    private string StageName
+    {
+        get
+        {
+            var stage = Design.Ruler.EvolutionMask ?? 0;
+
+            if (stage <= 0)
+            {
+                return "None";
+            }
+
+            return stage <= Stages.Count && Stages[stage - 1] is { Length: > 0 } suffix
+                ? Localizer.Prettify(suffix.TrimStart('_'))
+                : $"Stage {stage}";
         }
     }
 

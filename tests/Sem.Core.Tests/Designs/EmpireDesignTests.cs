@@ -221,6 +221,33 @@ public sealed class EmpireDesignTests
             file.Document.ToText());
     }
 
+    /// <summary>
+    /// The ruler's ascended form, which the designer can now set.
+    /// </summary>
+    /// <remarks>
+    /// Every design the game has written holds <c>evolution_mask=0</c>, so this is the first field
+    /// the app changes whose every observed value is zero. Worth stating that raising it rewrites
+    /// one digit and nothing else, and that the key keeps the place the game gives it — between the
+    /// skin variant and the attachment — rather than being appended as a new field would be.
+    /// </remarks>
+    [Fact]
+    public void RaisingTheRulersEvolutionStageRewritesOneDigit()
+    {
+        var file = EmpireDesignsFile.LoadText(Sample);
+        file.Designs[0].Ruler.EvolutionMask = 3;
+
+        var text = file.Document.ToText();
+
+        Assert.Equal(
+            Sample.Replace("evolution_mask=0", "evolution_mask=3", StringComparison.Ordinal),
+            text);
+
+        Assert.InRange(
+            text.IndexOf("evolution_mask", StringComparison.Ordinal),
+            text.IndexOf("texture", StringComparison.Ordinal),
+            text.IndexOf("attachment", StringComparison.Ordinal));
+    }
+
     [Fact]
     public void ReplacingOneTraitRewritesOnlyThatLine()
     {

@@ -326,6 +326,52 @@ public sealed class GameDataExtractionTests
         Assert.True(missing.Count == 0, $"Portrait sets name unknown portraits: {string.Join(", ", missing)}");
     }
 
+    /// <summary>
+    /// The ascended forms a portrait can wear, which a design stores as <c>evolution_mask</c>.
+    /// </summary>
+    /// <remarks>
+    /// Counted out of the game's own files rather than read back from the extractor. There is one
+    /// top-level <c>portrait_evolution</c> in the whole directory, in 00_portraits_main.txt, and
+    /// fifty-nine portraits that override it: twenty-one cybernetic and fourteen Biogenesis ones
+    /// with two stages apiece, and thirteen psionic and eleven synthetic ones with one.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void EveryPortraitKnowsHowManyAscendedFormsItHas()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        // The directory default: two stages of cybernetisation and psionic ascension, each naming
+        // the asset suffix that dresses it.
+        var mammalian = Single(database.Portraits, p => p.Key == "mam1");
+        Assert.Equal(["_stage_1", "_stage_2", "_ascended"], mammalian.EvolutionStages);
+
+        // A portrait with its own block takes it instead of the default. These write their stages as
+        // decal and mask paths rather than a suffix, so the names are empty and only the count says
+        // anything.
+        var cybernetic = Single(database.Portraits, p => p.Key == "cyb1");
+        Assert.Equal(2, cybernetic.EvolutionStages.Count);
+        Assert.All(cybernetic.EvolutionStages, name => Assert.Equal(string.Empty, name));
+
+        Assert.Equal(2, Single(database.Portraits, p => p.Key == "pro1_f").EvolutionStages.Count);
+        Assert.Single(Single(database.Portraits, p => p.Key == "psionic_01").EvolutionStages);
+        Assert.Single(Single(database.Portraits, p => p.Key == "synth01").EvolutionStages);
+
+        // A group is what a design stores, so it has to carry the stages of the face underneath it
+        // rather than none at all.
+        var group = Single(database.Portraits, p => p.Key == "mam4");
+        Assert.True(group.IsGroup);
+        Assert.Equal(3, group.EvolutionStages.Count);
+
+        // Every portrait ends up with a stage count, because every one either names its own or
+        // falls back on the default.
+        Assert.DoesNotContain(database.Portraits, p => p.EvolutionStages.Count == 0);
+
+        // And the overrides are exactly the fifty-nine counted in the files.
+        Assert.Equal(59, database.Portraits.Count(p => !p.IsGroup && p.EvolutionStages.Count != 3));
+    }
+
     [SkippableFact]
     [Trait("Category", "RealData")]
     public void ContentPacksAreNamedExactlyAsTheGameMatchesThem()

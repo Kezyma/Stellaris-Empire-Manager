@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "gameVersion": "v4.4.6",
-  "extractorVersion": "0.1.0\u002B9913f0c716c6d18e9560a928665f9f32d4f75574",
+  "extractorVersion": "0.1.0\u002B155963a87f7f9d38fb0a3c748fc2330ad609d3b1",
   "defines": {
     "ethicsPoints": 3,
     "civicPoints": 2,
@@ -105968,6 +105968,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/debug.png",
       "nameKey": "debug"
     },
@@ -105977,6 +105982,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/default_robot.png",
       "nameKey": "default_robot"
     },
@@ -105986,6 +105996,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/ai_crisis_1.png",
       "nameKey": "ai_crisis_1"
     },
@@ -105995,6 +106010,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/ai_crisis_2.png",
       "nameKey": "ai_crisis_2"
     },
@@ -106004,6 +106024,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/hum_robot_red.png",
       "nameKey": "hum_robot_red"
     },
@@ -106013,6 +106038,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/swarm1.png",
       "nameKey": "swarm1"
     },
@@ -106022,6 +106052,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/swarm1small.png",
       "nameKey": "swarm1small"
     },
@@ -106031,6 +106066,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/exd1.png",
       "nameKey": "exd1"
     },
@@ -106040,6 +106080,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/exd2.png",
       "nameKey": "exd2"
     },
@@ -106049,6 +106094,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/exd3.png",
       "nameKey": "exd3"
     },
@@ -106058,6 +106108,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/exd4.png",
       "nameKey": "exd4"
     },
@@ -106067,6 +106122,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/exd1_leader.png",
       "nameKey": "exd1_leader"
     },
@@ -106076,6 +106136,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/exd2_leader.png",
       "nameKey": "exd2_leader"
     },
@@ -106085,6 +106150,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/exd3_leader.png",
       "nameKey": "exd3_leader"
     },
@@ -106094,6 +106164,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/exd4_leader.png",
       "nameKey": "exd4_leader"
     },
@@ -106103,6 +106178,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/shroud1.png",
       "nameKey": "shroud1"
     },
@@ -106112,6 +106192,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/robot1.png",
       "nameKey": "robot1"
     },
@@ -106121,6 +106206,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/robot2.png",
       "nameKey": "robot2"
     },
@@ -106130,6 +106220,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/robot3.png",
       "nameKey": "robot3"
     },
@@ -106139,6 +106234,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 7,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mam1.png",
       "nameKey": "mam1"
     },
@@ -106148,6 +106248,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 6,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mam2.png",
       "nameKey": "mam2"
     },
@@ -106157,6 +106262,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 9,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mam3.png",
       "nameKey": "mam3"
     },
@@ -106166,6 +106276,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mam4_f.png",
       "nameKey": "mam4_f"
     },
@@ -106175,6 +106290,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mam4_m.png",
       "nameKey": "mam4_m"
     },
@@ -106184,6 +106304,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mam5.png",
       "nameKey": "mam5"
     },
@@ -106193,6 +106318,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mam6.png",
       "nameKey": "mam6"
     },
@@ -106202,6 +106332,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 7,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mam7.png",
       "nameKey": "mam7"
     },
@@ -106211,6 +106346,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mam8.png",
       "nameKey": "mam8"
     },
@@ -106220,6 +106360,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 6,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mam9.png",
       "nameKey": "mam9"
     },
@@ -106229,6 +106374,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 7,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mam10.png",
       "nameKey": "mam10"
     },
@@ -106238,6 +106388,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mam11.png",
       "nameKey": "mam11"
     },
@@ -106247,6 +106402,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 6,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mam12.png",
       "nameKey": "mam12"
     },
@@ -106256,6 +106416,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 7,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mam13.png",
       "nameKey": "mam13"
     },
@@ -106265,6 +106430,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 7,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mam14.png",
       "nameKey": "mam14"
     },
@@ -106274,6 +106444,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 8,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mam15.png",
       "nameKey": "mam15"
     },
@@ -106283,6 +106458,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mam16_f.png",
       "nameKey": "mam16_f"
     },
@@ -106292,6 +106472,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mam16_m.png",
       "nameKey": "mam16_m"
     },
@@ -106301,6 +106486,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mam17.png",
       "nameKey": "mam17"
     },
@@ -106310,6 +106500,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/rep1.png",
       "nameKey": "rep1"
     },
@@ -106319,6 +106514,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/rep2.png",
       "attachmentLabelKey": "HAT",
       "nameKey": "rep2"
@@ -106329,6 +106529,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/rep3_f.png",
       "nameKey": "rep3_f"
     },
@@ -106338,6 +106543,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/rep3_m.png",
       "nameKey": "rep3_m"
     },
@@ -106347,6 +106557,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 6,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/rep4.png",
       "nameKey": "rep4"
     },
@@ -106356,6 +106571,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 7,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/rep5.png",
       "nameKey": "rep5"
     },
@@ -106365,6 +106585,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 13,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/rep6.png",
       "nameKey": "rep6"
     },
@@ -106374,6 +106599,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 9,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/rep7.png",
       "nameKey": "rep7"
     },
@@ -106383,6 +106613,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 7,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/rep8.png",
       "nameKey": "rep8"
     },
@@ -106392,6 +106627,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 10,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/rep9.png",
       "nameKey": "rep9"
     },
@@ -106401,6 +106641,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/rep10.png",
       "nameKey": "rep10"
     },
@@ -106410,6 +106655,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 8,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/rep11.png",
       "nameKey": "rep11"
     },
@@ -106419,6 +106669,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 6,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/rep12.png",
       "nameKey": "rep12"
     },
@@ -106428,6 +106683,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 6,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/rep13.png",
       "nameKey": "rep13"
     },
@@ -106437,6 +106697,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 6,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/rep14.png",
       "nameKey": "rep14"
     },
@@ -106446,6 +106711,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 6,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/rep15.png",
       "nameKey": "rep15"
     },
@@ -106455,6 +106725,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/rep16_f.png",
       "nameKey": "rep16_f"
     },
@@ -106464,6 +106739,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/rep16_m.png",
       "nameKey": "rep16_m"
     },
@@ -106473,6 +106753,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/rep17.png",
       "nameKey": "rep17"
     },
@@ -106482,6 +106767,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/avi1.png",
       "nameKey": "avi1"
     },
@@ -106491,6 +106781,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 9,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/avi2.png",
       "nameKey": "avi2"
     },
@@ -106500,6 +106795,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 11,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/avi3.png",
       "nameKey": "avi3"
     },
@@ -106509,6 +106809,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 6,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/avi4.png",
       "nameKey": "avi4"
     },
@@ -106518,6 +106823,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 9,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/avi5.png",
       "nameKey": "avi5"
     },
@@ -106527,6 +106837,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/avi6_f.png",
       "nameKey": "avi6_f"
     },
@@ -106536,6 +106851,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/avi6_m.png",
       "nameKey": "avi6_m"
     },
@@ -106545,6 +106865,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 6,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/avi7_f.png",
       "nameKey": "avi7_f"
     },
@@ -106554,6 +106879,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/avi7_m.png",
       "nameKey": "avi7_m"
     },
@@ -106563,6 +106893,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/avi8.png",
       "nameKey": "avi8"
     },
@@ -106572,6 +106907,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/avi9.png",
       "nameKey": "avi9"
     },
@@ -106581,6 +106921,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/avi10.png",
       "nameKey": "avi10"
     },
@@ -106590,6 +106935,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/avi11.png",
       "nameKey": "avi11"
     },
@@ -106599,6 +106949,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 8,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/avi12.png",
       "nameKey": "avi12"
     },
@@ -106608,6 +106963,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/avi13.png",
       "nameKey": "avi13"
     },
@@ -106617,6 +106977,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/avi14_f.png",
       "nameKey": "avi14_f"
     },
@@ -106626,6 +106991,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/avi14_m.png",
       "nameKey": "avi14_m"
     },
@@ -106635,6 +107005,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 13,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/avi15.png",
       "nameKey": "avi15"
     },
@@ -106644,6 +107019,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/avi16.png",
       "nameKey": "avi16"
     },
@@ -106653,6 +107033,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/avi17.png",
       "nameKey": "avi17"
     },
@@ -106662,6 +107047,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/avi18.png",
       "nameKey": "avi18"
     },
@@ -106671,6 +107061,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 6,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/art1.png",
       "nameKey": "art1"
     },
@@ -106680,6 +107075,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 6,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/art3.png",
       "nameKey": "art3"
     },
@@ -106689,6 +107089,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 6,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/art5.png",
       "nameKey": "art5"
     },
@@ -106698,6 +107103,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 8,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/art6.png",
       "nameKey": "art6"
     },
@@ -106707,6 +107117,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 6,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/art7.png",
       "nameKey": "art7"
     },
@@ -106716,6 +107131,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 6,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/art8.png",
       "nameKey": "art8"
     },
@@ -106725,6 +107145,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 6,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/art9.png",
       "nameKey": "art9"
     },
@@ -106734,6 +107159,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/art10.png",
       "nameKey": "art10"
     },
@@ -106743,6 +107173,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 7,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/art11.png",
       "nameKey": "art11"
     },
@@ -106752,6 +107187,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 7,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/art12.png",
       "nameKey": "art12"
     },
@@ -106761,6 +107201,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/art13.png",
       "nameKey": "art13"
     },
@@ -106770,6 +107215,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 6,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/art14.png",
       "nameKey": "art14"
     },
@@ -106779,6 +107229,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 6,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/art15.png",
       "nameKey": "art15"
     },
@@ -106788,6 +107243,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/art16.png",
       "nameKey": "art16"
     },
@@ -106797,6 +107257,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 7,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/art17.png",
       "nameKey": "art17"
     },
@@ -106806,6 +107271,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 6,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/art18.png",
       "nameKey": "art18"
     },
@@ -106815,6 +107285,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/art18_pop.png",
       "nameKey": "art18_pop"
     },
@@ -106824,6 +107299,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/art19.png",
       "nameKey": "art19"
     },
@@ -106833,6 +107313,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/art20.png",
       "nameKey": "art20"
     },
@@ -106842,6 +107327,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 6,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/fun1.png",
       "nameKey": "fun1"
     },
@@ -106851,6 +107341,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/fun2.png",
       "nameKey": "fun2"
     },
@@ -106860,6 +107355,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 6,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/fun3.png",
       "nameKey": "fun3"
     },
@@ -106869,6 +107369,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 8,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/fun4.png",
       "nameKey": "fun4"
     },
@@ -106878,6 +107383,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/fun6.png",
       "nameKey": "fun6"
     },
@@ -106887,6 +107397,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/fun7.png",
       "nameKey": "fun7"
     },
@@ -106896,6 +107411,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/fun8.png",
       "nameKey": "fun8"
     },
@@ -106905,6 +107425,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 8,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/fun9.png",
       "nameKey": "fun9"
     },
@@ -106914,6 +107439,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 8,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/fun10.png",
       "nameKey": "fun10"
     },
@@ -106923,6 +107453,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 8,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/fun11.png",
       "nameKey": "fun11"
     },
@@ -106932,6 +107467,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/fun12.png",
       "nameKey": "fun12"
     },
@@ -106941,6 +107481,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 10,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/fun13.png",
       "nameKey": "fun13"
     },
@@ -106950,6 +107495,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/fun14.png",
       "nameKey": "fun14"
     },
@@ -106959,6 +107509,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/fun15.png",
       "nameKey": "fun15"
     },
@@ -106968,6 +107523,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/fun16.png",
       "nameKey": "fun16"
     },
@@ -106977,6 +107537,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 10,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/fun17.png",
       "nameKey": "fun17"
     },
@@ -106986,6 +107551,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mol1.png",
       "nameKey": "mol1"
     },
@@ -106995,6 +107565,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mol2.png",
       "nameKey": "mol2"
     },
@@ -107004,6 +107579,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mol3.png",
       "nameKey": "mol3"
     },
@@ -107013,6 +107593,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 8,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mol4.png",
       "nameKey": "mol4"
     },
@@ -107022,6 +107607,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 8,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mol5.png",
       "nameKey": "mol5"
     },
@@ -107031,6 +107621,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mol6.png",
       "nameKey": "mol6"
     },
@@ -107040,6 +107635,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 8,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mol7.png",
       "nameKey": "mol7"
     },
@@ -107049,6 +107649,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mol8.png",
       "nameKey": "mol8"
     },
@@ -107058,6 +107663,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 9,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mol11.png",
       "nameKey": "mol11"
     },
@@ -107067,6 +107677,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 9,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mol12.png",
       "nameKey": "mol12"
     },
@@ -107076,6 +107691,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 9,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mol13.png",
       "nameKey": "mol13"
     },
@@ -107085,6 +107705,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mol14.png",
       "nameKey": "mol14"
     },
@@ -107094,6 +107719,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 9,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mol15.png",
       "nameKey": "mol15"
     },
@@ -107103,6 +107733,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mol16.png",
       "nameKey": "mol16"
     },
@@ -107112,6 +107747,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mol17.png",
       "nameKey": "mol17"
     },
@@ -107121,6 +107761,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mol17_albin.png",
       "nameKey": "mol17_albin"
     },
@@ -107130,6 +107775,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 6,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mol18.png",
       "nameKey": "mol18"
     },
@@ -107139,6 +107789,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/human_female_01.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "human_female_01"
@@ -107149,6 +107804,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/human_female_02.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "human_female_02"
@@ -107159,6 +107819,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/human_female_03.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "human_female_03"
@@ -107169,6 +107834,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/human_female_04.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "human_female_04"
@@ -107179,6 +107849,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/human_female_05.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "human_female_05"
@@ -107189,6 +107864,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/human_male_01.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "human_male_01"
@@ -107199,6 +107879,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/human_male_02.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "human_male_02"
@@ -107209,6 +107894,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/human_male_03.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "human_male_03"
@@ -107219,6 +107909,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/human_male_04.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "human_male_04"
@@ -107229,6 +107924,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/human_male_05.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "human_male_05"
@@ -107239,6 +107939,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/human_legacy_female_01.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "human_legacy_female_01"
@@ -107249,6 +107954,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/human_legacy_female_02.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "human_legacy_female_02"
@@ -107259,6 +107969,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/human_legacy_female_03.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "human_legacy_female_03"
@@ -107269,6 +107984,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/human_legacy_female_04.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "human_legacy_female_04"
@@ -107279,6 +107999,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/human_legacy_female_05.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "human_legacy_female_05"
@@ -107289,6 +108014,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/human_legacy_male_01.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "human_legacy_male_01"
@@ -107299,6 +108029,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/human_legacy_male_02.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "human_legacy_male_02"
@@ -107309,6 +108044,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/human_legacy_male_03.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "human_legacy_male_03"
@@ -107319,6 +108059,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/human_legacy_male_04.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "human_legacy_male_04"
@@ -107329,6 +108074,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/human_legacy_male_05.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "human_legacy_male_05"
@@ -107339,6 +108089,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pre_avi1.png",
       "nameKey": "pre_avi1"
     },
@@ -107348,6 +108103,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pre_avi12.png",
       "nameKey": "pre_avi12"
     },
@@ -107357,6 +108117,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pre_mam6.png",
       "nameKey": "pre_mam6"
     },
@@ -107366,6 +108131,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pre_mam13.png",
       "nameKey": "pre_mam13"
     },
@@ -107375,6 +108145,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pre_mol1.png",
       "nameKey": "pre_mol1"
     },
@@ -107384,6 +108159,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pre_mol3.png",
       "nameKey": "pre_mol3"
     },
@@ -107393,6 +108173,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pre_rep09.png",
       "nameKey": "pre_rep09"
     },
@@ -107402,6 +108187,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pre_rep12.png",
       "nameKey": "pre_rep12"
     },
@@ -107411,6 +108201,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pre_art1.png",
       "nameKey": "pre_art1"
     },
@@ -107420,6 +108215,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pre_art11.png",
       "nameKey": "pre_art11"
     },
@@ -107429,6 +108229,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pre_art12.png",
       "nameKey": "pre_art12"
     },
@@ -107438,6 +108243,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pre_art13.png",
       "nameKey": "pre_art13"
     },
@@ -107447,6 +108257,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pre_art14.png",
       "nameKey": "pre_art14"
     },
@@ -107456,6 +108271,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pre_art15.png",
       "nameKey": "pre_art15"
     },
@@ -107465,6 +108285,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pre_fun9.png",
       "nameKey": "pre_fun9"
     },
@@ -107474,6 +108299,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pre_fun13.png",
       "nameKey": "pre_fun13"
     },
@@ -107483,6 +108313,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pre_pla2.png",
       "nameKey": "pre_pla2"
     },
@@ -107492,6 +108327,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pre_pla14.png",
       "nameKey": "pre_pla14"
     },
@@ -107501,6 +108341,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pre_lith5.png",
       "nameKey": "pre_lith5"
     },
@@ -107510,6 +108355,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pre_lith9.png",
       "nameKey": "pre_lith9"
     },
@@ -107519,6 +108369,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pre_nec9.png",
       "nameKey": "pre_nec9"
     },
@@ -107528,6 +108383,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pre_nec15.png",
       "nameKey": "pre_nec15"
     },
@@ -107537,6 +108397,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pre_aqu7.png",
       "nameKey": "pre_aqu7"
     },
@@ -107546,6 +108411,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pre_aqu9.png",
       "nameKey": "pre_aqu9"
     },
@@ -107555,6 +108425,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pre_tox4.png",
       "nameKey": "pre_tox4"
     },
@@ -107564,6 +108439,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pre_tox5.png",
       "nameKey": "pre_tox5"
     },
@@ -107573,6 +108453,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pre_inf1.png",
       "nameKey": "pre_inf1"
     },
@@ -107582,6 +108467,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pre_inf5.png",
       "nameKey": "pre_inf5"
     },
@@ -107591,6 +108481,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pre_inf9.png",
       "nameKey": "pre_inf9"
     },
@@ -107600,6 +108495,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pre_inf10.png",
       "nameKey": "pre_inf10"
     },
@@ -107609,6 +108509,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pla1.png",
       "nameKey": "pla1"
     },
@@ -107618,6 +108523,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pla2.png",
       "nameKey": "pla2"
     },
@@ -107627,6 +108537,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pla3.png",
       "nameKey": "pla3"
     },
@@ -107636,6 +108551,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pla4.png",
       "nameKey": "pla4"
     },
@@ -107645,6 +108565,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 8,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pla5.png",
       "nameKey": "pla5"
     },
@@ -107654,6 +108579,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pla6.png",
       "nameKey": "pla6"
     },
@@ -107663,6 +108593,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pla7.png",
       "nameKey": "pla7"
     },
@@ -107672,6 +108607,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pla8.png",
       "nameKey": "pla8"
     },
@@ -107681,6 +108621,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pla9.png",
       "nameKey": "pla9"
     },
@@ -107690,6 +108635,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pla10.png",
       "nameKey": "pla10"
     },
@@ -107699,6 +108649,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 8,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pla11.png",
       "nameKey": "pla11"
     },
@@ -107708,6 +108663,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pla12.png",
       "nameKey": "pla12"
     },
@@ -107717,6 +108677,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 6,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pla13.png",
       "nameKey": "pla13"
     },
@@ -107726,6 +108691,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 6,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pla14.png",
       "nameKey": "pla14"
     },
@@ -107735,6 +108705,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 8,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pla15.png",
       "nameKey": "pla15"
     },
@@ -107744,6 +108719,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pla16_baol.png",
       "nameKey": "pla16_baol"
     },
@@ -107753,6 +108733,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pla17_m.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "pla17_m"
@@ -107763,6 +108748,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pla17_f.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "pla17_f"
@@ -107773,6 +108763,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_02_female_01.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "humanoid_02_female_01"
@@ -107783,6 +108778,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_02_male_01.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "humanoid_02_male_01"
@@ -107793,6 +108793,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_03_female_01.png",
       "nameKey": "humanoid_03_female_01"
     },
@@ -107802,6 +108807,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_03_male_01.png",
       "nameKey": "humanoid_03_male_01"
     },
@@ -107811,6 +108821,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_04_female_01.png",
       "nameKey": "humanoid_04_female_01"
     },
@@ -107820,6 +108835,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_04_male_01.png",
       "nameKey": "humanoid_04_male_01"
     },
@@ -107829,6 +108849,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_05_female_01.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "humanoid_05_female_01"
@@ -107839,6 +108864,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_05_male_01.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "humanoid_05_male_01"
@@ -107849,6 +108879,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/sd_avi_robot.png",
       "nameKey": "sd_avi_robot"
     },
@@ -107858,6 +108893,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/sd_art_robot.png",
       "nameKey": "sd_art_robot"
     },
@@ -107867,6 +108907,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/sd_mol_robot.png",
       "nameKey": "sd_mol_robot"
     },
@@ -107876,6 +108921,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/sd_fun_robot.png",
       "nameKey": "sd_fun_robot"
     },
@@ -107885,6 +108935,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/sd_mam_robot.png",
       "nameKey": "sd_mam_robot"
     },
@@ -107894,6 +108949,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/sd_pla_robot.png",
       "nameKey": "sd_pla_robot"
     },
@@ -107903,6 +108963,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/sd_rep_robot.png",
       "nameKey": "sd_rep_robot"
     },
@@ -107912,6 +108977,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/sd_hum_robot.png",
       "nameKey": "sd_hum_robot"
     },
@@ -107921,6 +108991,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_hp_01.png",
       "nameKey": "humanoid_hp_01"
     },
@@ -107930,6 +109005,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_hp_01_female.png",
       "nameKey": "humanoid_hp_01_female"
     },
@@ -107939,6 +109019,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_hp_02.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "humanoid_hp_02"
@@ -107949,6 +109034,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_hp_02_female.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "humanoid_hp_02_female"
@@ -107959,6 +109049,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_hp_06.png",
       "nameKey": "humanoid_hp_06"
     },
@@ -107968,6 +109063,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_hp_06_female.png",
       "nameKey": "humanoid_hp_06_female"
     },
@@ -107977,6 +109077,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_hp_07.png",
       "nameKey": "humanoid_hp_07"
     },
@@ -107986,6 +109091,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_hp_07_female.png",
       "nameKey": "humanoid_hp_07_female"
     },
@@ -107995,6 +109105,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_hp_08.png",
       "nameKey": "humanoid_hp_08"
     },
@@ -108004,6 +109119,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_hp_08_female.png",
       "nameKey": "humanoid_hp_08_female"
     },
@@ -108013,6 +109133,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_hp_09.png",
       "nameKey": "humanoid_hp_09"
     },
@@ -108022,6 +109147,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_hp_09_female.png",
       "nameKey": "humanoid_hp_09_female"
     },
@@ -108031,6 +109161,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_hp_10.png",
       "nameKey": "humanoid_hp_10"
     },
@@ -108040,6 +109175,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_hp_10_female.png",
       "nameKey": "humanoid_hp_10_female"
     },
@@ -108049,6 +109189,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_hp_11.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "humanoid_hp_11"
@@ -108059,6 +109204,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_hp_11_female.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "humanoid_hp_11_female"
@@ -108069,6 +109219,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 20,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_hp_12.png",
       "nameKey": "humanoid_hp_12"
     },
@@ -108078,6 +109233,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 20,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_hp_12_female.png",
       "nameKey": "humanoid_hp_12_female"
     },
@@ -108087,6 +109247,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_hp_13.png",
       "nameKey": "humanoid_hp_13"
     },
@@ -108096,6 +109261,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_hp_13_female.png",
       "nameKey": "humanoid_hp_13_female"
     },
@@ -108105,6 +109275,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_hp_14_male.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "humanoid_hp_14_male"
@@ -108115,6 +109290,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_hp_14_female.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "humanoid_hp_14_female"
@@ -108125,6 +109305,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 7,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_elf_male.png",
       "nameKey": "humanoid_elf_male"
     },
@@ -108134,6 +109319,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 7,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_elf_female.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "humanoid_elf_female"
@@ -108144,6 +109334,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_hp_16_male.png",
       "nameKey": "humanoid_hp_16_male"
     },
@@ -108153,6 +109348,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/humanoid_hp_16_female.png",
       "nameKey": "humanoid_hp_16_female"
     },
@@ -108162,6 +109362,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mam_rat.png",
       "nameKey": "mam_rat"
     },
@@ -108171,6 +109376,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/baol_room.png",
       "nameKey": "baol_room"
     },
@@ -108180,6 +109390,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/lith1.png",
       "nameKey": "lith1"
     },
@@ -108189,6 +109404,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/lith2.png",
       "nameKey": "lith2"
     },
@@ -108198,6 +109418,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/lith2_inf.png",
       "nameKey": "lith2_inf"
     },
@@ -108207,6 +109432,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/lith3.png",
       "nameKey": "lith3"
     },
@@ -108216,6 +109446,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/lith4.png",
       "nameKey": "lith4"
     },
@@ -108225,6 +109460,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/lith5.png",
       "nameKey": "lith5"
     },
@@ -108234,6 +109474,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/lith6.png",
       "nameKey": "lith6"
     },
@@ -108243,6 +109488,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/lith7.png",
       "nameKey": "lith7"
     },
@@ -108252,6 +109502,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/lith8.png",
       "nameKey": "lith8"
     },
@@ -108261,6 +109516,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/lith9.png",
       "nameKey": "lith9"
     },
@@ -108270,6 +109530,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/lith10.png",
       "nameKey": "lith10"
     },
@@ -108279,6 +109544,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/lith11.png",
       "nameKey": "lith11"
     },
@@ -108288,6 +109558,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/lith12.png",
       "nameKey": "lith12"
     },
@@ -108297,6 +109572,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/lith13.png",
       "nameKey": "lith13"
     },
@@ -108306,6 +109586,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/lith14.png",
       "nameKey": "lith14"
     },
@@ -108315,6 +109600,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/lith15.png",
       "nameKey": "lith15"
     },
@@ -108324,6 +109614,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/lith_machine.png",
       "nameKey": "lith_machine"
     },
@@ -108333,6 +109628,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/lith_human_male.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "lith_human_male"
@@ -108343,6 +109643,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/lith_human_female.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "lith_human_female"
@@ -108353,6 +109658,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/nec1.png",
       "nameKey": "nec1"
     },
@@ -108362,6 +109672,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/nec2.png",
       "nameKey": "nec2"
     },
@@ -108371,6 +109686,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/nec3.png",
       "nameKey": "nec3"
     },
@@ -108380,6 +109700,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/nec4.png",
       "nameKey": "nec4"
     },
@@ -108389,6 +109714,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/nec5.png",
       "nameKey": "nec5"
     },
@@ -108398,6 +109728,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/nec6.png",
       "nameKey": "nec6"
     },
@@ -108407,6 +109742,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/nec7.png",
       "nameKey": "nec7"
     },
@@ -108416,6 +109756,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/nec8.png",
       "nameKey": "nec8"
     },
@@ -108425,6 +109770,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/nec9.png",
       "nameKey": "nec9"
     },
@@ -108434,6 +109784,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/nec10.png",
       "nameKey": "nec10"
     },
@@ -108443,6 +109798,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/nec11.png",
       "nameKey": "nec11"
     },
@@ -108452,6 +109812,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/nec12.png",
       "nameKey": "nec12"
     },
@@ -108461,6 +109826,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/nec13.png",
       "nameKey": "nec13"
     },
@@ -108470,6 +109840,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/nec14.png",
       "nameKey": "nec14"
     },
@@ -108479,6 +109854,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/nec15.png",
       "nameKey": "nec15"
     },
@@ -108488,6 +109868,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/nec_machine.png",
       "nameKey": "nec_machine"
     },
@@ -108497,6 +109882,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 2,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/aqu1_f.png",
       "nameKey": "aqu1_f"
     },
@@ -108506,6 +109896,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 2,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/aqu1_m.png",
       "nameKey": "aqu1_m"
     },
@@ -108515,6 +109910,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 2,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/aqu2_f.png",
       "nameKey": "aqu2_f"
     },
@@ -108524,6 +109924,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 2,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/aqu2_m.png",
       "nameKey": "aqu2_m"
     },
@@ -108533,6 +109938,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/aqu3.png",
       "nameKey": "aqu3"
     },
@@ -108542,6 +109952,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/aqu4_f.png",
       "nameKey": "aqu4_f"
     },
@@ -108551,6 +109966,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/aqu4_m.png",
       "nameKey": "aqu4_m"
     },
@@ -108560,6 +109980,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/aqu5_f.png",
       "nameKey": "aqu5_f"
     },
@@ -108569,6 +109994,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/aqu5_m.png",
       "nameKey": "aqu5_m"
     },
@@ -108578,6 +110008,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/aqu6_m.png",
       "nameKey": "aqu6_m"
     },
@@ -108587,6 +110022,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/aqu6_f.png",
       "nameKey": "aqu6_f"
     },
@@ -108596,6 +110036,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/aqu7.png",
       "nameKey": "aqu7"
     },
@@ -108605,6 +110050,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/aqu8.png",
       "nameKey": "aqu8"
     },
@@ -108614,6 +110064,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 12,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/aqu9.png",
       "nameKey": "aqu9"
     },
@@ -108623,6 +110078,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/aqu10.png",
       "nameKey": "aqu10"
     },
@@ -108632,6 +110092,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 6,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/aqu11.png",
       "nameKey": "aqu11"
     },
@@ -108641,6 +110106,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/aqu12.png",
       "nameKey": "aqu12"
     },
@@ -108650,6 +110120,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/aqu13_f.png",
       "nameKey": "aqu13_f"
     },
@@ -108659,6 +110134,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/aqu13_m.png",
       "nameKey": "aqu13_m"
     },
@@ -108668,6 +110148,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/aqu14.png",
       "nameKey": "aqu14"
     },
@@ -108677,6 +110162,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/aqu15_f.png",
       "nameKey": "aqu15_f"
     },
@@ -108686,6 +110176,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/aqu15_m.png",
       "nameKey": "aqu15_m"
     },
@@ -108695,6 +110190,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/aqu_machine.png",
       "nameKey": "aqu_machine"
     },
@@ -108704,6 +110204,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/salvager01.png",
       "nameKey": "salvager01"
     },
@@ -108713,6 +110218,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/salvager02.png",
       "nameKey": "salvager02"
     },
@@ -108722,6 +110232,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/salvager03.png",
       "nameKey": "salvager03"
     },
@@ -108731,6 +110246,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/shroudwalker01.png",
       "nameKey": "shroudwalker01"
     },
@@ -108740,6 +110260,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/shroudwalker02.png",
       "nameKey": "shroudwalker02"
     },
@@ -108749,6 +110274,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/shroudwalker03.png",
       "nameKey": "shroudwalker03"
     },
@@ -108758,6 +110288,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 8,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/tox1.png",
       "nameKey": "tox1"
     },
@@ -108767,6 +110302,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/tox2.png",
       "attachmentLabelKey": "MASK",
       "nameKey": "tox2"
@@ -108777,6 +110317,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/tox3.png",
       "nameKey": "tox3"
     },
@@ -108786,6 +110331,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 18,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/tox4.png",
       "nameKey": "tox4"
     },
@@ -108795,6 +110345,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/tox5_f.png",
       "nameKey": "tox5_f"
     },
@@ -108804,6 +110359,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/tox5_m.png",
       "nameKey": "tox5_m"
     },
@@ -108813,6 +110373,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 7,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/tox6.png",
       "nameKey": "tox6"
     },
@@ -108822,6 +110387,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/tox7_f.png",
       "nameKey": "tox7_f"
     },
@@ -108831,6 +110401,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/tox7_m.png",
       "nameKey": "tox7_m"
     },
@@ -108840,6 +110415,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/tox7_i.png",
       "nameKey": "tox7_i"
     },
@@ -108849,6 +110429,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/tox8.png",
       "attachmentLabelKey": "MASK",
       "nameKey": "tox8"
@@ -108859,6 +110444,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 6,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/tox9_f.png",
       "nameKey": "tox9_f"
     },
@@ -108868,6 +110458,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 6,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/tox9_m.png",
       "nameKey": "tox9_m"
     },
@@ -108877,6 +110472,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/tox10.png",
       "nameKey": "tox10"
     },
@@ -108886,6 +110486,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/tox11.png",
       "attachmentLabelKey": "MASK",
       "nameKey": "tox11"
@@ -108896,6 +110501,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/tox12_f.png",
       "nameKey": "tox12_f"
     },
@@ -108905,6 +110515,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/tox12_m.png",
       "nameKey": "tox12_m"
     },
@@ -108914,6 +110529,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/tox13.png",
       "nameKey": "tox13"
     },
@@ -108923,6 +110543,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/tox14.png",
       "nameKey": "tox14"
     },
@@ -108932,6 +110557,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/tox15.png",
       "nameKey": "tox15"
     },
@@ -108941,6 +110571,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/tox_machine.png",
       "nameKey": "tox_machine"
     },
@@ -108950,6 +110585,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/par_renown_01.png",
       "nameKey": "par_renown_01"
     },
@@ -108959,6 +110599,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/par_renown_02.png",
       "nameKey": "par_renown_02"
     },
@@ -108968,6 +110613,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/par_renown_03.png",
       "nameKey": "par_renown_03"
     },
@@ -108977,6 +110627,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/par_renown_04.png",
       "nameKey": "par_renown_04"
     },
@@ -108986,6 +110641,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/par_renown_05.png",
       "nameKey": "par_renown_05"
     },
@@ -108995,6 +110655,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/par_renown_06.png",
       "nameKey": "par_renown_06"
     },
@@ -109004,6 +110669,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/par_renown_07.png",
       "nameKey": "par_renown_07"
     },
@@ -109013,6 +110683,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/par_renown_08.png",
       "nameKey": "par_renown_08"
     },
@@ -109022,6 +110697,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/par_renown_09.png",
       "nameKey": "par_renown_09"
     },
@@ -109031,6 +110711,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/par_renown_10.png",
       "nameKey": "par_renown_10"
     },
@@ -109040,6 +110725,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/par_renown_11.png",
       "nameKey": "par_renown_11"
     },
@@ -109049,6 +110739,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/par_renown_12.png",
       "nameKey": "par_renown_12"
     },
@@ -109058,6 +110753,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/par_renown_13.png",
       "nameKey": "par_renown_13"
     },
@@ -109067,6 +110767,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/par_renown_14.png",
       "nameKey": "par_renown_14"
     },
@@ -109076,6 +110781,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/par_renown_15.png",
       "nameKey": "par_renown_15"
     },
@@ -109085,6 +110795,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/par_renown_16.png",
       "nameKey": "par_renown_16"
     },
@@ -109094,6 +110809,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/councilor_gestalt_growth_1.png",
       "nameKey": "councilor_gestalt_growth_1"
     },
@@ -109103,6 +110823,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/councilor_gestalt_growth_2.png",
       "nameKey": "councilor_gestalt_growth_2"
     },
@@ -109112,6 +110837,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/councilor_gestalt_growth_3.png",
       "nameKey": "councilor_gestalt_growth_3"
     },
@@ -109121,6 +110851,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/councilor_gestalt_cognitive_1.png",
       "nameKey": "councilor_gestalt_cognitive_1"
     },
@@ -109130,6 +110865,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/councilor_gestalt_cognitive_2.png",
       "nameKey": "councilor_gestalt_cognitive_2"
     },
@@ -109139,6 +110879,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/councilor_gestalt_cognitive_3.png",
       "nameKey": "councilor_gestalt_cognitive_3"
     },
@@ -109148,6 +110893,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/councilor_gestalt_legion_1.png",
       "nameKey": "councilor_gestalt_legion_1"
     },
@@ -109157,6 +110907,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/councilor_gestalt_legion_2.png",
       "nameKey": "councilor_gestalt_legion_2"
     },
@@ -109166,6 +110921,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/councilor_gestalt_legion_3.png",
       "nameKey": "councilor_gestalt_legion_3"
     },
@@ -109175,6 +110935,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/councilor_gestalt_regulatory_1.png",
       "nameKey": "councilor_gestalt_regulatory_1"
     },
@@ -109184,6 +110949,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/councilor_gestalt_regulatory_2.png",
       "nameKey": "councilor_gestalt_regulatory_2"
     },
@@ -109193,6 +110963,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/councilor_gestalt_regulatory_3.png",
       "nameKey": "councilor_gestalt_regulatory_3"
     },
@@ -109202,6 +110977,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/cpl_05.png",
       "nameKey": "cpl_05"
     },
@@ -109211,6 +110991,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/paragon01.png",
       "nameKey": "paragon01"
     },
@@ -109220,6 +111005,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/paragon02.png",
       "nameKey": "paragon02"
     },
@@ -109229,6 +111019,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/paragon03.png",
       "nameKey": "paragon03"
     },
@@ -109238,6 +111033,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/paragon_azaryn_3_buds.png",
       "nameKey": "paragon_azaryn_3_buds"
     },
@@ -109247,6 +111047,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/paragon_azaryn_2_buds.png",
       "nameKey": "paragon_azaryn_2_buds"
     },
@@ -109256,6 +111061,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/paragon_azaryn_1_bud.png",
       "nameKey": "paragon_azaryn_1_bud"
     },
@@ -109265,6 +111075,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/paragon_azaryn_no_buds.png",
       "nameKey": "paragon_azaryn_no_buds"
     },
@@ -109274,6 +111089,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/paragon_exakeides_artifact_1.png",
       "nameKey": "paragon_exakeides_artifact_1"
     },
@@ -109283,6 +111103,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/paragon_exakeides_artifact_2.png",
       "nameKey": "paragon_exakeides_artifact_2"
     },
@@ -109292,6 +111117,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/paragon_exakeides_artifact_3.png",
       "nameKey": "paragon_exakeides_artifact_3"
     },
@@ -109301,6 +111131,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/paragon_exakeides_artifact_4.png",
       "nameKey": "paragon_exakeides_artifact_4"
     },
@@ -109310,6 +111145,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/paragon_exakeides_artifact_5.png",
       "nameKey": "paragon_exakeides_artifact_5"
     },
@@ -109319,6 +111159,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/msi_slaver1_male.png",
       "nameKey": "msi_slaver1_male"
     },
@@ -109328,6 +111173,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/msi_slaver1_female.png",
       "nameKey": "msi_slaver1_female"
     },
@@ -109337,6 +111187,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/cpl_01.png",
       "nameKey": "cpl_01"
     },
@@ -109346,6 +111201,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/cpl_02_01.png",
       "nameKey": "cpl_02_01"
     },
@@ -109355,6 +111215,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/cpl_02_02.png",
       "nameKey": "cpl_02_02"
     },
@@ -109364,6 +111229,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/cpl_03.png",
       "nameKey": "cpl_03"
     },
@@ -109373,6 +111243,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/cpl_04.png",
       "nameKey": "cpl_04"
     },
@@ -109382,6 +111257,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/synth_queen.png",
       "nameKey": "synth_queen"
     },
@@ -109391,6 +111271,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/cetana_mammalian.png",
       "nameKey": "cetana_mammalian"
     },
@@ -109400,6 +111285,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/cetana_reptilian.png",
       "nameKey": "cetana_reptilian"
     },
@@ -109409,6 +111299,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/cetana_aquatic.png",
       "nameKey": "cetana_aquatic"
     },
@@ -109418,6 +111313,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/cetana_lithoid.png",
       "nameKey": "cetana_lithoid"
     },
@@ -109427,6 +111327,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/cetana_plantoid.png",
       "nameKey": "cetana_plantoid"
     },
@@ -109436,6 +111341,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/cetana_molluscoid.png",
       "nameKey": "cetana_molluscoid"
     },
@@ -109445,6 +111355,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/cetana_avian.png",
       "nameKey": "cetana_avian"
     },
@@ -109454,6 +111369,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/cetana_empty.png",
       "nameKey": "cetana_empty"
     },
@@ -109463,6 +111383,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/cetana_robot.png",
       "nameKey": "cetana_robot"
     },
@@ -109472,6 +111397,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/cyb1.png",
       "nameKey": "cyb1"
     },
@@ -109481,6 +111410,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/cyb2_m.png",
       "nameKey": "cyb2_m"
     },
@@ -109490,6 +111423,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/cyb2_f.png",
       "nameKey": "cyb2_f"
     },
@@ -109499,6 +111436,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/cyb3_m.png",
       "nameKey": "cyb3_m"
     },
@@ -109508,6 +111449,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/cyb3_f.png",
       "nameKey": "cyb3_f"
     },
@@ -109517,6 +111462,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/cyb4.png",
       "nameKey": "cyb4"
     },
@@ -109526,6 +111475,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/cyb5.png",
       "nameKey": "cyb5"
     },
@@ -109535,6 +111488,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/cyb6.png",
       "nameKey": "cyb6"
     },
@@ -109544,6 +111501,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/cyb7.png",
       "nameKey": "cyb7"
     },
@@ -109553,6 +111514,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/cyb8_m.png",
       "nameKey": "cyb8_m"
     },
@@ -109562,6 +111527,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/cyb8_f.png",
       "nameKey": "cyb8_f"
     },
@@ -109571,6 +111540,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 8,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/cyb9.png",
       "nameKey": "cyb9"
     },
@@ -109580,6 +111553,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 8,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/cyb10.png",
       "nameKey": "cyb10"
     },
@@ -109589,6 +111566,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/cyb11.png",
       "nameKey": "cyb11"
     },
@@ -109598,6 +111579,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/cyb12_m_01.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "cyb12_m_01"
@@ -109608,6 +111593,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/cyb12_m_02.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "cyb12_m_02"
@@ -109618,6 +111607,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/cyb12_m_03.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "cyb12_m_03"
@@ -109628,6 +111621,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/cyb12_f_01.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "cyb12_f_01"
@@ -109638,6 +111635,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/cyb12_f_02.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "cyb12_f_02"
@@ -109648,6 +111649,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/cyb12_f_03.png",
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "cyb12_f_03"
@@ -109658,6 +111663,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/cyb13.png",
       "nameKey": "cyb13"
     },
@@ -109667,6 +111676,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 7,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/cyb_machine.png",
       "nameKey": "cyb_machine"
     },
@@ -109676,6 +111690,9 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        ""
+      ],
       "thumbnail": "portraits/synth01.png",
       "nameKey": "synth01"
     },
@@ -109685,6 +111702,9 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        ""
+      ],
       "thumbnail": "portraits/synth02.png",
       "nameKey": "synth02"
     },
@@ -109694,6 +111714,9 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        ""
+      ],
       "thumbnail": "portraits/synth03.png",
       "nameKey": "synth03"
     },
@@ -109703,6 +111726,9 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        ""
+      ],
       "thumbnail": "portraits/synth04.png",
       "nameKey": "synth04"
     },
@@ -109712,6 +111738,9 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        ""
+      ],
       "thumbnail": "portraits/synth05.png",
       "nameKey": "synth05"
     },
@@ -109721,6 +111750,9 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        ""
+      ],
       "thumbnail": "portraits/synth06_f.png",
       "nameKey": "synth06_f"
     },
@@ -109730,6 +111762,9 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        ""
+      ],
       "thumbnail": "portraits/synth06_m.png",
       "nameKey": "synth06_m"
     },
@@ -109739,6 +111774,9 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        ""
+      ],
       "thumbnail": "portraits/synth07_m.png",
       "nameKey": "synth07_m"
     },
@@ -109748,6 +111786,9 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        ""
+      ],
       "thumbnail": "portraits/synth07_f.png",
       "nameKey": "synth07_f"
     },
@@ -109757,6 +111798,9 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 6,
+      "evolutionStages": [
+        ""
+      ],
       "thumbnail": "portraits/synth08.png",
       "nameKey": "synth08"
     },
@@ -109766,6 +111810,9 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 7,
+      "evolutionStages": [
+        ""
+      ],
       "thumbnail": "portraits/synth09.png",
       "nameKey": "synth09"
     },
@@ -109775,6 +111822,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/synth_machine_01.png",
       "nameKey": "synth_machine_01"
     },
@@ -109784,6 +111836,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/synth_machine_02.png",
       "nameKey": "synth_machine_02"
     },
@@ -109793,6 +111850,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/synth_machine_03.png",
       "nameKey": "synth_machine_03"
     },
@@ -109802,6 +111864,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/synth_machine_04.png",
       "nameKey": "synth_machine_04"
     },
@@ -109811,6 +111878,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/synth_machine_05.png",
       "nameKey": "synth_machine_05"
     },
@@ -109820,6 +111892,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/synth_machine_06.png",
       "nameKey": "synth_machine_06"
     },
@@ -109829,6 +111906,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/synth_machine_07.png",
       "nameKey": "synth_machine_07"
     },
@@ -109838,6 +111920,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/synth_machine_08.png",
       "nameKey": "synth_machine_08"
     },
@@ -109847,6 +111934,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 6,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/synth_machine_09.png",
       "nameKey": "synth_machine_09"
     },
@@ -109856,6 +111948,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/stargazer_01.png",
       "nameKey": "stargazer_01"
     },
@@ -109865,6 +111962,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mammalian_ar_01_f.png",
       "nameKey": "mammalian_ar_01_f"
     },
@@ -109874,6 +111976,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mammalian_ar_01_m.png",
       "nameKey": "mammalian_ar_01_m"
     },
@@ -109883,6 +111990,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mammalian_ar_01_i.png",
       "nameKey": "mammalian_ar_01_i"
     },
@@ -109892,6 +112004,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mammalian_ar_02_f.png",
       "nameKey": "mammalian_ar_02_f"
     },
@@ -109901,6 +112018,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mammalian_ar_02_m.png",
       "nameKey": "mammalian_ar_02_m"
     },
@@ -109910,6 +112032,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mammalian_ar_03_f.png",
       "nameKey": "mammalian_ar_03_f"
     },
@@ -109919,6 +112046,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mammalian_ar_03_m.png",
       "nameKey": "mammalian_ar_03_m"
     },
@@ -109928,6 +112060,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mammalian_ar_04_f.png",
       "nameKey": "mammalian_ar_04_f"
     },
@@ -109937,6 +112074,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mammalian_ar_04_m.png",
       "nameKey": "mammalian_ar_04_m"
     },
@@ -109946,6 +112088,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mammalian_ar_05_f.png",
       "nameKey": "mammalian_ar_05_f"
     },
@@ -109955,6 +112102,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mammalian_ar_05_m.png",
       "nameKey": "mammalian_ar_05_m"
     },
@@ -109964,6 +112116,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mammalian_ar_06_f.png",
       "nameKey": "mammalian_ar_06_f"
     },
@@ -109973,6 +112130,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mammalian_ar_06_m.png",
       "nameKey": "mammalian_ar_06_m"
     },
@@ -109982,6 +112144,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mammalian_ar_07_f.png",
       "nameKey": "mammalian_ar_07_f"
     },
@@ -109991,6 +112158,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mammalian_ar_07_m.png",
       "nameKey": "mammalian_ar_07_m"
     },
@@ -110000,6 +112172,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mammalian_ar_08_f.png",
       "nameKey": "mammalian_ar_08_f"
     },
@@ -110009,6 +112186,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mammalian_ar_08_m.png",
       "nameKey": "mammalian_ar_08_m"
     },
@@ -110018,6 +112200,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mammalian_ar_09_f.png",
       "nameKey": "mammalian_ar_09_f"
     },
@@ -110027,6 +112214,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mammalian_ar_09_m.png",
       "nameKey": "mammalian_ar_09_m"
     },
@@ -110036,6 +112228,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mammalian_ar_10_f.png",
       "nameKey": "mammalian_ar_10_f"
     },
@@ -110045,6 +112242,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mammalian_ar_10_m.png",
       "nameKey": "mammalian_ar_10_m"
     },
@@ -110054,6 +112256,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mammalian_ar_10_i.png",
       "nameKey": "mammalian_ar_10_i"
     },
@@ -110063,6 +112270,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/mindwarden_01.png",
       "nameKey": "mindwarden_01"
     },
@@ -110072,6 +112284,9 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        ""
+      ],
       "thumbnail": "portraits/psionic_01.png",
       "nameKey": "psionic_01"
     },
@@ -110081,6 +112296,9 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        ""
+      ],
       "thumbnail": "portraits/psionic_02.png",
       "nameKey": "psionic_02"
     },
@@ -110090,6 +112308,9 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        ""
+      ],
       "thumbnail": "portraits/psionic_03_male.png",
       "nameKey": "psionic_03_male"
     },
@@ -110099,6 +112320,9 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        ""
+      ],
       "thumbnail": "portraits/psionic_03_female.png",
       "nameKey": "psionic_03_female"
     },
@@ -110108,6 +112332,9 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        ""
+      ],
       "thumbnail": "portraits/psionic_04.png",
       "nameKey": "psionic_04"
     },
@@ -110117,6 +112344,9 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        ""
+      ],
       "thumbnail": "portraits/psionic_05.png",
       "nameKey": "psionic_05"
     },
@@ -110126,6 +112356,9 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        ""
+      ],
       "thumbnail": "portraits/psionic_06.png",
       "nameKey": "psionic_06"
     },
@@ -110135,6 +112368,9 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        ""
+      ],
       "thumbnail": "portraits/psionic_07.png",
       "nameKey": "psionic_07"
     },
@@ -110144,6 +112380,9 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        ""
+      ],
       "thumbnail": "portraits/psionic_08.png",
       "nameKey": "psionic_08"
     },
@@ -110153,6 +112392,9 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        ""
+      ],
       "thumbnail": "portraits/psionic_09.png",
       "nameKey": "psionic_09"
     },
@@ -110162,6 +112404,9 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        ""
+      ],
       "thumbnail": "portraits/psionic_10.png",
       "nameKey": "psionic_10"
     },
@@ -110171,6 +112416,9 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 1,
+      "evolutionStages": [
+        ""
+      ],
       "thumbnail": "portraits/psionic_11.png",
       "nameKey": "psionic_11"
     },
@@ -110180,6 +112428,9 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        ""
+      ],
       "thumbnail": "portraits/psionic_12.png",
       "nameKey": "psionic_12"
     },
@@ -110189,6 +112440,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/pro1_f.png",
       "nameKey": "pro1_f"
     },
@@ -110198,6 +112453,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/pro1_m.png",
       "nameKey": "pro1_m"
     },
@@ -110207,6 +112466,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/pro2.png",
       "nameKey": "pro2"
     },
@@ -110216,6 +112479,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/ant1.png",
       "nameKey": "ant1"
     },
@@ -110225,6 +112492,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/bio4.png",
       "nameKey": "bio4"
     },
@@ -110234,6 +112505,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/bio5.png",
       "nameKey": "bio5"
     },
@@ -110243,6 +112518,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/bio6.png",
       "nameKey": "bio6"
     },
@@ -110252,6 +112531,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/bio7.png",
       "nameKey": "bio7"
     },
@@ -110261,6 +112544,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/bio8_f.png",
       "nameKey": "bio8_f"
     },
@@ -110270,6 +112557,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/bio8_m.png",
       "nameKey": "bio8_m"
     },
@@ -110279,6 +112570,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/bio9.png",
       "nameKey": "bio9"
     },
@@ -110288,6 +112583,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/bio10.png",
       "nameKey": "bio10"
     },
@@ -110297,6 +112596,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/bio11.png",
       "nameKey": "bio11"
     },
@@ -110306,6 +112609,10 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "thumbnail": "portraits/bio12.png",
       "nameKey": "bio12"
     },
@@ -110315,6 +112622,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/inf1.png",
       "nameKey": "inf1"
     },
@@ -110324,6 +112636,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/inf2.png",
       "nameKey": "inf2"
     },
@@ -110333,6 +112650,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/inf3.png",
       "nameKey": "inf3"
     },
@@ -110342,6 +112664,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/inf4.png",
       "nameKey": "inf4"
     },
@@ -110351,6 +112678,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 6,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/inf5.png",
       "nameKey": "inf5"
     },
@@ -110360,6 +112692,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/inf6.png",
       "nameKey": "inf6"
     },
@@ -110369,6 +112706,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/inf7.png",
       "nameKey": "inf7"
     },
@@ -110378,6 +112720,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/inf8.png",
       "nameKey": "inf8"
     },
@@ -110387,6 +112734,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/inf9.png",
       "nameKey": "inf9"
     },
@@ -110396,6 +112748,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/inf10.png",
       "nameKey": "inf10"
     },
@@ -110405,6 +112762,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/season_10_portrait.png",
       "nameKey": "season_10_portrait"
     },
@@ -110414,6 +112776,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/par_renown_17.png",
       "nameKey": "par_renown_17"
     },
@@ -110423,6 +112790,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/par_renown_19.png",
       "nameKey": "par_renown_19"
     },
@@ -110432,6 +112804,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/par_renown_18.png",
       "nameKey": "par_renown_18"
     },
@@ -110441,6 +112818,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/par_renown_20.png",
       "nameKey": "par_renown_20"
     },
@@ -110450,6 +112832,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/par_renown_21.png",
       "nameKey": "par_renown_21"
     },
@@ -110459,6 +112846,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/par_renown_22.png",
       "nameKey": "par_renown_22"
     },
@@ -110468,6 +112860,11 @@
       "phenotypes": {},
       "isGroup": false,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "thumbnail": "portraits/pdx_signup_portrait_01.png",
       "nameKey": "pdx_signup_portrait_01"
     },
@@ -110478,6 +112875,11 @@
       "phenotypes": {},
       "isGroup": true,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "swarm"
     },
     {
@@ -110502,6 +112904,11 @@
       },
       "isGroup": true,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "mam4"
     },
     {
@@ -110526,6 +112933,11 @@
       },
       "isGroup": true,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "mam16"
     },
     {
@@ -110550,6 +112962,11 @@
       },
       "isGroup": true,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "rep3"
     },
     {
@@ -110574,6 +112991,11 @@
       },
       "isGroup": true,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "rep16"
     },
     {
@@ -110598,6 +113020,11 @@
       },
       "isGroup": true,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "avi6"
     },
     {
@@ -110622,6 +113049,11 @@
       },
       "isGroup": true,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "avi7"
     },
     {
@@ -110646,6 +113078,11 @@
       },
       "isGroup": true,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "avi14"
     },
     {
@@ -110686,6 +113123,11 @@
       },
       "isGroup": true,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "human"
     },
@@ -110727,6 +113169,11 @@
       },
       "isGroup": true,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "human_legacy"
     },
@@ -110752,6 +113199,11 @@
       },
       "isGroup": true,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "pla17"
     },
@@ -110777,6 +113229,11 @@
       },
       "isGroup": true,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "humanoid_02"
     },
@@ -110802,6 +113259,11 @@
       },
       "isGroup": true,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "humanoid_03"
     },
     {
@@ -110826,6 +113288,11 @@
       },
       "isGroup": true,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "humanoid_04"
     },
     {
@@ -110850,6 +113317,11 @@
       },
       "isGroup": true,
       "textureCount": 0,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "humanoid_05"
     },
@@ -110875,6 +113347,11 @@
       },
       "isGroup": true,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "humanoid_hp_14"
     },
@@ -110900,6 +113377,11 @@
       },
       "isGroup": true,
       "textureCount": 7,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "humanoid_elf"
     },
     {
@@ -110924,6 +113406,11 @@
       },
       "isGroup": true,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "humanoid_hp_16"
     },
     {
@@ -110948,6 +113435,11 @@
       },
       "isGroup": true,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "lith_human"
     },
@@ -110973,6 +113465,11 @@
       },
       "isGroup": true,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "lith_human_inf"
     },
@@ -110998,6 +113495,11 @@
       },
       "isGroup": true,
       "textureCount": 2,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "aqu1"
     },
     {
@@ -111022,6 +113524,11 @@
       },
       "isGroup": true,
       "textureCount": 2,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "aqu2"
     },
     {
@@ -111046,6 +113553,11 @@
       },
       "isGroup": true,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "aqu4"
     },
     {
@@ -111070,6 +113582,11 @@
       },
       "isGroup": true,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "aqu15"
     },
     {
@@ -111094,6 +113611,11 @@
       },
       "isGroup": true,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "aqu13"
     },
     {
@@ -111118,6 +113640,11 @@
       },
       "isGroup": true,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "aqu5"
     },
     {
@@ -111142,6 +113669,11 @@
       },
       "isGroup": true,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "aqu6"
     },
     {
@@ -111166,6 +113698,11 @@
       },
       "isGroup": true,
       "textureCount": 6,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "tox9"
     },
     {
@@ -111190,6 +113727,11 @@
       },
       "isGroup": true,
       "textureCount": 4,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "tox12"
     },
     {
@@ -111214,6 +113756,11 @@
       },
       "isGroup": true,
       "textureCount": 5,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "tox5"
     },
     {
@@ -111237,6 +113784,11 @@
       },
       "isGroup": true,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "tox7"
     },
     {
@@ -111261,6 +113813,10 @@
       },
       "isGroup": true,
       "textureCount": 3,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "nameKey": "cyb2"
     },
     {
@@ -111285,6 +113841,10 @@
       },
       "isGroup": true,
       "textureCount": 5,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "nameKey": "cyb3"
     },
     {
@@ -111309,6 +113869,10 @@
       },
       "isGroup": true,
       "textureCount": 3,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "nameKey": "cyb8"
     },
     {
@@ -111341,6 +113905,10 @@
       },
       "isGroup": true,
       "textureCount": 1,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "attachmentLabelKey": "HAIR_STYLE",
       "nameKey": "cyb12"
     },
@@ -111366,6 +113934,9 @@
       },
       "isGroup": true,
       "textureCount": 4,
+      "evolutionStages": [
+        ""
+      ],
       "nameKey": "synth06"
     },
     {
@@ -111390,6 +113961,9 @@
       },
       "isGroup": true,
       "textureCount": 5,
+      "evolutionStages": [
+        ""
+      ],
       "nameKey": "synth07"
     },
     {
@@ -111413,6 +113987,11 @@
       },
       "isGroup": true,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "mammalian_ar_01"
     },
     {
@@ -111437,6 +114016,11 @@
       },
       "isGroup": true,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "mammalian_ar_02"
     },
     {
@@ -111461,6 +114045,11 @@
       },
       "isGroup": true,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "mammalian_ar_03"
     },
     {
@@ -111485,6 +114074,11 @@
       },
       "isGroup": true,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "mammalian_ar_04"
     },
     {
@@ -111509,6 +114103,11 @@
       },
       "isGroup": true,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "mammalian_ar_05"
     },
     {
@@ -111533,6 +114132,11 @@
       },
       "isGroup": true,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "mammalian_ar_06"
     },
     {
@@ -111557,6 +114161,11 @@
       },
       "isGroup": true,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "mammalian_ar_07"
     },
     {
@@ -111581,6 +114190,11 @@
       },
       "isGroup": true,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "mammalian_ar_08"
     },
     {
@@ -111605,6 +114219,11 @@
       },
       "isGroup": true,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "mammalian_ar_09"
     },
     {
@@ -111628,6 +114247,11 @@
       },
       "isGroup": true,
       "textureCount": 3,
+      "evolutionStages": [
+        "_stage_1",
+        "_stage_2",
+        "_ascended"
+      ],
       "nameKey": "mammalian_ar_10"
     },
     {
@@ -111652,6 +114276,9 @@
       },
       "isGroup": true,
       "textureCount": 4,
+      "evolutionStages": [
+        ""
+      ],
       "nameKey": "psionic_03"
     },
     {
@@ -111676,6 +114303,10 @@
       },
       "isGroup": true,
       "textureCount": 0,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "nameKey": "pro1"
     },
     {
@@ -111700,6 +114331,10 @@
       },
       "isGroup": true,
       "textureCount": 0,
+      "evolutionStages": [
+        "",
+        ""
+      ],
       "nameKey": "bio8"
     }
   ],

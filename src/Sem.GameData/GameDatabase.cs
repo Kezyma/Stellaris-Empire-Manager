@@ -888,6 +888,21 @@ public sealed record PortraitDefinition(string Key)
     /// <summary>How many skin variants it has, which the design stores as an index.</summary>
     public int TextureCount { get; init; }
 
+    /// <summary>
+    /// The ascended forms this portrait can wear, beyond the one it starts in.
+    /// </summary>
+    /// <remarks>
+    /// Read from the portrait's own <c>portrait_evolution</c> where it has one, and otherwise from
+    /// the single top-level block in <c>00_portraits_main.txt</c>, which is three: the two stages of
+    /// cybernetisation and psionic ascension. Fifty-nine portraits override it — the cybernetic and
+    /// Biogenesis ones with two of their own, the psionic and synthetic ones with one.
+    ///
+    /// Each entry is the asset suffix the stage names — <c>_stage_1</c>, <c>_ascended</c> — or an
+    /// empty string where the stage is written as decal and mask paths instead and has no name to
+    /// take. The count is the part that matters; the names are for saying which is which.
+    /// </remarks>
+    public IReadOnlyList<string> EvolutionStages { get; init; } = [];
+
     /// <summary>Path to the rendered thumbnail within the extracted assets, when one exists.</summary>
     public string? Thumbnail { get; init; }
 
