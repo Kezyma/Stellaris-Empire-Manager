@@ -2281,16 +2281,6 @@ button.icon .sem-action-icon { display: block; }
 
 .sem-combo .toggle:hover { background: var(--bg-hover); color: var(--text); }
 
-/*
-   Hidden whenever the keyboard and the pointer have both left the box.
-
-   This used to be done by closing the list when the input lost focus, which dismissed it the moment
-   anyone tabbed towards the options — so the list could be used with a mouse and by no other means.
-   Asking the stylesheet instead means focus moving onto an option counts as still being in the box,
-   which is exactly the distinction the blur handler could not draw.
-*/
-.sem-combo:not(:focus-within) .options { display: none; }
-
 .sem-combo .options {
     position: absolute;
     top: calc(100% + 2px);

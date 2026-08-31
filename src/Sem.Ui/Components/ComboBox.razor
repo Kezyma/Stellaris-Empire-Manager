@@ -6,18 +6,23 @@
     working. There is no way to turn that off, hence this.
 *@
 
-@*
-    Closing is left to the stylesheet, which hides the list whenever focus is not inside the box.
-    Closing it on the input losing focus, as this did, meant tabbing towards the options dismissed
-    them on the way — so the list was reachable with a mouse and with nothing else. The toggle is
-    tabbable now for the same reason: it was the only way to open the list, and it could not be
-    reached.
+@using Microsoft.JSInterop
+@inject IJSRuntime Js
+@implements IAsyncDisposable
 
-    The toggle also takes focus when it is pressed, where it used to refuse it to keep the input's.
-    That refusal is what the stylesheet cannot live with: pressed with nothing else in the box
-    focused, it would open a list that focus was not inside, and the rule below would hide it again
-    at once. The options still refuse focus, so choosing one leaves it on the toggle — inside the
-    box either way.
+@*
+    Whether the list is drawn is this component's own business, and nothing else's.
+
+    It used to close when the text box lost focus, which meant tabbing towards the options dismissed
+    them on the way: the list could be used with a mouse and by nothing else. Asking the stylesheet
+    to hide it unless focus was inside the box fixed that and broke something worse — a finger does
+    not move focus at all, so on a phone the list was drawn and hidden in the same breath and the
+    box appeared to do nothing.
+
+    So the flag decides, and the three ways of closing it are all things this component can see:
+    Escape, choosing an option, and pressing the arrow again. The fourth — a press somewhere else on
+    the page — is the one it cannot, and sem.js watches for that. The toggle is tabbable because it
+    was the only way to open the list and could not be reached by keyboard at all.
 *@
 <div class="sem-combo @(_open ? "open" : null)" @onkeydown="Dismiss">
     <input type="text"
@@ -58,6 +63,44 @@
 
 @code {
     private bool _open;
+
+    private IJSObjectReference? _module;
+
+    /// <summary>
+    /// Asks for the one document-level listener that closes an open list on a press outside it.
+    /// </summary>
+    /// <remarks>
+    /// Every box asks, and the script installs it once: a page-wide listener is not something a
+    /// single box can own, and which box happens to render first is not worth depending on. Asking
+    /// per box is what keeps it right when the page is reloaded under a host that outlives it.
+    /// </remarks>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        _module = await Js.InvokeAsync<IJSObjectReference>("import", "./_content/Sem.Ui/sem.js");
+        await _module.InvokeVoidAsync("closeListsOnOutsidePress");
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_module is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await _module.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+            // The page went away first; there is nothing left to release.
+        }
+    }
 
     /// <summary>Escape closes the list, wherever inside the box the keyboard happens to be.</summary>
     private void Dismiss(KeyboardEventArgs e)

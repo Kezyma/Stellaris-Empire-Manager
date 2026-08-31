@@ -77,6 +77,41 @@ export function revealSelected(list, selector) {
 }
 
 /**
+ * Closes an open suggestion list when the next press lands outside it.
+ *
+ * The list itself is drawn or not drawn by the component, on a flag the component owns. What this
+ * adds is the one way of closing it that the component cannot see: a press somewhere else on the
+ * page. Escape, choosing an option and pressing the arrow again are all its own business.
+ *
+ * This was a blur handler on the text box, which had to go: focus moving from the box onto one of
+ * the options is not the box being left, and closing on it made the list reachable by mouse and by
+ * nothing else. A press is the right thing to watch instead, because it is the same event whether
+ * it came from a mouse or a finger — where focus, on a phone, never moves at all.
+ *
+ * Rather than call back into managed code, this presses the list's own arrow, which is the button
+ * that closes it. One listener serves every list on the page, and there is no per-list state to
+ * keep in step.
+ */
+let watchingForOutsidePress = false;
+
+export function closeListsOnOutsidePress() {
+    if (watchingForOutsidePress) {
+        return;
+    }
+
+    watchingForOutsidePress = true;
+
+    // Captured, so a press is seen before anything inside the page can stop it travelling.
+    document.addEventListener('pointerdown', event => {
+        for (const combo of document.querySelectorAll('.sem-combo.open')) {
+            if (!combo.contains(event.target)) {
+                combo.querySelector('button.toggle')?.click();
+            }
+        }
+    }, true);
+}
+
+/**
  * Ties a panel to the thing it describes, and opens it on hover, on focus or on a tap.
  *
  * The panel is a popover, which is to say the browser draws it in the top layer where no ancestor
