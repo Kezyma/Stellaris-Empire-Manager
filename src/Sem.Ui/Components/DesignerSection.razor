@@ -6,9 +6,9 @@
     empire — which is the thing worth seeing first.
 *@
 
-<section class="sem-section @(_open ? "open" : "closed")">
-    <button type="button" class="head" @onclick="() => _open = !_open">
-        <span class="chevron">@(_open ? "▾" : "▸")</span>
+<section class="sem-section @(IsOpen ? "open" : "closed")">
+    <button type="button" class="head" aria-expanded="@IsOpen" @onclick="Toggle">
+        <span class="chevron">@(IsOpen ? "▾" : "▸")</span>
         <span class="title">@Title</span>
 
         @if (Summary is { Length: > 0 })
@@ -22,7 +22,7 @@
         }
     </button>
 
-    @if (_open)
+    @if (IsOpen)
     {
         <div class="body">
             @ChildContent
@@ -31,7 +31,8 @@
 </section>
 
 @code {
-    private bool _open = true;
+    /// <summary>Whether this one is open when nobody is coordinating them.</summary>
+    private bool _open;
 
     /// <summary>The section's name.</summary>
     [Parameter, EditorRequired]
@@ -49,8 +50,38 @@
     [Parameter]
     public bool StartOpen { get; set; }
 
+    /// <summary>
+    /// Which section the page has open, where a page is keeping them to one at a time.
+    /// </summary>
+    /// <remarks>
+    /// Given, this section is open when the name matches and the page decides what happens on a
+    /// click; the section keeps no opinion of its own. Eleven sections open at once is a page of
+    /// several thousand pixels to scroll past whatever was actually being edited.
+    /// </remarks>
+    [Parameter]
+    public string? OpenSection { get; set; }
+
+    /// <summary>Called with this section's title when its head is clicked.</summary>
+    [Parameter]
+    public EventCallback<string> OnToggle { get; set; }
+
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
+
+    private bool Coordinated => OnToggle.HasDelegate;
+
+    private bool IsOpen => Coordinated ? OpenSection == Title : _open;
+
+    private Task Toggle()
+    {
+        if (Coordinated)
+        {
+            return OnToggle.InvokeAsync(Title);
+        }
+
+        _open = !_open;
+        return Task.CompletedTask;
+    }
 
     protected override void OnInitialized() => _open = StartOpen;
 }

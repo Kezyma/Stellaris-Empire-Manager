@@ -65,6 +65,17 @@
     --gap: var(--space-lg);
 
     /*
+       How tall the header is, and therefore how far down the page anything sticky has to stop.
+
+       The header sticks at the very top, so a panel sticking at --gap stuck underneath it and spent
+       the whole scroll half-covered by the brand. Stated here and used by both the header and the
+       things that clear it, so the two cannot drift; the header takes this as its height rather than
+       growing to its contents, which is what let them drift in the first place.
+    */
+    --header-height: 64px;
+    --sticky-top: calc(var(--header-height) + var(--gap));
+
+    /*
        Two more surfaces that are not steps in the elevation ladder. --bg-void is below the page
        rather than on it: the empty space behind a portrait or a room, where the game shows nothing
        at all. --shadow-popup lifts a menu off whatever it covers.
@@ -189,7 +200,8 @@ code {
     display: flex;
     align-items: center;
     gap: var(--gap);
-    padding: var(--space-lg) var(--space-xl);
+    height: var(--header-height);
+    padding: 0 var(--space-xl);
     background: var(--bg-panel);
     border-bottom: 1px solid var(--border);
     position: sticky;
@@ -1478,11 +1490,12 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 
 .sem-summary-pane {
     position: sticky;
-    top: var(--gap);
+    top: var(--sticky-top);
     display: flex;
     flex-direction: column;
     gap: var(--gap);
-    max-height: calc(100vh - 2 * var(--gap));
+    /* What is left of the window once the header and the gap either side are taken. */
+    max-height: calc(100vh - var(--sticky-top) - var(--gap));
     overflow-y: auto;
 }
 
@@ -2399,7 +2412,7 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     .sem-select > .preview {
         grid-column: 2;
         position: sticky;
-        top: var(--gap);
+        top: var(--sticky-top);
     }
 
     .sem-select > .lists { grid-column: 1; grid-row: 1; }

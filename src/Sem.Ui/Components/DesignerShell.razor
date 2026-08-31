@@ -19,12 +19,12 @@
     {
         <div class="sem-designer">
             <div class="sem-sections">
-                <DesignerSection Title="Empire"
+                <DesignerSection OpenSection="@_open" OnToggle="Open" Title="Empire"
                                  Summary="@Session.Localizer.Name(Session.Current.Name, Session.Current.Key)">
                     <EmpireSection />
                 </DesignerSection>
 
-                <DesignerSection Title="Species"
+                <DesignerSection OpenSection="@_open" OnToggle="Open" Title="Species"
                                  Summary="@SpeciesSummary"
                                  Problems="@Problems(ValidationArea.Species, ValidationArea.Traits)">
                     <SpeciesTab Species="@Session.Current.Species" />
@@ -37,7 +37,7 @@
                 *@
                 @if (Session.Current.SecondarySpecies is { } secondary)
                 {
-                    <DesignerSection Title="Second species"
+                    <DesignerSection OpenSection="@_open" OnToggle="Open" Title="Second species"
                                      Summary="@Session.Localizer.Name(secondary.Name)"
                                      Problems="@Problems(ValidationArea.SecondarySpecies)">
                         <SpeciesTab Species="@secondary" />
@@ -50,25 +50,25 @@
                     and the government it ends up called is derived from all three at once — so
                     splitting them across two sections meant scrolling between halves of one choice.
                 *@
-                <DesignerSection Title="Government"
+                <DesignerSection OpenSection="@_open" OnToggle="Open" Title="Government"
                                  Summary="@GovernmentSummary"
                                  Problems="@Problems(ValidationArea.Ethics, ValidationArea.Authority, ValidationArea.Civics)">
                     <GovernmentTab />
                 </DesignerSection>
 
-                <DesignerSection Title="Origin"
+                <DesignerSection OpenSection="@_open" OnToggle="Open" Title="Origin"
                                  Summary="@Name(Session.Current.Origin)"
                                  Problems="@Problems(ValidationArea.Origin)">
                     <OriginTab />
                 </DesignerSection>
 
-                <DesignerSection Title="Homeworld"
+                <DesignerSection OpenSection="@_open" OnToggle="Open" Title="Homeworld"
                                  Summary="@Name(Session.Current.PlanetClass)"
                                  Problems="@Problems(ValidationArea.Homeworld)">
                     <HomeworldTab />
                 </DesignerSection>
 
-                <DesignerSection Title="Ruler"
+                <DesignerSection OpenSection="@_open" OnToggle="Open" Title="Ruler"
                                  Summary="@RulerSummary"
                                  Problems="@Problems(ValidationArea.Ruler)">
                     <RulerTab />
@@ -80,19 +80,19 @@
                     four tabs of its own editor for the same reason. The city sits under Room because
                     the two are one picture, which is how the game has it too.
                 *@
-                <DesignerSection Title="Flag" Summary="@FlagSummary">
+                <DesignerSection OpenSection="@_open" OnToggle="Open" Title="Flag" Summary="@FlagSummary">
                     <FlagTab />
                 </DesignerSection>
 
-                <DesignerSection Title="Room" Summary="@RoomSummary">
+                <DesignerSection OpenSection="@_open" OnToggle="Open" Title="Room" Summary="@RoomSummary">
                     <RoomTab />
                 </DesignerSection>
 
-                <DesignerSection Title="Shipset" Summary="@ShipsetSummary">
+                <DesignerSection OpenSection="@_open" OnToggle="Open" Title="Shipset" Summary="@ShipsetSummary">
                     <ShipsetTab />
                 </DesignerSection>
 
-                <DesignerSection Title="Advisor Voice" Summary="@AdvisorSummary">
+                <DesignerSection OpenSection="@_open" OnToggle="Open" Title="Advisor Voice" Summary="@AdvisorSummary">
                     <AdvisorTab />
                 </DesignerSection>
             </div>
@@ -107,6 +107,20 @@
 @code {
     [Parameter, EditorRequired]
     public required DesignSession Session { get; set; }
+
+    /// <summary>
+    /// Which section is open, since only one is.
+    /// </summary>
+    /// <remarks>
+    /// Eleven of them open at once is several thousand pixels of page, and reaching one meant
+    /// scrolling past every choice made before it. Held here rather than in each section because
+    /// "only one" is a fact about the set, and a set of things that each decided for themselves
+    /// could not enforce it.
+    /// </remarks>
+    private string? _open;
+
+    /// <summary>Opens a section, closing whichever was open; clicking the open one closes it.</summary>
+    private void Open(string title) => _open = _open == title ? null : title;
 
     protected override void OnInitialized() => Session.Changed += OnChanged;
 

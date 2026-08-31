@@ -15,60 +15,63 @@
         <div class="sem-name-row">
             <div class="sem-field">
                 <label for="ruler-name">@Session.Localizer.Label("LEADER_NAME", "Leader Name")</label>
-                <ComboBox Id="ruler-name" Value="@RulerName" Options="@LeaderNames" OnChange="SetName" />
+                <div class="sem-row nowrap">
+                    <ComboBox Id="ruler-name" Value="@RulerName" Options="@LeaderNames" OnChange="SetName" />
+                    <RandomiseButton Title="A name from the empire's name list" OnClick="RandomiseName" />
+                </div>
             </div>
+        </div>
 
+        @*
+            All four titles, side by side, which is how the game's editor has them: a ruler's title
+            and an heir's, each in a male and a female form.
+
+            Three of them had been folded into a details element on the grounds that most players
+            fill in only the first. That hid two facts. Four of the player's own empires carry a
+            female ruler title, which they could not see without knowing to look; and an heir title
+            is not merely rare but meaningless under an elected government, which a fold cannot say.
+            Shown and disabled says it: the box is there, it is visibly not available, and whatever
+            a design already holds is kept and written back untouched.
+        *@
+        <div class="sem-name-row">
             <div class="sem-field">
-                <label for="ruler-title">@Session.Localizer.Label("RULER_TITLE", "Title")</label>
+                <label for="ruler-title">
+                    @Session.Localizer.Heading("RULER_TITLE", "Ruler Title")
+                    (@Session.Localizer.Heading("RULER_TITLE_MALE", "Male"))
+                </label>
                 <ComboBox Id="ruler-title" Value="@RulerTitle" Options="@Titles"
                           Placeholder="@DefaultTitle" OnChange="SetTitle" />
             </div>
 
             <div class="sem-field">
-                <label>&nbsp;</label>
-                <RandomiseButton Title="A name from the empire's name list" OnClick="RandomiseName" />
+                <label for="ruler-title-female">
+                    @Session.Localizer.Heading("RULER_TITLE", "Ruler Title")
+                    (@Session.Localizer.Heading("RULER_TITLE_FEMALE", "Female"))
+                </label>
+                <ComboBox Id="ruler-title-female" Value="@Read(Design.Ruler.TitleFemale)" Options="@Titles"
+                          OnChange="SetTitleFemale" />
+            </div>
+
+            <div class="sem-field">
+                <label for="heir-title">
+                    @Session.Localizer.Heading("HEIR_TITLE", "Heir Title")
+                    (@Session.Localizer.Heading("HEIR_TITLE_MALE", "Male"))
+                </label>
+                <ComboBox Id="heir-title" Value="@Read(Design.Ruler.HeirTitle)" Options="@Titles"
+                          Disabled="@(!HasHeir)" Placeholder="@HeirPlaceholder"
+                          OnChange="SetHeirTitle" />
+            </div>
+
+            <div class="sem-field">
+                <label for="heir-title-female">
+                    @Session.Localizer.Heading("HEIR_TITLE", "Heir Title")
+                    (@Session.Localizer.Heading("HEIR_TITLE_FEMALE", "Female"))
+                </label>
+                <ComboBox Id="heir-title-female" Value="@Read(Design.Ruler.HeirTitleFemale)" Options="@Titles"
+                          Disabled="@(!HasHeir)" Placeholder="@HeirPlaceholder"
+                          OnChange="SetHeirTitleFemale" />
             </div>
         </div>
-
-        @*
-            The other three titles, folded away. The game's editor keeps four boxes side by side — a
-            ruler's title and an heir's, each in a male and a female form — but only the first is
-            ever filled in by most players, and an heir title means nothing at all unless the
-            government has heirs. Rare enough to fold, real enough to offer: four of the player's own
-            empires carry a female ruler title they previously had no way to see.
-        *@
-        <details class="sem-bio">
-            <summary>@Session.Localizer.Heading("RULER_TITLE", "Title") &amp; @Session.Localizer.Heading("HEIR_TITLE", "Heir Title")</summary>
-
-            <div class="sem-name-row">
-                <div class="sem-field">
-                    <label for="ruler-title-female">
-                        @Session.Localizer.Heading("RULER_TITLE", "Ruler Title")
-                        (@Session.Localizer.Heading("RULER_TITLE_FEMALE", "Female"))
-                    </label>
-                    <ComboBox Id="ruler-title-female" Value="@Read(Design.Ruler.TitleFemale)" Options="@Titles"
-                              OnChange="SetTitleFemale" />
-                </div>
-
-                <div class="sem-field">
-                    <label for="heir-title">
-                        @Session.Localizer.Heading("HEIR_TITLE", "Heir Title")
-                        (@Session.Localizer.Heading("HEIR_TITLE_MALE", "Male"))
-                    </label>
-                    <ComboBox Id="heir-title" Value="@Read(Design.Ruler.HeirTitle)" Options="@Titles"
-                              OnChange="SetHeirTitle" />
-                </div>
-
-                <div class="sem-field">
-                    <label for="heir-title-female">
-                        @Session.Localizer.Heading("HEIR_TITLE", "Heir Title")
-                        (@Session.Localizer.Heading("HEIR_TITLE_FEMALE", "Female"))
-                    </label>
-                    <ComboBox Id="heir-title-female" Value="@Read(Design.Ruler.HeirTitleFemale)" Options="@Titles"
-                              OnChange="SetHeirTitleFemale" />
-                </div>
-            </div>
-        </details>
 
         @*
             Gender and class as icons on one row. The class decides nothing else in the designer, but
@@ -148,6 +151,19 @@
     private string RulerName => Session.Localizer.RulerName(Design.Ruler);
 
     private string RulerTitle => Session.Localizer.Name(Design.Ruler.Title);
+
+    /// <summary>
+    /// Whether this empire's government passes power to an heir rather than electing it.
+    /// </summary>
+    /// <remarks>
+    /// The authority says so — the game writes <c>has_heir</c> on each, and it is the difference
+    /// between a hereditary system and an election. Where there is no heir the two heir titles are
+    /// shown and disabled: a design may already carry them, and that is kept.
+    /// </remarks>
+    private bool HasHeir => Session.Data.Database.Authorities
+        .FirstOrDefault(a => a.Key == Design.Authority)?.HasHeir ?? false;
+
+    private string? HeirPlaceholder => HasHeir ? null : "This government elects its rulers";
 
     /// <summary>
     /// The names the empire's own list offers.

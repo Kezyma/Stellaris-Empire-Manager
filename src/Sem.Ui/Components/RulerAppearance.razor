@@ -3,12 +3,13 @@
 @*
     The ruler's likeness, and the four things about it a design can hold.
 
-    The game's leader editor offers six spinners. Five are here. Phenotype picks which likeness of
-    the portrait's group is worn; the rest are numbers into lists the portrait offers.
+    The game's leader editor offers six spinners and four of them are here. Phenotype picks which
+    likeness of the portrait's group is worn; the rest are numbers into lists the portrait offers.
 
-    The sixth, Evolution Variant, is not a value of its own. Every tied texture in the three files
-    that use them names exactly one variant, in file order, so the variant index is the texture
-    index — and that is what the colour control already writes.
+    Of the two that are not: Evolution Variant is not a value of its own — every tied texture in the
+    three files that use them names exactly one variant, in file order, so the variant index is the
+    texture index, which the colour control already writes. Evolution Stage is not stored at all; the
+    note where its control would be says how that was established.
 *@
 
 <div class="sem-appearance">
@@ -79,22 +80,23 @@
         }
 
         @*
-            The ascended form the ruler wears, which is the last of the game's six spinners we can
-            offer. Its neighbour, Evolution Variant, is not a separate value: in all three files that
-            use tied textures each one names exactly one variant, in order, so the variant index is
-            the texture index — which the colour control above already writes.
+            No evolution stage control, and the reason is worth writing down so nobody adds one back.
 
-            The picture does not change with this. The game dresses an ascended portrait in a decal
-            and a mask this app does not composite, so the stepper says which form is stored and the
-            figure stays as it was.
+            The game's editor has the spinner, but it does not persist: setting it and saving leaves
+            evolution_mask at zero, which is what all sixty-eight designs to hand hold — the fifty-two
+            the game ships, and sixteen of the player's own including one deliberately set to stage
+            three. Nothing under common/ reads the field either.
+
+            What the spinner does is preview. Each stage in a portrait_evolution block carries a
+            trigger — has_cybernetization_stage_1, has_become_psionic, has_biogenesis_evolution_stage_1
+            — and the game evaluates those against the leader at the time of drawing. The form is
+            derived, never stored, so there is nothing here for a design to record.
+
+            The extraction and the blending stay: the ascended skins are baked and PortraitFigure
+            draws whichever one it is handed, so a preview control is a small thing to add the day
+            it is wanted. What is gone is writing a number into the player's file that the game will
+            never write and never read.
         *@
-        @if (Stages.Count > 0)
-        {
-            <Stepper Label="@Session.Localizer.Label("EVOLUTION_STAGE", "Evolution Stage")"
-                     Value="@(Design.Ruler.EvolutionMask ?? 0)" Count="@(Stages.Count + 1)"
-                     Caption="@StageName"
-                     OnChange="value => Session.Edit(d => d.Ruler.EvolutionMask = value)" />
-        }
     </div>
 </div>
 
@@ -188,58 +190,13 @@
     }
 
     /// <summary>
-    /// The ascended forms this portrait can wear, which decide how far the stepper counts.
+    /// The skin an ascended form wears, where the design holds a stage and the portrait has artwork.
     /// </summary>
     /// <remarks>
-    /// From the face actually worn rather than the group a design may name, since it is the face
-    /// whose artwork has the stages. Most portraits take the directory's default of three — the two
-    /// stages of cybernetisation and psionic ascension — and fifty-nine name fewer of their own.
-    /// </remarks>
-    private IReadOnlyList<string> Stages =>
-        Session.Data.Database.Portraits.FirstOrDefault(p => p.Key == Likeness)?.EvolutionStages
-        ?? Portrait?.EvolutionStages
-        ?? [];
-
-    /// <summary>
-    /// What to call the stage now stored.
-    /// </summary>
-    /// <remarks>
-    /// Zero is the form the ruler starts in, which every design to hand holds. Above that a stage
-    /// takes the name of the asset suffix that dresses it where it has one — <c>_ascended</c> — and
-    /// its number where the stage is written as decal paths instead. A design holding a stage this
-    /// portrait does not have keeps the number rather than being silently corrected: it came from
-    /// the file and goes back to it.
-    ///
-    /// Where the portrait has no artwork for the stage the name says so, because otherwise the
-    /// stepper moves and the figure does not, which reads as a fault rather than as the truth. Most
-    /// portraits are in that case: the game does not paint implants onto a mammalian face, it swaps
-    /// the whole portrait for a cybernetic one, and that is a thing that happens in play.
-    /// </remarks>
-    private string StageName
-    {
-        get
-        {
-            var stage = Design.Ruler.EvolutionMask ?? 0;
-
-            if (stage <= 0)
-            {
-                return "None";
-            }
-
-            var named = stage <= Stages.Count && Stages[stage - 1] is { Length: > 0 } suffix
-                ? Localizer.Prettify(suffix.TrimStart('_'))
-                : $"Stage {stage}";
-
-            return AscendedSkin is null ? $"{named} — not drawn for this portrait" : named;
-        }
-    }
-
-    /// <summary>
-    /// The skin the chosen stage wears, where this portrait has one drawn for it.
-    /// </summary>
-    /// <remarks>
-    /// An ascended form is another skin rather than another layer, so the figure asks for it exactly
-    /// as it asks for a colour variant and nothing else about the drawing changes.
+    /// Nothing in this app sets the stage — see the note where its control would be — but a design
+    /// carrying one is drawn wearing it rather than ignored, since the field survives a round trip
+    /// and something outside this app may yet write it. An ascended form is another skin rather than
+    /// another layer, so the figure asks for it exactly as it asks for a colour variant.
     /// </remarks>
     private string? AscendedSkin =>
         Outfit?.AscendedCharacter(Design.Ruler.Texture, Design.Ruler.EvolutionMask ?? 0);
