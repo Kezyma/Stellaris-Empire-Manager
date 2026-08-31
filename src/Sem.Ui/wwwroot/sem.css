@@ -119,15 +119,21 @@ body {
    The margin stays in em so that it scales with each heading's own size rather than being a fixed
    distance under a variable thing.
 */
-h1, h2, h3, h4, h5 {
+h1, h2, h4, h5 {
     margin: 0 0 0.5em;
     font-weight: 600;
     letter-spacing: 0.01em;
 }
 
+/*
+   h3 has no rule because the app has no h3. It had one, sized like the rest, which was a size for
+   an element that is never written — and a heading that appears later would then inherit a decision
+   nobody made for it. The four that exist are here; a fifth would want a reason first.
+
+   h1 is the 404 page's, and the only place --text-2xl is reached.
+*/
 h1 { font-size: var(--text-2xl); }
 h2 { font-size: var(--text-xl); }
-h3 { font-size: var(--text-lg); }
 
 /*
    h4 is seventeen of this app's twenty-three headings and had no size rule at all, so it rendered
@@ -558,7 +564,7 @@ label {
 
 @media (max-width: 720px) {
     .sem-portrait-picker {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .sem-class-list {
@@ -877,8 +883,15 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     .sem-empires-preset { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
+/*
+    minmax(0, 1fr) rather than 1fr wherever a grid drops to one column on a narrow screen. Every
+    such rule in this sheet does it, and for the reason set out on .sem-select: 1fr means
+    minmax(auto, 1fr), whose floor is the widest thing inside, so a column that should shrink to the
+    phone instead pushes past it. Seven rules had the bare form and two of them were visibly
+    scrolling the empire list sideways.
+*/
 @media (max-width: 640px) {
-    .sem-empires-preset { grid-template-columns: 1fr; }
+    .sem-empires-preset { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* A section rather than a panel: a heading, a line of hint, and the list. */
@@ -980,7 +993,7 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 }
 
 @media (max-width: 900px) {
-    .sem-grid-and-detail { grid-template-columns: 1fr; }
+    .sem-grid-and-detail { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* Icons are a fixed size and the row length follows the space available. Letting them stretch to
@@ -1432,7 +1445,7 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 /* One column, and the preview leads. Grid children follow source order, so without this the panel
    would sit under every section — past the point where it answers anything. */
 @media (max-width: 1100px) {
-    .sem-designer { grid-template-columns: 1fr; }
+    .sem-designer { grid-template-columns: minmax(0, 1fr); }
 
     .sem-summary-pane {
         position: static !important;
@@ -1736,7 +1749,7 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
         --trait-column: 340px;
         --trait-detail: 170px;
 
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 }
 
@@ -1921,7 +1934,7 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 @media (max-width: 700px) {
     .sem-name-row,
     .sem-name-row:has(.sem-genders) {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 }
 
@@ -2163,7 +2176,7 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 }
 
 @media (max-width: 700px) {
-    .sem-name-sets { grid-template-columns: 1fr; }
+    .sem-name-sets { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* ---------------------------------------------------------------- gender */
@@ -2249,7 +2262,15 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 */
 .sem-select {
     display: grid;
-    grid-template-columns: 1fr;
+
+    /*
+        minmax(0, 1fr) rather than 1fr, which is minmax(auto, 1fr) and so refuses to go below the
+        widest thing inside it. The cards want 300px plus their padding, so on a 375px phone the one
+        column came out 362 wide in a 343 box and the page scrolled sideways by three pixels. The
+        wide-screen rule below already says minmax(0, 1fr) for the same reason; this is the case it
+        did not cover.
+    */
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--gap);
     align-items: start;
 }
