@@ -90,12 +90,16 @@
     /// </summary>
     /// <remarks>
     /// The class names carry it because the stylesheet does: a flag is only ever drawn at one of the
-    /// four named sizes, or at whatever a container gives it, and a component cannot measure itself
+    /// three named sizes, or at whatever a container gives it, and a component cannot measure itself
     /// without reaching into the browser.
+    ///
+    /// These are not what sets the size — the stylesheet does that, beside <c>.sem-flag.small</c> and
+    /// its siblings. They are here to pick which of the game's frames is nearest, so they have to
+    /// agree with it. A fourth, "tiny" at 24, went when the rule it named turned out to have no
+    /// caller.
     /// </remarks>
     private static readonly Dictionary<string, double> Sizes = new(StringComparer.Ordinal)
     {
-        ["tiny"] = 24,
         ["small"] = 44,
         ["medium"] = 72,
         ["large"] = 160,

@@ -41,25 +41,61 @@
     /*
        Spacing, named the way the type scale is so the two read alike.
 
-       The set is closed: a value that is not on it is either an optical adjustment below eight
-       pixels — the 1px that centres a chip's text against its dot, the 3px between two hundred and
-       sixteen colour swatches — or a control's own geometry, like the 28px of clearance the combo
-       box leaves for its arrow. Those stay literal, because they are answers to a specific shape
-       rather than steps in a rhythm, and rounding them costs density exactly where density is the
-       point.
+       The set is closed: a value that is not on it is either an optical adjustment below about six
+       pixels — the 1px that centres a chip's text against its dot, the 3px offset under a blocked
+       option's reason — or true geometry, meaning an aspect ratio or a border. Everything else is a
+       step here or a control size below.
 
-       Ten was the odd one out and is gone: nineteen declarations used it for the same job twelve
-       does — the gap between cards, the padding inside a panel — for no reason beyond having been
-       typed. The page gutter comes in from twenty to sixteen, which the wider container can afford.
+       These came in by a third. This is a dense tool that was not laid out like one: the header and
+       the content-pack bar took 112 pixels of a 900-pixel screen before a single control appeared,
+       and a text field cost 57 of them to show one line and its label. Nothing was individually
+       wrong; there was simply a step more air in every one of a hundred and sixty places, and it
+       compounds down a page.
     */
     --space-2xs: 2px;
-    --space-xs: 4px;
-    --space-sm: 6px;
-    --space-md: 8px;
-    --space-lg: 12px;
-    --space-xl: 16px;
-    --space-2xl: 24px;
-    --space-3xl: 40px;
+    --space-xs: 3px;
+    --space-sm: 4px;
+    --space-md: 6px;
+    --space-lg: 10px;
+    --space-xl: 12px;
+    --space-2xl: 18px;
+    --space-3xl: 28px;
+
+    /*
+       What a control is, as opposed to the space around it.
+
+       These used to be literals, on the argument that a control's geometry answers a specific shape
+       rather than stepping through a rhythm. That was true and it was also what made the interface
+       impossible to retune: fifty-five hard-coded pixel sizes do not move when the spacing does, so
+       tightening the gaps alone would have drawn the same buttons closer together and looked worse
+       than either end. Named here, the density of the whole application is these eleven numbers.
+
+       They are not on the spacing scale and should not be read as though they were. A swatch is 24
+       because a swatch is 24, not because it is two steps of something.
+
+       The heights are stated rather than left to fall out of padding, which is how they used to
+       work. A text box was 35 pixels because its padding happened to be 6 — so the height of every
+       control in the application was a side effect of a spacing token, and a later change to the
+       spacing would have quietly retuned all of them. Stated, a row of controls is level by
+       construction and a field's total height is a sum you can write down.
+    */
+    --control-h: 29px;      /* a text box or a select: one line of the body, and the unit of a form */
+    --label-line: 16px;     /* the caption above one, which is one line by construction */
+    --tab-h: 30px;          /* an item in the header, and in the content-pack bar beside the packs */
+    --icon-btn: 28px;       /* a button that is only a glyph */
+    --icon: 24px;           /* an option's icon, beside its name */
+    --icon-sm: 18px;        /* the same icon inside a chip, where the text leads */
+    --tile: 34px;           /* an icon on its own as the whole control: an ethic, a civic */
+    --swatch: 24px;         /* one of two hundred and sixteen flag colours */
+    --dlc: 28px;            /* a content pack in the bar across the top */
+    --combo-toggle: 24px;   /* the arrow inside a text box, which the box leaves room for */
+    --stepper: 24px;        /* the arrows either side of a numbered choice */
+    --round-btn: 30px;      /* the die, and the four gender buttons */
+    --track-h: 18px;        /* the bar a budget is drawn in */
+    --face-w: 40px;         /* a species' portrait in the empire list */
+    --face-h: 50px;
+    --face-lg-w: 72px;      /* and in the panel that shows one empire */
+    --face-lg-h: 86px;
 
     /* The distance between one section and the next, and the most-used spacing in the sheet. */
     --gap: var(--space-lg);
@@ -71,8 +107,13 @@
        the whole scroll half-covered by the brand. Stated here and used by both the header and the
        things that clear it, so the two cannot drift; the header takes this as its height rather than
        growing to its contents, which is what let them drift in the first place.
+
+       Derived from what it holds rather than asserted beside it. The header carries four tabs and,
+       on a phone, the burger — no icon buttons, which live in the showcase — so its height is a tab
+       plus a step of space above and below. Asserted, the two could disagree and the header would
+       clip its own buttons rather than grow, because it takes this as a height and not a minimum.
     */
-    --header-height: 64px;
+    --header-height: calc(var(--tab-h) + var(--space-lg) * 2);
     --sticky-top: calc(var(--header-height) + var(--gap));
 
     /*
@@ -91,13 +132,18 @@
        There had been sixteen sizes, seven of them inside a two-pixel band, which is not a scale but
        a series of separate decisions. Worse, they were wrong in the same direction: see the note on
        the root below.
+
+       Re-derived when the root came down a pixel, so the whole numbers stayed whole. The bottom step
+       is now 10px, which is small — it is worth saying plainly. It carries a cost pip, a badge count
+       and an overline, all of which are a digit or a word read next to the thing they belong to,
+       never a sentence. Nothing anyone has to read at length is set below 11.
     */
-    --text-xs: 0.786rem;    /* 11px — overlines, badge counts, cost pips */
-    --text-sm: 0.857rem;    /* 12px — anything subordinate to the body */
-    --text-md: 1rem;        /* 14px — the body; the middle of the scale */
-    --text-lg: 1.143rem;    /* 16px — a panel's title, or a readout's */
-    --text-xl: 1.286rem;    /* 18px — a heading over a region of the page */
-    --text-2xl: 1.571rem;   /* 22px — the page's own title */
+    --text-xs: 0.769rem;    /* 10px — overlines, badge counts, cost pips */
+    --text-sm: 0.846rem;    /* 11px — anything subordinate to the body */
+    --text-md: 1rem;        /* 13px — the body; the middle of the scale */
+    --text-lg: 1.154rem;    /* 15px — a panel's title, or a readout's */
+    --text-xl: 1.308rem;    /* 17px — a heading over a region of the page */
+    --text-2xl: 1.538rem;   /* 20px — the page's own title */
 }
 
 /*
@@ -107,10 +153,12 @@
    one of them was bigger than the text it was subordinate to.
 
    A percentage rather than 14px, so that a reader who has raised their browser's own base size
-   still gets a proportionally larger application rather than being overruled.
+   still gets a proportionally larger application rather than being overruled. That is also why the
+   compaction moved this number rather than replacing it: a pixel here would have quietly overruled
+   everyone who had asked for something larger.
 */
 html {
-    font-size: 87.5%;
+    font-size: 81.25%;
 }
 
 * {
@@ -306,8 +354,8 @@ code {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 2.5rem;
-        height: 2.5rem;
+        width: var(--tab-h);
+        height: var(--tab-h);
         border: 1px solid var(--border);
         border-radius: var(--radius);
         color: var(--text);
@@ -404,7 +452,7 @@ button, .sem-button {
     background: var(--bg-raised);
     border: 1px solid var(--border-strong);
     border-radius: var(--radius);
-    padding: var(--space-sm) 14px;
+    padding: var(--space-sm) var(--space-lg);
     cursor: pointer;
     transition: background 0.12s, border-color 0.12s;
 }
@@ -465,6 +513,16 @@ input[type="text"], select, textarea {
 }
 
 /*
+    One line, so the height is stated and the padding only holds the text off the sides. A textarea
+    is the exception and keeps growing by its padding, which is the whole point of one.
+*/
+input[type="text"], select {
+    height: var(--control-h);
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+/*
     A field lights its own border when focused, which is the convention and reads better on a box
     that is already outlined than a second line drawn around the first.
 
@@ -482,11 +540,16 @@ textarea:focus:not(:focus-visible) {
     outline: none;
 }
 
+/*
+    The smallest gap on the scale, because a label and the box it names are one thing. Any more and
+    the pair stops reading as a unit; this is the last two pixels of a field that costs 50.
+*/
 label {
     display: block;
     color: var(--text-dim);
     font-size: var(--text-sm);
-    margin-bottom: var(--space-xs);
+    line-height: var(--label-line);
+    margin-bottom: var(--space-2xs);
 }
 
 .sem-field {
@@ -517,7 +580,7 @@ label {
 button.sem-tab {
     display: inline-flex;
     align-items: center;
-    height: 2.5rem;
+    height: var(--tab-h);
 
     /* A label carries the four pixels every field's caption gets, and centring its margin box
        lifted Import two pixels above the three items beside it. */
@@ -645,15 +708,14 @@ button.sem-tab:disabled:hover { background: none; }
 /* ---------------------------------------------------------------- images */
 
 .sem-icon {
-    width: 28px;
-    height: 28px;
+    width: var(--icon);
+    height: var(--icon);
     object-fit: contain;
     flex-shrink: 0;
     image-rendering: auto;
 }
 
-.sem-icon.small { width: 20px; height: 20px; }
-
+/* Takes its size from .sem-icon beside it, so a missing icon holds exactly the space one would. */
 .sem-icon-placeholder {
     display: inline-block;
     border-radius: var(--radius-sm);
@@ -668,6 +730,14 @@ button.sem-tab:disabled:hover { background: none; }
     border-radius: var(--radius);
     border: 1px solid var(--border);
 }
+
+/*
+    An emblem holds its square before its picture arrives. They are loaded lazily and there are
+    hundreds, so without this a tile that has not loaded yet is its padding and nothing else — the
+    grid reflowed as you scrolled, and on a phone nineteen of the eighty-seven on screen were four
+    pixels tall and unhittable until they drew.
+*/
+.sem-thumbs.emblems .sem-thumb { aspect-ratio: 1; }
 
 .sem-thumbs {
     display: grid;
@@ -872,7 +942,6 @@ button.sem-tab:disabled:hover { background: none; }
     object-fit: contain;
 }
 
-.sem-flag.tiny { width: 24px; height: 24px; }
 .sem-flag.small { width: 44px; height: 44px; }
 .sem-flag.medium { width: 72px; height: 72px; }
 .sem-flag.large { width: 160px; height: 160px; }
@@ -898,7 +967,7 @@ button.sem-tab:disabled:hover { background: none; }
 */
 .sem-budget .track {
     position: relative;
-    height: 22px;
+    height: var(--track-h);
     background: var(--bg);
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
@@ -916,7 +985,7 @@ button.sem-tab:disabled:hover { background: none; }
     position: relative;
     display: block;
     padding: 0 var(--space-md);
-    line-height: 20px;
+    line-height: calc(var(--track-h) - 2px);
     font-size: var(--text-sm);
     color: var(--text);
     white-space: nowrap;
@@ -1172,8 +1241,8 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 
 /* The face, cropped to the head as the game crops it. */
 .sem-empire .face {
-    width: 46px;
-    height: 58px;
+    width: var(--face-w);
+    height: var(--face-h);
     object-fit: cover;
     object-position: top center;
     flex-shrink: 0;
@@ -1238,7 +1307,7 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
    that the compact layout exists to save. */
 .sem-icon-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, var(--sem-icon-size, 40px));
+    grid-template-columns: repeat(auto-fill, var(--sem-icon-size, var(--tile)));
     gap: var(--space-sm);
 }
 
@@ -1400,14 +1469,14 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     class and the origin panel would otherwise keep its desktop 460 here.
 */
 @media (max-width: 700px) {
-    .sem-detail { height: 260px; }
+    .sem-detail { height: 224px; }
 
     /*
         A picture at the game's ratio takes about 183 of a phone's width, so the 240 this used to be
         left under sixty pixels to read the description in. The panel is taller here than the plain
         one rather than shorter.
     */
-    .sem-detail:has(> .sem-detail-picture) { height: 420px; }
+    .sem-detail:has(> .sem-detail-picture) { height: 360px; }
 }
 
 .sem-detail h4 {
@@ -1467,8 +1536,8 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 30px;
-    height: 30px;
+    width: var(--dlc);
+    height: var(--dlc);
     padding: 0;
     background: none;
     border: 1px solid transparent;
@@ -1476,8 +1545,8 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 }
 
 .sem-dlc img {
-    width: 24px;
-    height: 24px;
+    width: var(--icon);
+    height: var(--icon);
     object-fit: contain;
 }
 
@@ -1508,7 +1577,7 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 .sem-ethics-grid {
     display: grid;
     grid-auto-flow: column;
-    grid-auto-columns: var(--sem-icon-size, 40px);
+    grid-auto-columns: var(--sem-icon-size, var(--tile));
     justify-content: start;
     gap: var(--space-sm);
     align-items: start;
@@ -1541,7 +1610,7 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     distinction, so the colour no longer has to.
 */
 .sem-nomad {
-    width: var(--sem-icon-size, 40px);
+    width: var(--sem-icon-size, var(--tile));
 }
 
 .sem-nomad .initials {
@@ -1887,14 +1956,14 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 /* Eight across and 28 to a side, which is the shape the game's own colour picker uses. */
 .sem-swatches {
     display: grid;
-    grid-template-columns: repeat(auto-fill, 28px);
+    grid-template-columns: repeat(auto-fill, var(--swatch));
     gap: 3px;
     margin-top: var(--space-xs);
 }
 
 .sem-swatch {
-    width: 28px;
-    height: 28px;
+    width: var(--swatch);
+    height: var(--swatch);
     padding: 0;
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
@@ -1985,8 +2054,8 @@ button.icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 2.25rem;
-    height: 2.25rem;
+    width: var(--icon-btn);
+    height: var(--icon-btn);
     padding: 0;
 }
 
@@ -2135,8 +2204,8 @@ button.icon .sem-action-icon { display: block; }
     fixed and the overflow scrolls.
 */
 .sem-trait-lists {
-    --trait-column: 440px;
-    --trait-detail: 210px;
+    --trait-column: 380px;
+    --trait-detail: 180px;
 
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -2169,8 +2238,8 @@ button.icon .sem-action-icon { display: block; }
 
 @media (max-width: 700px) {
     .sem-trait-lists {
-        --trait-column: 340px;
-        --trait-detail: 170px;
+        --trait-column: 300px;
+        --trait-detail: 150px;
 
         grid-template-columns: minmax(0, 1fr);
     }
@@ -2228,8 +2297,8 @@ button.icon .sem-action-icon { display: block; }
 
 .sem-trait-row img,
 .sem-trait-row .no-icon {
-    width: 22px;
-    height: 22px;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
     flex-shrink: 0;
     object-fit: contain;
 }
@@ -2274,7 +2343,7 @@ button.icon .sem-action-icon { display: block; }
 }
 
 .sem-combo input[type="text"] {
-    padding-right: 28px;
+    padding-right: calc(var(--combo-toggle) + var(--space-xs));
 }
 
 .sem-combo .toggle {
@@ -2282,7 +2351,7 @@ button.icon .sem-action-icon { display: block; }
     top: 1px;
     right: 1px;
     bottom: 1px;
-    width: 26px;
+    width: var(--combo-toggle);
     padding: 0;
     background: none;
     border: none;
@@ -2473,7 +2542,7 @@ button.icon .sem-action-icon { display: block; }
 
 .sem-stepper button {
     flex: none;
-    width: 28px;
+    width: var(--stepper);
     padding: var(--space-xs) 0;
 
     /* The glyphs are a single chevron each and want to be bigger than the label beside them. */
@@ -2602,8 +2671,8 @@ button.icon .sem-action-icon { display: block; }
 
 .sem-spawn {
     flex: none;
-    width: 44px;
-    height: 40px;
+    width: 38px;
+    height: 34px;
     padding: 0;
     background: none;
     border: none;
@@ -2646,14 +2715,14 @@ button.icon .sem-action-icon { display: block; }
     align-items: center;
     justify-content: center;
     flex: 0 0 auto;
-    width: 34px;
-    height: 34px;
+    width: var(--round-btn);
+    height: var(--round-btn);
     padding: 0;
 }
 
 .sem-randomise img {
-    width: 20px;
-    height: 20px;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
     object-fit: contain;
 }
 
@@ -2684,8 +2753,8 @@ button.icon .sem-action-icon { display: block; }
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
+    width: var(--round-btn);
+    height: var(--round-btn);
     padding: var(--space-xs);
     background: var(--bg-raised);
     border: 1px solid var(--border);
@@ -2811,8 +2880,8 @@ button.icon .sem-action-icon { display: block; }
 }
 
 .sem-showcase .species .face {
-    width: 84px;
-    height: 100px;
+    width: var(--face-lg-w);
+    height: var(--face-lg-h);
     object-fit: cover;
     object-position: top center;
     flex-shrink: 0;
@@ -2883,8 +2952,8 @@ button.icon .sem-action-icon { display: block; }
 .sem-chip > button:hover { background: var(--bg-hover); }
 
 .sem-chip > button img {
-    width: 20px;
-    height: 20px;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
     object-fit: contain;
 }
 
@@ -2948,13 +3017,6 @@ button.icon .sem-action-icon { display: block; }
     min-height: 24px;
     padding: 0 var(--space-sm);
     font-size: var(--text-xs);
-}
-
-@media (pointer: coarse) {
-    .sem-combined .compare {
-        min-height: 32px;
-        padding: 0 var(--space-md);
-    }
 }
 
 .sem-combined .compare[aria-pressed="true"] {
@@ -3089,18 +3151,33 @@ button.icon .sem-action-icon { display: block; }
     Desktop density is the point of this application, so nothing here changes for a mouse. What
     changes is what a finger can reliably hit.
 
-    36px for a swatch rather than the 44 the accessibility guidance asks for, and the reason is
-    arithmetic rather than preference: there are two hundred and sixteen of them. At 44 plus a gap
-    the palette runs past the bottom of a phone and choosing a colour becomes scrolling for one. 36
-    with a 4px gap is the practical floor for a grid that dense, and the honest number to claim.
+    This block used to hold four things up and let everything else meet a finger at whatever size the
+    desktop happened to use. That was already thin — the smallest control on a phone was 26 pixels —
+    and it stopped being tenable when the desktop came in a step: a compaction measured for a
+    trackpad would have taken a 26px target to 22. So the list is now every control that is pressed
+    rather than read.
 
-    The trait rows and the content chips have no such constraint — there are a couple of dozen of
-    each — so they go to a comfortable size outright.
+    Every value here is absolute. Written as a token these would have shrunk along with the desktop,
+    which is exactly the leak the block exists to prevent — and two of them were, until this pass:
+    the swatch gap and the trait row's padding both drew from the spacing scale.
+
+    The floor here is 40 rather than the 44 the accessibility guidance asks for, and it is worth
+    saying which number is being departed from and why. 44 assumes a control with room around it;
+    these are grids of forty ethics and eighty traits where every extra pixel is multiplied by the
+    row and pushes the next one off the screen. 40 with a real gap between neighbours misses less
+    often than 44 with none. The two things that are pressed rather than chosen from — a text box and
+    the burger — take the full 44.
+
+    36 for a swatch, lower again, and the reason is arithmetic rather than preference: there are two
+    hundred and sixteen of them. At 44 plus a gap the palette runs past the bottom of a phone and
+    choosing a colour becomes scrolling for one. 36 with a 4px gap is the practical floor for a grid
+    that dense, and the honest number to claim.
 */
 @media (pointer: coarse) {
+    /* The two hundred and sixteen swatches, at the floor argued for above. */
     .sem-swatches {
         grid-template-columns: repeat(auto-fill, 36px);
-        gap: var(--space-xs);
+        gap: 4px;
     }
 
     .sem-swatch {
@@ -3108,10 +3185,87 @@ button.icon .sem-action-icon { display: block; }
         height: 36px;
     }
 
-    .sem-trait-row { padding: var(--space-md); }
+    /* A row of text with an icon: the padding makes the target, so the icon comes back up with it. */
+    .sem-trait-row { padding: 10px 8px; }
+
+    .sem-trait-row img,
+    .sem-trait-row .no-icon {
+        width: 22px;
+        height: 22px;
+    }
 
     .sem-dlc {
         width: 40px;
         height: 40px;
     }
+
+    /* Anything typed into or chosen from. A textarea grows by its padding and is left to. */
+    input[type="text"], select {
+        height: 44px;
+    }
+
+    textarea { padding: 10px 12px; }
+
+    .sem-combo .toggle { width: 36px; }
+
+    .sem-combo input[type="text"] { padding-right: 40px; }
+
+    .sem-combo .options button { padding: 10px 8px; }
+
+    /* Anything pressed. */
+    button, .sem-button { padding: 10px 12px; }
+
+    button.icon,
+    .sem-randomise,
+    .sem-gender,
+    .sem-stepper button {
+        width: 40px;
+        height: 40px;
+    }
+
+    .sem-spawn {
+        width: 44px;
+        height: 40px;
+    }
+
+    /*
+        Both branches. The desktop rule names button.sem-tab as well, and that selector outranks a
+        bare .sem-tab here — so written the short way this reached the Empires link and the Import
+        label and left Create, Export, All and None at their desktop height.
+    */
+    .sem-tab,
+    button.sem-tab { height: 40px; }
+
+    .sem-header-burger {
+        width: 44px;
+        height: 44px;
+    }
+
+    .sem-combined .compare {
+        min-height: 36px;
+        padding: 0 10px;
+    }
+
+    /*
+        An icon that is the whole control, with nothing beside it to widen the target. A floor rather
+        than a size: the homeworld grid asks for larger tiles because a planet has to be recognised,
+        and setting the variable itself would have shrunk them.
+    */
+    .sem-icon-grid { grid-template-columns: repeat(auto-fill, max(40px, var(--sem-icon-size, var(--tile)))); }
+    .sem-ethics-grid { grid-auto-columns: max(40px, var(--sem-icon-size, var(--tile))); }
+    .sem-nomad { width: max(40px, var(--sem-icon-size, var(--tile))); }
+
+    /* 8 above and below an 18px icon, which is what makes 36 rather than the 32 six gave. */
+    .sem-chip > button { padding: 8px 10px 8px 4px; }
+
+    /* A picture chosen from a scrolling list: a portrait, a room, a flag pattern. */
+    .sem-thumb-option { padding: 8px; }
+
+    /* The rows that are the designer's own navigation, and the panels that fold. */
+    .sem-section > .head,
+    .sem-class-list button,
+    .sem-bio > summary,
+    .sem-showcase-problems > summary { padding: 12px 10px; }
+
+    .sem-dlc-summary { padding: 12px 10px; }
 }

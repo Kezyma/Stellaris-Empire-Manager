@@ -3,13 +3,19 @@
     A missing icon is normal rather than an error, so it takes the same space and stays quiet.
 *@
 
+@*
+    No size parameter. There was one, offering "small" and "large", and nothing ever passed either —
+    so its only effect was that the placeholder had three sizes while the image it stands in for had
+    one, and "large" had no rule in the stylesheet at all. An icon is the size the stylesheet says,
+    which is now one number in one place.
+*@
 @if (!string.IsNullOrEmpty(Path))
 {
-    <img class="sem-icon @Size" src="@Session.Data.AssetUrl(Path)" alt="@Alt" loading="lazy" />
+    <img class="sem-icon" src="@Session.Data.AssetUrl(Path)" alt="@Alt" loading="lazy" />
 }
 else
 {
-    <span class="sem-icon-placeholder @Size" style="@PlaceholderStyle" aria-hidden="true"></span>
+    <span class="sem-icon sem-icon-placeholder" aria-hidden="true"></span>
 }
 
 @code {
@@ -23,15 +29,4 @@ else
     /// <summary>Alternative text, normally the thing's display name.</summary>
     [Parameter]
     public string? Alt { get; set; }
-
-    /// <summary>An optional size class: <c>small</c> or <c>large</c>.</summary>
-    [Parameter]
-    public string? Size { get; set; }
-
-    private string PlaceholderStyle => Size switch
-    {
-        "small" => "width:20px;height:20px",
-        "large" => "width:40px;height:40px",
-        _ => "width:28px;height:28px",
-    };
 }

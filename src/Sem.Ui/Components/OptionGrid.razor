@@ -119,8 +119,13 @@
     /// The smallest an icon may be drawn. The row length follows from it and the space available,
     /// so a grid beside a narrow panel wraps sooner rather than shrinking its icons away.
     /// </summary>
+    /// <remarks>
+    /// The default matches the stylesheet's <c>--tile</c>, which is what a grid gets when nothing
+    /// passes this. Only the homeworld list asks for anything else, because a planet is a picture
+    /// rather than a symbol and reads badly small.
+    /// </remarks>
     [Parameter]
-    public int IconSize { get; set; } = 40;
+    public int IconSize { get; set; } = 34;
 
     /// <summary>Something to place beside the icons that is not one of the choices.</summary>
     [Parameter]
