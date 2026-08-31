@@ -71,13 +71,11 @@
                      OnChange="value => Session.Edit(d => d.Ruler.Attachment = value)" />
         }
 
-        @if (!_loading && Outfit is null)
-        {
-            <p class="sem-hint">
-                This build's data has no wardrobe, so the ruler is shown as a fixed portrait and
-                their outfit cannot be changed here. The numbers a design already holds are kept.
-            </p>
-        }
+        @*
+            No line saying the wardrobe is missing. Every control above it is drawn from a count that
+            is zero without one, so there is nothing on the panel to explain: what a design already
+            holds is still written back either way.
+        *@
 
         @*
             No evolution stage control, and the reason is worth writing down so nobody adds one back.

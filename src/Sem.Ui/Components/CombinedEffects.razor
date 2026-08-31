@@ -86,18 +86,6 @@
                 </li>
             }
         </ul>
-
-        @*
-            Only where something actually was left out. This had been printed under every empire,
-            including the many whose choices carry no conditional modifier at all — a footnote about
-            an omission that had not happened.
-        *@
-        @if (AnyConditional)
-        {
-            <p class="sem-hint">
-                Conditional bonuses are left out, since they depend on a game already in progress.
-            </p>
-        }
     }
 </div>
 
@@ -192,10 +180,6 @@
     /// </remarks>
     private IReadOnlyList<CombinedModifier> Ordered =>
         [.. Combined.OrderBy(m => Session.Modifiers.Label(m.Key), StringComparer.CurrentCulture)];
-
-    /// <summary>Whether anything the empire has chosen carries a bonus the totals leave out.</summary>
-    private bool AnyConditional =>
-        (Context ?? Session.Context) is { } context && DesignEffects.AnyConditional(context);
 
     /// <summary>Names the choices behind a total, for the reader who wonders where it came from.</summary>
     private string SourceSummary(CombinedModifier modifier) =>
