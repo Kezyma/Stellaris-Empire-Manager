@@ -99,20 +99,30 @@
         ReferenceEquals(Species.Block, Design.Species.Block) ? $"species-{name}" : $"second-species-{name}";
 
     /// <summary>
-    /// The ready-made species this class could be given, which is what the game's own randomise
-    /// draws on. A class the game ships none for still gets the whole set rather than an empty list.
+    /// The ready-made species the game would offer this empire.
     /// </summary>
+    /// <remarks>
+    /// Chosen by the empire's <em>name list</em>, not by its species class. The game keeps these per
+    /// name list — which is why <see cref="NameGenerator.SpeciesNameSourceFor"/> exists, since the
+    /// human lists point at a different one for this purpose — and filtering by class instead put
+    /// the wrong pool in front of every empire whose two disagree. Measured against the player's own
+    /// file, class covered eight of twelve generated names and the name list covers ten: Xeltek is
+    /// molluscoid with an arthropoid list, Khell'Zen fungoid with a humanoid one.
+    ///
+    /// A list the game ships no ready-made species for still gets the whole set rather than nothing.
+    /// </remarks>
     private IReadOnlyList<SpeciesNameSuggestion> Suggestions
     {
         get
         {
             var all = Session.Data.Database.SpeciesNames;
+            var list = Session.Names.SpeciesNameSourceFor(Species.NameList);
 
-            var forClass = all
-                .Where(s => string.Equals(s.SpeciesClass, Species.Class, StringComparison.Ordinal))
+            var forList = all
+                .Where(s => string.Equals(s.NameList, list, StringComparison.Ordinal))
                 .ToList();
 
-            return [.. (forClass.Count > 0 ? forClass : all).OrderBy(s => s.Name, StringComparer.CurrentCulture)];
+            return [.. (forList.Count > 0 ? forList : all).OrderBy(s => s.Name, StringComparer.CurrentCulture)];
         }
     }
 

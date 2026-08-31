@@ -147,6 +147,16 @@ internal static partial class LocalisationPruner
             AddEffects(trait.Effects);
         }
 
+        // Every word an empire name can be built from. These look like words and are keys: the game
+        // writes "Mercantile_Union" and shows "Mercantile Union", "All_Consuming" and shows
+        // "All-Consuming", "StarCorp" and shows "StarCorp" unchanged. Nothing else in the data
+        // refers to them, so without this the whole 1,774 were cut and the designer offered the
+        // tokens themselves.
+        foreach (var word in database.EmpireNameParts.SelectMany(list => list.Parts))
+        {
+            Add(word.Word);
+        }
+
         foreach (var ethic in database.Ethics)
         {
             Add(ethic.NameKey);

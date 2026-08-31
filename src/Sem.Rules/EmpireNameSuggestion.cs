@@ -18,9 +18,9 @@ public sealed record EmpireNameSuggestion(string Text, string? FormatKey, IReadO
 /// The things an empire's name can be built out of that are not words from a list.
 /// </summary>
 /// <remarks>
-/// The game's templates make exactly three scripted calls, and every one of them names something the
-/// design already holds. They arrive here as finished text rather than as keys because working out
-/// what a species is called is the localiser's business, and the rules have no localiser.
+/// The game's templates make four scripted calls, and every one of them names something the design
+/// already holds. They arrive here as finished text rather than as keys because working out what a
+/// species is called is the localiser's business, and the rules have no localiser.
 /// </remarks>
 public sealed class EmpireNameSources
 {
@@ -44,6 +44,10 @@ public sealed class EmpireNameSources
     {
         "This.GetSpeciesAdj" => SpeciesAdjective,
         "This.GetCapitalPlanetNameOrRandom" => PlanetName,
+
+        // The capital is the homeworld. Missed at first because the survey that found the others
+        // only matched calls of one segment, so five shapes quietly produced nothing at all.
+        "This.Capital.GetName" => PlanetName,
         "This.GetCapitalSystemNameOrRandom" => SystemName,
         _ => null,
     };

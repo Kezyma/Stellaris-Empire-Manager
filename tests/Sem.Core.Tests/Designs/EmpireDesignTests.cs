@@ -595,4 +595,48 @@ public sealed class EmpireDesignTests
 
         Assert.Equal(Sample, file.Document.ToText());
     }
+
+    [Theory]
+    [InlineData(new[] { "%ADJECTIVE%", "Astral_Fellowship" },
+        "%ADJECTIVE%", "adjective=SPEC_Xeltek;1=Astral_Fellowship")]
+    [InlineData(new[] { "Blessed", "%ADJECTIVE%", "Union" },
+        "%ADJ%", "1=Blessed;1=%ADJECTIVE%;adjective=SPEC_Xeltek;1=Union")]
+    [InlineData(new[] { "%ADJECTIVE%", "Irenic", "Kingdom" },
+        "%ADJECTIVE%", "adjective=SPEC_Xeltek;1=%ADJ%;1=Irenic;1=Kingdom")]
+    public void AGeneratedNameIsWrittenTheWayTheGameWritesOne(string[] words, string outermost, string trail)
+    {
+        // Taken from three real empires in the player's file: "Xeltek Astral Fellowship" leads with
+        // the species adjective and needs no wrapper, "Blessed Oxanalytoran Union" leads with a
+        // describing word and is wrapped in %ADJ%, and "Frubralav Irenic Kingdom" wraps only its
+        // inner half. Getting this wrong still reads correctly, which is exactly why it is asserted:
+        // the file would simply stop looking like one the game had written.
+        var design = LoadSample();
+        design.Name.SetFormat("placeholder", []);
+        design.Name.SetNested(words, "SPEC_Xeltek");
+
+        Assert.Equal(outermost, design.Name.Key);
+        Assert.Equal(trail, Trail(design.Name));
+    }
+
+    /// <summary>Every key and variable down the chain, in order, so a shape can be stated in one line.</summary>
+    private static string Trail(LocRef reference)
+    {
+        var parts = new List<string>();
+
+        void Walk(LocRef at)
+        {
+            foreach (var variable in at.Variables)
+            {
+                parts.Add($"{variable.Key}={variable.Value?.Key}");
+
+                if (variable.Value is { } value)
+                {
+                    Walk(value);
+                }
+            }
+        }
+
+        Walk(reference);
+        return string.Join(';', parts);
+    }
 }

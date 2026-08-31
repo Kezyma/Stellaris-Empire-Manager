@@ -17,9 +17,16 @@ public static class TestPaths
             ? configured
             : StellarisLocator.FindInstallRoot();
 
-    /// <summary>Copies of the player's empire designs files, newest format first. Empty when absent.</summary>
+    /// <summary>
+    /// The player's current empire designs, as copied into the sandbox. Never the originals.
+    /// </summary>
+    /// <remarks>
+    /// The one live file, not the dated backups beside it. Those hold empires from earlier versions
+    /// of the game and earlier ideas of the player's, and a corpus test that swept them in was
+    /// measuring against ninety-two empires the player no longer has.
+    /// </remarks>
     public static IReadOnlyList<string> SandboxDesignFiles =>
-        EnumerateSandboxFiles("userdata", "user_empire_designs_v3.4*.txt");
+        EnumerateSandboxFiles("userdata", "user_empire_designs_v3.4.txt");
 
     /// <summary>Copies of the built-in prescripted empire files. Empty when absent.</summary>
     public static IReadOnlyList<string> SandboxPrescriptedFiles =>

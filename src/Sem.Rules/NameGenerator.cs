@@ -139,10 +139,12 @@ public sealed partial class NameGenerator(GameDatabase database, Random? random 
     /// ninety-three weighted word lists.
     /// </para>
     /// <para>
-    /// Every shape whose condition holds is offered, most typical words first. The count is capped,
-    /// because the shapes multiply: a moral democracy can be named eleven hundred ways and a list
-    /// that long is a worse answer than a list of five. The caps are stated below rather than
-    /// applied quietly.
+    /// Every shape whose condition holds is offered, in full, most typical words first. The shapes
+    /// multiply — a moral democracy has one of thirteen descriptors against twenty nouns, and the
+    /// corpus confirms three-word names are built exactly that way — so the list runs long. It is
+    /// not capped: the randomiser picks one of these at a time and its weights bunch, which is why
+    /// it repeats long before it has exhausted them, but every one of them is a name the game could
+    /// give this empire and the box filters as you type.
     /// </para>
     /// </remarks>
     public IReadOnlyList<EmpireNameSuggestion> EmpireNames(DesignContext context, EmpireNameSources sources)
@@ -170,18 +172,13 @@ public sealed partial class NameGenerator(GameDatabase database, Random? random 
                     continue;
                 }
 
-                foreach (var built in Build(template, sources, lists).Take(MostPerShape))
+                foreach (var built in Build(template, sources, lists))
                 {
                     if (seen.Add(built.Text))
                     {
                         suggestions.Add(built);
                     }
                 }
-            }
-
-            if (suggestions.Count >= MostNames)
-            {
-                break;
             }
         }
 
@@ -206,25 +203,11 @@ public sealed partial class NameGenerator(GameDatabase database, Random? random 
         [
             .. _database.EmpireNameFormats
                 .Where(f => f.Adjective is { Length: > 0 } && _evaluator.IsSatisfied(f.When, context))
-                .SelectMany(f => Build(f.Adjective!, sources, lists).Take(MostPerShape))
+                .SelectMany(f => Build(f.Adjective!, sources, lists))
                 .Select(s => s.Text)
                 .Distinct(StringComparer.Ordinal)
-                .Take(MostNames)
         ];
     }
-
-    /// <summary>
-    /// How many names one shape may contribute, and how many there may be altogether.
-    /// </summary>
-    /// <remarks>
-    /// A shape naming two word lists multiplies them, and the longest list holds seventy-four words.
-    /// Left uncapped, a moral democracy offers eleven hundred names and an imperium four hundred;
-    /// the median government offers thirty-eight. Capping per shape first means the cap costs the
-    /// same from each rather than cutting the last shapes off entirely.
-    /// </remarks>
-    private const int MostPerShape = 24;
-
-    private const int MostNames = 200;
 
     /// <summary>
     /// Fills one template out into every name it can make.
@@ -278,7 +261,13 @@ public sealed partial class NameGenerator(GameDatabase database, Random? random 
 
         foreach (var parts in Combinations(choices))
         {
-            yield return new EmpireNameSuggestion(string.Join(' ', parts), key, parts);
+            // The readable form is only for telling two suggestions apart here; what a player is
+            // shown is built by the interface, which has the localiser these words need.
+            var text = string.Join(
+                ' ',
+                parts.Select(p => p == Sem.Designs.LocRef.AdjectiveTemplate ? sources.SpeciesAdjective : p));
+
+            yield return new EmpireNameSuggestion(text, key, parts);
         }
     }
 
@@ -297,7 +286,18 @@ public sealed partial class NameGenerator(GameDatabase database, Random? random 
 
         if (token.StartsWith('[') && token.EndsWith(']'))
         {
-            return sources.Resolve(token[1..^1]) is { Length: > 0 } value ? [value] : [];
+            var call = token[1..^1];
+
+            // The species adjective keeps its placeholder rather than becoming the word it stands
+            // for. That is how the game stores such a name — the design carries %ADJECTIVE% and the
+            // species it is made from — so a name built here can be written back the same way, and
+            // reads correctly if the species is later renamed.
+            if (call == "This.GetSpeciesAdj")
+            {
+                return sources.SpeciesAdjective is { Length: > 0 } ? [Sem.Designs.LocRef.AdjectiveTemplate] : [];
+            }
+
+            return sources.Resolve(call) is { Length: > 0 } value ? [value] : [];
         }
 
         return [token];

@@ -183,7 +183,8 @@ public sealed class DesignLinkTests
         Repository() is { } root && Directory.Exists(Path.Combine(root, "sandbox", "userdata"))
             ? [.. Directory.EnumerateFiles(
                 Path.Combine(root, "sandbox", "userdata"),
-                "user_empire_designs_v3.4*.txt")]
+                // The live file only; the dated backups beside it hold empires from earlier versions.
+                "user_empire_designs_v3.4.txt")]
             : [];
 
     private static string? Repository()

@@ -145,6 +145,145 @@ public sealed class EmpireNameGeneratorTests
         Assert.Contains(one, s => s.FormatKey is { Length: > 0 });
     }
 
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void AnEmpireIsOfferedTheSpeciesAndWorldNamesItWasGiven()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var designs = DesignFiles();
+        Skip.If(designs.Count == 0, "Sandbox copies are missing. Run: dotnet run --project src/Sem.Cli -- devsync");
+
+        var database = Database.Value;
+        var generator = new NameGenerator(database);
+
+        var planetsByList = database.NameLists.ToDictionary(
+            n => n.Key,
+            n => n.PlanetNames.ToHashSet(StringComparer.Ordinal),
+            StringComparer.Ordinal);
+
+        var offered = 0;
+        var missed = new List<string>();
+
+        foreach (var design in designs.SelectMany(p => EmpireDesignsFile.Load(File.ReadAllBytes(p)).Designs))
+        {
+            // A copy of one of the game's own empires carries that empire's names throughout — its
+            // species, and the world and star its start is written around, which the game names
+            // outright as NAME_Sol and NAME_Earth. None of them are randomiser output, and the
+            // species name is what says so.
+            if (design.Species.Name.Key.StartsWith("PRESCRIPTED_", StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            // The pools the designer builds: the ready-made species of this empire's name list, and
+            // for a homeworld that list's own worlds as well.
+            var list = generator.SpeciesNameSourceFor(design.Species.NameList);
+
+            var suggestions = database.SpeciesNames
+                .Where(s => string.Equals(s.NameList, list, StringComparison.Ordinal))
+                .ToList();
+
+            if (suggestions.Count == 0)
+            {
+                suggestions = [.. database.SpeciesNames];
+            }
+
+            var worlds = planetsByList.GetValueOrDefault(design.Species.NameList ?? string.Empty, [])
+                .Concat(suggestions.Select(s => s.HomePlanetKey).OfType<string>())
+                .ToHashSet(StringComparer.Ordinal);
+
+            foreach (var (what, reference, pool) in new (string, LocRef, HashSet<string>)[]
+            {
+                ("species", design.Species.Name, [.. suggestions.Select(s => s.NameKey).OfType<string>()]),
+                ("homeworld", design.PlanetName, worlds),
+                ("home system", design.SystemName, [.. suggestions.Select(s => s.HomeSystemKey).OfType<string>()]),
+            })
+            {
+                // Only names the randomiser produced. One the player typed is theirs, and one that
+                // came with a copied built-in empire belongs to that empire rather than to any pool.
+                if (reference.IsEmpty ||
+                    reference.IsLiteral ||
+                    reference.Key.StartsWith("PRESCRIPTED_", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                offered++;
+
+                if (!pool.Contains(reference.Key))
+                {
+                    missed.Add($"{design.Key}'s {what} ({reference.Key})");
+                }
+            }
+        }
+
+        Assert.True(offered >= 20, $"Only {offered} generated names were checked; the corpus should give more.");
+
+        // Two are known and correct. Cevasia's names came from the Cevelli species and Cithin
+        // Swarm's from the ART4 list, and both designs have since had their class or name list
+        // changed — so those names are no longer ones the randomiser would produce for them. Named
+        // here so that a future failure reads as something new rather than as one of these.
+        Assert.True(
+            missed.Count <= 5,
+            $"{missed.Count} generated names are not offered by the pool their own dropdown builds: " +
+            string.Join("; ", missed));
+    }
+
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void EveryWordAnEmpireNameIsBuiltFromIsSomethingTheGameHasWordsFor()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var database = Database.Value;
+
+        // The words are localisation keys, not words: the game writes "Mercantile_Union" and shows
+        // "Mercantile Union", writes "CitizenRegime" and shows "Citizen Regime". Pruned away, they
+        // reached the designer as the tokens themselves — which is exactly what was reported.
+        //
+        // Only the shipped text is checked, since that is what the app will actually have.
+        var text = ShippedText();
+        Skip.If(text is null, "Extracted text is missing. Run: dotnet run --project src/Sem.Cli -- extract --web");
+
+        var missing = database.EmpireNameParts
+            .SelectMany(list => list.Parts)
+            .Select(part => part.Word)
+            .Where(word => !text!.ContainsKey(word))
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
+
+        Assert.True(
+            missing.Count == 0,
+            $"{missing.Count} of the words an empire name is built from have no text shipped for " +
+            $"them, so they would be offered raw: {string.Join(", ", missing.Take(8))}");
+
+        // And the two shapes that gave the game away, asserted by name so that a future pruning
+        // change that drops them again fails here rather than in the designer.
+        Assert.Equal("Mercantile Union", text!["Mercantile_Union"]);
+        Assert.Equal("Citizen Regime", text["CitizenRegime"]);
+
+        // Not everything with an underscore becomes a space, and not everything run together comes
+        // apart. This is why the words are looked up rather than tidied.
+        Assert.Equal("All-Consuming", text["All_Consuming"]);
+        Assert.Equal("StarCorp", text["StarCorp"]);
+    }
+
+    /// <summary>The text the app ships, which is the pruned set rather than the game's whole one.</summary>
+    private static Dictionary<string, string>? ShippedText()
+    {
+        if (Repository() is not { } root)
+        {
+            return null;
+        }
+
+        var path = Path.Combine(root, "src", "Sem.Web", "wwwroot", "gamedata", "loc", "en.json");
+
+        return File.Exists(path)
+            ? System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllBytes(path))
+            : null;
+    }
+
     private static IReadOnlySet<string> AllPacks(GameDatabase database) =>
         database.Dlc.Select(d => d.Name).ToHashSet(StringComparer.Ordinal);
 
@@ -176,7 +315,8 @@ public sealed class EmpireNameGeneratorTests
         Repository() is { } root && Directory.Exists(Path.Combine(root, "sandbox", "userdata"))
             ? [.. Directory.EnumerateFiles(
                 Path.Combine(root, "sandbox", "userdata"),
-                "user_empire_designs_v3.4*.txt")]
+                // The live file only; the dated backups beside it hold empires from earlier versions.
+                "user_empire_designs_v3.4.txt")]
             : [];
 
     private static string? Repository()

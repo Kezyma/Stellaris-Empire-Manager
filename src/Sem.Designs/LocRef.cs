@@ -141,7 +141,9 @@ public sealed class LocRef(CwBlock block) : CwView(block, FieldOrder)
     /// "Empire of Pakshalika" in English and as whatever that language would say elsewhere.
     ///
     /// The blanks are numbered from one, which is the game's own convention and is why they are
-    /// counted here rather than passed in.
+    /// counted here rather than passed in. Each is written as a key rather than as literal text,
+    /// again as the game writes it: the words are localisation keys — <c>Mercantile_Union</c> reads
+    /// "Mercantile Union" — and stored as literals they would show as the tokens they are.
     /// </remarks>
     public void SetFormat(string formatKey, IEnumerable<string> parts)
     {
@@ -157,14 +159,107 @@ public sealed class LocRef(CwBlock block) : CwView(block, FieldOrder)
 
         foreach (var part in parts)
         {
-            var variable = new CwBlock();
-            variable.Add(CwNode.QuotedAssignment("key", position.ToString(System.Globalization.CultureInfo.InvariantCulture)));
-            variable.Add(CwNode.Assignment("value", CreateLiteralBlock(part)));
+            variables.Add(new CwNode(Variable(
+                position.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                CreateKeyBlock(part))));
 
-            // Unkeyed, as the game writes the list.
-            variables.Add(new CwNode(variable));
             position++;
         }
+    }
+
+    /// <summary>
+    /// Makes this a name built by wrapping each word around the next, as the game builds most of them.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Only the <c>AofB</c> family is a flat list of blanks. Everything else the generator produces
+    /// is nested, one word inside the last, which is what the player's own file shows:
+    /// </para>
+    /// <code>
+    /// Xeltek Astral Fellowship
+    ///   key="%ADJECTIVE%" variables={ {key="adjective" value={key="SPEC_Xeltek"}}
+    ///                                 {key="1" value={key="Astral_Fellowship"}} }
+    ///
+    /// Blessed Oxanalytoran Union
+    ///   key="%ADJ%" variables={ {key="1" value={ key="Blessed" variables={
+    ///                             {key="1" value={ key="%ADJECTIVE%" variables={
+    ///                                {key="adjective" value={key="SPEC_Oxanalytor"}}
+    ///                                {key="1" value={key="Union"}} }}}}}} }
+    /// </code>
+    /// <para>
+    /// So each word becomes a key carrying whatever follows it inside variable <c>1</c>, and the
+    /// species adjective carries the species' own name key under <c>adjective</c>. Written any other
+    /// way the name still reads, but it is not the name the game would have written, and this app's
+    /// whole claim is that it writes what the game writes.
+    /// </para>
+    /// </remarks>
+    public void SetNested(IReadOnlyList<string> words, string? speciesNameKey = null)
+    {
+        ArgumentNullException.ThrowIfNull(words);
+
+        if (words.Count == 0)
+        {
+            return;
+        }
+
+        RemoveAll("variables");
+        IsLiteral = false;
+
+        // A run that begins with a describing word rather than with the species adjective is wrapped
+        // in %ADJ%, which is the game's marker for one. Checked against all three shapes the
+        // player's file holds: "Blessed Oxanalytoran Union" wraps, "Xeltek Astral Fellowship" does
+        // not, and "Frubralav Irenic Kingdom" wraps only its inner half, which is where its
+        // describing word begins.
+        if (words.Count > 1 && words[0] != AdjectiveTemplate)
+        {
+            Key = AdjWrapper;
+
+            var wrapped = new CwBlock();
+            new LocRef(wrapped).Chain(words, speciesNameKey);
+
+            GetOrAddBlock("variables").Add(new CwNode(Variable("1", wrapped)));
+            return;
+        }
+
+        Chain(words, speciesNameKey);
+    }
+
+    /// <summary>Writes the words one inside the last, without asking whether they need wrapping.</summary>
+    private void Chain(IReadOnlyList<string> words, string? speciesNameKey)
+    {
+        RemoveAll("variables");
+        Key = words[0];
+        IsLiteral = false;
+
+        if (Key == AdjectiveTemplate && speciesNameKey is { Length: > 0 })
+        {
+            GetOrAddBlock("variables").Add(new CwNode(Variable("adjective", CreateKeyBlock(speciesNameKey))));
+        }
+
+        if (words.Count > 1)
+        {
+            var inner = new CwBlock();
+
+            // The rest is a run in its own right, so it asks the wrapping question again — which is
+            // what puts %ADJ% round "Irenic Kingdom" but not round a bare closing word.
+            new LocRef(inner).SetNested([.. words.Skip(1)], speciesNameKey);
+
+            GetOrAddBlock("variables").Add(new CwNode(Variable("1", inner)));
+        }
+    }
+
+    /// <summary>The placeholder the game wraps a name built round a describing word in.</summary>
+    private const string AdjWrapper = "%ADJ%";
+
+    /// <summary>One entry of a variables list: a name and the value it stands for.</summary>
+    private static CwBlock Variable(string key, CwBlock value)
+    {
+        var variable = new CwBlock();
+        variable.Add(CwNode.QuotedAssignment("key", key));
+        variable.Add(CwNode.Assignment("value", value));
+
+        // Unkeyed, as the game writes the list.
+        return variable;
     }
 
     public override string ToString() => IsLiteral ? Key : $"[{Key}]";

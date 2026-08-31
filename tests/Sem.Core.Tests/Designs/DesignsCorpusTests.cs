@@ -64,7 +64,9 @@ public sealed class DesignsCorpusTests
             }
         }
 
-        Assert.True(totalDesigns > 50, $"Expected a substantial corpus, found {totalDesigns} designs.");
+        // Sized to the live designs file rather than to the backups it used to sweep in: the point
+        // of the count is that the corpus was read at all, not that it is large.
+        Assert.True(totalDesigns >= 15, $"Expected the whole designs file, found {totalDesigns} designs.");
     }
 
     [SkippableFact]

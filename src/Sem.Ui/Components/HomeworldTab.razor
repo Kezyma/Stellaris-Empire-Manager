@@ -195,17 +195,27 @@
             .Distinct(StringComparer.Ordinal)
             .OrderBy(n => n, StringComparer.CurrentCulture)];
 
+    /// <summary>
+    /// The ready-made species whose worlds the game would offer this empire.
+    /// </summary>
+    /// <remarks>
+    /// Chosen by the empire's <em>name list</em> rather than by its species class, as the game keeps
+    /// them. Filtering by class put the wrong pool in front of any empire whose two disagree — a
+    /// molluscoid with an arthropoid list found neither its homeworld nor its home star in the lists
+    /// it had been given them from.
+    /// </remarks>
     private IReadOnlyList<SpeciesNameSuggestion> Suggestions
     {
         get
         {
             var all = Session.Data.Database.SpeciesNames;
+            var list = Session.Names.SpeciesNameSourceFor(Design.Species.NameList);
 
-            var forClass = all
-                .Where(s => string.Equals(s.SpeciesClass, Design.Species.Class, StringComparison.Ordinal))
+            var forList = all
+                .Where(s => string.Equals(s.NameList, list, StringComparison.Ordinal))
                 .ToList();
 
-            return forClass.Count > 0 ? forClass : [.. all];
+            return forList.Count > 0 ? forList : [.. all];
         }
     }
 
