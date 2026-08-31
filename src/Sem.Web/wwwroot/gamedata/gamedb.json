@@ -1,7 +1,7 @@
 {
   "schemaVersion": 3,
   "gameVersion": "v4.4.6",
-  "extractorVersion": "0.1.0\u002B32c2da308d1811fea1401a8d9f800f54be33110e",
+  "extractorVersion": "0.1.0\u002B90d810412fda6a2a65bea9f6800cefb8726f6984",
   "defines": {
     "ethicsPoints": 3,
     "civicPoints": 2,
@@ -60043,123 +60043,6 @@
     "GFX_button_empire_spawn_setting|2": "icons/ui/GFX_button_empire_spawn_setting_2.png",
     "GFX_button_empire_spawn_setting|3": "icons/ui/GFX_button_empire_spawn_setting_3.png"
   },
-  "chrome": {
-    "GFX_tiles_dark_area_cut_8": {
-      "image": "icons/chrome/GFX_tiles_dark_area_cut_8.png",
-      "borderX": 8,
-      "borderY": 8
-    },
-    "GFX_subwindow_tile_plain_solid": {
-      "image": "icons/chrome/GFX_subwindow_tile_plain_solid.png",
-      "borderX": 80,
-      "borderY": 80
-    },
-    "GFX_clean_frame_area": {
-      "image": "icons/chrome/GFX_clean_frame_area.png",
-      "borderX": 10,
-      "borderY": 10
-    },
-    "GFX_planet_bg_tile": {
-      "image": "icons/chrome/GFX_planet_bg_tile.png",
-      "borderX": 1,
-      "borderY": 1
-    },
-    "gfx_message_bg": {
-      "image": "icons/chrome/gfx_message_bg.png",
-      "borderX": 13,
-      "borderY": 13
-    },
-    "GFX_tiles_frame": {
-      "image": "icons/chrome/GFX_tiles_frame.png",
-      "borderX": 4,
-      "borderY": 4
-    },
-    "GFX_tiles_frame_extra_light": {
-      "image": "icons/chrome/GFX_tiles_frame_extra_light.png",
-      "borderX": 2,
-      "borderY": 2
-    },
-    "GFX_orange_frame_tile": {
-      "image": "icons/chrome/GFX_orange_frame_tile.png",
-      "borderX": 2,
-      "borderY": 2
-    },
-    "GFX_glow_tile_orange": {
-      "image": "icons/chrome/GFX_glow_tile_orange.png",
-      "borderX": 12,
-      "borderY": 12
-    },
-    "GFX_glow_tile_orange_no_padding": {
-      "image": "icons/chrome/GFX_glow_tile_orange_no_padding.png",
-      "borderX": 12,
-      "borderY": 12
-    },
-    "GFX_galactic_object_button": {
-      "image": "icons/chrome/GFX_galactic_object_button.png",
-      "borderX": 0,
-      "borderY": 0
-    },
-    "GFX_standard_button_142_34_button": {
-      "image": "icons/chrome/GFX_standard_button_142_34_button.png",
-      "borderX": 0,
-      "borderY": 0
-    },
-    "GFX_standard_button_240_24": {
-      "image": "icons/chrome/GFX_standard_button_240_24.png",
-      "borderX": 0,
-      "borderY": 0
-    },
-    "GFX_dropdown_button_104": {
-      "image": "icons/chrome/GFX_dropdown_button_104.png",
-      "borderX": 0,
-      "borderY": 0
-    },
-    "GFX_dropdown_item_104": {
-      "image": "icons/chrome/GFX_dropdown_item_104.png",
-      "borderX": 0,
-      "borderY": 0
-    },
-    "GFX_button_left": {
-      "image": "icons/chrome/GFX_button_left.png",
-      "borderX": 0,
-      "borderY": 0
-    },
-    "GFX_button_right": {
-      "image": "icons/chrome/GFX_button_right.png",
-      "borderX": 0,
-      "borderY": 0
-    },
-    "GFX_line": {
-      "image": "icons/chrome/GFX_line.png",
-      "borderX": 0,
-      "borderY": 0
-    },
-    "GFX_line_medium": {
-      "image": "icons/chrome/GFX_line_medium.png",
-      "borderX": 0,
-      "borderY": 0
-    },
-    "GFX_hex_bg": {
-      "image": "icons/chrome/GFX_hex_bg.png",
-      "borderX": 0,
-      "borderY": 0
-    },
-    "GFX_ship_design_entry_bg_arkships": {
-      "image": "icons/chrome/GFX_ship_design_entry_bg_arkships.png",
-      "borderX": 0,
-      "borderY": 0
-    },
-    "GFX_ethic_selected": {
-      "image": "icons/chrome/GFX_ethic_selected.png",
-      "borderX": 0,
-      "borderY": 0
-    },
-    "GFX_gamesetup_gov_sel": {
-      "image": "icons/chrome/GFX_gamesetup_gov_sel.png",
-      "borderX": 0,
-      "borderY": 0
-    }
-  },
   "scriptedValues": {
     "discovery_weight": 3,
     "hab_districts_per_major_body": 0.25,
@@ -64815,7 +64698,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -64926,7 +64808,6 @@
           "country_edict_fund_add": 100
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -65068,7 +64949,6 @@
           "add_attunement_the_cradle_of_souls": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -65167,7 +65047,6 @@
           "planet_bureaucrats_unity_produces_add": 1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -65246,7 +65125,6 @@
           "ruler_skill_add": 5
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -65336,7 +65214,6 @@
           "add_attunement_the_cradle_of_souls": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -65476,7 +65353,6 @@
           "add_attunement_the_eater_of_worlds": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -65578,7 +65454,6 @@
           "country_official_cap_add": -1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -65653,7 +65528,6 @@
           "add_attunement_the_eater_of_worlds": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -65753,7 +65627,6 @@
           "add_attunement_the_instrument_of_desire": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -65835,7 +65708,6 @@
           "add_attunement_the_cradle_of_souls": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -65947,7 +65819,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -66053,7 +65924,6 @@
           "add_attunement_the_instrument_of_desire": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -66272,7 +66142,6 @@
           "intel_decryption_add": -1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -66390,7 +66259,6 @@
           "add_attunement_the_eater_of_worlds": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -66477,7 +66345,6 @@
           "add_attunement_the_eater_of_worlds": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -66607,7 +66474,6 @@
           "add_attunement_the_cradle_of_souls": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -66677,7 +66543,6 @@
           "add_attunement_the_cradle_of_souls": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -66774,7 +66639,6 @@
           "add_attunement_the_instrument_of_desire": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -66951,7 +66815,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -67045,7 +66908,6 @@
           "add_attunement_the_instrument_of_desire": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -67132,7 +66994,6 @@
           "add_attunement_the_instrument_of_desire": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -67269,7 +67130,6 @@
           "add_attunement_the_cradle_of_souls": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -67339,7 +67199,6 @@
           "add_attunement_the_instrument_of_desire": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -67434,7 +67293,6 @@
           "add_attunement_the_eater_of_worlds": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -67505,7 +67363,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -67626,7 +67483,6 @@
           "add_attunement_the_instrument_of_desire": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -67744,7 +67600,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -68012,7 +67867,6 @@
           "the_cradle_of_souls_attunement_mult": -0.25
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -68198,7 +68052,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -68267,7 +68120,6 @@
           "planet_bureaucrats_stability_produces_add": 1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -68332,7 +68184,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -68513,7 +68364,6 @@
           "pop_soldier_bonus_workforce_mult": 0.1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -68607,7 +68457,6 @@
           "add_attunement_the_cradle_of_souls": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -68747,7 +68596,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -68856,7 +68704,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -68963,7 +68810,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -69029,7 +68875,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -69142,7 +68987,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -69305,7 +69149,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -69456,7 +69299,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -69565,7 +69407,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -69697,7 +69538,6 @@
           "add_attunement_the_cradle_of_souls": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -69808,7 +69648,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -69976,7 +69815,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -70057,7 +69895,6 @@
           "megastructure_dismantle_refund_mult": 0.1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -70161,7 +69998,6 @@
           "add_attunement_the_instrument_of_desire": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -70242,7 +70078,6 @@
           "leader_trait_selection_options_add": 1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -70398,7 +70233,6 @@
           "add_attunement_the_cradle_of_souls": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -70492,7 +70326,6 @@
           "category_voidcraft_draw_chance_mult": 0.5
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -70623,7 +70456,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -70719,7 +70551,6 @@
           "rare_tech_draw_chance_mult": 0.1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -70799,7 +70630,6 @@
           "country_scientist_cap_add": 1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -70924,7 +70754,6 @@
           "add_attunement_the_instrument_of_desire": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -71082,7 +70911,6 @@
           "citizen_pop_different_species_class_happiness": 0.025
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -71159,7 +70987,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -71349,10 +71176,6 @@
           "BIOLOGICAL_species_trait_points_add": 2,
           "planet_doctors_society_research_produces_add": 0.5
         }
-      },
-      "traitBudgetModifiers": {
-        "BIOLOGICAL_species_trait_picks_add": 2,
-        "BIOLOGICAL_species_trait_points_add": 2
       },
       "initializers": [],
       "addedPlanetClasses": [],
@@ -71548,7 +71371,6 @@
           "add_attunement_the_cradle_of_souls": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -71721,7 +71543,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -71820,7 +71641,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -71892,7 +71712,6 @@
           "planet_pop_assembly_mult": 0.2
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -71967,7 +71786,6 @@
           "councilor_research_exp_gain": 0.1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -72055,7 +71873,6 @@
           "add_attunement_the_eater_of_worlds": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -72118,7 +71935,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -72199,7 +72015,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -72416,7 +72231,6 @@
           "add_attunement_the_instrument_of_desire": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -72506,7 +72320,6 @@
           "add_attunement_the_instrument_of_desire": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -72627,7 +72440,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -72735,7 +72547,6 @@
           "add_attunement_the_instrument_of_desire": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -72883,7 +72694,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -72963,7 +72773,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -73131,7 +72940,6 @@
           "leader_lifespan_mult": 0.5
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -73251,7 +73059,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -73385,7 +73192,6 @@
           "refugee_attraction": -0.15
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -73558,7 +73364,6 @@
           "intel_encryption_add": 1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -73723,7 +73528,6 @@
           "psionic_aura_intensity_add": 10
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -73921,7 +73725,6 @@
           "job_technician_automated_workforce_mult": 1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -74230,7 +74033,6 @@
           "category_materials_research_speed_mult": 0.5
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [
         "pc_volcanic"
@@ -74404,7 +74206,6 @@
           "pc_volcanic_habitability": 0.2
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [
         "pc_volcanic"
@@ -74531,7 +74332,6 @@
           "planet_jobs_unity_produces_mult": 5
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -74631,7 +74431,6 @@
           "planet_building_refund_mult": 0.75
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -74708,7 +74507,6 @@
           "add_attunement_the_cradle_of_souls": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -74792,7 +74590,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -74956,7 +74753,6 @@
           "add_attunement_the_eater_of_worlds": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -75039,7 +74835,6 @@
           "ship_speed_mult": 0.2
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -75138,7 +74933,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -75207,7 +75001,6 @@
           "ship_speed_mult": 0.2
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -75244,7 +75037,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -75299,7 +75091,6 @@
           "ship_repair_armor_mult": 0.5
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -75359,7 +75150,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -75445,7 +75235,6 @@
           "ship_base_speed_mult": 0.3
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -75575,7 +75364,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -75750,7 +75538,6 @@
           "pc_volcanic_habitability": 0.2
         }
       },
-      "traitBudgetModifiers": {},
       "startingColony": "pc_volcanic",
       "habitabilityPreference": "pc_volcanic",
       "initializers": [
@@ -75966,7 +75753,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "startingColony": "pc_volcanic",
       "habitabilityPreference": "pc_volcanic",
       "initializers": [
@@ -76059,10 +75845,6 @@
           "ROBOT_species_trait_picks_add": 1,
           "ROBOT_species_trait_points_add": 1
         }
-      },
-      "traitBudgetModifiers": {
-        "ROBOT_species_trait_picks_add": 1,
-        "ROBOT_species_trait_points_add": 1
       },
       "initializers": [],
       "addedPlanetClasses": [],
@@ -76219,7 +76001,6 @@
           "evasion_vs_psionic_empires_mult": 0.25
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [
         "mindwarden_system_init",
         "mindwarden_sol_system_init"
@@ -76359,7 +76140,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -76532,9 +76312,6 @@
           "BIOLOGICAL_species_trait_picks_add": 1
         }
       },
-      "traitBudgetModifiers": {
-        "BIOLOGICAL_species_trait_picks_add": 1
-      },
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -76605,7 +76382,6 @@
           "country_starbase_capacity_add": 3
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -76769,7 +76545,6 @@
           "planet_building_capacity_add": 5
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -76837,7 +76612,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -76936,7 +76710,6 @@
           "country_vivarium_max_capacity_mult": 0.25
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -77020,7 +76793,6 @@
           "storm_ship_hull_breaker_mult": -0.1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -77189,7 +76961,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -77472,7 +77243,6 @@
           "category_computing_research_speed_mult": 0.15
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -77519,7 +77289,6 @@
           "arc_furnace_limit_add": 1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [
         "custom_starting_init_01",
         "custom_starting_init_02",
@@ -77574,7 +77343,6 @@
           "country_astral_rift_fail_mult": -0.5
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [
         "custom_starting_init_01",
         "custom_starting_init_02",
@@ -77642,7 +77410,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -77698,7 +77465,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -77754,7 +77520,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -77810,7 +77575,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -77976,7 +77740,6 @@
           "damage_vs_superior_empires_mult": 0.15
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -78220,7 +77983,6 @@
           "refugee_attraction": 1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [
         "custom_starting_init_01",
         "custom_starting_init_02",
@@ -78401,7 +78163,6 @@
           "refugee_attraction": -0.1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [
         "fear_of_the_dark_system",
         "sol_system_fear_of_the_dark_system"
@@ -78524,10 +78285,6 @@
           "BIOLOGICAL_species_trait_picks_add": 1
         }
       },
-      "traitBudgetModifiers": {
-        "BIOLOGICAL_species_trait_points_add": 2,
-        "BIOLOGICAL_species_trait_picks_add": 1
-      },
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -78645,7 +78402,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [
         "toxic_knights_start",
         "toxic_knights_sol_start"
@@ -78712,7 +78468,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -78797,7 +78552,6 @@
           "planet_non_artificial_max_districts_add": 2
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -78865,7 +78619,6 @@
           "planet_non_artificial_max_districts_add": 2
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -78912,7 +78665,6 @@
           "catapult_spread_mult": 0.5
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -79005,7 +78757,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -79106,7 +78857,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -79184,7 +78934,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -79318,7 +79067,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "startingColony": "pc_ocean",
       "habitabilityPreference": "pc_ocean",
       "initializers": [
@@ -79393,7 +79141,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "startingColony": "pc_ocean",
       "habitabilityPreference": "pc_ocean",
       "initializers": [
@@ -79573,7 +79320,6 @@
           "refugee_attraction": -0.25
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -79640,7 +79386,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "startingColony": "pc_relic",
       "initializers": [],
       "addedPlanetClasses": [],
@@ -79732,7 +79477,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "startingColony": "pc_shattered_ring_habitable",
       "habitabilityPreference": "pc_shattered_ring_habitable",
       "initializers": [
@@ -79882,7 +79626,6 @@
           "habitat_district_jobs_mult": 0.5
         }
       },
-      "traitBudgetModifiers": {},
       "startingColony": "pc_habitat",
       "habitabilityPreference": "pc_habitat",
       "initializers": [
@@ -79999,7 +79742,6 @@
           "habitat_district_jobs_mult": 0.5
         }
       },
-      "traitBudgetModifiers": {},
       "startingColony": "pc_habitat",
       "habitabilityPreference": "pc_habitat",
       "initializers": [
@@ -80093,7 +79835,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -80164,7 +79905,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -80280,7 +80020,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -80414,7 +80153,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -80453,7 +80191,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -80584,7 +80321,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -80764,7 +80500,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "startingColony": "pc_gaia",
       "habitabilityPreference": "pc_gaia",
       "initializers": [],
@@ -80882,7 +80617,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "startingColony": "pc_nuked",
       "initializers": [],
       "addedPlanetClasses": [],
@@ -80982,7 +80716,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "startingColony": "pc_nuked",
       "initializers": [],
       "addedPlanetClasses": [],
@@ -81092,7 +80825,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -81170,7 +80902,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "startingColony": "pc_machine",
       "initializers": [],
       "addedPlanetClasses": [],
@@ -81534,7 +81265,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [
         "origin_unplugged_starting_system_init",
         "sol_system_unplugged_initializer"
@@ -81643,10 +81373,6 @@
           "ROBOT_species_trait_picks_add": 1,
           "ROBOT_species_trait_points_add": 2
         }
-      },
-      "traitBudgetModifiers": {
-        "ROBOT_species_trait_picks_add": 1,
-        "ROBOT_species_trait_points_add": 2
       },
       "initializers": [],
       "addedPlanetClasses": [],
@@ -81771,7 +81497,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -81856,7 +81581,6 @@
           "ship_colonizer_alloys_cost_mult": -0.5
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -81973,7 +81697,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -82018,7 +81741,6 @@
           "megastructure_build_speed_mult": 0.05
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -82057,7 +81779,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -82100,7 +81821,6 @@
           "country_naval_cap_add": 1000
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -82141,7 +81861,6 @@
           "country_naval_cap_add": 1000
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -82183,7 +81902,6 @@
           "monthly_loyalty": 0.5
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -82219,7 +81937,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -82263,7 +81980,6 @@
           "starbase_shipyard_build_speed_mult": 0.2
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -82306,7 +82022,6 @@
           "starbase_shipyard_build_speed_mult": 0.2
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -82347,7 +82062,6 @@
           "ships_upkeep_mult": -0.5
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -82387,7 +82101,6 @@
           "commander_initial_skill": 2
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -82425,7 +82138,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "startingColony": "pc_gaia",
       "habitabilityPreference": "pc_gaia",
       "initializers": [],
@@ -82504,7 +82216,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -82580,7 +82291,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -82618,7 +82328,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -82660,7 +82369,6 @@
           "country_naval_cap_add": 50
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -82698,7 +82406,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -82735,7 +82442,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -82772,7 +82478,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -82825,7 +82530,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -82878,7 +82582,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -82935,7 +82638,6 @@
           "bonus_automated_workforce_mult": 5
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -82993,7 +82695,6 @@
           "planet_jobs_energy_produces_mult": 0.5
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -83050,7 +82751,6 @@
           "planet_jobs_energy_produces_mult": 0.5
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -83109,7 +82809,6 @@
           "country_civics_influence_upkeep_add": 1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -83165,7 +82864,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -83222,7 +82920,6 @@
           "country_unity_produces_mult": -0.5
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -83279,7 +82976,6 @@
           "planet_jobs_produces_mult": -0.5
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -83336,7 +83032,6 @@
           "empire_size_mult": 2
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -83393,7 +83088,6 @@
           "planet_jobs_produces_mult": -0.5
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -83450,7 +83144,6 @@
           "planet_jobs_produces_mult": -0.5
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -83507,7 +83200,6 @@
           "planet_jobs_produces_mult": -0.5
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -83560,7 +83252,6 @@
           "bonus_automated_workforce_mult": 5
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -83616,7 +83307,6 @@
           "army_damage_mult": 0.5
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -83670,7 +83360,6 @@
           "planetary_ascension_cost_mult": -0.75
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -83726,7 +83415,6 @@
           "diplo_weight_mult": 1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -83784,7 +83472,6 @@
           "country_civics_influence_produces_add": 1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -83844,7 +83531,6 @@
           "bonus_automated_workforce_mult": 5
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -83898,7 +83584,6 @@
         "isEmpty": true,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -83952,7 +83637,6 @@
         "isEmpty": true,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -84006,7 +83690,6 @@
         "isEmpty": true,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -84060,7 +83743,6 @@
         "isEmpty": true,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -84114,7 +83796,6 @@
         "isEmpty": true,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -84168,7 +83849,6 @@
         "isEmpty": true,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -84205,7 +83885,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -84252,7 +83931,6 @@
         "isEmpty": true,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -84298,7 +83976,6 @@
         "isEmpty": true,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -84344,7 +84021,6 @@
         "isEmpty": true,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -84390,7 +84066,6 @@
         "isEmpty": true,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -84436,7 +84111,6 @@
         "isEmpty": true,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -84482,7 +84156,6 @@
         "isEmpty": true,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -84536,7 +84209,6 @@
         "isEmpty": true,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -84590,7 +84262,6 @@
         "isEmpty": true,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -84644,7 +84315,6 @@
         "isEmpty": true,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -84710,7 +84380,6 @@
           "starbase_shipyard_build_speed_mult": 0.25
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -84764,7 +84433,6 @@
         "isEmpty": true,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -84818,7 +84486,6 @@
         "isEmpty": true,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -84872,7 +84539,6 @@
         "isEmpty": true,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -84926,7 +84592,6 @@
         "isEmpty": true,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -84980,7 +84645,6 @@
         "isEmpty": true,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -85016,7 +84680,6 @@
         "isEmpty": true,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -85052,7 +84715,6 @@
         "isEmpty": true,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -85118,7 +84780,6 @@
           "country_government_civic_points_add": 1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -85159,7 +84820,6 @@
           "country_naval_cap_mult": 0.15
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -85200,7 +84860,6 @@
           "ship_fire_rate_mult": 0.1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -85246,7 +84905,6 @@
           "country_government_civic_points_add": 1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -85292,7 +84950,6 @@
           "country_government_civic_points_add": 1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -85346,7 +85003,6 @@
           "pop_government_ethic_attraction": 0.25
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -85400,7 +85056,6 @@
         "isEmpty": true,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -85454,7 +85109,6 @@
         "isEmpty": true,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -85508,7 +85162,6 @@
         "isEmpty": true,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -85562,7 +85215,6 @@
         "isEmpty": true,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -85606,7 +85258,6 @@
           "ship_speed_mult": 0.2
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -85676,7 +85327,6 @@
           "councilor_gestalt_cognitive_exp_gain": 0.25
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -85722,7 +85372,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -85766,7 +85415,6 @@
           "negative_traits_country": -1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -85810,7 +85458,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -85862,7 +85509,6 @@
           "add_attunement_the_eater_of_worlds": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -85914,7 +85560,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -85961,7 +85606,6 @@
           "country_scientist_cap_add": 1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -86098,7 +85742,6 @@
           "the_cradle_of_souls_attunement_mult": -0.25
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -86182,7 +85825,6 @@
           "add_attunement_the_cradle_of_souls": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -86263,7 +85905,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -86340,7 +85981,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -86423,7 +86063,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -86481,7 +86120,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -86531,7 +86169,6 @@
           "add_attunement_the_instrument_of_desire": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -86581,7 +86218,6 @@
           "add_attunement_the_eater_of_worlds": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -86683,7 +86319,6 @@
           "country_starbase_influence_cost_distance_mult": -0.2
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -86734,7 +86369,6 @@
           "leader_trait_selection_options_add": 1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -86778,7 +86412,6 @@
           "councilor_gestalt_regulatory_exp_gain": 0.25
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -86827,7 +86460,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -86886,7 +86518,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -86966,7 +86597,6 @@
           "add_attunement_the_cradle_of_souls": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -87075,7 +86705,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -87213,7 +86842,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -87303,7 +86931,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -87354,7 +86981,6 @@
           "councilor_gestalt_cognitive_exp_gain": 0.25
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -87469,7 +87095,6 @@
           "add_attunement_the_instrument_of_desire": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -87522,7 +87147,6 @@
           "add_attunement_the_instrument_of_desire": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -87586,7 +87210,6 @@
           "add_attunement_the_cradle_of_souls": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -87644,7 +87267,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -87712,7 +87334,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -87803,7 +87424,6 @@
           "operation_smuggle_pops_difficulty_add": -2
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -87897,7 +87517,6 @@
           "councilor_gestalt_growth_exp_gain": 0.25
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -87939,7 +87558,6 @@
           "councilor_gestalt_regulatory_exp_gain": 0.25
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -88008,7 +87626,6 @@
           "councilor_gestalt_cognitive_exp_gain": 0.25
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -88085,7 +87702,6 @@
           "councilor_gestalt_growth_exp_gain": 0.25
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -88304,7 +87920,6 @@
           "category_materials_research_speed_mult": 0.5
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -88388,7 +88003,6 @@
           "councilor_gestalt_growth_exp_gain": 0.25
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [
         "pc_volcanic"
@@ -88475,7 +88089,6 @@
           "councilor_gestalt_growth_exp_gain": 0.25
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -88521,7 +88134,6 @@
           "councilor_gestalt_regulatory_exp_gain": 0.25
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -88575,7 +88187,6 @@
           "councilor_gestalt_cognitive_exp_gain": 0.25
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -88658,7 +88269,6 @@
           "add_attunement_the_cradle_of_souls": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -88803,7 +88413,6 @@
           "the_cradle_of_souls_attunement_mult": -0.25
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -88894,7 +88503,6 @@
           "add_attunement_the_eater_of_worlds": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -88944,7 +88552,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -88991,7 +88598,6 @@
           "country_scientist_cap_add": 1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -89033,7 +88639,6 @@
           "country_unity_produces_mult": 0.15
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -89078,7 +88683,6 @@
           "add_attunement_the_instrument_of_desire": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -89126,7 +88730,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -89170,7 +88773,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -89220,7 +88822,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -89280,7 +88881,6 @@
           "add_attunement_the_eater_of_worlds": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -89324,7 +88924,6 @@
           "intel_encryption_add": 1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -89368,7 +88967,6 @@
           "envoys_add": 1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -89413,7 +89011,6 @@
           "intel_decryption_add": 1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -89456,7 +89053,6 @@
           "planet_pop_assembly_mult": 0.2
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -89500,7 +89096,6 @@
           "councilor_gestalt_growth_exp_gain": 0.25
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -89562,7 +89157,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -89615,7 +89209,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -89668,7 +89261,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -89718,7 +89310,6 @@
           "add_attunement_the_instrument_of_desire": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -89813,7 +89404,6 @@
           "station_observers_unity_produces_add": 3
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -89873,7 +89463,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -89923,7 +89512,6 @@
           "leader_trait_selection_options_add": 1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -89967,7 +89555,6 @@
           "councilor_gestalt_regulatory_exp_gain": 0.25
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -90042,7 +89629,6 @@
           "add_attunement_the_cradle_of_souls": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -90099,7 +89685,6 @@
           "add_attunement_the_instrument_of_desire": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -90159,7 +89744,6 @@
           "add_attunement_the_cradle_of_souls": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -90223,7 +89807,6 @@
           "add_attunement_the_eater_of_worlds": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -90360,7 +89943,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -90422,7 +90004,6 @@
           "add_attunement_the_cradle_of_souls": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -90502,7 +90083,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -90588,7 +90168,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -90630,7 +90209,6 @@
           "councilor_gestalt_cognitive_exp_gain": 0.25
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -90740,7 +90318,6 @@
           "add_attunement_the_instrument_of_desire": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -90793,7 +90370,6 @@
           "add_attunement_the_instrument_of_desire": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -90845,7 +90421,6 @@
           "add_attunement_the_eater_of_worlds": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -90908,7 +90483,6 @@
           "councilor_gestalt_growth_exp_gain": 0.25
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -90950,7 +90524,6 @@
           "councilor_gestalt_regulatory_exp_gain": 0.25
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -91004,7 +90577,6 @@
           "councilor_gestalt_growth_exp_gain": 0.25
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -91088,7 +90660,6 @@
           "councilor_gestalt_growth_exp_gain": 0.25
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [
         "pc_volcanic"
@@ -91165,7 +90736,6 @@
           "councilor_gestalt_growth_exp_gain": 0.25
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -91211,7 +90781,6 @@
           "councilor_gestalt_regulatory_exp_gain": 0.25
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -91265,7 +90834,6 @@
           "councilor_gestalt_cognitive_exp_gain": 0.25
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -91330,7 +90898,6 @@
           "add_attunement_the_instrument_of_desire": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -91395,7 +90962,6 @@
           "add_attunement_the_cradle_of_souls": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -91527,7 +91093,6 @@
           "add_attunement_the_cradle_of_souls": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -91621,7 +91186,6 @@
           "add_attunement_the_eater_of_worlds": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -91674,7 +91238,6 @@
           "planet_traders_trade_produces_add": 2
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -91764,7 +91327,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -91832,7 +91394,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -91914,7 +91475,6 @@
           "add_attunement_the_instrument_of_desire": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -91989,7 +91549,6 @@
           "intel_decryption_add": 1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -92094,7 +91653,6 @@
           "add_attunement_the_eater_of_worlds": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -92195,7 +91753,6 @@
           "add_attunement_the_instrument_of_desire": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -92260,7 +91817,6 @@
           "add_attunement_the_cradle_of_souls": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -92329,7 +91885,6 @@
           "add_attunement_the_cradle_of_souls": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -92430,7 +91985,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -92521,7 +92075,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -92608,7 +92161,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -92758,7 +92310,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -92856,7 +92407,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -92916,7 +92466,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -93037,7 +92586,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -93189,7 +92737,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -93284,7 +92831,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -93349,7 +92895,6 @@
           "megastructure_dismantle_refund_mult": 0.1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -93437,7 +92982,6 @@
           "add_attunement_the_instrument_of_desire": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -93679,7 +93223,6 @@
           "station_researchers_produces_mult": 0.25
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -93799,7 +93342,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -93897,7 +93439,6 @@
           "rare_tech_draw_chance_mult": 0.1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -94023,7 +93564,6 @@
           "ships_upkeep_mult": -0.05
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -94097,7 +93637,6 @@
           "country_scientist_cap_add": 1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -94198,7 +93737,6 @@
           "add_attunement_the_instrument_of_desire": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -94281,7 +93819,6 @@
           "leader_trait_selection_options_add": 1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -94416,7 +93953,6 @@
           "add_attunement_the_cradle_of_souls": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -94491,7 +94027,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -94637,7 +94172,6 @@
           "planet_augmentors_trade_produces_add": 4
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -94823,7 +94357,6 @@
           "add_attunement_the_cradle_of_souls": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -94965,7 +94498,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -95053,7 +94585,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -95101,7 +94632,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -95166,7 +94696,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -95357,7 +94886,6 @@
           "add_attunement_the_instrument_of_desire": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -95438,7 +94966,6 @@
           "add_attunement_the_instrument_of_desire": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -95548,7 +95075,6 @@
           "add_attunement_the_composer_of_strands": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -95659,7 +95185,6 @@
           "add_attunement_the_instrument_of_desire": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -95810,7 +95335,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -95972,7 +95496,6 @@
           "leader_lifespan_mult": 0.5
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -96081,7 +95604,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -96204,7 +95726,6 @@
           "refugee_attraction": -0.15
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -96361,7 +95882,6 @@
           "intel_encryption_add": 1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -96500,7 +96020,6 @@
           "psionic_aura_intensity_add": 10
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -96690,7 +96209,6 @@
           "job_technician_automated_workforce_mult": 1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -96820,7 +96338,6 @@
           "pc_volcanic_habitability": 0.2
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [
         "pc_volcanic"
@@ -96928,7 +96445,6 @@
           "planet_building_refund_mult": 0.75
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -97007,7 +96523,6 @@
           "add_attunement_the_cradle_of_souls": 60
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -97093,7 +96608,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -97165,7 +96679,6 @@
           "ship_speed_mult": 0.1
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -97284,7 +96797,6 @@
         "isEmpty": false,
         "visibleModifiers": {}
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -97346,7 +96858,6 @@
           "ship_speed_mult": 0.2
         }
       },
-      "traitBudgetModifiers": {},
       "initializers": [],
       "addedPlanetClasses": [],
       "removedPlanetClasses": [],
@@ -151985,6 +151496,186 @@
       "nameKey": "name_list_PLANT4"
     },
     {
+      "key": "Prethoryn",
+      "selectable": {
+        "kind": "always",
+        "value": false
+      },
+      "randomized": false,
+      "characterNames": {
+        "fullNames": {
+          "any": [
+            "Gestalt Pattern \u0027Hunter\u0027",
+            "Gestalt Pattern \u0027Stalker\u0027",
+            "Gestalt Pattern \u0027Devourer\u0027",
+            "Gestalt Pattern \u0027Slayer\u0027",
+            "Gestalt Pattern \u0027Destroyer\u0027",
+            "Gestalt Pattern \u0027Executioner\u0027",
+            "Gestalt Pattern \u0027Reaper\u0027",
+            "Gestalt Pattern \u0027Slaughterer\u0027",
+            "Gestalt Pattern \u0027Howler\u0027",
+            "Gestalt Pattern \u0027Prowler\u0027",
+            "Gestalt Pattern \u0027Killer\u0027",
+            "Gestalt Pattern \u0027Mauler\u0027",
+            "Gestalt Pattern \u0027Seeker\u0027",
+            "Gestalt Pattern \u0027Butcher\u0027",
+            "Gestalt Pattern \u0027Corrupter\u0027",
+            "Gestalt Pattern \u0027Screamer\u0027",
+            "Gestalt Pattern \u0027Stinger\u0027",
+            "Gestalt Pattern \u0027Thresher\u0027",
+            "Gestalt Pattern \u0027Strider\u0027",
+            "Gestalt Pattern \u0027Singer\u0027",
+            "Gestalt Pattern \u0027Silencer\u0027",
+            "Gestalt Pattern \u0027Feeder\u0027",
+            "Gestalt Pattern \u0027Striker\u0027",
+            "Gestalt Pattern \u0027Smiter\u0027",
+            "Gestalt Pattern \u0027Watcher\u0027",
+            "Gestalt Pattern \u0027Observer\u0027",
+            "Gestalt Pattern \u0027Chaser\u0027",
+            "Gestalt Pattern \u0027Vanquisher\u0027",
+            "Gestalt Pattern \u0027Crusher\u0027",
+            "Gestalt Pattern \u0027Eater\u0027",
+            "Gestalt Pattern \u0027Invader\u0027",
+            "Gestalt Pattern \u0027Interloper\u0027",
+            "Gestalt Pattern \u0027Intruder\u0027",
+            "Gestalt Pattern \u0027Trespasser\u0027",
+            "Gestalt Pattern \u0027Encroacher\u0027",
+            "Gestalt Pattern \u0027Ravager\u0027",
+            "Gestalt Pattern \u0027Gnawer\u0027",
+            "Gestalt Pattern \u0027Ruiner\u0027",
+            "Gestalt Pattern \u0027Wrecker\u0027",
+            "Gestalt Pattern \u0027Despoiler\u0027",
+            "Gestalt Pattern \u0027Pillager\u0027",
+            "Gestalt Pattern \u0027Tainter\u0027",
+            "Gestalt Pattern \u0027Depriver\u0027",
+            "Gestalt Pattern \u0027Reaver\u0027",
+            "Gestalt Pattern \u0027Berserker\u0027",
+            "Gestalt Pattern \u0027Punisher\u0027",
+            "Gestalt Pattern \u0027Scourer\u0027",
+            "Gestalt Pattern \u0027Cleanser\u0027",
+            "Gestalt Pattern \u0027Shatterer\u0027",
+            "Gestalt Pattern \u0027Tormenter\u0027",
+            "Gestalt Pattern \u0027Terrorizer\u0027"
+          ],
+          "male": [],
+          "female": [],
+          "isEmpty": false,
+          "all": [
+            "Gestalt Pattern \u0027Hunter\u0027",
+            "Gestalt Pattern \u0027Stalker\u0027",
+            "Gestalt Pattern \u0027Devourer\u0027",
+            "Gestalt Pattern \u0027Slayer\u0027",
+            "Gestalt Pattern \u0027Destroyer\u0027",
+            "Gestalt Pattern \u0027Executioner\u0027",
+            "Gestalt Pattern \u0027Reaper\u0027",
+            "Gestalt Pattern \u0027Slaughterer\u0027",
+            "Gestalt Pattern \u0027Howler\u0027",
+            "Gestalt Pattern \u0027Prowler\u0027",
+            "Gestalt Pattern \u0027Killer\u0027",
+            "Gestalt Pattern \u0027Mauler\u0027",
+            "Gestalt Pattern \u0027Seeker\u0027",
+            "Gestalt Pattern \u0027Butcher\u0027",
+            "Gestalt Pattern \u0027Corrupter\u0027",
+            "Gestalt Pattern \u0027Screamer\u0027",
+            "Gestalt Pattern \u0027Stinger\u0027",
+            "Gestalt Pattern \u0027Thresher\u0027",
+            "Gestalt Pattern \u0027Strider\u0027",
+            "Gestalt Pattern \u0027Singer\u0027",
+            "Gestalt Pattern \u0027Silencer\u0027",
+            "Gestalt Pattern \u0027Feeder\u0027",
+            "Gestalt Pattern \u0027Striker\u0027",
+            "Gestalt Pattern \u0027Smiter\u0027",
+            "Gestalt Pattern \u0027Watcher\u0027",
+            "Gestalt Pattern \u0027Observer\u0027",
+            "Gestalt Pattern \u0027Chaser\u0027",
+            "Gestalt Pattern \u0027Vanquisher\u0027",
+            "Gestalt Pattern \u0027Crusher\u0027",
+            "Gestalt Pattern \u0027Eater\u0027",
+            "Gestalt Pattern \u0027Invader\u0027",
+            "Gestalt Pattern \u0027Interloper\u0027",
+            "Gestalt Pattern \u0027Intruder\u0027",
+            "Gestalt Pattern \u0027Trespasser\u0027",
+            "Gestalt Pattern \u0027Encroacher\u0027",
+            "Gestalt Pattern \u0027Ravager\u0027",
+            "Gestalt Pattern \u0027Gnawer\u0027",
+            "Gestalt Pattern \u0027Ruiner\u0027",
+            "Gestalt Pattern \u0027Wrecker\u0027",
+            "Gestalt Pattern \u0027Despoiler\u0027",
+            "Gestalt Pattern \u0027Pillager\u0027",
+            "Gestalt Pattern \u0027Tainter\u0027",
+            "Gestalt Pattern \u0027Depriver\u0027",
+            "Gestalt Pattern \u0027Reaver\u0027",
+            "Gestalt Pattern \u0027Berserker\u0027",
+            "Gestalt Pattern \u0027Punisher\u0027",
+            "Gestalt Pattern \u0027Scourer\u0027",
+            "Gestalt Pattern \u0027Cleanser\u0027",
+            "Gestalt Pattern \u0027Shatterer\u0027",
+            "Gestalt Pattern \u0027Tormenter\u0027",
+            "Gestalt Pattern \u0027Terrorizer\u0027"
+          ]
+        },
+        "firstNames": {
+          "any": [],
+          "male": [],
+          "female": [],
+          "isEmpty": true,
+          "all": []
+        },
+        "secondNames": {
+          "any": [],
+          "male": [],
+          "female": [],
+          "isEmpty": true,
+          "all": []
+        },
+        "regnalFirstNames": {
+          "any": [],
+          "male": [],
+          "female": [],
+          "isEmpty": true,
+          "all": []
+        },
+        "regnalSecondNames": {
+          "any": [],
+          "male": [],
+          "female": [],
+          "isEmpty": true,
+          "all": []
+        },
+        "isEmpty": false
+      },
+      "planetNames": [],
+      "shipNames": [
+        "Prethoryn Swarmer",
+        "Prethoryn Swarmling",
+        "Prethoryn Warrior",
+        "Prethoryn Brood Mother",
+        "Xarkiz",
+        "Mugask",
+        "Dark One",
+        "Sikilo",
+        "Saggraz",
+        "Zazas",
+        "Dimasos",
+        "Zugal",
+        "Terreak",
+        "Xabil",
+        "Xukaz",
+        "Xukanna",
+        "Zakul",
+        "Sugassa",
+        "Simirk",
+        "Xeldak",
+        "Zazuk",
+        "Golden One",
+        "Angry One",
+        "Prethoryn Infestor"
+      ],
+      "fleetNames": [],
+      "fleetPattern": "$ORD$ Star Brood",
+      "nameKey": "name_list_Prethoryn"
+    },
+    {
       "key": "PRT1",
       "selectable": {
         "kind": "always",
@@ -152499,186 +152190,6 @@
         "Orbwalkers"
       ],
       "nameKey": "name_list_PRT1"
-    },
-    {
-      "key": "Prethoryn",
-      "selectable": {
-        "kind": "always",
-        "value": false
-      },
-      "randomized": false,
-      "characterNames": {
-        "fullNames": {
-          "any": [
-            "Gestalt Pattern \u0027Hunter\u0027",
-            "Gestalt Pattern \u0027Stalker\u0027",
-            "Gestalt Pattern \u0027Devourer\u0027",
-            "Gestalt Pattern \u0027Slayer\u0027",
-            "Gestalt Pattern \u0027Destroyer\u0027",
-            "Gestalt Pattern \u0027Executioner\u0027",
-            "Gestalt Pattern \u0027Reaper\u0027",
-            "Gestalt Pattern \u0027Slaughterer\u0027",
-            "Gestalt Pattern \u0027Howler\u0027",
-            "Gestalt Pattern \u0027Prowler\u0027",
-            "Gestalt Pattern \u0027Killer\u0027",
-            "Gestalt Pattern \u0027Mauler\u0027",
-            "Gestalt Pattern \u0027Seeker\u0027",
-            "Gestalt Pattern \u0027Butcher\u0027",
-            "Gestalt Pattern \u0027Corrupter\u0027",
-            "Gestalt Pattern \u0027Screamer\u0027",
-            "Gestalt Pattern \u0027Stinger\u0027",
-            "Gestalt Pattern \u0027Thresher\u0027",
-            "Gestalt Pattern \u0027Strider\u0027",
-            "Gestalt Pattern \u0027Singer\u0027",
-            "Gestalt Pattern \u0027Silencer\u0027",
-            "Gestalt Pattern \u0027Feeder\u0027",
-            "Gestalt Pattern \u0027Striker\u0027",
-            "Gestalt Pattern \u0027Smiter\u0027",
-            "Gestalt Pattern \u0027Watcher\u0027",
-            "Gestalt Pattern \u0027Observer\u0027",
-            "Gestalt Pattern \u0027Chaser\u0027",
-            "Gestalt Pattern \u0027Vanquisher\u0027",
-            "Gestalt Pattern \u0027Crusher\u0027",
-            "Gestalt Pattern \u0027Eater\u0027",
-            "Gestalt Pattern \u0027Invader\u0027",
-            "Gestalt Pattern \u0027Interloper\u0027",
-            "Gestalt Pattern \u0027Intruder\u0027",
-            "Gestalt Pattern \u0027Trespasser\u0027",
-            "Gestalt Pattern \u0027Encroacher\u0027",
-            "Gestalt Pattern \u0027Ravager\u0027",
-            "Gestalt Pattern \u0027Gnawer\u0027",
-            "Gestalt Pattern \u0027Ruiner\u0027",
-            "Gestalt Pattern \u0027Wrecker\u0027",
-            "Gestalt Pattern \u0027Despoiler\u0027",
-            "Gestalt Pattern \u0027Pillager\u0027",
-            "Gestalt Pattern \u0027Tainter\u0027",
-            "Gestalt Pattern \u0027Depriver\u0027",
-            "Gestalt Pattern \u0027Reaver\u0027",
-            "Gestalt Pattern \u0027Berserker\u0027",
-            "Gestalt Pattern \u0027Punisher\u0027",
-            "Gestalt Pattern \u0027Scourer\u0027",
-            "Gestalt Pattern \u0027Cleanser\u0027",
-            "Gestalt Pattern \u0027Shatterer\u0027",
-            "Gestalt Pattern \u0027Tormenter\u0027",
-            "Gestalt Pattern \u0027Terrorizer\u0027"
-          ],
-          "male": [],
-          "female": [],
-          "isEmpty": false,
-          "all": [
-            "Gestalt Pattern \u0027Hunter\u0027",
-            "Gestalt Pattern \u0027Stalker\u0027",
-            "Gestalt Pattern \u0027Devourer\u0027",
-            "Gestalt Pattern \u0027Slayer\u0027",
-            "Gestalt Pattern \u0027Destroyer\u0027",
-            "Gestalt Pattern \u0027Executioner\u0027",
-            "Gestalt Pattern \u0027Reaper\u0027",
-            "Gestalt Pattern \u0027Slaughterer\u0027",
-            "Gestalt Pattern \u0027Howler\u0027",
-            "Gestalt Pattern \u0027Prowler\u0027",
-            "Gestalt Pattern \u0027Killer\u0027",
-            "Gestalt Pattern \u0027Mauler\u0027",
-            "Gestalt Pattern \u0027Seeker\u0027",
-            "Gestalt Pattern \u0027Butcher\u0027",
-            "Gestalt Pattern \u0027Corrupter\u0027",
-            "Gestalt Pattern \u0027Screamer\u0027",
-            "Gestalt Pattern \u0027Stinger\u0027",
-            "Gestalt Pattern \u0027Thresher\u0027",
-            "Gestalt Pattern \u0027Strider\u0027",
-            "Gestalt Pattern \u0027Singer\u0027",
-            "Gestalt Pattern \u0027Silencer\u0027",
-            "Gestalt Pattern \u0027Feeder\u0027",
-            "Gestalt Pattern \u0027Striker\u0027",
-            "Gestalt Pattern \u0027Smiter\u0027",
-            "Gestalt Pattern \u0027Watcher\u0027",
-            "Gestalt Pattern \u0027Observer\u0027",
-            "Gestalt Pattern \u0027Chaser\u0027",
-            "Gestalt Pattern \u0027Vanquisher\u0027",
-            "Gestalt Pattern \u0027Crusher\u0027",
-            "Gestalt Pattern \u0027Eater\u0027",
-            "Gestalt Pattern \u0027Invader\u0027",
-            "Gestalt Pattern \u0027Interloper\u0027",
-            "Gestalt Pattern \u0027Intruder\u0027",
-            "Gestalt Pattern \u0027Trespasser\u0027",
-            "Gestalt Pattern \u0027Encroacher\u0027",
-            "Gestalt Pattern \u0027Ravager\u0027",
-            "Gestalt Pattern \u0027Gnawer\u0027",
-            "Gestalt Pattern \u0027Ruiner\u0027",
-            "Gestalt Pattern \u0027Wrecker\u0027",
-            "Gestalt Pattern \u0027Despoiler\u0027",
-            "Gestalt Pattern \u0027Pillager\u0027",
-            "Gestalt Pattern \u0027Tainter\u0027",
-            "Gestalt Pattern \u0027Depriver\u0027",
-            "Gestalt Pattern \u0027Reaver\u0027",
-            "Gestalt Pattern \u0027Berserker\u0027",
-            "Gestalt Pattern \u0027Punisher\u0027",
-            "Gestalt Pattern \u0027Scourer\u0027",
-            "Gestalt Pattern \u0027Cleanser\u0027",
-            "Gestalt Pattern \u0027Shatterer\u0027",
-            "Gestalt Pattern \u0027Tormenter\u0027",
-            "Gestalt Pattern \u0027Terrorizer\u0027"
-          ]
-        },
-        "firstNames": {
-          "any": [],
-          "male": [],
-          "female": [],
-          "isEmpty": true,
-          "all": []
-        },
-        "secondNames": {
-          "any": [],
-          "male": [],
-          "female": [],
-          "isEmpty": true,
-          "all": []
-        },
-        "regnalFirstNames": {
-          "any": [],
-          "male": [],
-          "female": [],
-          "isEmpty": true,
-          "all": []
-        },
-        "regnalSecondNames": {
-          "any": [],
-          "male": [],
-          "female": [],
-          "isEmpty": true,
-          "all": []
-        },
-        "isEmpty": false
-      },
-      "planetNames": [],
-      "shipNames": [
-        "Prethoryn Swarmer",
-        "Prethoryn Swarmling",
-        "Prethoryn Warrior",
-        "Prethoryn Brood Mother",
-        "Xarkiz",
-        "Mugask",
-        "Dark One",
-        "Sikilo",
-        "Saggraz",
-        "Zazas",
-        "Dimasos",
-        "Zugal",
-        "Terreak",
-        "Xabil",
-        "Xukaz",
-        "Xukanna",
-        "Zakul",
-        "Sugassa",
-        "Simirk",
-        "Xeldak",
-        "Zazuk",
-        "Golden One",
-        "Angry One",
-        "Prethoryn Infestor"
-      ],
-      "fleetNames": [],
-      "fleetPattern": "$ORD$ Star Brood",
-      "nameKey": "name_list_Prethoryn"
     },
     {
       "key": "REP1",

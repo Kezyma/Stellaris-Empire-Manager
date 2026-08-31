@@ -129,7 +129,6 @@ public sealed class GameDataExtractor(LayeredContent content)
         var modifiers = DescribeModifiers(ethics, traits, authorities, civics);
         var textIcons = ExtractTextIcons(sprites, assets);
         var icons = ExtractInterfaceIcons(assets);
-        var chrome = ExtractChrome(assets);
 
         var database = new GameDatabase
         {
@@ -147,7 +146,6 @@ public sealed class GameDataExtractor(LayeredContent content)
             SpeciesNames = speciesNames,
             TextIcons = textIcons,
             Icons = icons,
-            Chrome = chrome,
             ScriptedValues = ScriptedValues(loader),
             ScriptedText = ScriptedText(loader),
             Ethics = ethics,
@@ -354,72 +352,6 @@ public sealed class GameDataExtractor(LayeredContent content)
         }
 
         return icons;
-    }
-
-    /// <summary>
-    /// The surfaces the game's own empire designer is drawn on.
-    /// </summary>
-    /// <remarks>
-    /// Every one of these is named by <c>interface/customize_species_editors.gui</c>, which is the
-    /// designer's own layout file, and the counts beside them are how often it asks for each. They
-    /// are listed rather than swept up because that file names sixty-six sprites and most are icons
-    /// of an ethic or a civic that already travel with the option they belong to; what is left, and
-    /// what nothing else in this app would ever ask for, is the furniture.
-    ///
-    /// Sizes are left alone. A cornered tile is meant to be drawn at whatever size it is given, and
-    /// shrinking one to fit a maximum would shrink the border it must not stretch along with it.
-    /// </remarks>
-    private static Dictionary<string, ChromeSprite> ExtractChrome(AssetCatalog assets)
-    {
-        string[] wanted =
-        [
-            // The panels. dark_area_cut_8 is the designer's workhorse, behind 47 of its containers.
-            "GFX_tiles_dark_area_cut_8",
-            "GFX_subwindow_tile_plain_solid",
-            "GFX_clean_frame_area",
-            "GFX_planet_bg_tile",
-            "gfx_message_bg",
-
-            // The frames that mark something out: chosen, or highlighted, or simply bounded.
-            "GFX_tiles_frame",
-            "GFX_tiles_frame_extra_light",
-            "GFX_orange_frame_tile",
-            "GFX_glow_tile_orange",
-            "GFX_glow_tile_orange_no_padding",
-
-            // The buttons, each a strip of frames for resting, hovered and pressed.
-            "GFX_galactic_object_button",
-            "GFX_standard_button_142_34_button",
-            "GFX_standard_button_240_24",
-            "GFX_dropdown_button_104",
-            "GFX_dropdown_item_104",
-            "GFX_button_left",
-            "GFX_button_right",
-
-            // The rest of the furniture: rules between sections, the hexagonal ground a planet
-            // sits on, the tile an arkship is listed in, and the marker on a chosen ethic.
-            "GFX_line",
-            "GFX_line_medium",
-            "GFX_hex_bg",
-            "GFX_ship_design_entry_bg_arkships",
-            "GFX_ethic_selected",
-            "GFX_gamesetup_gov_sel",
-        ];
-
-        var chrome = new Dictionary<string, ChromeSprite>(StringComparer.Ordinal);
-
-        foreach (var name in wanted)
-        {
-            if (assets.Sprites.Resolve(name) is not { } sprite ||
-                assets.RegisterSprite(name, $"icons/chrome/{name}.png") is not { } path)
-            {
-                continue;
-            }
-
-            chrome[name] = new ChromeSprite(path, sprite.BorderSize.X, sprite.BorderSize.Y);
-        }
-
-        return chrome;
     }
 
     /// <summary>The button the game's setup screen puts the spawn setting on.</summary>

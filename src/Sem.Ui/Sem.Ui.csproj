@@ -11,20 +11,6 @@
     <SupportedPlatform Include="browser" />
   </ItemGroup>
 
-  <!--
-    The game-layout designer is a proof of concept: the same empire drawn in the game's own frames,
-    read out of the game's .gui files. It is nowhere near finished — twelve of its sub-editors do
-    not exist — so it is left out of the build entirely rather than shipped behind a button nobody
-    should press. Nothing else references it, which is the point: it is a separate experiment and
-    not a second face of the real designer.
-
-    To work on it:  dotnet build -p:GameLayout=true
-  -->
-  <ItemGroup Condition="'$(GameLayout)' != 'true'">
-    <Content Remove="Pages\Classic.razor" />
-    <Content Remove="Components\Gui\**" />
-  </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
   </ItemGroup>
