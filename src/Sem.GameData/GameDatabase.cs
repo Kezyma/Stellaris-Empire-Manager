@@ -388,6 +388,36 @@ public sealed record PortraitOutfit(string Portrait, IReadOnlyList<PortraitLayer
     /// <summary>How many choices a slot offers.</summary>
     public int CountFor(PortraitSlot slot) =>
         Variants.FirstOrDefault(v => v.Slot == slot)?.Textures.Count ?? 0;
+
+    /// <summary>
+    /// The skin worn at an ascension stage, where this portrait has one drawn for it.
+    /// </summary>
+    /// <remarks>
+    /// An ascended form is another form of the body layer rather than a layer of its own, because
+    /// that is what it is: the same run of parts wearing a skin with the decal already blended in.
+    /// So it is asked for the way any other skin is, and the drawing, the trimming and the painting
+    /// order need not know that ascension exists.
+    ///
+    /// Null where the portrait has no artwork for that stage, which is the usual answer: of the
+    /// five hundred and forty-six portraits, only the fifty-nine that name their own stages have
+    /// any. The rest take the directory default, whose decal is a four-by-four placeholder — an
+    /// ordinary portrait does not gain implants, the game swaps it for a cybernetic portrait.
+    /// </remarks>
+    /// <param name="index">Which skin, as the design stores it.</param>
+    /// <param name="stage">Which stage, counting the unascended form as zero.</param>
+    public string? AscendedCharacter(int? index, int stage)
+    {
+        if (stage <= 0 || TextureFor(PortraitSlot.Character, index ?? 0) is not { } skin)
+        {
+            return null;
+        }
+
+        var key = $"{skin}|stage{stage}";
+
+        return Layers.Any(l => l.Slot == PortraitSlot.Character && l.Images.Any(i => i.Texture == key))
+            ? key
+            : null;
+    }
 }
 
 /// <summary>A species archetype and the trait budget it grants.</summary>

@@ -37,6 +37,16 @@ public sealed record PortraitExtent(string Key, float Rise, float Drop, bool Cli
 /// The default of each is the one the empire designer shows, and is listed first.
 /// </para>
 /// </remarks>
+/// <summary>
+/// One ascended form of one skin: the skin it replaces, and where it lets the original show.
+/// </summary>
+/// <param name="Decal">The ascended skin, a whole texture rather than an overlay.</param>
+/// <param name="Mask">
+/// Where the two are mixed rather than the decal simply winning. See
+/// <see cref="Sem.Assets.DdsImageOps.BlendEvolution"/>, which is the game's own shader written out.
+/// </param>
+public sealed record EvolutionArtwork(string Decal, string Mask);
+
 /// <param name="Character">Body textures, which carry the skin and the eyes.</param>
 /// <param name="Clothes">Outfits.</param>
 /// <param name="Attachment">Hair, horns, masks and hats.</param>
@@ -45,6 +55,17 @@ public sealed record PortraitWardrobe(
     IReadOnlyList<string> Clothes,
     IReadOnlyList<string> Attachment)
 {
+    /// <summary>
+    /// The ascended forms, outermost list a stage and innermost a variant of that stage.
+    /// </summary>
+    /// <remarks>
+    /// A stage's variants line up with <see cref="Character"/> by index, which is the same
+    /// correspondence <c>tied_texture</c> states with its <c>evolution_variants</c>: skin three and
+    /// ascended form three are the same choice seen twice. Where a stage names fewer forms than
+    /// there are skins — the cybernetic portraits name one — the last stands for all of them.
+    /// </remarks>
+    public IReadOnlyList<IReadOnlyList<EvolutionArtwork>> Evolution { get; init; } = [];
+
     /// <summary>An empty wardrobe, for a portrait whose definition offers nothing.</summary>
     public static PortraitWardrobe None { get; } = new([], [], []);
 
@@ -422,18 +443,42 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
 
                     var images = new List<PortraitLayerImage>();
 
-                    foreach (var texture in variants)
+                    for (var v = 0; v < variants.Count; v++)
                     {
-                        var wearing = Wearing(run.Kind, texture);
-                        var image = DrawLayer(mesh, run.Parts, (float)model.Scale, wearing);
+                        var texture = variants[v];
+                        var stem = texture is null ? "default" : Path.GetFileNameWithoutExtension(texture);
 
-                        if (Trim(image) is not { } trimmed)
+                        Draw(texture, texture ?? "default", stem, null);
+
+                        // The ascended forms of this skin, drawn the same way but with the decal
+                        // already blended into the texture. Only the body carries them: an ascension
+                        // changes the skin and leaves the coat alone, which is what the shader does
+                        // too — its decal branch is guarded off for the clothes and hair passes.
+                        if (run.Kind is PartKind.Clothes or PartKind.Attachment || texture is null)
                         {
                             continue;
                         }
 
-                        var name = texture is null ? "default" : Path.GetFileNameWithoutExtension(texture);
-                        var destination = $"portraits/wardrobe/{portrait.Key}/{layers.Count}-{name}.png";
+                        for (var stage = 1; stage <= wardrobe.Evolution.Count; stage++)
+                        {
+                            if (Ascended(wardrobe, stage, v) is { } artwork)
+                            {
+                                Draw(texture, EvolvedKey(texture, stage), $"{stem}-stage{stage}", artwork);
+                            }
+                        }
+                    }
+
+                    void Draw(string? texture, string key, string stem, EvolutionArtwork? evolution)
+                    {
+                        var wearing = Wearing(run.Kind, texture);
+
+                        if (Drawn(mesh, run.Parts, (float)model.Scale, wearing, texture, evolution)
+                            is not { } image || Trim(image) is not { } trimmed)
+                        {
+                            return;
+                        }
+
+                        var destination = $"portraits/wardrobe/{portrait.Key}/{layers.Count}-{stem}.png";
                         var png = PngWriter.Encode(trimmed.Image);
 
                         _file.WriteAllBytes(Path.Combine(outputDirectory, destination), png);
@@ -441,11 +486,7 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
                         drawn++;
                         bytes += png.Length;
 
-                        images.Add(new PortraitLayerImage(
-                            texture ?? "default",
-                            destination,
-                            trimmed.Left,
-                            trimmed.Top));
+                        images.Add(new PortraitLayerImage(key, destination, trimmed.Left, trimmed.Top));
                     }
 
                     if (images.Count > 0)
@@ -522,11 +563,74 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
         return runs;
     }
 
+    /// <summary>
+    /// How a skin is named once it is wearing an ascended form.
+    /// </summary>
+    /// <remarks>
+    /// A suffix on the texture's own name rather than a slot of its own, because that is what it is:
+    /// the same body layer wearing a different skin. Keying it this way means the designer picks it
+    /// by asking for a different texture and nothing about the drawing or the painting order has to
+    /// know that ascension exists.
+    /// </remarks>
+    public static string EvolvedKey(string texture, int stage) => $"{texture}|stage{stage}";
+
+    /// <summary>
+    /// The artwork for one stage and one skin, where the portrait has it.
+    /// </summary>
+    /// <remarks>
+    /// A stage may name one form for every skin — the cybernetic portraits paint the same implants
+    /// whatever the complexion — or one per skin, as the six coloured Biogenesis forms do. Fewer
+    /// than there are skins means the last covers the rest.
+    /// </remarks>
+    private static EvolutionArtwork? Ascended(PortraitWardrobe wardrobe, int stage, int variant)
+    {
+        if (stage < 1 || stage > wardrobe.Evolution.Count)
+        {
+            return null;
+        }
+
+        var forms = wardrobe.Evolution[stage - 1];
+
+        return forms.Count == 0 ? null : forms[Math.Min(variant, forms.Count - 1)];
+    }
+
+    /// <summary>
+    /// Draws one layer, ascended or not.
+    /// </summary>
+    /// <remarks>
+    /// Ascension happens in texture space, before the model is drawn, because that is where the game
+    /// does it — the mask is in the same UV as the skin it masks. Blending the two pictures after
+    /// drawing would put a flat stencil over a lit three-dimensional face and line up with nothing.
+    /// </remarks>
+    private DdsImage? Drawn(
+        PortraitMesh mesh,
+        IReadOnlyCollection<MeshPart> parts,
+        float scale,
+        PortraitTextures wearing,
+        string? texture,
+        EvolutionArtwork? evolution)
+    {
+        if (evolution is null || texture is null)
+        {
+            return DrawLayer(mesh, parts, scale, wearing);
+        }
+
+        if (LoadTexture(texture) is not { } skin ||
+            LoadTexture(evolution.Decal) is not { } decal ||
+            LoadTexture(evolution.Mask) is not { } mask)
+        {
+            return null;
+        }
+
+        return DrawLayer(mesh, parts, scale, wearing, DdsImageOps.BlendEvolution(skin, decal, mask));
+    }
+
     private DdsImage DrawLayer(
         PortraitMesh mesh,
         IReadOnlyCollection<MeshPart> parts,
         float scale,
-        PortraitTextures wearing)
+        PortraitTextures wearing,
+        DdsImage? instead = null)
     {
         var dressed = new PortraitMesh(
             [.. mesh.Parts.Select(p => p with { Texture = TextureFor(p, wearing) })]);
@@ -548,6 +652,15 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
 
         foreach (var path in wanted.Select(p => p.Texture).OfType<string>().Distinct(StringComparer.OrdinalIgnoreCase))
         {
+            // A caller drawing an ascended form has already blended the skin and hands it over
+            // here, so the one this part asks for by name is answered with that instead. Every other
+            // texture the run needs — a second body part on its own sheet — still loads normally.
+            if (instead is not null && string.Equals(path, wearing.Character, StringComparison.OrdinalIgnoreCase))
+            {
+                textures[path] = instead;
+                continue;
+            }
+
             if (LoadTexture(path) is { } texture)
             {
                 textures[path] = texture;
@@ -792,7 +905,10 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
                     wardrobes.TryAdd(key, new PortraitWardrobe(
                         ReadCharacterTextures(body),
                         Offered(selectors, body.GetString("clothes_selector")),
-                        Offered(selectors, body.GetString("attachment_selector"))));
+                        Offered(selectors, body.GetString("attachment_selector")))
+                    {
+                        Evolution = ReadEvolutionArtwork(body.GetBlock("portrait_evolution")),
+                    });
                 }
             }
         }
@@ -830,6 +946,50 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
         }
 
         return [.. found.Distinct(StringComparer.OrdinalIgnoreCase)];
+    }
+
+    /// <summary>
+    /// The ascended forms a portrait names, one list of variants per stage.
+    /// </summary>
+    /// <remarks>
+    /// Only the per-portrait shape is read, where a stage's <c>value</c> is a list of decal and mask
+    /// pairs. The one directory-wide default in <c>00_portraits_main.txt</c> writes an asset suffix
+    /// there instead, and its pair is a four-by-four placeholder — the cybernetic and psionic looks
+    /// of an ordinary portrait are separate portraits the game swaps to in play, not a decal painted
+    /// over a mammalian face. So the fifty-nine portraits that name their own artwork get a picture
+    /// here and the rest get nothing, which is the truth about them.
+    /// </remarks>
+    private static IReadOnlyList<IReadOnlyList<EvolutionArtwork>> ReadEvolutionArtwork(CwBlock? evolution)
+    {
+        if (evolution?.GetBlock("variants") is not { } variants)
+        {
+            return [];
+        }
+
+        var stages = new List<IReadOnlyList<EvolutionArtwork>>();
+
+        foreach (var stage in variants.Nodes.Where(n => !n.IsAssignment && n.Block is not null))
+        {
+            if (stage.Block!.GetBlock("value") is not { } forms)
+            {
+                // A stage naming an asset suffix rather than artwork. It keeps its place so that
+                // stage numbers still count through, and simply has nothing to draw.
+                stages.Add([]);
+                continue;
+            }
+
+            stages.Add(
+            [
+                .. forms.Nodes
+                    .Select(n => n.Block)
+                    .OfType<CwBlock>()
+                    .Select(form => (Decal: form.GetString("decal"), Mask: form.GetString("mask")))
+                    .Where(pair => pair.Decal is { Length: > 0 } && pair.Mask is { Length: > 0 })
+                    .Select(pair => new EvolutionArtwork(pair.Decal!, pair.Mask!)),
+            ]);
+        }
+
+        return stages;
     }
 
     /// <summary>Every texture a named selector could choose, the empire designer's first.</summary>

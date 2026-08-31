@@ -209,6 +209,11 @@
     /// its number where the stage is written as decal paths instead. A design holding a stage this
     /// portrait does not have keeps the number rather than being silently corrected: it came from
     /// the file and goes back to it.
+    ///
+    /// Where the portrait has no artwork for the stage the name says so, because otherwise the
+    /// stepper moves and the figure does not, which reads as a fault rather than as the truth. Most
+    /// portraits are in that case: the game does not paint implants onto a mammalian face, it swaps
+    /// the whole portrait for a cybernetic one, and that is a thing that happens in play.
     /// </remarks>
     private string StageName
     {
@@ -221,11 +226,23 @@
                 return "None";
             }
 
-            return stage <= Stages.Count && Stages[stage - 1] is { Length: > 0 } suffix
+            var named = stage <= Stages.Count && Stages[stage - 1] is { Length: > 0 } suffix
                 ? Localizer.Prettify(suffix.TrimStart('_'))
                 : $"Stage {stage}";
+
+            return AscendedSkin is null ? $"{named} — not drawn for this portrait" : named;
         }
     }
+
+    /// <summary>
+    /// The skin the chosen stage wears, where this portrait has one drawn for it.
+    /// </summary>
+    /// <remarks>
+    /// An ascended form is another skin rather than another layer, so the figure asks for it exactly
+    /// as it asks for a colour variant and nothing else about the drawing changes.
+    /// </remarks>
+    private string? AscendedSkin =>
+        Outfit?.AscendedCharacter(Design.Ruler.Texture, Design.Ruler.EvolutionMask ?? 0);
 
     private int PhenotypeIndex => Likeness is { } face
         ? Math.Max(0, Members.ToList().IndexOf(face))
@@ -261,12 +278,15 @@
     private int Count(PortraitSlot slot) => Outfit?.CountFor(slot)
         ?? (slot == PortraitSlot.Character ? Portrait?.TextureCount ?? 0 : 0);
 
-    private string? TextureFor(PortraitSlot slot) => Outfit?.TextureFor(slot, slot switch
-    {
-        PortraitSlot.Clothes => Design.Ruler.Clothes,
-        PortraitSlot.Attachment => Design.Ruler.Attachment,
-        _ => Design.Ruler.Texture,
-    });
+    private string? TextureFor(PortraitSlot slot) =>
+        slot == PortraitSlot.Character && AscendedSkin is { } ascended
+            ? ascended
+            : Outfit?.TextureFor(slot, slot switch
+            {
+                PortraitSlot.Clothes => Design.Ruler.Clothes,
+                PortraitSlot.Attachment => Design.Ruler.Attachment,
+                _ => Design.Ruler.Texture,
+            });
 
     /// <summary>
     /// Wears a different face of the group.

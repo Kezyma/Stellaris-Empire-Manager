@@ -245,4 +245,74 @@ public sealed class ImagePipelineTests
         var error = Assert.Throws<NotSupportedException>(() => DdsReader.Read(header));
         Assert.Contains("extended header", error.Message, StringComparison.Ordinal);
     }
+
+    /// <summary>Builds a one-pixel texture, in the blue-green-red-alpha order the decoder returns.</summary>
+    private static DdsImage Pixel(byte b, byte g, byte r, byte a) => new(1, 1, [b, g, r, a]);
+
+    /// <summary>
+    /// The evolution blend, against the game's own shader rather than against our output.
+    /// </summary>
+    /// <remarks>
+    /// Every number here is worked from <c>gfx/FX/pdxmesh.shader</c> around line 1160 by hand. The
+    /// case that matters most is the second: outside the cyan key the decal wins outright, which is
+    /// the opposite of what "mask" suggests and what an implementation written from the name would
+    /// have done.
+    /// </remarks>
+    [Fact]
+    public void TheCyanKeyBlendsAndEverythingElseTakesTheDecalWhole()
+    {
+        var skin = Pixel(0, 0, 200, 255);          // opaque red skin
+        var decal = Pixel(0, 200, 0, 128);         // half-transparent green
+        var cyan = Pixel(255, 255, 0, 255);        // the key: blue and green up, red down
+        var other = Pixel(0, 0, 0, 255);           // anything else
+
+        // fa = 128/255 = 0.50196, ba = 1, so scalar = fa + (1 - fa) * fa / (fa + ba) = 0.66862.
+        // Red: 200 + (0 - 200) * 0.66862 = 66.28 -> 66. Green: 0 + 200 * 0.66862 = 133.7 -> 134.
+        var blended = DdsImageOps.BlendEvolution(skin, decal, cyan);
+        Assert.Equal((0, 134, 66, 255), (blended.Pixels[0], blended.Pixels[1], blended.Pixels[2], blended.Pixels[3]));
+
+        // Alpha: fa + (1 - fa) * ba = 0.50196 + 0.49804 = 1.
+        Assert.Equal(255, blended.Pixels[3]);
+
+        // Away from the key the decal replaces the skin entirely, alpha included.
+        var replaced = DdsImageOps.BlendEvolution(skin, decal, other);
+        Assert.Equal(decal.Pixels, replaced.Pixels);
+    }
+
+    /// <summary>
+    /// Two transparent pixels have nothing to mix, and the shader's divisor would be zero.
+    /// </summary>
+    [Fact]
+    public void TwoTransparentPixelsLeaveTheSkinAsItWas()
+    {
+        var skin = Pixel(10, 20, 30, 0);
+        var decal = Pixel(90, 80, 70, 0);
+        var cyan = Pixel(255, 255, 0, 255);
+
+        var blended = DdsImageOps.BlendEvolution(skin, decal, cyan);
+
+        Assert.Equal([10, 20, 30, 0], blended.Pixels);
+    }
+
+    /// <summary>
+    /// A smaller decal or mask is stretched over the skin rather than read pixel for pixel.
+    /// </summary>
+    /// <remarks>
+    /// The shader samples all three at one UV, and they are not all the same size: the synthetic
+    /// portraits carry a four-pixel-square mask against a 512-pixel skin. Read by index that covers
+    /// sixteen pixels of a quarter of a million, which is how eighty-nine synthetic ascensions came
+    /// out byte-identical to the portraits they were meant to change.
+    /// </remarks>
+    [Fact]
+    public void ASmallerDecalOrMaskCoversTheWholeSkin()
+    {
+        var skin = new DdsImage(2, 1, [10, 20, 30, 255, 40, 50, 60, 255]);
+        var decal = Pixel(90, 80, 70, 255);
+        var flat = Pixel(255, 255, 255, 0);     // the synthetics' "empty" mask: not the cyan key
+
+        var blended = DdsImageOps.BlendEvolution(skin, decal, flat);
+
+        // Both pixels take the decal, including the one the decal has no pixel of its own for.
+        Assert.Equal([90, 80, 70, 255, 90, 80, 70, 255], blended.Pixels);
+    }
 }
