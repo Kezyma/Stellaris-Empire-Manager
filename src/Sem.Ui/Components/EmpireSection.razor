@@ -65,9 +65,9 @@
 
 </div>
 
-@if (_clash)
+@if (_clash is { } rejected)
 {
-    <p class="sem-status bad">Another empire in this file already has that name.</p>
+    <p class="sem-status bad">Another empire in this file already has the name @rejected.</p>
 }
 
 @*
@@ -93,8 +93,15 @@
 </div>
 
 @code {
-    /// <summary>Whether the last name typed was already taken by another empire.</summary>
-    private bool _clash;
+    /// <summary>
+    /// The name that was refused because another empire already had it, or null.
+    /// </summary>
+    /// <remarks>
+    /// The name rather than a flag, so the message can say which one and so it clears itself the
+    /// moment a different name is offered. As a flag it stayed on screen through every unrelated
+    /// edit once it had been raised, until the name field happened to be touched again.
+    /// </remarks>
+    private string? _clash;
 
     [CascadingParameter]
     public required DesignSession Session { get; set; }
@@ -340,9 +347,9 @@
         }
 
         var taken = Session.File?.Find(name);
-        _clash = taken is not null && !ReferenceEquals(taken, Design);
+        _clash = taken is not null && !ReferenceEquals(taken, Design) ? name : null;
 
-        if (_clash)
+        if (_clash is not null)
         {
             return;
         }
@@ -388,7 +395,7 @@
 
         var text = Display(chosen);
 
-        _clash = Session.File?.Find(text) is { } taken && !ReferenceEquals(taken, Design);
+        _clash = Session.File?.Find(text) is { } taken && !ReferenceEquals(taken, Design) ? text : null;
 
         var adjective = AdjectiveSuggestions.FirstOrDefault();
 
@@ -401,7 +408,7 @@
                 d.Adjective.SetLiteral(adjective);
             }
 
-            if (!_clash)
+            if (_clash is null)
             {
                 d.Rename(text);
             }

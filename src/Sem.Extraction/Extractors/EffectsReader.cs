@@ -34,6 +34,18 @@ public static class EffectsReader
         new(StringComparer.Ordinal) { "potential", "custom_tooltip", "show_only_custom_tooltip", "desc" };
 
     /// <summary>
+    /// <c>advanced_authority_swap</c> is deliberately not read.
+    /// </summary>
+    /// <remarks>
+    /// The hive mind and machine intelligence authorities each declare several, and every one is
+    /// gated on a country flag an event sets — Memory Aggregator, and its siblings — so none of them
+    /// applies to an empire being designed. Reading them would show a player bonuses their empire
+    /// does not have, including a trait pick. Left out by decision rather than by oversight, which
+    /// is what this note is for.
+    /// </remarks>
+    private const string MidGameAuthoritySwap = "advanced_authority_swap";
+
+    /// <summary>
     /// Reads an option's effects.
     /// </summary>
     /// <param name="body">The option's definition.</param>
@@ -60,7 +72,8 @@ public static class EffectsReader
 
         foreach (var node in body.Nodes)
         {
-            if (node.Key is not { } key || node.Block is not { } block)
+            if (node.Key is not { } key || node.Block is not { } block ||
+                string.Equals(key, MidGameAuthoritySwap, StringComparison.Ordinal))
             {
                 continue;
             }
@@ -93,6 +106,13 @@ public static class EffectsReader
             {
                 // A swap replaces parts of the option when its trigger holds, which for effects
                 // purposes is the same shape as a conditional modifier.
+                //
+                // Not exactly the same shape: a replacement that restated a number the base block
+                // also gives would be added to it rather than standing in for it. No option in the
+                // game does — of 1,510 read, not one states a modifier both always and inside a
+                // swap — and a test says so, which is cheaper and more honest than modelling a
+                // replacement nothing needs. Forty civics carry both a base block and a swap; they
+                // simply never overlap.
                 var values = new Dictionary<string, double>(StringComparer.Ordinal);
 
                 foreach (var inner in block.Nodes)

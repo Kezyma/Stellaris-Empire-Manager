@@ -99,6 +99,40 @@ public sealed class RulesCorpusTests
     /// playable. Honouring the field would hide it. This is what says so, and what would notice if a
     /// patch started gating an authority on something a designer can answer.
     /// </remarks>
+    /// <summary>
+    /// A conditional modifier is added to the always-on ones, not substituted for them, which is not
+    /// quite what a <c>swap_type</c> means. It holds because no option in the game states the same
+    /// modifier both ways — forty civics carry a base block and a swap, and none of them overlap —
+    /// so the difference between adding and replacing never arises. This is what would notice if a
+    /// patch made it arise, rather than the model quietly doubling a number.
+    /// </summary>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void NoOptionStatesTheSameModifierBothAlwaysAndConditionally()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var database = Database.Value;
+
+        var everything = database.Civics.Select(c => (c.Key, c.Effects))
+            .Concat(database.Authorities.Select(a => (a.Key, a.Effects)))
+            .Concat(database.Ethics.Select(e => (e.Key, e.Effects)))
+            .Concat(database.Traits.Select(t => (t.Key, t.Effects)));
+
+        var overlapping = everything
+            .SelectMany(o => o.Effects.Conditional.Select(g => (o.Key, Shared: g.Modifiers.Keys
+                .Where(k => o.Effects.Modifiers.ContainsKey(k))
+                .ToList())))
+            .Where(x => x.Shared.Count > 0)
+            .Select(x => $"  {x.Key}: {string.Join(", ", x.Shared)}")
+            .ToList();
+
+        Assert.True(
+            overlapping.Count == 0,
+            "Options stating a modifier both always and conditionally, which the totals would " +
+            "add together rather than treat as a replacement:\r\n" + string.Join("\r\n", overlapping));
+    }
+
     [SkippableFact]
     [Trait("Category", "RealData")]
     public void EveryAuthorityAPlayerCanPickIsOffered()

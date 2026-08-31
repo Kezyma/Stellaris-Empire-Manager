@@ -22,7 +22,17 @@
 
 <div class="sem-field spaced">
     <label for="city-set">@Session.Localizer.Label("EMPIRE_CREATION_CITY_APPEARANCE", "City")</label>
-    <select id="city-set" @onchange="e => Session.Edit(d => d.CityGraphicalCulture = e.Value?.ToString())">
+    @*
+        The empty option matters. A design with no city set yet, or one naming a set a turned-off
+        content pack removed from this list, matched no option — so the browser showed the first one
+        while the design held something else, and picking the thing already displayed fired no change
+        event, which left no way to reconcile the two by the obvious action.
+    *@
+    <select id="city-set" @onchange="e => Session.Edit(d => d.CityGraphicalCulture = Chosen(e.Value?.ToString()))">
+        <option value="" selected="@(CitySets.All(c => c.Key != Design.CityGraphicalCulture))">
+            @Session.Localizer.Label("NONE", "None")
+        </option>
+
         @foreach (var culture in CitySets)
         {
             <option value="@culture.Key" selected="@(culture.Key == Design.CityGraphicalCulture)">
@@ -62,6 +72,9 @@
     public required DesignSession Session { get; set; }
 
     private EmpireDesign Design => Session.Current!;
+
+    /// <summary>The empty choice writes nothing rather than an empty string.</summary>
+    private static string? Chosen(string? key) => key is { Length: > 0 } ? key : null;
 
     private readonly RequirementEvaluator _evaluator = new();
 

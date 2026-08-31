@@ -27,7 +27,7 @@
                     turned out to be, and whether the game would accept it. Validating built one of
                     its own before.
                 *@
-                var context = Session.Rules.CreateContext(design, Session.OwnedDlc);
+                var context = Read(design);
 
                 <EmpireCard Flag="@design.Flag"
                             Portrait="@Thumbnail(design)"
@@ -54,7 +54,34 @@
 
     public void Dispose() => Session.Changed -= OnChanged;
 
-    private void OnChanged() => InvokeAsync(StateHasChanged);
+    private void OnChanged()
+    {
+        // What the rules make of an empire only changes when the empire or the packs do, and both
+        // of those raise this.
+        _read.Clear();
+        InvokeAsync(StateHasChanged);
+    }
+
+    /// <summary>
+    /// What the rules make of one empire in the list, held until something changes.
+    /// </summary>
+    /// <remarks>
+    /// Building a context walks every government the game defines, and this list draws one per
+    /// empire on every render — while the designer beside it raises a change on every keystroke.
+    /// The same fix was made for the game's fifty-two built-in empires and not for the player's own.
+    /// </remarks>
+    private DesignContext Read(EmpireDesign design)
+    {
+        if (!_read.TryGetValue(design, out var context))
+        {
+            context = Session.Rules.CreateContext(design, Session.OwnedDlc);
+            _read[design] = context;
+        }
+
+        return context;
+    }
+
+    private readonly Dictionary<EmpireDesign, DesignContext> _read = [];
 
     private async Task Choose(EmpireDesign design)
     {

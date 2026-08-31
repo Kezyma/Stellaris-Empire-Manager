@@ -101,6 +101,12 @@ public sealed class EmpireRules(GameDatabase database)
             }
         }
 
+        // Only what the design records, which is also what the game charges. Traits an origin forces
+        // are shown separately and deliberately not added here: of the twenty-two the game forces,
+        // nineteen cost nothing, and the three that do — Malleable Genes at six, Aquatic at two and
+        // Syncretic Proles at one — are written into the design's own trait list by the game, so
+        // they arrive through this loop already. Adding the forced list on top would charge them
+        // twice.
         var spent = 0;
         var used = 0;
 
@@ -132,7 +138,17 @@ public sealed class EmpireRules(GameDatabase database)
         return new Budget(spent, _database.Defines.EthicsPoints);
     }
 
-    /// <summary>How many civics the empire has taken against how many it may.</summary>
+    /// <summary>
+    /// How many civics the empire has taken against how many it may.
+    /// </summary>
+    /// <remarks>
+    /// The define and nothing else. Five civics carry
+    /// <c>country_government_civic_points_add</c>, and none of them can be reached while designing:
+    /// Fanatic Purifiers grants it inside a swap gated on a country flag, and the other four have a
+    /// <c>potential</c> requiring the empire to hold the civic already — the game's own comment
+    /// beside it says the trigger is there to stop anyone picking it, because an event adds it. So
+    /// there is nothing to sum, and this says so rather than looking like an omission.
+    /// </remarks>
     public Budget GetCivicsBudget(DesignContext context)
     {
         ArgumentNullException.ThrowIfNull(context);

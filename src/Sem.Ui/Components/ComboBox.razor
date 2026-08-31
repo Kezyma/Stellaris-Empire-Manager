@@ -24,8 +24,15 @@
     the page — is the one it cannot, and sem.js watches for that. The toggle is tabbable because it
     was the only way to open the list and could not be reached by keyboard at all.
 *@
+@*
+    The box is keyed on what was last committed through it, so that a value the owner refused is put
+    back. Without the key, a rejected change left Value byte-identical to the previous render, Blazor
+    diffed no edit, and the box went on showing text the design does not hold — a name marked as
+    already taken sitting in the field as though it had been accepted.
+*@
 <div class="sem-combo @(_open ? "open" : null)" @onkeydown="Dismiss">
     <input type="text"
+           @key="(Value, _commits)"
            id="@Id"
            value="@Value"
            disabled="@Disabled"
@@ -63,6 +70,12 @@
 
 @code {
     private bool _open;
+
+    /// <summary>
+    /// How many values have been handed over, which changes the box's key so a refused one is put
+    /// back rather than left on screen.
+    /// </summary>
+    private int _commits;
 
     private IJSObjectReference? _module;
 
@@ -145,6 +158,8 @@
     private async Task Commit(string? value)
     {
         _open = false;
+        _commits++;
+
         await OnChange.InvokeAsync(value ?? string.Empty);
     }
 }
