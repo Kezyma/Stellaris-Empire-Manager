@@ -23,7 +23,7 @@ game install, and as a browser app that never uploads your files anywhere.
 
 ## Status
 
-Early development. See [the milestone plan](docs/) for what is built and what is next.
+Early development.
 
 | Milestone | Status |
 | --- | --- |

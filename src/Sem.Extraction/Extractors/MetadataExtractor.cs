@@ -246,5 +246,5 @@ internal static class MetadataExtractor
         sections.Select(s => s.FindNestedString(key)).FirstOrDefault(v => v is not null);
 
     private static int? FindInt(List<CwBlock> sections, string key) =>
-        int.TryParse(Find(sections, key), out var value) ? value : null;
+        int.TryParse(Find(sections, key), System.Globalization.CultureInfo.InvariantCulture, out var value) ? value : null;
 }

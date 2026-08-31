@@ -92,8 +92,16 @@ public sealed class DesignContext
     /// </summary>
     public IReadOnlySet<string> OwnedDlc { get; private init; } = new HashSet<string>();
 
-    /// <summary>True when the empire is a hive mind or a machine intelligence.</summary>
-    public bool IsGestalt => Ethics.Contains("ethic_gestalt_consciousness");
+    /// <summary>
+    /// True when the empire is a hive mind or a machine intelligence.
+    /// </summary>
+    /// <remarks>
+    /// Read from the ethic's own flag, which the game states as <c>is_gestalt = yes</c> and the
+    /// extractor already carries. The key was written out here as well, so the same literal sat on
+    /// both sides of the wire with nothing keeping them in step.
+    /// </remarks>
+    public bool IsGestalt => Ethics.Any(
+        e => Database.Ethics.Any(x => x.IsGestalt && string.Equals(x.Key, e, StringComparison.Ordinal)));
 
     /// <summary>True when the empire is a hive mind.</summary>
     public bool IsHiveEmpire => Authority == "auth_hive_mind";
@@ -104,8 +112,17 @@ public sealed class DesignContext
     /// <summary>True when the founder species is machine but the empire is not a gestalt.</summary>
     public bool IsIndividualMachine => SpeciesArchetype == "MACHINE" && !IsGestalt;
 
-    /// <summary>True when the founder species is robotic.</summary>
-    public bool IsRobotEmpire => SpeciesArchetype is "MACHINE" or "ROBOT";
+    /// <summary>
+    /// True when the founder species is robotic.
+    /// </summary>
+    /// <remarks>
+    /// The game says which archetypes are, in <c>robotic = yes</c>, and the extractor has carried
+    /// that flag all along without anything reading it. Two archetype names were listed here
+    /// instead, which is the same answer today and the wrong one the moment a pack adds a third.
+    /// </remarks>
+    public bool IsRobotEmpire =>
+        SpeciesArchetype is { } archetype &&
+        Database.Archetypes.Any(a => a.IsRobotic && string.Equals(a.Key, archetype, StringComparison.Ordinal));
 
     /// <summary>True when the empire is a megacorporation.</summary>
     public bool IsMegacorp => Authority == "auth_corporate";

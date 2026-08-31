@@ -131,9 +131,19 @@ public sealed class LayeredContent(IReadOnlyList<IContentSource> layers)
     }
 
     /// <summary>
-    /// Lists the files in a directory across all layers, in load order, with each relative path
-    /// appearing once even if several layers provide it.
+    /// Lists the files in a directory across all layers, with each relative path appearing once
+    /// even if several layers provide it.
     /// </summary>
+    /// <remarks>
+    /// Sorted by name, which is the order the game loads a directory in and the order the extractor
+    /// relies on for "later wins". It used to build the list layer by layer and then sort it, which
+    /// threw the layer order away — so this says plainly that name order is the answer, rather than
+    /// appearing to preserve something it then discarded. Layers still decide which copy of a path
+    /// is read; that is <see cref="Read"/>'s job, and it is the layer order that matters there.
+    ///
+    /// The two used different notions of the same path as well, gathering case-insensitively and
+    /// sorting case-sensitively. One comparer now does both.
+    /// </remarks>
     public IReadOnlyList<string> EnumerateFiles(
         string relativeDirectory,
         string pattern = "*.txt",
@@ -153,7 +163,7 @@ public sealed class LayeredContent(IReadOnlyList<IContentSource> layers)
             }
         }
 
-        ordered.Sort(StringComparer.Ordinal);
+        ordered.Sort(StringComparer.OrdinalIgnoreCase);
         return ordered;
     }
 }

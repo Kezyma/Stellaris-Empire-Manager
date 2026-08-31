@@ -2964,10 +2964,21 @@ button.icon .sem-action-icon { display: block; }
     margin-bottom: var(--space-sm);
 }
 
+/*
+   Small text, but not a small target: 54 by 19 was the only control in the designer under 24 pixels
+   in either direction, and it sits beside a panel that is scrolled with a thumb.
+*/
 .sem-combined .compare {
-    height: auto;
+    min-height: 24px;
     padding: 0 var(--space-sm);
     font-size: var(--text-xs);
+}
+
+@media (pointer: coarse) {
+    .sem-combined .compare {
+        min-height: 32px;
+        padding: 0 var(--space-md);
+    }
 }
 
 .sem-combined .compare[aria-pressed="true"] {

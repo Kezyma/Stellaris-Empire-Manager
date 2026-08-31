@@ -122,13 +122,16 @@ public sealed class SpriteCatalog
 
             if (texture is { Length: > 0 } || sheet is { Length: > 0 })
             {
-                // First declaration wins, matching the load order the caller enumerated in.
-                declarations.TryAdd(name, new Declaration(
+                // Last declaration wins, which is how the game resolves a sprite declared twice and
+                // how every other loader here resolves a definition declared twice. Keeping the
+                // first instead meant a .gfx file later in load order redefining a sprite was
+                // discarded — the one place in the extractor where an override went the wrong way.
+                declarations[name] = new Declaration(
                     Texture: texture?.Replace('\\', '/'),
                     Sheet: sheet,
                     Frames: Number(Property(body, "noOfFrames")),
                     DefaultFrame: Number(Property(body, "default_frame")),
-                    Border: Border(body)));
+                    Border: Border(body));
             }
         }
 
@@ -150,7 +153,7 @@ public sealed class SpriteCatalog
             n.Key is { } k && string.Equals(k, key, StringComparison.OrdinalIgnoreCase))?.ScalarValue;
 
     private static int? Number(string? value) =>
-        int.TryParse(value, out var parsed) ? parsed : null;
+        int.TryParse(value, System.Globalization.CultureInfo.InvariantCulture, out var parsed) ? parsed : null;
 
     private static SpriteFrame? Resolve(
         string name,

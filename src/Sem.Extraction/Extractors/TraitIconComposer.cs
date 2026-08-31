@@ -220,5 +220,5 @@ internal static class TraitIconComposer
     }
 
     private static byte? Channel(IReadOnlyList<string> values, int index) =>
-        byte.TryParse(values[index], out var value) ? value : null;
+        byte.TryParse(values[index], System.Globalization.CultureInfo.InvariantCulture, out var value) ? value : null;
 }

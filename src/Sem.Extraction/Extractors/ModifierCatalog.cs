@@ -78,7 +78,7 @@ public sealed class ModifierCatalog
                         IsPercentage: body.GetBool("percentage"),
                         IsGood: body.GetBool("good"),
                         IsNeutral: body.GetBool("neutral"),
-                        Decimals: int.TryParse(body.GetString("max_decimals"), out var d) ? d : 2,
+                        Decimals: int.TryParse(body.GetString("max_decimals"), System.Globalization.CultureInfo.InvariantCulture, out var d) ? d : 2,
                         Declared: true);
                 }
             }

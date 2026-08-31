@@ -251,9 +251,12 @@ public sealed class RequirementCompiler
             return new AlwaysRequirement(true);
         }
 
+        // A chain this deep is permitted, like anything else the compiler cannot read to the end of
+        // — but counted, so it shows up in the unrecognised list rather than becoming an
+        // "always allowed" that nothing can tell apart from a rule that really is.
         if (depth > MaxTriggerDepth)
         {
-            return new AlwaysRequirement(true);
+            return RecordUnrecognised("(scripted trigger nested too deeply)");
         }
 
         var items = new List<Requirement>();
@@ -458,13 +461,34 @@ public sealed class RequirementCompiler
                         new NotRequirement(new AnyRequirement(CategoryValues(category, node.Block))),
                         TextOf(node.Block)));
                     break;
+
+                // Everywhere else in this compiler counts what it cannot read. This alone had no
+                // default, so a key the game adds inside a category block vanished with no warning
+                // and no entry in the unrecognised list — the one place a new rule could be dropped
+                // and leave no trace of having been.
+                default:
+                    if (node.Key is { Length: > 0 } unread)
+                    {
+                        items.Add(RecordUnrecognised($"{category.ToString().ToLowerInvariant()}.{unread}"));
+                    }
+
+                    break;
             }
         }
 
         return WithText(Combine(items), text);
     }
 
-    private static List<Requirement> CategoryValues(SelectionCategory category, CwBlock block)
+    /// <summary>
+    /// The selections named inside a category's <c>OR</c>, <c>AND</c>, <c>NOT</c> or <c>NOR</c>.
+    /// </summary>
+    /// <remarks>
+    /// A group nested inside one of those is compiled rather than skipped. Reading only the direct
+    /// <c>value</c> children collapsed <c>NOT = { OR = { value value } }</c> to a negation of
+    /// nothing, and a negation of nothing is always false — so the clause refused the option
+    /// outright, silently. Vanilla has no such nesting today, which is why it went unseen.
+    /// </remarks>
+    private List<Requirement> CategoryValues(SelectionCategory category, CwBlock block)
     {
         var items = new List<Requirement>();
 
@@ -474,9 +498,21 @@ public sealed class RequirementCompiler
             {
                 items.Add(new SelectionRequirement(category, value));
             }
+            else if (node.Key is "OR" or "AND" or "NOT" or "NOR" && node.Block is not null)
+            {
+                items.Add(CompileCategory(category, WrapAsCategoryGroup(node)));
+            }
         }
 
         return items;
+    }
+
+    /// <summary>Puts one nested group back into the shape <see cref="CompileCategory"/> reads.</summary>
+    private static CwBlock WrapAsCategoryGroup(CwNode group)
+    {
+        var block = new CwBlock();
+        block.Add(CwNode.Assignment(group.Key!, group.Block!));
+        return block;
     }
 
     private static string? TextOf(CwBlock block) =>

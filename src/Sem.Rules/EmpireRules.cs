@@ -16,18 +16,23 @@ public sealed class EmpireRules(GameDatabase database)
     private readonly GameDatabase _database = database ?? throw new ArgumentNullException(nameof(database));
     private readonly RequirementEvaluator _evaluator = new();
 
-    private readonly Dictionary<string, TraitDefinition> _traits =
-        database.Traits.GroupBy(t => t.Key, StringComparer.Ordinal)
-            .ToDictionary(g => g.Key, g => g.Last(), StringComparer.Ordinal);
+    // All four indexed the same way: last definition wins, which is the game's own load order and
+    // what the extractor already applies. Three of them used to build the dictionary directly and
+    // threw on a repeated key — inside a field initialiser, so a database with one duplicate in it
+    // brought the app down at start rather than being read the way the game reads it. Only traits
+    // were defended, which said the asymmetry was an oversight rather than a decision.
+    private readonly Dictionary<string, TraitDefinition> _traits = Index(database.Traits, t => t.Key);
 
-    private readonly Dictionary<string, EthicDefinition> _ethics =
-        database.Ethics.ToDictionary(e => e.Key, StringComparer.Ordinal);
+    private readonly Dictionary<string, EthicDefinition> _ethics = Index(database.Ethics, e => e.Key);
 
-    private readonly Dictionary<string, CivicDefinition> _civics =
-        database.Civics.ToDictionary(c => c.Key, StringComparer.Ordinal);
+    private readonly Dictionary<string, CivicDefinition> _civics = Index(database.Civics, c => c.Key);
 
     private readonly Dictionary<string, ArchetypeDefinition> _archetypes =
-        database.Archetypes.ToDictionary(a => a.Key, StringComparer.Ordinal);
+        Index(database.Archetypes, a => a.Key);
+
+    private static Dictionary<string, T> Index<T>(IEnumerable<T> items, Func<T, string> key) =>
+        items.GroupBy(key, StringComparer.Ordinal)
+            .ToDictionary(g => g.Key, g => g.Last(), StringComparer.Ordinal);
 
     /// <summary>The extracted game data being enforced.</summary>
     public GameDatabase Database => _database;
@@ -496,13 +501,21 @@ public sealed class EmpireRules(GameDatabase database)
     /// no possible likeness is not a choice. Requiring a portrait set also keeps out AI, which has
     /// portraits but no archetype and is nobody's species.
     /// </remarks>
-    public IReadOnlyList<OptionState> GetSpeciesClassOptions(DesignContext context) =>
-        Options(
+    public IReadOnlyList<OptionState> GetSpeciesClassOptions(DesignContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        return Options(
             _database.SpeciesClasses.Where(c => !c.IsAppearanceOnly && HasPortraits(c.Key)),
             c => c.Key,
             c => c.Playable,
-            c => c.Possible,
+
+            // The game states a separate condition for the second species an origin calls for, and
+            // this ignored it — a rule extracted, shipped and then not enforced, so the second
+            // species could be given a class the game refuses.
+            c => context.IsSecondarySpecies ? Combine(c.Possible, c.PossibleSecondary) : c.Possible,
             context);
+    }
 
     private bool HasPortraits(string speciesClass) =>
         (_classesWithPortraits ??= [.. _database.PortraitSets
@@ -511,7 +524,18 @@ public sealed class EmpireRules(GameDatabase database)
 
     private HashSet<string>? _classesWithPortraits;
 
-    /// <summary>The authorities the player may choose from.</summary>
+    /// <summary>
+    /// The authorities the player may choose from.
+    /// </summary>
+    /// <remarks>
+    /// No <c>potential</c> here, unlike every other gated option, and that is deliberate. Two
+    /// authorities declare one: Machine Intelligence requires <c>country_type = ai_empire</c> and
+    /// Corporate requires <c>NOT = { country_type = primitive }</c>. Machine Intelligence is plainly
+    /// playable, so the game does not read authority <c>potential</c> in its designer at all —
+    /// honouring it faithfully would hide an authority the player is entitled to. Pinned by a test
+    /// against the installation, so a patch that starts using the field is noticed rather than
+    /// quietly ignored.
+    /// </remarks>
     public IReadOnlyList<OptionState> GetAuthorityOptions(DesignContext context) =>
         Options(
             _database.Authorities.Where(a => !a.AiOnly),

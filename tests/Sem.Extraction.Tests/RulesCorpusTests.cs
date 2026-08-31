@@ -89,6 +89,39 @@ public sealed class RulesCorpusTests
         }
     }
 
+    /// <summary>
+    /// Every authority the game lets a player pick is offered.
+    /// </summary>
+    /// <remarks>
+    /// Authorities carry no <c>potential</c> in the model, deliberately. Two declare one in the
+    /// game's script and neither can be read the way every other option's is: Machine Intelligence
+    /// wants <c>country_type = ai_empire</c>, which no empire being designed is, and it is plainly
+    /// playable. Honouring the field would hide it. This is what says so, and what would notice if a
+    /// patch started gating an authority on something a designer can answer.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void EveryAuthorityAPlayerCanPickIsOffered()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var design = EmpireDesignsFile.CreateEmpty().Add("Test");
+        var allPacks = Database.Value.Dlc.Select(d => d.Name).ToHashSet(StringComparer.Ordinal);
+        var options = Rules.Value.GetAuthorityOptions(Rules.Value.CreateContext(design, allPacks));
+
+        foreach (var key in new[] { "auth_democratic", "auth_oligarchic", "auth_dictatorial", "auth_imperial" })
+        {
+            Assert.True(options.Any(o => o.Key == key && o.Visible), $"{key} is not offered.");
+        }
+
+        // The two the game gates behind a pack, which the player here owns. Machine Intelligence is
+        // the one whose potential would hide it, so it is named rather than left to the loop.
+        foreach (var key in new[] { "auth_hive_mind", "auth_machine_intelligence", "auth_corporate" })
+        {
+            Assert.True(options.Any(o => o.Key == key && o.Visible), $"{key} is not offered.");
+        }
+    }
+
     [SkippableFact]
     [Trait("Category", "RealData")]
     public void EveryBuiltInEmpireTheGameOffersValidates()

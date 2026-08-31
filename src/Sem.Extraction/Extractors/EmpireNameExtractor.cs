@@ -90,7 +90,7 @@ internal static class EmpireNameExtractor
     {
         foreach (var node in parts.Nodes)
         {
-            if (node.Key is { Length: > 0 } word && int.TryParse(node.ScalarValue, out var weight))
+            if (node.Key is { Length: > 0 } word && int.TryParse(node.ScalarValue, System.Globalization.CultureInfo.InvariantCulture, out var weight))
             {
                 yield return new EmpireNamePart(word, weight);
             }

@@ -146,10 +146,21 @@ public sealed record FlagLayer(int Width, int Height, byte[] Pixels)
     /// </summary>
     public (byte R, byte G, byte B, byte A) Sample(int x, int y, int outputWidth, int outputHeight)
     {
+        // A layer with no pixels reads as transparent rather than throwing. Math.Clamp raises when
+        // its minimum exceeds its maximum, which a width of zero makes it do — so an empty or
+        // unreadable layer crashed the whole flag instead of leaving a hole in it.
+        if (Width <= 0 || Height <= 0)
+        {
+            return (0, 0, 0, 0);
+        }
+
         var sourceX = outputWidth == Width ? x : Math.Clamp(x * Width / outputWidth, 0, Width - 1);
         var sourceY = outputHeight == Height ? y : Math.Clamp(y * Height / outputHeight, 0, Height - 1);
 
         var offset = ((sourceY * Width) + sourceX) * 4;
-        return (Pixels[offset + 2], Pixels[offset + 1], Pixels[offset], Pixels[offset + 3]);
+
+        return offset + 3 < Pixels.Length
+            ? (Pixels[offset + 2], Pixels[offset + 1], Pixels[offset], Pixels[offset + 3])
+            : ((byte)0, (byte)0, (byte)0, (byte)0);
     }
 }

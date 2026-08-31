@@ -127,12 +127,26 @@ public sealed class EmpireDesignsFile
         return AddCopy(source, key);
     }
 
-    /// <summary>Removes an empire from the file.</summary>
+    /// <summary>
+    /// Removes an empire from the file.
+    /// </summary>
+    /// <remarks>
+    /// The list and the document are removed from together, or neither is. Written as one
+    /// short-circuiting expression, a document that refused left the design gone from the list and
+    /// still in what gets written — a deleted empire that comes back on the next save — and returned
+    /// false while having half acted.
+    /// </remarks>
     public bool Remove(EmpireDesign design)
     {
         ArgumentNullException.ThrowIfNull(design);
 
-        return _designs.Remove(design) && Document.Remove(design.Node);
+        if (!Document.Remove(design.Node))
+        {
+            return false;
+        }
+
+        _designs.Remove(design);
+        return true;
     }
 
     private static EmpireDesignsFile FromDocument(CwDocument document)

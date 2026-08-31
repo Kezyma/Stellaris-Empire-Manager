@@ -286,6 +286,14 @@ public sealed record GameDatabase
         {
             yield return empire.Playable;
         }
+
+        // The condition on a generated empire name. Missed when this list was written, which is the
+        // very thing the comment above warns about — so the packs that decide a name format went
+        // uncounted and the pruner never kept the text those conditions explain themselves with.
+        foreach (var format in EmpireNameFormats)
+        {
+            yield return format.When;
+        }
     }
 }
 

@@ -371,7 +371,7 @@ public sealed class ShipBaker(LayeredContent content, SafeFile file)
                     settingsBlock.GetString("name") is { Length: > 0 } name &&
                     settingsBlock.GetString("texture_diffuse") is { Length: > 0 } diffuse)
                 {
-                    var index = int.TryParse(settingsBlock.GetString("index"), out var declared)
+                    var index = int.TryParse(settingsBlock.GetString("index"), System.Globalization.CultureInfo.InvariantCulture, out var declared)
                         ? declared
                         : 0;
 
