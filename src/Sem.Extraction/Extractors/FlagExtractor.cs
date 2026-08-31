@@ -158,8 +158,28 @@ internal static class FlagExtractor
     /// The sprite's name is nominal rather than a measurement — the one called 128 is 131 pixels
     /// across — so the number has to come from the picture. Five small textures, decoded once.
     /// </remarks>
-    private static double Measure(ScriptLoader loader, string texture) =>
-        loader.Content.Contains(texture) ? DdsReader.Read(loader.Content.Read(texture)).Width : 0;
+    /// <remarks>
+    /// Guarded like every other decode in the project. This was the one that was not, so a single
+    /// unreadable frame texture threw out of the whole extraction — against the stated policy that
+    /// one defect in Paradox's data must not stop it. A width of zero is what an absent texture
+    /// already gives, and the caller handles that.
+    /// </remarks>
+    private static double Measure(ScriptLoader loader, string texture)
+    {
+        if (!loader.Content.Contains(texture))
+        {
+            return 0;
+        }
+
+        try
+        {
+            return DdsReader.Read(loader.Content.Read(texture)).Width;
+        }
+        catch (Exception ex) when (ex is InvalidDataException or NotSupportedException or IOException)
+        {
+            return 0;
+        }
+    }
 
     /// <summary>A width from a <c>{ width = n height = n }</c> pair.</summary>
     private static double? Extent(CwBlock body, string key) =>

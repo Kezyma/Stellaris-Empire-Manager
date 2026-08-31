@@ -96,7 +96,7 @@
                         <button type="button"
                                 class="sem-gender @(leaderClass.Key == CurrentClass ? "selected" : null)"
                                 title="@name"
-                                aria-pressed="@(leaderClass.Key == CurrentClass)"
+                                aria-pressed="@(leaderClass.Key == CurrentClass ? "true" : "false")"
                                 @onclick="() => Session.Edit(d => d.Ruler.LeaderClass = leaderClass.Key)">
 
                             @if (leaderClass.Icon is { Length: > 0 } icon)

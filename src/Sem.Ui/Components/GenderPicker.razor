@@ -12,7 +12,7 @@
         <button type="button"
                 class="sem-gender @(key == Current ? "selected" : null)"
                 title="@label"
-                aria-pressed="@(key == Current)"
+                aria-pressed="@(key == Current ? "true" : "false")"
                 @onclick="() => OnChange.InvokeAsync(key)">
 
             @if (Session.Data.Database.Icons.GetValueOrDefault(icon) is { Length: > 0 } path)

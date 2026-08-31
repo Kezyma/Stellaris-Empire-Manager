@@ -564,9 +564,16 @@ public sealed class EmpireRules(GameDatabase database)
                 reasons.Add(RuleReasons.GestaltExclusive);
             }
 
+            // The same ethic held at the other strength is not a conflict, it is the thing being
+            // changed. Militarist and Fanatic Militarist share a category, so taking one while
+            // holding the other was reported as blocked — and the game moves freely between them,
+            // which is what the fanatic_variant and regular_variant fields are for.
+            var replaced = context.Ethics.FirstOrDefault(e => IsSameEthicAtAnotherStrength(e, ethic));
+
             // Opposing ethics share a category, and only one may be taken from each.
             var conflicting = context.Ethics.FirstOrDefault(
-                e => _ethics.TryGetValue(e, out var taken) &&
+                e => !IsSameEthicAtAnotherStrength(e, ethic) &&
+                     _ethics.TryGetValue(e, out var taken) &&
                      string.Equals(taken.Category, ethic.Category, StringComparison.Ordinal));
 
             if (conflicting is not null)
@@ -574,7 +581,12 @@ public sealed class EmpireRules(GameDatabase database)
                 reasons.Add(RuleReasons.For(RuleReasons.EthicGroupTaken, conflicting));
             }
 
-            if (budget.Remaining < ethic.Cost)
+            // A swap costs only the difference, since what it replaces is given back.
+            var refunded = replaced is not null && _ethics.TryGetValue(replaced, out var previous)
+                ? previous.Cost
+                : 0;
+
+            if (budget.Remaining < ethic.Cost - refunded)
             {
                 reasons.Add(RuleReasons.NotEnoughEthicsPoints);
             }
@@ -583,6 +595,27 @@ public sealed class EmpireRules(GameDatabase database)
         }
 
         return options;
+    }
+
+    /// <summary>
+    /// Whether an ethic already held is the same conviction as another, at the other strength.
+    /// </summary>
+    /// <remarks>
+    /// The game states the pairing itself, in <c>fanatic_variant</c> and <c>regular_variant</c>, so
+    /// this reads it rather than inferring it from a shared category or from the word "fanatic".
+    /// </remarks>
+    private bool IsSameEthicAtAnotherStrength(string held, EthicDefinition wanted) =>
+        string.Equals(wanted.FanaticVariant, held, StringComparison.Ordinal) ||
+        string.Equals(wanted.RegularVariant, held, StringComparison.Ordinal);
+
+    /// <summary>The ethic this one would replace, where the empire holds it at the other strength.</summary>
+    public string? EthicReplacedBy(DesignContext context, string ethicKey)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        return _ethics.TryGetValue(ethicKey, out var wanted)
+            ? context.Ethics.FirstOrDefault(e => IsSameEthicAtAnotherStrength(e, wanted))
+            : null;
     }
 
     /// <summary>

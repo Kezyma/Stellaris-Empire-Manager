@@ -75,6 +75,16 @@ public sealed class HttpGameDataSource(HttpClient client, string baseUrl = "game
                 "gamedb.json", GameDataJsonContext.Default.GameDatabase, cancellationToken).ConfigureAwait(false)
                 ?? throw new InvalidOperationException("The game database could not be read.");
 
+            // Refused rather than read around. A database of an older shape deserialises without
+            // complaint and every field added since takes its default, so the designer would run on
+            // rules it silently does not have. The desktop has always checked; this did not.
+            if (database.SchemaVersion != GameDatabase.CurrentSchemaVersion)
+            {
+                throw new InvalidOperationException(
+                    $"The game data was built for a different version of this app " +
+                    $"(found {database.SchemaVersion}, expected {GameDatabase.CurrentSchemaVersion}).");
+            }
+
             var localisation = await ReadAsync(
                 "loc/en.json", GameDataJsonContext.Default.DictionaryStringString, cancellationToken)
                 .ConfigureAwait(false) ?? [];

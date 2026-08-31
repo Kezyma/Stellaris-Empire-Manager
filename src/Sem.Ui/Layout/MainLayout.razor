@@ -49,9 +49,13 @@
                     file input cannot be opened from code. The click has to be allowed to reach it,
                     so the question about unsaved work is asked when the file arrives instead — at
                     which point declining simply drops it.
+
+                    Hidden by size rather than by display: display:none takes the input out of the
+                    tab order, and since the label is not focusable either, Import was the one item
+                    in this header no keyboard could reach.
                 *@
                 <label class="sem-tab" for="designs-file">Import</label>
-                <InputFile id="designs-file" OnChange="Import" style="display:none" accept=".txt" />
+                <InputFile id="designs-file" OnChange="Import" class="sem-visually-hidden" accept=".txt" />
 
                 <button type="button" class="sem-tab"
                         disabled="@(_session.File is null || _session.File.Designs.Count == 0)"

@@ -33,7 +33,7 @@
                 <button type="button"
                         class="sem-icon-option sem-nomad @(Design.IsNomadic == true ? "selected" : null)"
                         title="@NomadicLabel"
-                        aria-pressed="@(Design.IsNomadic == true)"
+                        aria-pressed="@(Design.IsNomadic == true ? "true" : "false")"
                         @onclick="() => Session.Edit(d => d.IsNomadic = d.IsNomadic != true)">
 
                     @if (Session.Data.Database.Icons.GetValueOrDefault(NomadSprite) is { Length: > 0 } icon)

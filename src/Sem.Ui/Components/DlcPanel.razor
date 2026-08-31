@@ -30,7 +30,7 @@
         <button type="button"
                 class="sem-dlc @(owned ? "on" : "off")"
                 title="@Name(pack)"
-                aria-pressed="@owned"
+                aria-pressed="@(owned ? "true" : "false")"
                 @onclick="() => Session.ToggleDlc(pack.Name, !owned)">
 
             @if (pack.Icon is { Length: > 0 } icon)

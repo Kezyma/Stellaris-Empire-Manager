@@ -21,7 +21,7 @@
                 *@
                 <button type="button"
                         class="@ClassFor(option)"
-                        aria-pressed="@option.Selected"
+                        aria-pressed="@(option.Selected ? "true" : "false")"
                         disabled="@(!option.Enabled && !option.Selected)"
                         title="@option.Name"
                         @onmouseenter="() => _hovered = option.Key"

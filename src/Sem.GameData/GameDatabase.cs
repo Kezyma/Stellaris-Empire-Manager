@@ -10,6 +10,17 @@ namespace Sem.GameData;
 /// </remarks>
 public sealed record GameDatabase
 {
+    /// <summary>
+    /// The shape this version of the code reads and writes.
+    /// </summary>
+    /// <remarks>
+    /// Kept here rather than with the extractor because both ends need it: the extractor stamps it,
+    /// and every host has to check it before trusting what it just read. The web host did not, so a
+    /// site published with a database one version behind was read anyway, with whatever the shape had
+    /// gained since taking its default and no sign that anything was missing.
+    /// </remarks>
+    public const int CurrentSchemaVersion = 3;
+
     /// <summary>Version of this file's own shape, so an old cache can be detected and rebuilt.</summary>
     public required int SchemaVersion { get; init; }
 
@@ -1125,7 +1136,11 @@ public sealed record NameSet
         var firsts = FirstNames.All;
         var seconds = SecondNames.All;
 
-        var joined = new List<string>(whole.Select(name => LeaderName.Variant(name, gender)));
+        // Capped like everything else. The limit used to guard only the composed names, so a list
+        // whose leaders are all written out in full — which the human lists are — returned its whole
+        // pool however few the caller asked for.
+        var joined = new List<string>(
+            whole.Take(limit).Select(name => LeaderName.Variant(name, gender)));
 
         if (firsts.Count == 0)
         {

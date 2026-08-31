@@ -277,7 +277,10 @@ public static class DesignLink
             {
                 text.Add(Marker);
             }
-            else if (coded[i] - 1 is var index && index < Tokens.Length)
+            // Both ends checked. Only the upper one was, so a marker followed by a zero byte gave an
+            // index of -1 and threw past the filter that promises a link which will not unpack is
+            // treated as no design rather than as an error.
+            else if (coded[i] - 1 is var index && index >= 0 && index < Tokens.Length)
             {
                 text.AddRange(Tokens[index]);
             }

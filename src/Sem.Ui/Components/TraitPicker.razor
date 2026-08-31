@@ -18,8 +18,13 @@
     What the pointer is over is described beneath the chosen traits rather than beneath both lists,
     so reading about a trait and seeing what it would join happen in one place.
 *@
+@*
+    Groups of buttons rather than listboxes. A listbox's children have to be options, and a browser
+    prunes the ones that are not — so a screen reader was told "listbox, 0 items" over eighty traits.
+    Each row is a button that toggles, and it already says whether it is pressed.
+*@
 <div class="sem-trait-lists">
-    <div class="sem-trait-list" role="listbox" aria-label="Available traits">
+    <div class="sem-trait-list" role="group" aria-label="Available traits">
         @foreach (var trait in Available)
         {
             @Row(trait, chosen: false)
@@ -27,7 +32,7 @@
     </div>
 
     <div class="chosen-column">
-        <div class="sem-trait-list chosen" role="listbox" aria-label="Chosen traits">
+        <div class="sem-trait-list chosen" role="group" aria-label="Chosen traits">
             @if (Chosen.Count == 0)
             {
                 <p class="sem-hint padded">Nothing chosen yet.</p>
@@ -240,7 +245,7 @@
     private RenderFragment Row(TraitEntry trait, bool chosen) =>
         @<button type="button"
                  class="sem-trait-row @(trait.Enabled ? null : "blocked") @(trait.Overspends ? "overspends" : null)"
-                 aria-pressed="@chosen"
+                 aria-pressed="@(chosen ? "true" : "false")"
                  title="@trait.Name"
                  @onmouseenter="() => _described = trait.Key"
                  @onfocus="() => _described = trait.Key"

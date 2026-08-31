@@ -24,6 +24,51 @@ public sealed class DesktopFileExchange(SafeFile file, string designsPath) : IFi
     /// <summary>The file being edited.</summary>
     public string DesignsPath => _designsPath;
 
+    /// <summary>
+    /// The published site, which is where a shared link has to point.
+    /// </summary>
+    /// <remarks>
+    /// The web view serves the app from an origin only this process can reach, so a link built from
+    /// the window's own address opened nothing anywhere. The same design read from the same link
+    /// works on the site, which is the thing another person can actually be sent to.
+    /// </remarks>
+    public string? ShareBaseUri => "https://kezyma.github.io/Stellaris-Empire-Manager/";
+
+    /// <summary>
+    /// Puts text on the Windows clipboard.
+    /// </summary>
+    /// <remarks>
+    /// Without this the share button inherited the interface's default of "did not work" and said
+    /// nothing about it, so on the desktop it looked identical to the one that does. The clipboard
+    /// belongs to the UI thread and can be held by another process, which is what the retry count
+    /// is for; a refusal is reported rather than swallowed.
+    /// </remarks>
+    public Task<bool> CopyToClipboardAsync(string text)
+    {
+        ArgumentNullException.ThrowIfNull(text);
+
+        var dispatcher = System.Windows.Application.Current?.Dispatcher;
+
+        if (dispatcher is null)
+        {
+            return Task.FromResult(false);
+        }
+
+        return dispatcher.InvokeAsync(() =>
+        {
+            try
+            {
+                System.Windows.Clipboard.SetDataObject(text, copy: true);
+                return true;
+            }
+            catch (System.Runtime.InteropServices.ExternalException)
+            {
+                // Another process had the clipboard open. Nothing was copied, and the button says so.
+                return false;
+            }
+        }).Task;
+    }
+
     /// <inheritdoc />
     public Task<(string Name, byte[] Contents)?> TryOpenExistingAsync()
     {

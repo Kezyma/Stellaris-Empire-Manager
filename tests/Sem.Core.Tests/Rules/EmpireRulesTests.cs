@@ -254,6 +254,64 @@ public sealed class EmpireRulesTests
         Assert.Equal(5, budget.Picks.Available);
     }
 
+    /// <summary>
+    /// An ethic and its fanatic form share a category, so the rule that only one may be taken from
+    /// each category reported the swap as blocked by the very thing being swapped. The game moves
+    /// freely between the two, which is what the fanatic_variant and regular_variant fields describe.
+    /// </summary>
+    [Fact]
+    public void AnEthicCanBeTakenAtTheOtherStrength()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.SetEthics(["ethic_militarist", "ethic_xenophile"]);
+
+        var options = Rules.GetEthicOptions(Context(design));
+
+        Assert.True(Single(options, "ethic_fanatic_militarist").Enabled);
+        Assert.Equal("ethic_militarist", Rules.EthicReplacedBy(Context(design), "ethic_fanatic_militarist"));
+    }
+
+    /// <summary>
+    /// And the opposing ethic in the same category still is blocked, which is the rule the swap has
+    /// to be carved out of rather than around.
+    /// </summary>
+    [Fact]
+    public void ButTheOpposingEthicInThatCategoryStillIsNot()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.SetEthics(["ethic_militarist", "ethic_xenophile"]);
+
+        var options = Rules.GetEthicOptions(Context(design));
+
+        Assert.False(Single(options, "ethic_pacifist").Enabled);
+        Assert.Null(Rules.EthicReplacedBy(Context(design), "ethic_pacifist"));
+    }
+
+    /// <summary>
+    /// A swap is charged the difference, not the whole price, because what it replaces is given
+    /// back. Militarist alone spends one of three, and moving up to the fanatic form costs one more
+    /// — charged in full it would want two and be refused with a point still to spend.
+    /// </summary>
+    [Fact]
+    public void ASwapIsChargedTheDifferenceRatherThanTheWholePrice()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.SetEthics(["ethic_militarist", "ethic_fanatic_xenophile"]);
+
+        var context = Context(design);
+
+        // Three points, all spent, so a swap wanting one more is refused - and rightly.
+        Assert.Equal(0, Rules.GetEthicsBudget(context).Remaining);
+        Assert.False(Single(Rules.GetEthicOptions(context), "ethic_fanatic_militarist").Enabled);
+
+        // With a point to spare it goes through, where the full price of two would not have.
+        design.SetEthics(["ethic_militarist", "ethic_xenophile"]);
+        var spare = Context(design);
+
+        Assert.Equal(1, Rules.GetEthicsBudget(spare).Remaining);
+        Assert.True(Single(Rules.GetEthicOptions(spare), "ethic_fanatic_militarist").Enabled);
+    }
+
     [Fact]
     public void OpposingTraitsCannotBothBeTaken()
     {

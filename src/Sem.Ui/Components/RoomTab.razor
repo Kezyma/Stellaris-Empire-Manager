@@ -1,5 +1,6 @@
 @using Microsoft.JSInterop
 @inject IJSRuntime Js
+@implements IAsyncDisposable
 
 @*
     Where the empire's leader stands, and what its cities look like from that window.
@@ -90,6 +91,31 @@
             .ConfigureAwait(true);
     }
 
+    /// <summary>
+    /// Releases the script reference when the section closes.
+    /// </summary>
+    /// <remarks>
+    /// This section is opened and closed repeatedly while an empire is being designed, and every
+    /// other interop holder in the project releases its module. This one did not, so each open left
+    /// a reference behind on both hosts.
+    /// </remarks>
+    public async ValueTask DisposeAsync()
+    {
+        if (_module is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await _module.DisposeAsync().ConfigureAwait(false);
+        }
+        catch (JSDisconnectedException)
+        {
+            // The page went away first; there is nothing left to release.
+        }
+    }
+
     /// <summary>The rooms the game's own designer lists.</summary>
     private IReadOnlyList<RoomDefinition> Offered =>
         [.. Session.Data.Database.Rooms.Where(r => r.IsOffered)];
@@ -112,7 +138,7 @@
             {
                 <button type="button"
                         class="sem-thumb-option @(room.Key == Design.Room ? "selected" : null)"
-                        aria-pressed="@(room.Key == Design.Room)"
+                        aria-pressed="@(room.Key == Design.Room ? "true" : "false")"
                         @onclick="() => Session.Edit(d => d.Room = room.Key)">
                     @if (room.Image is not null)
                     {

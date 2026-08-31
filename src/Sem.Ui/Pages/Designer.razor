@@ -7,7 +7,22 @@
 
 <PageTitle>@Title - Stellaris Empire Manager</PageTitle>
 
-@if (_session is null)
+@*
+    A shared link is opened here first, so this page has to be able to say when the game data did not
+    arrive. It showed "Loading…" for ever instead: no message, no way back, and on the published site
+    this is exactly the address the SPA fallback exists to serve.
+*@
+@if (_session is null && Host.LoadError is { } loadError)
+{
+    <div class="sem-empty">
+        <h2>The game data is not available</h2>
+        <p class="sem-hint">@loadError</p>
+        <button type="button" class="primary" @onclick="@(() => Navigation.NavigateTo("", forceLoad: true))">
+            Try again
+        </button>
+    </div>
+}
+else if (_session is null)
 {
     <div class="sem-loading"><p>Loading…</p></div>
 }
@@ -63,7 +78,8 @@ else
     *@
     <DesignerShell Session="_session">
         <Actions>
-            <button type="button" class="icon" title="@(_copied ? "Link copied" : "Copy a link to this empire")"
+            @* A copy that did not happen says so, rather than looking exactly like one that did. *@
+            <button type="button" class="icon" title="@ShareTitle"
                     aria-label="Copy a link to this empire" @onclick="CopyLink">
                 <ActionIcon Name="share" />
             </button>
@@ -93,9 +109,6 @@ else
 
 @code {
     private DesignSession? _session;
-
-    /// <summary>Whether the last thing the player did was copy the link, so the button can say so.</summary>
-    private bool _copied;
 
     /// <summary>The questions this page stops to ask.</summary>
     private enum Asking
@@ -391,6 +404,17 @@ else
         Navigation.NavigateTo($"designer?{DesignLink.Parameter}={encoded}", replace: true);
     }
 
+    /// <summary>What the share button says, which depends on whether the last press worked.</summary>
+    private string ShareTitle => _copied switch
+    {
+        true => "Link copied",
+        false => "The clipboard would not take it",
+        null => "Copy a link to this empire",
+    };
+
+    /// <summary>Null until the button has been pressed; then whether the copy happened.</summary>
+    private bool? _copied;
+
     private async Task CopyLink()
     {
         if (_session?.Current is not { } design)
@@ -398,7 +422,11 @@ else
             return;
         }
 
-        var link = $"{Navigation.BaseUri}designer?{DesignLink.Parameter}={DesignLink.Encode(design)}";
+        // Built against the address the link can actually be opened at, which on the desktop is the
+        // published site rather than the window's own origin — a web view serves the app from
+        // somewhere only this process can reach.
+        var origin = Files.ShareBaseUri ?? Navigation.BaseUri;
+        var link = $"{origin}designer?{DesignLink.Parameter}={DesignLink.Encode(design)}";
 
         _copied = await Files.CopyToClipboardAsync(link);
     }

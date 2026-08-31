@@ -23,12 +23,16 @@
     the thing that decides which portraits there are.
 *@
 <div class="sem-portrait-picker">
-    <div class="sem-class-list" role="listbox" aria-label="@Session.Localizer.Label("SPECIES_CLASS_LABEL", "Species Class")">
+    @*
+        A group of buttons rather than a listbox. A listbox's children have to be options, and a
+        browser prunes the ones that are not — so a screen reader was told "listbox, 0 items" over a
+        list of species classes. These are buttons, and saying so is what makes them readable.
+    *@
+    <div class="sem-class-list" role="group" aria-label="@Session.Localizer.Label("SPECIES_CLASS_LABEL", "Species Class")">
         @foreach (var option in ClassOptions)
         {
             <button type="button"
-                    role="option"
-                    aria-selected="@(option.Key == Species.Class)"
+                    aria-pressed="@(option.Key == Species.Class ? "true" : "false")"
                     class="@(option.Key == Species.Class ? "selected" : null) @(option.Enabled || option.Key == Species.Class ? null : "blocked")"
                     disabled="@(!option.Enabled && option.Key != Species.Class)"
                     @onclick="() => SetClass(option.Key)">

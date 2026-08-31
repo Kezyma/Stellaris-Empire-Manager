@@ -54,7 +54,7 @@
     {
         <button type="button"
                 class="sem-thumb-option @(file == Design.Flag.Background.File ? "selected" : null)"
-                aria-pressed="@(file == Design.Flag.Background.File)"
+                aria-pressed="@(file == Design.Flag.Background.File ? "true" : "false")"
                 title="@System.IO.Path.GetFileNameWithoutExtension(file)"
                 @onclick="() => SetBackground(file)">
             <FlagPreview Flag="@Design.Flag" BackgroundFile="@file" HideEmblem="true" />
@@ -81,7 +81,7 @@
 
         <button type="button"
                 class="sem-thumb-option @(file == Design.Flag.Icon.File && EmblemCategory == Design.Flag.Icon.Category ? "selected" : null)"
-                aria-pressed="@(file == Design.Flag.Icon.File && EmblemCategory == Design.Flag.Icon.Category)"
+                aria-pressed="@(file == Design.Flag.Icon.File && EmblemCategory == Design.Flag.Icon.Category ? "true" : "false")"
                 title="@name"
                 @onclick="() => SetEmblem(file)">
             <img class="sem-thumb"

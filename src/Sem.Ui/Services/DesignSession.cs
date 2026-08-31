@@ -66,6 +66,8 @@ public sealed class DesignSession
         _ownedDlc.AddRange(data.Database.Dlc
             .Where(d => assumeAllPacks || d.Installed)
             .Select(d => d.Name));
+
+        RebuildOwned();
     }
 
     /// <summary>Raised whenever anything an interface displays has changed.</summary>
@@ -129,8 +131,20 @@ public sealed class DesignSession
     /// </remarks>
     public bool HasUnwrittenFileChanges { get; private set; }
 
-    /// <summary>The content packs to judge availability against.</summary>
-    public IReadOnlySet<string> OwnedDlc => _ownedDlc.ToHashSet(StringComparer.Ordinal);
+    /// <summary>
+    /// The content packs to judge availability against.
+    /// </summary>
+    /// <remarks>
+    /// Held rather than built on each read. This is asked once per pack while the bar draws, once
+    /// per empire while the list draws, and again by every context the rules build — dozens of sets
+    /// allocated per frame, in a runtime where that is not free, for something that changes only
+    /// when a switch is clicked.
+    /// </remarks>
+    public IReadOnlySet<string> OwnedDlc => _owned;
+
+    private HashSet<string> _owned = new(StringComparer.Ordinal);
+
+    private void RebuildOwned() => _owned = [.. _ownedDlc];
 
     /// <summary>Opens a designs file.</summary>
     public void Load(byte[] contents, string fileName)
@@ -265,6 +279,7 @@ public sealed class DesignSession
 
         _ownedDlc.Clear();
         _ownedDlc.AddRange(owned);
+        RebuildOwned();
 
         // The saved empire is read against the packs as well, so it is no longer the same reading.
         _savedContext = null;
@@ -286,6 +301,7 @@ public sealed class DesignSession
             _ownedDlc.RemoveAll(d => string.Equals(d, name, StringComparison.Ordinal));
         }
 
+        RebuildOwned();
         _savedContext = null;
         Recompute();
     }

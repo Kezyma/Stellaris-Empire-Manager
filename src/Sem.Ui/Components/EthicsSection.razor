@@ -151,6 +151,14 @@
             ethics.RemoveAll(e =>
                 Session.Data.Database.Ethics.FirstOrDefault(x => x.Key == e)?.IsGestalt == true);
 
+            // Moving between an ethic and its fanatic form replaces it rather than joining it, which
+            // is how the game's own designer behaves. Added beside it, the empire would hold both
+            // halves of one conviction and be rejected.
+            if (Session.Rules.EthicReplacedBy(Context, key) is { } replaced)
+            {
+                ethics.Remove(replaced);
+            }
+
             ethics.Add(key);
             d.SetEthics(ethics);
         });

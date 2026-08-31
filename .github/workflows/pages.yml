@@ -29,7 +29,15 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # The same build and test CI runs, before anything is published. The two workflows both triggered
+  # on a push to main and neither waited for the other, so a change that failed its tests went live
+  # anyway. Running it here rather than waiting on the other workflow keeps the gate in the same
+  # place as the deployment it guards.
+  check:
+    uses: ./.github/workflows/ci.yml
+
   publish:
+    needs: check
     runs-on: ubuntu-latest
 
     environment:

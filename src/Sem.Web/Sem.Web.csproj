@@ -39,9 +39,27 @@
       The base href is written for local development, where the site is the whole origin. Rewriting
       it here means index.html stays correct in both places rather than one of them.
     -->
+    <!--
+      A plain string replace, so it fails silently if index.html is ever reformatted — and a site
+      published with base href="/" resolves every asset against the domain root and comes up blank,
+      with nothing in the console to say why. Checked first, the way .nojekyll is.
+    -->
+    <PropertyGroup>
+      <PagesIndex>$([System.IO.File]::ReadAllText('$(PagesRoot)index.html'))</PagesIndex>
+    </PropertyGroup>
+
+    <Error
+      Condition="!$(PagesIndex.Contains('&lt;base href=&quot;/&quot; /&gt;'))"
+      Text="index.html has no &lt;base href=&quot;/&quot; /&gt; to rewrite, so the site would publish with the wrong base and come up blank." />
+
+    <!--
+      Escaped, because Lines is an item list and MSBuild splits an unescaped value on every
+      semicolon. One HTML entity or one inline style in the page would otherwise scatter it across
+      lines, mid-tag.
+    -->
     <WriteLinesToFile
       File="$(PagesRoot)index.html"
-      Lines="$([System.IO.File]::ReadAllText('$(PagesRoot)index.html').Replace('&lt;base href=&quot;/&quot; /&gt;', '&lt;base href=&quot;$(PagesBase)&quot; /&gt;'))"
+      Lines="$([MSBuild]::Escape($(PagesIndex.Replace('&lt;base href=&quot;/&quot; /&gt;', '&lt;base href=&quot;$(PagesBase)&quot; /&gt;'))))"
       Overwrite="true"
       WriteOnlyWhenDifferent="true" />
 

@@ -61,6 +61,16 @@ public interface IFileExchange
     /// answer decides whether the button claims success.
     /// </remarks>
     Task<bool> CopyToClipboardAsync(string text) => Task.FromResult(false);
+
+    /// <summary>
+    /// The address a shared link should be built against, or null to use the app's own.
+    /// </summary>
+    /// <remarks>
+    /// In a browser the app's own address is the one to share, and this stays null. A desktop window
+    /// has no address anyone else can open — the web view serves the app from an origin of its own —
+    /// so a link built from it was a link to nowhere, handed over as though it worked.
+    /// </remarks>
+    string? ShareBaseUri => null;
 }
 
 /// <summary>Offers the file as a browser download.</summary>

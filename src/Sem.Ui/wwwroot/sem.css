@@ -253,8 +253,44 @@ code {
    already has a control that holds exactly that — which means it works before the app has finished
    loading and needs nothing torn down afterwards.
 */
-.sem-header-toggle,
 .sem-header-burger { display: none; }
+
+/*
+   The checkbox itself is never seen, and must still be reachable. display:none takes an input out of
+   the tab order and out of the accessibility tree altogether, which left the whole menu — Create,
+   Import, Export — openable by pointer and by nothing else. Hidden by size instead, so it keeps its
+   place in the tab order and a screen reader still finds it.
+*/
+.sem-visually-hidden,
+.sem-header-toggle,
+.sem-dlc-toggle {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    clip-path: inset(50%);
+}
+
+/* And the label it drives shows focus, since the box that has the focus cannot be seen. */
+.sem-header-toggle:focus-visible + .sem-header-burger,
+.sem-dlc-toggle:focus-visible + .sem-dlc-summary {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/*
+   Import is a label over a hidden file input, so the focus lands on the input and the ring has to be
+   drawn on the label in front of it. The label precedes the input in the markup, which is why this
+   reaches backwards.
+*/
+.sem-header-actions:has(#designs-file:focus-visible) label[for="designs-file"] {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
 
 @media (max-width: 720px) {
     .sem-header {
@@ -1418,10 +1454,10 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 }
 
 /*
-   The bar folds away on a phone and is a bar everywhere else, so both the switch and the line that
-   stands in for it are absent above the breakpoint.
+   The bar folds away on a phone and is a bar everywhere else, so the line that stands in for it is
+   absent above the breakpoint. The switch is hidden by size rather than by display, up there and
+   down here alike, so it keeps its place in the tab order — see the rule beside the burger.
 */
-.sem-dlc-toggle,
 .sem-dlc-summary { display: none; }
 
 @media (max-width: 720px) {

@@ -58,7 +58,16 @@ public sealed class SessionHost(
             }
             else if (await _store.ReadAsync().ConfigureAwait(false) is { Length: > 0 } kept)
             {
-                session.LoadText(kept, EmpireDesignsFile.FileName);
+                if (Kept.TryDecode(kept) is { } bytes)
+                {
+                    session.Load(bytes, EmpireDesignsFile.FileName);
+                }
+                else
+                {
+                    // Kept before the store held bytes. Read as text, and written back as bytes the
+                    // next time the list changes.
+                    session.LoadText(kept, EmpireDesignsFile.FileName);
+                }
             }
             else
             {
@@ -73,6 +82,12 @@ public sealed class SessionHost(
             _session = session;
             LoadError = null;
             return _session;
+        }
+        catch (OperationCanceledException)
+        {
+            // Whoever asked has gone. Reported as a failure this looked like the data was broken,
+            // when nothing was wrong except that the page moved on.
+            throw;
         }
         catch (Exception ex)
         {
@@ -100,7 +115,7 @@ public sealed class SessionHost(
     {
         if (!_files.SavesInPlace && _session?.Save() is { } bytes)
         {
-            _ = _store.WriteAsync(System.Text.Encoding.UTF8.GetString(bytes));
+            _ = _store.WriteAsync(Kept.Encode(bytes));
         }
     }
 
@@ -136,7 +151,7 @@ public sealed class SessionHost(
                 await _files.SaveAsync(session.FileName ?? EmpireDesignsFile.FileName, contents)
                     .ConfigureAwait(false);
             }
-            else if (!await _store.WriteAsync(System.Text.Encoding.UTF8.GetString(contents)).ConfigureAwait(false))
+            else if (!await _store.WriteAsync(Kept.Encode(contents)).ConfigureAwait(false))
             {
                 return "Your browser would not keep the file. Download it to be sure of it.";
             }
