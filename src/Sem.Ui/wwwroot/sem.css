@@ -243,6 +243,21 @@ code {
 .sem-row.nowrap { flex-wrap: nowrap; }
 
 /*
+    An input with a die beside it, inside a field that is one column of a name row. The row's own
+    gap is the distance between two fields, and spending it between an input and the button attached
+    to it made the homeworld and star names visibly narrower than the plain select next to them.
+    Close the gap and let the input have everything the button does not.
+*/
+.sem-field > .sem-row.nowrap {
+    gap: var(--space-xs);
+}
+
+.sem-field > .sem-row.nowrap > :first-child {
+    flex: 1;
+    min-width: 0;
+}
+
+/*
     A wider gap where the row holds two labelled groups of controls rather than two controls. The
     space between the groups has to beat the space inside them or they read as one long strip of
     buttons — gender and leader class, side by side, are six icons that mean two different things.
@@ -1471,11 +1486,32 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     overflow-y: auto;
 }
 
+/*
+    No overflow:hidden here, deliberately. It was clipping the combo boxes: a dropdown opened near
+    the foot of a section had most of its list cut off at the section's edge, which is the one place
+    a dropdown must be allowed to escape. The rounding it was there for is done by the head and the
+    body instead, each taking the corners it actually touches.
+
+    Do not give this a position or a z-index either — either would make it a stacking context and
+    trap the list again just as effectively.
+*/
 .sem-section {
     background: var(--bg-panel);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    overflow: hidden;
+}
+
+.sem-section > .head {
+    border-radius: calc(var(--radius) - 1px) calc(var(--radius) - 1px) 0 0;
+}
+
+/* A closed section is only its head, so that head rounds all four corners. */
+.sem-section:not(:has(> .body)) > .head {
+    border-radius: calc(var(--radius) - 1px);
+}
+
+.sem-section > .body {
+    border-radius: 0 0 calc(var(--radius) - 1px) calc(var(--radius) - 1px);
 }
 
 .sem-section > .head {
@@ -1664,15 +1700,52 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
    Parts of one section, separated by a rule rather than another box: nesting a panel inside a panel
    inside the page reads as three frames around one list. */
 
+/*
+    Stacked by default. Five tabs use this and most of their sections are rows of named fields that
+    want the whole width; measured, making them all multi-column squeezed the species names into
+    328px and broke the homeworld row onto three lines.
+*/
 .sem-subsections {
     display: flex;
     flex-direction: column;
     gap: var(--space-xl);
 }
 
+/*
+    Except where two of the sections are grids of choices, which is the government: its ethics and its
+    authority each want an icon grid with a panel beside it, and stacking them left the right half of
+    a wide screen empty. Paired at 460 apiece — the width an icon column plus its 240px detail panel
+    actually needs, below which the panel starts scrolling text it has room for.
+
+    Only the first two pair. Anything after them spans the width, because the civics are eighty-one
+    options and a half-width grid of them is a column of scrolling.
+*/
+@media (min-width: 1000px) {
+    .sem-subsections.paired {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(460px, 1fr));
+        align-items: start;
+    }
+
+    .sem-subsections.paired > section { grid-column: 1 / -1; }
+    .sem-subsections.paired > section:nth-child(-n + 2) { grid-column: auto; }
+}
+
+/* A rule between stacked sections, which is what they are unless the container says otherwise. */
 .sem-subsections > section + section {
     padding-top: var(--space-xl);
     border-top: 1px solid var(--border);
+}
+
+/*
+    Not between two that sit side by side: there the border would run across the top of a column
+    rather than between two things, and the gap and the overline headings already separate them.
+*/
+@media (min-width: 1000px) {
+    .sem-subsections.paired > section:nth-child(-n + 2) + section:nth-child(-n + 2) {
+        padding-top: 0;
+        border-top: 0;
+    }
 }
 
 .sem-subsections > section > h4 {
@@ -1908,34 +1981,38 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
    Three names and the button that fills them, side by side, because they are one answer given three
    ways rather than three separate questions. */
 
+/*
+    Wrapping rather than a grid of a stated width.
+
+    It had been a grid of three columns, or four where a row held four fields, dropping to one at
+    700px — so the empire's four names went from a row of four straight to a column of four, with
+    nothing in between on the widths most monitors actually are. Every count was also written into a
+    selector twice: once as repeat(3), once as a :has(:nth-child(5)) that meant "and four when there
+    are four".
+
+    A flex row with a sensible basis says the same thing once and answers every width: four across
+    becomes two, then one, as the room runs out, and a row holding two fields is simply a row holding
+    two fields rather than a case anyone had to write down.
+*/
 .sem-name-row {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+    display: flex;
+    flex-wrap: wrap;
     gap: var(--gap);
     align-items: end;
 }
 
-.sem-name-row > .sem-field { margin-bottom: 0; }
+.sem-name-row > .sem-field {
+    flex: 1 1 220px;
+    min-width: 0;
+    margin-bottom: 0;
+}
 
 /*
-    A fourth field where there is one — the empire carries a ship prefix as well as a name and an
-    adjective. Counted from the children rather than named by a class, so the row follows what it
-    actually holds instead of being told twice.
+    The die is not a field and does not share their width: it is one button, and it belongs at the
+    end of whatever row it lands on.
 */
-.sem-name-row:has(> :nth-child(5)) {
-    grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
-}
-
-/* The class and gender pair sits in the same grid but wants only two columns. */
-.sem-name-row:has(.sem-genders) {
-    grid-template-columns: minmax(0, 1fr) auto;
-}
-
-@media (max-width: 700px) {
-    .sem-name-row,
-    .sem-name-row:has(.sem-genders) {
-        grid-template-columns: minmax(0, 1fr);
-    }
+.sem-name-row > .sem-field:has(> .sem-randomise) {
+    flex: 0 0 auto;
 }
 
 /*
@@ -1962,9 +2039,23 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     overflow: hidden;
 }
 
+/*
+    The five steppers as a wrapping row rather than one per line. Each is a fixed-width control, so
+    at full width they form a grid beside the portrait and stack only when they no longer fit —
+    which is what the game does with the same six spinners.
+*/
 .sem-appearance > .controls {
     flex: 1;
     min-width: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-lg) var(--space-2xl);
+    align-content: start;
+}
+
+.sem-appearance > .controls > .sem-stepper {
+    flex: 0 1 220px;
+    margin-bottom: 0;
 }
 
 @media (max-width: 800px) {
@@ -2012,10 +2103,17 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 }
 
 /* One of the game's spinners: arrows either side of where you are in a list. */
+/*
+    The arrows belong either side of the value, not either side of the panel. The value was flex:1,
+    so on the ruler's controls column it grew to the full width and pushed the right arrow an inch
+    and a half away from the left one. The game's own spinner is a fixed width with its arrows
+    adjacent; this is the same idea, capped so a long caption ellipses rather than spreading.
+*/
 .sem-stepper > .control {
     display: flex;
     align-items: center;
     gap: var(--space-md);
+    max-width: 220px;
 }
 
 .sem-stepper button {
@@ -2099,17 +2197,21 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     The picture alone is a puzzle — three lit variants of one shape — so the words carry the meaning
     and the button carries the recognition.
 */
+/*
+    The button is the picture and nothing else. It had been 74 by 58 around roughly forty pixels of
+    artwork, with a full gap beside it and another above the row — three separate paddings for one
+    small toggle. The field above already provides the space this row was adding on top of.
+*/
 .sem-spawn-row {
     display: flex;
     align-items: center;
-    gap: var(--gap);
-    margin-top: var(--gap);
+    gap: var(--space-md);
 }
 
 .sem-spawn {
     flex: none;
-    width: 74px;
-    height: 58px;
+    width: 44px;
+    height: 40px;
     padding: 0;
     background: none;
     border: none;
