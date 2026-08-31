@@ -8,16 +8,28 @@
 *@
 
 @*
-    Name, adjective and flags on one row with the die at the end, which is the arrangement the
-    species and the ruler already use. The country flags are markers rather than pictures: the game's
-    own empires use them to claim their bespoke opening screens and their own events, and a custom
-    empire may take a set, which is how it inherits them.
+    Name, adjective, ship prefix and flags on one row, wrapping as the width allows. The die sits in
+    the name field rather than at the end of the row, because that is what it fills.
+
+    The country flags are markers rather than pictures: the game's own empires use them to claim
+    their bespoke opening screens and their own events, and a custom empire may take a set, which is
+    how it inherits them.
 *@
 <div class="sem-name-row">
+    @*
+        The die belongs to this field, not to the end of the row. It fills the name and the adjective
+        together, and as a column of its own it drifted away from them — at a width where the row
+        wraps two and two it ended up beneath the flags, which it has nothing to do with, on a line
+        of its own under an empty label.
+    *@
     <div class="sem-field">
         <label for="empire-name">@Session.Localizer.Label("EMPIRE_NAME", "Empire Name")</label>
-        <ComboBox Id="empire-name" Value="@Session.Localizer.Name(Design.Name, Design.Key)"
-                  Options="@NameSuggestions" OnChange="Rename" />
+        <div class="sem-row nowrap">
+            <ComboBox Id="empire-name" Value="@Session.Localizer.Name(Design.Name, Design.Key)"
+                      Options="@NameSuggestions" OnChange="Rename" />
+            <RandomiseButton Title="The species adjective and a form of government"
+                             OnClick="RandomiseName" />
+        </div>
     </div>
 
     <div class="sem-field">
@@ -51,11 +63,6 @@
         </select>
     </div>
 
-    <div class="sem-field">
-        <label>&nbsp;</label>
-        <RandomiseButton Title="The species adjective and a form of government"
-                         OnClick="RandomiseName" />
-    </div>
 </div>
 
 @if (_clash)

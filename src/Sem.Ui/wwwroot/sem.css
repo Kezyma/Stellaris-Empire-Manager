@@ -1719,17 +1719,26 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 
     Only the first two pair. Anything after them spans the width, because the civics are eighty-one
     options and a half-width grid of them is a column of scrolling.
-*/
-@media (min-width: 1000px) {
-    .sem-subsections.paired {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(460px, 1fr));
-        align-items: start;
-    }
 
-    .sem-subsections.paired > section { grid-column: 1 / -1; }
-    .sem-subsections.paired > section:nth-child(-n + 2) { grid-column: auto; }
+    auto-fit rather than a breakpoint, and this matters: the first version asked for two 460px
+    columns above a viewport width of 1000, but what has to fit them is the sections column, not the
+    window. Between 1100 and about 1400 the preview keeps its 340px beside them, so the sections had
+    only ~726px to hold 920px of columns — and the detail panels ran out of their column, out of the
+    panel, and under the preview. auto-fit measures the space it actually has and drops to one
+    column when two will not fit, at every width, with nothing to keep in step.
+
+    min(460px, 100%) rather than 460px, because auto-fit can drop the column count to one but cannot
+    take a column below the minimum it was given: on a 343px phone the lone column stayed 460 wide
+    and eighty-nine things hung off the side of the page. The minimum is the smaller of the two.
+*/
+.sem-subsections.paired {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(460px, 100%), 1fr));
+    align-items: start;
 }
+
+/* Anything after the first two spans whatever columns there turned out to be. */
+.sem-subsections.paired > section:nth-child(n + 3) { grid-column: 1 / -1; }
 
 /* A rule between stacked sections, which is what they are unless the container says otherwise. */
 .sem-subsections > section + section {
@@ -1738,14 +1747,13 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 }
 
 /*
-    Not between two that sit side by side: there the border would run across the top of a column
-    rather than between two things, and the gap and the overline headings already separate them.
+    A grid lays its own sections out, so none of them wants the stacked divider: where two sit side
+    by side the border would run across the top of a column rather than between two things, and
+    where they stack the grid's gap already separates them.
 */
-@media (min-width: 1000px) {
-    .sem-subsections.paired > section:nth-child(-n + 2) + section:nth-child(-n + 2) {
-        padding-top: 0;
-        border-top: 0;
-    }
+.sem-subsections.paired > section + section {
+    padding-top: 0;
+    border-top: 0;
 }
 
 .sem-subsections > section > h4 {
@@ -1993,6 +2001,11 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     A flex row with a sensible basis says the same thing once and answers every width: four across
     becomes two, then one, as the room runs out, and a row holding two fields is simply a row holding
     two fields rather than a case anyone had to write down.
+
+    200 rather than something rounder because of what the column actually is. With the preview beside
+    them the sections get about 900px, and four fields at 220 want 916 — so the empire's row broke to
+    two lines on a 1300px monitor, which is the width it most wants to be one. At 200 they fit, and
+    they grow to fill whatever is really there.
 */
 .sem-name-row {
     display: flex;
@@ -2002,7 +2015,7 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 }
 
 .sem-name-row > .sem-field {
-    flex: 1 1 220px;
+    flex: 1 1 200px;
     min-width: 0;
     margin-bottom: 0;
 }
