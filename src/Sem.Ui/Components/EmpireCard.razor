@@ -10,29 +10,50 @@
     two that resemble each other.
 *@
 
-<button type="button" class="sem-empire @(Selected ? "selected" : null) @(Broken ? "broken" : null)"
-        disabled="@Disabled" @onclick="OnClick">
+@*
+    The card and its share button are siblings in a wrapper rather than one inside the other, because
+    a button may not contain a button — nested, the browser closes the outer one early and the card
+    comes apart. The wrapper is what the grid lays out, so the card keeps its full width inside it.
+*@
+<div class="sem-empire-slot">
+    <button type="button" class="sem-empire @(Selected ? "selected" : null) @(Broken ? "broken" : null)"
+            disabled="@Disabled" @onclick="OnClick">
 
-    @if (Flag is not null)
-    {
-        <FlagPreview Flag="@Flag" Class="small" />
-    }
-
-    @if (Portrait is { Length: > 0 } face)
-    {
-        <img class="face" src="@Session.Data.AssetUrl(face)" alt="" loading="lazy">
-    }
-
-    <span class="body">
-        <span class="name">@Name</span>
-        <span class="sub">@Government</span>
-
-        @if (SpeciesClass is { Length: > 0 } kind)
+        @if (Flag is not null)
         {
-            <span class="sub">@kind</span>
+            <FlagPreview Flag="@Flag" Class="small" />
         }
-    </span>
-</button>
+
+        @if (Portrait is { Length: > 0 } face)
+        {
+            <img class="face" src="@Session.Data.AssetUrl(face)" alt="" loading="lazy">
+        }
+
+        <span class="body">
+            <span class="name">@Name</span>
+            <span class="sub">@Government</span>
+
+            @if (SpeciesClass is { Length: > 0 } kind)
+            {
+                <span class="sub">@kind</span>
+            }
+        </span>
+    </button>
+
+    @*
+        Offered on the card so a link can be taken without opening the empire first, which was the
+        only way to reach one. Hidden until the pointer is over the card or something inside it has
+        focus — a share button on every card at rest would put a second thing to click on a list
+        whose whole job is choosing between fifty-two of them.
+    *@
+    @if (OnCopyLink.HasDelegate && !Disabled)
+    {
+        <button type="button" class="icon sem-empire-share" title="@CopyTitle"
+                aria-label="@($"Copy a link to {Name}")" @onclick="OnCopyLink">
+            <ActionIcon Name="share" />
+        </button>
+    }
+</div>
 
 @code {
     [CascadingParameter]
@@ -80,4 +101,16 @@
 
     [Parameter]
     public EventCallback OnClick { get; set; }
+
+    /// <summary>
+    /// Copies a link to this empire. Where nothing is given, the card has no share button.
+    /// </summary>
+    [Parameter]
+    public EventCallback OnCopyLink { get; set; }
+
+    /// <summary>
+    /// What the share button says, which the host varies to report whether the last press worked.
+    /// </summary>
+    [Parameter]
+    public string CopyTitle { get; set; } = "Copy a link to this empire";
 }

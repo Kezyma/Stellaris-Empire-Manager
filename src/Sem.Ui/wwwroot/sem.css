@@ -1258,6 +1258,55 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     margin-top: var(--space-lg);
 }
 
+/*
+   The card and its share button, which are siblings because a button cannot hold a button. This is
+   what the grid lays out, so it carries no look of its own — only the frame the share button is
+   positioned against.
+*/
+.sem-empire-slot {
+    position: relative;
+    min-width: 0;
+}
+
+/*
+   The share button, in the card's top right corner and out of sight until it is wanted.
+
+   Hidden at rest rather than always shown: the front page is two lists totalling fifty-five cards
+   whose whole purpose is choosing between them, and a permanent second button on every one of them
+   competes with that. Revealed on hover, and on focus-within so it is reachable by keyboard — it
+   comes after the card in the markup, so tabbing to a card and pressing Tab again lands on it.
+
+   Its own background, because it sits over the card's face and name.
+*/
+.sem-empire-share {
+    position: absolute;
+    top: var(--space-xs);
+    right: var(--space-xs);
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    opacity: 0;
+}
+
+.sem-empire-slot:hover .sem-empire-share,
+.sem-empire-slot:focus-within .sem-empire-share {
+    opacity: 1;
+}
+
+/*
+   A finger has no hover, so on a touch screen the button would never appear at all. Shown there,
+   at the cost of the tidiness the rule above buys on a pointer — and the card gives up the width
+   for it, since nothing is going to move it out of the way again. On a pointer the button is
+   absent at rest and the card keeps the whole line for the empire's name.
+*/
+@media (hover: none) {
+    .sem-empire-share { opacity: 1; }
+
+    .sem-empire-slot .sem-empire {
+        padding-right: calc(var(--icon-btn) + var(--space-lg));
+    }
+}
+
 .sem-empire {
     display: flex;
     gap: var(--space-lg);
@@ -3255,7 +3304,12 @@ button.icon .sem-action-icon { display: block; }
 
 .sem-showcase .identity .sub.faint { color: var(--text-faint); }
 
-.sem-showcase .identity .actions { flex-shrink: 0; }
+/* A row of glyphs now, rather than two worded buttons that spaced themselves. */
+.sem-showcase .identity .actions {
+    display: flex;
+    gap: var(--space-sm);
+    flex-shrink: 0;
+}
 
 /*
    The game frames the portrait and sets the species beside it; so does this.

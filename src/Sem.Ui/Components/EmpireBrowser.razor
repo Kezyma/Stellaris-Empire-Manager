@@ -36,6 +36,8 @@
                             SpeciesClass="@Session.Localizer.Text(design.Species.Class)"
                             Selected="@ReferenceEquals(design, Session.Current)"
                             Broken="@(!Session.Rules.Validate(context, design).IsValid)"
+                            OnCopyLink="@(OnCopyLink.HasDelegate ? EventCallback.Factory.Create(this, () => OnCopyLink.InvokeAsync(design)) : default)"
+                            CopyTitle="@(CopyTitle?.Invoke(design) ?? "Copy a link to this empire")"
                             OnClick="() => Choose(design)" />
             }
         </div>
@@ -49,6 +51,23 @@
     /// <summary>Raised when an empire is chosen, so the host can move to the designer.</summary>
     [Parameter]
     public EventCallback<EmpireDesign> OnSelected { get; set; }
+
+    /// <summary>
+    /// Raised to copy a link to one empire. Where nothing is given, the cards have no share button.
+    /// </summary>
+    /// <remarks>
+    /// Handled by the page rather than here: building the link needs the address the app is
+    /// published at, and putting it on the clipboard needs the host, neither of which a list of
+    /// cards has any business knowing about.
+    /// </remarks>
+    [Parameter]
+    public EventCallback<EmpireDesign> OnCopyLink { get; set; }
+
+    /// <summary>
+    /// What each card's share button should say, which the page varies to report the last press.
+    /// </summary>
+    [Parameter]
+    public Func<EmpireDesign, string>? CopyTitle { get; set; }
 
     protected override void OnInitialized() => Session.Changed += OnChanged;
 

@@ -41,11 +41,26 @@
             <path d="M4 9h9a5 5 0 0 1 0 10h-6" />
             <path d="M7 5 3 9l4 4" />
             break;
+
+        case "edit":
+            @* A pencil laid across the tile, nib to the lower left. *@
+            <path d="M4 20h4L20 8a2.8 2.8 0 0 0-4-4L4 16z" />
+            <path d="M14 6l4 4" />
+            break;
+
+        case "duplicate":
+            @* Two sheets, the second offset behind the first. *@
+            <path d="M9 9h10v12H9z" />
+            <path d="M15 5H5v12" />
+            break;
     }
 </svg>
 
 @code {
-    /// <summary>Which glyph: <c>save</c>, <c>share</c>, <c>delete</c> or <c>revert</c>.</summary>
+    /// <summary>
+    /// Which glyph: <c>save</c>, <c>share</c>, <c>delete</c>, <c>revert</c>, <c>edit</c> or
+    /// <c>duplicate</c>.
+    /// </summary>
     [Parameter, EditorRequired]
     public required string Name { get; set; }
 }

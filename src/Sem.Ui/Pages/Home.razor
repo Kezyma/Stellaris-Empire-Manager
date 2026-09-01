@@ -77,6 +77,18 @@ else
                 {
                     <EmpireShowcase Design="previewed" Lore="@_previewSource?.DescriptionKey">
                         <Actions>
+                            @*
+                                Glyphs, in the same order and the same shapes the designer puts them
+                                in: a link, then whatever is destructive, then the one thing the
+                                button is really for. A player who has been in the designer already
+                                knows this row.
+                            *@
+                            <button type="button" class="icon" title="@CopyTitleFor(previewed)"
+                                    aria-label="Copy a link to this empire"
+                                    @onclick="() => CopyLink(previewed)">
+                                <ActionIcon Name="share" />
+                            </button>
+
                             @if (_previewOwn)
                             {
                                 @*
@@ -84,18 +96,30 @@ else
                                     order to throw it away is a strange way round, and the list is
                                     where you are when you decide you no longer want one.
                                 *@
-                                <button type="button" class="danger"
+                                <button type="button" class="icon danger" title="Delete this empire"
+                                        aria-label="Delete this empire"
                                         @onclick="() => _deleting = previewed">
-                                    Delete
+                                    <ActionIcon Name="delete" />
                                 </button>
-                                <button type="button" class="primary" @onclick="() => OpenDesigner(previewed)">
-                                    Edit
+
+                                <button type="button" class="icon primary" title="Edit this empire"
+                                        aria-label="Edit this empire"
+                                        @onclick="() => OpenDesigner(previewed)">
+                                    <ActionIcon Name="edit" />
                                 </button>
                             }
                             else if (_previewSource is { } source)
                             {
-                                <button type="button" class="primary" @onclick="() => Duplicate(source)">
-                                    Duplicate
+                                @*
+                                    "Duplicate", not "copy into your file", which it also is: the
+                                    button beside it copies a link, and two glyphs whose labels both
+                                    begin "Copy" is a riddle rather than a pair of choices.
+                                *@
+                                <button type="button" class="icon primary"
+                                        title="Duplicate this empire"
+                                        aria-label="Duplicate this empire"
+                                        @onclick="() => Duplicate(source)">
+                                    <ActionIcon Name="duplicate" />
                                 </button>
                             }
                         </Actions>
@@ -110,7 +134,8 @@ else
             </div>
 
             <div class="lists">
-                <EmpireBrowser Session="_session" OnSelected="PreviewOwn" />
+                <EmpireBrowser Session="_session" OnSelected="PreviewOwn"
+                               OnCopyLink="CopyLink" CopyTitle="CopyTitleFor" />
 
                 @*
                     The game's own empires, for everyone. They are worth reading on their own — a
@@ -138,6 +163,8 @@ else
                                         SpeciesClass="@ClassOf(empire)"
                                         Selected="@ReferenceEquals(empire, _previewSource)"
                                         Disabled="@(read is null)"
+                                        OnCopyLink="@(read is null ? default : EventCallback.Factory.Create(this, () => CopyLink(read.Design)))"
+                                        CopyTitle="@(read is null ? string.Empty : CopyTitleFor(read.Design))"
                                         OnClick="() => PreviewPrescripted(empire)" />
                         }
                     </div>
@@ -152,6 +179,41 @@ else
 
     /// <summary>The empire the delete question is about, and nothing when nothing is being asked.</summary>
     private EmpireDesign? _deleting;
+
+    /// <summary>The empire the last link was copied from, and whether the clipboard took it.</summary>
+    /// <remarks>
+    /// Held against the design rather than as one flag for the page, because these buttons are on
+    /// every card: a single flag reported one card's success on all fifty-three of them. The preset
+    /// designs are parsed once and kept, so the same empire is the same object every render and
+    /// comparing by reference is sound.
+    /// </remarks>
+    private EmpireDesign? _copiedFrom;
+
+    private bool _copyWorked;
+
+    /// <summary>What one empire's share button says, which is only ever news about that one.</summary>
+    private string CopyTitleFor(EmpireDesign? design) =>
+        design is not null && ReferenceEquals(design, _copiedFrom)
+            ? _copyWorked ? "Link copied" : "The clipboard would not take it"
+            : "Copy a link to this empire";
+
+    /// <summary>
+    /// Puts a link to one empire on the clipboard, without opening it.
+    /// </summary>
+    /// <remarks>
+    /// The same link the designer offers, and built the same way — against the address the app is
+    /// published at, since on the desktop the window's own origin is somewhere only this process
+    /// can reach. Offered from the list because taking a link used to mean opening the empire
+    /// first, which for one of the game's own meant copying it into your file to get at it.
+    /// </remarks>
+    private async Task CopyLink(EmpireDesign design)
+    {
+        var origin = Files.ShareBaseUri ?? Navigation.BaseUri;
+        var link = $"{origin}designer?{DesignLink.Parameter}={DesignLink.Encode(design)}";
+
+        _copyWorked = await Files.CopyToClipboardAsync(link);
+        _copiedFrom = design;
+    }
 
     /// <summary>Whether the panel is showing one of the player's own empires or one of the game's.</summary>
     private bool _previewOwn;
