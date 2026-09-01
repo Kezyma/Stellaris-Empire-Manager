@@ -641,6 +641,18 @@ public sealed record TraitDefinition(string Key, TraitKind Kind)
     /// <summary>Civics this trait requires.</summary>
     public IReadOnlyList<string> AllowedCivics { get; init; } = [];
 
+    /// <summary>
+    /// Leader classes this trait is for, which is how a ruler trait says who may hold it.
+    /// </summary>
+    /// <remarks>
+    /// Empty for a species trait, and for the few leader traits that name no class. The game
+    /// enforces the pairing: across the twenty files of empires it ships, all fifty-two that give
+    /// their ruler a trait give them a class that trait allows. It was read and discarded once - it
+    /// decided whether a trait was a leader's or a species' and was then thrown away - so the
+    /// designer offered an official the commander's traits and the scientist's.
+    /// </remarks>
+    public IReadOnlyList<string> AllowedLeaderClasses { get; init; } = [];
+
     /// <summary>Whether the trait can be chosen during empire creation at all.</summary>
     public bool Initial { get; init; } = true;
 
@@ -737,7 +749,15 @@ public sealed record AuthorityDefinition(string Key)
     public string NameKey => Key;
 
     /// <summary>Localisation key for the description.</summary>
-    public string DescriptionKey => $"{Key}_tt";
+    /// <remarks>
+    /// <c>_desc</c>, as every other kind of choice uses, and as the game itself writes: the install
+    /// has <c>auth_imperial_desc</c> and no <c>auth_imperial_tt</c>. This said <c>_tt</c>, which
+    /// only the pruner ever asked for - so the pruner kept a key that does not exist, the real one
+    /// was dropped as unused, and the designer asked at runtime for a description that had been
+    /// thrown away. Seven of the eight authorities have one in the game; none of them reached the
+    /// page.
+    /// </remarks>
+    public string DescriptionKey => $"{Key}_desc";
 }
 
 /// <summary>A civic, or an origin, which the game defines in the same files.</summary>
@@ -1424,7 +1444,24 @@ public sealed record FlagCategoryDefinition(string Key, bool IsBackground)
     public IReadOnlyList<string> Files { get; init; } = [];
 
     /// <summary>Localisation key for the display name.</summary>
+    /// <remarks>
+    /// The game builds these from the folder name and ships none for the three categories its own
+    /// designer never draws, so those fall back to the folder name prettified — there is no string
+    /// to find because nothing was ever meant to read one.
+    /// </remarks>
     public string NameKey => $"FLAG_CATEGORY_{Key}";
+
+    /// <summary>
+    /// Whether the game's own empire designer lists this category.
+    /// </summary>
+    /// <remarks>
+    /// Set from <c>usage.txt</c>'s <c>show_in_designer</c>. False for the enclave, pre-FTL and
+    /// special emblems, which the designer never draws and the game accepts perfectly well: its own
+    /// scripts hand them out by writing the same category and file name a design stores. Kept apart
+    /// from the rest in the picker rather than mixed in, so nobody has to wonder why the list is
+    /// longer than the game's.
+    /// </remarks>
+    public bool IsOffered { get; init; } = true;
 }
 
 /// <summary>
@@ -1452,14 +1489,39 @@ public sealed record ArkshipDefinition(string Key)
         $"{Key[..(Key.IndexOf("_tier_", StringComparison.Ordinal) is var t and >= 0 ? t : Key.Length)]}_name";
 
     /// <summary>
+    /// Localisation key for the description, which carries the bonuses with it.
+    /// </summary>
+    /// <remarks>
+    /// The game writes the bonus list by hand rather than generating it from the ship size's
+    /// modifiers, so there is nothing here to compute: this one key expands to the shared effects,
+    /// the arkship's own modifiers and the prose, and the text is the game's own.
+    /// </remarks>
+    public string DescriptionKey => $"{Key}_selector_desc";
+
+    /// <summary>
     /// The picture the game's own panel shows beside the name.
     /// </summary>
     /// <remarks>
     /// One frame of the ship-size sheet rather than a file of its own, which is why it was missed:
     /// the definition names a sprite, the sprite names a sheet, and the arkships sat as three
-    /// unillustrated cards in a panel where every other choice has a picture.
+    /// unillustrated cards in a panel where every other choice has a picture. It is also the same
+    /// frame for all nine arkships - frame 29 of 29, a generic glyph - so it illustrates the panel
+    /// without distinguishing anything in it. <see cref="Preview"/> is what tells them apart.
     /// </remarks>
     public string? Icon { get; init; }
+
+    /// <summary>
+    /// The entity the game draws this arkship as, which is how its model is found.
+    /// </summary>
+    /// <remarks>
+    /// Kept because the meshes are not named after the ship size and are not in a folder named
+    /// after anything either - all nine sit in <c>gfx/models/ships/other</c> beside the enclaves
+    /// and the crystal stations. The entity name is the game's own link between the two.
+    /// </remarks>
+    public string? Entity { get; init; }
+
+    /// <summary>A drawing of the ship, rendered from its model the way a shipset's is.</summary>
+    public string? Preview { get; init; }
 }
 
 /// <summary>

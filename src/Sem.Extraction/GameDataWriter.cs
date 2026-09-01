@@ -67,11 +67,16 @@ public static class GameDataWriter
             .Bake(database.Portraits, assets, progress);
 
         // So are ships, and for the same reason: the game shows a shipset by spinning it.
-        var (sets, shipReport) = new ShipBaker(content, file)
-            .Bake(database.GraphicalCultures, assets, progress);
+        var shipBaker = new ShipBaker(content, file);
+        var (sets, shipReport) = shipBaker.Bake(database.GraphicalCultures, assets, progress);
+
+        // And the arkships, which the game also shows as live models — its own panel for them is
+        // called 3d_icons_arkships. The only flat art anywhere near them is one sheet frame shared
+        // by all nine.
+        var (arkships, arkshipReport) = shipBaker.BakeArkships(database.Arkships, assets, progress);
 
         // Written last, once every image path it refers to is known.
-        database = database with { Portraits = portraits, GraphicalCultures = sets };
+        database = database with { Portraits = portraits, GraphicalCultures = sets, Arkships = arkships };
         var json = JsonSerializer.SerializeToUtf8Bytes(database, GameDataJsonContext.Default.GameDatabase);
         file.WriteAllBytes(Path.Combine(outputDirectory, DatabaseFileName), json);
 
@@ -82,7 +87,12 @@ public static class GameDataWriter
             localisationJson.Length,
             images,
             portraitReport,
-            shipReport,
+            shipReport with
+            {
+                Rendered = shipReport.Rendered + arkshipReport.Rendered,
+                Bytes = shipReport.Bytes + arkshipReport.Bytes,
+                Failures = [.. shipReport.Failures, .. arkshipReport.Failures],
+            },
             extractor.Assets.Missing);
     }
 }

@@ -276,9 +276,15 @@ internal static partial class LocalisationPruner
 
         // An arkship's name is built from two other entries — a class word and the word "Arkship" —
         // so both have to travel with it. The reference-following pass finds them from the name.
+        //
+        // The description is the whole of what the panel says about an arkship: the game writes the
+        // bonus list by hand rather than generating it, and this one key expands to the shared
+        // effects, the arkship's own modifiers and the prose about it. Left out, the picker had
+        // three cards with a name apiece and nothing to choose between them.
         foreach (var arkship in database.Arkships)
         {
             Add(arkship.NameKey);
+            Add(arkship.DescriptionKey);
         }
 
         foreach (var empire in database.PrescriptedEmpires)

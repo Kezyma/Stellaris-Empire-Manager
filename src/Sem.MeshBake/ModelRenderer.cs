@@ -99,7 +99,15 @@ public sealed class ModelRenderer(ModelSettings? settings = null)
         ArgumentNullException.ThrowIfNull(mesh);
         ArgumentNullException.ThrowIfNull(textures);
 
-        var parts = mesh.Parts.Where(IsVisible).ToList();
+        // Only what can actually be drawn. Framing is chosen from these, and a part whose texture
+        // was never found is not a part: counted in, it pushed the camera back to take in geometry
+        // that then left no mark, which is how an arkship - a hull carrying a whole planet and a
+        // crew of construction bots, each textured from a folder of its own - came out as a small
+        // ship adrift in empty space.
+        var parts = mesh.Parts
+            .Where(IsVisible)
+            .Where(part => textures.ContainsKey(part.Texture!))
+            .ToList();
 
         if (parts.Count == 0)
         {
@@ -125,12 +133,7 @@ public sealed class ModelRenderer(ModelSettings? settings = null)
 
         foreach (var part in parts)
         {
-            if (textures.GetValueOrDefault(part.Texture!) is not { } texture)
-            {
-                continue;
-            }
-
-            DrawPart(part, texture, camera, frame, pixels, depth, width, height);
+            DrawPart(part, textures[part.Texture!], camera, frame, pixels, depth, width, height);
         }
 
         return Raster.Downsample(pixels, width, height, _settings.Supersample);

@@ -589,6 +589,78 @@ public sealed class EmpireRules(GameDatabase database)
     }
 
     /// <summary>
+    /// The traits the empire's ruler may be given.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Filtered by the ruler's class, which is the thing this did not do. A ruler trait names the
+    /// classes it is for and the game holds to it - every one of the fifty-two empires the game
+    /// ships that gives its ruler a trait gives them a class that trait allows - so an official
+    /// offered the commander's warlike was being offered something the game would refuse.
+    /// </para>
+    /// <para>
+    /// A ruler holds one trait, so once they have it the rest are closed rather than swapped. The
+    /// held one stays open, which is how it is let go of.
+    /// </para>
+    /// </remarks>
+    public IReadOnlyList<OptionState> GetRulerTraitOptions(DesignContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        var held = context.RulerTraits;
+        var options = new List<OptionState>();
+
+        foreach (var trait in _database.Traits.Where(t => t.Kind == TraitKind.StartingRuler))
+        {
+            var reasons = new List<string>();
+            var has = held.Contains(trait.Key);
+
+            if (trait.AllowedLeaderClasses.Count > 0 &&
+                (context.RulerClass is null || !trait.AllowedLeaderClasses.Contains(context.RulerClass)))
+            {
+                reasons.Add(RuleReasons.For(
+                    RuleReasons.WrongLeaderClass,
+                    string.Join(", ", trait.AllowedLeaderClasses)));
+            }
+
+            if (context.Origin is { } origin && trait.ForbiddenOrigins.Contains(origin))
+            {
+                reasons.Add(RuleReasons.For(RuleReasons.ForbiddenByOrigin, origin));
+            }
+
+            if (trait.AllowedOrigins.Count > 0 &&
+                (context.Origin is null || !trait.AllowedOrigins.Contains(context.Origin)))
+            {
+                reasons.Add(RuleReasons.For(
+                    RuleReasons.WrongOrigin,
+                    string.Join(", ", trait.AllowedOrigins)));
+            }
+
+            if (trait.AllowedEthics.Count > 0 && !context.Ethics.Any(trait.AllowedEthics.Contains))
+            {
+                reasons.Add(RuleReasons.For(
+                    RuleReasons.WrongEthics,
+                    string.Join(", ", trait.AllowedEthics)));
+            }
+
+            // The ruler has their one already, and it is not this one.
+            if (!has && held.Count > 0)
+            {
+                reasons.Add(RuleReasons.RulerTraitTaken);
+            }
+
+            options.Add(new OptionState(
+                trait.Key,
+                Visible: true,
+                Enabled: reasons.Count == 0 || has,
+                Reasons: has ? [] : reasons,
+                RequiredDlc: trait.RequiredDlc is { } dlc && !context.OwnedDlc.Contains(dlc) ? dlc : null));
+        }
+
+        return options;
+    }
+
+    /// <summary>
     /// The civics the player may choose from, with the rest closed off once the slots are full.
     /// </summary>
     /// <remarks>

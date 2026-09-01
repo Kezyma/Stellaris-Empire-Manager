@@ -20,6 +20,9 @@ internal static class WorldExtractor
     /// Dwellers begin on a habitat.
     /// </para>
     /// </remarks>
+    /// <summary>The one block in the planet-class folder that does not declare a planet class.</summary>
+    private const string RandomListBlock = "random_list";
+
     public static List<PlanetClassDefinition> ExtractPlanetClasses(
         ScriptLoader loader,
         RequirementCompiler requirements,
@@ -30,6 +33,15 @@ internal static class WorldExtractor
         foreach (var entry in loader.LoadDefinitions("common/planet_classes"))
         {
             var body = entry.Body;
+
+            // The folder holds one kind of block that is not a planet class: nine random_list
+            // entries naming groups of worlds for the galaxy generator. Read as classes they
+            // collapsed into a single phantom, since they all share the key, and it sat in the
+            // shipped data being counted as a world nobody could ever start on.
+            if (entry.Key == RandomListBlock)
+            {
+                continue;
+            }
 
             results.Add(new PlanetClassDefinition(entry.Key)
             {

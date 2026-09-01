@@ -12,7 +12,7 @@ public sealed class UnavailableFileExchange : IFileExchange
     public bool SavesInPlace => true;
 
     /// <inheritdoc />
-    public Task SaveAsync(string fileName, byte[] contents) =>
+    public Task<SaveOutcome> SaveAsync(string fileName, byte[] contents) =>
         throw new InvalidOperationException(
             "The Stellaris game data folder could not be found, so there is nowhere to save. " +
             "Run Stellaris once to create it.");

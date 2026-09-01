@@ -46,18 +46,34 @@ public sealed class GameDataExtractionTests
             // Nine, not eleven: a volcanic world and an arkship are each flagged initial, and each
             // is also flagged starting_planet = no. Neither is a world a player may simply pick —
             // an Infernal species class adds the first, and being nomadic puts you on the second.
+            // Sixty-nine, not seventy: the folder holds nine random_list blocks naming groups of
+            // worlds for the galaxy generator, and read as classes they collapsed into a single
+            // phantom that sat in the shipped data being counted as a world.
+            ("planet classes", 69, database.PlanetClasses.Count),
             ("starting worlds", 9, database.PlanetClasses.Count(p => p.IsStartingWorld)),
             ("starting systems", 23, database.Initializers.Count),
             ("advisor voices", 27, database.AdvisorVoices.Count),
-            // Sixty-six: the forty-one the game's own designer offers, plus twenty-five it hands out
-            // during play and has artwork for. The selector names one more, synth_queen_room, which
-            // no installation has a picture for.
-            ("rooms", 66, database.Rooms.Count),
+            // Ninety-one: every room the installation has a picture of. Forty-one the game's own
+            // designer offers, twenty-five more it hands out during play, and twenty-five it draws
+            // only for an event - the Contingency's transmission, the Shroud, the enclaves - which
+            // are the same artwork in the same frame and which a design may name. The room selector
+            // names one further, synth_queen_room, that no installation has ever had a picture for.
+            ("rooms", 91, database.Rooms.Count),
             ("rooms the designer offers", 41, database.Rooms.Count(r => r.IsOffered)),
 
             // Twenty-one named sets of country flags, carried by the game's own empires.
             ("empire flag sets", 21, database.EmpireFlagSets.Count),
-            ("flag categories", 19, database.FlagCategories.Count),
+
+            // Twenty-two: twenty-one emblem categories and the backgrounds. Three of the emblem
+            // categories carry show_in_designer = no - the enclaves, the pre-FTL ages and the
+            // special emblems - which keeps them out of the game's own picker and not out of a
+            // design: its scripts hand them to empires by writing the category and file a design
+            // stores, and one built with them was checked in game and loads.
+            ("flag categories", 22, database.FlagCategories.Count),
+            ("flag categories the designer offers", 19, database.FlagCategories.Count(c => c.IsOffered)),
+            ("emblems", 323, database.FlagCategories.Where(c => !c.IsBackground).Sum(c => c.Files.Count)),
+            ("emblems the designer offers", 283,
+                database.FlagCategories.Where(c => !c.IsBackground && c.IsOffered).Sum(c => c.Files.Count)),
             ("flag colours", 72, database.FlagColors.Count),
             ("built-in empires", 52, database.PrescriptedEmpires.Count),
         ];
@@ -205,6 +221,14 @@ public sealed class GameDataExtractionTests
         Assert.NotNull(brick.Image);
 
         Assert.True(Single(database.Rooms, r => r.Key == "default_room").IsOffered);
+
+        // A room the game only ever draws for an event is still a room, and a design may name one.
+        // These were left out while the selector was treated as the definition of what exists; the
+        // Contingency's own transmission room was the plain case for why that was wrong.
+        var contingency = Single(database.Rooms, r => r.Key == "ethic_spaceship_room");
+
+        Assert.False(contingency.IsOffered);
+        Assert.NotNull(contingency.Image);
 
         // A room the selector names but no installation has a picture for is left out entirely:
         // naming one would be the one way to ask for something that cannot be drawn.
@@ -597,6 +621,23 @@ public sealed class GameDataExtractionTests
             a => Assert.False(
                 string.IsNullOrEmpty(a.Icon),
                 $"{a.Key} resolved no icon; the game declares one and it has evidently moved."));
+
+        // And that is as far as the icon goes: all nine arkships name frame 29 of a 29-frame sheet,
+        // so the three icons are the same picture and this assertion passed while the panel showed
+        // one glyph three times. What tells them apart is the model, drawn as a shipset is, reached
+        // through the entity the ship size names.
+        Assert.All(
+            database.Arkships,
+            a =>
+            {
+                Assert.False(
+                    string.IsNullOrEmpty(a.Entity),
+                    $"{a.Key} names no entity, so there is no way to find its model.");
+
+                Assert.False(
+                    string.IsNullOrEmpty(a.DescriptionKey),
+                    $"{a.Key} has no description key.");
+            });
     }
 
     [SkippableFact]

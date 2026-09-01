@@ -47,80 +47,98 @@
 </div>
 
 @*
-    Patterns as pictures, drawn in the empire's own colours. The pattern files themselves cannot be
-    shown — each is three shapes packed into a red, a green and a blue channel and reads as coloured
-    wedges — so each tile is the flag that pattern would make.
+    The two halves of a flag, side by side where there is room for them and folded away one at a time
+    where there is not.
+
+    Not a <details>. Its open state is an attribute the browser owns and no stylesheet can write, and
+    here it is a constant in the render tree besides, so Blazor never re-emits it either — fold one
+    shut on a laptop, plug in a monitor, and the column stays empty for good with nothing able to
+    reopen it. A class the media query is free to ignore has no such problem, which is how the
+    empire summary already does this.
 *@
-<details class="sem-fold" open>
-    <summary>
-        <span class="chevron" aria-hidden="true">▸</span>
-        <span class="title">@Session.Localizer.Label("EMBLEM_BACKGROUND_PATTERN", "Patterns")</span>
-        <span class="state">@PatternName</span>
-    </summary>
+<div class="sem-pickers">
+    @*
+        Patterns as pictures, drawn in the empire's own colours. The pattern files themselves cannot
+        be shown — each is three shapes packed into a red, a green and a blue channel and reads as
+        coloured wedges — so each tile is the flag that pattern would make.
+    *@
+    <section class="sem-picker @(_patterns ? null : "collapsed")">
+        <button type="button" class="head" aria-expanded="@(_patterns ? "true" : "false")"
+                @onclick="() => _patterns = !_patterns">
+            <span class="chevron" aria-hidden="true">@(_patterns ? "▾" : "▸")</span>
+            <span class="title">@Session.Localizer.Label("EMBLEM_BACKGROUND_PATTERN", "Patterns")</span>
+            <span class="state">@PatternName</span>
+        </button>
 
-    <div class="sem-scroll-list">
-        <div class="sem-thumbs sem-patterns">
-            @foreach (var file in BackgroundFiles)
-            {
-                <button type="button"
-                        class="sem-thumb-option @(file == Design.Flag.Background.File ? "selected" : null)"
-                        aria-pressed="@(file == Design.Flag.Background.File ? "true" : "false")"
-                        title="@System.IO.Path.GetFileNameWithoutExtension(file)"
-                        @onclick="() => SetBackground(file)">
-                    <FlagPreview Flag="@Design.Flag" BackgroundFile="@file" HideEmblem="true" />
-                </button>
-            }
-        </div>
-    </div>
-</details>
-
-@*
-    Every emblem the game has, in one box, with each category named where it begins.
-
-    They used to come a category at a time from a dropdown, which is how the game's own editor does
-    it — but the game has a panel the size of the screen and this has a column of one. Picking an
-    emblem is looking for one, and eighteen categories behind a control that shows one at a time is
-    eighteen things to open before you have seen what there is. Two hundred and eighty-three tiles is
-    a great deal to put on a page and nothing at all to put in a box that scrolls.
-*@
-<details class="sem-fold" open @ontoggle="Reveal">
-    <summary>
-        <span class="chevron" aria-hidden="true">▸</span>
-        <span class="title">@Session.Localizer.Label("CHOOSE_SYMBOL", "Choose Symbol")</span>
-        <span class="state">@EmblemName</span>
-    </summary>
-
-    <div class="sem-scroll-list" @ref="_emblems">
-        @foreach (var category in EmblemCategories)
-        {
-            <h5 class="sem-subhead">@Session.Localizer.Text(category.NameKey, Localizer.Prettify(category.Key))</h5>
-
-            <div class="sem-thumbs emblems">
-                @foreach (var file in category.Files)
+        <div class="sem-scroll-list">
+            <div class="sem-thumbs sem-patterns">
+                @foreach (var file in BackgroundFiles)
                 {
-                    var name = System.IO.Path.GetFileNameWithoutExtension(file);
-                    var chosen = file == Design.Flag.Icon.File && category.Key == Design.Flag.Icon.Category;
-
                     <button type="button"
-                            class="sem-thumb-option @(chosen ? "selected" : null)"
-                            aria-pressed="@(chosen ? "true" : "false")"
-                            title="@name"
-                            @onclick="() => SetEmblem(category.Key, file)">
-                        <img class="sem-thumb"
-                             src="@Session.Data.AssetUrl($"flags/{category.Key}/{name}.png")"
-                             alt="@name" loading="lazy" />
+                            class="sem-thumb-option @(file == Design.Flag.Background.File ? "selected" : null)"
+                            aria-pressed="@(file == Design.Flag.Background.File ? "true" : "false")"
+                            title="@System.IO.Path.GetFileNameWithoutExtension(file)"
+                            @onclick="() => SetBackground(file)">
+                        <FlagPreview Flag="@Design.Flag" BackgroundFile="@file" HideEmblem="true" />
                     </button>
                 }
             </div>
-        }
-    </div>
-</details>
+        </div>
+    </section>
+
+    @*
+        Every emblem the game has, in one box, with each category named where it begins.
+
+        They used to come a category at a time from a dropdown, which is how the game's own editor
+        does it — but the game has a panel the size of the screen and this has a column of one.
+        Picking an emblem is looking for one, and eighteen categories behind a control that shows one
+        at a time is eighteen things to open before you have seen what there is. Two hundred and
+        eighty-three tiles is a great deal to put on a page and nothing at all to put in a box that
+        scrolls.
+    *@
+    <section class="sem-picker @(_emblemsOpen ? null : "collapsed")">
+        <button type="button" class="head" aria-expanded="@(_emblemsOpen ? "true" : "false")"
+                @onclick="ToggleEmblems">
+            <span class="chevron" aria-hidden="true">@(_emblemsOpen ? "▾" : "▸")</span>
+            <span class="title">@Session.Localizer.Label("CHOOSE_SYMBOL", "Choose Symbol")</span>
+            <span class="state">@EmblemName</span>
+        </button>
+
+        @*
+            The game's own categories first, then the three its designer never draws. Kept apart for
+            the same reason the rooms are: a design may name any of them and the game accepts it —
+            its own scripts hand these emblems out by writing exactly this category and file — but
+            choosing one is stepping outside what the designer offers, and should look like it.
+        *@
+        <div class="sem-scroll-list" @ref="_emblems">
+            @Emblems(OfferedEmblems)
+
+            @if (UnlistedEmblems.Count > 0)
+            {
+                <h5 class="sem-subhead apart">Emblems the game does not offer</h5>
+
+                @Emblems(UnlistedEmblems)
+            }
+        </div>
+    </section>
+</div>
 
 @code {
     [CascadingParameter]
     public required DesignSession Session { get; set; }
 
     private EmpireDesign Design => Session.Current!;
+
+    /// <summary>
+    /// Whether each picker is unfolded, which only matters below the width where both fit.
+    /// </summary>
+    /// <remarks>
+    /// Held as a flag and rendered as a class, so that the stylesheet can disregard it: above the
+    /// breakpoint the collapsing apparatus is not applied at all and both are simply open, whatever
+    /// the reader last did to them on a narrower screen.
+    /// </remarks>
+    private bool _patterns = true;
+    private bool _emblemsOpen = true;
 
     /// <summary>The scrolling box of emblems, so the chosen one can be brought into it.</summary>
     private ElementReference _emblems;
@@ -140,6 +158,26 @@
     {
         if (firstRender)
         {
+            await Reveal().ConfigureAwait(true);
+        }
+    }
+
+    /// <summary>
+    /// Unfolds or folds the emblems, and puts the chosen one back in view when it reappears.
+    /// </summary>
+    /// <remarks>
+    /// A folded box is not drawn, so it has no height to scroll and forgets where it was: opening
+    /// it again showed the first of eighteen categories rather than the emblem the empire wears.
+    /// This used to hang off the <c>toggle</c> event, which a &lt;details&gt; raised for us.
+    /// </remarks>
+    private async Task ToggleEmblems()
+    {
+        _emblemsOpen = !_emblemsOpen;
+
+        if (_emblemsOpen)
+        {
+            // After the browser has drawn it, or there is still nothing to measure.
+            await Task.Yield();
             await Reveal().ConfigureAwait(true);
         }
     }
@@ -171,8 +209,62 @@
         }
     }
 
-    private IReadOnlyList<FlagCategoryDefinition> EmblemCategories =>
-        [.. Session.Data.Database.FlagCategories.Where(c => !c.IsBackground)];
+    private RenderFragment Emblems(IReadOnlyList<FlagCategoryDefinition> categories) =>
+        @<text>
+            @foreach (var category in categories)
+            {
+                <h5 class="sem-subhead">@CategoryName(category)</h5>
+
+                <div class="sem-thumbs emblems">
+                    @foreach (var file in category.Files)
+                    {
+                        var name = System.IO.Path.GetFileNameWithoutExtension(file);
+                        var chosen = file == Design.Flag.Icon.File && category.Key == Design.Flag.Icon.Category;
+
+                        <button type="button"
+                                class="sem-thumb-option @(chosen ? "selected" : null)"
+                                aria-pressed="@(chosen ? "true" : "false")"
+                                title="@name"
+                                @onclick="() => SetEmblem(category.Key, file)">
+                            <img class="sem-thumb"
+                                 src="@Session.Data.AssetUrl($"flags/{category.Key}/{name}.png")"
+                                 alt="@name" loading="lazy" />
+                        </button>
+                    }
+                </div>
+            }
+        </text>;
+
+    /// <summary>The emblem categories the game's own designer lists.</summary>
+    private IReadOnlyList<FlagCategoryDefinition> OfferedEmblems =>
+        [.. Session.Data.Database.FlagCategories.Where(c => !c.IsBackground && c.IsOffered)];
+
+    /// <summary>
+    /// The three it hides: the enclaves, the pre-FTL ages, and the special emblems.
+    /// </summary>
+    /// <remarks>
+    /// Turned off by <c>show_in_designer = no</c> in the category's own <c>usage.txt</c>, which
+    /// governs what the designer draws and nothing else. Checked in game before being offered here.
+    /// </remarks>
+    private IReadOnlyList<FlagCategoryDefinition> UnlistedEmblems =>
+        [.. Session.Data.Database.FlagCategories.Where(c => !c.IsBackground && !c.IsOffered)];
+
+    /// <summary>
+    /// What to head a category with.
+    /// </summary>
+    /// <remarks>
+    /// The game builds these names from the folder name and ships none for the categories it never
+    /// draws, so those have no string to find. Prettifying the folder name covers two of the three;
+    /// the third would read "Pre Ftl", which is nobody's name for it.
+    /// </remarks>
+    private string CategoryName(FlagCategoryDefinition category) =>
+        Session.Localizer.Text(category.NameKey, string.Empty) is { Length: > 0 } named
+            ? named
+            : category.Key switch
+            {
+                "pre_ftl" => "Pre-FTL",
+                var key => Localizer.Prettify(key),
+            };
 
     /// <summary>What a folded box says is chosen inside it.</summary>
     private string EmblemName =>

@@ -14,12 +14,20 @@ internal static class FlagExtractor
     private static readonly string[] SizeVariantFolders = ["map", "small"];
 
     /// <summary>
-    /// Reads the emblem categories and the background category, skipping the ones the game hides.
+    /// Reads the emblem categories and the background category, noting which the game hides.
     /// </summary>
     /// <remarks>
     /// A category may carry a <c>usage.txt</c> turning it off in the designer, which is how the
     /// enclave, pre-FTL and special emblems stay out of the player's list. A category without that
     /// file is shown.
+    /// <para>
+    /// Hidden is not the same as forbidden, and these were dropped here for a while on the
+    /// assumption that it was: the artwork is shipped in the same formats as the rest, the game's
+    /// own scripts hand these emblems to empires by writing exactly the category and file a design
+    /// stores, and one built with them loads. So they are read like any other and marked, and the
+    /// interface offers them apart from the ones the designer lists — the same arrangement the
+    /// rooms already use.
+    /// </para>
     /// </remarks>
     public static List<FlagCategoryDefinition> ExtractCategories(ScriptLoader loader, AssetCatalog assets)
     {
@@ -28,11 +36,7 @@ internal static class FlagExtractor
 
         foreach (var category in EnumerateCategories(content))
         {
-            if (!IsShownInDesigner(loader, category))
-            {
-                continue;
-            }
-
+            var offered = IsShownInDesigner(loader, category);
             var isBackground = category == "backgrounds";
             var files = new List<string>();
 
@@ -65,6 +69,7 @@ internal static class FlagExtractor
                 results.Add(new FlagCategoryDefinition(category, isBackground)
                 {
                     Files = [.. files.Order(StringComparer.Ordinal)],
+                    IsOffered = offered,
                 });
             }
         }

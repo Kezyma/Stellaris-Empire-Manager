@@ -134,15 +134,24 @@
     private IReadOnlyList<string> Adjectives =>
         [.. Suggestions.Select(s => NameGenerator.Adjective(s.Name)).Distinct(StringComparer.Ordinal)];
 
+    /// <summary>What the lists the game's own designer never shows are gathered under.</summary>
+    private const string NotOffered = "Not offered in the game";
+
     /// <summary>
-    /// The name lists a player may choose. A dozen exist only for the game's own creatures, and the
-    /// game marks those unselectable rather than removing them.
+    /// The name lists a player may choose.
     /// </summary>
+    /// <remarks>
+    /// Sixteen exist only for the game's own creatures — the swarm, the amoebae, the Cybrex — and
+    /// the game marks those unselectable rather than removing them. They are offered anyway, at the
+    /// end and under their own heading: the lists are fully populated with ship, planet and leader
+    /// names, and an empire named from one was checked in game and plays. Unselectable here means
+    /// the designer does not draw it, not that the game refuses it.
+    /// </remarks>
     private IEnumerable<IGrouping<string, NameListDefinition>> NameLists =>
         Session.Data.Database.NameLists
-            .Where(n => _evaluator.IsSatisfied(n.Selectable, Context))
-            .GroupBy(n => n.Category ?? "Other")
-            .OrderBy(g => g.Key, StringComparer.CurrentCulture);
+            .GroupBy(n => _evaluator.IsSatisfied(n.Selectable, Context) ? n.Category ?? "Other" : NotOffered)
+            .OrderBy(g => g.Key == NotOffered)
+            .ThenBy(g => g.Key, StringComparer.CurrentCulture);
 
     private string ListName(NameListDefinition list) => Session.Localizer.Text(list.NameKey, list.Key);
 

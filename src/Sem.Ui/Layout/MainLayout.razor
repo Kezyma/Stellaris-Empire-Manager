@@ -6,7 +6,8 @@
 @inject UnsavedWorkGuard Guard
 
 @*
-    The file lives in the header: the empire list, a new empire, the file in, the file out.
+    The file lives in the header: the empire list, a new empire, the file in, the file out, and
+    the way to put it all back.
 
     All four are about the file rather than about whichever page happens to be open, and both pages
     used to carry their own card of them across the top. Two cards saying the same thing is one too
@@ -25,7 +26,7 @@
             The menu on a narrow screen. A checkbox and its label rather than a scripted button: the
             state is one boolean, the platform already has a control for exactly that, and it works
             whether or not the app has finished loading. Hidden entirely above the breakpoint, where
-            the four items fit on the line beside the brand.
+            the items fit on the line beside the brand.
         *@
         <input type="checkbox" id="header-menu" class="sem-header-toggle" />
         <label for="header-menu" class="sem-header-burger" aria-label="Menu" title="Menu">
@@ -45,30 +46,68 @@
                 <button type="button" class="sem-tab" @onclick="Create">Create</button>
 
                 @*
-                    The picker is opened by the label rather than by the button beside it, because a
-                    file input cannot be opened from code. The click has to be allowed to reach it,
-                    so the question about unsaved work is asked when the file arrives instead — at
-                    which point declining simply drops it.
+                    Two ways in, and only ever one of them on the page.
 
-                    Hidden by size rather than by display: display:none takes the input out of the
-                    tab order, and since the label is not focusable either, Import was the one item
-                    in this header no keyboard could reach.
+                    Where the browser has a file picker this is a plain button, because a picker
+                    opened from code can be told to reopen in the folder the player last used - which
+                    after one import is their Stellaris folder, and is the only way this app can ever
+                    land there. A page may not name a directory itself.
+
+                    Where it has not - Firefox and Safari have no picker - it falls back to the
+                    label and the hidden input, which is the older arrangement and the reason for its
+                    oddities: a file input cannot be opened from code, so the click has to be allowed
+                    to reach it, and the input is hidden by size rather than by display because
+                    display:none takes it out of the tab order and the label is not focusable either,
+                    which once left Import the one item in this header no keyboard could reach.
+
+                    Either way the question about unsaved work is asked once the file has arrived,
+                    never before: a dialog would spend the click that the picker needs.
                 *@
-                <label class="sem-tab" for="designs-file">Import</label>
-                <InputFile id="designs-file" OnChange="Import" class="sem-visually-hidden" accept=".txt" />
+                @if (_canPickFiles)
+                {
+                    <button type="button" class="sem-tab" @onclick="Pick">Import</button>
+                }
+                else
+                {
+                    <label class="sem-tab" for="designs-file">Import</label>
+                    <InputFile id="designs-file" OnChange="Import" class="sem-visually-hidden" accept=".txt" />
+                }
 
                 <button type="button" class="sem-tab"
-                        disabled="@(_session.File is null || _session.File.Designs.Count == 0)"
+                        disabled="@(Nothing)"
                         @onclick="Export">
                     Export
+                </button>
+
+                @*
+                    Last in the row, and disabled by the same question as Export: both act on the
+                    whole file, so both are meaningless when there is no file or nothing in it.
+                    Plain sem-tab rather than danger - a red button in the header would shout from
+                    every page, and the warning belongs on the dialog's confirm button, where the
+                    two existing delete flows already put it.
+                *@
+                <button type="button" class="sem-tab"
+                        disabled="@(Nothing)"
+                        @onclick="Reset">
+                    Reset
                 </button>
             }
         </nav>
     </header>
 
-    @if (_error is { } message)
+    @if (_resetting)
     {
-        <p class="sem-header-error">@message</p>
+        <ConfirmDialog Title="@($"Delete all {Empires} of your empires?")"
+                       Message="@ResetWarning"
+                       OnDismiss="() => _resetting = false">
+            <button type="button" @onclick="() => _resetting = false">Keep them</button>
+            <button type="button" class="danger" @onclick="ClearEverything">Delete them all</button>
+        </ConfirmDialog>
+    }
+
+    @if (_message is { } note)
+    {
+        <p class="@(note.IsProblem ? "sem-header-error" : "sem-header-note")">@note.Text</p>
     }
 
     @*
@@ -96,8 +135,49 @@
 @code {
     private DesignSession? _session;
 
-    /// <summary>Why the last file would not open, where one would not.</summary>
-    private string? _error;
+    /// <summary>What the header has to say about the last file it handled, and how loudly.</summary>
+    /// <remarks>
+    /// Two unlike things end up here. A file that would not open is a failure and is coloured as
+    /// one. A file that downloaded because this browser has no save dialog, or one that opened
+    /// under a name the game would not recognise, is a remark - true, worth reading once, and
+    /// nothing the player did wrong. Shown in the same red, the remarks read as failures and the
+    /// failures stopped standing out.
+    /// </remarks>
+    private (string Text, bool IsProblem)? _message;
+
+    /// <summary>Whether the "delete everything" question is on screen.</summary>
+    private bool _resetting;
+
+    /// <summary>Whether there is a file with anything in it for the whole-file buttons to act on.</summary>
+    private bool Nothing => _session?.File is null || _session.File.Designs.Count == 0;
+
+    /// <summary>How many empires Reset would take, which the question has to say out loud.</summary>
+    private int Empires => _session?.File?.Designs.Count ?? 0;
+
+    /// <summary>
+    /// What Reset costs, and - the part worth reading - what it does not.
+    /// </summary>
+    /// <remarks>
+    /// The reassurance is the thing that makes the button safe to press. Nothing here can touch the
+    /// file the game reads: this app has never written it, and only ever offers a copy through a
+    /// save dialog the player drives. Someone about to delete an evening's work needs to know that
+    /// their designs file is not what is being deleted.
+    /// </remarks>
+    private string ResetWarning =>
+        $"All {Empires} empires you have made here are removed and the file is closed, leaving the "
+        + "app as it was on your first visit. Your Stellaris designs file is not touched - nothing "
+        + "on disk changes unless you export. There is no undo.";
+
+    /// <summary>
+    /// Whether this browser can be asked to show a file picker.
+    /// </summary>
+    /// <remarks>
+    /// Asked of the host once the page exists, because it is a question about the browser and the
+    /// answer needs script to get at. False keeps the file input in the page, which is the only way
+    /// in on a browser without a picker, and is also what the desktop gets - it opens the player's
+    /// own file without asking and has no use for a dialog.
+    /// </remarks>
+    private bool _canPickFiles;
 
     protected override async Task OnInitializedAsync()
     {
@@ -109,6 +189,30 @@
         if (_session is not null)
         {
             _session.Changed += OnChanged;
+        }
+    }
+
+    /// <summary>
+    /// Finds out whether this host can show a file picker, once there is a page to ask from.
+    /// </summary>
+    /// <remarks>
+    /// After the first render rather than before it, because the answer comes from script and there
+    /// is none to run until then. Until it is known the header shows the file input, which works
+    /// everywhere - so the worst a slow answer costs is that Import is briefly the older control.
+    /// </remarks>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        var canPick = await Files.CanOpenAsync();
+
+        if (canPick != _canPickFiles)
+        {
+            _canPickFiles = canPick;
+            StateHasChanged();
         }
     }
 
@@ -131,7 +235,7 @@
     /// </remarks>
     private async Task Import(InputFileChangeEventArgs e)
     {
-        _error = null;
+        _message = null;
 
         if (!await Guard.ConfirmAsync())
         {
@@ -145,14 +249,72 @@
             using var buffer = new MemoryStream();
             await stream.CopyToAsync(buffer);
 
-            _session!.Load(buffer.ToArray(), e.File.Name);
+            Load(e.File.Name, buffer.ToArray());
         }
         catch (Exception ex) when (ex is Sem.Clausewitz.CwSyntaxException or IOException)
         {
             // Loading half a damaged file would be worse than refusing it.
-            _error = $"That file could not be read: {ex.Message}";
+            _message = ($"That file could not be read: {ex.Message}", true);
         }
     }
+
+    /// <summary>
+    /// Asks the browser for a designs file, and opens whatever comes back.
+    /// </summary>
+    /// <remarks>
+    /// The picker first and the question afterwards, which is not the tidy order. A picker may only
+    /// be opened while a click is still being handled, and the question is a dialog waiting on a
+    /// person - ask it first and the click is long spent by the time the answer arrives. So the file
+    /// is chosen, then asked about, and declining drops it.
+    /// </remarks>
+    private async Task Pick()
+    {
+        _message = null;
+
+        if (await Files.OpenAsync() is not { } chosen)
+        {
+            // No picker, or the player closed it. Neither is a failure and neither is worth saying.
+            return;
+        }
+
+        if (!await Guard.ConfirmAsync())
+        {
+            return;
+        }
+
+        try
+        {
+            Load(chosen.Name, chosen.Contents);
+        }
+        catch (Exception ex) when (ex is Sem.Clausewitz.CwSyntaxException or IOException)
+        {
+            _message = ($"That file could not be read: {ex.Message}", true);
+        }
+    }
+
+    /// <summary>
+    /// Opens a file, and says so when it does not look like the one the game keeps.
+    /// </summary>
+    /// <remarks>
+    /// A remark rather than a refusal. The picker cannot be told to show only these - a browser will
+    /// filter by extension and by nothing else, and says so: an accept entry "must start with '.'".
+    /// So the name is checked once it is chosen. A renamed file, or one of the game's own dated
+    /// backups, reads perfectly well and is opened; the player is only told in case they reached for
+    /// the wrong thing.
+    /// </remarks>
+    private void Load(string name, byte[] contents)
+    {
+        _session!.Load(contents, name);
+
+        if (!name.StartsWith(DesignsFilePrefix, StringComparison.OrdinalIgnoreCase))
+        {
+            _message = ($"That file opened, but it is not named like a designs file. "
+                + $"The game's own is called {EmpireDesignsFile.FileName}.", false);
+        }
+    }
+
+    /// <summary>What the game calls its designs files, before the version and the extension.</summary>
+    private const string DesignsFilePrefix = "user_empire_designs_";
 
     /// <summary>
     /// Starts a new empire and opens it.
@@ -203,17 +365,79 @@
         }
     }
 
-    /// <summary>Hands the file over: a download in a browser, the player's own file on the desktop.</summary>
+    /// <summary>
+    /// Asks whether to throw away every empire, once the designer has had its say.
+    /// </summary>
+    /// <remarks>
+    /// Two questions in a row, and both are earned: the first is about the empire being edited and
+    /// can be answered by saving it, the second is about the whole file. Running them in this order
+    /// matters - asking "delete everything?" and then "save your changes first?" would be asking
+    /// someone to save work that is about to be deleted.
+    /// </remarks>
+    private async Task Reset()
+    {
+        if (!await Guard.ConfirmAsync())
+        {
+            return;
+        }
+
+        _resetting = true;
+    }
+
+    /// <summary>
+    /// Puts the session back to a first visit.
+    /// </summary>
+    /// <remarks>
+    /// The same call the app makes when it finds nothing kept from a previous visit, which is what
+    /// makes this a genuine start over rather than an emptied file: the imported name goes with it,
+    /// so the next export suggests the game's own filename again. Nothing is written here - the
+    /// host mirrors the empty file to browser storage on its own, and the player's real file is
+    /// only ever reached through Export.
+    /// </remarks>
+    private void ClearEverything()
+    {
+        _resetting = false;
+        _message = null;
+        _session!.StartEmptyFile();
+
+        // Back to the list. The designer would otherwise be left holding an empire that no longer
+        // exists, and StartEmptyFile has already cleared the unsaved flag, so nothing asks again on
+        // the way out.
+        Navigation.NavigateTo(string.Empty);
+    }
+
+    /// <summary>Hands the file over: a save dialog where there is one, a download where there is not.</summary>
+    /// <remarks>
+    /// Only a file the player named settles the work. The other three outcomes all leave it
+    /// outstanding and are told apart because they want different things said: a dismissed dialog
+    /// wants nothing said at all, and a download wants explaining, since the file has landed
+    /// somewhere the game will never look.
+    /// </remarks>
     private async Task Export()
     {
         var name = _session!.FileName is { Length: > 0 } existing ? existing : EmpireDesignsFile.FileName;
-        await Files.SaveAsync(name, _session.Save());
 
-        // On the desktop that call replaced the player's own file, so nothing is outstanding any
-        // more. In a browser it handed over a copy, which settles nothing.
-        if (Files.SavesInPlace)
+        switch (await Files.SaveAsync(name, _session.Save()))
         {
-            _session.MarkSaved();
+            case SaveOutcome.Saved:
+                _message = null;
+                _session.MarkSaved();
+                break;
+
+            // They closed the dialog. They know what they did, and nothing was written or handed
+            // over, so there is nothing to report.
+            case SaveOutcome.Cancelled:
+                break;
+
+            case SaveOutcome.Downloaded:
+                _message = ($"This browser has no save dialog, so {name} was downloaded instead. "
+                    + "Move it into your Stellaris folder for the game to find it.", false);
+                break;
+
+            case SaveOutcome.Refused:
+                _message = ($"This browser would not open a save dialog, so {name} was downloaded "
+                    + "instead. Move it into your Stellaris folder for the game to find it.", false);
+                break;
         }
     }
 }

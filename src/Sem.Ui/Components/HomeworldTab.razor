@@ -69,15 +69,19 @@
         <section>
             <h4>@Session.Localizer.Heading("arkship_cap", "Arkship")</h4>
 
-            <div class="sem-options">
-                @foreach (var arkship in Arkships)
-                {
-                    <OptionCard Name="@Session.Localizer.Text(arkship.NameKey, Localizer.Prettify(arkship.Key))"
-                                Icon="@arkship.Icon"
-                                Selected="@(arkship.Key == Design.ShipSize)"
-                                OnSelect="() => Session.Edit(d => d.ShipSize = arkship.Key)" />
-                }
-            </div>
+            @*
+                The same grid and detail panel the worlds use, since it is the same act: pick one of
+                a short list of pictures and read what it gets you.
+
+                Drawn larger than a planet. The tile is a render of the ship - the game shows these
+                as live models, its own panel for them is called 3d_icons_arkships, and the one flat
+                picture it ships is a single sheet frame shared by all nine, so three tiles carrying
+                that said the same thing three times. A ship is wide and long where a planet is a
+                disc, and at a planet's size it is a smudge.
+            *@
+            <OptionGrid Options="@ArkshipOptions"
+                        IconSize="120"
+                        OnSelect="key => Session.Edit(d => d.ShipSize = key)" />
         </section>
     }
     else
@@ -110,6 +114,30 @@
 
     /// <summary>The ships a nomad may begin aboard, in the order the game's own panel lists them.</summary>
     private IReadOnlyList<ArkshipDefinition> Arkships => Session.Data.Database.Arkships;
+
+    /// <summary>
+    /// The three arkships, each described by what the game says about it.
+    /// </summary>
+    /// <remarks>
+    /// No <c>Effects</c>: unlike a world, whose bonuses come from a habitability trait and have to
+    /// be assembled, an arkship's are written out by hand in the same localisation entry as its
+    /// prose. Composing an effect set from the ship size's modifiers would put the same numbers on
+    /// the panel twice, in two wordings, one of them ours.
+    /// </remarks>
+    private IReadOnlyList<OptionGrid.GridOption> ArkshipOptions =>
+    [
+        .. Arkships.Select(arkship =>
+            new OptionGrid.GridOption(
+                arkship.Key,
+                Session.Localizer.Text(arkship.NameKey, Localizer.Prettify(arkship.Key)))
+            {
+                // The render where there is one, and the sheet frame as a stand-in if a future
+                // patch moves the models out from under the baker.
+                Icon = arkship.Preview is { Length: > 0 } render ? render : arkship.Icon,
+                Description = Session.Localizer.Html(arkship.DescriptionKey, string.Empty),
+                Selected = arkship.Key == Design.ShipSize,
+            })
+    ];
 
     /// <summary>
     /// The worlds an empire may begin on, each described by what living there would do to it.

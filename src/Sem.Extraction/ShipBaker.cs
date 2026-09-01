@@ -111,6 +111,101 @@ public sealed class ShipBaker(LayeredContent content, SafeFile file)
     }
 
     /// <summary>
+    /// Draws each arkship from its own model, the way a shipset is drawn from a corvette.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Separate from <see cref="Bake"/> because an arkship is not reached the way a set is. A set
+    /// names its meshes after itself and keeps them in a folder of its own name; all nine arkships
+    /// sit together in <c>gfx/models/ships/other</c>, sharing it with the enclaves and the crystal
+    /// stations, and are named after neither the ship size nor any set. The ship size's
+    /// <c>entity</c> is the game's own link across, so it is followed rather than guessed at.
+    /// </para>
+    /// <para>
+    /// The three arkship graphical cultures are no help here and are a trap: they carry the
+    /// lighting rig and nothing else, declare no models, and fall back to <c>avian_01</c> - so
+    /// running them through <see cref="Bake"/> produced three identical avian corvettes.
+    /// </para>
+    /// </remarks>
+    public (IReadOnlyList<ArkshipDefinition> Arkships, ShipBakeReport Report) BakeArkships(
+        IReadOnlyList<ArkshipDefinition> arkships,
+        string outputDirectory,
+        IProgress<string>? progress = null)
+    {
+        ArgumentNullException.ThrowIfNull(arkships);
+        ArgumentException.ThrowIfNullOrWhiteSpace(outputDirectory);
+
+        var results = new List<ArkshipDefinition>(arkships.Count);
+        var failures = new List<string>();
+        var rendered = 0;
+        long bytes = 0;
+
+        progress?.Report($"Drawing arkships ({arkships.Count})");
+
+        foreach (var arkship in arkships)
+        {
+            if (ArkshipHull(arkship) is not { } mesh)
+            {
+                failures.Add($"{arkship.Key}: no model found for entity {arkship.Entity}");
+                results.Add(arkship);
+                continue;
+            }
+
+            try
+            {
+                if (Draw(mesh) is not { } png)
+                {
+                    failures.Add($"{arkship.Key}: nothing in {mesh} could be drawn");
+                    results.Add(arkship);
+                    continue;
+                }
+
+                var destination = $"ships/arkships/{arkship.Key}.png";
+                _file.WriteAllBytes(Path.Combine(outputDirectory, destination), png);
+
+                rendered++;
+                bytes += png.Length;
+                results.Add(arkship with { Preview = destination });
+            }
+            catch (Exception ex) when (ex is InvalidDataException or NotSupportedException or IOException)
+            {
+                failures.Add($"{arkship.Key}: {ex.Message}");
+                results.Add(arkship);
+            }
+        }
+
+        return (results, new ShipBakeReport(rendered, bytes, failures));
+    }
+
+    /// <summary>
+    /// The hull an arkship's entity stands for.
+    /// </summary>
+    /// <remarks>
+    /// The entity a ship size names is the <em>frame</em> - the armature the hull's sections hang
+    /// on, a few vertices that draw nothing - and the hull is its sibling. Both are named after the
+    /// same stem, so the stem is what is wanted and the frame is what must not be taken. Searched
+    /// for rather than composed into a path, since nothing in the files says which folder under
+    /// <c>gfx/models/ships</c> an arkship lives in.
+    /// </remarks>
+    private string? ArkshipHull(ArkshipDefinition arkship)
+    {
+        if (arkship.Entity is not { Length: > 0 } entity)
+        {
+            return null;
+        }
+
+        const string EntitySuffix = "_entity";
+
+        var stem = entity.EndsWith(EntitySuffix, StringComparison.Ordinal)
+            ? entity[..^EntitySuffix.Length]
+            : entity;
+
+        return _content
+            .EnumerateFiles(ModelRoot, $"{stem}.mesh", recursive: true)
+            .FirstOrDefault();
+    }
+
+    /// <summary>
     /// The mesh a set is drawn by, following its fallbacks when it has no models of its own.
     /// </summary>
     /// <remarks>

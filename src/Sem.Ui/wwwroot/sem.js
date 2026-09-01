@@ -25,6 +25,131 @@ export function saveFile(name, bytes) {
 }
 
 /**
+ * How the file pickers identify themselves to the browser.
+ *
+ * The browser keeps the directory last used under an id and reopens there next time, across
+ * sessions - which is the only way this app can ever land in the player's Stellaris folder. A page
+ * may not choose a directory: startIn takes a handful of well-known names and nothing else, and
+ * given a path it refuses outright, saying the value "is not a valid enum value of type
+ * WellKnownDirectory". So the first pick opens at Documents and every one after opens where the
+ * player themselves went. Open and save share the id deliberately: exporting should offer to write
+ * back where the file was imported from.
+ */
+const DESIGNS_PICKER = 'sem-designs';
+
+/** What the pickers offer, which the browser will only accept as extensions. */
+const DESIGNS_TYPES = [{
+    description: 'Stellaris empire designs',
+    accept: { 'text/plain': ['.txt'] },
+}];
+
+/**
+ * Generous enough for any real designs file; the player's own is about forty kilobytes. The same
+ * number the fallback input is given, so the two ways in agree about what is too big.
+ */
+const LARGEST_DESIGNS_FILE = 16 * 1024 * 1024;
+
+/**
+ * Whether this browser has a file picker to show at all.
+ *
+ * Asked before the header is drawn, so that Import can be an ordinary button where a picker exists
+ * and fall back to a file input where one does not. Firefox and Safari have none.
+ *
+ * @returns {boolean} whether openDesignsFile can do anything
+ */
+export function canPickFiles() {
+    return typeof window.showOpenFilePicker === 'function';
+}
+
+/**
+ * Asks the player for their designs file.
+ *
+ * Where the browser has no picker - Firefox and Safari have none - this returns null and the caller
+ * falls back to the file input, which is still in the page for exactly that reason.
+ *
+ * Must be called while a click is still being handled. That holds through the trip out to C# and
+ * back, but it would not survive a dialog, so nothing may be asked of the player before this.
+ *
+ * @returns {Promise<{name: string, bytes: Uint8Array}|null>} the file, or null if there is no picker
+ *   to show, the player cancelled, or what they chose is too large to be a designs file
+ */
+export async function openDesignsFile() {
+    if (typeof window.showOpenFilePicker !== 'function') {
+        return null;
+    }
+
+    try {
+        const [handle] = await window.showOpenFilePicker({
+            id: DESIGNS_PICKER,
+            startIn: 'documents',
+            types: DESIGNS_TYPES,
+            excludeAcceptAllOption: false,
+            multiple: false,
+        });
+
+        const file = await handle.getFile();
+
+        if (file.size > LARGEST_DESIGNS_FILE) {
+            return null;
+        }
+
+        return { name: file.name, bytes: new Uint8Array(await file.arrayBuffer()) };
+    } catch {
+        // Cancelling is the ordinary way to leave a file picker, and it is not a failure.
+        return null;
+    }
+}
+
+/**
+ * Offers to write the designs file where the player keeps it.
+ *
+ * A real save dialog rather than a download, so the file goes back where it came from instead of
+ * into Downloads for the player to move themselves. Sharing an id with the open picker is what puts
+ * it in the right folder with nothing having to know the path.
+ *
+ * Every export asks again. Keeping the handle would let a later save skip the dialog, and it was
+ * decided not to: writing the player's own designs file should be a thing they chose that time, not
+ * a permission granted once.
+ *
+ * Which of the three things happened matters, and a boolean could not say. A dismissed dialog must
+ * leave nothing behind - handing over a download after the player said no is answering a question
+ * they declined to ask. A browser with no dialog at all should still get its file, and be told why
+ * it arrived the older way. And a browser that has the dialog but will not open it is a third thing
+ * again, worth saying out loud rather than blaming on the player.
+ *
+ * @param {string} name what to call it
+ * @param {Uint8Array} bytes file contents
+ * @returns {Promise<'saved'|'cancelled'|'unavailable'|'refused'>} what became of it
+ */
+export async function saveDesignsFile(name, bytes) {
+    if (typeof window.showSaveFilePicker !== 'function') {
+        return 'unavailable';
+    }
+
+    try {
+        const handle = await window.showSaveFilePicker({
+            id: DESIGNS_PICKER,
+            startIn: 'documents',
+            suggestedName: name,
+            types: DESIGNS_TYPES,
+        });
+
+        // The browser stages this and swaps it in when the stream closes, so a tab that dies
+        // half-way through leaves the file as it was.
+        const writable = await handle.createWritable();
+        await writable.write(bytes);
+        await writable.close();
+
+        return 'saved';
+    } catch (error) {
+        // AbortError is the one the player caused, and it is not a failure: they closed the dialog.
+        // Everything else is the browser refusing - a policy, a site setting, a file it will not
+        // open - and the caller should fall back rather than leave them with nothing.
+        return error?.name === 'AbortError' ? 'cancelled' : 'refused';
+    }
+}
+
+/**
  * Reads what was kept from a previous visit.
  *
  * @param {string} key where it was filed

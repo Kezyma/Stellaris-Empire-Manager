@@ -286,13 +286,23 @@ code {
 }
 
 /* A file that would not open. Full width under the header, since it is a sentence and not a chip. */
-.sem-header-error {
+.sem-header-error,
+.sem-header-note {
     margin: 0;
     padding: var(--space-md) var(--space-xl);
     background: var(--bg-panel);
     border-bottom: 1px solid var(--border);
-    color: var(--bad);
 }
+
+.sem-header-error { color: var(--bad); }
+
+/*
+   The same line, for something that is true rather than wrong: a file downloaded because this
+   browser has no save dialog, or one opened under a name the game will not recognise. Both used to
+   be red, which told the player they had made a mistake they had not made — and left real failures
+   with nothing to distinguish them.
+*/
+.sem-header-note { color: var(--text-dim); }
 
 /*
    The burger, which exists only on a narrow screen: four items and a brand do not fit one phone-wide
@@ -745,6 +755,7 @@ button.sem-tab:disabled:hover { background: none; }
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: var(--space-md);
 }
+
 
 /*
     Emblems are square and read at a glance, so they pack far tighter than the wide pictures the
@@ -1854,6 +1865,17 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     color: var(--text-dim);
 }
 
+/*
+   And a heavier one for a divider that separates two whole groups rather than two lists. The emblem
+   picker already gives every category a subhead, so the ordinary rule reads as one more of them —
+   which is precisely the wrong thing to say about the line where the game's own offering stops.
+*/
+.sem-subhead.apart {
+    border-top-width: 2px;
+    border-top-color: var(--text-faint);
+    color: var(--text);
+}
+
 .sem-hint.unlisted { color: var(--warn); }
 
 /* The scene an origin opens on, above whatever is written about it and fixed while that scrolls. */
@@ -2902,6 +2924,128 @@ button.icon .sem-action-icon { display: block; }
     border-radius: 0 0 var(--radius) var(--radius);
 }
 
+/* ------------------------------------------------- pickers that pair up
+
+   The flag's patterns and symbols, and the room's rooms and cities. Two long lists of pictures that
+   belong to one decision, so they sit side by side where there is room and fold away one at a time
+   where there is not.
+
+   Deliberately not a <details>, and the reason is worth keeping: a details element's open state is
+   an attribute the browser owns, which no stylesheet can write and which Blazor never re-emits once
+   it has rendered it. Shut one on a laptop, plug in a monitor, and the wide-screen column would be
+   empty for ever with nothing able to reopen it. Held as a class instead, the media query below is
+   free to ignore it — which is exactly how the empire summary already folds itself on a phone. */
+
+.sem-pickers {
+    display: grid;
+
+    /*
+        auto-fit against the space these actually have rather than a viewport width, for the reason
+        the paired subsections give: the pickers are two containers deep inside the designer's left
+        column, so a window measurement is a guess about them. At 1500 that column is around 960
+        pixels, which takes two; below it they fall to one on their own.
+    */
+    grid-template-columns: repeat(auto-fit, minmax(min(460px, 100%), 1fr));
+    gap: var(--gap);
+    align-items: start;
+    margin-top: var(--gap);
+}
+
+.sem-picker {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+/*
+    The strip that names the picker. Above the breakpoint it is a heading and nothing else: no
+    pointer, no chevron, and nothing it can be pressed to do.
+*/
+.sem-picker > .head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-md);
+    padding: var(--space-sm) var(--space-lg);
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-bottom-color: transparent;
+    border-radius: var(--radius) var(--radius) 0 0;
+    color: var(--text);
+    font: inherit;
+    text-align: left;
+    cursor: default;
+}
+
+.sem-picker > .head .chevron {
+    width: 12px;
+    color: var(--text-faint);
+
+    /* Only meaningful where the picker folds, so it is not drawn where it does not. */
+    display: none;
+}
+
+.sem-picker > .head .title {
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+/* What is chosen, for a folded picker that is not showing it. */
+.sem-picker > .head .state {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text-dim);
+    font-size: var(--text-sm);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* The list continues the frame its strip opens, so the two read as one box. */
+.sem-picker > .sem-scroll-list {
+    border-top: none;
+    border-radius: 0 0 var(--radius) var(--radius);
+
+    /*
+        A height rather than a ceiling, so that two of these side by side are the same height. As a
+        ceiling the taller list reached it and the shorter one stopped where its contents did, and
+        the pair sat forty pixels out of step with each other.
+    */
+    height: clamp(240px, 34vh, 560px);
+    max-height: none;
+}
+
+/*
+    One scroller per picker. The patterns grid carries a ceiling of its own, which is right where it
+    is the only thing on the row - but inside a picker the box around it already scrolls, and a
+    scroller inside a scroller left the patterns short of its neighbour with a band of nothing under
+    it.
+*/
+.sem-picker .sem-thumbs.sem-patterns {
+    max-height: none;
+    overflow: visible;
+}
+
+/*
+    Below the width that takes two columns, the strip becomes a control and the list folds behind it.
+    Every rule that makes it one lives in here, so above the breakpoint the whole apparatus is simply
+    not applied and a picker the reader once shut is open again.
+*/
+@media (max-width: 1499px) {
+    .sem-picker > .head { cursor: pointer; }
+
+    .sem-picker > .head:hover { background: var(--bg-hover); }
+
+    .sem-picker > .head .chevron { display: inline; }
+
+    .sem-picker.collapsed > .head {
+        border-bottom-color: var(--border);
+        border-radius: var(--radius);
+    }
+
+    .sem-picker.collapsed > .sem-scroll-list { display: none; }
+}
+
 /*
     The spawn setting: the game's own cycling button, with the state it is showing named beside it.
     The picture alone is a puzzle — three lit variants of one shape — so the words carry the meaning
@@ -3387,6 +3531,8 @@ button.icon .sem-action-icon { display: block; }
 @media (max-width: 700px) {
     .sem-scroll-list { max-height: clamp(240px, 48vh, 560px); }
 
+    .sem-picker > .sem-scroll-list { height: clamp(240px, 48vh, 560px); }
+
     .sem-scroll-list .sem-thumbs {
         grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
         gap: var(--space-sm);
@@ -3537,6 +3683,7 @@ button.icon .sem-action-icon { display: block; }
     .sem-section > .head,
     .sem-class-list button,
     .sem-fold > summary,
+    .sem-picker > .head,
     .sem-showcase-problems > summary { padding: 12px 10px; }
 
     .sem-dlc-summary { padding: 12px 10px; }

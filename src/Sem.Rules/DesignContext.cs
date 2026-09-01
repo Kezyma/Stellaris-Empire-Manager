@@ -87,6 +87,20 @@ public sealed class DesignContext
     public bool IsNomadic { get; private init; }
 
     /// <summary>
+    /// The class the empire's ruler belongs to, which decides the traits they may hold.
+    /// </summary>
+    /// <remarks>
+    /// A ruler trait names the classes it is for, and the game holds to it. Nothing here read the
+    /// ruler at all until now, so every ruler was offered every trait - an official could be given
+    /// the commander's warlike and the scientist's spark of genius, neither of which the game would
+    /// accept on them.
+    /// </remarks>
+    public string? RulerClass { get; private init; }
+
+    /// <summary>The traits the ruler holds, which is one of them or none.</summary>
+    public IReadOnlySet<string> RulerTraits { get; private init; } = new HashSet<string>();
+
+    /// <summary>
     /// The content packs available. Everything gated on a pack is judged against this rather than
     /// against what the extraction machine happened to own.
     /// </summary>
@@ -161,6 +175,8 @@ public sealed class DesignContext
                 origin?.HabitabilityPreference ?? origin?.StartingColony ?? design.PlanetClass,
             GraphicalCulture = design.GraphicalCulture,
             IsNomadic = design.IsNomadic ?? false,
+            RulerClass = design.Ruler.LeaderClass,
+            RulerTraits = new HashSet<string>(design.Ruler.Traits, StringComparer.Ordinal),
             OwnedDlc = ownedDlc ?? InstalledDlc(database),
         };
     }

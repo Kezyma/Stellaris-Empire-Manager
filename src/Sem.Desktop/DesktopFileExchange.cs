@@ -8,10 +8,14 @@ namespace Sem.Desktop;
 /// Saves the designs file back where it came from.
 /// </summary>
 /// <remarks>
-/// This is the one place in the whole project that writes to the player's real empire designs, and
-/// it is careful about it: the new contents are staged beside the file and swapped in, the previous
-/// version is kept, and a copy goes to the app's own archive as well. Losing a file full of
-/// hand-built empires is the worst thing this app could do.
+/// This is the careful way to write the player's real empire designs, and the only one that is:
+/// the new contents are staged beside the file and swapped in, the previous version is kept, and a
+/// copy goes to the app's own archive as well. Losing a file full of hand-built empires is the
+/// worst thing this app could do.
+///
+/// The web app's Export can now reach that file too, through the browser's own save dialog, but it
+/// arrives with none of this - no dated backup, no archive, and no write policy, because none of
+/// that code exists in a tab. See docs/file-safety.md.
 /// </remarks>
 public sealed class DesktopFileExchange(SafeFile file, string designsPath) : IFileExchange
 {
@@ -82,7 +86,7 @@ public sealed class DesktopFileExchange(SafeFile file, string designsPath) : IFi
     }
 
     /// <inheritdoc />
-    public Task SaveAsync(string fileName, byte[] contents)
+    public Task<SaveOutcome> SaveAsync(string fileName, byte[] contents)
     {
         ArgumentNullException.ThrowIfNull(contents);
 
@@ -90,7 +94,10 @@ public sealed class DesktopFileExchange(SafeFile file, string designsPath) : IFi
         Archive(contents);
 
         _file.ReplaceAtomically(_designsPath, contents, DatedBackupPath());
-        return Task.CompletedTask;
+
+        // Always saved here: there is no dialog to dismiss, and a failure throws rather than
+        // returning. The other outcomes only arise in a browser, where the player may say no.
+        return Task.FromResult(SaveOutcome.Saved);
     }
 
     /// <summary>

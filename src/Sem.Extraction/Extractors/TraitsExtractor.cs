@@ -47,6 +47,7 @@ internal static class TraitsExtractor
                 AllowedEthics = body.GetList("allowed_ethics"),
                 ForbiddenEthics = body.GetList("forbidden_ethics"),
                 AllowedCivics = body.GetList("allowed_civics"),
+                AllowedLeaderClasses = body.GetList("leader_class"),
 
                 // Traits are offered at empire creation unless a definition says otherwise.
                 Initial = body.GetBool("initial", defaultValue: true),

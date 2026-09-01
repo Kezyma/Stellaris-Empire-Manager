@@ -60,7 +60,7 @@ that overwrites real files.
 
 ## Writing to real files
 
-Two paths deliberately reach the player's real designs file, and both are opt-in:
+Three paths deliberately reach the player's real designs file, and all three are opt-in:
 
 1. **The shipped desktop application.** It runs under `WritePolicy.ForApplication()` and adds the
    designs file's directory only once the user has chosen it. Every save then goes through
@@ -68,8 +68,28 @@ Two paths deliberately reach the player's real designs file, and both are opt-in
    `File.Replace`, and the previous version is kept as a backup.
 2. **The `deploy-design` CLI command** used for in-game verification, which archives the existing
    file before copying an export over it.
+3. **The web app's Export, through the browser's save dialog.** The weakest of the three, and
+   deliberately the narrowest.
 
-Neither is reachable from the development policy.
+Neither of the first two is reachable from the development policy.
+
+### What the browser's write is, and is not
+
+A page cannot reach the disk. It can only ask the browser to show a save dialog, and is then handed
+a writer for the one file the person named in it — the browser is the guard, and it is not this
+project's code. Export asks every time: no file handle is kept between saves, so there is no
+standing permission to write anything, and dismissing the dialog writes nothing and leaves the work
+marked unsaved.
+
+**None of the guarantees above apply to it.** There is no dated sibling backup, no archive of the
+last twenty, no `SafeFile` and no `WritePolicy` — `Sem.Ui` does not reference `Sem.Io` and a
+WebAssembly build could not use it if it did. What the browser does provide is that the write is
+staged and committed when the stream closes, so a tab that dies mid-save leaves the file as it was.
+
+That is worth stating plainly rather than leaving implied: the desktop app is still the safe way to
+write this file, and the web app's Export is a convenience that trades those protections for not
+having to find the folder by hand. Anyone who would be sorry to lose a designs file should keep a
+copy of their own, which is what the site's own README says.
 
 ## Tests
 

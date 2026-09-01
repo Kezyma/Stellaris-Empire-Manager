@@ -155,8 +155,16 @@ public sealed class SessionHost(
 
             if (_files.SavesInPlace)
             {
-                await _files.SaveAsync(session.FileName ?? EmpireDesignsFile.FileName, contents)
+                // The desktop saves or throws, so this can only be Saved today. Checked anyway: a
+                // host that could answer otherwise must not have its "no" reported as a success.
+                var outcome = await _files
+                    .SaveAsync(session.FileName ?? EmpireDesignsFile.FileName, contents)
                     .ConfigureAwait(false);
+
+                if (outcome is not SaveOutcome.Saved)
+                {
+                    return "Your empires were not written to their file.";
+                }
             }
             else if (!await _store.WriteAsync(Kept.Encode(contents)).ConfigureAwait(false))
             {

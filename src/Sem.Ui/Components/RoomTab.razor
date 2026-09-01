@@ -26,80 +26,89 @@
     they are long enough that the scene had scrolled away by the time you reached the one you
     wanted — you were choosing a picture you could not see.
 
-    And either folds. Two boxes of pictures under a picture is a tall section however tightly it is
-    packed, so each says what is chosen on its own strip and gets out of the way when asked.
+    Side by side where there is room for both, and folded one at a time where there is not: two
+    boxes of pictures under a picture is a tall section however tightly it is packed. Folded, each
+    says what is chosen on its own strip.
+
+    Not a <details>, for the reason the flag tab gives at length: its open state is the browser's to
+    own, so a box shut on a narrow screen could never be reopened by widening the window.
 *@
-<details class="sem-fold" open @ontoggle="() => Reveal(_rooms)">
-    <summary>
-        <span class="chevron" aria-hidden="true">▸</span>
-        <span class="title">@Session.Localizer.Label("EMPIRE_CREATION_ROOM_APPEARANCE", "Room")</span>
-        <span class="state">@RoomName(Design.Room)</span>
-    </summary>
+<div class="sem-pickers">
+    <section class="sem-picker @(_roomsOpen ? null : "collapsed")">
+        <button type="button" class="head" aria-expanded="@(_roomsOpen ? "true" : "false")"
+                @onclick="() => Toggle(open: !_roomsOpen, rooms: true)">
+            <span class="chevron" aria-hidden="true">@(_roomsOpen ? "▾" : "▸")</span>
+            <span class="title">@Session.Localizer.Label("EMPIRE_CREATION_ROOM_APPEARANCE", "Room")</span>
+            <span class="state">@RoomName(Design.Room)</span>
+        </button>
 
-    @*
-        Two lists, deliberately apart. The game's own designer offers the first; the second are rooms
-        it hands out during play, to a fallen empire or a galactic emperor or a world that never left
-        its own atmosphere. A design may name any of them and the game draws it — one of the game's
-        own empires sits in an ancient brick room this way — but choosing one is stepping outside
-        what the designer offers, and should feel like it.
-    *@
-    <div class="sem-scroll-list" @ref="_rooms">
-        @Rooms(Offered)
-
-        @if (Unlisted.Count > 0)
-        {
-            <h5 class="sem-subhead">Rooms the game assigns rather than offers</h5>
-
-            @Rooms(Unlisted)
-        }
-    </div>
-</details>
-
-<details class="sem-fold" open @ontoggle="() => Reveal(_cities)">
-    <summary>
-        <span class="chevron" aria-hidden="true">▸</span>
-        <span class="title">@Session.Localizer.Label("EMPIRE_CREATION_CITY_APPEARANCE", "City")</span>
-        <span class="state">@CityName(ChosenCity)</span>
-    </summary>
-
-    <div class="sem-scroll-list" @ref="_cities">
         @*
-            A tile for no city at all, first. The dropdown this replaced carried an empty option and
-            the reason it carried one still holds: a design may name nothing, and there has to be a
-            way back to naming nothing. As a tile rather than as clicking the chosen one again,
-            because a control that clears by being pressed twice is a control nobody finds.
+            Two lists, deliberately apart. The game's own designer offers the first; the second are
+            rooms it hands out during play, to a fallen empire or a galactic emperor or a world that
+            never left its own atmosphere. A design may name any of them and the game draws it — one
+            of the game's own empires sits in an ancient brick room this way — but choosing one is
+            stepping outside what the designer offers, and should feel like it.
         *@
-        <div class="sem-thumbs cities">
-            <button type="button"
-                    class="sem-thumb-option @(ChosenCity is null ? "selected" : null)"
-                    aria-pressed="@(ChosenCity is null ? "true" : "false")"
-                    @onclick="() => Session.Edit(d => d.CityGraphicalCulture = null)">
-                <span class="sem-thumb none" aria-hidden="true"></span>
-                <span class="caption">@Session.Localizer.Label("NONE", "None")</span>
-            </button>
+        <div class="sem-scroll-list" @ref="_rooms">
+            @Rooms(Offered)
 
-            @foreach (var culture in CitySets)
+            @if (Unlisted.Count > 0)
             {
-                @City(culture)
+                <h5 class="sem-subhead">Rooms the game assigns rather than offers</h5>
+
+                @Rooms(Unlisted)
             }
         </div>
+    </section>
 
-        @*
-            The other half of what the empty option was protecting. A design naming a set this empire
-            cannot be offered — a turned-off content pack, or one the rules exclude — used to match
-            nothing in the list, and a grid with no tile marked would have said the design held
-            nothing at all. Shown under a heading of its own, as the rooms the game assigns are.
-        *@
-        @if (ChosenCity is { } held && CitySets.All(c => c.Key != held.Key))
-        {
-            <h5 class="sem-subhead">Not offered for this empire</h5>
+    <section class="sem-picker @(_citiesOpen ? null : "collapsed")">
+        <button type="button" class="head" aria-expanded="@(_citiesOpen ? "true" : "false")"
+                @onclick="() => Toggle(open: !_citiesOpen, rooms: false)">
+            <span class="chevron" aria-hidden="true">@(_citiesOpen ? "▾" : "▸")</span>
+            <span class="title">@Session.Localizer.Label("EMPIRE_CREATION_CITY_APPEARANCE", "City")</span>
+            <span class="state">@CityName(ChosenCity)</span>
+        </button>
 
+        <div class="sem-scroll-list" @ref="_cities">
+            @*
+                A tile for no city at all, first. The dropdown this replaced carried an empty option
+                and the reason it carried one still holds: a design may name nothing, and there has
+                to be a way back to naming nothing. As a tile rather than as clicking the chosen one
+                again, because a control that clears by being pressed twice is a control nobody finds.
+            *@
             <div class="sem-thumbs cities">
-                @City(held)
+                <button type="button"
+                        class="sem-thumb-option @(ChosenCity is null ? "selected" : null)"
+                        aria-pressed="@(ChosenCity is null ? "true" : "false")"
+                        @onclick="() => Session.Edit(d => d.CityGraphicalCulture = null)">
+                    <span class="sem-thumb none" aria-hidden="true"></span>
+                    <span class="caption">@Session.Localizer.Label("NONE", "None")</span>
+                </button>
+
+                @foreach (var culture in CitySets)
+                {
+                    @City(culture)
+                }
             </div>
-        }
-    </div>
-</details>
+
+            @*
+                The other half of what the empty option was protecting. A design naming a set this
+                empire cannot be offered — a turned-off content pack, or one the rules exclude — used
+                to match nothing in the list, and a grid with no tile marked would have said the
+                design held nothing at all. Shown under a heading of its own, as the rooms the game
+                assigns are.
+            *@
+            @if (ChosenCity is { } held && CitySets.All(c => c.Key != held.Key))
+            {
+                <h5 class="sem-subhead">Not offered for this empire</h5>
+
+                <div class="sem-thumbs cities">
+                    @City(held)
+                </div>
+            }
+        </div>
+    </section>
+</div>
 
 @code {
     [CascadingParameter]
@@ -108,6 +117,17 @@
     private EmpireDesign Design => Session.Current!;
 
     private readonly RequirementEvaluator _evaluator = new();
+
+    /// <summary>
+    /// Whether each picker is unfolded, which only matters below the width where both fit.
+    /// </summary>
+    /// <remarks>
+    /// A flag rendered as a class, so the stylesheet can disregard it: above the breakpoint the
+    /// collapsing rules are not applied at all and both are open, whatever the reader last did to
+    /// them on a narrower screen.
+    /// </remarks>
+    private bool _roomsOpen = true;
+    private bool _citiesOpen = true;
 
     /// <summary>The scrolling boxes, so the chosen tile in each can be brought into view.</summary>
     private ElementReference _rooms;
@@ -134,20 +154,33 @@
     }
 
     /// <summary>
+    /// Unfolds or folds one of the pickers, and puts its chosen tile back in view when it reappears.
+    /// </summary>
+    private async Task Toggle(bool open, bool rooms)
+    {
+        if (rooms)
+        {
+            _roomsOpen = open;
+        }
+        else
+        {
+            _citiesOpen = open;
+        }
+
+        if (open)
+        {
+            // After the browser has drawn it, or there is still nothing to measure.
+            await Task.Yield();
+            await Reveal(rooms ? _rooms : _cities).ConfigureAwait(true);
+        }
+    }
+
+    /// <summary>
     /// Scrolls a list to what is chosen in it.
     /// </summary>
     /// <remarks>
-    /// <para>
-    /// Also on being unfolded, which is not the same as being rendered. A shut
-    /// <c>&lt;details&gt;</c> keeps its contents in the page but gives them no layout, so a list
-    /// inside one has no height to scroll and loses where it was scrolled to; without this, opening
-    /// a folded list showed its first tile rather than the one the empire has.
-    /// </para>
-    /// <para>
-    /// Called on being shut as well, since the event does not say which way it went. There is
-    /// nothing to do then and nothing happens: with no layout every measurement comes back zero and
-    /// the scroll it works out is zero too.
-    /// </para>
+    /// A folded box is not drawn, so it has no height to scroll and forgets where it was: opening it
+    /// again showed the first tile rather than the one the empire has.
     /// </remarks>
     private async Task Reveal(ElementReference list)
     {

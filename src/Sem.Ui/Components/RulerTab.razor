@@ -130,14 +130,23 @@
     </section>
 
     <section>
-        <h4>@Session.Localizer.Label("TRAITS", "Traits")</h4>
+        <div class="heading">
+            <h4>@Session.Localizer.Label("TRAITS", "Traits")</h4>
+
+            <ViewToggle ViewKey="RulerTraits" List="@_asList" ListChanged="v => _asList = v" />
+        </div>
 
         <OptionGrid Options="@TraitOptions"
+                    AsList="@_asList"
+                    Label="Ruler traits"
                     OnSelect="Toggle" />
     </section>
 </div>
 
 @code {
+    /// <summary>Which way the traits are drawn. The toggle owns the remembering; this mirrors it.</summary>
+    private bool _asList = true;
+
     [CascadingParameter]
     public required DesignSession Session { get; set; }
 
@@ -207,10 +216,20 @@
             ? Session.Localizer.Text(key)
             : "chosen by the government";
 
+    /// <summary>
+    /// The traits, as the rules see them.
+    /// </summary>
+    /// <remarks>
+    /// Asked of the rules rather than worked out here. This section used to decide for itself which
+    /// traits were out of reach and write the sentences too, which meant the ruler was the one
+    /// picker whose reasons were English rather than keys - untranslatable, and outside everything
+    /// the rest of the app knows how to say. It also meant nothing checked the ruler's class.
+    /// </remarks>
     private IReadOnlyList<OptionGrid.GridOption> TraitOptions =>
         GridOptions.Build(
             Session,
-            RulerTraits.Select(t => new OptionState(t.Key, true, IsAllowed(t), Blockers(t))),
+            Session.Rules.GetRulerTraitOptions(Context)
+                .OrderBy(o => Session.Localizer.Text(o.Key), StringComparer.CurrentCulture),
             key => RulerTraits.FirstOrDefault(t => t.Key == key) is { } trait
                 ? (trait.Icon, trait.Effects)
                 : (null, null),
@@ -220,41 +239,6 @@
         Session.Data.Database.Traits
             .Where(t => t.Kind == TraitKind.StartingRuler)
             .OrderBy(t => Session.Localizer.Text(t.Key), StringComparer.CurrentCulture);
-
-    private bool IsAllowed(TraitDefinition trait) =>
-        Blockers(trait).Count == 0;
-
-    /// <summary>
-    /// Why a ruler trait is out of reach. These are gated by origin and by content pack rather
-    /// than by the species rules that govern the founder species' own traits.
-    /// </summary>
-    private IReadOnlyList<string> Blockers(TraitDefinition trait)
-    {
-        var reasons = new List<string>();
-
-        if (trait.RequiredDlc is { } dlc && !Context.OwnedDlc.Contains(dlc))
-        {
-            reasons.Add($"Needs {dlc}");
-        }
-
-        if (Context.Origin is { } origin && trait.ForbiddenOrigins.Contains(origin))
-        {
-            reasons.Add($"Not with {Session.Localizer.Text(origin)}");
-        }
-
-        if (trait.AllowedOrigins.Count > 0 &&
-            (Context.Origin is null || !trait.AllowedOrigins.Contains(Context.Origin)))
-        {
-            reasons.Add("Needs a different origin");
-        }
-
-        if (trait.AllowedEthics.Count > 0 && !Context.Ethics.Any(trait.AllowedEthics.Contains))
-        {
-            reasons.Add("Needs different ethics");
-        }
-
-        return reasons;
-    }
 
     /// <summary>
     /// Writes the ruler's name.
@@ -364,8 +348,15 @@
 
             if (!traits.Remove(key))
             {
-                // A starting ruler takes one trait, so choosing another replaces it.
-                traits.Clear();
+                // A ruler takes one trait, and a full slate is refused rather than swapped: this
+                // used to clear whatever was held and add the new one, which is a press that takes
+                // something away while appearing to add one. The rules close the rest while one is
+                // held, so this is the guard for a key arriving some other way.
+                if (traits.Count > 0)
+                {
+                    return;
+                }
+
                 traits.Add(key);
             }
 

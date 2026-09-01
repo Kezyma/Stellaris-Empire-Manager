@@ -20,9 +20,18 @@ internal static class CosmeticsExtractor
     /// an ancient brick room the picker never offered.
     /// </para>
     /// <para>
-    /// So all of them are read, and one is left out only when the installation has no picture for
-    /// it. Rooms have no localised names anywhere in the game, which is why the picker shows images
-    /// alone.
+    /// And the selector is not the whole of it either. The installation holds ninety-one room
+    /// pictures against the sixty-seven it names; the rest are the same artwork in the same frame,
+    /// reached by an event rather than by the selector - the Contingency's transmission, the Shroud,
+    /// the swarm, the enclaves and the caravaneers. They were left out once as "event backdrops",
+    /// which was a judgement about taste rather than a fact about the game: a design may name one
+    /// and the game loads it. So every picture is read, and every room the game can draw is a room
+    /// the designer offers.
+    /// </para>
+    /// <para>
+    /// One is left out only when the installation has no picture for it, which today is exactly one:
+    /// the synth queen's room is named by the selector and was never drawn. Rooms have no localised
+    /// names anywhere in the game, which is why the picker shows images alone.
     /// </para>
     /// </remarks>
     public static List<RoomDefinition> ExtractRooms(ScriptLoader loader, AssetCatalog assets)
@@ -42,7 +51,19 @@ internal static class CosmeticsExtractor
         var results = new List<RoomDefinition>();
         var seen = new HashSet<string>(StringComparer.Ordinal);
 
-        foreach (var key in Named(selector).Where(k => k.EndsWith("_room", StringComparison.Ordinal)))
+        // Every room the installation has a picture of, not only the ones the selector names.
+        //
+        // The selector is how the game decides which room to give an empire that has not chosen one,
+        // and it names sixty-seven. There are ninety-one pictures, and the other twenty-four are the
+        // same artwork in the same 952 by 340 frame - the Contingency's transmission, the Shroud,
+        // the swarm, the enclaves - reached through an event's picture_event_data rather than
+        // through the selector. Nothing about them is a different kind of thing, and a design that
+        // names one loads: the extradimensional rooms were tried in the game.
+        var keys = Named(selector)
+            .Where(k => k.EndsWith("_room", StringComparison.Ordinal))
+            .Concat(RoomPictures(loader));
+
+        foreach (var key in keys)
         {
             if (!seen.Add(key))
             {
@@ -65,6 +86,21 @@ internal static class CosmeticsExtractor
         // The designer's own list first, in the order the game gives it, then the rest.
         return [.. results.OrderByDescending(r => r.IsOffered)];
     }
+
+    /// <summary>
+    /// Every room the installation has artwork for, by the key that artwork is filed under.
+    /// </summary>
+    /// <remarks>
+    /// Read from the pictures rather than from any list, so a room the game gains stays out of this
+    /// only if it also has nothing to show. The one the selector names and the installation has no
+    /// picture of - the synth queen's - is left out by the register below returning nothing, which
+    /// is the same door every other missing picture leaves by.
+    /// </remarks>
+    private static IEnumerable<string> RoomPictures(ScriptLoader loader) =>
+        loader.Content.EnumerateFiles("gfx/portraits/city_sets", "*_room.dds")
+            .Select(Path.GetFileNameWithoutExtension)
+            .OfType<string>()
+            .OrderBy(k => k, StringComparer.Ordinal);
 
     /// <summary>
     /// Every room the selector names, wherever in its tree it names one.
@@ -265,6 +301,10 @@ internal static class CosmeticsExtractor
                 Icon = assets.RegisterSprite(
                     $"GFX_{entry.Body.GetString("icon")}",
                     $"icons/arkships/{entry.Key}.png"),
+
+                // Read so the ship can be drawn: the sheet frame above is the same picture for all
+                // three, and a panel of three identical icons tells a player nothing.
+                Entity = entry.Body.GetString("entity"),
             });
         }
 

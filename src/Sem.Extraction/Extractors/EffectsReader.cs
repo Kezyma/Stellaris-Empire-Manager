@@ -141,6 +141,19 @@ public static class EffectsReader
             tooltipReplaces = false;
         }
 
+        // The bare form of the same field, which stands in for the numbers instead of joining them.
+        //
+        // This is the other half of not reading the triggered blocks above. The game hides those on
+        // purpose and its own trait documentation says to describe them here instead — so having
+        // correctly declined to print numbers the game never claims, we then dropped the sentence it
+        // wrote in their place, and the option came out with nothing to say. Existential Iteroparity
+        // was the plain case: no modifier block at all, its whole effect in one line of text.
+        else if (body.GetString("custom_tooltip") is { Length: > 0 } instead)
+        {
+            tooltip = instead;
+            tooltipReplaces = true;
+        }
+
         return new EffectSet
         {
             Modifiers = modifiers,

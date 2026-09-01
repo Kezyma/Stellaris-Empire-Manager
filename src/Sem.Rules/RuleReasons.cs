@@ -62,6 +62,14 @@ public static class RuleReasons
     /// <summary>An origin is already chosen, and an empire has only the one.</summary>
     public const string OriginAlreadyChosen = "sem.origin.chosen";
 
+    /// <summary>The ruler already has their trait, and a ruler has only the one.</summary>
+    public const string RulerTraitTaken = "sem.ruler.trait";
+
+    /// <summary>
+    /// The trait belongs to another kind of leader. Followed by the classes that may hold it.
+    /// </summary>
+    public const string WrongLeaderClass = "sem.ruler.class";
+
     /// <summary>A content pack is needed. Followed by its name.</summary>
     public const string MissingDlc = "sem.dlc";
 
@@ -89,7 +97,8 @@ public static class RuleReasons
             or NoPicksLeft
             or NotEnoughEthicsPoints
             or NoCivicSlotsLeft
-            or OriginAlreadyChosen;
+            or OriginAlreadyChosen
+            or RulerTraitTaken;
 
     /// <summary>Builds a reason that refers to something, such as the trait that excludes it.</summary>
     public static string For(string reason, string subject) => $"{reason}{Separator}{subject}";

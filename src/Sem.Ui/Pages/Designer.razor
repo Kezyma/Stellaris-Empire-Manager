@@ -321,12 +321,14 @@ else
     }
 
     /// <summary>
-    /// Opens an empire someone sent a link to, adding it to whatever file is already open.
+    /// Opens an empire someone sent a link to, without giving it to the player until they say so.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Added rather than swapped in: the link is a gift, not a replacement for the empires the
-    /// player already has. A name already taken gets a number after it, as a copy would.
+    /// Offered rather than swapped in: the link is a gift, not a replacement for the empires the
+    /// player already has. A name already taken gets a number after it, as a copy would. And a gift
+    /// is not kept until it is accepted - the empire is created rather than added, so it lives in
+    /// the file only for as long as the designer is looking at it and is written nowhere until Save.
     /// </para>
     /// <para>
     /// An empire the file already holds is selected instead of copied. That matters now that the
@@ -354,7 +356,18 @@ else
         }
 
 
-        _session.EditFile(file =>
+        // Created rather than added to the file, which is the whole difference between looking at
+        // somebody's empire and being given it. A created empire is held out of the player's file
+        // until they press Save - it is in there only because the designer has to have something to
+        // work on - and turning to anything else takes it back out again. Added, it was theirs
+        // before they had seen it: EditFile announces the change, the host keeps the file, and it
+        // was in browser storage by the time the page finished drawing.
+        //
+        // Selecting inside the change was the second half of that. Select takes a saved snapshot,
+        // so the empire arrived already looking saved: the Save button was disabled, the revert
+        // icon was not drawn, and leaving asked nothing. There was no way to accept a shared empire
+        // even deliberately.
+        _session.CreateEmpire(file =>
         {
             var key = design.Key;
 
@@ -363,8 +376,12 @@ else
                 key = $"{design.Key} {attempt}";
             }
 
-            _session.Select(file.AddCopy(design, key));
+            return file.AddCopy(design, key);
         });
+
+        // The address already carries this empire, so there is nothing to rewrite - but say so, or
+        // the first save looks like a change of empire and pushes a second entry.
+        _shown = shared;
     }
 
     /// <summary>
@@ -467,12 +484,5 @@ else
             // that no longer exists.
             Navigation.NavigateTo(string.Empty);
         }
-    }
-
-    /// <summary>Hands over a copy of the file, which is a different thing from saving it.</summary>
-    private async Task Export()
-    {
-        var name = _session!.FileName is { Length: > 0 } existing ? existing : EmpireDesignsFile.FileName;
-        await Files.SaveAsync(name, _session.Save());
     }
 }
