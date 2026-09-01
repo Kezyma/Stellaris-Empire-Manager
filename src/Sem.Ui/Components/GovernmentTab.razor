@@ -50,12 +50,25 @@
     </section>
 
     <section>
-        <h4>@Session.Localizer.Heading("CIVICS_LABEL", "Civics")</h4>
+        @*
+            The heading and the control that changes how the choices under it are drawn, on one
+            line, as the empire modifiers panel already has it. The wrapper is why the stylesheet
+            has to know about `.heading` as well as a bare h4: the rules that give a subsection
+            heading its spacing and its small dim treatment are child selectors, and a heading
+            inside a div is no longer a child.
+        *@
+        <div class="heading">
+            <h4>@Session.Localizer.Heading("CIVICS_LABEL", "Civics")</h4>
+
+            <ViewToggle ViewKey="Civics" List="@_civicsAsList" ListChanged="v => _civicsAsList = v" />
+        </div>
 
         <BudgetBar Key="POINTS_LEFT_CIVICS" Fallback="Civic Picks Left: $POINTS|H$"
                    Label="CIVICS_LABEL" LabelFallback="Civics" Value="@Session.Rules.GetCivicsBudget(Context)" />
 
         <OptionGrid Options="@Civics"
+                    AsList="@_civicsAsList"
+                    Label="Civics"
                     OnSelect="Toggle" />
     </section>
 </div>
@@ -63,6 +76,9 @@
 @code {
     /// <summary>The sprite the game's own nomad toggle wears.</summary>
     private const string NomadSprite = "GFX_toggle_nomad";
+
+    /// <summary>Which way the civics are drawn. The toggle owns the remembering; this mirrors it.</summary>
+    private bool _civicsAsList = true;
 
     [CascadingParameter]
     public required DesignSession Session { get; set; }
@@ -112,11 +128,13 @@
 
             if (!civics.Remove(key))
             {
-                // The allowance is fixed, so choosing a third replaces the oldest rather than
-                // leaving the player to clear one first.
+                // The allowance is fixed, and a full slate is refused rather than made room in:
+                // choosing a third used to remove the first, which is a press that took something
+                // away while appearing to add one. The rules mark the rest unavailable while the
+                // slots are full, so this is the guard for a key that arrives some other way.
                 if (civics.Count >= Session.Data.Database.Defines.CivicPoints)
                 {
-                    civics.RemoveAt(0);
+                    return;
                 }
 
                 civics.Add(key);

@@ -52,11 +52,13 @@ public sealed record RenderSettings
     /// How far above the frame's bottom edge the model's feet sit, as a fraction of the height.
     /// </summary>
     /// <remarks>
-    /// None. The game's layout lifts the figure 20 pixels of its 380, leaving room for what some
-    /// species keep below the ground they stand on — but the game never shows that room: its own
-    /// designer tile crops the render from the top down to three units above the ground line, so
-    /// everything beneath is thrown away. Reserving it here only left the portraits that keep
-    /// nothing down there hovering above an empty strip, which is what they looked like.
+    /// None. The game's own layout sinks the figure 20 pixels of its 380 rather than lifting it —
+    /// the entity sits at y = -20 against a bottom anchor, and negative is downwards in that file,
+    /// which the artwork settles: the window cut out of a room begins 25 pixels down a 340-pixel
+    /// room, the number the downward reading predicts. So what a species keeps below the ground it
+    /// stands on is buried, not shown. Reserving room for it here only left the portraits that keep
+    /// nothing down there hovering above an empty strip, which is what they looked like; the burying
+    /// is done where the figure is placed in the room instead.
     /// </remarks>
     public double BottomMargin { get; init; }
 

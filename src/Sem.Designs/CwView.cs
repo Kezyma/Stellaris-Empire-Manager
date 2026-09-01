@@ -71,6 +71,19 @@ public abstract class CwView
     /// </summary>
     private CwBlock? Existing => _block ??= _parent?.GetBlock(_key!);
 
+    /// <summary>
+    /// Whether two views stand on the same block.
+    /// </summary>
+    /// <remarks>
+    /// The way to tell one view from another, since a view is built fresh every time the property
+    /// holding it is read and two of them are never the same object. Asking creates neither side:
+    /// this is a question, and <see cref="Block"/> would answer it by making the block it was asked
+    /// about. A view whose block does not exist yet matches nothing, including another absent one -
+    /// there is no block for them to share.
+    /// </remarks>
+    public bool SameAs(CwView? other) =>
+        other is not null && Existing is { } block && ReferenceEquals(block, other.Existing);
+
     /// <summary>The first node with this key, or null.</summary>
     protected CwNode? FindNode(string key) =>
         Existing?.Nodes.FirstOrDefault(n => string.Equals(n.Key, key, StringComparison.Ordinal));
@@ -141,6 +154,14 @@ public abstract class CwView
     protected void SetStrings(string key, IReadOnlyList<string> values, bool quoted = true)
     {
         ArgumentNullException.ThrowIfNull(values);
+
+        // Writing none of something into a block that is not there is not a write. Every loop below
+        // would run over nothing, but reaching them through Block would have made the block first,
+        // which is the same trap RemoveAll had: an empty list of traits added an empty species.
+        if (values.Count == 0 && Existing is null)
+        {
+            return;
+        }
 
         var existing = Block.Nodes
             .Where(n => string.Equals(n.Key, key, StringComparison.Ordinal))
@@ -231,12 +252,24 @@ public abstract class CwView
         return created;
     }
 
-    /// <summary>Removes every node with this key.</summary>
+    /// <summary>
+    /// Removes every node with this key.
+    /// </summary>
+    /// <remarks>
+    /// A design that has not got the block has not got the field either, so there is nothing here to
+    /// do — and doing it through <see cref="Block"/> made the block on the way, which is a design
+    /// gaining a field from having one taken out of it. Clearing a species' biography did this.
+    /// </remarks>
     protected void RemoveAll(string key)
     {
-        foreach (var node in Block.Nodes.Where(n => string.Equals(n.Key, key, StringComparison.Ordinal)).ToList())
+        if (Existing is not { } block)
         {
-            Block.Remove(node);
+            return;
+        }
+
+        foreach (var node in block.Nodes.Where(n => string.Equals(n.Key, key, StringComparison.Ordinal)).ToList())
+        {
+            block.Remove(node);
         }
     }
 

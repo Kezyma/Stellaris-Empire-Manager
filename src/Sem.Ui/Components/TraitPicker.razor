@@ -178,9 +178,12 @@
     /// moves. The trait is still marked as overspending, and the counters still go red.
     /// </para>
     /// </remarks>
-    private static readonly string[] BudgetReasons = [RuleReasons.NotEnoughPoints, RuleReasons.NoPicksLeft];
-
-    private static bool IsBudget(string reason) => BudgetReasons.Contains(reason);
+    /// <remarks>
+    /// The list of which reasons those are lives with the reasons themselves, in
+    /// <see cref="RuleReasons.IsBudget"/>, since the civic and origin pickers now draw the same
+    /// distinction. It covers the ethic and civic ones as well, which can never appear on a trait.
+    /// </remarks>
+    private static bool IsBudget(string reason) => RuleReasons.IsBudget(reason);
 
     private TraitEntry Entry(OptionState state)
     {

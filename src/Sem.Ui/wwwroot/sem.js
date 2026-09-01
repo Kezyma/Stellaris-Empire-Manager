@@ -77,6 +77,46 @@ export function revealSelected(list, selector) {
 }
 
 /**
+ * Scrolls the page to an element that answers what was just clicked, if it is not already on screen.
+ *
+ * The empire list writes its preview before the list, so where there is room for two columns the
+ * preview sits beside the cards and where there is not it sits above them. In the second case
+ * choosing an empire halfway down the page updates a panel that is off the top of the screen, and
+ * the only way to see what you chose is to scroll back up looking for it.
+ *
+ * Only where the layout has stacked it, which the element says itself: the stylesheet makes the
+ * preview sticky exactly when there is room for it beside the cards, so a sticky one is never what
+ * this is for and the page is left alone. Asking the element beats writing the breakpoint here,
+ * which would be the same width in a second place, free to drift from the sheet that decides it —
+ * and beats asking whether it is on screen, because a preview taller than the window scrolls its
+ * own top away even while stuck.
+ *
+ * Aligned to just under the sticky header rather than to the top of the page, since the header
+ * would otherwise cover the first line of what was scrolled to.
+ *
+ * @param {HTMLElement} element what to bring on screen
+ */
+export function revealOnPage(element) {
+    if (!element || getComputedStyle(element).position === 'sticky') {
+        return;
+    }
+
+    const box = element.getBoundingClientRect();
+
+    // The header's real height rather than the token, which is a length this file cannot read.
+    const header = document.querySelector('.sem-header');
+    const top = header ? header.getBoundingClientRect().height : 0;
+
+    if (box.top >= top && box.top < window.innerHeight) {
+        return;
+    }
+
+    // The gap the stylesheet leaves under the header for anything that sticks to it.
+    const gap = 10;
+    window.scrollTo({ top: Math.max(0, window.scrollY + box.top - top - gap), behavior: 'smooth' });
+}
+
+/**
  * Closes an open suggestion list when the next press lands outside it.
  *
  * The list itself is drawn or not drawn by the component, on a flag the component owns. What this

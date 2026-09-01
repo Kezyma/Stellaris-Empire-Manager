@@ -1,8 +1,11 @@
 @page "/"
+@using Microsoft.JSInterop
 @implements IDisposable
+@implements IAsyncDisposable
 @inject SessionHost Host
 @inject IFileExchange Files
 @inject NavigationManager Navigation
+@inject IJSRuntime Js
 
 <PageTitle>Empires - Stellaris Empire Manager</PageTitle>
 
@@ -69,7 +72,7 @@ else
     *@
     <CascadingValue Value="_session">
         <div class="sem-select">
-            <div class="preview">
+            <div class="preview" @ref="_preview">
                 @if (Previewed is { } previewed)
                 {
                     <EmpireShowcase Design="previewed" Lore="@_previewSource?.DescriptionKey">
@@ -156,6 +159,11 @@ else
     /// <summary>The built-in empire being shown, and the design read out of it.</summary>
     private PrescriptedEmpireSummary? _previewSource;
 
+    /// <summary>The preview panel, so choosing an empire can bring it on screen.</summary>
+    private ElementReference _preview;
+
+    private IJSObjectReference? _module;
+
     private EmpireDesign? _previewDesign;
 
     protected override async Task OnInitializedAsync()
@@ -190,11 +198,13 @@ else
             ? _session?.File?.Designs.Contains(_previewDesign!) is true
             : _previewSource is { } source && Prescripted.Contains(source);
 
-    private void PreviewOwn(EmpireDesign design)
+    private async Task PreviewOwn(EmpireDesign design)
     {
         _previewDesign = design;
         _previewOwn = true;
         _previewSource = null;
+
+        await RevealPreview().ConfigureAwait(true);
     }
 
     /// <summary>
@@ -204,7 +214,7 @@ else
     /// Read into a file of its own, which nothing ever saves — the same reading the list beside it
     /// already did to learn what the empire's government is called, so it costs nothing here.
     /// </remarks>
-    private void PreviewPrescripted(PrescriptedEmpireSummary empire)
+    private async Task PreviewPrescripted(PrescriptedEmpireSummary empire)
     {
         if (Read(empire) is not { } preset)
         {
@@ -214,6 +224,37 @@ else
         _previewDesign = preset.Design;
         _previewSource = empire;
         _previewOwn = false;
+
+        await RevealPreview().ConfigureAwait(true);
+    }
+
+    /// <summary>
+    /// Brings the preview on screen when choosing an empire has just changed what is in it.
+    /// </summary>
+    /// <remarks>
+    /// The preview is written before the lists, so where the page is too narrow for two columns it
+    /// sits above them: choosing a card halfway down updated a panel off the top of the screen, and
+    /// the only way to see the answer was to go looking for it. The script does nothing when the
+    /// panel is already in view, which is the case at every width where it sits beside the cards.
+    /// </remarks>
+    /// <remarks>
+    /// On the click and not on a render. Selecting raises <c>Changed</c>, which re-renders this page
+    /// from two directions, and a page that scrolled every time anything changed would drag a reader
+    /// back to the top while they were part-way down the list.
+    /// </remarks>
+    private async Task RevealPreview()
+    {
+        try
+        {
+            _module ??= await Js.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/Sem.Ui/sem.js").ConfigureAwait(true);
+
+            await _module.InvokeVoidAsync("revealOnPage", _preview).ConfigureAwait(true);
+        }
+        catch (JSDisconnectedException)
+        {
+            // The page went away between the click and the scrolling of it.
+        }
     }
 
     public void Dispose()
@@ -221,6 +262,26 @@ else
         if (_session is not null)
         {
             _session.Changed -= OnChanged;
+        }
+    }
+
+    /// <summary>Releases the script reference, as every other interop holder in the app does.</summary>
+    public async ValueTask DisposeAsync()
+    {
+        Dispose();
+
+        if (_module is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await _module.DisposeAsync().ConfigureAwait(false);
+        }
+        catch (JSDisconnectedException)
+        {
+            // The page went away first; there is nothing left to release.
         }
     }
 

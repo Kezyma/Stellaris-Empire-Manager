@@ -145,7 +145,7 @@
 
             // The ruler wears the founder species' likeness unless deliberately given another,
             // and leaving a portrait from a different species behind looks like a fault.
-            if (Session.Current is { } design && ReferenceEquals(Species.Block, design.Species.Block))
+            if (Session.Current is { } design && !design.IsSecondary(Species))
             {
                 design.Ruler.Portrait = key;
             }

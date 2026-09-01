@@ -9,9 +9,9 @@
     seen through the room's window, so choosing a city with no room in view would be choosing blind.
     The game agrees — its own editor has them as two tabs of one panel, headed "City Graphics".
 
-    The scene at the top is every appearance choice at once. The room comes from the list below, the
-    city from the dropdown beside it, and the world from the homeworld the empire actually starts on,
-    so each is chosen against the thing it changes.
+    The scene at the top is every appearance choice at once. The room and the city each come from a
+    list of pictures below it, and the world from the homeworld the empire actually starts on, so
+    each is chosen against the thing it changes.
 *@
 
 <div class="sem-scene">
@@ -20,52 +20,86 @@
                Alt="@Session.Localizer.Name(Design.Name, Design.Key)" />
 </div>
 
-<div class="sem-field spaced">
-    <label for="city-set">@Session.Localizer.Label("EMPIRE_CREATION_CITY_APPEARANCE", "City")</label>
-    @*
-        The empty option matters. A design with no city set yet, or one naming a set a turned-off
-        content pack removed from this list, matched no option — so the browser showed the first one
-        while the design held something else, and picking the thing already displayed fired no change
-        event, which left no way to reconcile the two by the obvious action.
-    *@
-    <select id="city-set" @onchange="e => Session.Edit(d => d.CityGraphicalCulture = Chosen(e.Value?.ToString()))">
-        <option value="" selected="@(CitySets.All(c => c.Key != Design.CityGraphicalCulture))">
-            @Session.Localizer.Label("NONE", "None")
-        </option>
-
-        @foreach (var culture in CitySets)
-        {
-            <option value="@culture.Key" selected="@(culture.Key == Design.CityGraphicalCulture)">
-                @Localizer.Prettify(culture.Key)
-            </option>
-        }
-    </select>
-</div>
-
 @*
-    The rooms scroll inside their own box rather than down the page, so the scene above stays on
-    screen while they are being picked. Choosing a room is choosing what the scene looks like, and
-    the list is long enough that the scene had scrolled away by the time you reached the room you
+    Both lists scroll inside their own box rather than down the page, so the scene above stays on
+    screen while they are being picked. Choosing either is choosing what the scene looks like, and
+    they are long enough that the scene had scrolled away by the time you reached the one you
     wanted — you were choosing a picture you could not see.
 
-    Two lists, deliberately apart. The game's own designer offers the first; the second are rooms it
-    hands out during play, to a fallen empire or a galactic emperor or a world that never left its own
-    atmosphere. A design may name any of them and the game draws it — one of the game's own empires
-    sits in an ancient brick room this way — but choosing one is stepping outside what the designer
-    offers, and should feel like it.
+    And either folds. Two boxes of pictures under a picture is a tall section however tightly it is
+    packed, so each says what is chosen on its own strip and gets out of the way when asked.
 *@
-<label>@Session.Localizer.Label("EMPIRE_CREATION_ROOM_APPEARANCE", "Room")</label>
+<details class="sem-fold" open @ontoggle="() => Reveal(_rooms)">
+    <summary>
+        <span class="chevron" aria-hidden="true">▸</span>
+        <span class="title">@Session.Localizer.Label("EMPIRE_CREATION_ROOM_APPEARANCE", "Room")</span>
+        <span class="state">@RoomName(Design.Room)</span>
+    </summary>
 
-<div class="sem-scroll-list" @ref="_list">
-    @Rooms(Offered)
+    @*
+        Two lists, deliberately apart. The game's own designer offers the first; the second are rooms
+        it hands out during play, to a fallen empire or a galactic emperor or a world that never left
+        its own atmosphere. A design may name any of them and the game draws it — one of the game's
+        own empires sits in an ancient brick room this way — but choosing one is stepping outside
+        what the designer offers, and should feel like it.
+    *@
+    <div class="sem-scroll-list" @ref="_rooms">
+        @Rooms(Offered)
 
-    @if (Unlisted.Count > 0)
-    {
-        <h5 class="sem-subhead">Rooms the game assigns rather than offers</h5>
+        @if (Unlisted.Count > 0)
+        {
+            <h5 class="sem-subhead">Rooms the game assigns rather than offers</h5>
 
-        @Rooms(Unlisted)
-    }
-</div>
+            @Rooms(Unlisted)
+        }
+    </div>
+</details>
+
+<details class="sem-fold" open @ontoggle="() => Reveal(_cities)">
+    <summary>
+        <span class="chevron" aria-hidden="true">▸</span>
+        <span class="title">@Session.Localizer.Label("EMPIRE_CREATION_CITY_APPEARANCE", "City")</span>
+        <span class="state">@CityName(ChosenCity)</span>
+    </summary>
+
+    <div class="sem-scroll-list" @ref="_cities">
+        @*
+            A tile for no city at all, first. The dropdown this replaced carried an empty option and
+            the reason it carried one still holds: a design may name nothing, and there has to be a
+            way back to naming nothing. As a tile rather than as clicking the chosen one again,
+            because a control that clears by being pressed twice is a control nobody finds.
+        *@
+        <div class="sem-thumbs cities">
+            <button type="button"
+                    class="sem-thumb-option @(ChosenCity is null ? "selected" : null)"
+                    aria-pressed="@(ChosenCity is null ? "true" : "false")"
+                    @onclick="() => Session.Edit(d => d.CityGraphicalCulture = null)">
+                <span class="sem-thumb none" aria-hidden="true"></span>
+                <span class="caption">@Session.Localizer.Label("NONE", "None")</span>
+            </button>
+
+            @foreach (var culture in CitySets)
+            {
+                @City(culture)
+            }
+        </div>
+
+        @*
+            The other half of what the empty option was protecting. A design naming a set this empire
+            cannot be offered — a turned-off content pack, or one the rules exclude — used to match
+            nothing in the list, and a grid with no tile marked would have said the design held
+            nothing at all. Shown under a heading of its own, as the rooms the game assigns are.
+        *@
+        @if (ChosenCity is { } held && CitySets.All(c => c.Key != held.Key))
+        {
+            <h5 class="sem-subhead">Not offered for this empire</h5>
+
+            <div class="sem-thumbs cities">
+                @City(held)
+            </div>
+        }
+    </div>
+</details>
 
 @code {
     [CascadingParameter]
@@ -73,21 +107,19 @@
 
     private EmpireDesign Design => Session.Current!;
 
-    /// <summary>The empty choice writes nothing rather than an empty string.</summary>
-    private static string? Chosen(string? key) => key is { Length: > 0 } ? key : null;
-
     private readonly RequirementEvaluator _evaluator = new();
 
-    /// <summary>The scrolling box the rooms live in, so the chosen one can be brought into it.</summary>
-    private ElementReference _list;
+    /// <summary>The scrolling boxes, so the chosen tile in each can be brought into view.</summary>
+    private ElementReference _rooms;
+    private ElementReference _cities;
 
     private IJSObjectReference? _module;
 
     /// <summary>
-    /// Opens the list on the room the design already has.
+    /// Opens each list on what the design already has.
     /// </summary>
     /// <remarks>
-    /// Once only. Scrolling on every render would drag the list back under anyone reading further
+    /// Once only. Scrolling on every render would drag a list back under anyone reading further
     /// down it, and after the first render the reason to move is a click, which is already in view.
     /// </remarks>
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -97,10 +129,32 @@
             return;
         }
 
+        await Reveal(_rooms).ConfigureAwait(true);
+        await Reveal(_cities).ConfigureAwait(true);
+    }
+
+    /// <summary>
+    /// Scrolls a list to what is chosen in it.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Also on being unfolded, which is not the same as being rendered. A shut
+    /// <c>&lt;details&gt;</c> keeps its contents in the page but gives them no layout, so a list
+    /// inside one has no height to scroll and loses where it was scrolled to; without this, opening
+    /// a folded list showed its first tile rather than the one the empire has.
+    /// </para>
+    /// <para>
+    /// Called on being shut as well, since the event does not say which way it went. There is
+    /// nothing to do then and nothing happens: with no layout every measurement comes back zero and
+    /// the scroll it works out is zero too.
+    /// </para>
+    /// </remarks>
+    private async Task Reveal(ElementReference list)
+    {
         _module ??= await Js.InvokeAsync<IJSObjectReference>(
             "import", "./_content/Sem.Ui/sem.js").ConfigureAwait(true);
 
-        await _module.InvokeVoidAsync("revealSelected", _list, ".sem-thumb-option.selected")
+        await _module.InvokeVoidAsync("revealSelected", list, ".sem-thumb-option.selected")
             .ConfigureAwait(true);
     }
 
@@ -157,10 +211,63 @@
                     {
                         <img class="sem-thumb" src="@Session.Data.AssetUrl(room.Image)" alt="@room.Key" loading="lazy" />
                     }
-                    <span class="caption">@Localizer.Prettify(room.Key.Replace("_room", string.Empty, StringComparison.Ordinal))</span>
+                    <span class="caption">@RoomName(room.Key)</span>
                 </button>
             }
         </div>;
+
+    /// <summary>
+    /// One city set as a tile.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The scene above, small: the empire's own world with this city built on it, drawn by the same
+    /// <see cref="WorldBackdrop"/> and so band for band the thing that will appear in the window.
+    /// It was the game's flat city preview once, which is only the furthest of a city's bands — a
+    /// distant skyline covering between half a per cent and four per cent of its frame. Every tile
+    /// was the same smudge in a different shape.
+    /// </para>
+    /// <para>
+    /// The bands come to about two hundred and eighty kilobytes for a set and seven megabytes across
+    /// the twenty on offer. That is worth saying out loud and it is not much here: the room picker
+    /// in this same section is eighteen megabytes across its sixty-six rooms, the tiles load lazily,
+    /// and the world underneath is the same handful of pictures on every one of them.
+    /// </para>
+    /// </remarks>
+    private RenderFragment City(GraphicalCultureDefinition culture) =>
+        @<button type="button"
+                 class="sem-thumb-option @(culture.Key == Design.CityGraphicalCulture ? "selected" : null)"
+                 aria-pressed="@(culture.Key == Design.CityGraphicalCulture ? "true" : "false")"
+                 @onclick="() => Session.Edit(d => d.CityGraphicalCulture = culture.Key)">
+            <span class="sem-thumb">
+                @foreach (var layer in WorldBackdrop.Layers(Homeworld, culture, Level))
+                {
+                    <img src="@Session.Data.AssetUrl(layer)" alt="" loading="lazy" />
+                }
+            </span>
+
+            <span class="caption">@CityName(culture)</span>
+        </button>;
+
+    /// <summary>How built-up the world is drawn, which the scene and the tiles have to agree on.</summary>
+    private int Level => Session.Data.Database.Defines.CityPopLevel;
+
+    private static string RoomName(string? key) =>
+        key is { Length: > 0 }
+            ? Localizer.Prettify(key.Replace("_room", string.Empty, StringComparison.Ordinal))
+            : "Not set";
+
+    /// <summary>
+    /// What a city set is called, as the shipset picker names the same sets.
+    /// </summary>
+    /// <remarks>
+    /// The key's own words for all but two of them: the game has names for these, but nothing had
+    /// asked for one before, so the extraction's pruning of the text file dropped them.
+    /// </remarks>
+    private string CityName(GraphicalCultureDefinition? culture) =>
+        culture is null
+            ? Session.Localizer.Label("NONE", "None")
+            : Session.Localizer.Text(culture.NameKey, Localizer.Prettify(culture.Key));
 
     /// <summary>
     /// The sets that dress a city, which is not the same list as the ones that build ships.

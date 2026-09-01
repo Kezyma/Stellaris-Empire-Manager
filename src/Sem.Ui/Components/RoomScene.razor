@@ -95,16 +95,59 @@
     private const double FigureInset = 75;
 
     /// <summary>
-    /// How tall the figure is drawn against the room.
+    /// How far below the room's floor a figure's feet are buried.
     /// </summary>
     /// <remarks>
-    /// The game composites a character into a room at its own scale, but its portrait frame shows
-    /// 15.83 units of model where ours shows 19.65 — ours is taller so that nothing is cut off the
-    /// top. Drawn at the game's scale the figure would stand too small by exactly that ratio, so it
-    /// is drawn larger by exactly that ratio. What that puts above the room's ceiling is clipped,
-    /// as the game clips its own frame's top forty pixels.
+    /// The game's own <c>entity = { position = { x = 0 y = -20 } }</c> against a <c>center_down</c>
+    /// anchor, and negative means downwards here — settled the same way the world's own -23 was, by
+    /// measuring the artwork: the transparent window cut out of <c>default_room</c> begins 25 pixels
+    /// down a 340-pixel room, which is the 23 the downward reading predicts and not the -23 of the
+    /// other. Pinned to the floor instead, every species whose lowest ink stops above its own origin
+    /// hovered — of the portraits the designer offers, twenty-eight did, by three to fifteen pixels
+    /// of their own frame. Thirty-nine floated; four still do, and two of those — Rick the Cube and
+    /// the Shroud's own — float in the model itself and float in the game. The other two are lithoid
+    /// and miss the floor by three pixels of the room.
+    ///
+    /// It buys the ceiling twenty pixels as well, which is the difference between the room showing
+    /// 14.17 model units and the 15.0 the game shows. That alone takes the portraits whose heads
+    /// meet the top of the window from 133 to 72.
     /// </remarks>
-    private const double FigureHeight = FigureFrameHeight / RoomHeight * (19.65 / 15.833);
+    private const double FigureBury = 20;
+
+    /// <summary>
+    /// How many of the room's pixels one model unit is drawn at.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The game's own <c>scale = 24</c>, and it is right to the pixel: registering a screenshot of
+    /// the game's empire list against this room's artwork puts an aquatic ruler's head 314 of the
+    /// room's 340 pixels above the floor, and that species measures 13.1 units.
+    /// </para>
+    /// <para>
+    /// It crops the tall ones, and that is a decision rather than an oversight. The room shows 15
+    /// units above the buried floor, and 72 of the 391 portraits the designer offers are taller —
+    /// ordinary faces among them, an aquatic, a reptilian, two lithoids. The alternative was one
+    /// smaller scale for everybody, sized so the whole baked frame fits: 18.32 to the unit, which
+    /// crops nothing and stands a middling species at 63% of the room's height where the game
+    /// stands it at 90%. Drawn side by side, the smaller one reads as a figure that has stepped
+    /// back into the room. Fidelity of size won.
+    /// </para>
+    /// </remarks>
+    private const double PixelsPerUnit = 24;
+
+    /// <summary>
+    /// How tall a baked portrait is, in model units, measured from the ground it stands on.
+    /// </summary>
+    /// <remarks>
+    /// The bake's own frame, from <c>PortraitRenderer.VisibleHeight</c> — the tallest portrait there
+    /// is, measured across all of them by <c>sem portrait-bounds</c>. Repeated here because the two
+    /// projects do not share a constant; if the bake's frame ever changes, this has to change with
+    /// it or every figure in the room is drawn at the wrong size.
+    /// </remarks>
+    private const double PortraitUnits = 19.65;
+
+    /// <summary>How tall the figure is drawn, as a fraction of the room.</summary>
+    private const double FigureHeight = PortraitUnits * PixelsPerUnit / RoomHeight;
 
     /// <summary>
     /// Where the figure's middle goes.
@@ -166,53 +209,10 @@
     /// The world and the city interleaved, furthest from the viewer first.
     /// </summary>
     /// <remarks>
-    /// <para>
-    /// Sky, then a band of landscape, then a band of city, and so on — which is the order the game's
-    /// own layout lists them in, and the reason a city cannot simply be painted on top. A world with
-    /// fewer bands than the city has, or the other way about, keeps whatever is left over rather
-    /// than dropping it.
-    /// </para>
-    /// <para>
-    /// Only the city bands belonging to a world of <see cref="Development"/> are drawn. Painting all
-    /// of them put an ecumenopolis over every homeworld — the last band alone covers nearly half the
-    /// frame — and left nothing of the planet to see.
-    /// </para>
-    /// <para>
-    /// Paired by the band each picture is rather than by its place in the list, because two worlds
-    /// are missing a band: an arctic and a desert world have no second one, and matched by position
-    /// their hills came out in front of the towers they belong behind.
-    /// </para>
+    /// Worked out by <see cref="WorldBackdrop"/>, which the city picker's tiles use as well, so that
+    /// choosing a city is choosing from small pictures of what this will draw.
     /// </remarks>
-    private IEnumerable<string> Backdrop
-    {
-        get
-        {
-            if (World?.Sky is { Length: > 0 } sky)
-            {
-                yield return sky;
-            }
-
-            var scenery = World?.Scenery ?? [];
-            var city = City?.CityLayers ?? [];
-
-            var bands = Math.Max(
-                scenery.Count > 0 ? scenery.Max(s => s.Band) : 0,
-                city.Count > 0 ? city.Max(c => c.Band) : 0);
-
-            for (var band = 1; band <= bands; band++)
-            {
-                if (scenery.FirstOrDefault(s => s.Band == band) is { } hills)
-                {
-                    yield return hills.Image;
-                }
-
-                if (city.FirstOrDefault(c => c.Band == band) is { } towers && towers.AppearsAt(Level))
-                {
-                    yield return towers.Image;
-                }
-            }
-        }
-    }
+    private IEnumerable<string> Backdrop => WorldBackdrop.Layers(World, City, Level);
 
     /// <summary>Where the world hangs, as fractions of the room, so it scales with it.</summary>
     private string WorldStyle =>
@@ -250,7 +250,7 @@
 
     private string FigureStyle =>
         $"left:{Percent(FigureCentre / RoomWidth)};height:{Percent(FigureHeight)};" +
-        "transform:translateX(-50%)";
+        $"bottom:{Percent(-FigureBury / RoomHeight)};transform:translateX(-50%)";
 
     /// <summary>
     /// A fraction as a CSS percentage.

@@ -214,7 +214,7 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
     /// </summary>
     /// <remarks>
     /// This is what the frame has to cover. It is measured rather than assumed because the game's
-    /// own answer — a 380-pixel box at scale 24, with the figure standing 20 pixels up it — is the
+    /// own answer — a 380-pixel box at scale 24, with the figure sunk 20 pixels into it — is the
     /// size of a window the game then crops, not the size of the figures inside it. Portraits taller
     /// than it lose their heads and shorter ones float above the bottom edge.
     /// </remarks>

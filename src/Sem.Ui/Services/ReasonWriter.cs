@@ -42,6 +42,8 @@ public sealed class ReasonWriter(Localizer localizer)
             RuleReasons.Opposite => $"Excluded by {Names(subject)}",
             RuleReasons.NotEnoughPoints => "Not enough trait points",
             RuleReasons.NoPicksLeft => "No trait slots left",
+            RuleReasons.NoCivicSlotsLeft => "No civic slots left - release one first",
+            RuleReasons.OriginAlreadyChosen => "An origin is already chosen - clear it first",
             RuleReasons.MissingDlc => $"Needs {subject}",
             RuleReasons.NotEnoughEthicsPoints => "Not enough ethics points",
             RuleReasons.EthicGroupTaken => $"Conflicts with {Names(subject)}",

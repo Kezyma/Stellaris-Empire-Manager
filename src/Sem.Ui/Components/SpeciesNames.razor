@@ -96,7 +96,7 @@
     /// once and a label may only point at one field.
     /// </remarks>
     private string Field(string name) =>
-        ReferenceEquals(Species.Block, Design.Species.Block) ? $"species-{name}" : $"second-species-{name}";
+        Design.IsSecondary(Species) ? $"second-species-{name}" : $"species-{name}";
 
     /// <summary>
     /// The ready-made species the game would offer this empire.
@@ -247,7 +247,7 @@
             NameWriter.Species(Species, suggestion);
 
             // Only the founder species names the empire's homeworld.
-            if (!ReferenceEquals(Species.Block, d.Species.Block))
+            if (d.IsSecondary(Species))
             {
                 return;
             }

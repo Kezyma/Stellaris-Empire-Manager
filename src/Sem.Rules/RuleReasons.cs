@@ -51,6 +51,17 @@ public static class RuleReasons
     /// <summary>The species already has as many traits as it may.</summary>
     public const string NoPicksLeft = "sem.trait.picks";
 
+    /// <summary>The empire already has as many civics as it may.</summary>
+    /// <remarks>
+    /// Separate from <see cref="NoPicksLeft"/> because it is a different sentence to a reader, and
+    /// because a civic is not spent from a pool of points the way a trait is: there are two slots,
+    /// and a third choice used to take the place of the first without saying so.
+    /// </remarks>
+    public const string NoCivicSlotsLeft = "sem.civic.picks";
+
+    /// <summary>An origin is already chosen, and an empire has only the one.</summary>
+    public const string OriginAlreadyChosen = "sem.origin.chosen";
+
     /// <summary>A content pack is needed. Followed by its name.</summary>
     public const string MissingDlc = "sem.dlc";
 
@@ -62,6 +73,23 @@ public static class RuleReasons
 
     /// <summary>Gestalt consciousness cannot share an empire with any other ethic.</summary>
     public const string GestaltExclusive = "sem.ethic.gestalt";
+
+    /// <summary>
+    /// Whether a reason is about having run out of room, rather than about what the empire is.
+    /// </summary>
+    /// <remarks>
+    /// The distinction the interface is built on. What the game forbids an empire is a standing
+    /// objection and reads as one; a full slate is undone by letting something go, and saying so in
+    /// the same grey as the other would tell a player their whole list had gone unavailable at the
+    /// moment they were deciding what to release. These are also the ones already counted out on
+    /// the bars above the list, which is why the trait picker declines to say them twice.
+    /// </remarks>
+    public static bool IsBudget(string reason) =>
+        Split(reason).Kind is NotEnoughPoints
+            or NoPicksLeft
+            or NotEnoughEthicsPoints
+            or NoCivicSlotsLeft
+            or OriginAlreadyChosen;
 
     /// <summary>Builds a reason that refers to something, such as the trait that excludes it.</summary>
     public static string For(string reason, string subject) => $"{reason}{Separator}{subject}";

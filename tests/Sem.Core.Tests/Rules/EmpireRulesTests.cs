@@ -521,6 +521,67 @@ public sealed class EmpireRulesTests
         Assert.True(Single(options, "civic_beacon_of_liberty").Visible);
     }
 
+    /// <summary>
+    /// A full slate of civics closes the rest off rather than making room among them.
+    /// </summary>
+    /// <remarks>
+    /// Choosing a third civic used to remove whichever had been chosen first, silently. The rules
+    /// say the slate is full instead, and the player releases one deliberately.
+    /// </remarks>
+    [Fact]
+    public void CivicsAreClosedOffOnceTheSlotsAreFull()
+    {
+        var design = RulesTestData.ValidEmpire();
+        var options = Rules.GetCivicOptions(Context(design));
+
+        var held = Single(options, "civic_beacon_of_liberty");
+        var other = Single(options, "civic_natural_design");
+
+        // The ones it has stay open, or there would be no way to let one go.
+        Assert.True(held.Enabled);
+
+        Assert.False(other.Enabled);
+        Assert.Contains(RuleReasons.NoCivicSlotsLeft, other.Reasons);
+    }
+
+    [Fact]
+    public void CivicsAreOpenWhileASlotIsFree()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.SetCivics(["civic_beacon_of_liberty"]);
+
+        Assert.True(Single(Rules.GetCivicOptions(Context(design)), "civic_natural_design").Enabled);
+    }
+
+    /// <summary>
+    /// An empire has one origin, so the others are shut while it holds one.
+    /// </summary>
+    /// <remarks>
+    /// Changing origin moves the homeworld and removes the second species, which is too much to do
+    /// off a stray press. Clearing the one it has is the first of two deliberate steps.
+    /// </remarks>
+    [Fact]
+    public void OriginsAreClosedOffWhileOneIsHeld()
+    {
+        var design = RulesTestData.ValidEmpire();
+        var options = Rules.GetOriginOptions(Context(design));
+
+        Assert.True(Single(options, "origin_default").Enabled);
+
+        var other = Single(options, "origin_syncretic_evolution");
+        Assert.False(other.Enabled);
+        Assert.Contains(RuleReasons.OriginAlreadyChosen, other.Reasons);
+    }
+
+    [Fact]
+    public void OriginsAreOpenWhenTheEmpireHasNone()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.Origin = null;
+
+        Assert.True(Single(Rules.GetOriginOptions(Context(design)), "origin_syncretic_evolution").Enabled);
+    }
+
     [Fact]
     public void TheGovernmentIsDerivedFromTheHighestWeightedMatch()
     {

@@ -5,99 +5,134 @@
     Hovering an icon shows everything about it. With nothing hovered the panel falls back to what is
     currently selected, so the detail is never blank and never moves the layout when the pointer
     passes over.
+
+    The longer lists can be drawn as named rows instead. Eighty-one civics as unlabelled symbols is
+    a memory test, and the detail panel stays where it is either way, so switching does not move the
+    thing being read.
 *@
 
 @using Sem.GameData
 
-<div class="sem-grid-and-detail" style="@RowStyle">
-    <div class="sem-grid-column">
-        <div class="sem-icon-grid">
-            @foreach (var option in Options)
+<div class="sem-picker" style="@RowStyle">
+    <div class="sem-grid-and-detail">
+        <div class="sem-grid-column">
+            @if (AsList)
             {
                 @*
-                    Whether an option is taken is said as well as shown. The class draws a border,
-                    which is nothing at all to a reader who cannot see it, and these grids are the
-                    whole of choosing an ethic, an authority or a civic.
+                    What is taken is held at the top while the rest scrolls under it, so the answer to
+                    "what have I got" does not depend on where the list happens to be scrolled. One
+                    sticky box around them rather than a sticky row each: rows stacked that way need
+                    each one offset by the height of those above it, and that height is not the same
+                    under a finger as under a pointer.
                 *@
-                <button type="button"
-                        class="@ClassFor(option)"
-                        aria-pressed="@(option.Selected ? "true" : "false")"
-                        disabled="@(!option.Enabled && !option.Selected)"
-                        title="@option.Name"
-                        @onmouseenter="() => _hovered = option.Key"
-                        @onfocus="() => _hovered = option.Key"
-                        @onmouseleave="() => Unhover(option.Key)"
-                        @onblur="() => Unhover(option.Key)"
-                        @onclick="() => OnSelect.InvokeAsync(option.Key)">
-                    @if (option.Icon is { Length: > 0 } icon)
+                <div class="sem-option-list" role="group" aria-label="@Named">
+                    @if (Held.Count > 0)
                     {
-                        <img src="@Session.Data.AssetUrl(icon)" alt="@option.Name" loading="lazy">
-                    }
-                    else
-                    {
-                        <span class="initials">@Initials(option.Name)</span>
+                        <div class="stuck">
+                            @foreach (var option in Held)
+                            {
+                                @Row(option)
+                            }
+                        </div>
                     }
 
-                    @if (option.Cost is { } cost && cost != 0)
+                    @foreach (var option in Rest)
                     {
-                        <span class="cost @(cost < 0 ? "gain" : string.Empty)">@(cost > 0 ? "+" : string.Empty)@cost</span>
+                        @Row(option)
                     }
-                </button>
+                </div>
+            }
+            else
+            {
+                <div class="sem-icon-grid">
+                    @foreach (var option in Options)
+                    {
+                        @*
+                            Whether an option is taken is said as well as shown. The class draws a
+                            border, which is nothing at all to a reader who cannot see it, and these
+                            grids are the whole of choosing an ethic, an authority or a civic.
+                        *@
+                        <button type="button"
+                                class="@ClassFor(option, "sem-icon-option")"
+                                aria-pressed="@(option.Selected ? "true" : "false")"
+                                aria-disabled="@(Blocked(option) ? "true" : null)"
+                                title="@option.Name"
+                                @onmouseenter="() => _hovered = option.Key"
+                                @onfocus="() => _hovered = option.Key"
+                                @onmouseleave="() => Unhover(option.Key)"
+                                @onblur="() => Unhover(option.Key)"
+                                @onclick="() => Choose(option)">
+                            @if (option.Icon is { Length: > 0 } icon)
+                            {
+                                <img src="@Session.Data.AssetUrl(icon)" alt="@option.Name" loading="lazy">
+                            }
+                            else
+                            {
+                                <span class="initials">@Initials(option.Name)</span>
+                            }
+
+                            @if (option.Cost is { } cost && cost != 0)
+                            {
+                                <span class="cost @(cost < 0 ? "gain" : string.Empty)">@(cost > 0 ? "+" : string.Empty)@cost</span>
+                            }
+                        </button>
+                    }
+                </div>
+            }
+
+            @*
+                Something that belongs beside the choices without being one of them — the nomad toggle
+                beside the authorities, which the game also keeps in a container of its own rather than
+                as a cell in its grid, so that it does not read as one more authority.
+            *@
+            @if (Aside is not null)
+            {
+                <div class="sem-grid-aside">@Aside</div>
             }
         </div>
 
-        @*
-            Something that belongs beside the choices without being one of them — the nomad toggle
-            beside the authorities, which the game also keeps in a container of its own rather than
-            as a cell in its grid, so that it does not read as one more authority.
-        *@
-        @if (Aside is not null)
-        {
-            <div class="sem-grid-aside">@Aside</div>
-        }
-    </div>
-
-    <div class="sem-detail">
-        @if (Shown is { } shown)
-        {
-            @*
-                Some options carry a picture as well as an icon — an origin has a whole scene, which
-                is most of how the game sells it. Above the words and outside what scrolls: it is
-                what the option looks like, and scrolling past it to read about it loses the thing
-                being read about.
-            *@
-            @if (shown.Picture is { Length: > 0 } picture)
+        <div class="sem-detail">
+            @if (Shown is { } shown)
             {
-                <img class="sem-detail-picture" src="@Session.Data.AssetUrl(picture)" alt="" loading="lazy">
+                @*
+                    Some options carry a picture as well as an icon — an origin has a whole scene, which
+                    is most of how the game sells it. Above the words and outside what scrolls: it is
+                    what the option looks like, and scrolling past it to read about it loses the thing
+                    being read about.
+                *@
+                @if (shown.Picture is { Length: > 0 } picture)
+                {
+                    <img class="sem-detail-picture" src="@Session.Data.AssetUrl(picture)" alt="" loading="lazy">
+                }
+
+                <div class="body">
+                    <h4>@shown.Name</h4>
+
+                    @if (shown.Description is { Length: > 0 } description)
+                    {
+                        <div class="sem-detail-lore">@((MarkupString)description)</div>
+                    }
+
+                    <EffectsList Effects="@shown.Effects" />
+
+                    @if (!shown.Enabled && shown.Reasons.Count > 0)
+                    {
+                        <ul class="sem-blocked">
+                            @foreach (var reason in shown.Reasons)
+                            {
+                                <li>@reason</li>
+                            }
+                        </ul>
+                    }
+                </div>
             }
-
-            <div class="body">
-                <h4>@shown.Name</h4>
-
-                @if (shown.Description is { Length: > 0 } description)
-                {
-                    <div class="sem-detail-lore">@((MarkupString)description)</div>
-                }
-
-                <EffectsList Effects="@shown.Effects" />
-
-                @if (!shown.Enabled && shown.Reasons.Count > 0)
-                {
-                    <ul class="sem-blocked">
-                        @foreach (var reason in shown.Reasons)
-                        {
-                            <li>@reason</li>
-                        }
-                    </ul>
-                }
-            </div>
-        }
-        @*
-            No else. Shown falls back as far as the first option, so the only way here is a grid with
-            no options at all, and an empty box is the honest picture of that. There had been a
-            sentence saying to hover an option — the same sentence, differently worded, in seven
-            other grids — which told a player who had already hovered one what they had just done.
-        *@
+            @*
+                No else. Shown falls back as far as the first option, so the only way here is a grid with
+                no options at all, and an empty box is the honest picture of that. There had been a
+                sentence saying to hover an option — the same sentence, differently worded, in seven
+                other grids — which told a player who had already hovered one what they had just done.
+            *@
+        </div>
     </div>
 </div>
 
@@ -114,6 +149,22 @@
     /// <summary>Called with the key of the icon clicked.</summary>
     [Parameter]
     public EventCallback<string> OnSelect { get; set; }
+
+    /// <summary>
+    /// Whether to draw the choices as named rows rather than as a grid of symbols.
+    /// </summary>
+    /// <remarks>
+    /// Given rather than owned, because the control that changes it belongs to the heading above
+    /// this and a component cannot render into a place above its own root. Left false by the short
+    /// grids: eight authorities or eleven worlds read perfectly well as symbols, and a control for
+    /// rearranging eleven things is more furniture than it saves.
+    /// </remarks>
+    [Parameter]
+    public bool AsList { get; set; }
+
+    /// <summary>What the list of rows is called out loud, since it has no visible heading.</summary>
+    [Parameter]
+    public string? Label { get; set; }
 
     /// <summary>
     /// The smallest an icon may be drawn. The row length follows from it and the space available,
@@ -151,6 +202,26 @@
     private string RowStyle =>
         $"--sem-icon-size:{Math.Max(20, IconSize)}px";
 
+    private string Named => Label is { Length: > 0 } label ? label : "Choices";
+
+    /// <summary>What the empire has, held at the top of the list.</summary>
+    private IReadOnlyList<GridOption> Held => [.. Options.Where(o => o.Selected)];
+
+    /// <summary>
+    /// Everything else, with what the empire's own shape rules out at the bottom.
+    /// </summary>
+    /// <remarks>
+    /// Sunk on being ruled out, never on being unaffordable, which is the same rule the trait list
+    /// follows. Once two civics are held every other civic is out of room, so sorting on that would
+    /// reorder eighty-one rows at the moment the player chose their second — while the forty a
+    /// gestalt or a corporation can never have are out for good and belong past the ones it can.
+    /// </remarks>
+    private IReadOnlyList<GridOption> Rest =>
+        [.. Options.Where(o => !o.Selected).OrderBy(Ruled)];
+
+    /// <summary>Blocked by what the empire is, rather than by there being no room left.</summary>
+    private static bool Ruled(GridOption option) => Blocked(option) && !option.AtLimit;
+
     private void Unhover(string key)
     {
         if (_hovered == key)
@@ -159,22 +230,85 @@
         }
     }
 
-    private string ClassFor(GridOption option)
+    /// <summary>Whether an option cannot be taken as things stand.</summary>
+    /// <remarks>
+    /// One that is held is never blocked, whatever the rules make of it: an empire loaded from a
+    /// file may hold something it could not choose today, and the way out of that is to be able to
+    /// put it down.
+    /// </remarks>
+    private static bool Blocked(GridOption option) => !option.Enabled && !option.Selected;
+
+    /// <summary>
+    /// Refuses the click rather than the button.
+    /// </summary>
+    /// <remarks>
+    /// A disabled button is not sent mouse events, so it cannot be hovered, focused or given a
+    /// tooltip — and it is exactly the blocked options that have something to explain. The panel
+    /// beside the grid has held their reasons all along with no way to reach them. Marked
+    /// unavailable to a reader rather than made inert, and the press stopped here instead, which is
+    /// how the trait list has always done it.
+    /// </remarks>
+    private void Choose(GridOption option)
     {
-        var classes = new List<string> { "sem-icon-option" };
+        // A finger has no hover, so a tap is also how the panel is asked about something. Set for
+        // a blocked option too — being told why is the only thing left to do with one.
+        _hovered = option.Key;
+
+        if (!Blocked(option))
+        {
+            _ = OnSelect.InvokeAsync(option.Key);
+        }
+    }
+
+    private static string ClassFor(GridOption option, string baseClass)
+    {
+        var classes = new List<string> { baseClass };
 
         if (option.Selected)
         {
             classes.Add("selected");
         }
-
-        if (!option.Enabled && !option.Selected)
+        else if (option.AtLimit)
+        {
+            // Kept apart from blocked: nothing is wrong with this choice, there is simply no room
+            // for it. At the blocked treatment, choosing a second civic put four fifths of the
+            // grid at a third of its brightness, which reads as the page having gone wrong.
+            classes.Add("at-limit");
+        }
+        else if (!option.Enabled)
         {
             classes.Add("blocked");
         }
 
         return string.Join(' ', classes);
     }
+
+    /// <summary>One option as a named row, for the list.</summary>
+    private RenderFragment Row(GridOption option) =>
+        @<button type="button"
+                 class="@ClassFor(option, "sem-trait-row")"
+                 aria-pressed="@(option.Selected ? "true" : "false")"
+                 aria-disabled="@(Blocked(option) ? "true" : null)"
+                 title="@option.Name"
+                 @onmouseenter="() => _hovered = option.Key"
+                 @onfocus="() => _hovered = option.Key"
+                 @onclick="() => Choose(option)">
+            @if (option.Icon is { Length: > 0 } icon)
+            {
+                <img src="@Session.Data.AssetUrl(icon)" alt="" loading="lazy">
+            }
+            else
+            {
+                <span class="no-icon" aria-hidden="true"></span>
+            }
+
+            <span class="name">@option.Name</span>
+
+            @if (option.Cost is { } cost && cost != 0)
+            {
+                <span class="cost @(cost < 0 ? "gain" : string.Empty)">@(cost > 0 ? "+" : string.Empty)@cost</span>
+            }
+        </button>;
 
     /// <summary>A stand-in for an option the installation has no picture for.</summary>
     private static string Initials(string name)
@@ -214,6 +348,17 @@
 
         /// <summary>Whether it may be chosen.</summary>
         public bool Enabled { get; init; } = true;
+
+        /// <summary>
+        /// Whether the only thing in the way is that there is no room left for it.
+        /// </summary>
+        /// <remarks>
+        /// Drawn differently from something the empire may not have at all, and worth the extra
+        /// field because of how many options it applies to at once: a second civic puts seventy-nine
+        /// others out of reach, and at the treatment for "not for this empire" the whole grid went
+        /// dim at the moment the player was deciding which one to release.
+        /// </remarks>
+        public bool AtLimit { get; init; }
 
         /// <summary>Why it may not be, in the game's own words.</summary>
         public IReadOnlyList<string> Reasons { get; init; } = [];

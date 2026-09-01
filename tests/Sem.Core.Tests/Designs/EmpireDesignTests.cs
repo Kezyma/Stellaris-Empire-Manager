@@ -222,6 +222,30 @@ public sealed class EmpireDesignTests
     }
 
     /// <summary>
+    /// Clearing a field a design has not got leaves the design alone.
+    /// </summary>
+    /// <remarks>
+    /// A removal used to reach for the block through the property that makes one, so an empire with
+    /// no species block — an older file, a mod's, a hand-edited one — gained an empty
+    /// <c>species={}</c> from having a field taken out of it that was never there. Clearing a
+    /// biography did it, and so did setting an empty list of traits.
+    /// </remarks>
+    [Fact]
+    public void ClearingWhatIsNotThereWritesNothing()
+    {
+        const string bare = "\"Bare\"=\r\n{\r\n\tkey=\"Bare\"\r\n}\r\n";
+
+        var file = EmpireDesignsFile.LoadText(bare);
+        var design = file.Designs[0];
+
+        design.Species.Biography = null;
+        design.Species.SetTraits([]);
+        design.Species.Portrait = null;
+
+        Assert.Equal(bare, file.Document.ToText());
+    }
+
+    /// <summary>
     /// The ruler's ascended form, which the designer can now set.
     /// </summary>
     /// <remarks>

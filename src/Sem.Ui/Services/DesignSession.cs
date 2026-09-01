@@ -46,11 +46,16 @@ public sealed class DesignSession
     /// data was read. True on the web, where the installation the data came from is mine and not the
     /// player's; false on the desktop, where it is theirs.
     /// </param>
-    public DesignSession(GameData data, bool assumeAllPacks = false)
+    /// <param name="preferences">
+    /// What the player has settled on about how the designer is arranged. Optional, because a
+    /// session with nowhere to remember them still works — it simply opens with the defaults.
+    /// </param>
+    public DesignSession(GameData data, bool assumeAllPacks = false, Preferences? preferences = null)
     {
         ArgumentNullException.ThrowIfNull(data);
 
         Data = data;
+        Preferences = preferences ?? new Preferences();
         Localizer = new Localizer(
             data.Localisation,
             data.Database.TextIcons,
@@ -102,6 +107,9 @@ public sealed class DesignSession
 
     /// <summary>The rules being enforced.</summary>
     public EmpireRules Rules { get; }
+
+    /// <summary>What the player has settled on about how the designer is arranged.</summary>
+    public Preferences Preferences { get; }
 
     /// <summary>The loaded designs file, or null before one is opened.</summary>
     public EmpireDesignsFile? File { get; private set; }
@@ -383,16 +391,17 @@ public sealed class DesignSession
     /// </summary>
     /// <remarks>
     /// <para>
-    /// An origin may call for a second, and every control that edits a species — its traits, its
-    /// class, its portrait, its names — was judging whichever it was given by the founders' context.
-    /// The visible symptom was the trait budget: it counted the founders' traits, so adding to the
-    /// second species moved no counter and exceeded no limit.
+    /// An origin may call for a second, and it is judged by different rules from the founders'.
+    /// This exists because every control that edits a species — its traits, its class, its portrait,
+    /// its names — holds whichever species it was handed and has to ask which of the two it has;
+    /// before there was anywhere to ask, they all used the empire's own context, and the trait
+    /// budget counted the founders' traits however many the second species was given.
     /// </para>
     /// <para>
-    /// Told apart by the block each one is a view of, not by the view. A view is built fresh every
-    /// time the property is read, so comparing two of them is comparing two objects that are never
-    /// the same object — the test was false for the founders as surely as for anybody else, and
-    /// every species in the application was being judged as the second one.
+    /// Asked of the design, which answers from the second species rather than the founders. Two
+    /// views are never the same object even when they are views of one block, so this cannot be a
+    /// comparison of views; and it cannot reach for the founders' block either, because a design
+    /// that has not got one would gain an empty one from being asked, on every render.
     /// </para>
     /// </remarks>
     public DesignContext? ContextFor(SpeciesDesign? species)
@@ -402,9 +411,9 @@ public sealed class DesignSession
             return Context;
         }
 
-        return Current is { } design && ReferenceEquals(species.Block, design.Species.Block)
-            ? context
-            : context.ForSpecies(species, secondary: true);
+        return Current is { } design && design.IsSecondary(species)
+            ? context.ForSpecies(species, secondary: true)
+            : context;
     }
 
     /// <summary>The report for any empire in the file, for showing status in a list.</summary>

@@ -1,3 +1,7 @@
+@using Microsoft.JSInterop
+@inject IJSRuntime Js
+@implements IAsyncDisposable
+
 @*
     The empire's flag: its colours, the pattern behind them, and the emblem over them.
 
@@ -47,49 +51,70 @@
     shown — each is three shapes packed into a red, a green and a blue channel and reads as coloured
     wedges — so each tile is the flag that pattern would make.
 *@
-<label>@Session.Localizer.Label("EMBLEM_BACKGROUND_PATTERN", "Patterns")</label>
+<details class="sem-fold" open>
+    <summary>
+        <span class="chevron" aria-hidden="true">▸</span>
+        <span class="title">@Session.Localizer.Label("EMBLEM_BACKGROUND_PATTERN", "Patterns")</span>
+        <span class="state">@PatternName</span>
+    </summary>
 
-<div class="sem-thumbs sem-patterns">
-    @foreach (var file in BackgroundFiles)
-    {
-        <button type="button"
-                class="sem-thumb-option @(file == Design.Flag.Background.File ? "selected" : null)"
-                aria-pressed="@(file == Design.Flag.Background.File ? "true" : "false")"
-                title="@System.IO.Path.GetFileNameWithoutExtension(file)"
-                @onclick="() => SetBackground(file)">
-            <FlagPreview Flag="@Design.Flag" BackgroundFile="@file" HideEmblem="true" />
-        </button>
-    }
-</div>
+    <div class="sem-scroll-list">
+        <div class="sem-thumbs sem-patterns">
+            @foreach (var file in BackgroundFiles)
+            {
+                <button type="button"
+                        class="sem-thumb-option @(file == Design.Flag.Background.File ? "selected" : null)"
+                        aria-pressed="@(file == Design.Flag.Background.File ? "true" : "false")"
+                        title="@System.IO.Path.GetFileNameWithoutExtension(file)"
+                        @onclick="() => SetBackground(file)">
+                    <FlagPreview Flag="@Design.Flag" BackgroundFile="@file" HideEmblem="true" />
+                </button>
+            }
+        </div>
+    </div>
+</details>
 
-<div class="sem-field">
-    <label for="emblem-category">@Session.Localizer.Label("CHOOSE_SYMBOL", "Choose Symbol")</label>
-    <select id="emblem-category" @onchange="e => _emblemCategory = e.Value?.ToString() ?? _emblemCategory">
+@*
+    Every emblem the game has, in one box, with each category named where it begins.
+
+    They used to come a category at a time from a dropdown, which is how the game's own editor does
+    it — but the game has a panel the size of the screen and this has a column of one. Picking an
+    emblem is looking for one, and eighteen categories behind a control that shows one at a time is
+    eighteen things to open before you have seen what there is. Two hundred and eighty-three tiles is
+    a great deal to put on a page and nothing at all to put in a box that scrolls.
+*@
+<details class="sem-fold" open @ontoggle="Reveal">
+    <summary>
+        <span class="chevron" aria-hidden="true">▸</span>
+        <span class="title">@Session.Localizer.Label("CHOOSE_SYMBOL", "Choose Symbol")</span>
+        <span class="state">@EmblemName</span>
+    </summary>
+
+    <div class="sem-scroll-list" @ref="_emblems">
         @foreach (var category in EmblemCategories)
         {
-            <option value="@category.Key" selected="@(category.Key == EmblemCategory)">
-                @Session.Localizer.Text(category.NameKey, Localizer.Prettify(category.Key))
-            </option>
+            <h5 class="sem-subhead">@Session.Localizer.Text(category.NameKey, Localizer.Prettify(category.Key))</h5>
+
+            <div class="sem-thumbs emblems">
+                @foreach (var file in category.Files)
+                {
+                    var name = System.IO.Path.GetFileNameWithoutExtension(file);
+                    var chosen = file == Design.Flag.Icon.File && category.Key == Design.Flag.Icon.Category;
+
+                    <button type="button"
+                            class="sem-thumb-option @(chosen ? "selected" : null)"
+                            aria-pressed="@(chosen ? "true" : "false")"
+                            title="@name"
+                            @onclick="() => SetEmblem(category.Key, file)">
+                        <img class="sem-thumb"
+                             src="@Session.Data.AssetUrl($"flags/{category.Key}/{name}.png")"
+                             alt="@name" loading="lazy" />
+                    </button>
+                }
+            </div>
         }
-    </select>
-</div>
-
-<div class="sem-thumbs emblems">
-    @foreach (var file in EmblemFiles)
-    {
-        var name = System.IO.Path.GetFileNameWithoutExtension(file);
-
-        <button type="button"
-                class="sem-thumb-option @(file == Design.Flag.Icon.File && EmblemCategory == Design.Flag.Icon.Category ? "selected" : null)"
-                aria-pressed="@(file == Design.Flag.Icon.File && EmblemCategory == Design.Flag.Icon.Category ? "true" : "false")"
-                title="@name"
-                @onclick="() => SetEmblem(file)">
-            <img class="sem-thumb"
-                 src="@Session.Data.AssetUrl($"flags/{EmblemCategory}/{name}.png")"
-                 alt="@name" loading="lazy" />
-        </button>
-    }
-</div>
+    </div>
+</details>
 
 @code {
     [CascadingParameter]
@@ -97,16 +122,68 @@
 
     private EmpireDesign Design => Session.Current!;
 
-    private string? _emblemCategory;
+    /// <summary>The scrolling box of emblems, so the chosen one can be brought into it.</summary>
+    private ElementReference _emblems;
 
-    private string EmblemCategory =>
-        _emblemCategory ?? Design.Flag.Icon.Category ?? EmblemCategories.FirstOrDefault()?.Key ?? "pointy";
+    private IJSObjectReference? _module;
+
+    /// <summary>
+    /// Opens the emblems on the one the design already has, and again whenever the box is unfolded.
+    /// </summary>
+    /// <remarks>
+    /// Two hundred and eighty-three of them under eighteen headings: without this the box opens on
+    /// the first category every time, and the emblem the empire actually wears is somewhere below.
+    /// A shut fold has no layout, so the call does nothing when it is being shut, which is what is
+    /// wanted — the event does not say which way it went.
+    /// </remarks>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Reveal().ConfigureAwait(true);
+        }
+    }
+
+    private async Task Reveal()
+    {
+        _module ??= await Js.InvokeAsync<IJSObjectReference>(
+            "import", "./_content/Sem.Ui/sem.js").ConfigureAwait(true);
+
+        await _module.InvokeVoidAsync("revealSelected", _emblems, ".sem-thumb-option.selected")
+            .ConfigureAwait(true);
+    }
+
+    /// <summary>Releases the script reference when the section closes, as the room picker does.</summary>
+    public async ValueTask DisposeAsync()
+    {
+        if (_module is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await _module.DisposeAsync().ConfigureAwait(false);
+        }
+        catch (JSDisconnectedException)
+        {
+            // The page went away first; there is nothing left to release.
+        }
+    }
 
     private IReadOnlyList<FlagCategoryDefinition> EmblemCategories =>
         [.. Session.Data.Database.FlagCategories.Where(c => !c.IsBackground)];
 
-    private IReadOnlyList<string> EmblemFiles =>
-        Session.Data.Database.FlagCategories.FirstOrDefault(c => c.Key == EmblemCategory)?.Files ?? [];
+    /// <summary>What a folded box says is chosen inside it.</summary>
+    private string EmblemName =>
+        Design.Flag.Icon.File is { Length: > 0 } file
+            ? Localizer.Prettify(System.IO.Path.GetFileNameWithoutExtension(file))
+            : "Not set";
+
+    private string PatternName =>
+        Design.Flag.Background.File is { Length: > 0 } file
+            ? Localizer.Prettify(System.IO.Path.GetFileNameWithoutExtension(file))
+            : "Not set";
 
     private IReadOnlyList<string> BackgroundFiles =>
         Session.Data.Database.FlagCategories.FirstOrDefault(c => c.IsBackground)?.Files ?? [];
@@ -181,14 +258,10 @@
         });
     }
 
-    private void SetEmblem(string file)
-    {
-        var category = EmblemCategory;
-
+    private void SetEmblem(string category, string file) =>
         Session.Edit(d =>
         {
             d.Flag.Icon.Category = category;
             d.Flag.Icon.File = file;
         });
-    }
 }

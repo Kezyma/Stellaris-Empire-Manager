@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Windows;
 using Microsoft.AspNetCore.Components.WebView.Wpf;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.JSInterop;
 using Microsoft.Web.WebView2.Core;
 using Sem.Io;
 using Sem.Ui.Services;
@@ -102,6 +103,11 @@ public partial class MainWindow : Window
 
         services.AddScoped<SessionHost>();
         services.AddScoped(_ => CreateFileExchange());
+
+        // Which way round the pickers are drawn is kept here too. The reason this host keeps no
+        // copy of the designs — that the player's own file is the one that counts, and a second
+        // copy would be a rival to it — says nothing about a setting.
+        services.AddScoped(s => new Preferences(s.GetRequiredService<IJSRuntime>()));
 
         // Asked by the header before it starts an empire or opens a file, answered by the designer.
         services.AddScoped<UnsavedWorkGuard>();

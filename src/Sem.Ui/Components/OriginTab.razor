@@ -5,13 +5,19 @@
 
 <div class="sem-subsections">
     <section>
-        <h4>@Session.Localizer.Label("ORIGIN", "Origin")</h4>
+        <div class="heading">
+            <h4>@Session.Localizer.Label("ORIGIN", "Origin")</h4>
+
+            <ViewToggle ViewKey="Origins" List="@_asList" ListChanged="v => _asList = v" />
+        </div>
 
         @*
             Taller than the rest, because these are the only choices whose detail carries a picture,
             and the game sells an origin on that picture as much as on what it does.
         *@
         <OptionGrid Options="@Origins"
+                    AsList="@_asList"
+                    Label="Origins"
                     OnSelect="Choose" />
 
         @*
@@ -40,6 +46,9 @@
 </div>
 
 @code {
+    /// <summary>Which way the origins are drawn. The toggle owns the remembering; this mirrors it.</summary>
+    private bool _asList = true;
+
     [CascadingParameter]
     public required DesignSession Session { get; set; }
 
@@ -70,6 +79,30 @@
 
     private void Choose(string key)
     {
+        // An empire has one origin, so the press that would have swapped it clears it instead, and
+        // choosing the next one is a second press. What an origin does when it changes is too much
+        // to do off a stray click: it takes the homeworld with it, and it removes the second
+        // species along with whatever the player had made of it. The rules mark the others
+        // unavailable while one is held; this is the guard for a key that arrives some other way.
+        if (Design.Origin is { Length: > 0 } held)
+        {
+            if (!string.Equals(held, key, StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            Session.Edit(d =>
+            {
+                d.Origin = null;
+
+                // No origin asks for a second species, and the homeworld the old one imposed is
+                // left as it stands: there is nothing recorded to put back in its place.
+                d.RemoveSecondarySpecies();
+            });
+
+            return;
+        }
+
         Session.Edit(d =>
         {
             d.Origin = key;

@@ -68,4 +68,26 @@ public sealed class SpeciesContextTests
 
         Assert.True(session.ContextFor(second)!.IsSecondarySpecies);
     }
+
+    /// <summary>
+    /// Asking which species this is does not write one into the file.
+    /// </summary>
+    /// <remarks>
+    /// The question used to be answered by comparing the species' block against the founders', and
+    /// reading the founders' block makes one where a design has not got one. Three controls ask it,
+    /// on every render, so a design missing the field — an older file, a mod's, a hand-edited one —
+    /// gained an empty <c>species = { }</c> from being looked at, and a file nobody touched no
+    /// longer came back as it went in.
+    /// </remarks>
+    [Fact]
+    public void AskingAboutASpeciesWritesNothing()
+    {
+        var session = Session();
+        var before = session.File!.Document.ToText();
+
+        session.ContextFor(session.Current!.Species);
+
+        Assert.Equal(before, session.File.Document.ToText());
+        Assert.DoesNotContain("species", before, StringComparison.Ordinal);
+    }
 }

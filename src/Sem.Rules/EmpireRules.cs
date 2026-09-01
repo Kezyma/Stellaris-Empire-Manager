@@ -560,23 +560,69 @@ public sealed class EmpireRules(GameDatabase database)
             a => a.Possible,
             context);
 
-    /// <summary>The origins the player may choose from.</summary>
-    public IReadOnlyList<OptionState> GetOriginOptions(DesignContext context) =>
-        Options(
+    /// <summary>
+    /// The origins the player may choose from, with the rest closed off once one is chosen.
+    /// </summary>
+    /// <remarks>
+    /// An empire has one origin, and choosing another used to swap it on a single press. That is a
+    /// great deal to do quietly: an origin sets the homeworld and may add a second species, so
+    /// landing on the wrong icon discarded a species the player had dressed and named. Held shut
+    /// instead, and cleared deliberately — which the design allows, and which the validation already
+    /// has words for.
+    /// </remarks>
+    public IReadOnlyList<OptionState> GetOriginOptions(DesignContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        var options = Options(
             _database.Civics.Where(c => c.IsOrigin),
             c => c.Key,
             c => Combine(c.Playable, c.Potential),
             c => c.Possible,
             context);
 
-    /// <summary>The civics the player may choose from.</summary>
-    public IReadOnlyList<OptionState> GetCivicOptions(DesignContext context) =>
-        Options(
+        return context.Origin is not { Length: > 0 } chosen
+            ? options
+            : [.. options.Select(o => string.Equals(o.Key, chosen, StringComparison.Ordinal)
+                ? o
+                : Blocked(o, RuleReasons.OriginAlreadyChosen))];
+    }
+
+    /// <summary>
+    /// The civics the player may choose from, with the rest closed off once the slots are full.
+    /// </summary>
+    /// <remarks>
+    /// The allowance is two, and a third choice used to take the place of the oldest. Nothing said
+    /// so, so a press meant to add a civic removed one — and the one it removed was whichever had
+    /// been chosen first, which is not a thing anybody keeps track of.
+    /// </remarks>
+    public IReadOnlyList<OptionState> GetCivicOptions(DesignContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        var options = Options(
             _database.Civics.Where(c => !c.IsOrigin),
             c => c.Key,
             c => Combine(c.Playable, c.Potential),
             c => c.Possible,
             context);
+
+        return context.Civics.Count < _database.Defines.CivicPoints
+            ? options
+            : [.. options.Select(o => context.Civics.Contains(o.Key)
+                ? o
+                : Blocked(o, RuleReasons.NoCivicSlotsLeft))];
+    }
+
+    /// <summary>
+    /// Closes an option off for a reason of the designer's rather than the game's.
+    /// </summary>
+    /// <remarks>
+    /// The reason is added to whatever the game already had to say, and put last: what the empire
+    /// is may be a permanent objection, while being full is undone by letting something go.
+    /// </remarks>
+    private static OptionState Blocked(OptionState option, string reason) =>
+        option with { Enabled = false, Reasons = [.. option.Reasons, reason] };
 
     /// <summary>
     /// The ethics the player may choose from, with the ones that would break a rule disabled.

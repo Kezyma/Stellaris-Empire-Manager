@@ -14,11 +14,13 @@ public sealed class SessionHost(
     IGameDataSource source,
     IFileExchange files,
     IDesignStore? store = null,
-    bool assumeAllPacks = false)
+    bool assumeAllPacks = false,
+    Preferences? preferences = null)
 {
     private readonly IGameDataSource _source = source ?? throw new ArgumentNullException(nameof(source));
     private readonly IFileExchange _files = files ?? throw new ArgumentNullException(nameof(files));
     private readonly IDesignStore _store = store ?? new NoDesignStore();
+    private readonly Preferences _preferences = preferences ?? new Preferences();
     private readonly SemaphoreSlim _gate = new(1, 1);
 
     private DesignSession? _session;
@@ -47,7 +49,12 @@ public sealed class SessionHost(
             }
 
             var data = await _source.LoadAsync(cancellationToken).ConfigureAwait(false);
-            var session = new DesignSession(data, assumeAllPacks);
+
+            // Before the session exists, so the first render of a picker is already the way the
+            // player left it rather than the default flipping into it a moment later.
+            await _preferences.LoadAsync().ConfigureAwait(false);
+
+            var session = new DesignSession(data, assumeAllPacks, _preferences);
 
             // The desktop app knows where the player's designs are and opens them. A browser has to
             // be handed one — but it may have been handed one before, so what it kept is opened

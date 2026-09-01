@@ -226,6 +226,19 @@ public sealed class EmpireDesign : CwView
     public bool HasSecondarySpecies => GetBlock("secondary_species") is not null;
 
     /// <summary>
+    /// Whether one of this empire's species is the second one rather than the founders.
+    /// </summary>
+    /// <remarks>
+    /// Asked positively - is this the second species - rather than as "is this not the founders",
+    /// because <see cref="SecondarySpecies"/> is read through <c>GetBlock</c> and so
+    /// exists only if the design says it does, while reaching for the founders' block would make
+    /// one in a design that has none. An empire's controls each hold whichever species they were
+    /// given and have to ask, since the two are judged by different rules.
+    /// </remarks>
+    public bool IsSecondary(SpeciesDesign species) =>
+        SecondarySpecies is { } second && second.SameAs(species);
+
+    /// <summary>
     /// Renames the empire, updating both the file's entry key and the <c>key</c> field, which the
     /// game keeps in step. The displayed name in <see cref="Name"/> is separate and unchanged.
     /// </summary>

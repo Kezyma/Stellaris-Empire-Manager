@@ -213,6 +213,7 @@ h5 { font-size: var(--text-sm); }
 .sem-effects-penalty .heading,
 .sem-combined h4,
 .sem-subsections > section > h4,
+.sem-subsections > section > .heading > h4,
 .sem-showcase-chips .heading {
     font-size: var(--text-xs);
     text-transform: uppercase;
@@ -751,6 +752,43 @@ button.sem-tab:disabled:hover { background: none; }
     a screen where a 52px one puts a hundred.
 */
 .sem-thumbs.emblems { grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); }
+
+/*
+    A city tile is the scene at the top of the same panel, small: the empire's own world in bands
+    with the city built between them, stacked by the same code for the reason the scene gives at
+    length — a city is painted into a world rather than over it.
+
+    Three to one rather than the pictures' own two to one, and no magnification. The tile had both
+    once, because it held only the game's flat city preview — the furthest band alone, a distant
+    skyline over an otherwise empty field — and needed doubling to be visible at all. With the
+    whole city drawn there is nothing left to magnify: at twice the size the panorama is cropped to
+    a fragment and the wilderness set becomes an abstract shape. The 3:1 window earns its keep on
+    its own by trimming empty sky, and the picture sits at 60% so the ground wins what is left.
+
+    The shape is stated rather than left to the pictures, because one installed set, ai_01, ships a
+    four-pixel placeholder where its artwork should be, and the tiles either side of it should not
+    change size because of it.
+*/
+.sem-thumbs.cities .sem-thumb {
+    position: relative;
+    display: block;
+    aspect-ratio: 3;
+    overflow: hidden;
+    background: var(--bg-void);
+}
+
+/* Every band fills the frame, and the frame clips them, exactly as the scene stacks them. */
+.sem-thumbs.cities .sem-thumb img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 60%;
+}
+
+/* The tile that chooses no city is the frame and nothing in it, so the grid keeps one shape. */
+.sem-thumbs.cities .sem-thumb.none { background: var(--bg); }
 
 .sem-thumb-option {
     padding: var(--space-xs);
@@ -1330,10 +1368,34 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     border-color: var(--border-strong);
 }
 
-/* Still legible, and still hoverable: a blocked option has to be able to explain itself. */
+/*
+    Still legible, and still hoverable: a blocked option has to be able to explain itself.
+
+    Hoverable took a change in the markup to become true. The button carried the disabled attribute,
+    and a disabled control is sent no mouse events at all — no hover, no focus, not even its own
+    title — so the panel beside the grid held a list of reasons that the options with reasons were
+    the only ones unable to reach. It is marked unavailable to a reader now and refuses the press
+    itself, which is how the trait list had always done it.
+*/
 .sem-icon-option.blocked {
     opacity: 0.35;
     cursor: not-allowed;
+}
+
+/*
+    Not the same thing as blocked, and not drawn as it.
+
+    Nothing is wrong with an option there is simply no room left for. The distinction would be
+    pedantic if it applied to one tile at a time, but it applies to nearly all of them at once:
+    taking a second civic puts seventy-nine others out of reach, and at the blocked treatment the
+    whole grid dropped to a third of its brightness at the exact moment the player was reading it to
+    decide which one to release. Dimmed enough to say it is not available, bright enough to be the
+    thing you are choosing between.
+*/
+.sem-icon-option.at-limit,
+.sem-trait-row.at-limit {
+    opacity: 0.6;
+    cursor: default;
 }
 
 .sem-icon-option img {
@@ -1371,6 +1433,109 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 .sem-grid-column > .sem-icon-grid { flex: 1; min-width: 0; }
 
 .sem-grid-aside { flex-shrink: 0; }
+
+/* ------------------------------------------------------- the same choices as a list
+
+   Eighty-one civics as unlabelled symbols is a memory test. The same options as named rows, in the
+   same two-column shape, so that changing view changes the left half and leaves the description
+   where it was. */
+
+.sem-picker { min-width: 0; }
+
+/*
+    A choice between two ways of being shown one list, and the first control of its kind here — so
+    it is built out of the surfaces already in use rather than a look of its own: the strip is the
+    page's own depth, and the view in force is a raised tile inside it.
+
+    It sits on the heading's line, in the flex row above. It had a row to itself once, which cost
+    the section a whole row of height to say one word.
+*/
+.sem-view-toggle {
+    display: inline-flex;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.sem-view-toggle button {
+    padding: var(--space-2xs) var(--space-lg);
+    background: none;
+    border: none;
+    border-radius: 0;
+    color: var(--text-dim);
+    font-size: var(--text-sm);
+}
+
+.sem-view-toggle button:hover {
+    background: var(--bg-hover);
+    color: var(--text);
+}
+
+.sem-view-toggle button[aria-pressed="true"] {
+    background: var(--bg-raised);
+    color: var(--text);
+}
+
+/*
+    As tall as the panel beside it, so the two columns end level and switching view does not change
+    the height of the section. The panel says how tall it is by whether it carries a picture, and
+    the list takes the same answer from it rather than being told twice.
+*/
+.sem-grid-and-detail { --option-list: 300px; }
+
+.sem-grid-and-detail:has(.sem-detail-picture) { --option-list: 460px; }
+
+.sem-grid-column > .sem-option-list { flex: 1; min-width: 0; }
+
+.sem-option-list {
+    height: var(--option-list);
+    overflow-y: auto;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+/*
+    What the empire has, held at the top while the rest goes under it — so what you already hold is
+    an answer the list gives rather than one you have to scroll for.
+
+    One sticky box around them, not a sticky row apiece. Rows pinned to a common top slide under
+    each other, and pinning each at its own offset needs a row height written in the stylesheet,
+    which is not a constant: a finger gets ten pixels of padding where a pointer gets three. A box
+    is whatever its contents come to, whether that is nothing, one row or two.
+
+    The edge is the raised surface plus a rule, which is how the chosen column of the trait picker
+    already tells itself from the available one. No shadow: the three in this sheet are an inset
+    ring and two popups, and this is neither.
+
+    This is also the whole of how a held option is marked. The rows carry aria-pressed for a reader
+    who is not looking, and for one who is, being in this box is what says it — the same answer the
+    trait picker gives by which of its two lists a row is in. A ring around each row as well would
+    be a second treatment for one fact, on the two rows that need it least.
+*/
+.sem-option-list > .stuck {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--bg-raised);
+    border-bottom: 1px solid var(--border-strong);
+}
+
+/*
+    On a phone the list is sized for itself rather than for the panel. The two are stacked here
+    instead of side by side, so there is no longer a row for them to end level at — and the reason
+    they matched was that they were columns of one.
+
+    380 is what it takes to stay usable. A row is 42 pixels under a finger against 25 under a
+    pointer, and the held civics take 85 of them off the top: at the panel's 224 that left three
+    rows of the eighty-one to scroll through. This gives seven under the two that are pinned, which
+    is about what the desktop shows.
+*/
+@media (max-width: 700px) {
+    .sem-grid-and-detail,
+    .sem-grid-and-detail:has(.sem-detail-picture) { --option-list: 380px; }
+}
 
 /*
     How deep a surface is, and what that means. This panel is the first case of it.
@@ -1656,10 +1821,13 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     object-fit: cover;
 }
 
-/* The figure stands on the floor, whatever height the room is drawn at. */
+/*
+    Where the figure stands is set on the element, not here: the height and the depth its feet are
+    buried at are two halves of one arrangement and belong beside each other, in the component that
+    holds the game's numbers.
+*/
 .sem-room > .figure {
     position: absolute;
-    bottom: 0;
     width: auto;
     object-fit: contain;
 }
@@ -2191,6 +2359,24 @@ button.icon .sem-action-icon { display: block; }
     margin: 0 0 var(--space-lg);
 }
 
+/*
+    A heading with a control beside it, as the empire modifiers panel has it. The spacing moves to
+    the row, because the heading is no longer the thing the section spaces away from what follows -
+    two rules give a subsection heading its look and both are child selectors, so a wrapper has to
+    be named in each rather than the selectors loosened for four other places that share them.
+*/
+.sem-subsections > section > .heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-md);
+    margin: 0 0 var(--space-lg);
+}
+
+.sem-subsections > section > .heading > h4 {
+    margin: 0;
+}
+
 /* The names a list holds, shown rather than described. Read-only, and sized to hint at how many
    there are without taking the page over. */
 .sem-name-set label {
@@ -2214,7 +2400,11 @@ button.icon .sem-action-icon { display: block; }
 /* ---------------------------------------------------------------- traits
 
    The game's own arrangement: what may be taken, what has been taken, and what the pointer is over
-   described underneath. */
+   described underneath.
+
+   `.sem-trait-row` is a shape rather than a place: the civic and origin lists use it too, so a row
+   of choices is the same row of choices wherever it is. Changing it changes all of them, which is
+   the point — including the target size it is given under a coarse pointer. */
 
 /*
     Both columns are exactly as tall as each other and never change height. The box on the right
@@ -2254,6 +2444,32 @@ button.icon .sem-action-icon { display: block; }
     flex: 0 0 var(--trait-detail);
     margin-top: 0;
     overflow-y: auto;
+}
+
+/*
+    Wide enough for three, so the description stands beside what it describes rather than under it.
+    The chosen column stops being a column — display: contents hands its two children to the grid
+    above — which is the whole of the change: no second arrangement of the same markup, and the two
+    narrower ones below are untouched.
+
+    At the step where the preview panel widens, rather than a step of its own. A trait row needs 199
+    pixels to show its longest name uncut, and the three columns come to 369, 369 and 332 at 1600.
+*/
+@media (min-width: 1500px) {
+    .sem-trait-lists {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 0.9fr);
+    }
+
+    .sem-trait-lists .chosen-column {
+        display: contents;
+    }
+
+    .sem-trait-lists .chosen-column .sem-trait-list,
+    .sem-trait-lists .chosen-column .sem-trait-detail {
+        flex: none;
+        height: var(--trait-column);
+        margin-top: 0;
+    }
 }
 
 @media (max-width: 700px) {
@@ -2605,10 +2821,13 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
-    A biography, folded away. The summary is styled as a field label so a shut one reads as one more
-    field rather than as a control of a different kind.
+    Something folded away, with a strip naming it and saying what is inside. A biography most players
+    never write; the room and city pickers, which are two long lists of pictures in one section.
+
+    The strip is styled as a control rather than as a caption, so a shut one reads as a thing that
+    opens rather than as a heading for something that has gone missing.
 */
-.sem-bio {
+.sem-fold {
     margin-top: var(--gap);
 }
 
@@ -2620,7 +2839,7 @@ button.icon .sem-action-icon { display: block; }
    there, and two of the designer's fields looked as though they had gone missing. A bordered strip
    in the raised colour reads as a thing that opens, which is what it is.
 */
-.sem-bio > summary {
+.sem-fold > summary {
     display: flex;
     align-items: baseline;
     gap: var(--space-md);
@@ -2633,31 +2852,31 @@ button.icon .sem-action-icon { display: block; }
     list-style: none;
 }
 
-.sem-bio > summary::-webkit-details-marker { display: none; }
+.sem-fold > summary::-webkit-details-marker { display: none; }
 
-.sem-bio > summary:hover { background: var(--bg-hover); }
+.sem-fold > summary:hover { background: var(--bg-hover); }
 
 /* Squared off where the box below meets it, so open they read as one piece. */
-.sem-bio[open] > summary {
+.sem-fold[open] > summary {
     border-bottom-color: transparent;
     border-radius: var(--radius) var(--radius) 0 0;
 }
 
-.sem-bio > summary .chevron {
+.sem-fold > summary .chevron {
     width: 12px;
     color: var(--text-faint);
 }
 
-.sem-bio[open] > summary .chevron { rotate: 90deg; }
+.sem-fold[open] > summary .chevron { rotate: 90deg; }
 
-.sem-bio > summary .title {
+.sem-fold > summary .title {
     font-size: var(--text-xs);
     text-transform: uppercase;
     letter-spacing: 0.06em;
 }
 
-/* The opening words of what is written, cut to one line. */
-.sem-bio > summary .state {
+/* The opening words of what is written, or the name of what is chosen, cut to one line. */
+.sem-fold > summary .state {
     flex: 1;
     min-width: 0;
     overflow: hidden;
@@ -2667,10 +2886,20 @@ button.icon .sem-action-icon { display: block; }
     text-overflow: ellipsis;
 }
 
-.sem-bio > textarea {
+.sem-fold > textarea {
     width: 100%;
     border-radius: 0 0 var(--radius) var(--radius);
     resize: vertical;
+}
+
+/*
+    A list inside a fold continues the frame the strip above it opens, the way the biography's box
+    does. Its own top corners are squared and its top border dropped, so the two read as one box
+    with a lid rather than as a strip with a separate box under it.
+*/
+.sem-fold[open] > .sem-scroll-list {
+    border-top: none;
+    border-radius: 0 0 var(--radius) var(--radius);
 }
 
 /*
@@ -3251,6 +3480,13 @@ button.icon .sem-action-icon { display: block; }
     /* Anything pressed. */
     button, .sem-button { padding: 10px 12px; }
 
+    /*
+        The view toggle's two halves. Named rather than left to the rule above, which a bare element
+        selector loses to: they are a strip of two words with nothing beside them to widen the
+        target, and at their desktop padding the whole control is 23 pixels tall.
+    */
+    .sem-view-toggle button { padding: 10px 14px; }
+
     button.icon,
     .sem-randomise,
     .sem-gender,
@@ -3300,7 +3536,7 @@ button.icon .sem-action-icon { display: block; }
     /* The rows that are the designer's own navigation, and the panels that fold. */
     .sem-section > .head,
     .sem-class-list button,
-    .sem-bio > summary,
+    .sem-fold > summary,
     .sem-showcase-problems > summary { padding: 12px 10px; }
 
     .sem-dlc-summary { padding: 12px 10px; }

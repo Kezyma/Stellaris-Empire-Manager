@@ -1,0 +1,69 @@
+@*
+    A choice between two ways of being shown one list of choices.
+
+    Two buttons, each named for a view and exactly one of them pressed, rather than one button that
+    flips. A single control has to decide whether its label names what you are looking at or what
+    pressing it would do, and there is no wording that answers both.
+
+    It sits beside the heading it belongs to rather than above the picker, which is where it started:
+    a row of its own cost the section a row of height to say one word.
+*@
+
+<div class="sem-view-toggle" role="group" aria-label="View">
+    <button type="button"
+            aria-pressed="@(List ? "false" : "true")"
+            @onclick="() => Show(list: false)">Icons</button>
+
+    <button type="button"
+            aria-pressed="@(List ? "true" : "false")"
+            @onclick="() => Show(list: true)">List</button>
+</div>
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>
+    /// Which picker this belongs to, which is what its setting is remembered under.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public required string ViewKey { get; set; }
+
+    /// <summary>Whether the picker is currently drawn as a list.</summary>
+    [Parameter]
+    public bool List { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> ListChanged { get; set; }
+
+    /// <summary>
+    /// Opens on whatever the player settled on last time.
+    /// </summary>
+    /// <remarks>
+    /// Announced upwards rather than held here, so the picker beside this and the toggle can never
+    /// disagree about which view is in force. The whole of the remembering lives in this one
+    /// component; the sections it sits in carry a flag and nothing else.
+    /// </remarks>
+    protected override async Task OnInitializedAsync()
+    {
+        var kept = Session.Preferences.PickerIsList(ViewKey);
+
+        if (kept != List)
+        {
+            List = kept;
+            await ListChanged.InvokeAsync(kept).ConfigureAwait(true);
+        }
+    }
+
+    private async Task Show(bool list)
+    {
+        if (list == List)
+        {
+            return;
+        }
+
+        List = list;
+        Session.Preferences.SetPickerView(ViewKey, list);
+        await ListChanged.InvokeAsync(list).ConfigureAwait(true);
+    }
+}

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.JSInterop;
 using Sem.Ui.Services;
 using Sem.Web;
 
@@ -24,6 +25,11 @@ builder.Services.AddScoped<UnsavedWorkGuard>();
 // browser between visits.
 builder.Services.AddScoped<IDesignStore, BrowserDesignStore>();
 
+// How the pickers are drawn, which is a setting rather than the player's work, and is kept apart
+// from it.
+builder.Services.AddScoped(services =>
+    new Preferences(services.GetRequiredService<IJSRuntime>()));
+
 // One session for the whole app, so moving between the list and the designer keeps unsaved work.
 // Every content pack is assumed: the installation the data was read from is not the player's, and a
 // designer that hides half the game until a setting is found is worse than one that offers too much.
@@ -31,6 +37,7 @@ builder.Services.AddScoped(services => new SessionHost(
     services.GetRequiredService<IGameDataSource>(),
     services.GetRequiredService<IFileExchange>(),
     services.GetRequiredService<IDesignStore>(),
-    assumeAllPacks: true));
+    assumeAllPacks: true,
+    services.GetRequiredService<Preferences>()));
 
 await builder.Build().RunAsync();
