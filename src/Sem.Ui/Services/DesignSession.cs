@@ -382,10 +382,18 @@ public sealed class DesignSession
     /// What the rules make of one of the empire's species, which is not always the founders.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// An origin may call for a second, and every control that edits a species — its traits, its
     /// class, its portrait, its names — was judging whichever it was given by the founders' context.
     /// The visible symptom was the trait budget: it counted the founders' traits, so adding to the
     /// second species moved no counter and exceeded no limit.
+    /// </para>
+    /// <para>
+    /// Told apart by the block each one is a view of, not by the view. A view is built fresh every
+    /// time the property is read, so comparing two of them is comparing two objects that are never
+    /// the same object — the test was false for the founders as surely as for anybody else, and
+    /// every species in the application was being judged as the second one.
+    /// </para>
     /// </remarks>
     public DesignContext? ContextFor(SpeciesDesign? species)
     {
@@ -394,7 +402,7 @@ public sealed class DesignSession
             return Context;
         }
 
-        return ReferenceEquals(species, Current?.Species)
+        return Current is { } design && ReferenceEquals(species.Block, design.Species.Block)
             ? context
             : context.ForSpecies(species, secondary: true);
     }
