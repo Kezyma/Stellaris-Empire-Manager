@@ -86,20 +86,21 @@ public sealed class EmpireDesign : CwView
     }
 
     /// <summary>
-    /// A named flag preset from <c>common/prescripted_flags</c>, used instead of
-    /// <see cref="Flag"/> by a few empires.
+    /// A named set of scripted country flags from <c>common/prescripted_flags</c>.
     /// </summary>
     /// <remarks>
-    /// Two spellings, and they differ in shape as well as in name: the current game writes the
-    /// scalar <c>flag="empire_blorg"</c>, while before 4.x it wrote a block holding a list,
-    /// <c>flags={ "prescripted_blorg" }</c>. Only the scalar was read, so a design saved by an older
-    /// game appeared to have no preset flag at all - and since the preset overrides
-    /// <see cref="Flag"/> in game, editing the flag on such a design silently did nothing: the old
-    /// block sat above the edit and still won.
+    /// Nothing to do with <see cref="Flag"/>, despite the name. That one is the drawn flag; this one
+    /// names an entry in <c>common/prescripted_flags</c>, and each entry is a list of country flags
+    /// the game sets on the empire at game start - <c>empire_human_1</c> sets <c>human_1</c> and
+    /// <c>custom_start_screen</c>. Country flags are the markers events and triggers read, so this
+    /// is the field that makes an empire count as one of the game's own for scripting purposes.
+    /// What each one actually does is written down in <c>docs/empire-flags.md</c>.
     ///
-    /// So the old form is read, and writing takes it out. Preserving it untouched was the bug rather
-    /// than the caution: it is not an unmodelled field sitting harmlessly beside ours, it is the same
-    /// field in an older hand, contradicting what the player just chose.
+    /// Two spellings, differing in shape as well as name: the current game writes the scalar
+    /// <c>flag="empire_blorg"</c>, while before 4.x it wrote a block holding a list,
+    /// <c>flags={ "prescripted_blorg" }</c>. Only the scalar was read, so a design saved by an older
+    /// game appeared to carry none at all. The old form is read now, and writing takes it out -
+    /// two spellings of one field, left together, is two answers to the same question.
     /// </remarks>
     public string? PrescriptedFlag
     {
