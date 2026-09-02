@@ -73,7 +73,10 @@ public sealed class DesignsCorpusTests
     [Trait("Category", "RealData")]
     public void OlderFormatFilesLoadDespiteOmittingNewerFields()
     {
-        var legacy = TestPaths.SandboxDesignFiles
+        // Looked for among the backups, which is where they are. This searched SandboxDesignFiles,
+        // and that property returns only the live file by design - so the test could never find one
+        // and skipped every run it was ever part of.
+        var legacy = TestPaths.SandboxDesignBackups
             .FirstOrDefault(p => Path.GetFileName(p).Contains("_250416", StringComparison.Ordinal));
         Skip.If(legacy is null, "The 3.x-era designs backup is not in the sandbox.");
 
@@ -82,6 +85,11 @@ public sealed class DesignsCorpusTests
         // This file predates is_nomadic, so the property must read as absent rather than throw.
         Assert.All(file.Designs, d => Assert.Null(d.IsNomadic));
         Assert.Contains(file.Designs, d => d.SecondarySpecies is not null);
+
+        // And it is the only real file carrying the pre-4.x prescripted flag, which is a block of
+        // names where the current game writes a single scalar. Read from the file rather than from
+        // a sample, since a sample only proves the parser agrees with whoever wrote the sample.
+        Assert.Contains(file.Designs, d => d.PrescriptedFlag is { Length: > 0 });
     }
 
     [SkippableFact]
