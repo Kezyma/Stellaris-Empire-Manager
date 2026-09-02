@@ -101,6 +101,16 @@ public sealed class RulerDesign : CwView
     /// <summary>Returns the biography, adding it in canonical position when absent.</summary>
     public LocRef GetOrAddCustomBiography() => new(GetOrAddBlock("custom_biography"));
 
+    /// <summary>
+    /// Drops the biography, leaving a ruler who never had one exactly as they were.
+    /// </summary>
+    /// <remarks>
+    /// Through <see cref="CwView.RemoveAll"/> rather than through the block, which would be made on
+    /// the way and leave an empty <c>ruler={}</c> in a design that had none - a design gaining a
+    /// field from having one taken out of it.
+    /// </remarks>
+    public void RemoveCustomBiography() => RemoveAll("custom_biography");
+
     /// <summary>Custom ruler title, or null to use the one the government implies.</summary>
     public LocRef? Title => GetBlock("ruler_title") is { } title ? new LocRef(title) : null;
 

@@ -18,13 +18,26 @@
             <div class="column">
                 @foreach (var ethic in column)
                 {
+                    @*
+                        Marked unavailable rather than disabled, which is what the option grid does
+                        and for the reason it gives: a disabled button is sent no mouse events, so it
+                        can be neither hovered nor focused - and a blocked conviction is exactly the
+                        one with something to explain. The panel beside this held those reasons all
+                        along with no way to reach them. The press is refused in Toggle instead.
+
+                        At-limit is drawn apart from blocked for the same reason the grids do it:
+                        once three points are spent everything else is merely unaffordable, and at
+                        the blocked treatment the whole argument went dim at the moment the player
+                        was deciding what to give up.
+                    *@
                     <button type="button"
-                            class="sem-icon-option @(ethic.Selected ? "selected" : null) @(ethic.Enabled || ethic.Selected ? null : "blocked")"
-                            disabled="@(!ethic.Enabled && !ethic.Selected)"
+                            class="sem-icon-option @(ethic.Selected ? "selected" : null) @(Blocked(ethic) ? (ethic.AtLimit ? "at-limit" : "blocked") : null)"
+                            aria-pressed="@(ethic.Selected ? "true" : "false")"
+                            aria-disabled="@(Blocked(ethic) ? "true" : null)"
                             title="@ethic.Name"
                             @onmouseenter="() => _hovered = ethic.Key"
                             @onfocus="() => _hovered = ethic.Key"
-                            @onclick="() => Toggle(ethic.Key)">
+                            @onclick="() => Choose(ethic)">
 
                         @if (ethic.Icon is { Length: > 0 } icon)
                         {
@@ -101,8 +114,34 @@
     private EthicDefinition? Definition(string key) =>
         Session.Data.Database.Ethics.FirstOrDefault(e => string.Equals(e.Key, key, StringComparison.Ordinal));
 
+    /// <summary>
+    /// What the panel describes: whatever is under the pointer, failing that whatever is held,
+    /// failing that the first there is.
+    /// </summary>
+    /// <remarks>
+    /// That third fallback is what keeps the panel from opening empty. A fresh empire has no ethics,
+    /// so the first two both came back with nothing and Government opened on a bordered box with
+    /// nothing in it - a poor answer to "what is an ethic".
+    /// </remarks>
     private OptionGrid.GridOption? Described =>
-        Options.FirstOrDefault(o => o.Key == _hovered) ?? Options.FirstOrDefault(o => o.Selected);
+        Options.FirstOrDefault(o => o.Key == _hovered)
+        ?? Options.FirstOrDefault(o => o.Selected)
+        ?? Options.FirstOrDefault();
+
+    /// <summary>Whether this conviction cannot be taken as things stand. A held one never is.</summary>
+    private static bool Blocked(OptionGrid.GridOption ethic) => !ethic.Enabled && !ethic.Selected;
+
+    /// <summary>Refuses the press rather than the button, so a blocked ethic can still be asked about.</summary>
+    private void Choose(OptionGrid.GridOption ethic)
+    {
+        // A finger has no hover, so a tap is also how the panel is asked about something.
+        _hovered = ethic.Key;
+
+        if (!Blocked(ethic))
+        {
+            Toggle(ethic.Key);
+        }
+    }
 
     private IReadOnlyList<OptionGrid.GridOption> Options
     {
@@ -122,6 +161,11 @@
                         Cost = o.Cost,
                         Selected = Design.Ethics.Contains(o.Key),
                         Enabled = o.Enabled,
+
+                        // Read from the reasons while they are still keys, the same line the grids
+                        // and the trait picker use to tell "no room left" from "not for this empire".
+                        AtLimit = !o.Enabled && o.Reasons.Count > 0 && o.Reasons.All(RuleReasons.IsBudget),
+
                         Reasons = Session.Reasons.Describe(o.Reasons),
                     })
             ];

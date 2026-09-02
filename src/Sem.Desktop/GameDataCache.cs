@@ -56,6 +56,18 @@ public sealed class GameDataCache
             if (!root.TryGetProperty("schemaVersion", out var schema) ||
                 schema.GetInt32() != GameDataExtractor.SchemaVersion)
             {
+                reason = "built to an older data format";
+                return false;
+            }
+
+            // And the same question the other way round: the shape can be unchanged while what was
+            // extracted into it is not. Every database records the build that made it; nothing read
+            // it, so a desktop that had extracted once kept that data through every later change to
+            // what extraction produces - new emblems, new renders, new text - and reported itself
+            // perfectly up to date.
+            if (!root.TryGetProperty("extractorVersion", out var built) ||
+                !string.Equals(built.GetString(), GameDataExtractor.ExtractorVersion, StringComparison.Ordinal))
+            {
                 reason = "built by an older version of this app";
                 return false;
             }

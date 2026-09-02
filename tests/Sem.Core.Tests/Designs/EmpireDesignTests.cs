@@ -111,6 +111,56 @@ public sealed class EmpireDesignTests
 
     private static EmpireDesign LoadSample() => EmpireDesignsFile.LoadText(Sample).Designs[0];
 
+    /// <summary>
+    /// The pre-4.x spelling of the prescripted flag, which is a block rather than a scalar. Files in
+    /// this shape are still on players' disks.
+    /// </summary>
+    private const string OldFlagForm = """
+        "Blorg"=
+        {
+        	key="Blorg"
+        	flags=
+        	{
+        		"prescripted_blorg"
+        	}
+        }
+        """;
+
+    [Fact]
+    public void ThePreFourFlagsBlockIsReadAsAPrescriptedFlag()
+    {
+        var design = EmpireDesignsFile.LoadText(OldFlagForm).Designs[0];
+
+        Assert.Equal("prescripted_blorg", design.PrescriptedFlag);
+    }
+
+    /// <summary>
+    /// The old block overrides the empire's own flag in game, so leaving it in place meant an edit
+    /// to the flag silently did nothing.
+    /// </summary>
+    [Fact]
+    public void ChoosingAPrescriptedFlagRemovesThePreFourBlock()
+    {
+        var file = EmpireDesignsFile.LoadText(OldFlagForm);
+        var design = file.Designs[0];
+
+        design.PrescriptedFlag = "empire_human_1";
+
+        Assert.Equal("empire_human_1", design.PrescriptedFlag);
+        Assert.DoesNotContain("flags", file.Document.ToText(), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void ClearingAPrescriptedFlagRemovesThePreFourBlockToo()
+    {
+        var file = EmpireDesignsFile.LoadText(OldFlagForm);
+
+        file.Designs[0].PrescriptedFlag = null;
+
+        Assert.Null(file.Designs[0].PrescriptedFlag);
+        Assert.DoesNotContain("flags", file.Document.ToText(), StringComparison.Ordinal);
+    }
+
     [Fact]
     public void ReadsEveryTopLevelField()
     {

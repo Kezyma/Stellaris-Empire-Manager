@@ -42,7 +42,52 @@ public partial class MainWindow : Window
         Loaded += async (_, _) => await StartAsync();
     }
 
+    /// <summary>Whether a start is already running, so a second one cannot be begun over it.</summary>
+    private bool _starting;
+
+    /// <summary>
+    /// Finds the game, builds the data if it needs building, and opens the designer.
+    /// </summary>
+    /// <remarks>
+    /// Everything is caught. This runs from an async void handler on Loaded, where an escaping
+    /// exception ends the process with a Windows crash dialog, and from Retry and Choose folder as a
+    /// discarded task, where an escaping exception is swallowed and the window sits on "Looking for
+    /// your Stellaris installation…" for ever. Both of those are reachable: the extraction reads
+    /// image formats and throws NotSupportedException at a DDS it does not know, which a modded or
+    /// newly patched install can easily have, and only IOException and UnauthorizedAccessException
+    /// were being caught.
+    ///
+    /// Guarded against a second run as well, since Retry is a button the player can press while the
+    /// first attempt is still going.
+    /// </remarks>
     private async Task StartAsync()
+    {
+        if (_starting)
+        {
+            return;
+        }
+
+        _starting = true;
+
+        try
+        {
+            await StartCoreAsync();
+        }
+        catch (Exception ex)
+        {
+            ShowStatus(
+                "The designer could not be started.",
+                $"{ex.GetType().Name}: {ex.Message}",
+                busy: false,
+                offerChoice: true);
+        }
+        finally
+        {
+            _starting = false;
+        }
+    }
+
+    private async Task StartCoreAsync()
     {
         ShowStatus("Looking for your Stellaris installation…", detail: null, busy: true);
 

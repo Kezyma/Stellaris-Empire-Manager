@@ -19,12 +19,25 @@ internal static class RulesTestData
 
         design.Species.Class = "MAM";
         design.Species.Portrait = "mam1";
+        design.Species.NameList = "MAM1";
         design.Species.SetTraits(["trait_organic", "trait_intelligent", "trait_deviants"]);
         design.Authority = "auth_democratic";
         design.Origin = "origin_default";
         design.PlanetClass = "pc_continental";
         design.SetEthics(["ethic_fanatic_militarist", "ethic_xenophile"]);
         design.SetCivics(["civic_beacon_of_liberty", "civic_functional_architecture"]);
+
+        // The game refuses a design missing any of these by name, and this fixture had none of them
+        // - so "a valid empire passes every check" was passing against an empire the game would not
+        // have offered. Filled in rather than the checks relaxed, because the checks are the point.
+        design.Name.Key = "Test Empire";
+        design.Name.IsLiteral = true;
+        design.PlanetName.Key = "Testworld";
+        design.PlanetName.IsLiteral = true;
+
+        var ruler = design.Ruler.Name.GetOrAddFullNames();
+        ruler.Key = "Test Ruler";
+        ruler.IsLiteral = true;
 
         return design;
     }
@@ -252,6 +265,23 @@ internal static class RulesTestData
                 Opposites = ["trait_intelligent"],
             },
             new TraitDefinition("trait_deviants", TraitKind.Species) { Cost = -1, AllowedArchetypes = ["BIOLOGICAL"] },
+
+            // Forced by origin_void_dwellers below, and defined here so a design that carries it -
+            // which is what a design the game has seen looks like - reads as valid.
+            new TraitDefinition("trait_void_dweller_1", TraitKind.Species)
+            {
+                Cost = 0,
+                AllowedArchetypes = ["BIOLOGICAL"],
+            },
+
+            // A starting ruler's trait, and one that belongs to a class of leader. The rules for
+            // these were written for the picker and never run at validation time.
+            new TraitDefinition("leader_trait_fleet_organiser", TraitKind.StartingRuler)
+            {
+                Cost = 1,
+                AllowedLeaderClasses = ["commander"],
+            },
+            new TraitDefinition("leader_trait_principled", TraitKind.StartingRuler) { Cost = 1 },
 
             // Dear, and nothing else stands in its way, so the budget is the only thing that can.
             new TraitDefinition("trait_expensive", TraitKind.Species) { Cost = 3, AllowedArchetypes = ["BIOLOGICAL"] },

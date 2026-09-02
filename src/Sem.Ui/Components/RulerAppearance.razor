@@ -217,9 +217,19 @@
         _outfitFor = face;
         _loading = true;
 
-        _wardrobe ??= await Source.LoadWardrobeAsync().ConfigureAwait(true);
-        _outfit = _wardrobe.FirstOrDefault(o => o.Portrait == face);
-        _loading = false;
+        // In a finally, because anything the fetch throws that is not an HttpRequestException - a
+        // malformed wardrobe.json raises a JsonException - escaped past the source's own catch and
+        // left this flag set for the component's lifetime. The panel then read "Drawing…" for ever,
+        // over a failure the player never saw.
+        try
+        {
+            _wardrobe ??= await Source.LoadWardrobeAsync().ConfigureAwait(true);
+            _outfit = _wardrobe.FirstOrDefault(o => o.Portrait == face);
+        }
+        finally
+        {
+            _loading = false;
+        }
     }
 
     /// <summary>

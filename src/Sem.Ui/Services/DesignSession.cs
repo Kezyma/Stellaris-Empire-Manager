@@ -1,3 +1,4 @@
+using Sem.Clausewitz;
 using Sem.Designs;
 using Sem.GameData;
 using Sem.Rules;
@@ -243,18 +244,98 @@ public sealed class DesignSession
     /// <summary>
     /// Applies a change to the current empire and works the rules out again.
     /// </summary>
+    /// <remarks>
+    /// A change that changed nothing is not an edit, and saying otherwise cost the player something
+    /// real: pressing the room an empire already had armed the Save button and made leaving the
+    /// designer ask whether to save an empire nobody had touched. Two pickers were worse than that -
+    /// they decide whether to allow the change from inside this callback and return without making
+    /// one, so a refusal marked the design dirty every time.
+    ///
+    /// Compared by writing the empire out both times rather than by asking each picker to check its
+    /// own field first. There are a dozen such fields and the comparison has to be right for all of
+    /// them; the written form is the whole design by definition, and at a kilobyte and a half the
+    /// two writes are far below the cost of the render that follows.
+    /// </remarks>
     public void Edit(Action<EmpireDesign> change)
     {
         ArgumentNullException.ThrowIfNull(change);
 
-        if (Current is null)
+        if (Current is not { } current)
         {
             return;
         }
 
-        change(Current);
+        var before = Written(current);
+        var shape = Shape(current);
+
+        change(current);
+
+        // Only when one of the five things that impose a trait has moved. A name being typed cannot
+        // change what the empire forces on its founders, and working it out costs a whole context.
+        if (!string.Equals(shape, Shape(current), StringComparison.Ordinal))
+        {
+            AddForcedTraits(current);
+        }
+
+        if (string.Equals(before, Written(current), StringComparison.Ordinal))
+        {
+            return;
+        }
+
         IsModified = true;
         Recompute();
+    }
+
+    /// <summary>
+    /// The choices that decide which traits the empire imposes on its founders.
+    /// </summary>
+    private static string Shape(EmpireDesign design) => string.Join(
+        '|',
+        design.Authority,
+        design.Origin,
+        design.PlanetClass,
+        design.Species.Class,
+        string.Join(',', design.Civics));
+
+    /// <summary>
+    /// Writes in the traits the empire's own choices impose, where the design lacks them.
+    /// </summary>
+    /// <remarks>
+    /// The game forces these and, in its own words, verifies them "only for empire designs" - which
+    /// is exactly what this app writes. They were computed for the picker, which showed them among
+    /// the chosen traits and would not let them go, and never reached the file: an empire switched to
+    /// Hive Mind displayed the trait and did not carry it.
+    ///
+    /// Added and never removed. A trait that has stopped being forced is left where it is, because
+    /// this cannot tell one it put there from one that arrived with an imported design or from a
+    /// mechanic this app does not model - and the picker will now let the player take it off, since
+    /// nothing is forcing it any more.
+    /// </remarks>
+    private void AddForcedTraits(EmpireDesign design)
+    {
+        var forced = Rules.GetWrittenForcedTraits(Rules.CreateContext(design, OwnedDlc));
+        var held = design.Species.Traits;
+
+        if (forced.Where(t => !held.Contains(t)).ToList() is not { Count: > 0 } missing)
+        {
+            return;
+        }
+
+        design.Species.SetTraits([.. held, .. missing]);
+    }
+
+    /// <summary>
+    /// The empire exactly as it would be written to the file, which is the only complete account of
+    /// it - a design carries fields this app does not model, and they count as much as the rest.
+    /// </summary>
+    private static string Written(EmpireDesign design)
+    {
+        var document = new CwDocument();
+
+        // Cloned, so that wrapping the block in a node to write it cannot reparent the live one.
+        document.Add(CwNode.Assignment(design.Key, design.Block.Clone(), quoteKey: true));
+
+        return document.ToText(CwWriteOptions.Compact);
     }
 
     /// <summary>

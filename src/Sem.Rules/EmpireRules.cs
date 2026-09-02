@@ -276,6 +276,27 @@ public sealed class EmpireRules(GameDatabase database)
         [.. GetForcedTraitSources(context).Select(f => f.Trait).Distinct(StringComparer.Ordinal)];
 
     /// <summary>
+    /// The forced traits a design has to carry in the file, which is not all of them.
+    /// </summary>
+    /// <remarks>
+    /// A habitability preference is forced by the homeworld and is never written down: not one of
+    /// the fifty-two empires the game ships carries a <c>trait_pc_*_preference</c>, because the game
+    /// works it out from the planet class as it reads the design. Everything else is written and is
+    /// checked - the species class's Organic or Lithoid, an authority's Hive Mind, whatever a civic
+    /// or an origin imposes.
+    ///
+    /// Told apart by source rather than by the trait's name, because the distinction is where the
+    /// trait came from and not what it is called.
+    /// </remarks>
+    public IReadOnlyList<string> GetWrittenForcedTraits(DesignContext context) =>
+    [
+        .. GetForcedTraitSources(context)
+            .Where(f => f.Source != ForcedTraitSource.Homeworld)
+            .Select(f => f.Trait)
+            .Distinct(StringComparer.Ordinal)
+    ];
+
+    /// <summary>
     /// The same traits, each with whatever put it there.
     /// </summary>
     /// <remarks>
@@ -612,36 +633,8 @@ public sealed class EmpireRules(GameDatabase database)
 
         foreach (var trait in _database.Traits.Where(t => t.Kind == TraitKind.StartingRuler))
         {
-            var reasons = new List<string>();
             var has = held.Contains(trait.Key);
-
-            if (trait.AllowedLeaderClasses.Count > 0 &&
-                (context.RulerClass is null || !trait.AllowedLeaderClasses.Contains(context.RulerClass)))
-            {
-                reasons.Add(RuleReasons.For(
-                    RuleReasons.WrongLeaderClass,
-                    string.Join(", ", trait.AllowedLeaderClasses)));
-            }
-
-            if (context.Origin is { } origin && trait.ForbiddenOrigins.Contains(origin))
-            {
-                reasons.Add(RuleReasons.For(RuleReasons.ForbiddenByOrigin, origin));
-            }
-
-            if (trait.AllowedOrigins.Count > 0 &&
-                (context.Origin is null || !trait.AllowedOrigins.Contains(context.Origin)))
-            {
-                reasons.Add(RuleReasons.For(
-                    RuleReasons.WrongOrigin,
-                    string.Join(", ", trait.AllowedOrigins)));
-            }
-
-            if (trait.AllowedEthics.Count > 0 && !context.Ethics.Any(trait.AllowedEthics.Contains))
-            {
-                reasons.Add(RuleReasons.For(
-                    RuleReasons.WrongEthics,
-                    string.Join(", ", trait.AllowedEthics)));
-            }
+            var reasons = RulerTraitObjections(trait, context);
 
             // The ruler has their one already, and it is not this one.
             if (!has && held.Count > 0)
@@ -658,6 +651,50 @@ public sealed class EmpireRules(GameDatabase database)
         }
 
         return options;
+    }
+
+    /// <summary>
+    /// Why this empire's ruler could not take a trait: their class, the origin, the ethics.
+    /// </summary>
+    /// <remarks>
+    /// Shared by the picker and by validation, which want the same answer for opposite reasons - the
+    /// picker to grey out something not yet taken, validation to object to something already held.
+    /// The picker's own "you already have one" rule is not here, because it is about the ruler
+    /// rather than about the trait, and a held trait must not object to itself.
+    /// </remarks>
+    private static List<string> RulerTraitObjections(TraitDefinition trait, DesignContext context)
+    {
+        var reasons = new List<string>();
+
+        if (trait.AllowedLeaderClasses.Count > 0 &&
+            (context.RulerClass is null || !trait.AllowedLeaderClasses.Contains(context.RulerClass)))
+        {
+            reasons.Add(RuleReasons.For(
+                RuleReasons.WrongLeaderClass,
+                string.Join(", ", trait.AllowedLeaderClasses)));
+        }
+
+        if (context.Origin is { } origin && trait.ForbiddenOrigins.Contains(origin))
+        {
+            reasons.Add(RuleReasons.For(RuleReasons.ForbiddenByOrigin, origin));
+        }
+
+        if (trait.AllowedOrigins.Count > 0 &&
+            (context.Origin is null || !trait.AllowedOrigins.Contains(context.Origin)))
+        {
+            reasons.Add(RuleReasons.For(
+                RuleReasons.WrongOrigin,
+                string.Join(", ", trait.AllowedOrigins)));
+        }
+
+        if (trait.AllowedEthics.Count > 0 && !context.Ethics.Any(trait.AllowedEthics.Contains))
+        {
+            reasons.Add(RuleReasons.For(
+                RuleReasons.WrongEthics,
+                string.Join(", ", trait.AllowedEthics)));
+        }
+
+        return reasons;
     }
 
     /// <summary>
@@ -834,6 +871,16 @@ public sealed class EmpireRules(GameDatabase database)
         ValidateCivics(context, problems);
         ValidateOrigin(context, problems);
         ValidateHomeworld(context, problems);
+        ValidateRuler(context, problems);
+        ValidateForcedTraits(context, problems);
+        ValidateGovernment(context, problems);
+
+        // Needs the design rather than the context: what the game refuses here are empty fields, and
+        // the context carries the empire's choices rather than the text on it.
+        if (design is not null)
+        {
+            ValidateRequiredNames(design, problems);
+        }
 
         if (design is not null && RequiresSecondarySpecies(context))
         {
@@ -858,6 +905,153 @@ public sealed class EmpireRules(GameDatabase database)
         }
 
         return new ValidationReport(problems);
+    }
+
+    /// <summary>
+    /// The empire has to add up to a government the game recognises.
+    /// </summary>
+    /// <remarks>
+    /// The game names a government from the authority, the ethics and the civics together, shows the
+    /// answer under the authority grid, and refuses the design when nothing matches -
+    /// <c>GAMESETUP_COUNTRY_GOVERNMENT_TYPE_INVALID</c>. We derived the same answer for the header
+    /// and never objected when it came back with nothing.
+    ///
+    /// Only asked once the three things it is derived from are present, because "no government yet"
+    /// is the ordinary state of a half-built empire and the sections it comes from are already
+    /// saying so themselves.
+    /// </remarks>
+    private void ValidateGovernment(DesignContext context, List<ValidationProblem> problems)
+    {
+        if (context.Authority is not { Length: > 0 } || context.Ethics.Count == 0)
+        {
+            return;
+        }
+
+        if (DeriveGovernment(context) is null)
+        {
+            problems.Add(new ValidationProblem(
+                ValidationArea.Authority,
+                null,
+                "These ethics, authority and civics do not add up to a government the game has.",
+                []));
+        }
+    }
+
+    /// <summary>
+    /// The traits the empire's own choices impose on its founders.
+    /// </summary>
+    /// <remarks>
+    /// The game states the contract in the authority file: a <c>traits</c> list on an authority
+    /// forces those traits on the founder species, and is "only verified for empire designs, no
+    /// effect after game start". Verified for empire designs is precisely the case this app
+    /// produces, and its own empires comply - the prescripted hive minds write
+    /// <c>trait_hive_mind</c> into the species block rather than relying on the authority.
+    ///
+    /// These were computed for the picker, which showed them among the chosen traits and refused to
+    /// let them go, and never written into the design. So an empire switched to Hive Mind displayed
+    /// the trait and did not carry it.
+    /// </remarks>
+    private void ValidateForcedTraits(DesignContext context, List<ValidationProblem> problems)
+    {
+        foreach (var forced in GetWrittenForcedTraits(context).Where(t => !context.Traits.Contains(t)))
+        {
+            problems.Add(new ValidationProblem(
+                ValidationArea.Traits,
+                forced,
+                $"The species must have '{forced}' and the design does not carry it.",
+                []));
+        }
+    }
+
+    /// <summary>
+    /// The starting ruler, whose trait has to be one this empire's ruler could hold.
+    /// </summary>
+    /// <remarks>
+    /// The rules for this were written for the picker and never run at validation time, so a design
+    /// that arrived by import or by hand - an official holding a commander's trait, say - was
+    /// reported as ready to play.
+    /// </remarks>
+    private void ValidateRuler(DesignContext context, List<ValidationProblem> problems)
+    {
+        if (context.RulerTraits.Count > 1)
+        {
+            problems.Add(new ValidationProblem(
+                ValidationArea.Ruler,
+                null,
+                $"The ruler has {context.RulerTraits.Count} traits but may have one.",
+                []));
+        }
+
+        var traits = _database.Traits
+            .Where(t => t.Kind == TraitKind.StartingRuler)
+            .ToDictionary(t => t.Key, StringComparer.Ordinal);
+
+        foreach (var key in context.RulerTraits)
+        {
+            if (!traits.TryGetValue(key, out var trait))
+            {
+                problems.Add(new ValidationProblem(
+                    ValidationArea.Ruler,
+                    key,
+                    $"'{key}' is not a trait a starting ruler may have.",
+                    []));
+                continue;
+            }
+
+            if (RulerTraitObjections(trait, context) is { Count: > 0 } reasons)
+            {
+                problems.Add(new ValidationProblem(
+                    ValidationArea.Ruler, key, $"The ruler may not have '{key}'.", reasons));
+            }
+        }
+    }
+
+    /// <summary>
+    /// The fields the game insists on before it will offer a design at all.
+    /// </summary>
+    /// <remarks>
+    /// Each of these has a refusal string of its own in the game -
+    /// <c>GAMESETUP_COUNTRY_INVALID_EMPIRE_NAME</c> and its four neighbours - and none of them was
+    /// checked here. They are what a half-finished empire trips, and the failure is silent: the game
+    /// does not complain, the empire simply stops appearing in the list.
+    /// </remarks>
+    private void ValidateRequiredNames(EmpireDesign design, List<ValidationProblem> problems)
+    {
+        if (design.Name.IsEmpty)
+        {
+            problems.Add(new ValidationProblem(
+                ValidationArea.Empire, null, "The empire has no name.", []));
+        }
+
+        if (design.PlanetName.IsEmpty)
+        {
+            problems.Add(new ValidationProblem(
+                ValidationArea.Homeworld, null, "The homeworld has no name.", []));
+        }
+
+        // Stored either whole or split into two, and the game's own empires use both forms.
+        var ruler = design.Ruler.Name;
+        var named = ruler.FullNames is { IsEmpty: false }
+            || ruler.FirstName is { IsEmpty: false }
+            || ruler.SecondName is { IsEmpty: false };
+
+        if (!named)
+        {
+            problems.Add(new ValidationProblem(
+                ValidationArea.Ruler, null, "The ruler has no name.", []));
+        }
+
+        if (string.IsNullOrWhiteSpace(design.Species.NameList))
+        {
+            problems.Add(new ValidationProblem(
+                ValidationArea.Species, null, "The species has no name list.", []));
+        }
+
+        if (string.IsNullOrWhiteSpace(design.Species.Portrait))
+        {
+            problems.Add(new ValidationProblem(
+                ValidationArea.Species, null, "The species has no portrait.", []));
+        }
     }
 
     private void ValidateSpeciesClass(DesignContext context, List<ValidationProblem> problems)
@@ -942,12 +1136,19 @@ public sealed class EmpireRules(GameDatabase database)
                 ValidationArea.Ethics, key, $"'{key}' is not an ethic this game defines.", []));
         }
 
-        if (budget.IsOverspent)
+        // Exactly, not at most. ETHOS_MAX_POINTS is 3 and the game spends all three: a fanatic ethic
+        // costs 2, a regular one 1, gestalt consciousness all 3, so the only legal spends are 1+1+1,
+        // 2+1 and 3 - and every one of the fifty-two empires the game ships spends exactly three.
+        // Checking only for overspend called an empire holding a single ethic valid, and the game
+        // does not offer such an empire at all. The civics check below has always read this way.
+        if (budget.Spent != budget.Available)
         {
             problems.Add(new ValidationProblem(
                 ValidationArea.Ethics,
                 null,
-                $"Ethics cost {budget.Spent} points but only {budget.Available} are available.",
+                budget.IsOverspent
+                    ? $"Ethics cost {budget.Spent} points but only {budget.Available} are available."
+                    : $"Ethics cost {budget.Spent} points of {budget.Available}, and all of them must be spent.",
                 []));
         }
 

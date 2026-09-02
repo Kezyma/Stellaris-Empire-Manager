@@ -26,6 +26,18 @@ public sealed class ScriptLoader(LayeredContent content)
     /// <summary>Files that could not be parsed, with the reason.</summary>
     public IReadOnlyList<string> Failures => _failures;
 
+    /// <summary>
+    /// Records a file that would not parse, for a reader that does its own parsing.
+    /// </summary>
+    /// <remarks>
+    /// The prescripted-countries files are read through their own loader rather than through
+    /// <see cref="Load"/>, and were dropping a whole file on a syntax error without telling anyone -
+    /// so a patch that changed that syntax would quietly remove every built-in empire in it while
+    /// the extract command still reported success. This is where the rest of the failures collect.
+    /// </remarks>
+    public void RecordFailure(string relativePath, string reason) =>
+        _failures.Add($"{relativePath}: {reason}");
+
     /// <summary>Parses one file, or returns null when it is missing or unparseable.</summary>
     public CwDocument? Load(string relativePath)
     {

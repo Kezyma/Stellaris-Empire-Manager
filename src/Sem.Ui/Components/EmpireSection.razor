@@ -53,12 +53,19 @@
 
     <div class="sem-field">
         <label for="empire-flag-set">Special empire flags</label>
-        <select id="empire-flag-set" @onchange="e => Session.Edit(d => d.PrescriptedFlag = Chosen(e.Value?.ToString()))">
-            <option value="" selected="@string.IsNullOrEmpty(Design.PrescriptedFlag)">None</option>
+        @* Set on the box rather than by marking an option - see the note in HomeworldTab. *@
+        <select id="empire-flag-set" value="@(Design.PrescriptedFlag ?? string.Empty)"
+                @onchange="e => Session.Edit(d => d.PrescriptedFlag = Chosen(e.Value?.ToString()))">
+            <option value="">None</option>
+
+            @if (Design.PrescriptedFlag is { Length: > 0 } held && !FlagSets.Any(s => s.Key == held))
+            {
+                <option value="@held">@Localizer.Prettify(held) - not offered for this empire</option>
+            }
 
             @foreach (var set in FlagSets)
             {
-                <option value="@set.Key" selected="@(set.Key == Design.PrescriptedFlag)">@FlagSetName(set)</option>
+                <option value="@set.Key">@FlagSetName(set)</option>
             }
         </select>
     </div>
@@ -387,15 +394,45 @@
     /// </summary>
     private void RandomiseName()
     {
-        if (Session.Context is not { } context ||
-            Session.Names.Empire(context, Sources) is not { Text.Length: > 0 } chosen)
+        if (Session.Context is not { } context)
         {
             return;
         }
 
-        var text = Display(chosen);
+        // Asked again when the name it produced is one the file already has, rather than the name
+        // being written and the key quietly left behind. Rename refuses a typed name in that case
+        // and says so, which is right for a name somebody meant; a generated one carries no such
+        // intent, so the generator is simply asked for another. Bounded, because a file could in
+        // principle hold every name the generator can make.
+        EmpireNameSuggestion? chosen = null;
+        var text = string.Empty;
 
-        _clash = Session.File?.Find(text) is { } taken && !ReferenceEquals(taken, Design) ? text : null;
+        for (var attempt = 0; attempt < 8; attempt++)
+        {
+            if (Session.Names.Empire(context, Sources) is not { Text.Length: > 0 } candidate)
+            {
+                return;
+            }
+
+            chosen = candidate;
+            text = Display(candidate);
+
+            if (Session.File?.Find(text) is not { } taken || ReferenceEquals(taken, Design))
+            {
+                break;
+            }
+
+            chosen = null;
+        }
+
+        if (chosen is null)
+        {
+            // Every name it offered is taken. Said out loud rather than written half-way in.
+            _clash = text;
+            return;
+        }
+
+        _clash = null;
 
         var adjective = AdjectiveSuggestions.FirstOrDefault();
 
@@ -408,10 +445,7 @@
                 d.Adjective.SetLiteral(adjective);
             }
 
-            if (_clash is null)
-            {
-                d.Rename(text);
-            }
+            d.Rename(text);
         });
     }
 }

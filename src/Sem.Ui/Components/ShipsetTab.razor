@@ -9,6 +9,27 @@
     fleet is modelled on, so it sits with the empire's other names.
 *@
 
+@*
+    What the design holds, where this empire is not offered it: a turned-off content pack, or a set
+    the rules exclude. Without this the grid marked nothing and a design that plainly has a shipset
+    looked as though it had none. The room picker has always done this; the ships and the portraits
+    did not.
+*@
+@if (HeldButNotOffered is { } held)
+{
+    <h5 class="sem-subhead apart">Not offered for this empire</h5>
+
+    <div class="sem-thumbs">
+        <button type="button" class="sem-thumb-option selected" aria-pressed="true" disabled>
+            @if (held.ShipPreview is { Length: > 0 } ship)
+            {
+                <img class="sem-thumb" src="@Session.Data.AssetUrl(ship)" alt="@ShipSetName(held)" loading="lazy" />
+            }
+            <span class="caption">@ShipSetName(held)</span>
+        </button>
+    </div>
+}
+
 @foreach (var group in ShipSetGroups)
 {
     @*
@@ -64,6 +85,24 @@
     /// Wilderness showed a Biogenesis corvette, being a Biogenesis corvette. Both keep their place
     /// in the city list under Room, which is what they are actually for.
     /// </remarks>
+    /// <summary>
+    /// The set the design names when the groups below will not be showing it.
+    /// </summary>
+    private GraphicalCultureDefinition? HeldButNotOffered
+    {
+        get
+        {
+            if (Design.GraphicalCulture is not { Length: > 0 } key)
+            {
+                return null;
+            }
+
+            return ShipSetGroups.SelectMany(g => g.Value).Any(c => c.Key == key)
+                ? null
+                : Session.Data.Database.GraphicalCultures.FirstOrDefault(c => c.Key == key);
+        }
+    }
+
     private IEnumerable<KeyValuePair<ShipSetDefinition, IReadOnlyList<GraphicalCultureDefinition>>> ShipSetGroups
     {
         get
