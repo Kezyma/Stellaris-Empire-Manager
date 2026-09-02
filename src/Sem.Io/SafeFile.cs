@@ -153,7 +153,10 @@ public sealed class SafeFile(WritePolicy policy)
                 Thread.Sleep(delay);
                 delay *= 2;
             }
-            catch (IOException ex)
+            // Both kinds are retried above, and only one of them was wrapped on the way out - a
+            // final UnauthorizedAccessException escaped raw, with none of the explanation and none
+            // of the reassurance that the original file is intact.
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
             {
                 throw new IOException(
                     $"Failed to write '{path}' after {MaxAttempts} attempts. It may be open in another " +

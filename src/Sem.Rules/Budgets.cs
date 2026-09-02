@@ -52,6 +52,9 @@ public readonly record struct TraitBudget(Budget Points, Budget Picks);
 /// <summary>Where in a design a problem was found.</summary>
 public enum ValidationArea
 {
+    /// <summary>The empire itself: its name, and the rest of the Empire section.</summary>
+    Empire,
+
     /// <summary>The founder species' class, portrait or name.</summary>
     Species,
 

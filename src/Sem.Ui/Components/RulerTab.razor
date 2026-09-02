@@ -330,9 +330,16 @@
         {
             // An emptied box takes the block out rather than leaving an empty one, so a design
             // nobody wrote a biography for stays as it was.
+            //
+            // Reached through CustomBiography rather than through Ruler.Block, which creates the
+            // block it is asked for: clearing an empty box on a design that had no ruler block wrote
+            // an empty ruler={} into a file that had none - a design gaining a field from having one
+            // taken out of it, which is the trap CwView.RemoveAll documents. And the node was found
+            // with a null-forgiving !, which was hiding the ordinary case of there being no
+            // biography to remove.
             if (string.IsNullOrWhiteSpace(value))
             {
-                d.Ruler.Block.Remove(d.Ruler.Block.Nodes.FirstOrDefault(n => n.Key == "custom_biography")!);
+                d.Ruler.RemoveCustomBiography();
                 return;
             }
 

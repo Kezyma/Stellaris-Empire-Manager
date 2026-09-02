@@ -51,10 +51,12 @@ public sealed class BrowserDesignStore(IJSRuntime js) : IDesignStore, IAsyncDisp
                 .InvokeAsync<string?>("readStored", Key)
                 .ConfigureAwait(false);
         }
-        catch (JSException)
+        catch (Exception ex) when (ex is JSException or JSDisconnectedException)
         {
             // Storage can be switched off or full. Losing what was kept is a shame; refusing to
-            // start the app over it is worse.
+            // start the app over it is worse. A runtime that has gone away is caught with it -
+            // JSDisconnectedException does not derive from JSException, which is why DisposeAsync
+            // below names it separately.
             return null;
         }
     }
@@ -72,9 +74,11 @@ public sealed class BrowserDesignStore(IJSRuntime js) : IDesignStore, IAsyncDisp
 
             return true;
         }
-        catch (JSException)
+        catch (Exception ex) when (ex is JSException or JSDisconnectedException)
         {
-            // Storage switched off, or full. The player is told, since they asked for this one.
+            // Storage switched off, or full, or a runtime that has gone away. The player is told,
+            // since they asked for this one - and this is now the path Export reports through, so
+            // anything escaping here reaches them as an unhandled failure instead of a sentence.
             return false;
         }
     }

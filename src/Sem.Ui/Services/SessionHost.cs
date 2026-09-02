@@ -48,6 +48,13 @@ public sealed class SessionHost(
                 return _session;
             }
 
+            // Cleared before the attempt, not after it. TryOpenExistingAsync below records why the
+            // host's own file would not open, and clearing on the way out deleted that reason one
+            // line later — the desktop opened an empty session with nothing said about the file it
+            // had just failed to read. Clearing here still wipes a previous attempt's message, which
+            // is the only thing the old line was good for.
+            LoadError = null;
+
             var data = await _source.LoadAsync(cancellationToken).ConfigureAwait(false);
 
             // Before the session exists, so the first render of a picker is already the way the
@@ -87,7 +94,6 @@ public sealed class SessionHost(
             session.FileChanged += Keep;
 
             _session = session;
-            LoadError = null;
             return _session;
         }
         catch (OperationCanceledException)
@@ -178,6 +184,35 @@ public sealed class SessionHost(
         {
             return $"Your empires could not be saved: {ex.Message}";
         }
+    }
+
+    /// <summary>
+    /// Keeps the file wherever this host keeps one, after it has been handed to the player.
+    /// </summary>
+    /// <remarks>
+    /// Export writes a file the player named and then wants to call the work saved. On the desktop
+    /// that file <em>is</em> where the app keeps things, so there is nothing further to do. In a
+    /// browser it is not: the browser's own copy lives in local storage, that copy is what a reload
+    /// restores, and only <see cref="SaveAsync"/> was writing it. So an export marked the work saved,
+    /// disabled the Save button, stopped warning on the way out — and the next reload handed back the
+    /// empire as it had been before the export.
+    /// </remarks>
+    /// <returns>What went wrong, or null when the copy is safe.</returns>
+    public async Task<string?> RememberAsync()
+    {
+        if (_session is not { File: not null } session)
+        {
+            return "There is nothing open to keep.";
+        }
+
+        if (_files.SavesInPlace)
+        {
+            return null;
+        }
+
+        return await _store.WriteAsync(Kept.Encode(session.Save())).ConfigureAwait(false)
+            ? null
+            : "Your browser would not keep the file. The copy you just saved is the only one.";
     }
 
     /// <summary>

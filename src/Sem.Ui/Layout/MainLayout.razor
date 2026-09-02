@@ -126,11 +126,13 @@
     </main>
 </div>
 
-<div id="blazor-error-ui">
-    Something went wrong.
-    <a href="." class="reload">Reload</a>
-    <span class="dismiss">🗙</span>
-</div>
+@*
+    No error bar here. Both hosts carry their own — the web app styles it from css/app.css, the
+    desktop from inline rules — and a third element sharing the id made the markup invalid and, being
+    first in tree order, made itself the one Blazor's showErrorNotification found. Unstyled, and on
+    the desktop clipped inside a container pinned to the viewport, so the app could not report a
+    failure at all.
+*@
 
 @code {
     private DesignSession? _session;
@@ -340,9 +342,21 @@
         // the page to look at what a new empire starts as and going back again leaves nothing
         // behind. The game keeps a blank template of its own, which is what makes a new empire
         // playable straight away rather than an empty shell.
-        _session.CreateEmpire(file => string.IsNullOrEmpty(template)
-            ? file.Add(name)
-            : file.AddFromTemplate(template, name));
+        _session.CreateEmpire(file =>
+        {
+            var design = string.IsNullOrEmpty(template)
+                ? file.Add(name)
+                : file.AddFromTemplate(template, name);
+
+            // Named as well as keyed. The game's blank template carries name="" - it is a template
+            // rather than a playable empire - so a new empire arrived with the key standing in for a
+            // name everywhere it was shown, while the design itself had none. Harmless until the
+            // rules learned to check for it, at which point a brand new empire read "the empire has
+            // no name" beside a heading showing exactly the name it appeared to have.
+            design.Name.SetLiteral(name);
+
+            return design;
+        });
 
         Navigation.NavigateTo("designer");
     }
@@ -417,27 +431,47 @@
     {
         var name = _session!.FileName is { Length: > 0 } existing ? existing : EmpireDesignsFile.FileName;
 
-        switch (await Files.SaveAsync(name, _session.Save()))
+        try
         {
-            case SaveOutcome.Saved:
-                _message = null;
-                _session.MarkSaved();
-                break;
+            switch (await Files.SaveAsync(name, _session.Save()))
+            {
+                case SaveOutcome.Saved:
+                    // Kept before it is called saved. The file the player named is not the copy this
+                    // app restores from - in a browser that is local storage - and marking the work
+                    // saved without writing it there disabled the Save button, stopped the warning on
+                    // the way out, and lost the edit on the next reload.
+                    if (await Host.RememberAsync() is { } problem)
+                    {
+                        _message = (problem, true);
+                        break;
+                    }
 
-            // They closed the dialog. They know what they did, and nothing was written or handed
-            // over, so there is nothing to report.
-            case SaveOutcome.Cancelled:
-                break;
+                    _message = null;
+                    _session.MarkSaved();
+                    break;
 
-            case SaveOutcome.Downloaded:
-                _message = ($"This browser has no save dialog, so {name} was downloaded instead. "
-                    + "Move it into your Stellaris folder for the game to find it.", false);
-                break;
+                // They closed the dialog. They know what they did, and nothing was written or handed
+                // over, so there is nothing to report.
+                case SaveOutcome.Cancelled:
+                    break;
 
-            case SaveOutcome.Refused:
-                _message = ($"This browser would not open a save dialog, so {name} was downloaded "
-                    + "instead. Move it into your Stellaris folder for the game to find it.", false);
-                break;
+                case SaveOutcome.Downloaded:
+                    _message = ($"This browser has no save dialog, so {name} was downloaded instead. "
+                        + "Move it into your Stellaris folder for the game to find it.", false);
+                    break;
+
+                case SaveOutcome.Refused:
+                    _message = ($"This browser would not open a save dialog, so {name} was downloaded "
+                        + "instead. Move it into your Stellaris folder for the game to find it.", false);
+                    break;
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidOperationException)
+        {
+            // The desktop throws where a browser returns a value: no designs folder to write to, or a
+            // file something else is holding. This was the one save path with no guard, so those
+            // reached the error bar as an unhandled failure instead of the sentence written for them.
+            _message = ($"Your empires could not be saved: {ex.Message}", true);
         }
     }
 }

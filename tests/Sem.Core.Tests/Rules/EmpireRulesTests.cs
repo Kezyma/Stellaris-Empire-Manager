@@ -67,6 +67,168 @@ public sealed class EmpireRulesTests
         AssertProblem(design, ValidationArea.Ethics, "no ethics");
     }
 
+    /// <summary>
+    /// The game spends the whole ethos, and an empire that does not is one it will not offer.
+    /// </summary>
+    /// <remarks>
+    /// Only overspending was rejected, so an empire holding a single ethic - one point of three -
+    /// was reported as ready to play. The failure is invisible in game: a design the creator refuses
+    /// does not raise an error, it simply stops appearing in the list.
+    /// </remarks>
+    [Fact]
+    public void AnEmpireThatLeavesEthicsPointsUnspentIsRejected()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.SetEthics(["ethic_militarist"]);
+
+        AssertProblem(design, ValidationArea.Ethics, "must be spent");
+    }
+
+    /// <summary>Two points of three is just as short as one, and just as refused.</summary>
+    [Fact]
+    public void OneFanaticEthicOnItsOwnIsRejected()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.SetEthics(["ethic_fanatic_militarist"]);
+
+        AssertProblem(design, ValidationArea.Ethics, "must be spent");
+    }
+
+    /// <summary>And gestalt consciousness spends all three on its own, so it is complete alone.</summary>
+    [Fact]
+    public void GestaltConsciousnessSpendsTheWholeEthosByItself()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.SetEthics(["ethic_gestalt_consciousness"]);
+
+        Assert.DoesNotContain(
+            Validate(design).Problems,
+            p => p.Area == ValidationArea.Ethics && p.Message.Contains("must be spent", StringComparison.Ordinal));
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // The fields the game insists on
+    // -----------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// Five fields have a refusal string of their own in the game and none of them was checked, so a
+    /// half-finished empire read as ready to play and then never appeared in the game's list.
+    /// </summary>
+    [Fact]
+    public void AnEmpireWithNoNameIsRejected()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.Name.Key = string.Empty;
+
+        AssertProblem(design, ValidationArea.Empire, "no name");
+    }
+
+    [Fact]
+    public void AHomeworldWithNoNameIsRejected()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.PlanetName.Key = string.Empty;
+
+        AssertProblem(design, ValidationArea.Homeworld, "no name");
+    }
+
+    [Fact]
+    public void ARulerWithNoNameIsRejected()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.Ruler.Name.GetOrAddFullNames().Key = string.Empty;
+
+        AssertProblem(design, ValidationArea.Ruler, "no name");
+    }
+
+    [Fact]
+    public void ASpeciesWithNoNameListIsRejected()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.Species.NameList = null;
+
+        AssertProblem(design, ValidationArea.Species, "name list");
+    }
+
+    [Fact]
+    public void ASpeciesWithNoPortraitIsRejected()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.Species.Portrait = null;
+
+        AssertProblem(design, ValidationArea.Species, "portrait");
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // The ruler
+    // -----------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// The picker has always refused this and validation never looked, so an imported design could
+    /// give an official a commander's trait and be reported as ready to play.
+    /// </summary>
+    [Fact]
+    public void ARulerTraitBelongingToAnotherLeaderClassIsRejected()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.Ruler.LeaderClass = "official";
+        design.Ruler.SetTraits(["leader_trait_fleet_organiser"]);
+
+        AssertProblem(design, ValidationArea.Ruler, "may not have");
+    }
+
+    [Fact]
+    public void ARulerTraitTheirOwnClassAllowsIsAccepted()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.Ruler.LeaderClass = "commander";
+        design.Ruler.SetTraits(["leader_trait_fleet_organiser"]);
+
+        Assert.DoesNotContain(
+            Validate(design).Problems,
+            p => p.Area == ValidationArea.Ruler && p.Message.Contains("may not have", StringComparison.Ordinal));
+    }
+
+    // -----------------------------------------------------------------------------------------
+    // Traits the empire's own choices impose
+    // -----------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// The game verifies these for empire designs specifically. We showed them in the picker and
+    /// never wrote them into the design, so an empire could display a trait it did not carry.
+    /// </summary>
+    [Fact]
+    public void AnOriginsForcedTraitMustBeCarriedByTheDesign()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.Origin = "origin_void_dwellers";
+
+        AssertProblem(design, ValidationArea.Traits, "must have 'trait_void_dweller_1'");
+    }
+
+    [Fact]
+    public void AnOriginsForcedTraitCarriedByTheDesignIsAccepted()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.Origin = "origin_void_dwellers";
+        design.Species.SetTraits([.. design.Species.Traits, "trait_void_dweller_1"]);
+
+        Assert.DoesNotContain(
+            Validate(design).Problems,
+            p => p.Message.Contains("must have 'trait_void_dweller_1'", StringComparison.Ordinal));
+    }
+
+    /// <summary>A ruler has one trait, and a design carrying two is one the game will not offer.</summary>
+    [Fact]
+    public void ARulerHoldingTwoTraitsIsRejected()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.Ruler.LeaderClass = "official";
+        design.Ruler.SetTraits(["leader_trait_principled", "leader_trait_fleet_organiser"]);
+
+        AssertProblem(design, ValidationArea.Ruler, "may have one");
+    }
+
     [Fact]
     public void EthicOptionsDisableWhatWouldBreakARule()
     {
@@ -633,6 +795,11 @@ public sealed class EmpireRulesTests
         var design = RulesTestData.ValidEmpire();
         design.Origin = "origin_void_dwellers";
         design.PlanetClass = "pc_continental";
+
+        // The origin forces this, and a design that has been through the game carries it. Written
+        // here because this test builds its design by hand rather than through the session, which is
+        // what puts forced traits in for the player.
+        design.Species.SetTraits([.. design.Species.Traits, "trait_void_dweller_1"]);
 
         var report = Validate(design);
 

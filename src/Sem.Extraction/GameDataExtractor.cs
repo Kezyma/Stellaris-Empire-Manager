@@ -21,6 +21,21 @@ public sealed class GameDataExtractor(LayeredContent content)
     /// </summary>
     public const int SchemaVersion = GameDatabase.CurrentSchemaVersion;
 
+    /// <summary>
+    /// Which build of this app the extraction came from.
+    /// </summary>
+    /// <remarks>
+    /// Stamped into every database and, for a long time, read by nothing. The schema version only
+    /// changes when the <em>shape</em> of the data does, so every change to what extraction
+    /// <em>produces</em> - new artwork, new text kept, a field read that was not read before - left
+    /// an existing cache looking perfectly valid. The desktop went on serving data from an older
+    /// build with no way to notice.
+    /// </remarks>
+    public static string ExtractorVersion { get; } =
+        typeof(GameDataExtractor).Assembly
+            .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
+        ?? "0.0.0";
+
     private readonly LayeredContent _content = content ?? throw new ArgumentNullException(nameof(content));
 
     /// <summary>The installation this reads from, when a layer is backed by one.</summary>
@@ -134,9 +149,7 @@ public sealed class GameDataExtractor(LayeredContent content)
         {
             SchemaVersion = SchemaVersion,
             GameVersion = ReadGameVersion() ?? "unknown",
-            ExtractorVersion = typeof(GameDataExtractor).Assembly
-                .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
-                ?? "0.0.0",
+            ExtractorVersion = ExtractorVersion,
             Defines = defines,
             Dlc = dlc,
             Archetypes = archetypes,

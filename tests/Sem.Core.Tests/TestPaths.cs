@@ -28,6 +28,22 @@ public static class TestPaths
     public static IReadOnlyList<string> SandboxDesignFiles =>
         EnumerateSandboxFiles("userdata", "user_empire_designs_v3.4.txt");
 
+    /// <summary>
+    /// The dated backups beside the live file, which the corpus deliberately leaves out.
+    /// </summary>
+    /// <remarks>
+    /// Kept apart rather than folded into <see cref="SandboxDesignFiles"/>, because the reason for
+    /// that narrowing still stands: a corpus that swept these in was measuring against ninety-odd
+    /// empires the player no longer has. But one test wants them specifically - a file written
+    /// before 4.x is the only place some older spellings survive, and the pre-4.x prescripted flag
+    /// block is one of them - and it had been looking for them in the narrowed list, where they can
+    /// never be, so it silently skipped every run.
+    /// </remarks>
+    public static IReadOnlyList<string> SandboxDesignBackups =>
+    [
+        .. EnumerateSandboxFiles("userdata", "user_empire_designs_v3.4_*.txt")
+    ];
+
     /// <summary>Copies of the built-in prescripted empire files. Empty when absent.</summary>
     public static IReadOnlyList<string> SandboxPrescriptedFiles =>
         EnumerateSandboxFiles(Path.Combine("gamefiles", "prescripted_countries"), "*.txt");

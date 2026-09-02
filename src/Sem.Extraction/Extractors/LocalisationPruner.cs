@@ -38,6 +38,12 @@ internal static partial class LocalisationPruner
         "SELECT_SYSTEM_INITIALIZER_LABEL", "SYSTEM_NAME",
         "RANDOM_FRONTEND_NAME", "random_system_initializer_DESC",
         "EMPIRE_ADVISOR", "EMPIRE_CREATION_ROOM_APPEARANCE", "EMPIRE_CREATION_CITY_APPEARANCE", "SHIPSETS_LABEL",
+
+        // The advisor's other mode. The game frames the voice as a choice between letting the empire
+        // pick one and naming one, and a design that names none is the first of those - so the words
+        // for it are needed as much as any voice's name.
+        "SETTINGS_VOICE_TYPE_auto_advisor_voice_type",
+        "SETTINGS_VOICE_TYPE_auto_advisor_voice_type_DESC",
         "SHIPSET_MECHANICAL", "SHIPSET_BIOLOGICAL",
         "EMPIRE_FLAG", "CHOOSE_SYMBOL", "EMBLEM_BACKGROUND_PATTERN",
         "PRIMARY_COLOR", "SECONDARY_COLOR", "TERTIARY_COLOR",

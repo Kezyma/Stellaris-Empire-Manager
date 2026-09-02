@@ -35,15 +35,22 @@
 
 <div class="sem-field">
     <label for="@Field("list")">@Session.Localizer.Label("NAME_LIST", "Name List")</label>
-    <select id="@Field("list")" @onchange="e => Session.Edit(d => Species.NameList = e.Value?.ToString())">
+    @* Set on the box rather than by marking an option - see the note in HomeworldTab. *@
+    <select id="@Field("list")" value="@(Species.NameList ?? string.Empty)"
+            @onchange="e => Session.Edit(d => Species.NameList = e.Value?.ToString())">
+        @if (Species.NameList is { Length: > 0 } held && !Offered.Contains(held))
+        {
+            <optgroup label="Not offered for this empire">
+                <option value="@held">@Localizer.Prettify(held)</option>
+            </optgroup>
+        }
+
         @foreach (var group in NameLists)
         {
             <optgroup label="@group.Key">
                 @foreach (var list in group)
                 {
-                    <option value="@list.Key" selected="@(list.Key == Species.NameList)">
-                        @ListName(list)
-                    </option>
+                    <option value="@list.Key">@ListName(list)</option>
                 }
             </optgroup>
         }
@@ -147,6 +154,13 @@
     /// names, and an empire named from one was checked in game and plays. Unselectable here means
     /// the designer does not draw it, not that the game refuses it.
     /// </remarks>
+    /// <summary>
+    /// Every list the box has an entry for, so that a design naming something else can be shown
+    /// holding it rather than appearing to hold whatever happens to be first.
+    /// </summary>
+    private IReadOnlySet<string> Offered =>
+        Session.Data.Database.NameLists.Select(n => n.Key).ToHashSet(StringComparer.Ordinal);
+
     private IEnumerable<IGrouping<string, NameListDefinition>> NameLists =>
         Session.Data.Database.NameLists
             .GroupBy(n => _evaluator.IsSatisfied(n.Selectable, Context) ? n.Category ?? "Other" : NotOffered)

@@ -36,7 +36,13 @@ public sealed class DesktopFileExchange(SafeFile file, string designsPath) : IFi
     /// the window's own address opened nothing anywhere. The same design read from the same link
     /// works on the site, which is the thing another person can actually be sent to.
     /// </remarks>
-    public string? ShareBaseUri => "https://kezyma.github.io/Stellaris-Empire-Manager/";
+    public string? ShareBaseUri => PublishedSite;
+
+    /// <summary>
+    /// The address the site is published at, shared with the stand-in used when no designs file was
+    /// found - the question is about the host, and both of them are the same host.
+    /// </summary>
+    internal const string PublishedSite = "https://kezyma.github.io/Stellaris-Empire-Manager/";
 
     /// <summary>
     /// Puts text on the Windows clipboard.
@@ -47,7 +53,13 @@ public sealed class DesktopFileExchange(SafeFile file, string designsPath) : IFi
     /// belongs to the UI thread and can be held by another process, which is what the retry count
     /// is for; a refusal is reported rather than swallowed.
     /// </remarks>
-    public Task<bool> CopyToClipboardAsync(string text)
+    public Task<bool> CopyToClipboardAsync(string text) => CopyAsync(text);
+
+    /// <summary>
+    /// The clipboard itself, which belongs to the window rather than to the designs file - so the
+    /// stand-in used when no file was found shares it.
+    /// </summary>
+    internal static Task<bool> CopyAsync(string text)
     {
         ArgumentNullException.ThrowIfNull(text);
 

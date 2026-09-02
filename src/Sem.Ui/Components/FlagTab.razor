@@ -184,11 +184,21 @@
 
     private async Task Reveal()
     {
-        _module ??= await Js.InvokeAsync<IJSObjectReference>(
-            "import", "./_content/Sem.Ui/sem.js").ConfigureAwait(true);
+        // Guarded because this runs after a render and the page may already have gone - navigating
+        // away mid-render otherwise surfaced as an unhandled error. Every DisposeAsync in the app
+        // catches this; the two Reveal calls did not.
+        try
+        {
+            _module ??= await Js.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/Sem.Ui/sem.js").ConfigureAwait(true);
 
-        await _module.InvokeVoidAsync("revealSelected", _emblems, ".sem-thumb-option.selected")
-            .ConfigureAwait(true);
+            await _module.InvokeVoidAsync("revealSelected", _emblems, ".sem-thumb-option.selected")
+                .ConfigureAwait(true);
+        }
+        catch (JSDisconnectedException)
+        {
+            // The page went away first; there was nothing left to scroll.
+        }
     }
 
     /// <summary>Releases the script reference when the section closes, as the room picker does.</summary>

@@ -20,7 +20,8 @@
         <div class="sem-designer">
             <div class="sem-sections">
                 <DesignerSection OpenSection="@_open" OnToggle="Open" Title="Empire"
-                                 Summary="@Session.Localizer.Name(Session.Current.Name, Session.Current.Key)">
+                                 Summary="@Session.Localizer.Name(Session.Current.Name, Session.Current.Key)"
+                                 Problems="@Problems(ValidationArea.Empire)">
                     <EmpireSection />
                 </DesignerSection>
 

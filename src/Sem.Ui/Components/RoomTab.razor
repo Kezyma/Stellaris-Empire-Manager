@@ -184,11 +184,20 @@
     /// </remarks>
     private async Task Reveal(ElementReference list)
     {
-        _module ??= await Js.InvokeAsync<IJSObjectReference>(
-            "import", "./_content/Sem.Ui/sem.js").ConfigureAwait(true);
+        // Guarded because this runs after a render and the page may already have gone - see the same
+        // note in FlagTab.
+        try
+        {
+            _module ??= await Js.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/Sem.Ui/sem.js").ConfigureAwait(true);
 
-        await _module.InvokeVoidAsync("revealSelected", list, ".sem-thumb-option.selected")
-            .ConfigureAwait(true);
+            await _module.InvokeVoidAsync("revealSelected", list, ".sem-thumb-option.selected")
+                .ConfigureAwait(true);
+        }
+        catch (JSDisconnectedException)
+        {
+            // The page went away first; there was nothing left to scroll.
+        }
     }
 
     /// <summary>

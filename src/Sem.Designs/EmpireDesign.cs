@@ -87,12 +87,28 @@ public sealed class EmpireDesign : CwView
 
     /// <summary>
     /// A named flag preset from <c>common/prescripted_flags</c>, used instead of
-    /// <see cref="Flag"/> by a few empires. Named <c>flags</c> before 4.x.
+    /// <see cref="Flag"/> by a few empires.
     /// </summary>
+    /// <remarks>
+    /// Two spellings, and they differ in shape as well as in name: the current game writes the
+    /// scalar <c>flag="empire_blorg"</c>, while before 4.x it wrote a block holding a list,
+    /// <c>flags={ "prescripted_blorg" }</c>. Only the scalar was read, so a design saved by an older
+    /// game appeared to have no preset flag at all - and since the preset overrides
+    /// <see cref="Flag"/> in game, editing the flag on such a design silently did nothing: the old
+    /// block sat above the edit and still won.
+    ///
+    /// So the old form is read, and writing takes it out. Preserving it untouched was the bug rather
+    /// than the caution: it is not an unmodelled field sitting harmlessly beside ours, it is the same
+    /// field in an older hand, contradicting what the player just chose.
+    /// </remarks>
     public string? PrescriptedFlag
     {
-        get => GetString("flag");
-        set => SetString("flag", value);
+        get => GetString("flag") ?? GetBlockElements("flags").FirstOrDefault();
+        set
+        {
+            SetString("flag", value);
+            RemoveAll("flags");
+        }
     }
 
     /// <summary>

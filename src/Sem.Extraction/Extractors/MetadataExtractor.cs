@@ -132,8 +132,12 @@ internal static class MetadataExtractor
             {
                 file = PrescriptedCountriesFile.Load(loader.Content.Read(path));
             }
-            catch (CwSyntaxException)
+            catch (CwSyntaxException ex)
             {
+                // Recorded rather than dropped in silence, the way ScriptLoader records the same
+                // failure. A game patch that changes this syntax otherwise removed a whole file of
+                // built-in empires from the site while the extract command reported success.
+                loader.RecordFailure(path, ex.Message);
                 continue;
             }
 
@@ -183,8 +187,12 @@ internal static class MetadataExtractor
             {
                 file = PrescriptedCountriesFile.Load(loader.Content.Read(path));
             }
-            catch (CwSyntaxException)
+            catch (CwSyntaxException ex)
             {
+                // As above. This one matters more: the file it fails on may be the one holding the
+                // blank template, and without that a new empire is a bare key= block with nothing in
+                // it, presented to the player as a wall of validation problems.
+                loader.RecordFailure(path, ex.Message);
                 continue;
             }
 

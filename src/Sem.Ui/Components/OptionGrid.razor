@@ -248,16 +248,16 @@
     /// unavailable to a reader rather than made inert, and the press stopped here instead, which is
     /// how the trait list has always done it.
     /// </remarks>
-    private void Choose(GridOption option)
+    private Task Choose(GridOption option)
     {
         // A finger has no hover, so a tap is also how the panel is asked about something. Set for
         // a blocked option too — being told why is the only thing left to do with one.
         _hovered = option.Key;
 
-        if (!Blocked(option))
-        {
-            _ = OnSelect.InvokeAsync(option.Key);
-        }
+        // Returned rather than discarded. Dropped into a variable, anything a picker's own handler
+        // threw went into a Task nobody awaited and was lost - the click simply did nothing, with
+        // no error anywhere to say why. OptionCard has always returned it.
+        return Blocked(option) ? Task.CompletedTask : OnSelect.InvokeAsync(option.Key);
     }
 
     private static string ClassFor(GridOption option, string baseClass)
