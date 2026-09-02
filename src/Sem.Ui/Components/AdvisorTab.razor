@@ -11,12 +11,17 @@
     @*
         The first of the game's two modes, and for a long time the one no control could reach: every
         card wrote a voice and nothing wrote none, so an empire that had been left to choose for
-        itself could not be put back that way once anything was clicked. The game's own wording, and
-        the same answer the room picker's None tile gives - a design may name nothing, and there has
-        to be a way back to naming nothing.
+        itself could not be put back that way once anything was clicked. The same answer the room
+        picker's None tile gives - a design may name nothing, and there has to be a way back to
+        naming nothing.
+
+        "Automatic", rather than the game's own "Based on Government" and the sentence of
+        explanation under it. This sits at the head of a grid of named voices, where the only thing
+        worth saying is that this card is not one of them - the game has room for a paragraph beside
+        a pair of radio buttons and a card has room for a word. Written here rather than read,
+        because the game ships no string that says just this.
     *@
-    <OptionCard Name="@Session.Localizer.Text("SETTINGS_VOICE_TYPE_auto_advisor_voice_type", "Based on Government")"
-                Description="@Session.Localizer.Text("SETTINGS_VOICE_TYPE_auto_advisor_voice_type_DESC", string.Empty)"
+    <OptionCard Name="Automatic"
                 Selected="@string.IsNullOrEmpty(Design.AdvisorVoiceType)"
                 OnSelect="() => Session.Edit(d => d.AdvisorVoiceType = null)" />
 
