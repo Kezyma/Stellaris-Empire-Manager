@@ -287,6 +287,53 @@ public sealed class DesignSession
     }
 
     /// <summary>
+    /// Renames the empire, refusing a name another empire in the file already has.
+    /// </summary>
+    /// <remarks>
+    /// The file keys empires by name, so two of a name would make one of them unreachable. Rather
+    /// than silently keeping the old key - which left the two disagreeing with no sign of it - the
+    /// caller is told no and says so.
+    ///
+    /// Here rather than in the section that used to own it, because the lite editor names the empire
+    /// too, and a second copy of this rule is a second answer to "is that name taken". How the
+    /// display name is written is the caller's, though: a name picked from the generator is stored as
+    /// the shape and the pieces the game would have stored, and only a typed one is stored as text.
+    /// </remarks>
+    /// <param name="name">The new name.</param>
+    /// <param name="writeDisplayName">
+    /// How to record it as the name shown. Omitted, it is written as text somebody typed.
+    /// </param>
+    /// <returns>False when the name is taken, in which case nothing was changed.</returns>
+    public bool TryRename(string? name, Action<EmpireDesign>? writeDisplayName = null)
+    {
+        if (Current is null || string.IsNullOrWhiteSpace(name))
+        {
+            return false;
+        }
+
+        if (File?.Find(name) is { } taken && !ReferenceEquals(taken, Current))
+        {
+            return false;
+        }
+
+        Edit(design =>
+        {
+            if (writeDisplayName is not null)
+            {
+                writeDisplayName(design);
+            }
+            else
+            {
+                design.Name.SetLiteral(name);
+            }
+
+            design.Rename(name);
+        });
+
+        return true;
+    }
+
+    /// <summary>
     /// The choices that decide which traits the empire imposes on its founders.
     /// </summary>
     private static string Shape(EmpireDesign design) => string.Join(

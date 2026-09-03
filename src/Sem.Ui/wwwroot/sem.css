@@ -3784,6 +3784,294 @@ button.icon .sem-action-icon { display: block; }
     font-size: var(--text-lg);
 }
 
+/* ------------------------------------------------------------------ the lite editor
+
+   The card, with everything on it pressable.
+
+   The whole visual idea is that this reads as the empire and not as a form: no field borders, no
+   labels floating over boxes. So every target is a bare button that inherits its surroundings and
+   only admits to being a button when the pointer is over it. The hover treatment is the one thing
+   holding the affordance up, which is why it is a border and a background rather than a colour
+   change alone - a colour alone would be invisible to anyone who cannot see it, and the focus ring
+   below is what answers that.
+*/
+.sem-lite {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--space-lg);
+    max-width: 56rem;
+}
+
+/* Every pressable thing on the card, which is nearly all of it. */
+.sem-lite button {
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    background: none;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    padding: var(--space-2xs) var(--space-xs);
+    cursor: pointer;
+}
+
+.sem-lite button:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent-dim);
+}
+
+.sem-lite-shell {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+}
+
+.sem-lite-actions {
+    display: flex;
+    gap: var(--space-sm);
+    justify-content: flex-end;
+}
+
+/* The scene, which is the biggest target and the one that looks least like a button. */
+.sem-lite-scene {
+    position: relative;
+    padding: 0;
+    overflow: hidden;
+}
+
+/* The pencil that admits the scene is pressable, since nothing else about a photograph does. */
+.sem-lite-hint {
+    position: absolute;
+    top: var(--space-sm);
+    right: var(--space-sm);
+    display: flex;
+    padding: var(--space-2xs);
+    border-radius: var(--radius);
+    background: rgb(0 0 0 / 0.55);
+    color: var(--text);
+    opacity: 0;
+}
+
+.sem-lite-scene:hover .sem-lite-hint,
+.sem-lite-scene:focus-visible .sem-lite-hint { opacity: 1; }
+
+/* A finger has no hover, so there it is simply always shown. */
+@media (hover: none) {
+    .sem-lite-hint { opacity: 1; }
+}
+
+.sem-lite-identity {
+    display: flex;
+    align-items: center;
+    gap: var(--gap);
+}
+
+.sem-lite-flag { padding: var(--space-2xs); flex-shrink: 0; }
+
+.sem-lite-titles { flex: 1; min-width: 0; }
+
+.sem-lite-name {
+    display: block;
+    width: 100%;
+    font-size: var(--text-xl);
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+/* The field that replaces it, sized to sit exactly where the name was. */
+.sem-lite-name-field {
+    width: 100%;
+    font-size: var(--text-xl);
+    font-weight: 600;
+    line-height: 1.2;
+    padding: var(--space-2xs) var(--space-xs);
+}
+
+.sem-lite-sub {
+    display: block;
+    width: 100%;
+    color: var(--text-dim);
+    font-size: var(--text-sm);
+}
+
+.sem-lite-sub.faint { color: var(--text-faint); }
+
+.sem-lite-settings { flex-shrink: 0; }
+
+.sem-lite-species {
+    display: flex;
+    gap: var(--gap);
+    align-items: flex-start;
+}
+
+.sem-lite-face { padding: 0; flex-shrink: 0; }
+
+.sem-lite-face img,
+.sem-lite-noface {
+    display: block;
+    width: var(--face-w);
+    height: var(--face-h);
+    object-fit: cover;
+    object-position: top center;
+    border-radius: var(--radius);
+}
+
+.sem-lite-noface { background: var(--bg-raised); border: 1px solid var(--border); }
+
+.sem-lite-about {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    align-items: flex-start;
+}
+
+.sem-lite-species-name { display: block; }
+
+.sem-lite-species-name .name { font-weight: 600; }
+
+.sem-lite-species-name .kind {
+    display: block;
+    color: var(--text-dim);
+    font-size: var(--text-sm);
+}
+
+.sem-lite-empty { color: var(--text-faint); font-size: var(--text-sm); }
+
+/*
+   A row of chips. The row is a plain container and its label is the button, because each chip is
+   already a button of its own - it opens the popover describing the option - and one cannot sit
+   inside the other.
+*/
+.sem-lite-chips {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.sem-lite-chips .heading {
+    color: var(--text-dim);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+}
+
+/*
+   The rest, as tiles. Artwork where the game has any and words where it has none, which is why the
+   picture is optional and the label and value are not.
+*/
+.sem-lite-tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: var(--space-md);
+}
+
+.sem-lite-tile {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    padding: var(--space-sm);
+    border-color: var(--border);
+    background: var(--bg-raised);
+}
+
+.sem-lite-tile .art {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: contain;
+    border-radius: var(--radius);
+}
+
+.sem-lite-tile .label {
+    color: var(--text-dim);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.sem-lite-tile .value {
+    font-size: var(--text-sm);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+    .sem-lite { padding: var(--space-md); }
+
+    .sem-lite-tiles { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+}
+
+/* ------------------------------------------------------------------ the editor dialog
+
+   The same backdrop and sheet as a confirmation, sized for an editor instead of a question.
+
+   Three differences, and each is the reason this is not just a wider ConfirmDialog. It is capped in
+   height rather than growing with its content, because the flag picker is three hundred emblems and
+   the trait picker a hundred and seventeen rows. Its middle scrolls while its head and its Done stay
+   put, so closing does not mean scrolling back. And its padding moves off the sheet onto the three
+   parts, so the scrollbar runs the full height of the box rather than floating inside a margin.
+*/
+.sem-editor-modal > .sheet {
+    width: min(64rem, 100%);
+    max-height: min(85vh, 60rem);
+    padding: 0;
+    gap: 0;
+    overflow: hidden;
+}
+
+.sem-editor-modal > .sheet > .head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+    padding: var(--space-lg) var(--space-xl);
+    border-bottom: 1px solid var(--border);
+}
+
+.sem-editor-modal > .sheet > .head h2 { flex: 1; min-width: 0; }
+
+/* The one part that scrolls. min-height:0 because a flex child will not shrink below its content
+   without it, and without that the sheet grows past its own max-height and the page scrolls
+   instead — which is the failure this whole block exists to avoid. */
+.sem-editor-modal > .sheet > .body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: var(--space-xl);
+}
+
+.sem-editor-modal > .sheet > .choices {
+    padding: var(--space-lg) var(--space-xl);
+    border-top: 1px solid var(--border);
+}
+
+/*
+   Nothing here overrides the pickers. They lay themselves out with auto-fit against the space they
+   actually have rather than against the window, so the sheet's own width is what they measure and
+   the two-column flag picker still gets two columns inside it. Checked rather than assumed.
+*/
+
+@media (max-width: 720px) {
+    .sem-editor-modal > .sheet {
+        max-height: 100%;
+        width: 100%;
+    }
+
+    .sem-editor-modal > .sheet > .head,
+    .sem-editor-modal > .sheet > .body,
+    .sem-editor-modal > .sheet > .choices {
+        padding-left: var(--space-lg);
+        padding-right: var(--space-lg);
+    }
+}
+
 .sem-modal p {
     margin: 0;
     color: var(--text-dim);

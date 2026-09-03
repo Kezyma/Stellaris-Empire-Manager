@@ -353,19 +353,10 @@
             return;
         }
 
-        var taken = Session.File?.Find(name);
-        _clash = taken is not null && !ReferenceEquals(taken, Design) ? name : null;
-
-        if (_clash is not null)
-        {
-            return;
-        }
-
-        Session.Edit(d =>
-        {
-            Write(d, name);
-            d.Rename(name);
-        });
+        // The rule itself is the session's, since the lite editor names the empire too and two
+        // copies of "is that name taken" is two answers to it. How the name is written stays here,
+        // because only this component knows which of the generator's suggestions it came from.
+        _clash = Session.TryRename(name, d => Write(d, name)) ? null : name;
     }
 
     /// <summary>

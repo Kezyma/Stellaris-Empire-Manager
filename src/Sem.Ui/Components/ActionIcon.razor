@@ -53,13 +53,34 @@
             <path d="M9 9h10v12H9z" />
             <path d="M15 5H5v12" />
             break;
+
+        case "lite":
+            @* One large pane over two small ones: the card, which is one thing to read. *@
+            <path d="M4 4h16v9H4z" />
+            <path d="M4 17h7v3H4zM13 17h7v3h-7z" />
+            break;
+
+        case "advanced":
+            @* A stack of rows: the sections, which are a list of them. *@
+            <path d="M4 5h16M4 10h16M4 15h16M4 20h16" />
+            break;
+
+        case "close":
+            @* A cross, for the corner of a dialog. *@
+            <path d="M6 6l12 12M18 6L6 18" />
+            break;
+
+        case "edit-pencil":
+            @* The pencil again, small, for the hint that a thing on the card can be pressed. *@
+            <path d="M4 20h4L20 8a2.8 2.8 0 0 0-4-4L4 16z" />
+            break;
     }
 </svg>
 
 @code {
     /// <summary>
-    /// Which glyph: <c>save</c>, <c>share</c>, <c>delete</c>, <c>revert</c>, <c>edit</c> or
-    /// <c>duplicate</c>.
+    /// Which glyph: <c>save</c>, <c>share</c>, <c>delete</c>, <c>revert</c>, <c>edit</c>,
+    /// <c>duplicate</c>, <c>close</c>, <c>edit-pencil</c>, <c>lite</c> or <c>advanced</c>.
     /// </summary>
     [Parameter, EditorRequired]
     public required string Name { get; set; }

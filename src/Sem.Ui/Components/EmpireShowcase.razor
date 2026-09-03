@@ -314,154 +314,71 @@
     private string? Biography => Design.Species.Biography;
 
     /// <summary>
-    /// The design read against the rules, worked out once per empire shown.
+    /// Everything derived about this empire: the rules' reading of it, the artwork behind each
+    /// choice, and the sentences under them.
     /// </summary>
     /// <remarks>
-    /// The session keeps a context for the empire being edited, and this is not necessarily that
-    /// one: the select screen shows empires the player has not opened, and the game's own, which are
-    /// not in their file at all. So it builds its own, and holds it until the empire changes.
+    /// Shared with the lite editor, which arranges the same facts for editing rather than for
+    /// reading. Held rather than rebuilt per render: building a context walks every government the
+    /// game defines and this panel asks for one a dozen times while it draws, which is the mistake
+    /// the empire list made before.
     /// </remarks>
-    private DesignContext Context => _cached ??= Session.Rules.CreateContext(Design, Session.OwnedDlc);
+    private EmpireView View => _view ??= new EmpireView(Session, Design);
 
-    private DesignContext? _cached;
-
-    private ValidationReport Report => _report ??= Session.Rules.Validate(Context, Design);
-
-    private ValidationReport? _report;
+    private EmpireView? _view;
 
     /// <summary>
     /// Forgets what was worked out, so the next render works it out again.
     /// </summary>
     /// <remarks>
     /// Both a different empire and an edit to the same one arrive here, and both invalidate
-    /// everything derived. The holding is not to survive a render but to survive one: a context
-    /// is read a dozen times while the panel draws, and building it a dozen times was the mistake
-    /// the empire list made before.
+    /// everything derived.
     /// </remarks>
-    protected override void OnParametersSet()
-    {
-        _cached = null;
-        _report = null;
-    }
+    protected override void OnParametersSet() => _view = null;
 
-    private GameDatabase Database => Session.Data.Database;
+    private DesignContext Context => View.Context;
 
-    private RoomDefinition? Room =>
-        Database.Rooms.FirstOrDefault(r => r.Key == Design.Room);
+    private ValidationReport Report => View.Report;
 
-    /// <summary>
-    /// The world through the window: the homeworld the empire actually starts on.
-    /// </summary>
-    /// <remarks>
-    /// An origin can override the choice — Void Dwellers begin on a habitat whatever the picker
-    /// said — and the context has already worked that out.
-    /// </remarks>
-    private PlanetClassDefinition? World =>
-        Database.PlanetClasses.FirstOrDefault(p => p.Key == Context.EffectivePlanetClass);
+    private RoomDefinition? Room => View.Room;
 
-    private GraphicalCultureDefinition? City =>
-        Database.GraphicalCultures.FirstOrDefault(c => c.Key == Design.CityGraphicalCulture);
+    private PlanetClassDefinition? World => View.World;
 
-    /// <summary>
-    /// What the game calls a set of artwork, falling back to its readable key.
-    /// </summary>
-    /// <remarks>
-    /// The game names a set by its key shouted, and names only the two Biogenesis added. Read the
-    /// stored key directly and the row shows <c>mammalian_01</c>.
-    /// </remarks>
-    private string? CultureName(string? key) => key is { Length: > 0 }
-        ? Session.Localizer.Text(key.ToUpperInvariant(), Localizer.Prettify(key))
-        : null;
+    private GraphicalCultureDefinition? City => View.City;
 
-    private string? RulerPortrait =>
-        PortraitArtwork.For(Database, Design.Ruler.Portrait, Design.Ruler.Gender)
-        ?? SpeciesPortrait;
+    private string? CultureName(string? key) => View.CultureName(key);
 
-    private string? SpeciesPortrait =>
-        PortraitArtwork.For(Database, Design.Species.Portrait, Design.Species.Gender);
+    private string? RulerPortrait => View.RulerPortrait;
 
-    private AuthorityDefinition? AuthorityDefinition =>
-        Database.Authorities.FirstOrDefault(a => a.Key == Design.Authority);
+    private string? SpeciesPortrait => View.SpeciesPortrait;
 
-    private string? AuthorityIcon => AuthorityDefinition?.Icon;
+    private string? AuthorityIcon => View.Authority?.Icon;
 
-    private EffectSet? AuthorityEffects => AuthorityDefinition?.Effects;
+    private EffectSet? AuthorityEffects => View.Authority?.Effects;
 
-    /// <summary>An origin is a civic, as the game files have it, so it is looked up among them.</summary>
-    private CivicDefinition? OriginDefinition =>
-        Database.Civics.FirstOrDefault(c => c.Key == Design.Origin);
+    private string? OriginIcon => View.Origin?.Icon;
 
-    private string? OriginIcon => OriginDefinition?.Icon;
+    private EffectSet? OriginEffects => View.Origin?.Effects;
 
-    private EffectSet? OriginEffects => OriginDefinition?.Effects;
+    private string Government => View.Government;
 
-    /// <summary>The government the game would name this empire's, derived rather than stored.</summary>
-    private string Government =>
-        Session.Rules.DeriveGovernment(Context) is { } government
-            ? Session.Localizer.Text(government.Key)
-            : Session.Localizer.Text(Design.Authority);
+    private string Ruler => View.Ruler;
 
-    private string Ruler
-    {
-        get
-        {
-            var name = Session.Localizer.RulerName(Design.Ruler, string.Empty);
+    private string Homeworld => View.Homeworld;
 
-            var title = Design.Ruler.Title is { } held
-                ? Session.Localizer.Name(held, string.Empty)
-                : string.Empty;
+    private string StartingSystem => View.StartingSystem;
 
-            return string.Join(", ", new[] { name, title }.Where(p => p.Length > 0));
-        }
-    }
+    private EmpireFlagSet? FlagSet => View.FlagSet;
 
-    /// <summary>The homeworld: what the player called it, and what kind of world it is.</summary>
-    private string Homeworld =>
-        string.Join(
-            " · ",
-            new[]
-            {
-                Session.Localizer.Name(Design.PlanetName, string.Empty),
-                Session.Localizer.Text(Context.EffectivePlanetClass),
-            }.Where(p => p.Length > 0));
+    private IEnumerable<EmpireChoice> Ethics => View.Ethics;
 
-    /// <summary>The starting system, which most empires leave to the galaxy generator.</summary>
-    private string StartingSystem =>
-        Design.Initializer is { Length: > 0 } initializer
-            ? Session.Localizer.Text(
-                Database.Initializers.FirstOrDefault(i => i.Key == initializer)?.NameKey ?? initializer)
-            : string.Empty;
+    private IEnumerable<EmpireChoice> Civics => View.Civics;
 
-    /// <summary>The named set of country flags a built-in empire carries, when it carries one.</summary>
-    private EmpireFlagSet? FlagSet =>
-        Design.PrescriptedFlag is { Length: > 0 } key
-            ? Database.EmpireFlagSets.FirstOrDefault(f => f.Key == key)
-            : null;
+    private IEnumerable<EmpireChoice> Traits => View.Traits;
 
-    private IEnumerable<Choice> Ethics =>
-        Design.Ethics.Select(key => Described(key, Database.Ethics.FirstOrDefault(d => d.Key == key)));
+    private IEnumerable<EmpireChoice> TraitsOf(SpeciesDesign species) => View.TraitsOf(species);
 
-    private IEnumerable<Choice> Civics =>
-        Design.Civics.Select(key => Described(key, Database.Civics.FirstOrDefault(d => d.Key == key)));
-
-    private IEnumerable<Choice> Traits => TraitsOf(Design.Species);
-
-    private IEnumerable<Choice> TraitsOf(SpeciesDesign species) =>
-        species.Traits.Select(key => Described(key, Database.Traits.FirstOrDefault(d => d.Key == key)));
-
-    private static Choice Described(string key, EthicDefinition? definition) =>
-        new(key, definition?.Icon, definition?.Effects);
-
-    private static Choice Described(string key, CivicDefinition? definition) =>
-        new(key, definition?.Icon, definition?.Effects);
-
-    private static Choice Described(string key, TraitDefinition? definition) =>
-        new(key, definition?.Icon, definition?.Effects);
-
-    /// <summary>What to call the second species' traits, since two rows of "Traits" would not say.</summary>
-    private string SecondName(SpeciesDesign species) =>
-        $"{Session.Localizer.Name(species.Name, Session.Localizer.Text(species.Class))} · " +
-        Session.Localizer.Heading("TRAITS", "Traits");
+    private string SecondName(SpeciesDesign species) => View.SecondName(species);
 
     /// <summary>
     /// A labelled row of icons with their names, which is how the game shows a set of choices.
@@ -470,7 +387,7 @@
     /// Nothing is drawn for an empty set. A gestalt empire has no civics until it has an authority,
     /// and an empty heading would read as a fault rather than as a stage.
     /// </remarks>
-    private RenderFragment Chips(string label, IEnumerable<Choice> items) => builder =>
+    private RenderFragment Chips(string label, IEnumerable<EmpireChoice> items) => builder =>
     {
         var listed = items.ToList();
 
@@ -500,15 +417,6 @@
 
         builder.CloseElement();
     };
-
-    /// <summary>
-    /// One of the empire's choices, with everything needed to describe it.
-    /// </summary>
-    /// <remarks>
-    /// The icon was already being fetched out of the database for each of these; what it does was
-    /// sitting on the same record and being thrown away.
-    /// </remarks>
-    private sealed record Choice(string Key, string? Icon, EffectSet? Effects);
 
     private RenderFragment Row(string label, string? value) => builder =>
     {

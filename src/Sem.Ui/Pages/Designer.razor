@@ -76,38 +76,91 @@ else
         laid across the top of the page in a card of their own. Icons because there is room for three
         of them beside a flag and not for three words.
     *@
-    <DesignerShell Session="_session">
-        <Actions>
-            @* A copy that did not happen says so, rather than looking exactly like one that did. *@
-            <button type="button" class="icon" title="@ShareTitle"
-                    aria-label="Copy a link to this empire" @onclick="CopyLink">
-                <ActionIcon Name="share" />
-            </button>
-
-            @if (_session.IsModified)
-            {
-                <button type="button" class="icon" title="Throw away your changes"
-                        aria-label="Throw away your changes" @onclick="() => _confirming = Asking.Revert">
-                    <ActionIcon Name="revert" />
-                </button>
-            }
-
-            <button type="button" class="icon danger" title="Delete this empire"
-                    aria-label="Delete this empire" @onclick="() => _confirming = Asking.Delete">
-                <ActionIcon Name="delete" />
-            </button>
-
-            <button type="button" class="icon primary" disabled="@(!_session.IsModified)"
-                    title="@(_session.IsModified ? "Save this empire" : "Saved")"
-                    aria-label="@(_session.IsModified ? "Save this empire" : "Saved")"
-                    @onclick="SaveEdits">
-                <ActionIcon Name="save" />
-            </button>
-        </Actions>
-    </DesignerShell>
+    @*
+        Two bodies, one page. Everything that makes the designer work - the guard, the save, the
+        revert, the delete, the shared link and the address bar - is this page's and is the same
+        either way; all that changes is how the empire is laid out in front of it. The actions row is
+        written once and handed to whichever body is drawn, so the two cannot drift about what Save
+        does.
+    *@
+    @if (_lite)
+    {
+        <LiteShell Session="_session" Actions="@EditorActions" />
+    }
+    else
+    {
+        <DesignerShell Session="_session" Actions="@EditorActions" />
+    }
 }
 
 @code {
+    /// <summary>
+    /// The row of things you can do to the empire, shared by both editors.
+    /// </summary>
+    /// <remarks>
+    /// A fragment rather than markup inside one of them, because there are two now and a second copy
+    /// of Save is a second thing to keep right.
+    /// </remarks>
+    private RenderFragment EditorActions => @<text>
+        @* A copy that did not happen says so, rather than looking exactly like one that did. *@
+        <button type="button" class="icon" title="@ShareTitle"
+                aria-label="Copy a link to this empire" @onclick="CopyLink">
+            <ActionIcon Name="share" />
+        </button>
+
+        @if (_session!.IsModified)
+        {
+            <button type="button" class="icon" title="Throw away your changes"
+                    aria-label="Throw away your changes" @onclick="() => _confirming = Asking.Revert">
+                <ActionIcon Name="revert" />
+            </button>
+        }
+
+        <button type="button" class="icon danger" title="Delete this empire"
+                aria-label="Delete this empire" @onclick="() => _confirming = Asking.Delete">
+            <ActionIcon Name="delete" />
+        </button>
+
+        @*
+            The way across. In both editors and in the same place, because a switch you have to find
+            twice is two controls.
+        *@
+        <button type="button" class="icon" title="@(_lite ? "Switch to the advanced editor" : "Switch to the lite editor")"
+                aria-label="@(_lite ? "Switch to the advanced editor" : "Switch to the lite editor")"
+                @onclick="SwitchEditor">
+            <ActionIcon Name="@(_lite ? "advanced" : "lite")" />
+        </button>
+
+        <button type="button" class="icon primary" disabled="@(!_session.IsModified)"
+                title="@(_session.IsModified ? "Save this empire" : "Saved")"
+                aria-label="@(_session.IsModified ? "Save this empire" : "Saved")"
+                @onclick="SaveEdits">
+            <ActionIcon Name="save" />
+        </button>
+    </text>;
+
+    /// <summary>Which editor is drawn. The lite one, for anybody who has not said otherwise.</summary>
+    private bool _lite = true;
+
+    /// <summary>What the remembered choice is filed under.</summary>
+    private const string EditorPreference = "editor";
+
+    /// <summary>The value that means the sections rather than the card.</summary>
+    private const string AdvancedEditor = "advanced";
+
+    /// <summary>
+    /// Swaps the editors, and remembers it.
+    /// </summary>
+    /// <remarks>
+    /// Remembered rather than reset each visit, and read before the first render, so somebody who
+    /// prefers the sections is not shown the card for a moment on the way to them every time. The
+    /// preferences are loaded before the session is built, which is what makes that possible.
+    /// </remarks>
+    private void SwitchEditor()
+    {
+        _lite = !_lite;
+        _session?.Preferences.Set(EditorPreference, _lite ? "lite" : AdvancedEditor);
+    }
     private DesignSession? _session;
 
     /// <summary>The questions this page stops to ask.</summary>
@@ -166,6 +219,11 @@ else
     protected override async Task OnInitializedAsync()
     {
         _session = await Host.GetAsync();
+
+        // Read before anything is drawn. The preferences are loaded before the session is built, so
+        // somebody who chose the sections gets them on the first render rather than seeing the card
+        // for a frame on the way.
+        _lite = _session?.Preferences.Get(EditorPreference) is not AdvancedEditor;
 
         if (_session is not null)
         {

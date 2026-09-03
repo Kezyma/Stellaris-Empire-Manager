@@ -1,0 +1,175 @@
+@implements IDisposable
+
+@*
+    The lite editor: the card, and whichever editor the card asked for.
+
+    The other half of DesignerShell rather than a page of its own. Everything that makes the designer
+    work - the session, the unsaved-work guard, the save and revert and delete, the shared link and
+    the address bar - belongs to Designer.razor and is untouched by which of the two bodies it draws.
+    So this holds a card, a dialog, and the mapping from one to the other, and nothing else.
+
+    The editors inside the dialog are the same components the sections use. Not copies of them, not
+    trimmed versions: the flag picker in here is the flag picker in there, so a fix to one is a fix
+    to both and there is no second answer to what an origin costs.
+*@
+
+@*
+    The session is cascaded here, as the sections' shell cascades it, because every editor that goes
+    in the dialog expects to find it that way and the dialog is rendered from here.
+*@
+<CascadingValue Value="Session">
+<div class="sem-lite-shell">
+    @if (Session.Current is null)
+    {
+        <div class="sem-empty">
+            <p>No empire is open.</p>
+        </div>
+    }
+    else
+    {
+        @if (Actions is not null)
+        {
+            <div class="sem-lite-actions">@Actions</div>
+        }
+
+        <LiteCard Design="Session.Current" Baseline="@Session.SavedContext" OnEdit="Open" />
+
+        @if (_editing is { } part)
+        {
+            <EditorDialog Title="@TitleOf(part)" OnClose="Close">
+                @Editor(part)
+            </EditorDialog>
+        }
+    }
+</div>
+</CascadingValue>
+
+@code {
+    [Parameter, EditorRequired]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>The save, revert, delete and share row, which both editors get from the page.</summary>
+    [Parameter]
+    public RenderFragment? Actions { get; set; }
+
+    /// <summary>Which editor is open, and nothing when none is.</summary>
+    private LitePart? _editing;
+
+    protected override void OnInitialized() => Session.Changed += OnChanged;
+
+    public void Dispose() => Session.Changed -= OnChanged;
+
+    private void OnChanged() => InvokeAsync(StateHasChanged);
+
+    private void Open(LitePart part) => _editing = part;
+
+    private void Close() => _editing = null;
+
+    /// <summary>What the dialog is called, in the game's own words where the game has any.</summary>
+    private string TitleOf(LitePart part) => part switch
+    {
+        LitePart.Empire => Session.Localizer.Heading("EMPIRE_NAME", "Empire"),
+        LitePart.Government => Session.Localizer.Heading("GOVERNMENT_AUTHORITY_AND_TYPE", "Government"),
+        LitePart.Origin => Session.Localizer.Heading("ORIGIN", "Origin"),
+        LitePart.Species => Session.Localizer.Heading("SPECIES_CLASS_LABEL", "Species"),
+        LitePart.Portrait => Session.Localizer.Heading("PORTRAIT", "Portrait"),
+        LitePart.Traits => Session.Localizer.Heading("TRAITS", "Traits"),
+        LitePart.SecondSpecies => "Second species",
+        LitePart.Ruler => Session.Localizer.Heading("RULER", "Ruler"),
+        LitePart.Homeworld => Session.Localizer.Heading("HOMEWORLD_CLASS_LABEL", "Homeworld"),
+        LitePart.Flag => Session.Localizer.Heading("EMPIRE_FLAG", "Flag"),
+        LitePart.Room => Session.Localizer.Heading("EMPIRE_CREATION_ROOM_APPEARANCE", "Room"),
+        LitePart.Shipset => Session.Localizer.Heading("SHIPSETS_LABEL", "Shipset"),
+        _ => Session.Localizer.Heading("EMPIRE_ADVISOR", "Advisor Voice"),
+    };
+
+    /// <summary>
+    /// The editor for one part, which is in every case a component the sections already use.
+    /// </summary>
+    /// <remarks>
+    /// Eleven of them need nothing but the cascading session and go in as they are. The four about a
+    /// species need to be told which one, and that is the only thing this decides - the founders,
+    /// except for the second-species dialog.
+    /// </remarks>
+    private RenderFragment Editor(LitePart part) => builder =>
+    {
+        var design = Session.Current!;
+
+        switch (part)
+        {
+            case LitePart.Empire:
+                builder.OpenComponent<EmpireSection>(0);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.Government:
+                builder.OpenComponent<GovernmentTab>(1);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.Origin:
+                builder.OpenComponent<OriginTab>(2);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.Species:
+                builder.OpenComponent<SpeciesTab>(3);
+                builder.AddComponentParameter(4, nameof(SpeciesTab.Species), design.Species);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.Portrait:
+                builder.OpenComponent<PortraitPicker>(5);
+                builder.AddComponentParameter(6, nameof(PortraitPicker.Species), design.Species);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.Traits:
+                builder.OpenComponent<TraitPicker>(7);
+                builder.AddComponentParameter(8, nameof(TraitPicker.Species), design.Species);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.SecondSpecies when design.SecondarySpecies is { } second:
+                builder.OpenComponent<SpeciesTab>(9);
+                builder.AddComponentParameter(10, nameof(SpeciesTab.Species), second);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.Ruler:
+                builder.OpenComponent<RulerTab>(11);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.Homeworld:
+                builder.OpenComponent<HomeworldTab>(12);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.Flag:
+                builder.OpenComponent<FlagTab>(13);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.Room:
+                builder.OpenComponent<RoomTab>(14);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.Shipset:
+                builder.OpenComponent<ShipsetTab>(15);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.Advisor:
+                builder.OpenComponent<AdvisorTab>(16);
+                builder.CloseComponent();
+                break;
+
+            default:
+                // SecondSpecies with no second species, which the card cannot offer and a stale
+                // click could still ask for.
+                break;
+        }
+    };
+}
