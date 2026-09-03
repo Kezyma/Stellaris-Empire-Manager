@@ -65,22 +65,31 @@
 
     private void Close() => _editing = null;
 
-    /// <summary>What the dialog is called, in the game's own words where the game has any.</summary>
-    private string TitleOf(LitePart part) => part switch
+    /// <summary>
+    /// What the dialog is called.
+    /// </summary>
+    /// <remarks>
+    /// The names the sections already use, rather than a second set looked up from the game's keys.
+    /// The same editor opened from either shell has to be called the same thing, and the game's keys
+    /// name whole screens rather than single editors: they titled the empire's settings "Empire
+    /// Name", which is the one thing that dialog does not hold, and the species editor "Species
+    /// Class", which is one field of the several in it.
+    /// </remarks>
+    private static string TitleOf(LitePart part) => part switch
     {
-        LitePart.Empire => Session.Localizer.Heading("EMPIRE_NAME", "Empire"),
-        LitePart.Government => Session.Localizer.Heading("GOVERNMENT_AUTHORITY_AND_TYPE", "Government"),
-        LitePart.Origin => Session.Localizer.Heading("ORIGIN", "Origin"),
-        LitePart.Species => Session.Localizer.Heading("SPECIES_CLASS_LABEL", "Species"),
-        LitePart.Portrait => Session.Localizer.Heading("PORTRAIT", "Portrait"),
-        LitePart.Traits => Session.Localizer.Heading("TRAITS", "Traits"),
+        LitePart.Empire => "Empire",
+        LitePart.Government => "Government",
+        LitePart.Origin => "Origin",
+        LitePart.Species => "Species",
+        LitePart.Portrait => "Portrait",
+        LitePart.Traits => "Traits",
         LitePart.SecondSpecies => "Second species",
-        LitePart.Ruler => Session.Localizer.Heading("RULER", "Ruler"),
-        LitePart.Homeworld => Session.Localizer.Heading("HOMEWORLD_CLASS_LABEL", "Homeworld"),
-        LitePart.Flag => Session.Localizer.Heading("EMPIRE_FLAG", "Flag"),
-        LitePart.Room => Session.Localizer.Heading("EMPIRE_CREATION_ROOM_APPEARANCE", "Room"),
-        LitePart.Shipset => Session.Localizer.Heading("SHIPSETS_LABEL", "Shipset"),
-        _ => Session.Localizer.Heading("EMPIRE_ADVISOR", "Advisor Voice"),
+        LitePart.Ruler => "Ruler",
+        LitePart.Homeworld => "Homeworld",
+        LitePart.Flag => "Flag",
+        LitePart.Room => "Room",
+        LitePart.Shipset => "Shipset",
+        _ => "Advisor Voice",
     };
 
     /// <summary>
@@ -98,71 +107,73 @@
         switch (part)
         {
             case LitePart.Empire:
-                builder.OpenComponent<EmpireSection>(0);
+                builder.OpenComponent<EmpireSection>(10);
                 builder.CloseComponent();
                 break;
 
             case LitePart.Government:
-                builder.OpenComponent<GovernmentTab>(1);
+                builder.OpenComponent<GovernmentTab>(20);
                 builder.CloseComponent();
                 break;
 
             case LitePart.Origin:
-                builder.OpenComponent<OriginTab>(2);
+                builder.OpenComponent<OriginTab>(30);
                 builder.CloseComponent();
                 break;
 
             case LitePart.Species:
-                builder.OpenComponent<SpeciesTab>(3);
-                builder.AddComponentParameter(4, nameof(SpeciesTab.Species), design.Species);
+                builder.OpenComponent<SpeciesTab>(40);
+                builder.AddComponentParameter(41, nameof(SpeciesTab.Species), design.Species);
+                builder.AddComponentParameter(42, nameof(SpeciesTab.Founder), true);
                 builder.CloseComponent();
                 break;
 
             case LitePart.Portrait:
-                builder.OpenComponent<PortraitPicker>(5);
-                builder.AddComponentParameter(6, nameof(PortraitPicker.Species), design.Species);
+                builder.OpenComponent<PortraitPicker>(50);
+                builder.AddComponentParameter(51, nameof(PortraitPicker.Species), design.Species);
+                builder.AddComponentParameter(52, nameof(PortraitPicker.Founder), true);
                 builder.CloseComponent();
                 break;
 
             case LitePart.Traits:
-                builder.OpenComponent<TraitPicker>(7);
-                builder.AddComponentParameter(8, nameof(TraitPicker.Species), design.Species);
+                builder.OpenComponent<TraitPicker>(60);
+                builder.AddComponentParameter(61, nameof(TraitPicker.Species), design.Species);
                 builder.CloseComponent();
                 break;
 
             case LitePart.SecondSpecies when design.SecondarySpecies is { } second:
-                builder.OpenComponent<SpeciesTab>(9);
-                builder.AddComponentParameter(10, nameof(SpeciesTab.Species), second);
+                builder.OpenComponent<SpeciesTab>(70);
+                builder.AddComponentParameter(71, nameof(SpeciesTab.Species), second);
                 builder.CloseComponent();
                 break;
 
             case LitePart.Ruler:
-                builder.OpenComponent<RulerTab>(11);
+                builder.OpenComponent<RulerTab>(80);
                 builder.CloseComponent();
                 break;
 
             case LitePart.Homeworld:
-                builder.OpenComponent<HomeworldTab>(12);
+                builder.OpenComponent<HomeworldTab>(90);
                 builder.CloseComponent();
                 break;
 
             case LitePart.Flag:
-                builder.OpenComponent<FlagTab>(13);
+                builder.OpenComponent<FlagTab>(100);
                 builder.CloseComponent();
                 break;
 
             case LitePart.Room:
-                builder.OpenComponent<RoomTab>(14);
+                builder.OpenComponent<RoomTab>(110);
                 builder.CloseComponent();
                 break;
 
             case LitePart.Shipset:
-                builder.OpenComponent<ShipsetTab>(15);
+                builder.OpenComponent<ShipsetTab>(120);
                 builder.CloseComponent();
                 break;
 
             case LitePart.Advisor:
-                builder.OpenComponent<AdvisorTab>(16);
+                builder.OpenComponent<AdvisorTab>(130);
                 builder.CloseComponent();
                 break;
 

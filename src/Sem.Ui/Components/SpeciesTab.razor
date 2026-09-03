@@ -14,7 +14,7 @@
 
     <section>
         <h4>Portrait</h4>
-        <PortraitPicker Species="@Species" />
+        <PortraitPicker Species="@Species" Founder="@Founder" />
     </section>
 
     <section>
@@ -30,4 +30,8 @@
     /// <summary>The species being designed, which may be the second one.</summary>
     [Parameter, EditorRequired]
     public required SpeciesDesign Species { get; set; }
+
+    /// <summary>Whether this is the founder, for the settings that belong to the empire.</summary>
+    [Parameter]
+    public bool Founder { get; set; }
 }

@@ -3784,6 +3784,34 @@ button.icon .sem-action-icon { display: block; }
     font-size: var(--text-lg);
 }
 
+/*
+   A setting with two answers, written out rather than drawn as a switch. The button says which of
+   the two is in force and pressing it takes the other, so there is no caption explaining what "on"
+   would have meant - which for a rule about sharing a portrait is a sentence whichever way it sits.
+*/
+.sem-toggle {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--space-2xs) var(--space-sm);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: none;
+    color: var(--text-dim);
+    font: inherit;
+    cursor: pointer;
+}
+
+.sem-toggle:hover {
+    background: var(--bg-hover);
+    color: var(--text);
+}
+
+.sem-toggle[aria-pressed="true"] {
+    background: var(--bg-raised);
+    border-color: var(--accent-dim);
+    color: var(--text);
+}
+
 /* ------------------------------------------------------------------ the lite editor
 
    The card, with everything on it pressable.
@@ -3981,13 +4009,24 @@ button.icon .sem-action-icon { display: block; }
     background: var(--bg-raised);
 }
 
+/*
+   A fixed height rather than a ratio, and the words pushed to the foot of the tile below.
+
+   These pictures are nothing like each other: a planet is a circle, a ship render is a wide strip,
+   a city is a thin silhouette, and four of the tiles have no picture at all. Sized by ratio they
+   each took a different amount of room, so no two labels in a row started at the same height and a
+   tile with no art put its label where its neighbour put its picture. Same box for every picture,
+   same line for every label.
+*/
 .sem-lite-tile .art {
     display: block;
     width: 100%;
-    aspect-ratio: 16 / 9;
+    height: 5.25rem;
     object-fit: contain;
     border-radius: var(--radius);
 }
+
+.sem-lite-tile .label { margin-top: auto; }
 
 .sem-lite-tile .label {
     color: var(--text-dim);
