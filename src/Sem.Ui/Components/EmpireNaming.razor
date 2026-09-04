@@ -1,0 +1,313 @@
+@*
+    What the empire is called: its name and its adjectival form.
+
+    The ship prefix went back to the fleet. It is a name, which is why it was here, but it is also
+    the only thing about a fleet that is not the shipset - and on the lite card the shipset panel
+    had a spare line while this dialog had three fields for two questions.
+
+    A component rather than markup inside the Empire section because both editors name an empire —
+    the sections through the section, the lite card by pressing the name on it — and two copies of
+    "which suggestion did this come from" would be two answers to it. The one that mattered: the
+    card wrote every name as a literal, so a name picked from this list lost the templated form the
+    game stores it in.
+*@
+
+<div class="sem-name-row">
+    @*
+        The die belongs to this field, not to the end of the row. It fills the name and the adjective
+        together, and as a column of its own it drifted away from them — at a width where the row
+        wraps two and two it ended up beneath the flags, which it has nothing to do with, on a line
+        of its own under an empty label.
+    *@
+    <div class="sem-field">
+        <label for="empire-name">@Session.Localizer.Label("EMPIRE_NAME", "Empire Name")</label>
+        <div class="sem-row nowrap">
+            <ComboBox Id="empire-name" Value="@Session.Localizer.Name(Design.Name, Design.Key)"
+                      Options="@NameSuggestions" OnChange="Rename" />
+            <RandomiseButton Title="The species adjective and a form of government"
+                             OnClick="RandomiseName" />
+        </div>
+    </div>
+
+    <div class="sem-field">
+        <label for="empire-adjective">@Session.Localizer.Label("EMPIRE_ADJECTIVE", "Empire Adjective")</label>
+        <ComboBox Id="empire-adjective" Value="@Session.Localizer.Name(Design.Adjective)"
+                  Options="@AdjectiveSuggestions"
+                  OnChange="value => Session.Edit(d => d.Adjective.SetLiteral(value))" />
+    </div>
+
+</div>
+
+@if (_clash is { } rejected)
+{
+    <p class="sem-status bad">Another empire in this file already has the name @rejected.</p>
+}
+
+@code {
+    /// <summary>
+    /// The name that was refused because another empire already had it, or null.
+    /// </summary>
+    /// <remarks>
+    /// The name rather than a flag, so the message can say which one and so it clears itself the
+    /// moment a different name is offered. As a flag it stayed on screen through every unrelated
+    /// edit once it had been raised, until the name field happened to be touched again.
+    /// </remarks>
+    private string? _clash;
+
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    private EmpireDesign Design => Session.Current!;
+
+    /// <summary>
+    /// The names the die would choose between, offered as a list instead.
+    /// </summary>
+    private IReadOnlyList<string> NameSuggestions
+    {
+        get
+        {
+            Refresh();
+            return _names;
+        }
+    }
+
+    private IReadOnlyList<EmpireNameSuggestion> Generated
+    {
+        get
+        {
+            Refresh();
+            return _generated;
+        }
+    }
+
+    private IReadOnlyList<EmpireNameSuggestion> _generated = [];
+    private IReadOnlyList<string> _names = [];
+    private string? _signature;
+
+    /// <summary>
+    /// Works out every name the game could give this empire, when something about it has changed.
+    /// </summary>
+    /// <remarks>
+    /// Held rather than recomputed. Two hundred and seventy-one shapes are read against the empire
+    /// and can produce a hundred and forty names, each of which is then rendered the long way — and
+    /// this is a property of a component that redraws on every keystroke in the section. Only the
+    /// four things the shapes actually depend on are watched.
+    /// </remarks>
+    private void Refresh()
+    {
+        var sources = Sources;
+
+        var signature = string.Join(
+            '\u0000',
+            Session.Context?.Government,
+            sources.SpeciesAdjective,
+            sources.PlanetName,
+            sources.SystemName);
+
+        if (signature == _signature)
+        {
+            return;
+        }
+
+        _signature = signature;
+        _generated = Session.Context is { } context ? Session.Names.EmpireNames(context, sources) : [];
+        _names = [.. _generated.Select(Display).Distinct(StringComparer.CurrentCulture)];
+    }
+
+    /// <summary>
+    /// What a suggestion reads as.
+    /// </summary>
+    /// <remarks>
+    /// A shape that names a localisation format has to be put through it: <c>AofB</c> is "$1$ of $2$",
+    /// so its two pieces read "Coalition of Blorg" and not "Coalition Blorg". Rendered by building
+    /// the name the way it would be stored and asking for it back, so that a suggestion in the list
+    /// reads exactly as the empire will read once it is chosen.
+    /// </remarks>
+    private string Display(EmpireNameSuggestion suggestion)
+    {
+        var reference = new LocRef(LocRef.CreateKeyBlock(string.Empty));
+
+        Store(reference, suggestion);
+
+        return Session.Localizer.Name(reference, suggestion.Text);
+    }
+
+    /// <summary>
+    /// Writes a suggestion into a name, the way the game writes one.
+    /// </summary>
+    /// <remarks>
+    /// Two shapes, and the player's own file has both. The <c>AofB</c> family is a format and a flat
+    /// list of blanks — "Empire of Pakshalika". Everything else is nested, each word carrying the
+    /// next inside it, with the species adjective's placeholder among them — "Blessed Oxanalytoran
+    /// Union" is Blessed wrapped round %ADJECTIVE% wrapped round Union.
+    ///
+    /// Used for showing a suggestion as well as for keeping one, so that what is read in the list is
+    /// built by exactly the machinery that will render it once it is chosen. A word with no entry
+    /// falls back to itself, which is what happens to a system name like Pakshalika.
+    /// </remarks>
+    private void Store(LocRef reference, EmpireNameSuggestion suggestion)
+    {
+        if (suggestion.FormatKey is { Length: > 0 } format)
+        {
+            reference.SetFormat(format, suggestion.Parts);
+            return;
+        }
+
+        reference.SetNested(suggestion.Parts, Design.Species.Name.Key);
+    }
+
+    /// <summary>
+    /// The three things the game's templates ask the design for.
+    /// </summary>
+    /// <remarks>
+    /// Resolved to text here because the rules have no localiser: a species adjective is a template
+    /// over a species name, and working out what it reads as is this layer's job.
+    /// </remarks>
+    private EmpireNameSources Sources => new()
+    {
+        SpeciesAdjective = Session.Localizer.Name(Design.Species.Adjective, string.Empty) is { Length: > 0 } adjective
+            ? adjective
+            : Session.Localizer.Name(Design.Species.Name) is { Length: > 0 } species
+                ? NameGenerator.Adjective(species)
+                : null,
+        PlanetName = Session.Localizer.Name(Design.PlanetName, string.Empty),
+        SystemName = Session.Localizer.Name(Design.SystemName, string.Empty),
+    };
+
+    /// <summary>
+    /// What the empire might be called as an adjective.
+    /// </summary>
+    /// <remarks>
+    /// The generator's own shapes carry one, which is nearly always the species adjective. What the
+    /// empire is already called and the first word of its name are added after them, since a player
+    /// who has typed a name of their own is likely to want its adjective to match.
+    /// </remarks>
+    private IReadOnlyList<string> AdjectiveSuggestions
+    {
+        get
+        {
+            var empire = Session.Localizer.Name(Design.Name, Design.Key);
+
+            return
+            [
+                .. (Session.Context is { } context
+                        ? Session.Names.EmpireAdjectives(context, Sources)
+                        : [])
+                .Concat(new[]
+                {
+                    // What the empire is called now, and the word its own name begins with: neither
+                    // is one the generator would offer, and both are what somebody who has typed a
+                    // name of their own is most likely to want beside it.
+                    Session.Localizer.Name(Design.Adjective, string.Empty),
+                    empire?.Split(' ') is [{ Length: > 0 } first, ..] ? first : null,
+                }.OfType<string>())
+                .Where(name => name.Length > 0)
+                .Distinct(StringComparer.CurrentCulture),
+            ];
+        }
+    }
+
+    /// <summary>
+    /// Names the empire, and renames the design with it.
+    /// </summary>
+    /// <remarks>
+    /// The file keys empires by name, so two of a name would make one of them unreachable. Rather
+    /// than silently keeping the old key — which left the two disagreeing with no sign of it — the
+    /// clash is said out loud and the name is left alone until it is resolved.
+    /// </remarks>
+    private void Rename(string? value)
+    {
+        var name = value ?? string.Empty;
+
+        if (name.Length == 0)
+        {
+            return;
+        }
+
+        // The rule itself is the session's, since the list of empires is what decides whether a name
+        // is free. How the name is written is this component's, because only it knows which of the
+        // generator's suggestions it came from.
+        _clash = Session.TryRename(name, d => Write(d, name)) ? null : name;
+    }
+
+    /// <summary>
+    /// Writes a name the way the game would have written it.
+    /// </summary>
+    /// <remarks>
+    /// A name the generator produced is not stored as its words: the game stores the shape and the
+    /// pieces — <c>key="AofB" variables={ … }</c> — and builds the words when it shows them, which
+    /// is what lets one file read correctly in more than one language. So a name that came from the
+    /// list is written back that way, and only a name somebody typed is stored as text.
+    /// </remarks>
+    private void Write(EmpireDesign design, string name)
+    {
+        if (Generated.FirstOrDefault(s => Display(s) == name) is { } chosen)
+        {
+            Store(design.Name, chosen);
+            return;
+        }
+
+        // Somebody typed it, so it is theirs and it is stored as they typed it.
+        design.Name.SetLiteral(name);
+    }
+
+    /// <summary>
+    /// Names an empire the way the game does, out of the game's own generator.
+    /// </summary>
+    private void RandomiseName()
+    {
+        if (Session.Context is not { } context)
+        {
+            return;
+        }
+
+        // Asked again when the name it produced is one the file already has, rather than the name
+        // being written and the key quietly left behind. Rename refuses a typed name in that case
+        // and says so, which is right for a name somebody meant; a generated one carries no such
+        // intent, so the generator is simply asked for another. Bounded, because a file could in
+        // principle hold every name the generator can make.
+        EmpireNameSuggestion? chosen = null;
+        var text = string.Empty;
+
+        for (var attempt = 0; attempt < 8; attempt++)
+        {
+            if (Session.Names.Empire(context, Sources) is not { Text.Length: > 0 } candidate)
+            {
+                return;
+            }
+
+            chosen = candidate;
+            text = Display(candidate);
+
+            if (Session.File?.Find(text) is not { } taken || ReferenceEquals(taken, Design))
+            {
+                break;
+            }
+
+            chosen = null;
+        }
+
+        if (chosen is null)
+        {
+            // Every name it offered is taken. Said out loud rather than written half-way in.
+            _clash = text;
+            return;
+        }
+
+        _clash = null;
+
+        var adjective = AdjectiveSuggestions.FirstOrDefault();
+
+        Session.Edit(d =>
+        {
+            Store(d.Name, chosen);
+
+            if (adjective is { Length: > 0 })
+            {
+                d.Adjective.SetLiteral(adjective);
+            }
+
+            d.Rename(text);
+        });
+    }
+}

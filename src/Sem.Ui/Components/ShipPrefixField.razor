@@ -1,0 +1,46 @@
+@*
+    The prefix the empire's ships wear - UNS Enterprise.
+
+    A component so the lite card can swap it in where the value is read, the way the flag sets are.
+    It had sat with the empire's names on the grounds that it is one, which it is; it is also the
+    only thing about a fleet that is not the shipset, so it lives with the shipset now and the
+    naming dialog is three fields shorter.
+*@
+
+<input id="@Id" type="text" value="@Session.Localizer.Name(Design.ShipPrefix, string.Empty)"
+       maxlength="16" placeholder="@Placeholder"
+       @onchange="Commit" @onblur="Leave" />
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>What a caption points at, where a caller writes one.</summary>
+    [Parameter]
+    public string? Id { get; set; }
+
+    /// <summary>What to show in an empty box.</summary>
+    [Parameter]
+    public string? Placeholder { get; set; }
+
+    /// <summary>
+    /// Told when this is finished with, so a caller showing it in place of a value can stop.
+    /// </summary>
+    /// <remarks>
+    /// On leaving as well as on committing, since a box opened over a value and never typed in is
+    /// as finished with as one that was.
+    /// </remarks>
+    [Parameter]
+    public EventCallback OnDone { get; set; }
+
+    private EmpireDesign Design => Session.Current!;
+
+    private async Task Commit(ChangeEventArgs e)
+    {
+        Session.Edit(d => d.ShipPrefix.SetLiteral(e.Value?.ToString() ?? string.Empty));
+
+        await OnDone.InvokeAsync();
+    }
+
+    private Task Leave() => OnDone.InvokeAsync();
+}

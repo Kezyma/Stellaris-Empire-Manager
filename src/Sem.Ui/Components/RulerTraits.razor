@@ -1,0 +1,78 @@
+@*
+    What the empire's first ruler is good at.
+
+    One trait, not a budget: the ruler takes exactly one, so there is no points bar to draw, and a
+    full slate is refused rather than swapped. The heading carries its own class so the row survives
+    being shown outside a subsection.
+*@
+
+<div class="sem-heading-row">
+    <h4>@Session.Localizer.Label("TRAITS", "Traits")</h4>
+
+    <ViewToggle ViewKey="RulerTraits" List="@_asList" ListChanged="v => _asList = v" />
+</div>
+
+<OptionGrid Options="@TraitOptions"
+            AsList="@_asList"
+            Label="Ruler traits"
+            OnSelect="Toggle" />
+
+@code {
+    /// <summary>Which way they are drawn. The toggle owns the remembering; this mirrors it.</summary>
+    private bool _asList = true;
+
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    private EmpireDesign Design => Session.Current!;
+
+    private DesignContext Context => Session.Context!;
+
+    /// <summary>
+    /// The traits, as the rules see them.
+    /// </summary>
+    /// <remarks>
+    /// Asked of the rules rather than worked out here. This section used to decide for itself which
+    /// traits were out of reach and write the sentences too, which meant the ruler was the one
+    /// picker whose reasons were English rather than keys - untranslatable, and outside everything
+    /// the rest of the app knows how to say. It also meant nothing checked the ruler's class.
+    /// </remarks>
+    private IReadOnlyList<OptionGrid.GridOption> TraitOptions =>
+        GridOptions.Build(
+            Session,
+            Session.Rules.GetRulerTraitOptions(Context)
+                .OrderBy(o => Session.Localizer.Text(o.Key), StringComparer.CurrentCulture),
+            key => Definitions.FirstOrDefault(t => t.Key == key) is { } trait
+                ? (trait.Icon, trait.Effects)
+                : (null, null),
+            Design.Ruler.Traits.Contains);
+
+    private IEnumerable<TraitDefinition> Definitions =>
+        Session.Data.Database.Traits
+            .Where(t => t.Kind == TraitKind.StartingRuler)
+            .OrderBy(t => Session.Localizer.Text(t.Key), StringComparer.CurrentCulture);
+
+    private void Toggle(string key)
+    {
+        Session.Edit(d =>
+        {
+            var traits = d.Ruler.Traits.ToList();
+
+            if (!traits.Remove(key))
+            {
+                // A ruler takes one trait, and a full slate is refused rather than swapped: this
+                // used to clear whatever was held and add the new one, which is a press that takes
+                // something away while appearing to add one. The rules close the rest while one is
+                // held, so this is the guard for a key arriving some other way.
+                if (traits.Count > 0)
+                {
+                    return;
+                }
+
+                traits.Add(key);
+            }
+
+            d.Ruler.SetTraits(traits);
+        });
+    }
+}

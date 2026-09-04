@@ -1,0 +1,122 @@
+@inject IGameDataSource Source
+
+@*
+    The ruler as they actually look: the face the design names, wearing the colour, the clothes and
+    the thing on its head that the design chose.
+
+    A component because the card shows the ruler too, and the flat species thumbnail it used before
+    is not the ruler - it ignores every appearance control the player touched, so a ruler in a red
+    coat was drawn in whatever the species portrait happened to wear.
+
+    Three states, and every caller has to tolerate all of them. The wardrobe is a couple of megabytes
+    describing eight thousand pictures and is fetched only when something asks for it, so it may be
+    in flight; and a host may publish none at all - the desktop builds its cache without one - in
+    which case the portrait's own flat picture stands in.
+*@
+
+@if (_loading)
+{
+    <p class="sem-hint">Drawing…</p>
+}
+else if (_outfit is { } outfit)
+{
+    <PortraitFigure Outfit="outfit"
+                    Character="@TextureFor(PortraitSlot.Character)"
+                    Clothes="@TextureFor(PortraitSlot.Clothes)"
+                    Attachment="@TextureFor(PortraitSlot.Attachment)" />
+}
+else if (Thumbnail is { Length: > 0 } thumbnail)
+{
+    <img class="sem-thumb" src="@Session.Data.AssetUrl(thumbnail)" alt="">
+}
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    private EmpireDesign Design => Session.Current!;
+
+    /// <summary>The pieces for the portrait now being worn, once they have been fetched.</summary>
+    private PortraitOutfit? _outfit;
+
+    /// <summary>Which portrait <see cref="_outfit"/> is for, so a change of face refetches nothing.</summary>
+    private string? _outfitFor;
+
+    private bool _loading;
+
+    /// <summary>
+    /// The whole wardrobe, held for the life of the component.
+    /// </summary>
+    /// <remarks>
+    /// The source memoises this, so a second component asking for it costs nothing; holding the
+    /// reference here only saves going back through the gate on every keystroke.
+    /// </remarks>
+    private IReadOnlyList<PortraitOutfit>? _wardrobe;
+
+    /// <summary>The pieces being worn, for a caller that needs to know whether there are any.</summary>
+    public PortraitOutfit? Outfit => _outfit;
+
+    /// <summary>
+    /// The likeness actually worn, which for a group is one of its members.
+    /// </summary>
+    /// <remarks>
+    /// A design stores the group — the game's own United Nations of Earth records
+    /// <c>portrait = "human"</c> — and the group picks a face by gender. The wardrobe is keyed by
+    /// the face rather than the group, so it is the face that has to be looked up.
+    /// </remarks>
+    private string? Likeness => PortraitArtwork.Resolve(
+        Session.Data.Database, Design.Ruler.Portrait, Design.Ruler.Gender);
+
+    private PortraitDefinition? Portrait => Session.Data.Database.Portraits
+        .FirstOrDefault(p => p.Key == Design.Ruler.Portrait);
+
+    private string? Thumbnail => Session.Data.Database.Portraits
+        .FirstOrDefault(p => p.Key == Likeness)?.Thumbnail;
+
+    /// <summary>
+    /// The skin an ascended form wears, where the design holds a stage and the portrait has artwork.
+    /// </summary>
+    /// <remarks>
+    /// Nothing in this app sets the stage, but a design carrying one is drawn wearing it rather than
+    /// ignored, since the field survives a round trip and something outside this app may yet write
+    /// it. An ascended form is another skin rather than another layer, so the figure asks for it
+    /// exactly as it asks for a colour variant.
+    /// </remarks>
+    private string? AscendedSkin =>
+        _outfit?.AscendedCharacter(Design.Ruler.Texture, Design.Ruler.EvolutionMask ?? 0);
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Likeness is not { Length: > 0 } face || face == _outfitFor)
+        {
+            return;
+        }
+
+        _outfitFor = face;
+        _loading = true;
+
+        // In a finally, because anything the fetch throws that is not an HttpRequestException - a
+        // malformed wardrobe.json raises a JsonException - escaped past the source's own catch and
+        // left this flag set for the component's lifetime. The panel then read "Drawing…" for ever,
+        // over a failure the player never saw.
+        try
+        {
+            _wardrobe ??= await Source.LoadWardrobeAsync().ConfigureAwait(true);
+            _outfit = _wardrobe.FirstOrDefault(o => o.Portrait == face);
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private string? TextureFor(PortraitSlot slot) =>
+        slot == PortraitSlot.Character && AscendedSkin is { } ascended
+            ? ascended
+            : _outfit?.TextureFor(slot, slot switch
+            {
+                PortraitSlot.Clothes => Design.Ruler.Clothes,
+                PortraitSlot.Attachment => Design.Ruler.Attachment,
+                _ => Design.Ruler.Texture,
+            });
+}

@@ -196,7 +196,19 @@ public sealed class DesignSession
     /// Choosing a different empire abandons the copy held of the last one. Nothing is lost by that:
     /// the only way to leave the designer is past a question about unsaved work.
     /// </remarks>
-    public void Select(EmpireDesign? design)
+    public void Select(EmpireDesign? design) => Select(design, announce: true);
+
+    /// <summary>
+    /// The same, for a caller that has more to set before anyone should hear about it.
+    /// </summary>
+    /// <remarks>
+    /// Selecting clears the modified flag and then announces the change, so a caller that goes on
+    /// to set that flag has already been overheard saying the opposite. That is how a brand-new
+    /// empire reached the address bar: the bar is written for a design that is not modified, this
+    /// said so, and CreateEmpire set the flag two lines later. Reloading then read the bar as a
+    /// stranger's link and made a second copy of the blank empire.
+    /// </remarks>
+    private void Select(EmpireDesign? design, bool announce)
     {
         // Turning to a different empire abandons one that was never saved, so it goes back out of
         // the file. This is also what deleting one does, and what reverting one does.
@@ -210,7 +222,11 @@ public sealed class DesignSession
         _saved = design?.Snapshot();
         _savedContext = null;
         IsModified = false;
-        Recompute();
+
+        if (announce)
+        {
+            Recompute();
+        }
     }
 
     /// <summary>
@@ -232,7 +248,7 @@ public sealed class DesignSession
 
         var design = add(File!);
 
-        Select(design);
+        Select(design, announce: false);
 
         _unsaved = design;
         IsModified = true;
@@ -284,6 +300,53 @@ public sealed class DesignSession
 
         IsModified = true;
         Recompute();
+    }
+
+    /// <summary>
+    /// Renames the empire, refusing a name another empire in the file already has.
+    /// </summary>
+    /// <remarks>
+    /// The file keys empires by name, so two of a name would make one of them unreachable. Rather
+    /// than silently keeping the old key - which left the two disagreeing with no sign of it - the
+    /// caller is told no and says so.
+    ///
+    /// Here rather than in the section that used to own it, because the lite editor names the empire
+    /// too, and a second copy of this rule is a second answer to "is that name taken". How the
+    /// display name is written is the caller's, though: a name picked from the generator is stored as
+    /// the shape and the pieces the game would have stored, and only a typed one is stored as text.
+    /// </remarks>
+    /// <param name="name">The new name.</param>
+    /// <param name="writeDisplayName">
+    /// How to record it as the name shown. Omitted, it is written as text somebody typed.
+    /// </param>
+    /// <returns>False when the name is taken, in which case nothing was changed.</returns>
+    public bool TryRename(string? name, Action<EmpireDesign>? writeDisplayName = null)
+    {
+        if (Current is null || string.IsNullOrWhiteSpace(name))
+        {
+            return false;
+        }
+
+        if (File?.Find(name) is { } taken && !ReferenceEquals(taken, Current))
+        {
+            return false;
+        }
+
+        Edit(design =>
+        {
+            if (writeDisplayName is not null)
+            {
+                writeDisplayName(design);
+            }
+            else
+            {
+                design.Name.SetLiteral(name);
+            }
+
+            design.Rename(name);
+        });
+
+        return true;
     }
 
     /// <summary>

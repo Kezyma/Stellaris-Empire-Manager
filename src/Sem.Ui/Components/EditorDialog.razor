@@ -1,0 +1,96 @@
+@*
+    One part of the empire, opened over the card that showed it.
+
+    The lite editor's whole shape: the card says what the empire looks like, and pressing any of it
+    opens the editor for that one thing here. What goes inside is the same component the sections use
+    — the flag picker, the room picker, the trait picker — so there is one editor for each thing and
+    this only decides where it sits.
+
+    Not ConfirmDialog, and not a fork of it. That one is sized for a question: a 30rem sheet that
+    grows with its content and never scrolls, which is right for two sentences and hopeless for three
+    hundred emblems. The parts worth having are the same though, and are taken from it deliberately —
+    the backdrop, the focus on open, Escape, and the stopPropagation that keeps a press on a button
+    from also reading as a press on the backdrop behind it.
+*@
+
+<div class="sem-modal sem-editor-modal @(Compact ? "sem-editor-compact" : null)" @onclick="Close">
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="@_titleId"
+         tabindex="-1" @ref="_sheet" @onkeydown="OnKey" @onclick:stopPropagation="true">
+
+        <div class="head">
+            <h2 id="@_titleId">@Title</h2>
+
+            @*
+                A cross as well as the Done below, because a dialog this size is closed from wherever
+                the eye happens to be and the foot of a scrolled editor is a long way from the top.
+            *@
+            <button type="button" class="icon" title="Close" aria-label="Close" @onclick="Close">
+                <ActionIcon Name="close" />
+            </button>
+        </div>
+
+        @*
+            The scrolling part, and the reason this component exists. Everything the editors do —
+            their own scroll lists, their sticky heads — happens inside this.
+        *@
+        <div class="body">
+            @ChildContent
+        </div>
+
+        <div class="choices">
+            @*
+                Done rather than Save or OK. Nothing here is being confirmed: the edits went into the
+                design as they were made, exactly as they do in the sections, and the Save button on
+                the page behind is still the only thing that writes anything.
+            *@
+            <button type="button" class="primary" @onclick="Close">Done</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private ElementReference _sheet;
+
+    /// <summary>Ties the sheet to its heading for a screen reader, uniquely on a page.</summary>
+    private readonly string _titleId = $"editor-{Guid.NewGuid():N}";
+
+    /// <summary>What is being edited, named as the section that holds it is named.</summary>
+    [Parameter, EditorRequired]
+    public required string Title { get; set; }
+
+    /// <summary>The editor itself.</summary>
+    [Parameter, EditorRequired]
+    public required RenderFragment ChildContent { get; set; }
+
+    /// <summary>Called when the dialog is closed, however it was closed.</summary>
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+    /// <summary>
+    /// Whether this holds a form rather than a picker.
+    /// </summary>
+    /// <remarks>
+    /// Three fields do not want a sixty-four-rem sheet with a scrolling middle. A compact one is
+    /// narrow, sized to its content, and - the part that matters - does not clip: a ComboBox drops
+    /// its list as an absolutely positioned child, and the scrolling body would cut it off exactly
+    /// as it once did inside a section.
+    /// </remarks>
+    [Parameter]
+    public bool Compact { get; set; }
+
+    /// <summary>
+    /// Takes the keyboard when the dialog appears, so Escape reaches it and Tab stays inside.
+    /// </summary>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await _sheet.FocusAsync();
+        }
+    }
+
+    private Task OnKey(KeyboardEventArgs e) =>
+        e.Key == "Escape" ? Close() : Task.CompletedTask;
+
+    private Task Close() => OnClose.InvokeAsync();
+}

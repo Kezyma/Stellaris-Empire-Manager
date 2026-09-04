@@ -1,0 +1,105 @@
+@*
+    What is wrong with the empire, folded away.
+
+    A component because both editors need it and only one of them had it. The sections show a count
+    on each header and the showcase beside them carried the messages; the lite card carried neither,
+    so a lite user was told a design was invalid only by the game refusing it. The messages exist
+    nowhere else, so this is the one place they are written.
+
+    Nothing is drawn when there is nothing wrong — a heading saying "0 problems" is a heading that
+    is always there, which is how it stops being read.
+*@
+
+@if (Total > 0)
+{
+    <details class="sem-showcase-problems">
+        <summary>
+            <span class="chevron" aria-hidden="true">▸</span>
+            <span class="title">@Summary</span>
+        </summary>
+
+        @foreach (var problem in Report.Errors)
+        {
+            <div class="sem-problem">
+                <div class="area">@AreaName(problem.Area)</div>
+                <div>@Describe(problem)</div>
+
+                @foreach (var reason in problem.Reasons.Distinct())
+                {
+                    <div class="why">@Session.Localizer.Text(reason)</div>
+                }
+            </div>
+        }
+
+        @foreach (var problem in Report.Warnings)
+        {
+            <div class="sem-problem warning">
+                <div class="area">@AreaName(problem.Area)</div>
+                <div>@Describe(problem)</div>
+            </div>
+        }
+    </details>
+}
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>What the rules make of the empire.</summary>
+    [Parameter, EditorRequired]
+    public required ValidationReport Report { get; set; }
+
+    private int Total => Report.Errors.Count + Report.Warnings.Count;
+
+    /// <summary>
+    /// What the heading says, which is what there is rather than always "problems".
+    /// </summary>
+    private string Summary
+    {
+        get
+        {
+            var parts = new List<string>();
+
+            if (Report.Errors.Count is var errors and > 0)
+            {
+                parts.Add($"{errors} problem{(errors == 1 ? string.Empty : "s")}");
+            }
+
+            if (Report.Warnings.Count is var warnings and > 0)
+            {
+                parts.Add($"{warnings} warning{(warnings == 1 ? string.Empty : "s")}");
+            }
+
+            return string.Join(", ", parts);
+        }
+    }
+
+    /// <summary>
+    /// A problem's message with the things it names spelled out.
+    /// </summary>
+    /// <remarks>
+    /// The rules know nothing about language, so a message that has to name something the game
+    /// defines leaves a numbered blank and hands over the key. Filling them here is what turns
+    /// "This origin starts the empire on 'pc_volcanic'" into the words a player would recognise.
+    /// </remarks>
+    private string Describe(ValidationProblem problem) =>
+        problem.Arguments.Count == 0
+            ? problem.Message
+            : string.Format(
+                System.Globalization.CultureInfo.CurrentCulture,
+                problem.Message,
+                [.. problem.Arguments.Select(key => Session.Localizer.Text(key))]);
+
+    /// <summary>
+    /// What to call the part of the empire a problem belongs to.
+    /// </summary>
+    /// <remarks>
+    /// The enum's own name is shouted and run together — SECONDARYSPECIES — which is the same fault
+    /// as printing a key.
+    /// </remarks>
+    private static string AreaName(ValidationArea area) => area switch
+    {
+        ValidationArea.SecondarySpecies => "Second species",
+        _ => Localizer.Prettify(area.ToString()),
+    };
+}

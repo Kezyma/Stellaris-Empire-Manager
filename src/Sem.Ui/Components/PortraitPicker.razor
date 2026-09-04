@@ -18,6 +18,26 @@
 </div>
 
 @*
+    Whether the galaxy may hand this face to somebody else as well. The designs file has carried
+    ignore_portrait_duplication all along and nothing has ever been able to set it, so an empire
+    written with it kept the setting and an empire made here could never have it.
+
+    Drawn here because this is the portrait it governs, and drawn once: it belongs to the empire
+    rather than to a species, so a second species — which shares this editor — must not offer a
+    second answer to it.
+*@
+@if (Founder)
+{
+    <div class="sem-field">
+        <label>Portrait duplication</label>
+        <button type="button" class="sem-toggle" aria-pressed="@(Shared ? "true" : "false")"
+                @onclick="() => Session.Edit(d => d.IgnorePortraitDuplication = d.IgnorePortraitDuplication != true)">
+            @(Shared ? "Allowed" : "Disallowed")
+        </button>
+    </div>
+}
+
+@*
     The classes on the left and their faces on the right, as the game arranges them. A dropdown hid
     which classes exist behind a click, and the class is not an afterthought to the portrait — it is
     the thing that decides which portraits there are.
@@ -84,8 +104,23 @@
     [Parameter, EditorRequired]
     public required SpeciesDesign Species { get; set; }
 
+    /// <summary>
+    /// Whether this is the empire's founding species rather than a second one.
+    /// </summary>
+    /// <remarks>
+    /// Told rather than worked out. Both SpeciesDesign properties hand back a fresh view over the
+    /// same block every time they are read, so no two reads are the same object and comparing them
+    /// says nothing; the block underneath could be compared, but reading it is what creates it, and
+    /// a comparison that writes to the design is not a comparison. The caller already knows.
+    /// </remarks>
+    [Parameter]
+    public bool Founder { get; set; }
+
     /// <summary>The rules as they apply to the species this control is editing.</summary>
     private DesignContext Context => Session.ContextFor(Species)!;
+
+    /// <summary>Whether the game has been told not to keep this portrait to this empire.</summary>
+    private bool Shared => Session.Current?.IgnorePortraitDuplication == true;
 
     private IEnumerable<OptionState> ClassOptions =>
         Session.Rules.GetSpeciesClassOptions(Context).Where(o => o.Visible);

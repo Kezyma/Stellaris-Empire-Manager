@@ -1,0 +1,48 @@
+@*
+    What each of the empire's choices does, one option at a time.
+
+    The panel it sits in adds everything up; this takes it apart again. The totals answer "what is my
+    empire like", and this answers "which of my choices did that" - the question you have when a
+    number is not what you expected, and which was previously answerable only by hovering each row of
+    the totals to read its tooltip.
+
+    Everything an option does, not only its numbers. Most of what an option does is not a number:
+    Aerospace Adaptation's three modifiers say nothing about the biological ships it is actually
+    about, and forty-two of the game's seventy-seven origins carry no modifier at all - which is why
+    Prosperous Unification used to be missing from this list entirely.
+
+    Rendered by the same component the hover popover uses, so an option cannot say one thing there
+    and another here. The lore paragraph is not part of it: that belongs to the chip, above the
+    effects, and a column of flavour text is not what this panel is for.
+*@
+
+@if (Contributions.Count == 0)
+{
+    <p class="sem-hint">Nothing chosen so far changes anything.</p>
+}
+
+@foreach (var contribution in Contributions)
+{
+    <div class="option" @key="contribution.Option.Key">
+        <div class="name">
+            <GameIcon Path="@contribution.Option.Icon" Alt="" />
+            <span>@contribution.Option.Name</span>
+        </div>
+
+        @*
+            AllModifiers, because this has to add up to the total above it. An option may ask for its
+            numbers not to be listed - its own sentence usually states them - and the arithmetic
+            counts them regardless, so a breakdown that honoured the request would not reconcile.
+        *@
+        <EffectsList Effects="@contribution.Effects" AllModifiers="true" />
+    </div>
+}
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>Each option that changes something, with what it changes.</summary>
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<OptionContribution> Contributions { get; set; }
+}

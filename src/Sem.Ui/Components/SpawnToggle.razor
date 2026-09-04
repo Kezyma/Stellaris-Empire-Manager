@@ -1,0 +1,106 @@
+@*
+    Whether this empire may turn up in somebody else's game.
+
+    The game makes this one button that cycles rather than a list, and wears one of three pictures
+    for it, so this does the same — with the state named beside it, since a picture alone is a
+    puzzle. A component because it is on the lite card as well as in the Empire section, and it is
+    small enough that a second copy would have been the easier mistake.
+*@
+
+@if (IconOnly)
+{
+    @* In a panel's corner, where the name beside it would be a second heading. *@
+    <button type="button" class="badge large" title="@Told" aria-label="@Told" @onclick="Cycle">
+        @if (Icon is { Length: > 0 } icon)
+        {
+            <img src="@Session.Data.AssetUrl(icon)" alt="">
+        }
+        else
+        {
+            <span>@Name</span>
+        }
+    </button>
+}
+else
+{
+    <div class="sem-spawn-row">
+        <button type="button" class="sem-spawn" title="@Description" @onclick="Cycle">
+            @if (Icon is { Length: > 0 } icon)
+            {
+                <img src="@Session.Data.AssetUrl(icon)" alt="@Name">
+            }
+            else
+            {
+                <span class="initials">@Name</span>
+            }
+        </button>
+
+        <div>
+            <div class="name">@Name</div>
+        </div>
+    </div>
+}
+
+@code {
+    /// <summary>
+    /// The three states the button cycles through, in the order the game's pictures run.
+    /// </summary>
+    /// <remarks>
+    /// The design stores <c>yes</c>, <c>no</c> or <c>always</c>, and a design that says nothing is
+    /// treated as <c>no</c>, which is what the game does with a blank. The frame numbers are the
+    /// button's own, and nothing in the game's files states which frame means which state — it picks
+    /// by index in code. The pictures settle it: all three are the same phoenix, the first unlit,
+    /// the second alight, and the third alight with a padlock over it. Dark is off, lit is may, and
+    /// locked is must.
+    /// </remarks>
+    private static readonly (string Value, string NameKey, int Frame)[] States =
+    [
+        ("no", "EMPIRE_SPAWN_DISALLOWED", 1),
+        ("yes", "EMPIRE_SPAWN_ALLOWED", 2),
+        ("always", "EMPIRE_SPAWN_ALWAYS", 3),
+    ];
+
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>
+    /// Whether to draw the button alone rather than with its state written beside it.
+    /// </summary>
+    /// <remarks>
+    /// The section has room to name which of the three states is held; a panel's corner does not,
+    /// and the picture says it anyway once you know the three - the game's own control is this same
+    /// button with no label at all. The words are still on it, as its title and its label.
+    /// </remarks>
+    [Parameter]
+    public bool IconOnly { get; set; }
+
+    private EmpireDesign Design => Session.Current!;
+
+    private (string Value, string NameKey, int Frame) State =>
+        States.FirstOrDefault(s => s.Value == Design.SpawnEnabled, States[0]);
+
+    private string Name => Session.Localizer.Text(State.NameKey, "Empire Spawning Forbidden");
+
+    /// <summary>
+    /// The sentence under the button, which names the empire it is about.
+    /// </summary>
+    /// <remarks>
+    /// The game writes the empire in as <c>$TEMPLATE$</c> and fills it at the moment of showing.
+    /// Nothing here defines that, so left alone the player would read the placeholder.
+    /// </remarks>
+    private string Description => Session.Localizer
+        .Text($"{State.NameKey}_DESC", string.Empty)
+        .Replace("$TEMPLATE$", Session.Localizer.Name(Design.Name, Design.Key), StringComparison.Ordinal);
+
+    private string? Icon => Session.Data.Database.Icons
+        .GetValueOrDefault($"GFX_button_empire_spawn_setting|{State.Frame}");
+
+    /// <summary>The state and the sentence about it, for a button with no room to print either.</summary>
+    private string Told => Description is { Length: > 0 } why ? $"{Name}. {why}" : Name;
+
+    private void Cycle()
+    {
+        var next = States[(Array.IndexOf(States, State) + 1) % States.Length];
+        Session.Edit(d => d.SpawnEnabled = next.Value);
+    }
+}

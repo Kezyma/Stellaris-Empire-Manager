@@ -1,0 +1,243 @@
+@implements IDisposable
+
+@*
+    The lite editor: the card, and whichever editor the card asked for.
+
+    The other half of DesignerShell rather than a page of its own. Everything that makes the designer
+    work - the session, the unsaved-work guard, the save and revert and delete, the shared link and
+    the address bar - belongs to Designer.razor and is untouched by which of the two bodies it draws.
+    So this holds a card, a dialog, and the mapping from one to the other, and nothing else.
+
+    The editors inside the dialog are the same components the sections use. Not copies of them, not
+    trimmed versions: the flag picker in here is the flag picker in there, so a fix to one is a fix
+    to both and there is no second answer to what an origin costs.
+*@
+
+@*
+    The session is cascaded here, as the sections' shell cascades it, because every editor that goes
+    in the dialog expects to find it that way and the dialog is rendered from here.
+*@
+<CascadingValue Value="Session">
+<div class="sem-lite-shell">
+    @if (Session.Current is null)
+    {
+        <div class="sem-empty">
+            <p>No empire is open.</p>
+        </div>
+    }
+    else
+    {
+        @if (Actions is not null)
+        {
+            <div class="sem-lite-actions">@Actions</div>
+        }
+
+        <LiteCard Design="Session.Current" Baseline="@Session.SavedContext" OnEdit="Open" />
+
+        @if (_editing is { } part)
+        {
+            <EditorDialog Title="@TitleOf(part)" Compact="@IsCompact(part)" OnClose="Close">
+                @Editor(part)
+            </EditorDialog>
+        }
+    }
+</div>
+</CascadingValue>
+
+@code {
+    [Parameter, EditorRequired]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>The save, revert, delete and share row, which both editors get from the page.</summary>
+    [Parameter]
+    public RenderFragment? Actions { get; set; }
+
+    /// <summary>Which editor is open, and nothing when none is.</summary>
+    private LitePart? _editing;
+
+    protected override void OnInitialized() => Session.Changed += OnChanged;
+
+    public void Dispose() => Session.Changed -= OnChanged;
+
+    private void OnChanged() => InvokeAsync(StateHasChanged);
+
+    private void Open(LitePart part) => _editing = part;
+
+    private void Close() => _editing = null;
+
+    /// <summary>
+    /// What the dialog is called.
+    /// </summary>
+    /// <remarks>
+    /// The names the sections already use, rather than a second set looked up from the game's keys.
+    /// The same editor opened from either shell has to be called the same thing, and the game's keys
+    /// name whole screens rather than single editors: they titled the empire's settings "Empire
+    /// Name", which is the one thing that dialog does not hold.
+    /// </remarks>
+    private static string TitleOf(LitePart part) => part switch
+    {
+        LitePart.Naming => "Name",
+        LitePart.Ethics => "Ethics",
+        LitePart.Authority => "Authority",
+        LitePart.Civics => "Civics",
+        LitePart.Government => "Government",
+        LitePart.Origin => "Origin",
+        LitePart.Species => "Species",
+        LitePart.Portrait => "Portrait",
+        LitePart.Traits => "Traits",
+        LitePart.SecondSpecies => "Second species",
+        LitePart.SecondPortrait => "Second species portrait",
+        LitePart.SecondTraits => "Second species traits",
+        LitePart.Ruler => "Ruler",
+        LitePart.RulerAppearance => "Ruler appearance",
+        LitePart.RulerTraits => "Ruler traits",
+        LitePart.Homeworld => "Homeworld",
+        LitePart.Flag => "Flag",
+        LitePart.Room => "Room",
+        LitePart.Shipset => "Shipset",
+        _ => "Advisor Voice",
+    };
+
+    /// <summary>
+    /// Whether the editor is a form rather than a picker, and wants a sheet sized to it.
+    /// </summary>
+    /// <remarks>
+    /// The wide sheet exists for the grids - three hundred emblems, a hundred and seventeen traits,
+    /// a picker with a description panel beside it. A handful of labelled boxes in the same sheet is
+    /// a lot of empty sheet, and the two naming dialogs need the narrow one for a second reason:
+    /// their comboboxes drop a list that the scrolling body of a tall sheet would clip.
+    ///
+    /// Only the two forms, then. The shipsets and the advisor voices are pickers like the rest -
+    /// twenty-seven voices in a compact sheet, which does not scroll, ran off the bottom of the
+    /// page.
+    /// </remarks>
+    private static bool IsCompact(LitePart part) =>
+        part is LitePart.Naming or LitePart.Ruler;
+
+    /// <summary>
+    /// The editor for one part, which is in every case a component the sections already use.
+    /// </summary>
+    /// <remarks>
+    /// Each case takes a block of ten sequence numbers, so a case that gains a parameter cannot
+    /// collide with the next one along.
+    /// </remarks>
+    private RenderFragment Editor(LitePart part) => builder =>
+    {
+        var design = Session.Current!;
+
+        switch (part)
+        {
+            case LitePart.Naming:
+                builder.OpenComponent<EmpireNaming>(20);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.Ethics:
+                builder.OpenComponent<EthicsSection>(30);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.Authority:
+                builder.OpenComponent<AuthoritySection>(40);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.Civics:
+                builder.OpenComponent<CivicsSection>(50);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.Government:
+                builder.OpenComponent<GovernmentTab>(60);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.Origin:
+                builder.OpenComponent<OriginTab>(70);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.Species:
+                builder.OpenComponent<SpeciesNames>(80);
+                builder.AddComponentParameter(81, nameof(SpeciesNames.Species), design.Species);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.Portrait:
+                builder.OpenComponent<PortraitPicker>(90);
+                builder.AddComponentParameter(91, nameof(PortraitPicker.Species), design.Species);
+                builder.AddComponentParameter(92, nameof(PortraitPicker.Founder), true);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.Traits:
+                builder.OpenComponent<TraitPicker>(100);
+                builder.AddComponentParameter(101, nameof(TraitPicker.Species), design.Species);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.SecondSpecies when design.SecondarySpecies is { } named:
+                builder.OpenComponent<SpeciesNames>(110);
+                builder.AddComponentParameter(111, nameof(SpeciesNames.Species), named);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.SecondPortrait when design.SecondarySpecies is { } shown:
+                builder.OpenComponent<PortraitPicker>(200);
+                builder.AddComponentParameter(201, nameof(PortraitPicker.Species), shown);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.SecondTraits when design.SecondarySpecies is { } gifted:
+                builder.OpenComponent<TraitPicker>(210);
+                builder.AddComponentParameter(211, nameof(TraitPicker.Species), gifted);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.Ruler:
+                builder.OpenComponent<RulerNaming>(120);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.RulerAppearance:
+                builder.OpenComponent<RulerAppearance>(130);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.RulerTraits:
+                builder.OpenComponent<RulerTraits>(140);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.Homeworld:
+                builder.OpenComponent<HomeworldTab>(150);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.Flag:
+                builder.OpenComponent<FlagTab>(160);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.Room:
+                builder.OpenComponent<RoomTab>(170);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.Shipset:
+                builder.OpenComponent<ShipsetTab>(180);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.Advisor:
+                builder.OpenComponent<AdvisorTab>(190);
+                builder.CloseComponent();
+                break;
+
+            default:
+                // One of the second species' parts with no second species, which the card cannot
+                // offer and a stale click could still ask for.
+                break;
+        }
+    };
+}

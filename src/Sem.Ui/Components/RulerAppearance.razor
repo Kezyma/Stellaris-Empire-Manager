@@ -13,27 +13,14 @@
 *@
 
 <div class="sem-appearance">
+    @*
+        The likeness itself is drawn by RulerFigure, which the lite card's ruler panel draws too.
+        Where a host publishes no wardrobe - the desktop builds its cache without one - it falls
+        back to the portrait's own flat picture, and the controls that need the pieces are left out
+        below rather than shown doing nothing.
+    *@
     <div class="figure">
-        @if (_loading)
-        {
-            <p class="sem-hint">Drawing…</p>
-        }
-        else if (Outfit is { } outfit)
-        {
-            <PortraitFigure Outfit="outfit"
-                            Character="@TextureFor(PortraitSlot.Character)"
-                            Clothes="@TextureFor(PortraitSlot.Clothes)"
-                            Attachment="@TextureFor(PortraitSlot.Attachment)" />
-        }
-        else if (Thumbnail is { Length: > 0 } thumbnail)
-        {
-            @*
-                No wardrobe published by this host — the desktop builds its cache without one — so
-                the portrait's own flat picture stands in and the controls that need the pieces are
-                left out rather than shown doing nothing.
-            *@
-            <img class="sem-thumb" src="@Session.Data.AssetUrl(thumbnail)" alt="">
-        }
+        <RulerFigure @ref="_figure" />
     </div>
 
     <div class="controls">
@@ -104,24 +91,17 @@
 
     private EmpireDesign Design => Session.Current!;
 
-    /// <summary>The pieces for the portrait now being worn, once they have been fetched.</summary>
-    private PortraitOutfit? _outfit;
-
-    /// <summary>Which portrait <see cref="_outfit"/> is for, so a change of face refetches nothing.</summary>
-    private string? _outfitFor;
-
-    private bool _loading;
-
     /// <summary>
-    /// The whole wardrobe, held for the life of the component.
+    /// The figure being drawn, asked only what pieces it found.
     /// </summary>
     /// <remarks>
-    /// The source memoises this, so opening the section a second time costs nothing; holding the
-    /// reference here only saves going back through the gate on every keystroke.
+    /// The controls below have to know how many choices each slot offers, and only the wardrobe
+    /// says - so the fetch belongs to whoever draws the picture, and this reads the answer off it
+    /// rather than fetching a second copy.
     /// </remarks>
-    private IReadOnlyList<PortraitOutfit>? _wardrobe;
+    private RulerFigure? _figure;
 
-    private PortraitOutfit? Outfit => _outfit;
+    private PortraitOutfit? Outfit => _figure?.Outfit;
 
     /// <summary>
     /// The likeness actually worn, which for a group is one of its members.
@@ -149,9 +129,6 @@
         ? Portrait
         : Session.Data.Database.Portraits.FirstOrDefault(p =>
             p.IsGroup && p.Phenotypes.Values.Any(faces => faces.Contains(Design.Ruler.Portrait!)));
-
-    private string? Thumbnail => Session.Data.Database.Portraits
-        .FirstOrDefault(p => p.Key == Likeness)?.Thumbnail;
 
     /// <summary>
     /// What this portrait calls the thing on its head.
@@ -187,18 +164,6 @@
         }
     }
 
-    /// <summary>
-    /// The skin an ascended form wears, where the design holds a stage and the portrait has artwork.
-    /// </summary>
-    /// <remarks>
-    /// Nothing in this app sets the stage — see the note where its control would be — but a design
-    /// carrying one is drawn wearing it rather than ignored, since the field survives a round trip
-    /// and something outside this app may yet write it. An ascended form is another skin rather than
-    /// another layer, so the figure asks for it exactly as it asks for a colour variant.
-    /// </remarks>
-    private string? AscendedSkin =>
-        Outfit?.AscendedCharacter(Design.Ruler.Texture, Design.Ruler.EvolutionMask ?? 0);
-
     private int PhenotypeIndex => Likeness is { } face
         ? Math.Max(0, Members.ToList().IndexOf(face))
         : 0;
@@ -207,30 +172,23 @@
         ? Localizer.Prettify(Members[PhenotypeIndex])
         : null;
 
-    protected override async Task OnParametersSetAsync()
+    /// <summary>
+    /// Drawn a second time once the figure has its pieces.
+    /// </summary>
+    /// <remarks>
+    /// The counts under the picture come from the wardrobe, which the figure fetches after its
+    /// first render. Without this the steppers would render against no wardrobe and stay that way.
+    /// </remarks>
+    protected override void OnAfterRender(bool firstRender)
     {
-        if (Likeness is not { Length: > 0 } face || face == _outfitFor)
+        if (firstRender || Outfit is null != _drawnWithout)
         {
-            return;
-        }
-
-        _outfitFor = face;
-        _loading = true;
-
-        // In a finally, because anything the fetch throws that is not an HttpRequestException - a
-        // malformed wardrobe.json raises a JsonException - escaped past the source's own catch and
-        // left this flag set for the component's lifetime. The panel then read "Drawing…" for ever,
-        // over a failure the player never saw.
-        try
-        {
-            _wardrobe ??= await Source.LoadWardrobeAsync().ConfigureAwait(true);
-            _outfit = _wardrobe.FirstOrDefault(o => o.Portrait == face);
-        }
-        finally
-        {
-            _loading = false;
+            _drawnWithout = Outfit is null;
+            StateHasChanged();
         }
     }
+
+    private bool _drawnWithout = true;
 
     /// <summary>
     /// How many choices a slot offers.
@@ -242,16 +200,6 @@
     /// </remarks>
     private int Count(PortraitSlot slot) => Outfit?.CountFor(slot)
         ?? (slot == PortraitSlot.Character ? Portrait?.TextureCount ?? 0 : 0);
-
-    private string? TextureFor(PortraitSlot slot) =>
-        slot == PortraitSlot.Character && AscendedSkin is { } ascended
-            ? ascended
-            : Outfit?.TextureFor(slot, slot switch
-            {
-                PortraitSlot.Clothes => Design.Ruler.Clothes,
-                PortraitSlot.Attachment => Design.Ruler.Attachment,
-                _ => Design.Ruler.Texture,
-            });
 
     /// <summary>
     /// Wears a different face of the group.

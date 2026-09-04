@@ -87,8 +87,21 @@ else
     [Parameter]
     public bool ShowNothing { get; set; }
 
-    private IReadOnlyList<FormattedModifier> Modifiers =>
-        Effects is null ? [] : Session.Modifiers.Format(Effects.VisibleModifiers);
+    /// <summary>
+    /// Whether to show the numbers an option hides as well as the ones it prints.
+    /// </summary>
+    /// <remarks>
+    /// An option may say "do not list my modifiers" - because its own sentence already states them,
+    /// or because the game would rather not - and a popover honours that. A breakdown of a total
+    /// cannot: the arithmetic counts those numbers whatever the option would prefer, so a panel
+    /// that hid them would not add up to the total printed beside it.
+    /// </remarks>
+    [Parameter]
+    public bool AllModifiers { get; set; }
+
+    private IReadOnlyList<FormattedModifier> Modifiers => Effects is null
+        ? []
+        : Session.Modifiers.Format(AllModifiers ? Effects.Modifiers : Effects.VisibleModifiers);
 
     private static string ToneClass(ModifierTone tone) => tone switch
     {

@@ -1,0 +1,42 @@
+@*
+    What kind of leader rules the empire.
+
+    The class decides nothing else in the designer, but it decides the ruler's portrait frame and
+    their traits in a running game, and a dropdown hid three choices behind a click. Wearing the
+    gender picker's clothes on purpose: three icons that mean one choice, sitting next to four icons
+    that mean another, and they should read as the same kind of control.
+*@
+
+<div class="sem-genders">
+    @foreach (var leaderClass in Classes)
+    {
+        var name = Session.Localizer.Text(leaderClass.NameKey, Localizer.Prettify(leaderClass.Key));
+
+        <button type="button"
+                class="sem-gender @(leaderClass.Key == Current ? "selected" : null)"
+                title="@name"
+                aria-pressed="@(leaderClass.Key == Current ? "true" : "false")"
+                @onclick="() => Session.Edit(d => d.Ruler.LeaderClass = leaderClass.Key)">
+
+            @if (leaderClass.Icon is { Length: > 0 } icon)
+            {
+                <img src="@Session.Data.AssetUrl(icon)" alt="@name">
+            }
+            else
+            {
+                <span>@name</span>
+            }
+        </button>
+    }
+</div>
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>The kinds of leader that may rule an empire.</summary>
+    private IEnumerable<LeaderClassDefinition> Classes =>
+        Session.Data.Database.LeaderClasses.Where(c => c.CanRule);
+
+    private string? Current => Session.Current!.Ruler.LeaderClass;
+}

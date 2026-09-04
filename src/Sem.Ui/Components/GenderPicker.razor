@@ -55,4 +55,22 @@
     public EventCallback<string> OnChange { get; set; }
 
     private string Current => Value is { Length: > 0 } set ? set : "not_set";
+
+    /// <summary>
+    /// The sprite and the word for one gender, for somewhere that shows the held one rather than
+    /// offering all four.
+    /// </summary>
+    /// <remarks>
+    /// The card shows the answer and opens this picker to change it, so the four live here and are
+    /// read from here - a second list of the game's four sprites would be a second thing to keep
+    /// right.
+    /// </remarks>
+    public static (string Label, string Icon) Held(string? gender)
+    {
+        var key = gender is { Length: > 0 } set ? set : "not_set";
+
+        return Genders.FirstOrDefault(g => g.Key == key, Genders[0]) is var (_, label, icon)
+            ? (label, icon)
+            : (Genders[0].Label, Genders[0].Icon);
+    }
 }

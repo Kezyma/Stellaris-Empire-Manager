@@ -101,6 +101,28 @@ public sealed class DesignContext
     public IReadOnlySet<string> RulerTraits { get; private init; } = new HashSet<string>();
 
     /// <summary>
+    /// Every trait the founder species actually has, written down or not.
+    /// </summary>
+    /// <remarks>
+    /// <see cref="Traits"/> is what the file says. This is what the empire has, which is not the
+    /// same list: a habitability preference is forced by the homeworld and deliberately never
+    /// written - see <c>GetWrittenForcedTraits</c> - so an ocean species carries
+    /// <c>trait_pc_ocean_preference</c> and its five habitability modifiers with nothing in the file
+    /// to say so.
+    ///
+    /// Filled in by whoever built the context, as <see cref="Government"/> is, because working it
+    /// out needs the rules and the context has none. Falls back to the written list until then, so
+    /// a context nobody completed still answers sensibly.
+    /// </remarks>
+    public IReadOnlySet<string> EffectiveTraits
+    {
+        get => _effectiveTraits ?? Traits;
+        internal set => _effectiveTraits = value;
+    }
+
+    private IReadOnlySet<string>? _effectiveTraits;
+
+    /// <summary>
     /// The content packs available. Everything gated on a pack is judged against this rather than
     /// against what the extraction machine happened to own.
     /// </summary>

@@ -1,0 +1,62 @@
+@*
+    How an empire is run, and whether it stays still to do it.
+
+    The nomad toggle rides here rather than having a place of its own. It is not an authority, but
+    the game puts it beside them and it belongs there: it changes what an empire may govern with,
+    ruling out a good many civics on its own, and forcing the homeworld to an arkship. There is
+    nowhere else it could go without becoming unreachable.
+*@
+
+<OptionGrid Options="@Authorities"
+            OnSelect="key => Session.Edit(d => d.Authority = key)">
+    <Aside>
+        @*
+            Beside the grid rather than in it, as the game also has it — a container of its own next
+            to the authorities, so that it does not read as one more of them — and an icon rather
+            than a labelled row, which read as a section.
+        *@
+        <button type="button"
+                class="sem-icon-option sem-nomad @(Design.IsNomadic == true ? "selected" : null)"
+                title="@NomadicLabel"
+                aria-pressed="@(Design.IsNomadic == true ? "true" : "false")"
+                @onclick="() => Session.Edit(d => d.IsNomadic = d.IsNomadic != true)">
+
+            @if (Session.Data.Database.Icons.GetValueOrDefault(NomadSprite) is { Length: > 0 } icon)
+            {
+                <img src="@Session.Data.AssetUrl(icon)" alt="@NomadicLabel">
+            }
+            else
+            {
+                <span class="initials">@NomadicLabel</span>
+            }
+        </button>
+    </Aside>
+</OptionGrid>
+
+@code {
+    /// <summary>The sprite the game's own nomad toggle wears.</summary>
+    private const string NomadSprite = "GFX_toggle_nomad";
+
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    private EmpireDesign Design => Session.Current!;
+
+    private DesignContext Context => Session.Context!;
+
+    private string NomadicLabel => Session.Localizer.Text("IS_NOMADIC", "Is a Nomadic Empire");
+
+    private IReadOnlyList<OptionGrid.GridOption> Authorities
+    {
+        get
+        {
+            var byKey = Session.Data.Database.Authorities.ToDictionary(a => a.Key, StringComparer.Ordinal);
+
+            return GridOptions.Build(
+                Session,
+                Session.Rules.GetAuthorityOptions(Context),
+                key => (byKey.GetValueOrDefault(key)?.Icon, byKey.GetValueOrDefault(key)?.Effects),
+                key => key == Design.Authority);
+        }
+    }
+}

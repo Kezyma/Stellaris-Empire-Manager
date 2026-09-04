@@ -291,10 +291,16 @@ export function closeListsOnOutsidePress() {
  * All of the listening happens here rather than in the component, so a hover costs no round trip
  * into managed code.
  *
+ * A tap is the odd one out. There is no hover to leave, so a click pins the panel open until
+ * something dismisses it - which is right for a chip that only describes itself, and wrong for one
+ * that also opens an editor, where the press belongs to the editor and pinning would fire as well.
+ * So pinning is asked for rather than assumed, and a chip that opens something asks for none.
+ *
  * @param {HTMLElement} anchor what the panel describes
  * @param {HTMLElement} panel the popover itself
+ * @param {boolean} [pinOnClick=true] whether a click should hold the panel open
  */
-export function bindPopover(anchor, panel) {
+export function bindPopover(anchor, panel, pinOnClick = true) {
     if (!anchor || !panel || anchor.dataset.semBound === 'yes') {
         return;
     }
@@ -347,16 +353,18 @@ export function bindPopover(anchor, panel) {
     anchor.addEventListener('focus', show);
     anchor.addEventListener('blur', () => { pinned = false; hide(); });
 
-    anchor.addEventListener('click', event => {
-        event.preventDefault();
-        pinned = !pinned;
+    if (pinOnClick) {
+        anchor.addEventListener('click', event => {
+            event.preventDefault();
+            pinned = !pinned;
 
-        if (pinned) {
-            show();
-        } else {
-            panel.hidePopover();
-        }
-    });
+            if (pinned) {
+                show();
+            } else {
+                panel.hidePopover();
+            }
+        });
+    }
 
     anchor.addEventListener('keydown', event => {
         if (event.key === 'Escape') {

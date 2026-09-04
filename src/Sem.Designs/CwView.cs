@@ -219,6 +219,16 @@ public abstract class CwView
     {
         ArgumentNullException.ThrowIfNull(values);
 
+        // The same trap SetStrings guards against, and the same answer: writing no values into a
+        // block that is not there is not a write, and reaching them through GetOrAddBlock made the
+        // block first. Every empire the app created carried "civics={}", which the game itself
+        // never writes - visible in the extracted blank template, where "ethic" is correctly absent
+        // beside it because that one goes through the guarded path.
+        if (values.Count == 0 && GetBlock(key) is null)
+        {
+            return;
+        }
+
         var block = GetOrAddBlock(key);
         var elements = block.Nodes.Where(n => !n.IsAssignment).ToList();
 

@@ -29,10 +29,20 @@
     back. Without the key, a rejected change left Value byte-identical to the previous render, Blazor
     diffed no edit, and the box went on showing text the design does not hold — a name marked as
     already taken sitting in the field as though it had been accepted.
+
+    Only when it was refused, and the key is the count of refusals and nothing else. A changed key
+    is a remove and an insert, and the browser does not carry focus across one — so keying on the
+    value as well threw the input away and built a new one every time a name was *accepted*, which
+    left the caret nowhere the moment you pressed Enter. Every name in the designer goes through
+    this box.
+
+    Nothing is lost by dropping the value from the key: a value that changes is a value Blazor can
+    see changing, and it updates the box the ordinary way. The refused one is the only case it
+    cannot see, which is the case this counts.
 *@
 <div class="sem-combo @(_open ? "open" : null)" @onkeydown="Dismiss">
     <input type="text"
-           @key="(Value, _commits)"
+           @key="_commits"
            id="@Id"
            value="@Value"
            disabled="@Disabled"
@@ -72,10 +82,13 @@
     private bool _open;
 
     /// <summary>
-    /// How many values have been handed over, which changes the box's key so a refused one is put
+    /// How many values have been refused, which changes the box's key so the refused one is put
     /// back rather than left on screen.
     /// </summary>
     private int _commits;
+
+    /// <summary>What was last handed over, until the owner has had its say about it.</summary>
+    private string? _offered;
 
     private IJSObjectReference? _module;
 
@@ -155,11 +168,34 @@
     [Parameter]
     public EventCallback<string> OnChange { get; set; }
 
+    /// <summary>
+    /// Notices whether the owner took what was last typed, and rebuilds the box only where it did
+    /// not.
+    /// </summary>
+    /// <remarks>
+    /// Asked here rather than after awaiting the callback, because the parameter does not carry the
+    /// owner's answer until the owner has re-rendered, which is later than the callback returning.
+    /// </remarks>
+    protected override void OnParametersSet()
+    {
+        if (_offered is null)
+        {
+            return;
+        }
+
+        if (!string.Equals(_offered, Value, StringComparison.Ordinal))
+        {
+            _commits++;
+        }
+
+        _offered = null;
+    }
+
     private async Task Commit(string? value)
     {
         _open = false;
-        _commits++;
+        _offered = value ?? string.Empty;
 
-        await OnChange.InvokeAsync(value ?? string.Empty);
+        await OnChange.InvokeAsync(_offered);
     }
 }

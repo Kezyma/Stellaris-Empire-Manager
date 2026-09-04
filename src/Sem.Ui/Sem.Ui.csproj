@@ -11,6 +11,15 @@
     <SupportedPlatform Include="browser" />
   </ItemGroup>
 
+  <!--
+    The frozen table a v2 share link encodes against. Carried in the assembly rather than fetched
+    with the game data, because it must not change when the game data is re-extracted: a link
+    stores a position in these lists, so the lists have to outlive the database they came from.
+  -->
+  <ItemGroup>
+    <EmbeddedResource Include="Services\LinkDictionary.v2.txt" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
   </ItemGroup>
