@@ -5,10 +5,16 @@
     governed, who lives in it, who rules it, where it starts, and what it flies. Every option the
     designer can set appears on one of them - the card is the whole empire, not a summary of it.
 
+    Every panel is shaped the same way, because they are all the same kind of thing: a picture on
+    the left, a name at the top of the rest, the other forms of that name bracketed beside it, small
+    settings as icons in the corner, and labelled rows only for what genuinely needs a label. A
+    species' plural is not a fact about a species - it is the species' name again, so it reads as
+    one rather than taking a line of its own.
+
     Pressing anything opens the editor for that one thing. The exceptions are the two the game
     itself joins: a name comes with its other forms, and a portrait comes with what decides which
-    portrait is worn. Pressing a chip does what pressing its row's name does, because that is what a
-    chip looks like it should do.
+    portrait is worn - the class and the gender. Pressing a chip does what pressing its row's name
+    does, because that is what a chip looks like it should do.
 
     Everything derived comes from the shared EmpireView, so this and the showcase cannot drift about
     what an empire is - only about how it is laid out, which is the whole point of there being two.
@@ -35,7 +41,12 @@
 
             @* ------------------------------------------------------------- the empire *@
             <section class="sem-panel">
-                <h3>Empire</h3>
+                <div class="head">
+                    <h3>Empire</h3>
+
+                    @* Whether it may turn up in somebody else's game: one setting, one icon. *@
+                    <SpawnToggle Compact="true" />
+                </div>
 
                 <div class="body">
                     <button type="button" class="face-button" title="Edit the flag"
@@ -44,17 +55,14 @@
                     </button>
 
                     <div class="about">
-                        <button type="button" class="name-button" title="Edit the empire's name"
-                                @onclick="() => Open(LitePart.Naming)">
-                            <span class="name">@Session.Localizer.Name(Design.Name, Design.Key)</span>
-                        </button>
+                        @Named(Session.Localizer.Name(Design.Name, Design.Key),
+                               [View.Adjective],
+                               Session.Localizer.Name(Design.ShipPrefix, string.Empty) is { Length: > 0 } prefix
+                                   ? $"{prefix} - ship prefix"
+                                   : null,
+                               LitePart.Naming, "Edit the empire's name")
 
                         <div class="sem-lite-choices">
-                            @Row(Session.Localizer.Heading("EMPIRE_ADJECTIVE", "Adjective"),
-                                 View.Adjective, LitePart.Naming)
-                            @Row(Session.Localizer.Heading("SHIP_PREFIX", "Ship Prefix"),
-                                 Session.Localizer.Name(Design.ShipPrefix, string.Empty), LitePart.Naming)
-
                             @*
                                 The scripted country flags. Nothing to do with the flag beside them,
                                 which is why they are named in full - see docs/empire-flags.md,
@@ -79,28 +87,21 @@
                                 </div>
                             </div>
                         </div>
-
-                        <SpawnToggle />
                     </div>
                 </div>
             </section>
 
             @* ------------------------------------------------------------- how it is governed *@
             <section class="sem-panel">
-                <h3>Government</h3>
+                <div class="head">
+                    <h3>Government</h3>
+                </div>
 
                 <div class="body">
                     <div class="about">
-                        <button type="button" class="name-button"
-                                title="Edit ethics, authority and civics together"
-                                @onclick="() => Open(LitePart.Government)">
-                            <span class="name">@View.Government</span>
-
-                            @if (!View.HasGovernment)
-                            {
-                                <span class="aside bad">no government matches these</span>
-                            }
-                        </button>
+                        @Named(View.Government, [], null, LitePart.Government,
+                               "Edit ethics, authority and civics together",
+                               warning: View.HasGovernment ? null : "no government matches these")
 
                         <div class="sem-lite-choices">
                             @Chips(Session.Localizer.Heading("ETHICS", "Ethics"), View.Ethics, LitePart.Ethics)
@@ -123,7 +124,12 @@
 
             @* ------------------------------------------------------------- who rules it *@
             <section class="sem-panel">
-                <h3>Ruler</h3>
+                <div class="head">
+                    <h3>Ruler</h3>
+
+                    @Icon(GenderPicker.Held(Design.Ruler.Gender), LitePart.Ruler)
+                    @Icon((RulerClassName, RulerClass?.Icon), LitePart.Ruler, sprite: false)
+                </div>
 
                 <div class="body">
                     @*
@@ -136,22 +142,10 @@
                     </button>
 
                     <div class="about">
-                        <button type="button" class="name-button" title="Edit the ruler's name and titles"
-                                @onclick="() => Open(LitePart.Ruler)">
-                            <span class="name">
-                                @(View.RulerName is { Length: > 0 } named ? named : "No ruler named")
-                            </span>
-
-                            @if (View.RulerTitle is { Length: > 0 } title)
-                            {
-                                <span class="kind">@title</span>
-                            }
-                        </button>
+                        @Named(View.RulerName is { Length: > 0 } named ? named : "No ruler named",
+                               [], View.RulerTitle, LitePart.Ruler, "Edit the ruler's name and titles")
 
                         <div class="sem-lite-choices">
-                            @Gender(Design.Ruler.Gender, LitePart.Ruler)
-                            @IconRow(Session.Localizer.Heading("RULER_CLASS", "Class"),
-                                     RulerClass?.Icon, RulerClassName, LitePart.Ruler)
                             @Chips(Session.Localizer.Heading("TRAITS", "Traits"), View.RulerTraits,
                                    LitePart.RulerTraits)
                         </div>
@@ -166,27 +160,46 @@
 
             @* ------------------------------------------------------------- where it starts *@
             <section class="sem-panel">
-                <h3>Origin</h3>
+                <div class="head">
+                    <h3>Origin</h3>
+                </div>
 
                 <div class="body">
+                    @*
+                        The world itself, as a picture, the way a species has one. It was a tile
+                        under everything else - a picture in a box beneath a panel that had room for
+                        it at the side.
+                    *@
+                    <button type="button" class="face-button" title="Edit the homeworld"
+                            @onclick="() => Open(LitePart.Homeworld)">
+                        @if (View.World?.Icon is { Length: > 0 } world)
+                        {
+                            <img class="face contain" src="@Session.Data.AssetUrl(world)" alt="" loading="lazy">
+                        }
+                        else
+                        {
+                            <span class="face noface" aria-hidden="true"></span>
+                        }
+                    </button>
+
                     <div class="about">
+                        @Named(Session.Localizer.Name(Design.PlanetName, "Unnamed world"),
+                               [Session.Localizer.Name(Design.SystemName, string.Empty)],
+                               Session.Localizer.Text(View.Context.EffectivePlanetClass),
+                               LitePart.Homeworld, "Edit the homeworld and its system")
+
                         <div class="sem-lite-choices">
                             @Chips(Session.Localizer.Heading("ORIGIN", "Origin"), View.OriginChoice, LitePart.Origin)
                             @Row(Session.Localizer.Heading("SELECT_SYSTEM_INITIALIZER_LABEL", "Starting System"),
                                  View.StartingSystem, LitePart.Homeworld)
-                            @Row("Home system name", Session.Localizer.Name(Design.SystemName, string.Empty),
-                                 LitePart.Homeworld)
-                        </div>
-
-                        <div class="sem-lite-tiles">
-                            @Tile(Session.Localizer.Heading("HOMEWORLD_CLASS_LABEL", "Homeworld"), View.Homeworld,
-                                  View.World?.Icon, LitePart.Homeworld)
 
                             @if (Design.IsNomadic == true)
                             {
-                                @Tile(Session.Localizer.Heading("arkship_cap", "Arkship"),
-                                      View.Arkship is { } ark ? Session.Localizer.Text(ark.NameKey, Localizer.Prettify(ark.Key)) : null,
-                                      View.Arkship?.Preview ?? View.Arkship?.Icon, LitePart.Homeworld)
+                                @Row(Session.Localizer.Heading("arkship_cap", "Arkship"),
+                                     View.Arkship is { } ark
+                                         ? Session.Localizer.Text(ark.NameKey, Localizer.Prettify(ark.Key))
+                                         : null,
+                                     LitePart.Homeworld)
                             }
                         </div>
                     </div>
@@ -195,15 +208,26 @@
 
             @* ------------------------------------------------------------- what it flies *@
             <section class="sem-panel">
-                <h3>@Session.Localizer.Heading("SHIPSETS_LABEL", "Shipset")</h3>
+                <div class="head">
+                    <h3>@Session.Localizer.Heading("SHIPSETS_LABEL", "Shipset")</h3>
+                </div>
 
                 <div class="body">
+                    <button type="button" class="face-button" title="Edit the shipset"
+                            @onclick="() => Open(LitePart.Shipset)">
+                        @if (View.Shipset?.ShipPreview is { Length: > 0 } ships)
+                        {
+                            <img class="face contain" src="@Session.Data.AssetUrl(ships)" alt="" loading="lazy">
+                        }
+                        else
+                        {
+                            <span class="face noface" aria-hidden="true"></span>
+                        }
+                    </button>
+
                     <div class="about">
-                        <div class="sem-lite-tiles">
-                            @* No label on the tile: the panel above it is already called Shipset. *@
-                            @Tile(null, View.CultureName(Design.GraphicalCulture),
-                                  View.Shipset?.ShipPreview, LitePart.Shipset)
-                        </div>
+                        @Named(View.CultureName(Design.GraphicalCulture) ?? "not set", [], null,
+                               LitePart.Shipset, "Edit the shipset")
                     </div>
                 </div>
             </section>
@@ -216,11 +240,12 @@
                 empire either, which is why its chip has no effects to show.
             *@
             <section class="sem-panel">
-                <h3>@Session.Localizer.Heading("EMPIRE_ADVISOR", "Advisor Voice")</h3>
+                <div class="head">
+                    <h3>@Session.Localizer.Heading("EMPIRE_ADVISOR", "Advisor Voice")</h3>
+                </div>
 
                 <div class="body">
                     <div class="about">
-                        @* No row label either, for the same reason. *@
                         @Chips(null, View.AdvisorChoice, LitePart.Advisor, empty: "Automatic")
                     </div>
                 </div>
@@ -266,6 +291,14 @@
 
     private Task Open(LitePart part) => OnEdit.InvokeAsync(part);
 
+    /// <summary>The kind of leader who rules, where the design names one.</summary>
+    private LeaderClassDefinition? RulerClass => Session.Data.Database.LeaderClasses
+        .FirstOrDefault(c => c.Key == Design.Ruler.LeaderClass);
+
+    private string RulerClassName => RulerClass is { } held
+        ? Session.Localizer.Text(held.NameKey, Localizer.Prettify(held.Key))
+        : "No leader class";
+
     /// <summary>
     /// The ruler's own story, which the game keeps as a name rather than as plain text.
     /// </summary>
@@ -302,7 +335,12 @@
     private RenderFragment Species(SpeciesDesign species, string title, LitePart names,
                                    LitePart portrait, LitePart traits) =>
         @<section class="sem-panel">
-            <h3>@title</h3>
+            <div class="head">
+                <h3>@title</h3>
+
+                @* The gender decides which face of the group is worn, so it opens the portrait. *@
+                @Icon(GenderPicker.Held(species.Gender), portrait)
+            </div>
 
             <div class="body">
                 <button type="button" class="face-button" title="Edit the portrait, class and gender"
@@ -318,18 +356,13 @@
                 </button>
 
                 <div class="about">
-                    <button type="button" class="name-button" title="Edit the species' names"
-                            @onclick="() => Open(names)">
-                        <span class="name">@Session.Localizer.Name(species.Name, species.Class)</span>
-                        <span class="kind">@Session.Localizer.Text(species.Class)</span>
-                    </button>
+                    @Named(Session.Localizer.Name(species.Name, species.Class),
+                           [Session.Localizer.Name(species.Plural, string.Empty),
+                            Session.Localizer.Name(species.Adjective, string.Empty)],
+                           Session.Localizer.Text(species.Class),
+                           names, "Edit the species' names")
 
                     <div class="sem-lite-choices">
-                        @Gender(species.Gender, portrait)
-                        @Row(Session.Localizer.Heading("SPECIES_NAME_PLURAL", "Plural"),
-                             Session.Localizer.Name(species.Plural, string.Empty), names)
-                        @Row(Session.Localizer.Heading("SPECIES_ADJECTIVE", "Adjective"),
-                             Session.Localizer.Name(species.Adjective, string.Empty), names)
                         @Row(Session.Localizer.Heading("NAME_LIST", "Name List"),
                              Session.Localizer.Text(species.NameList), names)
                         @Chips(Session.Localizer.Heading("TRAITS", "Traits"), View.TraitsOf(species), traits)
@@ -342,6 +375,66 @@
                 </div>
             </div>
         </section>;
+
+    /// <summary>
+    /// A name, the other forms of it, and the one line that describes it.
+    /// </summary>
+    /// <remarks>
+    /// The variants are bracketed and italic beside the name rather than given rows of their own. A
+    /// species' plural and adjective are not two more facts about it - they are its name again, and
+    /// as labelled rows they took two lines each to say so.
+    /// </remarks>
+    private RenderFragment Named(string name, IEnumerable<string?> variants, string? sub,
+                                 LitePart part, string title, string? warning = null)
+    {
+        var forms = variants.Where(v => v is { Length: > 0 }).ToList();
+
+        return @<button type="button" class="name-button" title="@title" @onclick="() => Open(part)">
+            <span class="name">@name</span>
+
+            @if (forms.Count > 0)
+            {
+                <span class="aside">(@string.Join(", ", forms))</span>
+            }
+
+            @if (warning is { Length: > 0 })
+            {
+                <span class="aside bad">@warning</span>
+            }
+
+            @if (sub is { Length: > 0 })
+            {
+                <span class="kind">@sub</span>
+            }
+        </button>;
+    }
+
+    /// <summary>
+    /// One held setting, as the icon it is and nothing else.
+    /// </summary>
+    /// <remarks>
+    /// In the panel's corner rather than in a row, because a gender is one glyph and a row to hold
+    /// it is two lines of panel spent saying what the picture already says. The word is the title,
+    /// so it is there for a pointer and for a screen reader without being drawn.
+    /// </remarks>
+    private RenderFragment Icon((string Label, string? Key) held, LitePart part, bool sprite = true)
+    {
+        var path = held.Key is { Length: > 0 } key
+            ? sprite ? Session.Data.Database.Icons.GetValueOrDefault(key) : key
+            : null;
+
+        return @<button type="button" class="badge" title="@held.Label" aria-label="@held.Label"
+                        @onclick="() => Open(part)">
+            @if (path is { Length: > 0 })
+            {
+                <img src="@Session.Data.AssetUrl(path)" alt="">
+            }
+            else
+            {
+                <span>@held.Label</span>
+            }
+        </button>;
+    }
 
     /// <summary>
     /// A labelled row of chips, where the label and every chip open the same editor.
@@ -368,7 +461,7 @@
             <div class="chips">
                 @if (listed.Count == 0)
                 {
-                    <button type="button" class="sem-lite-empty" title="@($"Edit {label}")"
+                    <button type="button" class="sem-lite-empty" title="@($"Edit {label ?? empty}")"
                             @onclick="() => Open(part)">@empty</button>
                 }
 
@@ -382,54 +475,6 @@
         </div>;
     }
 
-    /// <summary>The kind of leader who rules, where the design names one.</summary>
-    private LeaderClassDefinition? RulerClass => Session.Data.Database.LeaderClasses
-        .FirstOrDefault(c => c.Key == Design.Ruler.LeaderClass);
-
-    private string RulerClassName => RulerClass is { } held
-        ? Session.Localizer.Text(held.NameKey, Localizer.Prettify(held.Key))
-        : "not set";
-
-    /// <summary>
-    /// The gender held, as one icon.
-    /// </summary>
-    /// <remarks>
-    /// The four buttons went back into the editor the icon opens. On the card the answer is what
-    /// matters, and a row of four sat differently from every labelled row beside it - which is most
-    /// of what made the panels look untidy. For a species that editor is the portrait picker, since
-    /// the gender is half of which portrait is worn.
-    /// </remarks>
-    private RenderFragment Gender(string? gender, LitePart part)
-    {
-        var (label, sprite) = GenderPicker.Held(gender);
-
-        return IconRow(
-            Session.Localizer.Heading("GENDER", "Gender"),
-            Session.Data.Database.Icons.GetValueOrDefault(sprite),
-            label,
-            part);
-    }
-
-    /// <summary>A labelled line whose value is a picture rather than a word.</summary>
-    private RenderFragment IconRow(string label, string? icon, string alt, LitePart part) =>
-        @<div class="sem-lite-chips">
-            <button type="button" class="heading" title="@($"Edit {label}")"
-                    @onclick="() => Open(part)">@label</button>
-
-            <div class="chips">
-                <button type="button" class="value icon" title="@alt" @onclick="() => Open(part)">
-                    @if (icon is { Length: > 0 })
-                    {
-                        <img src="@Session.Data.AssetUrl(icon)" alt="@alt">
-                    }
-                    else
-                    {
-                        <span>@alt</span>
-                    }
-                </button>
-            </div>
-        </div>;
-
     /// <summary>One fact the game has no picture for, as a labelled line.</summary>
     private RenderFragment Row(string label, string? value, LitePart part) =>
         @<div class="sem-lite-chips">
@@ -441,21 +486,4 @@
                         @onclick="() => Open(part)">@(value is { Length: > 0 } ? value : "not set")</button>
             </div>
         </div>;
-
-    /// <summary>One of the choices the game draws a picture for.</summary>
-    private RenderFragment Tile(string? label, string? value, string? image, LitePart part) =>
-        @<button type="button" class="sem-lite-tile" title="@($"Edit {label ?? value}")"
-                 @onclick="() => Open(part)">
-            @if (image is { Length: > 0 })
-            {
-                <img class="art" src="@Session.Data.AssetUrl(image)" alt="" loading="lazy">
-            }
-
-            @if (label is not null)
-            {
-                <span class="label">@label</span>
-            }
-
-            <span class="value">@(value is { Length: > 0 } ? value : "not set")</span>
-        </button>;
 }

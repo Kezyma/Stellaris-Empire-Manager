@@ -3932,12 +3932,54 @@ button.icon .sem-action-icon { display: block; }
     border-radius: var(--radius);
 }
 
-.sem-panel > h3 {
+/*
+   The panel's name, and in the space beside it the settings that are one glyph each - a gender, a
+   leader class, whether the empire spawns. They were labelled rows, which spent two lines of panel
+   apiece saying what the picture says, and left this line empty.
+*/
+.sem-panel > .head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    min-height: var(--icon-btn);
+}
+
+.sem-panel > .head > h3 {
     margin: 0;
+    flex: 1;
+    min-width: 0;
     font-size: var(--text-xs);
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--text-faint);
+}
+
+.sem-panel .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: var(--icon-btn);
+    height: var(--icon-btn);
+    padding: 0;
+    background: none;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    color: var(--text-dim);
+    font: inherit;
+    font-size: var(--text-xs);
+    cursor: pointer;
+}
+
+.sem-panel .badge:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent-dim);
+}
+
+.sem-panel .badge img {
+    width: var(--icon);
+    height: var(--icon);
+    object-fit: contain;
 }
 
 .sem-panel > .body {
@@ -4009,9 +4051,7 @@ button.icon .sem-action-icon { display: block; }
 .sem-lite .name-button,
 .sem-lite-chips > .heading,
 .sem-lite-chips .value,
-.sem-lite-chips .sem-lite-empty,
-.sem-lite-field > .value,
-.sem-lite-tile {
+.sem-lite-chips .sem-lite-empty {
     font: inherit;
     color: inherit;
     text-align: left;
@@ -4027,9 +4067,7 @@ button.icon .sem-action-icon { display: block; }
 .sem-lite .name-button:hover,
 .sem-lite-chips > .heading:hover,
 .sem-lite-chips .value:hover,
-.sem-lite-chips .sem-lite-empty:hover,
-.sem-lite-field > .value:hover,
-.sem-lite-tile:hover {
+.sem-lite-chips .sem-lite-empty:hover {
     background: var(--bg-hover);
     border-color: var(--accent-dim);
 }
@@ -4097,6 +4135,12 @@ button.icon .sem-action-icon { display: block; }
 */
 .sem-lite .name-button > .kind { display: block; }
 
+/* A planet or a ship render is not a face: shown whole rather than cropped to fill. */
+.sem-panel .face-button > .face.contain {
+    object-fit: contain;
+    background: var(--bg-void);
+}
+
 .sem-lite .name-button > .aside {
     margin-left: var(--space-xs);
     color: var(--text-dim);
@@ -4114,27 +4158,12 @@ button.icon .sem-action-icon { display: block; }
     border: 1px solid var(--border);
 }
 
-/* A label and the one value beside it, for a setting that is a word rather than a picture. */
-.sem-lite-field {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: var(--space-sm);
-}
-
-.sem-lite-field > .label,
+/* The name of a row, in the small dim uppercase every label on the card wears. */
 .sem-lite-chips > .heading {
     color: var(--text-dim);
     font-size: var(--text-xs);
     text-transform: uppercase;
     letter-spacing: 0.04em;
-}
-
-/* Gender beside leader class: two sets of icons that mean two different things. */
-.sem-lite-pickers {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-xl);
 }
 
 /*
@@ -4177,12 +4206,18 @@ button.icon .sem-action-icon { display: block; }
     white-space: nowrap;
 }
 
+/*
+   min-height so a row holding a word is as tall as one holding a chip. It matters most where the
+   gutter has collapsed and the label sits above its value: there the row's height is the label plus
+   this, and without it a column of rows rose and fell by a few pixels a line.
+*/
 .sem-lite-chips > .chips {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: var(--space-sm);
     min-width: 0;
+    min-height: var(--control-h);
 }
 
 .sem-lite-chips .sem-lite-empty {
@@ -4207,65 +4242,11 @@ button.icon .sem-action-icon { display: block; }
     height: var(--icon);
 }
 
-/*
-   The choices the game draws a real picture for. Capped at three tracks: there are two of these, or
-   three for a nomad, and left to the column's width auto-fill made seven of which four were always
-   empty. Capped here rather than by widening the track, so a shipset tile is the same size whether
-   or not the empire flies an arkship.
-*/
-.sem-lite-tiles {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: var(--space-md);
-    max-width: 640px;
-}
-
-.sem-lite-tile {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2xs);
-    padding: var(--space-sm);
-    border-color: var(--border);
-    background: var(--bg-raised);
-}
-
-/*
-   A fixed height rather than a ratio, and the words pushed to the foot of the tile below.
-
-   These pictures are nothing like each other: a planet is a circle and a ship render is a wide
-   strip. Sized by ratio they each took a different amount of room, so no two labels in a row
-   started at the same height.
-*/
-.sem-lite-tile .art {
-    display: block;
-    width: 100%;
-    height: 5.25rem;
-    object-fit: contain;
-    border-radius: var(--radius);
-}
-
-.sem-lite-tile .label {
-    margin-top: auto;
-    color: var(--text-dim);
-    font-size: var(--text-xs);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-}
-
-.sem-lite-tile .value {
-    font-size: var(--text-sm);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
 @media (max-width: 900px) {
     .sem-lite { padding: var(--space-md); }
 
     /* No room for a gutter; the label goes back above its chips, as the showcase does it. */
     .sem-lite-choices { grid-template-columns: minmax(0, 1fr); }
-
-    .sem-lite-tiles { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
 }
 
 /* ------------------------------------------------------------------ the editor dialog
