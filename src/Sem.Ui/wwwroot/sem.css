@@ -3843,12 +3843,12 @@ button.icon .sem-action-icon { display: block; }
     display: grid;
     /*
        The panels stop at the width of the scene above them, which is the room artwork's own 952
-       pixels. Past that the card would only be spreading two columns of short rows further apart,
-       so it stops growing and sits at the left rather than stretching to whatever the monitor is.
+       pixels. Past that the card would only be spreading two columns of short rows further apart.
+
+       The cap and the centring live on the shell below, so the actions row keeps the card's edges
+       rather than running the full width of a page the card no longer fills.
     */
     grid-template-columns: minmax(0, 952px) minmax(300px, 360px);
-    justify-content: start;
-    max-width: fit-content;
     gap: var(--gap);
 
     /*
@@ -3877,30 +3877,34 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
-   The right column, which never grows taller than the panels beside it.
+   The right column, which cannot grow taller than the panels beside it.
 
-   That is what the stretched grid cell is for: the row's height is the panels' height, so this cell
-   is too, and the inner panel is capped at whichever is smaller - the column, or what is left of
-   the window under the header. The sections inside shrink and scroll rather than push the column
-   past either.
+   A stretched cell was not enough. A grid row is as tall as its tallest item, and a sticky child is
+   in flow - so a long list of modifiers made the totals the tallest item, the row grew to fit it,
+   and the column matched the panels only because it had just dragged them up to meet it. Measuring
+   the two as equal proved nothing.
 
-   The sticking is on the inner wrapper rather than the cell, because a stretched cell cannot stick
-   to anything. Nothing here takes an overflow, a position or a z-index that would trap a popover;
-   the sections below take the overflow instead, and hold no chips.
+   Taking the inner out of flow is what settles it: the cell now has no content of its own, the row
+   is sized by the panels alone, and inset:0 gives the inner exactly that height. It is the one
+   arrangement where "never taller than the preview" is a fact about the box rather than a hope
+   about its contents.
+
+   The cost is the sticking, which an absolutely positioned box cannot do. Worth it: the column is
+   the height of the card, so it is on screen for as long as the card is.
 */
 .sem-lite-totals {
+    position: relative;
     min-width: 0;
     min-height: 0;
 }
 
 .sem-lite-totals > .inner {
-    position: sticky;
-    top: var(--sticky-top);
+    position: absolute;
+    inset: 0;
     display: flex;
     flex-direction: column;
     gap: var(--gap);
     min-height: 0;
-    max-height: min(100%, calc(100vh - var(--sticky-top) - var(--gap)));
 }
 
 /*
@@ -3922,30 +3926,40 @@ button.icon .sem-action-icon { display: block; }
     overflow: hidden;
 }
 
-.sem-lite .sem-combined > .sem-modifiers,
-.sem-lite .sem-combined > .sem-hint,
-.sem-lite .sem-combined > .sem-contributions,
-.sem-lite .sem-combined > .sem-combined-worded {
+/* The one scrolling thing in the panel, whichever view is drawn inside it. */
+.sem-lite .sem-combined > .body {
+    flex: 1 1 auto;
     min-height: 0;
     overflow-y: auto;
 }
 
 @media (max-width: 1100px) {
-    .sem-lite {
-        grid-template-columns: minmax(0, 1fr);
-        max-width: none;
-    }
+    .sem-lite { grid-template-columns: minmax(0, 1fr); }
+
+    /* One column, so the totals follow the panels down the page and take the height they need. */
+    .sem-lite-totals { position: static; }
 
     .sem-lite-totals > .inner {
         position: static;
         max-height: none;
     }
+
+    .sem-lite .sem-combined > .body { overflow-y: visible; }
 }
 
+/*
+   As wide as the card wants and no wider, in the middle of whatever it is given.
+
+   fit-content resolves to the widest the grid inside can be - its two capped tracks, their gap and
+   the card's padding - so the shell stops growing where the card does, and the auto margins put
+   what is left either side rather than all of it on the right.
+*/
 .sem-lite-shell {
     display: flex;
     flex-direction: column;
     gap: var(--gap);
+    max-width: fit-content;
+    margin-inline: auto;
 }
 
 .sem-lite-actions {
@@ -4338,14 +4352,17 @@ button.icon .sem-action-icon { display: block; }
     height: var(--icon);
 }
 
-/* The totals taken apart again, one option at a time. */
-.sem-contributions {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-md);
+/*
+   The totals taken apart again, one option at a time.
+
+   Spaced by the options themselves rather than by a gap on whatever holds them: the panel's body is
+   one scrolling box shared by all three views, and only this one has options in it.
+*/
+.sem-combined .option + .option {
+    margin-top: var(--space-md);
 }
 
-.sem-contributions .option > .name {
+.sem-combined .option > .name {
     display: flex;
     align-items: center;
     gap: var(--space-sm);
@@ -4353,40 +4370,34 @@ button.icon .sem-action-icon { display: block; }
     font-size: var(--text-sm);
 }
 
-.sem-contributions .option > .name img {
+.sem-combined .option > .name img {
     width: var(--icon-sm);
     height: var(--icon-sm);
 }
 
 /* Indented under the option that caused them, so the two levels are told apart at a glance. */
-.sem-contributions .option > .sem-effects {
+.sem-combined .option > .sem-effects {
     margin-left: calc(var(--icon-sm) + var(--space-sm));
 }
 
-.sem-contributions .option > .sem-effects .sem-modifiers:last-child {
+.sem-combined .option > .sem-effects .sem-modifiers:last-child {
     margin-bottom: 0;
 }
 
 /*
    What the empire's choices do in words rather than numbers, under the arithmetic they cannot join.
-   Each says which choices carry it, since one sentence often belongs to several.
 */
 .sem-combined-worded {
     display: flex;
     flex-direction: column;
     gap: var(--space-md);
-    padding-top: var(--space-sm);
+    padding-top: var(--space-md);
     border-top: 1px solid var(--border);
 }
 
-.sem-combined-worded .worded > .sem-effects-text {
-    margin-bottom: var(--space-2xs);
+.sem-combined-worded > .sem-effects-text {
+    margin: 0;
     font-size: var(--text-sm);
-}
-
-.sem-combined-worded .worded > .from {
-    color: var(--text-faint);
-    font-size: var(--text-xs);
 }
 
 /* The three views, sized to sit beside a heading rather than above a picker. */

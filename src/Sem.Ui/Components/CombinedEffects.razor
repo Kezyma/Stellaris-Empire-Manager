@@ -39,11 +39,15 @@
         </div>
     </div>
 
+@*
+    One body, and everything a view draws goes inside it. The scroll belongs here rather than on each
+    list: the combined view has two of them - the numbers and the sentences under them - and a
+    scrollbar apiece made one panel look like two.
+*@
+<div class="body">
     @if (Showing == View.Individual)
     {
-        <div class="sem-contributions">
-            <OptionModifiers Contributions="@Contributions" />
-        </div>
+        <OptionModifiers Contributions="@Contributions" />
     }
     else if (Showing == View.Changes)
     {
@@ -109,23 +113,23 @@
 
     @*
         And under the arithmetic, the things that are not arithmetic. A sentence cannot be added to
-        another sentence, so these are listed rather than summed, each naming what it came from -
-        the way a total names its sources in its tooltip. Deduplicated by the text itself, since
-        several civics share one: BLOCKS_COUNCILOR_STATE belongs to both Inwards Perfection and
+        another, so these are listed rather than summed, and deduplicated by the text itself since
+        several civics share one - BLOCKS_COUNCILOR_STATE belongs to both Inwards Perfection and
         Fanatic Purifiers.
+
+        Unattributed on purpose. Naming the choice under every line turned a list of sentences into
+        a list of pairs, and which choice did what is the question the Individual view answers.
     *@
     @if (Showing == View.Combined && Worded.Count > 0)
     {
         <div class="sem-combined-worded">
-            @foreach (var (line, sources) in Worded)
+            @foreach (var line in Worded)
             {
-                <div class="worded" @key="line">
-                    <div class="sem-effects-text">@((MarkupString)line)</div>
-                    <div class="from">@string.Join(", ", sources)</div>
-                </div>
+                <div class="sem-effects-text" @key="line">@((MarkupString)line)</div>
             }
         </div>
     }
+</div>
 </div>
 
 @code {
@@ -234,42 +238,49 @@
     /// <remarks>
     /// An option states these three ways - a description of its effect, a hand-written tooltip, and
     /// tag lines naming capabilities rather than amounts - and 130 of the game's options say
-    /// everything they do this way and carry no modifier at all. Keyed by the rendered line so one
-    /// sentence appears once however many choices carry it, and so the sources gather under it.
+    /// everything they do this way and carry no modifier at all. Deduplicated by the rendered line,
+    /// so one sentence appears once however many choices carry it.
     /// </remarks>
-    private IReadOnlyList<(string Line, IReadOnlyList<string> Sources)> Worded
+    private IReadOnlyList<string> Worded
     {
         get
         {
-            var lines = new Dictionary<string, List<string>>(StringComparer.Ordinal);
+            var lines = new List<string>();
 
             foreach (var contribution in Contributions)
             {
                 foreach (var key in Wording(contribution.Effects))
                 {
-                    if (Session.Localizer.Html(key, string.Empty) is not { Length: > 0 } line)
+                    if (Session.Localizer.Html(key, string.Empty) is { Length: > 0 } line
+                        && !lines.Contains(line, StringComparer.Ordinal))
                     {
-                        continue;
-                    }
-
-                    if (!lines.TryGetValue(line, out var sources))
-                    {
-                        lines[line] = sources = [];
-                    }
-
-                    if (!sources.Contains(contribution.Option.Name, StringComparer.CurrentCulture))
-                    {
-                        sources.Add(contribution.Option.Name);
+                        lines.Add(line);
                     }
                 }
             }
 
-            return [.. lines.Select(p => (p.Key, (IReadOnlyList<string>)p.Value))];
+            return lines;
         }
     }
 
+    /// <summary>
+    /// The keys whose text belongs beside a list of totals.
+    /// </summary>
+    /// <remarks>
+    /// The tooltip only from an option that has no numbers. A tooltip is the game's way of stating
+    /// in words what an option does, and for an option that also carries modifiers it usually
+    /// states those - auth_democratic's reads "Faction Approval: +10%", which is already a row in
+    /// the column above, so printing it here says one thing twice. But fifty options say everything
+    /// they do this way and carry no modifier at all: trait_organic's food upkeep is a tooltip and
+    /// nothing else, and dropping it would lose the only thing the trait has to say.
+    /// </remarks>
     private static IEnumerable<string> Wording(EffectSet effects) =>
-        new[] { effects.DescriptionKey, effects.TooltipKey, effects.PenaltyKey }
+        new[]
+        {
+            effects.DescriptionKey,
+            effects.Modifiers.Count == 0 && effects.Conditional.Count == 0 ? effects.TooltipKey : null,
+            effects.PenaltyKey,
+        }
             .OfType<string>()
             .Concat(effects.TagKeys);
 
