@@ -821,4 +821,70 @@ public sealed class EmpireDesignTests
         	}
         }
         """;
+
+    [Fact]
+    public void MergingReplacesASharedNameWhereItAlreadySat()
+    {
+        // The key is the empire's name and the file is keyed by it, so same-name is the only sense
+        // in which two files hold the same empire. Putting the replacement at the end instead would
+        // reorder somebody's list every time they re-imported their own designs.
+        var file = EmpireDesignsFile.LoadText(
+            FileOf(("Alpha", null), ("Beta", "auth_democratic"), ("Gamma", null)));
+
+        file.Merge(EmpireDesignsFile.LoadText(FileOf(("Beta", "auth_imperial"))));
+
+        Assert.Equal(["Alpha", "Beta", "Gamma"], file.Designs.Select(d => d.Key));
+        Assert.Equal("auth_imperial", file.Designs[1].Authority);
+    }
+
+    [Fact]
+    public void MergingAppendsWhatIsNewAndLeavesTheRestAlone()
+    {
+        var file = EmpireDesignsFile.LoadText(FileOf(("Alpha", null), ("Beta", null)));
+
+        file.Merge(EmpireDesignsFile.LoadText(FileOf(("Gamma", null), ("Delta", null))));
+
+        Assert.Equal(["Alpha", "Beta", "Gamma", "Delta"], file.Designs.Select(d => d.Key));
+    }
+
+    [Fact]
+    public void MergingLeavesTheFileItTookFrom()
+    {
+        // Cloned rather than moved, so the same import can be merged twice and the second time
+        // still has something to give.
+        var file = EmpireDesignsFile.LoadText(FileOf(("Alpha", null)));
+        var other = EmpireDesignsFile.LoadText(FileOf(("Beta", null)));
+
+        file.Merge(other);
+
+        Assert.Single(other.Designs);
+        Assert.Equal("Beta", other.Designs[0].Key);
+    }
+
+    [Fact]
+    public void AMergedEmpireStartsOnItsOwnLine()
+    {
+        // The }"Name"= failure: an entry cloned from the top of a file remembers having nothing in
+        // front of it, and lands on the end of the previous line unless its placement is forgotten.
+        // Both paths through Merge are exercised here - Gamma is appended, Alpha replaces.
+        var file = EmpireDesignsFile.LoadText(FileOf(("Alpha", null), ("Beta", null)));
+
+        file.Merge(EmpireDesignsFile.LoadText(FileOf(("Gamma", null), ("Alpha", "auth_imperial"))));
+
+        var text = file.Document.ToText();
+
+        Assert.DoesNotContain(text.Split('\n'), line => line.StartsWith("}\"", StringComparison.Ordinal));
+
+        // And it comes back the same way through the parser, which is what the game will do with it.
+        Assert.Equal(
+            ["Alpha", "Beta", "Gamma"],
+            EmpireDesignsFile.LoadText(text).Designs.Select(d => d.Key));
+    }
+
+    /// <summary>A designs file holding the named empires, each with an optional authority.</summary>
+    private static string FileOf(params (string Key, string? Authority)[] empires) =>
+        string.Concat(empires.Select(e =>
+            "\"" + e.Key + "\"=\r\n{\r\n\tkey=\"" + e.Key + "\"\r\n"
+            + (e.Authority is null ? string.Empty : "\tauthority=\"" + e.Authority + "\"\r\n")
+            + "}\r\n"));
 }

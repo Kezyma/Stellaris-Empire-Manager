@@ -105,6 +105,23 @@
         </ConfirmDialog>
     }
 
+    @*
+        Asked only when there is something to lose. Importing used to replace the open file without
+        saying so, which is right when the file is empty and is throwing your empires away when it
+        is not - and there was no way at all to bring one empire across from another file.
+    *@
+    @if (_importing is { } incoming)
+    {
+        <ConfirmDialog Title="@($"You already have {Count(Empires)} open.")"
+                       Message="@($"{incoming.Name} holds {Count(incoming.File.Designs.Count)}. "
+                                 + "Merging keeps yours and adds these, overwriting any of the same name.")"
+                       OnDismiss="() => _importing = null">
+            <button type="button" @onclick="() => _importing = null">Cancel</button>
+            <button type="button" @onclick="Merge">Merge them in</button>
+            <button type="button" class="danger" @onclick="Replace">Replace mine</button>
+        </ConfirmDialog>
+    }
+
     @if (_message is { } note)
     {
         <p class="@(note.IsProblem ? "sem-header-error" : "sem-header-note")">@note.Text</p>
@@ -149,6 +166,9 @@
 
     /// <summary>Whether the "delete everything" question is on screen.</summary>
     private bool _resetting;
+
+    /// <summary>A file that has been read and parsed, waiting to hear what to do with it.</summary>
+    private (string Name, EmpireDesignsFile File)? _importing;
 
     /// <summary>Whether there is a file with anything in it for the whole-file buttons to act on.</summary>
     private bool Nothing => _session?.File is null || _session.File.Designs.Count == 0;
@@ -306,8 +326,48 @@
     /// </remarks>
     private void Load(string name, byte[] contents)
     {
-        _session!.Load(contents, name);
+        // Parsed here rather than after the question, so a file that will not parse is refused with
+        // the reason - the callers' catch is what turns that into a message.
+        var incoming = EmpireDesignsFile.Load(contents);
 
+        Named(name);
+
+        // Nothing to weigh up: an empty file has nothing to lose, and neither has an empty import.
+        if (_session!.File is not { Designs.Count: > 0 } || incoming.Designs.Count == 0)
+        {
+            _session.Open(incoming, name);
+            return;
+        }
+
+        _importing = (name, incoming);
+    }
+
+    /// <summary>Adds the imported empires to the ones already open, name for name.</summary>
+    private void Merge()
+    {
+        if (_importing is { } incoming)
+        {
+            _session!.Merge(incoming.File);
+            _importing = null;
+        }
+    }
+
+    /// <summary>Throws the open file away and keeps the imported one, which is what import did.</summary>
+    private void Replace()
+    {
+        if (_importing is { } incoming)
+        {
+            _session!.Open(incoming.File, incoming.Name);
+            _importing = null;
+        }
+    }
+
+    /// <summary>A number of empires, said the way a sentence would say it.</summary>
+    private static string Count(int empires) => empires == 1 ? "one empire" : $"{empires} empires";
+
+    /// <summary>Says so when the file is not named like one of the game's.</summary>
+    private void Named(string name)
+    {
         if (!name.StartsWith(DesignsFilePrefix, StringComparison.OrdinalIgnoreCase))
         {
             _message = ($"That file opened, but it is not named like a designs file. "

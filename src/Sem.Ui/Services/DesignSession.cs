@@ -160,11 +160,55 @@ public sealed class DesignSession
     {
         ArgumentNullException.ThrowIfNull(contents);
 
-        File = EmpireDesignsFile.Load(contents);
+        Open(EmpireDesignsFile.Load(contents), fileName);
+    }
+
+    /// <summary>Opens a designs file already parsed.</summary>
+    /// <remarks>
+    /// Import parses before it asks what to do with the file, so that a file which will not parse
+    /// is refused with the error it deserves rather than behind a question about merging.
+    /// </remarks>
+    public void Open(EmpireDesignsFile file, string fileName)
+    {
+        ArgumentNullException.ThrowIfNull(file);
+
+        File = file;
         FileName = fileName;
         HasUnwrittenFileChanges = false;
         Select(File.Designs.FirstOrDefault());
         FileChanged?.Invoke();
+    }
+
+    /// <summary>
+    /// Folds another file's empires into the one that is open.
+    /// </summary>
+    /// <remarks>
+    /// An empire whose name is already here takes its place, in its place; everything else is
+    /// appended. The selection has to be looked at afterwards because a replaced empire is a
+    /// different object from the one it replaced, and Current would otherwise go on pointing at a
+    /// design the file no longer holds - the same care a delete takes.
+    /// </remarks>
+    public void Merge(EmpireDesignsFile other)
+    {
+        ArgumentNullException.ThrowIfNull(other);
+
+        if (File is null)
+        {
+            Open(other, FileName ?? EmpireDesignsFile.FileName);
+            return;
+        }
+
+        var wasEditing = Current?.Key;
+
+        EditFile(file => file.Merge(other));
+
+        if (Current is null || File.Designs.Contains(Current))
+        {
+            return;
+        }
+
+        Select(wasEditing is not null ? File.Find(wasEditing) ?? File.Designs.FirstOrDefault()
+                                      : File.Designs.FirstOrDefault());
     }
 
     /// <summary>Opens a designs file already in hand as text.</summary>
@@ -172,11 +216,7 @@ public sealed class DesignSession
     {
         ArgumentNullException.ThrowIfNull(contents);
 
-        File = EmpireDesignsFile.LoadText(contents);
-        FileName = fileName;
-        HasUnwrittenFileChanges = false;
-        Select(File.Designs.FirstOrDefault());
-        FileChanged?.Invoke();
+        Open(EmpireDesignsFile.LoadText(contents), fileName);
     }
 
     /// <summary>Starts an empty file, for someone who has none yet.</summary>

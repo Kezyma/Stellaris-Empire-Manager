@@ -128,6 +128,65 @@ public sealed class EmpireDesignsFile
     }
 
     /// <summary>
+    /// Brings every empire from another file into this one.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// One that shares a key with an empire already here takes its place, in its place: the
+    /// incoming design is put at the position the old one held rather than at the end, so a file
+    /// merged with a newer copy of itself comes back in the order it went in. Everything else is
+    /// appended, in the order the other file had it.
+    /// </para>
+    /// <para>
+    /// The key is the empire's name and the file is keyed by it, so same-name is the only sense in
+    /// which two designs can be the same empire. Nothing here compares any other field.
+    /// </para>
+    /// <para>
+    /// Nodes are cloned rather than moved, so the file they came from is left whole and could be
+    /// merged again. <see cref="CwDocument.Insert"/> forgets the copy's remembered whitespace, which
+    /// is what stops an entry taken from the top of one file running onto the end of a line in this
+    /// one.
+    /// </para>
+    /// </remarks>
+    public void Merge(EmpireDesignsFile other)
+    {
+        ArgumentNullException.ThrowIfNull(other);
+
+        if (ReferenceEquals(other, this))
+        {
+            return;
+        }
+
+        foreach (var incoming in other.Designs)
+        {
+            var node = incoming.Node.Clone();
+
+            if (Find(incoming.Key) is { } existing)
+            {
+                var at = Document.Nodes.ToList().IndexOf(existing.Node);
+                var slot = _designs.IndexOf(existing);
+
+                // Neither index should be missing, and a merge that quietly appended instead would
+                // be a merge that reordered the file without saying so.
+                if (at < 0 || slot < 0)
+                {
+                    continue;
+                }
+
+                Document.RemoveAt(at);
+                Document.Insert(at, node);
+
+                _designs[slot] = new EmpireDesign(node);
+            }
+            else
+            {
+                Document.Add(node);
+                _designs.Add(new EmpireDesign(node));
+            }
+        }
+    }
+
+    /// <summary>
     /// Removes an empire from the file.
     /// </summary>
     /// <remarks>
