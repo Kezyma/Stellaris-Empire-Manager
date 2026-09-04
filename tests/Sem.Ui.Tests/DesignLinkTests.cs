@@ -138,6 +138,35 @@ public sealed class DesignLinkTests
         Assert.Equal(encoded, DesignLink.Encode(restored));
     }
 
+    /// <summary>
+    /// A link written by the first packing, which must go on opening for ever.
+    /// </summary>
+    /// <remarks>
+    /// Captured from the running app before the tree packing existed. It is the only test that can
+    /// fail when the old decoder is changed, because everything else round-trips through whatever
+    /// the encoder currently writes and would agree with itself however both ends drifted. Somebody
+    /// has this link in a chat window; this is what says so.
+    /// </remarks>
+    [Fact]
+    public void ALinkFromTheFirstPackingStillOpens()
+    {
+        const string Shared =
+            "AW1QTUsDMRAdPChEFPUg6EFrUPELrVLUVvbkxYs3PYcxmbVDs8mSbBWR_ndn7XopHsLMe_OReU-_kPcx9B5j"
+            + "sDE5DSO4W6AU7LcsDHNNlikLuH56fRb-fDytMEhyKPha4hbsxvSOgS0MA1b077a9mYKL-UZYc1RFm7BhK5V1"
+            + "R7mOkhuqak4kVK9rVDaGhgOFBr3Qx5Y_2DMGg2mSx1ybhimZ9oaDbmITliusKvzt6reVpQXcir2Xd1ZHDs2X"
+            + "MEfzzNxcOpdlx0lbhZOsVcmeCv3R8Tcw0olEjH7zaCcSw9T7LsBQBN7K5HZnwen8otmfYaYkOYNMfyBfXvUV"
+            + "rMIO9AfKEzoRYT3mXMSyZMvo4QFW-D3ERKaOqUnIjXHT2rMV02IoviirFGNVaEclTn1jWqRVrvEzGAr45skV"
+            + "IarWMZuLbzljo2vVavYD";
+
+        var restored = DesignLink.Decode(Shared);
+
+        Assert.NotNull(restored);
+        Assert.Equal("Tellon Concord", restored.Key);
+        Assert.Equal("HUM", restored.Species.Class);
+        Assert.Equal("human", restored.Species.Portrait);
+        Assert.Equal("pc_continental", restored.PlanetClass);
+    }
+
     [SkippableFact]
     [Trait("Category", "RealData")]
     public void EveryEmpireInTheCorpusComesBackAsTheSameLink()
@@ -167,15 +196,26 @@ public sealed class DesignLinkTests
 
         Assert.True(lengths.Count > 15, $"Only {lengths.Count} empires were packed; the corpus should be larger.");
 
-        // What the packing is for. Before the compact writing and the table of common runs, these
-        // same empires averaged 1,129 characters and the longest was 1,258. The bound is well clear
-        // of the measured maximum so that an empire with unusually long names does not fail the
-        // build, but close enough that losing the packing would.
-        var longest = lengths.Max();
+        // What the packing is for, measured over this corpus rather than asserted. Version one
+        // wrote the design as text and reached a median of 660 characters; writing it as a tree
+        // against a frozen vocabulary reaches 372. The bounds sit clear of the measurements so an
+        // empire with unusually long names does not fail the build, and close enough that losing
+        // the packing would.
+        //
+        // The median is asserted as well as the maximum because one empire in the corpus carries a
+        // four-hundred-word biography and dominates the maximum on its own - a change that doubled
+        // every other link would still pass a bound set only by that one.
+        var sorted = lengths.Order().ToList();
+        var median = sorted[sorted.Count / 2];
+        var longest = sorted[^1];
 
         Assert.True(
-            longest <= 1_000,
-            $"The longest link is {longest} characters, averaging {lengths.Average():F0}.");
+            median <= 450,
+            $"The median link is {median} characters; shortest {sorted[0]}, longest {longest}.");
+
+        Assert.True(
+            longest <= 900,
+            $"The longest link is {longest} characters, median {median}.");
     }
 
     /// <summary>The player's own designs, as copied into the sandbox. Never the originals.</summary>
