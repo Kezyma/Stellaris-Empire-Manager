@@ -3880,7 +3880,10 @@ button.icon .sem-action-icon { display: block; }
     background: var(--bg-panel);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: var(--space-lg);
+
+    /* Named because the narrow column's height has to subtract it, and it changes at 900. */
+    --lite-pad: var(--space-lg);
+    padding: var(--lite-pad);
 }
 
 /*
@@ -3961,11 +3964,30 @@ button.icon .sem-action-icon { display: block; }
        Left to its content it was several times the height of the phone it was on, and a reader
        scrolling for the empire underneath had a list of modifiers to get past first.
     */
-    .sem-lite-totals { position: static; }
+    .sem-lite-totals {
+        position: static;
 
+        /*
+           What the header takes off the top. It is pinned over the page at this width, so that
+           much of the screen is never the column's to use - the same budget the summary pane is
+           given, the header and the gap under it.
+        */
+        --above: var(--sticky-top);
+    }
+
+    /*
+       And a screenful is what is left of the screen, not the whole of it: the header above, and
+       the card's padding and the page's below, which are under the column and part of what has to
+       be on screen with it. The panel's own heading needs no term - it is inside the box being
+       measured, and the list under it is what shrinks to make room.
+
+       svh rather than vh, so a phone showing its address bar still fits: vh is the height the page
+       gets with the bar hidden, which is not the height it has while the reader is looking at it.
+    */
     .sem-lite-totals > .inner {
         position: static;
-        max-height: calc(100vh - var(--gap) * 2);
+        max-height: calc(100vh - var(--above) - var(--lite-pad) - var(--space-xl));
+        max-height: calc(100svh - var(--above) - var(--lite-pad) - var(--space-xl));
     }
 }
 
@@ -4480,7 +4502,7 @@ button.icon .sem-action-icon { display: block; }
 }
 
 @media (max-width: 900px) {
-    .sem-lite { padding: var(--space-md); }
+    .sem-lite { --lite-pad: var(--space-md); }
 
     /*
        A narrower gutter rather than none. Stacking each label over its value doubled the height of
@@ -4491,6 +4513,15 @@ button.icon .sem-action-icon { display: block; }
         grid-template-columns: fit-content(7rem) minmax(0, 1fr);
         column-gap: var(--space-sm);
     }
+}
+
+/*
+   The header stops sticking at 720 and scrolls away with everything above it, so by the time the
+   column is on screen the whole screen is the column's. Charging it for a header that is no longer
+   there costs a phone sixty pixels of the list.
+*/
+@media (max-width: 720px) {
+    .sem-lite-totals { --above: 0px; }
 }
 
 /* ------------------------------------------------------------------ the editor dialog
