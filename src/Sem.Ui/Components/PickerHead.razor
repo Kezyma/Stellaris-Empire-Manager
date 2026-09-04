@@ -1,0 +1,21 @@
+@*
+    What a list is, and what is chosen in it, over the list itself.
+
+    The same line a tab carries, for the arrangement that has no tabs. Where there is room for both
+    lists at once there is nothing to switch between, so each column says what it is above itself
+    instead - which is what these strips were before they became tabs.
+
+    Only one of the two is ever in the page: the container query hides whichever does not apply, and
+    a hidden element is out of the accessibility tree as well as off the screen. So a reader is never
+    offered a tab to a list that is already open beside it, and never a heading with no list under it.
+*@
+
+<div class="head">
+    <span class="title">@Tab.Title</span>
+    <span class="state">@Tab.State</span>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public required PickerTabs.Tab Tab { get; set; }
+}

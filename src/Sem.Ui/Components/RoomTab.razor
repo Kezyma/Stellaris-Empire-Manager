@@ -21,29 +21,24 @@
 </div>
 
 @*
-    The room and the city, one at a time.
+    The room and the city: side by side where there is room for both, and one at a time behind a
+    pair of tabs where there is not.
 
     Both lists scroll inside their own box rather than down the page, so the scene above stays on
     screen while they are being picked. Choosing either is choosing what the scene looks like, and
     they are long enough that the scene had scrolled away by the time you reached the one you
     wanted — you were choosing a picture you could not see.
 
-    Which is the same argument for showing one list rather than two: two boxes of pictures under a
-    picture is a tall section however tightly it is packed, and the picture is the point. The room
-    and the city are both in it, so the tab you are not on has nothing to show you that the scene is
-    not already showing.
+    Which is also why one list is enough where two will not fit. The picture is the point, and the
+    room and the city are both in it, so the tab you are not on has nothing to show you that the
+    scene is not already showing.
 *@
-<PickerTabs Label="Scene" Selected="_tab" SelectedChanged="Show"
-            Tabs="@(new PickerTabs.Tab[]
-                    {
-                        new(Session.Localizer.Label("EMPIRE_CREATION_ROOM_APPEARANCE", "Room"),
-                            RoomName(Design.Room)),
-                        new(Session.Localizer.Label("EMPIRE_CREATION_CITY_APPEARANCE", "City"),
-                            CityName(ChosenCity)),
-                    })" />
-
 <div class="sem-pickers">
+    <PickerTabs Label="Scene" Selected="_tab" SelectedChanged="Show" Tabs="Tabs" />
+
     <section class="sem-picker @(_tab == RoomList ? null : "away")">
+        <PickerHead Tab="Tabs[RoomList]" />
+
         @*
             Two lists, deliberately apart. The game's own designer offers the first; the second are
             rooms it hands out during play, to a fallen empire or a galactic emperor or a world that
@@ -64,6 +59,8 @@
     </section>
 
     <section class="sem-picker @(_tab == CityList ? null : "away")">
+        <PickerHead Tab="Tabs[CityList]" />
+
         <div class="sem-scroll-list" @ref="_cities">
             @*
                 A tile for no city at all, first. The dropdown this replaced carried an empty option
@@ -123,6 +120,19 @@
     /// </remarks>
     private int _tab = RoomList;
 
+    /// <summary>
+    /// The two lists, named and with what each holds, for the tabs and the headings alike.
+    /// </summary>
+    /// <remarks>
+    /// One source for both, because both are drawn every render and only the stylesheet decides
+    /// which is on the page. Two copies of these words would be two places for them to drift.
+    /// </remarks>
+    private PickerTabs.Tab[] Tabs =>
+    [
+        new(Session.Localizer.Label("EMPIRE_CREATION_ROOM_APPEARANCE", "Room"), RoomName(Design.Room)),
+        new(Session.Localizer.Label("EMPIRE_CREATION_CITY_APPEARANCE", "City"), CityName(ChosenCity)),
+    ];
+
     /// <summary>The scrolling boxes, so the chosen tile in each can be brought into view.</summary>
     private ElementReference _rooms;
     private ElementReference _cities;
@@ -130,19 +140,25 @@
     private IJSObjectReference? _module;
 
     /// <summary>
-    /// Opens the list that is showing on what the design already has.
+    /// Opens each list on what the design already has.
     /// </summary>
     /// <remarks>
-    /// Once only, and only the one on show — the other has no height to scroll yet. Scrolling on
-    /// every render would drag a list back under anyone reading further down it, and after the
-    /// first render the reason to move is a click, which is already in view.
+    /// Once only. Scrolling on every render would drag a list back under anyone reading further
+    /// down it, and after the first render the reason to move is a click, which is already in view.
+    ///
+    /// Both, without asking which arrangement the stylesheet settled on: where only one is on show
+    /// the other is not drawn, so the second call measures zeroes and moves nothing, and switching
+    /// to that tab does the work instead.
     /// </remarks>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (!firstRender)
         {
-            await Reveal(_rooms).ConfigureAwait(true);
+            return;
         }
+
+        await Reveal(_rooms).ConfigureAwait(true);
+        await Reveal(_cities).ConfigureAwait(true);
     }
 
     /// <summary>
