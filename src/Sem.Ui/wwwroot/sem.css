@@ -3015,7 +3015,7 @@ button.icon .sem-action-icon { display: block; }
 .sem-pickers > .sem-picker.away { display: none; }
 
 /*
-    The tabs. Each is the strip that used to head its own list - a title, what is chosen under it,
+    The tabs. Each is the strip that used to head its own list - a title, what is chosen beside it,
     square at the bottom where the list carries on - and there were always two of them; the change
     is that only one list hangs off them now.
 
@@ -3023,6 +3023,10 @@ button.icon .sem-action-icon { display: block; }
     box below can open into the pressed one without a seam to explain. Halves rather than tight to
     their text because each carries a name that can run long, and a strip whose tabs resize as the
     empire changes emblem is a strip that moves under the pointer.
+
+    One line, as the strip they came from was. Two of them stacked the name under the title and cost
+    the strip a second row of height to say what one row already had room for; the name gives up its
+    tail to an ellipsis instead, which is the right thing for it to give up.
 */
 .sem-picker-tabs {
     display: flex;
@@ -3033,8 +3037,8 @@ button.icon .sem-action-icon { display: block; }
     flex: 1;
     min-width: 0;
     display: flex;
-    flex-direction: column;
-    gap: var(--space-2xs);
+    align-items: baseline;
+    gap: var(--space-md);
     padding: var(--space-sm) var(--space-lg);
     background: var(--bg-raised);
     border: 1px solid var(--border);
@@ -3062,7 +3066,9 @@ button.icon .sem-action-icon { display: block; }
     cursor: default;
 }
 
+/* Never squeezed: the title is what the tab is, and the name beside it is what it happens to hold. */
 .sem-picker-tabs button .title {
+    flex: none;
     font-size: var(--text-xs);
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -3070,6 +3076,7 @@ button.icon .sem-action-icon { display: block; }
 
 /* What is chosen behind the tab, which is the whole of what a tab you are not on has to say. */
 .sem-picker-tabs button .state {
+    flex: 1;
     min-width: 0;
     overflow: hidden;
     font-size: var(--text-sm);
