@@ -32,9 +32,7 @@
         <label>Portrait duplication</label>
         <button type="button" class="sem-toggle" aria-pressed="@(Shared ? "true" : "false")"
                 @onclick="() => Session.Edit(d => d.IgnorePortraitDuplication = d.IgnorePortraitDuplication != true)">
-            @(Shared
-                ? "Another empire may use this portrait too"
-                : "This portrait is kept to this empire")
+            @(Shared ? "Allowed" : "Disallowed")
         </button>
     </div>
 }

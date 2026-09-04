@@ -41,10 +41,20 @@
             <span class="sem-lite-hint" aria-hidden="true"><ActionIcon Name="edit-pencil" /></span>
         </button>
 
+@*
+    Two columns, and which panel goes in which is stated rather than left to a balancing algorithm.
+    The wide arrangement is the DOM: what the empire is on the left, who is in it on the right.
+
+    Narrow, the columns hand their panels back - display:contents - and the order attribute puts
+    them in reading order instead, which is not the order either column holds them in. That is the
+    whole reason for stating both: a species belongs beside its ruler when there is room and after
+    the government when there is not.
+*@
         <div class="sem-lite-panels">
+            <div class="column">
 
             @* ------------------------------------------------------------- the empire *@
-            <section class="sem-lite-panel">
+            <section class="sem-lite-panel" style="--panel-order: 1">
                 <div class="body">
                     <button type="button" class="face-button" title="Edit the flag"
                             @onclick="() => Open(LitePart.Flag)">
@@ -56,6 +66,14 @@
                             @Named(Session.Localizer.Name(Design.Name, Design.Key),
                                    [View.Adjective], null,
                                    LitePart.Naming, "Edit the empire's name")
+
+                            @*
+                                Whether it may turn up in somebody else's game. The game draws this
+                                as one button wearing one of three pictures and so does this - the
+                                state is the picture, and the words for it are on the button for a
+                                pointer and for a reader.
+                            *@
+                            <SpawnToggle IconOnly="true" />
                         </div>
 
                         <div class="sem-lite-choices">
@@ -83,12 +101,6 @@
                                 </div>
                             </div>
 
-                            @* Whether it may turn up in somebody else's game, and how it arrives. *@
-                            <div class="sem-lite-chips">
-                                <span class="heading">@Session.Localizer.Heading("EMPIRE_SPAWN", "Spawning")</span>
-                                <div class="chips"><SpawnToggle /></div>
-                            </div>
-
                             <div class="sem-lite-chips">
                                 <span class="heading">Fallen empire</span>
                                 <div class="chips"><FallenToggle /></div>
@@ -99,7 +111,7 @@
             </section>
 
             @* ------------------------------------------------------------- how it is governed *@
-            <section class="sem-lite-panel">
+            <section class="sem-lite-panel" style="--panel-order: 2">
                 <div class="body">
                     <div class="about">
                         <div class="titles">
@@ -125,65 +137,21 @@
                 </div>
             </section>
 
-            @* ------------------------------------------------------------- who lives in it *@
-            @Species(Design.Species, true, LitePart.Species, LitePart.Portrait, LitePart.Traits)
-
-            @if (Design.SecondarySpecies is { } second)
-            {
-                @Species(second, false, LitePart.SecondSpecies, LitePart.SecondPortrait,
-                         LitePart.SecondTraits)
-            }
-
-            @* ------------------------------------------------------------- who rules it *@
-            <section class="sem-lite-panel">
-                <div class="body">
-                    @*
-                        The ruler as they actually look, not the species' stock face: the design's
-                        own phenotype, colour, clothes and whatever is on its head.
-                    *@
-                    <button type="button" class="face-button figure" title="Edit the ruler's appearance"
-                            @onclick="() => Open(LitePart.RulerAppearance)">
-                        <RulerFigure />
-                    </button>
-
-                    <div class="about">
-                        <div class="titles">
-                            @Named(View.RulerName is { Length: > 0 } named ? named : "No ruler named",
-                                   [Read(Design.Ruler.TitleFemale)], View.RulerTitle,
-                                   LitePart.Ruler, "Edit the ruler's name and titles")
-
-                            @Icon(GenderPicker.Held(Design.Ruler.Gender), LitePart.Ruler)
-                            @Icon((RulerClassName, RulerClass?.Icon), LitePart.Ruler, sprite: false)
-                        </div>
-
-                        <div class="sem-lite-choices">
-                            @Chips(Session.Localizer.Heading("TRAITS", "Traits"), View.RulerTraits,
-                                   LitePart.RulerTraits)
-
-                            @* Only where the design holds one: most governments elect their rulers. *@
-                            @if (HeirTitles is { Length: > 0 } heirs)
-                            {
-                                @Row(Session.Localizer.Heading("HEIR_TITLE", "Heir Titles"), heirs, LitePart.Ruler)
-                            }
-
-                            @Row(Session.Localizer.Label("BIOGRAPHY", "Biography"),
-                                 OneLine(RulerBiography), LitePart.Ruler)
-                        </div>
-                    </div>
-                </div>
-            </section>
-
             @* ------------------------------------------------------------- where it starts *@
-            <section class="sem-lite-panel">
+            <section class="sem-lite-panel" style="--panel-order: 5">
                 <div class="body">
                     @*
                         The world itself, as a picture, the way a species has one. It was a tile
                         under everything else - a picture in a box beneath a panel that had room for
                         it at the side.
+
+                        A nomad's is its ship. The class underneath still reads pc_ark, because that
+                        is what the game records, but a picture of the ark world says nothing about
+                        an empire whose whole point is that it does not live on one.
                     *@
                     <button type="button" class="face-button" title="Edit the homeworld"
                             @onclick="() => Open(LitePart.Homeworld)">
-                        @if (View.World?.Icon is { Length: > 0 } world)
+                        @if (HomePicture is { Length: > 0 } world)
                         {
                             <img class="face contain" src="@Session.Data.AssetUrl(world)" alt="" loading="lazy">
                         }
@@ -227,7 +195,7 @@
                 effects to show. The ship prefix is the one thing about a fleet that is not the
                 shipset. Three near-empty panels, or one.
             *@
-            <section class="sem-lite-panel">
+            <section class="sem-lite-panel" style="--panel-order: 7">
                 <div class="body">
                     <button type="button" class="face-button" title="Edit the shipset"
                             @onclick="() => Open(LitePart.Shipset)">
@@ -278,6 +246,58 @@
                     </div>
                 </div>
             </section>
+            </div>
+
+            <div class="column">
+
+            @* ------------------------------------------------------------- who lives in it *@
+            @Species(Design.Species, true, 3, LitePart.Species, LitePart.Portrait, LitePart.Traits)
+
+            @if (Design.SecondarySpecies is { } second)
+            {
+                @Species(second, false, 4, LitePart.SecondSpecies, LitePart.SecondPortrait,
+                         LitePart.SecondTraits)
+            }
+
+            @* ------------------------------------------------------------- who rules it *@
+            <section class="sem-lite-panel" style="--panel-order: 6">
+                <div class="body">
+                    @*
+                        The ruler as they actually look, not the species' stock face: the design's
+                        own phenotype, colour, clothes and whatever is on its head.
+                    *@
+                    <button type="button" class="face-button figure" title="Edit the ruler's appearance"
+                            @onclick="() => Open(LitePart.RulerAppearance)">
+                        <RulerFigure />
+                    </button>
+
+                    <div class="about">
+                        <div class="titles">
+                            @Named(View.RulerName is { Length: > 0 } named ? named : "No ruler named",
+                                   [Read(Design.Ruler.TitleFemale)], View.RulerTitle,
+                                   LitePart.Ruler, "Edit the ruler's name and titles")
+
+                            @Icon(GenderPicker.Held(Design.Ruler.Gender), LitePart.Ruler)
+                            @Icon((RulerClassName, RulerClass?.Icon), LitePart.Ruler, sprite: false)
+                        </div>
+
+                        <div class="sem-lite-choices">
+                            @Chips(Session.Localizer.Heading("TRAITS", "Traits"), View.RulerTraits,
+                                   LitePart.RulerTraits)
+
+                            @* Only where the design holds one: most governments elect their rulers. *@
+                            @if (HeirTitles is { Length: > 0 } heirs)
+                            {
+                                @Row(Session.Localizer.Heading("HEIR_TITLE", "Heir Titles"), heirs, LitePart.Ruler)
+                            }
+
+                            @Row(Session.Localizer.Label("BIOGRAPHY", "Biography"),
+                                 OneLine(RulerBiography), LitePart.Ruler)
+                        </div>
+                    </div>
+                </div>
+            </section>
+            </div>
         </div>
     </div>
 
@@ -346,6 +366,13 @@
             .Where(t => t.Length > 0)
             .Distinct(StringComparer.CurrentCulture));
 
+    /// <summary>
+    /// The picture for where the empire starts, which for a nomad is what it starts in.
+    /// </summary>
+    private string? HomePicture => Design.IsNomadic == true
+        ? View.Arkship?.Preview ?? View.Arkship?.Icon ?? View.World?.Icon
+        : View.World?.Icon;
+
     /// <summary>The kind of leader who rules, where the design names one.</summary>
     private LeaderClassDefinition? RulerClass => Session.Data.Database.LeaderClasses
         .FirstOrDefault(c => c.Key == Design.Ruler.LeaderClass);
@@ -387,9 +414,9 @@
     /// reason the species editor itself serves both. Only which editors its presses open differ,
     /// and those are handed in.
     /// </remarks>
-    private RenderFragment Species(SpeciesDesign species, bool founder, LitePart names,
+    private RenderFragment Species(SpeciesDesign species, bool founder, int order, LitePart names,
                                    LitePart portrait, LitePart traits) =>
-        @<section class="sem-lite-panel">
+        @<section class="sem-lite-panel" style="--panel-order: @order">
             <div class="body">
                 <button type="button" class="face-button" title="Edit the portrait, class and gender"
                         @onclick="() => Open(portrait)">
@@ -428,7 +455,7 @@
                         @if (founder)
                         {
                             @Row("Portrait duplication",
-                                 Design.IgnorePortraitDuplication == true ? "May be shared" : "Kept to this empire",
+                                 Design.IgnorePortraitDuplication == true ? "Allowed" : "Disallowed",
                                  portrait)
                         }
 

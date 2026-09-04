@@ -3969,22 +3969,47 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
-   The panels, two columns at most, packed rather than ruled into rows.
+   The panels, in two columns that are stated rather than balanced.
 
-   Columns rather than a grid: a grid puts every panel in a row with its neighbour, so a short panel
-   beside a tall one leaves a hole the height of the difference and the next row starts below both.
-   Columns flow and balance, which is what packing upward means. Nothing inside a panel is sticky,
-   which is multicol's one real limitation, and the chip popovers are in the top layer regardless.
+   Two real columns rather than CSS multicol: which panel belongs in which is a decision - what the
+   empire is on the left, who is in it on the right - and multicol decides by height instead. Each
+   column stacks its own, so a short panel does not leave a hole beside a tall one either.
 
-   There is no row gap in multicol, so the panels space themselves - see the margin below.
+   Narrow, the columns give their panels back with display:contents and the row becomes one flex
+   column. Reading order there is not either column's order - a species belongs beside its ruler
+   when there is room and after the government when there is not - so each panel carries the order
+   it wants, and the flattened list is sorted by it.
 */
 .sem-lite-panels {
-    columns: 1;
-    column-gap: var(--gap);
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+}
+
+.sem-lite-panels > .column {
+    display: contents;
+}
+
+.sem-lite-panels > .column > .sem-lite-panel {
+    order: var(--panel-order, 0);
 }
 
 @media (min-width: 1100px) {
-    .sem-lite-panels { columns: 2; }
+    .sem-lite-panels {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: start;
+    }
+
+    .sem-lite-panels > .column {
+        display: flex;
+        flex-direction: column;
+        gap: var(--gap);
+        min-width: 0;
+    }
+
+    /* Stacked by their column now, so the order they would take alone does not apply. */
+    .sem-lite-panels > .column > .sem-lite-panel { order: 0; }
 }
 
 /*
@@ -3995,8 +4020,6 @@ button.icon .sem-action-icon { display: block; }
    its margin-bottom - so every panel had a bottom margin on top of the grid's own gap.
 */
 .sem-lite-panel {
-    break-inside: avoid;
-    margin-bottom: var(--gap);
     display: flex;
     flex-direction: column;
     gap: var(--space-sm);
@@ -4051,6 +4074,20 @@ button.icon .sem-action-icon { display: block; }
     width: var(--icon);
     height: var(--icon);
     object-fit: contain;
+}
+
+/*
+   The spawn setting, which is a picture rather than a glyph - three frames of the same phoenix,
+   telling them apart needs the size the game draws them at.
+*/
+.sem-lite-panel .badge.large {
+    width: calc(var(--icon-btn) * 2);
+    height: calc(var(--icon-btn) * 2);
+}
+
+.sem-lite-panel .badge.large img {
+    width: calc(var(--icon) * 2);
+    height: calc(var(--icon) * 2);
 }
 
 .sem-lite-panel > .body {

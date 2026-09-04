@@ -21,9 +21,7 @@
 <button type="button" class="sem-toggle" aria-pressed="@(Fallen ? "true" : "false")"
         title="A fallen empire the galaxy generates may wear this design's species, portrait, name and flag. It does not change the empire you play."
         @onclick="() => Session.Edit(d => d.SpawnAsFallen = d.SpawnAsFallen != true)">
-    @(Fallen
-        ? "May dress an AI fallen empire"
-        : "Not used for fallen empires")
+    @(Fallen ? "Allowed" : "Disallowed")
 </button>
 
 @code {
