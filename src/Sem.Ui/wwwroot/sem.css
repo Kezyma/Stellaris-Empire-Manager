@@ -3503,6 +3503,26 @@ button.icon .sem-action-icon { display: block; }
    shown because "-10%" says how far something moved without saying what it moved from, and comparing
    the two is the whole point of the view.
 */
+/*
+   Five columns shared by every row, rather than five widths per row.
+
+   Each li laid its own out, so a "was" of "-10%" and one of "+2" took different widths and no two
+   rows agreed where the arrow sat. subgrid gives them one set of tracks, which is what makes a
+   column of numbers readable at all.
+*/
+.sem-modifiers.changes {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto auto auto;
+    column-gap: var(--space-md);
+}
+
+.sem-modifiers.changes li {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
+    gap: 0;
+}
+
 .sem-modifiers.changes .was,
 .sem-modifiers.changes .arrow {
     color: var(--text-faint);
@@ -3512,7 +3532,7 @@ button.icon .sem-action-icon { display: block; }
 
 .sem-modifiers.changes .value {
     min-width: 0;
-    text-align: left;
+    text-align: right;
 }
 
 .sem-modifiers.changes .delta {
@@ -3936,15 +3956,17 @@ button.icon .sem-action-icon { display: block; }
 @media (max-width: 1100px) {
     .sem-lite { grid-template-columns: minmax(0, 1fr); }
 
-    /* One column, so the totals follow the panels down the page and take the height they need. */
+    /*
+       One column, so the totals follow the panels down the page - but no further than a screenful.
+       Left to its content it was several times the height of the phone it was on, and a reader
+       scrolling for the empire underneath had a list of modifiers to get past first.
+    */
     .sem-lite-totals { position: static; }
 
     .sem-lite-totals > .inner {
         position: static;
-        max-height: none;
+        max-height: calc(100vh - var(--gap) * 2);
     }
-
-    .sem-lite .sem-combined > .body { overflow-y: visible; }
 }
 
 /*
@@ -4020,6 +4042,7 @@ button.icon .sem-action-icon { display: block; }
    its margin-bottom - so every panel had a bottom margin on top of the grid's own gap.
 */
 .sem-lite-panel {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: var(--space-sm);
@@ -4077,17 +4100,30 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
-   The spawn setting, which is a picture rather than a glyph - three frames of the same phoenix,
+   The spawn setting, which is a picture rather than a glyph - three frames of the same phoenix, and
    telling them apart needs the size the game draws them at.
+
+   Out of flow, in the panel's own corner. In the row it was twice the height of the name beside it,
+   so it set the row's height and pushed every setting under it down by the difference. Sized to the
+   picture rather than to a button, since the sprite carries its own margin.
 */
 .sem-lite-panel .badge.large {
-    width: calc(var(--icon-btn) * 2);
-    height: calc(var(--icon-btn) * 2);
+    position: absolute;
+    top: var(--space-sm);
+    right: var(--space-sm);
+    width: auto;
+    height: auto;
+    padding: 0;
 }
 
 .sem-lite-panel .badge.large img {
     width: calc(var(--icon) * 2);
     height: calc(var(--icon) * 2);
+}
+
+/* Room for it, so a long name does not run underneath. */
+.sem-lite-panel:has(.badge.large) > .body > .about > .titles {
+    padding-right: calc(var(--icon) * 2 + var(--space-sm));
 }
 
 .sem-lite-panel > .body {
@@ -4446,8 +4482,15 @@ button.icon .sem-action-icon { display: block; }
 @media (max-width: 900px) {
     .sem-lite { padding: var(--space-md); }
 
-    /* No room for a gutter; the label goes back above its chips, as the showcase does it. */
-    .sem-lite-choices { grid-template-columns: minmax(0, 1fr); }
+    /*
+       A narrower gutter rather than none. Stacking each label over its value doubled the height of
+       every row that holds a word - which is most of them - to buy a width the words did not need.
+       The gutter shrinks instead, and a row of chips still wraps inside its own half.
+    */
+    .sem-lite-choices {
+        grid-template-columns: fit-content(7rem) minmax(0, 1fr);
+        column-gap: var(--space-sm);
+    }
 }
 
 /* ------------------------------------------------------------------ the editor dialog
