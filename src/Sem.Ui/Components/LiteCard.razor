@@ -115,12 +115,11 @@
                             @Chips(Session.Localizer.Heading("CIVICS_LABEL", "Civics"), View.Civics, LitePart.Civics)
 
                             @*
-                                Not an authority, but the game keeps it beside them and it rules out
-                                a good many civics. Its only sign on the card was the arkship row
-                                appearing in another panel.
+                                The origin sits with the government rather than with the homeworld.
+                                It is chosen alongside the ethics and civics and reads as one of
+                                them; beside a planet it read as a property of the planet.
                             *@
-                            @Row(Session.Localizer.Heading("IS_NOMADIC", "Nomadic"),
-                                 Design.IsNomadic == true ? "Yes" : "No", LitePart.Authority)
+                            @Chips(Session.Localizer.Heading("ORIGIN", "Origin"), View.OriginChoice, LitePart.Origin)
                         </div>
                     </div>
                 </div>
@@ -203,7 +202,6 @@
                         </div>
 
                         <div class="sem-lite-choices">
-                            @Chips(Session.Localizer.Heading("ORIGIN", "Origin"), View.OriginChoice, LitePart.Origin)
                             @Row(Session.Localizer.Heading("SELECT_SYSTEM_INITIALIZER_LABEL", "Starting System"),
                                  View.StartingSystem, LitePart.Homeworld)
 
@@ -243,15 +241,15 @@
                         }
                     </button>
 
+                    @*
+                        Three rows and no name line. The shipset is not this panel's identity the way
+                        an empire's name is its panel's - it is one of three settings that happen to
+                        share a picture, so it reads as a row like the two under it.
+                    *@
                     <div class="about">
-                        <div class="titles">
-                            @Named(View.CultureName(Design.GraphicalCulture) ?? "not set", [], null,
-                                   LitePart.Shipset, "Edit the shipset")
-                        </div>
-
                         <div class="sem-lite-choices">
-                            @Chips(Session.Localizer.Heading("EMPIRE_ADVISOR", "Advisor Voice"),
-                                   View.AdvisorChoice, LitePart.Advisor, empty: "Automatic")
+                            @Row(Session.Localizer.Heading("SHIPSETS_LABEL", "Shipset"),
+                                 View.CultureName(Design.GraphicalCulture), LitePart.Shipset)
 
                             @* Edited where it is read, as the flag sets are. *@
                             <div class="sem-lite-chips">
@@ -273,6 +271,9 @@
                                     }
                                 </div>
                             </div>
+
+                            @Chips(Session.Localizer.Heading("EMPIRE_ADVISOR", "Advisor Voice"),
+                                   View.AdvisorChoice, LitePart.Advisor, empty: "Automatic")
                         </div>
                     </div>
                 </div>
@@ -289,7 +290,6 @@
         <div class="inner">
             <ProblemsPanel Report="@View.Report" />
             <CombinedEffects Context="@View.Context" Baseline="@Baseline" />
-            <OptionModifiers Contributions="@View.Contributions" />
         </div>
     </div>
 </div>
@@ -416,9 +416,9 @@
                     </div>
 
                     <div class="sem-lite-choices">
+                        @Chips(Session.Localizer.Heading("TRAITS", "Traits"), View.TraitsOf(species), traits)
                         @Row(Session.Localizer.Heading("NAME_LIST", "Name List"),
                              Session.Localizer.Text(species.NameList), names)
-                        @Chips(Session.Localizer.Heading("TRAITS", "Traits"), View.TraitsOf(species), traits)
 
                         @*
                             Whether the galaxy may hand this face to somebody else. An empire-level

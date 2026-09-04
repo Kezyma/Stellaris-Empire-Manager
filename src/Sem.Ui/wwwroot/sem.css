@@ -3841,7 +3841,14 @@ button.icon .sem-action-icon { display: block; }
 */
 .sem-lite {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
+    /*
+       The panels stop at the width of the scene above them, which is the room artwork's own 952
+       pixels. Past that the card would only be spreading two columns of short rows further apart,
+       so it stops growing and sits at the left rather than stretching to whatever the monitor is.
+    */
+    grid-template-columns: minmax(0, 952px) minmax(300px, 360px);
+    justify-content: start;
+    max-width: fit-content;
     gap: var(--gap);
 
     /*
@@ -3856,8 +3863,11 @@ button.icon .sem-action-icon { display: block; }
     padding: var(--space-lg);
 }
 
-@media (min-width: 1500px) { .sem-lite { grid-template-columns: minmax(0, 1fr) 400px; } }
-@media (min-width: 1800px) { .sem-lite { grid-template-columns: minmax(0, 1fr) 440px; } }
+/*
+   No wider steps for the totals column. The panels stop at the scene's width, so a column that
+   kept growing past it would be the only thing a bigger monitor changed - and the card is meant
+   to stop growing, not to grow in one place.
+*/
 
 .sem-lite-main {
     display: flex;
@@ -3893,14 +3903,20 @@ button.icon .sem-action-icon { display: block; }
     max-height: min(100%, calc(100vh - var(--sticky-top) - var(--gap)));
 }
 
-/* Each section shrinks only as far as it must, and scrolls the rest. */
-.sem-lite-totals > .inner > * {
-    min-height: 0;
-    flex-shrink: 1;
+/*
+   The problem list is as tall as it needs to be; the modifiers take the rest and scroll.
+
+   Both were flex-shrink with no grow, which sizes each to its content and leaves the container's
+   max-height to clamp whatever will not fit - so a long list pushed past the column and a short one
+   never reached the bottom of it.
+*/
+.sem-lite-totals > .inner > .sem-showcase-problems {
+    flex: 0 0 auto;
 }
 
-.sem-lite .sem-combined,
-.sem-lite .sem-contributions {
+.sem-lite-totals > .inner > .sem-combined {
+    flex: 1 1 auto;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -3908,13 +3924,17 @@ button.icon .sem-action-icon { display: block; }
 
 .sem-lite .sem-combined > .sem-modifiers,
 .sem-lite .sem-combined > .sem-hint,
-.sem-lite .sem-contributions > .body {
+.sem-lite .sem-combined > .sem-contributions,
+.sem-lite .sem-combined > .sem-combined-worded {
     min-height: 0;
     overflow-y: auto;
 }
 
 @media (max-width: 1100px) {
-    .sem-lite { grid-template-columns: minmax(0, 1fr); }
+    .sem-lite {
+        grid-template-columns: minmax(0, 1fr);
+        max-width: none;
+    }
 
     .sem-lite-totals > .inner {
         position: static;
@@ -4178,8 +4198,14 @@ button.icon .sem-action-icon { display: block; }
 .sem-lite .name-button > .kind { display: block; }
 
 /* A planet or a ship render is not a face: shown whole rather than cropped to fill. */
+/*
+   A planet or a ship render is not a face: shown whole rather than cropped, and centred rather than
+   pinned to the top. The shared rule's object-position is there to keep a portrait's head in frame,
+   which left a planet sitting against the ceiling of its box with the space below it.
+*/
 .sem-lite-panel .face-button > .face.contain {
     object-fit: contain;
+    object-position: center;
     background: var(--bg-void);
 }
 
@@ -4312,15 +4338,11 @@ button.icon .sem-action-icon { display: block; }
     height: var(--icon);
 }
 
-/*
-   The totals taken apart again, one option at a time. Wears the picker's fold so it reads as the
-   same kind of thing as the panels it sits under.
-*/
-.sem-contributions > .body {
+/* The totals taken apart again, one option at a time. */
+.sem-contributions {
     display: flex;
     flex-direction: column;
     gap: var(--space-md);
-    padding: var(--space-sm) 0 0;
 }
 
 .sem-contributions .option > .name {
@@ -4337,8 +4359,40 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /* Indented under the option that caused them, so the two levels are told apart at a glance. */
-.sem-contributions .option > .sem-modifiers {
-    margin: 0 0 0 calc(var(--icon-sm) + var(--space-sm));
+.sem-contributions .option > .sem-effects {
+    margin-left: calc(var(--icon-sm) + var(--space-sm));
+}
+
+.sem-contributions .option > .sem-effects .sem-modifiers:last-child {
+    margin-bottom: 0;
+}
+
+/*
+   What the empire's choices do in words rather than numbers, under the arithmetic they cannot join.
+   Each says which choices carry it, since one sentence often belongs to several.
+*/
+.sem-combined-worded {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--border);
+}
+
+.sem-combined-worded .worded > .sem-effects-text {
+    margin-bottom: var(--space-2xs);
+    font-size: var(--text-sm);
+}
+
+.sem-combined-worded .worded > .from {
+    color: var(--text-faint);
+    font-size: var(--text-xs);
+}
+
+/* The three views, sized to sit beside a heading rather than above a picker. */
+.sem-combined .heading > .sem-view-toggle button {
+    padding: var(--space-2xs) var(--space-sm);
+    font-size: var(--text-xs);
 }
 
 @media (max-width: 900px) {

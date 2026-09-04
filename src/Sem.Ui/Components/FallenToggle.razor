@@ -1,20 +1,29 @@
 @*
-    Whether the empire arrives already ancient.
+    Whether the galaxy may dress a fallen empire in this design.
 
-    A fallen empire is one the galaxy starts with rather than one that grows: enormously powerful,
-    dormant, and not a thing the player controls. The designs file has carried spawn_as_fallen all
-    along and nothing has ever been able to set it, so an empire written with it kept the setting
-    and an empire made here could never have one.
+    Not "play as a fallen empire", which no design can ask for. The game builds a fallen empire from
+    scratch in common/fallen_empires/00_fallen_empire.txt - its country type, its imperial authority,
+    origin_fallen_empire and civic_empire_in_decline are each gated playable = { always = no } or
+    country_type = { value = fallen_empire } - and a design marked yes and then played is an ordinary
+    empire.
 
-    Stated as the answer rather than as a checkbox, the way portrait duplication is: a box labelled
-    "spawn as fallen" leaves you working out what a ticked one means.
+    What it marks is eligibility to be the *appearance* of an AI one: species, portrait, name, flag,
+    ship prefix and room are taken, and the design's own ethics, civics and origin are thrown away.
+    It fires on a 5% roll (FALLEN_CUSTOM_EMPIRE_SPAWN_CHANCE = 50 in 00_defines.txt) and it overrides
+    spawn_enabled, which is why the Blorg Commonality carries spawn_enabled = no beside it.
+
+    The game writes the field into every design it saves, always no, and offers no control for it -
+    there is no localisation key and no .gui element anywhere. So this is the only place it can be
+    set, and the wording has to carry all of the above, because "spawn as fallen" reads as something
+    far larger than it is.
 *@
 
 <button type="button" class="sem-toggle" aria-pressed="@(Fallen ? "true" : "false")"
+        title="A fallen empire the galaxy generates may wear this design's species, portrait, name and flag. It does not change the empire you play."
         @onclick="() => Session.Edit(d => d.SpawnAsFallen = d.SpawnAsFallen != true)">
     @(Fallen
-        ? "Starts as a fallen empire"
-        : "Starts as an ordinary empire")
+        ? "May dress an AI fallen empire"
+        : "Not used for fallen empires")
 </button>
 
 @code {

@@ -1,85 +1,48 @@
 @*
-    What each of the empire's choices contributes, one option at a time.
+    What each of the empire's choices does, one option at a time.
 
-    The panel above adds everything up; this takes it apart again. The totals answer "what is my
-    empire like", and this answers "which of my choices did that" - which is the question you have
-    when a number is not what you expected, and which was previously answerable only by hovering
-    each row of the totals to read its tooltip.
+    The panel it sits in adds everything up; this takes it apart again. The totals answer "what is my
+    empire like", and this answers "which of my choices did that" - the question you have when a
+    number is not what you expected, and which was previously answerable only by hovering each row of
+    the totals to read its tooltip.
 
-    Built from the same sequence the totals are built from, so the two cannot disagree: the same
-    options, and the numbers that actually counted rather than the ones an option prints. An option
-    whose modifiers are all conditional on something that cannot be settled here contributes nothing
-    and is left out rather than listed as empty.
+    Everything an option does, not only its numbers. Most of what an option does is not a number:
+    Aerospace Adaptation's three modifiers say nothing about the biological ships it is actually
+    about, and forty-two of the game's seventy-seven origins carry no modifier at all - which is why
+    Prosperous Unification used to be missing from this list entirely.
+
+    Rendered by the same component the hover popover uses, so an option cannot say one thing there
+    and another here. The lore paragraph is not part of it: that belongs to the chip, above the
+    effects, and a column of flavour text is not what this panel is for.
 *@
 
-<section class="sem-picker sem-contributions @(_open ? null : "collapsed")">
-    <button type="button" class="head" aria-expanded="@(_open ? "true" : "false")"
-            @onclick="() => _open = !_open">
-        <span class="chevron" aria-hidden="true">@(_open ? "▾" : "▸")</span>
-        <span class="title">By choice</span>
-        <span class="state">@Summary</span>
-    </button>
+@if (Contributions.Count == 0)
+{
+    <p class="sem-hint">Nothing chosen so far changes anything.</p>
+}
 
-    @if (_open)
-    {
-        <div class="body">
-            @if (Contributions.Count == 0)
-            {
-                <p class="sem-hint">Nothing chosen so far changes anything.</p>
-            }
-
-            @foreach (var (option, modifiers) in Contributions)
-            {
-                <div class="option" @key="option.Key">
-                    <div class="name">
-                        <GameIcon Path="@option.Icon" Alt="" />
-                        <span>@option.Name</span>
-                    </div>
-
-                    <ul class="sem-modifiers">
-                        @foreach (var modifier in modifiers)
-                        {
-                            <li>
-                                <span class="label">@((MarkupString)Session.Modifiers.LabelHtml(modifier.Key))</span>
-                                <span class="value @ToneClass(modifier.Tone)">@modifier.Value</span>
-                            </li>
-                        }
-                    </ul>
-                </div>
-            }
+@foreach (var contribution in Contributions)
+{
+    <div class="option" @key="contribution.Option.Key">
+        <div class="name">
+            <GameIcon Path="@contribution.Option.Icon" Alt="" />
+            <span>@contribution.Option.Name</span>
         </div>
-    }
-</section>
+
+        @*
+            AllModifiers, because this has to add up to the total above it. An option may ask for its
+            numbers not to be listed - its own sentence usually states them - and the arithmetic
+            counts them regardless, so a breakdown that honoured the request would not reconcile.
+        *@
+        <EffectsList Effects="@contribution.Effects" AllModifiers="true" />
+    </div>
+}
 
 @code {
-    /// <summary>
-    /// Whether the list is showing.
-    /// </summary>
-    /// <remarks>
-    /// Component state and a button rather than a details element, for the reason written against
-    /// the flag picker: a details element's open state belongs to the browser, and Blazor never
-    /// re-emits it, so one shut at one width can be stranded shut.
-    /// </remarks>
-    private bool _open = true;
-
     [CascadingParameter]
     public required DesignSession Session { get; set; }
 
     /// <summary>Each option that changes something, with what it changes.</summary>
     [Parameter, EditorRequired]
     public required IReadOnlyList<OptionContribution> Contributions { get; set; }
-
-    private string Summary => Contributions.Count switch
-    {
-        0 => "nothing",
-        1 => "1 choice",
-        var many => $"{many} choices",
-    };
-
-    private static string ToneClass(ModifierTone tone) => tone switch
-    {
-        ModifierTone.Good => "good",
-        ModifierTone.Bad => "bad",
-        _ => string.Empty,
-    };
 }

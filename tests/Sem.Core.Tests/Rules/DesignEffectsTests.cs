@@ -46,6 +46,34 @@ public sealed class DesignEffectsTests
                 _ => e,
             }),
         ],
+
+        Traits =
+        [
+            .. RulesTestData.Database.Traits.Select(t => t.Key switch
+            {
+                // A ruler trait that does something, so counting it is visible in a total.
+                "leader_trait_principled" => t with
+                {
+                    Effects = new EffectSet
+                    {
+                        Modifiers = new Dictionary<string, double> { ["country_unity_produces_mult"] = 0.05 },
+                    },
+                },
+                _ => t,
+            }),
+
+            // The preference the homeworld forces. Named for the world, which is how the rules find
+            // it, and never written into a design - which is the whole point of the test below.
+            new TraitDefinition("trait_pc_continental_preference", TraitKind.Species)
+            {
+                Cost = 0,
+                AllowedArchetypes = ["BIOLOGICAL"],
+                Effects = new EffectSet
+                {
+                    Modifiers = new Dictionary<string, double> { ["pc_continental_habitability"] = 0.8 },
+                },
+            },
+        ],
     };
 
     private static DesignContext Context(bool nomadic)
@@ -136,5 +164,55 @@ public sealed class DesignEffectsTests
 
         Assert.Contains("trait_intelligent", sources);
         Assert.Contains("ethic_fanatic_militarist", sources);
+    }
+
+    [Fact]
+    public void TheRulersTraitCounts()
+    {
+        // The ruler is the empire's, and their trait is one of the things the player chose. It was
+        // reaching neither the totals nor the breakdown: Selected walked the species' traits and
+        // stopped, though the context has carried the ruler's all along.
+        var design = RulesTestData.ValidEmpire();
+        design.Ruler.SetTraits(["leader_trait_principled"]);
+
+        var context = new EmpireRules(Database).CreateContext(design, new HashSet<string> { "Utopia" });
+
+        Assert.Contains("leader_trait_principled", DesignEffects.Selected(context).Select(o => o.Key));
+        Assert.Equal(0.05, Total(context, "country_unity_produces_mult"));
+    }
+
+    [Fact]
+    public void TheHomeworldsPreferenceCountsAlthoughNothingWritesItDown()
+    {
+        // A habitability preference is forced by the world the species evolved on, and is the one
+        // forced trait the file never carries - GetWrittenForcedTraits leaves it out so that a
+        // design matches what the game itself would write. Its five habitability modifiers are as
+        // real as any other, so the totals count it even though design.Species.Traits does not
+        // mention it.
+        var design = RulesTestData.ValidEmpire();
+
+        var context = new EmpireRules(Database).CreateContext(design, new HashSet<string> { "Utopia" });
+
+        Assert.DoesNotContain("trait_pc_continental_preference", design.Species.Traits);
+        Assert.Contains("trait_pc_continental_preference", context.EffectiveTraits);
+        Assert.Equal(0.8, Total(context, "pc_continental_habitability"));
+    }
+
+    [Fact]
+    public void ASecondSpeciesTraitsAreNotTheEmpiresOwn()
+    {
+        // The founder species is the empire at the point it is being designed; a second species is
+        // a population it starts alongside. Its traits belong to it and not to the empire, so they
+        // stay out of both the totals and the breakdown. Stated because nothing else pins it - the
+        // separation falls out of the context being built from design.Species alone, which is the
+        // sort of thing a refactor takes away without noticing.
+        var design = RulesTestData.ValidEmpire();
+        var second = design.AddSecondarySpecies();
+        second.SetTraits(["trait_intelligent", "trait_expensive"]);
+
+        var context = new EmpireRules(Database).CreateContext(design, new HashSet<string> { "Utopia" });
+
+        Assert.DoesNotContain("trait_expensive", context.EffectiveTraits);
+        Assert.DoesNotContain("trait_expensive", DesignEffects.Selected(context).Select(o => o.Key));
     }
 }

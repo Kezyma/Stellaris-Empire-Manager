@@ -8,40 +8,44 @@
 
 @using Sem.Rules
 
-<div class="sem-combined @(_open ? null : "collapsed")">
+<div class="sem-combined">
     <div class="heading">
-        @*
-            The heading itself folds the panel. Not a details element wrapping the row: the compare
-            button lives in this row, and a button inside a summary toggles the fold when it is
-            pressed. Component state and aria-expanded, for the same reason the flag and room
-            pickers use them - a details element's open state belongs to the browser and Blazor
-            never re-emits it.
-        *@
-        <button type="button" class="fold" aria-expanded="@(_open ? "true" : "false")"
-                @onclick="() => _open = !_open">
-            <span class="chevron" aria-hidden="true">@(_open ? "▾" : "▸")</span>
-            <h4>@Session.Localizer.Label("SUMMARY_EMPIRE_MODIFIERS", "Empire Modifiers")</h4>
-        </button>
+        <h4>@Session.Localizer.Label("SUMMARY_EMPIRE_MODIFIERS", "Empire Modifiers")</h4>
 
         @*
-            Only where there is something to compare with: an empire nobody is editing, or one
-            created and never saved, was never anything other than what it is.
+            Three questions about one set of numbers: which choice did this, what does it all come
+            to, and what have I changed since I saved. Two buttons each naming a view rather than
+            one that flips, as the pickers' own toggle has it - a single button has to decide
+            whether its label names what you are looking at or what pressing it would do.
+
+            Changes only where there is something to compare with: an empire nobody is editing, or
+            one created and never saved, was never anything other than what it is.
         *@
-        @if (Baseline is not null)
-        {
-            <button type="button" class="sem-tab compare" aria-pressed="@(_changes ? "true" : "false")"
-                    title="@(_changes ? "Show what the empire comes to" : "Show what your edits changed")"
-                    @onclick="() => _changes = !_changes">
-                @(_changes ? "Totals" : "Changes")
-            </button>
-        }
+        <div class="sem-view-toggle" role="group" aria-label="Modifiers">
+            <button type="button" aria-pressed="@(_view == View.Individual ? "true" : "false")"
+                    title="What each choice contributes"
+                    @onclick="() => _view = View.Individual">Individual</button>
+
+            <button type="button" aria-pressed="@(_view == View.Combined ? "true" : "false")"
+                    title="What the empire comes to"
+                    @onclick="() => _view = View.Combined">Combined</button>
+
+            @if (Baseline is not null)
+            {
+                <button type="button" aria-pressed="@(_view == View.Changes ? "true" : "false")"
+                        title="What your edits changed"
+                        @onclick="() => _view = View.Changes">Changes</button>
+            }
+        </div>
     </div>
 
-    @if (!_open)
+    @if (Showing == View.Individual)
     {
-        @* Folded, so the heading is the whole of it. *@
+        <div class="sem-contributions">
+            <OptionModifiers Contributions="@Contributions" />
+        </div>
     }
-    else if (_changes && Baseline is not null)
+    else if (Showing == View.Changes)
     {
         @if (Changes.Count == 0)
         {
@@ -102,6 +106,26 @@
             }
         </ul>
     }
+
+    @*
+        And under the arithmetic, the things that are not arithmetic. A sentence cannot be added to
+        another sentence, so these are listed rather than summed, each naming what it came from -
+        the way a total names its sources in its tooltip. Deduplicated by the text itself, since
+        several civics share one: BLOCKS_COUNCILOR_STATE belongs to both Inwards Perfection and
+        Fanatic Purifiers.
+    *@
+    @if (Showing == View.Combined && Worded.Count > 0)
+    {
+        <div class="sem-combined-worded">
+            @foreach (var (line, sources) in Worded)
+            {
+                <div class="worded" @key="line">
+                    <div class="sem-effects-text">@((MarkupString)line)</div>
+                    <div class="from">@string.Join(", ", sources)</div>
+                </div>
+            }
+        </div>
+    }
 </div>
 
 @code {
@@ -130,11 +154,30 @@
     [Parameter]
     public DesignContext? Baseline { get; set; }
 
-    /// <summary>Whether the panel is showing what changed rather than what the empire comes to.</summary>
-    private bool _changes;
+    /// <summary>Which of the three questions the panel is answering.</summary>
+    private enum View
+    {
+        /// <summary>What each choice contributes.</summary>
+        Individual,
 
-    /// <summary>Whether the list is showing at all.</summary>
-    private bool _open = true;
+        /// <summary>What the empire comes to.</summary>
+        Combined,
+
+        /// <summary>What the edits since the last save moved.</summary>
+        Changes,
+    }
+
+    private View _view = View.Combined;
+
+    /// <summary>
+    /// The view actually drawn, which is not always the one asked for.
+    /// </summary>
+    /// <remarks>
+    /// Changes needs something to compare against. Saving an empire, or opening one on the select
+    /// screen, can take the baseline away underneath a panel already showing it - so the fallback
+    /// is here rather than in the handler, where it would depend on the order things happened in.
+    /// </remarks>
+    private View Showing => _view == View.Changes && Baseline is null ? View.Combined : _view;
 
     /// <summary>One modifier that is not what it was.</summary>
     /// <param name="Key">The modifier.</param>
@@ -176,6 +219,91 @@
 
     private IReadOnlyList<CombinedModifier> Combined =>
         (Context ?? Session.Context) is { } context ? DesignEffects.Combine(context) : [];
+
+    /// <summary>Each chosen option that changes something, with everything it changes.</summary>
+    private IReadOnlyList<OptionContribution> Contributions =>
+        (Context ?? Session.Context) is { } context
+            ? [.. DesignEffects.Selected(context)
+                .Where(o => !o.Effects.IsEmpty)
+                .Select(o => new OptionContribution(Named(context, o.Key), o.Effects))]
+            : [];
+
+    /// <summary>
+    /// The parts of what an empire's choices do that are words rather than numbers.
+    /// </summary>
+    /// <remarks>
+    /// An option states these three ways - a description of its effect, a hand-written tooltip, and
+    /// tag lines naming capabilities rather than amounts - and 130 of the game's options say
+    /// everything they do this way and carry no modifier at all. Keyed by the rendered line so one
+    /// sentence appears once however many choices carry it, and so the sources gather under it.
+    /// </remarks>
+    private IReadOnlyList<(string Line, IReadOnlyList<string> Sources)> Worded
+    {
+        get
+        {
+            var lines = new Dictionary<string, List<string>>(StringComparer.Ordinal);
+
+            foreach (var contribution in Contributions)
+            {
+                foreach (var key in Wording(contribution.Effects))
+                {
+                    if (Session.Localizer.Html(key, string.Empty) is not { Length: > 0 } line)
+                    {
+                        continue;
+                    }
+
+                    if (!lines.TryGetValue(line, out var sources))
+                    {
+                        lines[line] = sources = [];
+                    }
+
+                    if (!sources.Contains(contribution.Option.Name, StringComparer.CurrentCulture))
+                    {
+                        sources.Add(contribution.Option.Name);
+                    }
+                }
+            }
+
+            return [.. lines.Select(p => (p.Key, (IReadOnlyList<string>)p.Value))];
+        }
+    }
+
+    private static IEnumerable<string> Wording(EffectSet effects) =>
+        new[] { effects.DescriptionKey, effects.TooltipKey, effects.PenaltyKey }
+            .OfType<string>()
+            .Concat(effects.TagKeys);
+
+    /// <summary>
+    /// One option by key, whatever kind of option it is.
+    /// </summary>
+    /// <remarks>
+    /// The contributions arrive as keys alone, and the four kinds that carry effects are spread
+    /// across three collections. The lite card asks the same question of EmpireView; this panel is
+    /// also drawn for empires nobody has opened, which have no view.
+    /// </remarks>
+    private EmpireChoice Named(DesignContext context, string key)
+    {
+        var database = context.Database;
+
+        if (database.Ethics.FirstOrDefault(e => e.Key == key) is { } ethic)
+        {
+            return new EmpireChoice(key, Session.Localizer.Text(key), ethic.Icon, ethic.Effects);
+        }
+
+        if (database.Authorities.FirstOrDefault(a => a.Key == key) is { } authority)
+        {
+            return new EmpireChoice(key, Session.Localizer.Text(key), authority.Icon, authority.Effects);
+        }
+
+        if (database.Civics.FirstOrDefault(c => c.Key == key) is { } civic)
+        {
+            return new EmpireChoice(key, Session.Localizer.Text(key), civic.Icon, civic.Effects);
+        }
+
+        var trait = database.Traits.FirstOrDefault(t => t.Key == key);
+
+        return new EmpireChoice(key, Session.Localizer.Text(key), trait?.Icon, trait?.Effects);
+    }
 
     /// <summary>
     /// The totals in the order they will be read in.

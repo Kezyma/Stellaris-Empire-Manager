@@ -49,6 +49,13 @@ public sealed class EmpireRules(GameDatabase database)
         // there is not one yet rather than being asked again for ever.
         context.Government = DeriveGovernment(context)?.Key;
 
+        // The traits it really has, once the ones nothing writes down are added. Forced traits are
+        // worked out against the finished context, so this follows the government rather than
+        // sharing a line with it.
+        context.EffectiveTraits = new HashSet<string>(
+            context.Traits.Concat(GetForcedTraits(context)),
+            StringComparer.Ordinal);
+
         return context;
     }
 

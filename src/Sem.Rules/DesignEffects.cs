@@ -169,7 +169,17 @@ public static class DesignEffects
             yield return (civic.Key, civic.Effects);
         }
 
-        foreach (var trait in database.Traits.Where(t => context.Traits.Contains(t.Key)))
+        // Every trait the species has rather than every trait the file names: a habitability
+        // preference comes from the homeworld and is never written down, and its five habitability
+        // modifiers are as real as any other.
+        foreach (var trait in database.Traits.Where(t => context.EffectiveTraits.Contains(t.Key)))
+        {
+            yield return (trait.Key, trait.Effects);
+        }
+
+        // The ruler's own, which are a different set from the species' and were reaching neither
+        // panel. A second species' are in neither list and stay out: the context is the founder's.
+        foreach (var trait in database.Traits.Where(t => context.RulerTraits.Contains(t.Key)))
         {
             yield return (trait.Key, trait.Effects);
         }
