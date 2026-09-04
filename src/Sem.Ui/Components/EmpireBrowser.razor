@@ -19,9 +19,17 @@
     }
     else
     {
+        @*
+            Dropping is allowed anywhere in the list, and the card the pointer is over decides where
+            the dragged one lands. preventDefault on dragover is what makes a target a target at
+            all - without it the browser refuses every drop and nothing says why.
+        *@
         <div class="sem-empires">
-            @foreach (var design in Session.File.Designs)
+            @for (var position = 0; position < Session.File.Designs.Count; position++)
             {
+                var index = position;
+                var design = Session.File.Designs[index];
+
                 @*
                     One context, used for both questions asked of each empire — what its government
                     turned out to be, and whether the game would accept it. Validating built one of
@@ -29,6 +37,14 @@
                 *@
                 var context = Read(design);
 
+                <div class="sem-empire-drag @(ReferenceEquals(design, _dragging) ? "lifted" : null)"
+                     draggable="true"
+                     @key="design"
+                     @ondragstart="() => _dragging = design"
+                     @ondragend="() => _dragging = null"
+                     @ondragover:preventDefault="true"
+                     @ondragover="() => { }"
+                     @ondrop="() => Drop(index)">
                 <EmpireCard Flag="@design.Flag"
                             Portrait="@Thumbnail(design)"
                             Name="@Session.Localizer.Name(design.Name, design.Key)"
@@ -38,7 +54,11 @@
                             Broken="@(!Session.Rules.Validate(context, design).IsValid)"
                             OnCopyLink="@(OnCopyLink.HasDelegate ? EventCallback.Factory.Create(this, () => OnCopyLink.InvokeAsync(design)) : default)"
                             CopyTitle="@(CopyTitle?.Invoke(design) ?? "Copy a link to this empire")"
+                            IsFirst="@(index == 0)"
+                            IsLast="@(index == Session.File.Designs.Count - 1)"
+                            OnMove="@(by => Move(design, index + by))"
                             OnClick="() => Choose(design)" />
+                </div>
             }
         </div>
     }
@@ -101,6 +121,26 @@
     }
 
     private readonly Dictionary<EmpireDesign, DesignContext> _read = [];
+
+    /// <summary>The empire a drag is carrying, or nothing while none is in the air.</summary>
+    private EmpireDesign? _dragging;
+
+    /// <summary>Puts the dragged empire where the card it was dropped on sits.</summary>
+    private void Drop(int index)
+    {
+        if (_dragging is { } design)
+        {
+            Move(design, index);
+            _dragging = null;
+        }
+    }
+
+    /// <summary>Moves an empire, and tells whoever is showing the list to draw it again.</summary>
+    private void Move(EmpireDesign design, int toIndex)
+    {
+        Session.MoveEmpire(design, toIndex);
+        StateHasChanged();
+    }
 
     private async Task Choose(EmpireDesign design)
     {

@@ -187,6 +187,79 @@ public sealed class EmpireDesignsFile
     }
 
     /// <summary>
+    /// Moves an empire to another position in the file.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The list and the document are moved in together, as they are removed from together. The
+    /// document is what gets written, so a move that only reordered the list would show in the app
+    /// and in nothing else.
+    /// </para>
+    /// <para>
+    /// Placement is forgotten at both ends of the move, and that is the part worth explaining. A
+    /// token read from a file remembers the whitespace in front of it, which is what lets an
+    /// untouched file be written back byte for byte - and the entry at the top of a file remembers
+    /// having none. Move that entry down and it writes onto the end of the previous line, which is
+    /// the <c>}"Name"=</c> failure <see cref="CwNode.ForgetPlacement"/> exists to describe. So
+    /// whatever is at the top now, and whatever used to be, are both laid out afresh; everything
+    /// else keeps the spacing it arrived with.
+    /// </para>
+    /// </remarks>
+    public bool Move(EmpireDesign design, int toIndex)
+    {
+        ArgumentNullException.ThrowIfNull(design);
+
+        var from = _designs.IndexOf(design);
+
+        if (from < 0)
+        {
+            return false;
+        }
+
+        toIndex = Math.Clamp(toIndex, 0, _designs.Count - 1);
+
+        if (toIndex == from)
+        {
+            return false;
+        }
+
+        var wasFirst = Document.Nodes.Count > 0 ? Document.Nodes[0] : null;
+
+        if (!Document.Remove(design.Node))
+        {
+            return false;
+        }
+
+        _designs.RemoveAt(from);
+        _designs.Insert(toIndex, design);
+
+        // Ahead of whichever empire follows it now, or at the end when none does. Found by the
+        // following design rather than by counting, because the document may hold entries this
+        // model does not read and their positions are not ours to shuffle.
+        var follower = toIndex + 1 < _designs.Count ? _designs[toIndex + 1].Node : null;
+
+        Document.Insert(follower is null ? Document.Nodes.Count : PositionOf(follower), design.Node);
+
+        Document.Nodes[0].ForgetPlacement();
+        wasFirst?.ForgetPlacement();
+
+        return true;
+    }
+
+    private int PositionOf(CwNode node)
+    {
+        for (var i = 0; i < Document.Nodes.Count; i++)
+        {
+            if (ReferenceEquals(Document.Nodes[i], node))
+            {
+                return i;
+            }
+        }
+
+        return Document.Nodes.Count;
+    }
+
+    /// <summary>
     /// Removes an empire from the file.
     /// </summary>
     /// <remarks>

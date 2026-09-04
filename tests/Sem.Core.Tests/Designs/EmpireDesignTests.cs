@@ -887,4 +887,59 @@ public sealed class EmpireDesignTests
             "\"" + e.Key + "\"=\r\n{\r\n\tkey=\"" + e.Key + "\"\r\n"
             + (e.Authority is null ? string.Empty : "\tauthority=\"" + e.Authority + "\"\r\n")
             + "}\r\n"));
+
+    [Theory]
+    [InlineData(0, 2, new[] { "Beta", "Gamma", "Alpha" })]
+    [InlineData(2, 0, new[] { "Gamma", "Alpha", "Beta" })]
+    [InlineData(1, 2, new[] { "Alpha", "Gamma", "Beta" })]
+    [InlineData(2, 1, new[] { "Alpha", "Gamma", "Beta" })]
+    public void MovingAnEmpirePutsItWhereItWasAsked(int from, int to, string[] expected)
+    {
+        var file = EmpireDesignsFile.LoadText(FileOf(("Alpha", null), ("Beta", null), ("Gamma", null)));
+
+        Assert.True(file.Move(file.Designs[from], to));
+
+        Assert.Equal(expected, file.Designs.Select(d => d.Key));
+    }
+
+    [Fact]
+    public void AMovedFileIsWhatGetsWritten()
+    {
+        // The document is what Save serialises, so a move that reordered only the list would show
+        // in the app and nowhere else. Read back through the parser, which is what the game does.
+        var file = EmpireDesignsFile.LoadText(FileOf(("Alpha", null), ("Beta", null), ("Gamma", null)));
+
+        file.Move(file.Designs[0], 2);
+
+        Assert.Equal(
+            ["Beta", "Gamma", "Alpha"],
+            EmpireDesignsFile.LoadText(file.Document.ToText()).Designs.Select(d => d.Key));
+    }
+
+    [Fact]
+    public void AnEmpireMovedOffTheTopStillStartsOnItsOwnLine()
+    {
+        // The entry at the top of a file remembers having no whitespace in front of it. Move it
+        // down without saying so and it writes onto the end of the previous line - }"Alpha"= - and
+        // the file the game reads has one empire fewer than the one that was written.
+        var file = EmpireDesignsFile.LoadText(FileOf(("Alpha", null), ("Beta", null), ("Gamma", null)));
+
+        file.Move(file.Designs[0], 2);
+
+        var text = file.Document.ToText();
+
+        Assert.DoesNotContain(text.Split('\n'), line => line.StartsWith("}\"", StringComparison.Ordinal));
+        Assert.StartsWith("\"Beta\"", text, StringComparison.Ordinal);
+        Assert.Equal(3, EmpireDesignsFile.LoadText(text).Designs.Count);
+    }
+
+    [Fact]
+    public void MovingAnEmpireNowhereChangesNothing()
+    {
+        var file = EmpireDesignsFile.LoadText(FileOf(("Alpha", null), ("Beta", null)));
+        var before = file.Document.ToText();
+
+        Assert.False(file.Move(file.Designs[0], 0));
+        Assert.Equal(before, file.Document.ToText());
+    }
 }

@@ -1295,16 +1295,68 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 }
 
 /*
-   A finger has no hover, so on a touch screen the button would never appear at all. Shown there,
-   at the cost of the tidiness the rule above buys on a pointer — and the card gives up the width
-   for it, since nothing is going to move it out of the way again. On a pointer the button is
-   absent at rest and the card keeps the whole line for the empire's name.
+   Up and down, under the share button and hidden by the same rule.
+
+   Dragging is the quick way to reorder and it is only a way for some - a finger cannot drag a card
+   and neither can a keyboard - so these are the way that always works.
+
+   Side by side at the bottom, with the share button alone at the top. Stacked into a column they
+   ran into it: a card is 71 pixels tall and three controls of 28 do not fit one above another, so
+   the up arrow sat underneath the share and could be neither seen nor pressed. Measured, not
+   guessed at.
+
+   Disabled rather than removed at the ends of the list, so the pair does not change size under the
+   pointer as a card moves.
+*/
+.sem-empire-order {
+    position: absolute;
+    right: var(--space-xs);
+    bottom: var(--space-xs);
+    display: flex;
+    gap: 1px;
+    opacity: 0;
+}
+
+.sem-empire-order button {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    line-height: 1;
+    padding: 1px var(--space-xs);
+}
+
+.sem-empire-order button:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.sem-empire-slot:hover .sem-empire-order,
+.sem-empire-slot:focus-within .sem-empire-order {
+    opacity: 1;
+}
+
+/*
+   The card while it is being carried. Enough to say which one is in the air without moving anything
+   else, since the list re-lays itself out the moment it lands.
+*/
+.sem-empire-drag.lifted .sem-empire {
+    opacity: 0.4;
+    border-color: var(--accent);
+}
+
+/*
+   A finger has no hover, so on a touch screen neither control would ever appear. Shown there, at
+   the cost of the tidiness the rules above buy on a pointer — and the card gives up the width for
+   them, since nothing is going to move them out of the way again. On a pointer they are absent at
+   rest and the card keeps the whole line for the empire's name.
 */
 @media (hover: none) {
-    .sem-empire-share { opacity: 1; }
+    .sem-empire-share,
+    .sem-empire-order { opacity: 1; }
 
+    /* Two of them side by side now, so the card gives up twice the width. */
     .sem-empire-slot .sem-empire {
-        padding-right: calc(var(--icon-btn) + var(--space-lg));
+        padding-right: calc((var(--icon-btn) * 2) + var(--space-lg));
     }
 }
 

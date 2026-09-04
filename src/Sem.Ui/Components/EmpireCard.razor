@@ -53,11 +53,45 @@
             <ActionIcon Name="share" />
         </button>
     }
+
+    @*
+        Dragging is the quick way and it is only a way for some: a finger cannot do it, and neither
+        can a keyboard. These two can do both, and being ordinary buttons they are in the tab order
+        already - so the list can be reordered without a pointer at all.
+    *@
+    @if (OnMove.HasDelegate)
+    {
+        <div class="sem-empire-order">
+            <button type="button" class="icon" disabled="@IsFirst"
+                    title="@($"Move {Name} up")" aria-label="@($"Move {Name} up")"
+                    @onclick="() => OnMove.InvokeAsync(-1)">▴</button>
+
+            <button type="button" class="icon" disabled="@IsLast"
+                    title="@($"Move {Name} down")" aria-label="@($"Move {Name} down")"
+                    @onclick="() => OnMove.InvokeAsync(1)">▾</button>
+        </div>
+    }
 </div>
 
 @code {
     [CascadingParameter]
     public required DesignSession Session { get; set; }
+
+    /// <summary>Called with -1 or 1 to move this empire one place that way.</summary>
+    /// <remarks>
+    /// A direction rather than a position, because the card does not know where it sits and the
+    /// list it belongs to does.
+    /// </remarks>
+    [Parameter]
+    public EventCallback<int> OnMove { get; set; }
+
+    /// <summary>Whether there is nowhere above to go, which greys the control rather than hiding it.</summary>
+    [Parameter]
+    public bool IsFirst { get; set; }
+
+    /// <summary>Whether there is nowhere below to go.</summary>
+    [Parameter]
+    public bool IsLast { get; set; }
 
     /// <summary>The empire's flag, drawn as the game draws one.</summary>
     [Parameter]

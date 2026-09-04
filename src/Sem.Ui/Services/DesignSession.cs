@@ -230,6 +230,24 @@ public sealed class DesignSession
     }
 
     /// <summary>
+    /// Moves an empire to another place in the list.
+    /// </summary>
+    /// <remarks>
+    /// Through EditFile, so it settles the way adding and deleting do: the browser keeps the file
+    /// at once, the desktop says it has something unwritten, and the empire being edited is not
+    /// touched - the order of the list is not one of its fields.
+    /// </remarks>
+    public void MoveEmpire(EmpireDesign design, int toIndex)
+    {
+        ArgumentNullException.ThrowIfNull(design);
+
+        if (File?.Designs.Contains(design) is true)
+        {
+            EditFile(file => file.Move(design, toIndex));
+        }
+    }
+
+    /// <summary>
     /// Chooses which empire to edit, taking the point a revert would come back to.
     /// </summary>
     /// <remarks>
