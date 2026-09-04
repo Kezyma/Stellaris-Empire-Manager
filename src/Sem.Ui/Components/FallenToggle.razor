@@ -1,0 +1,25 @@
+@*
+    Whether the empire arrives already ancient.
+
+    A fallen empire is one the galaxy starts with rather than one that grows: enormously powerful,
+    dormant, and not a thing the player controls. The designs file has carried spawn_as_fallen all
+    along and nothing has ever been able to set it, so an empire written with it kept the setting
+    and an empire made here could never have one.
+
+    Stated as the answer rather than as a checkbox, the way portrait duplication is: a box labelled
+    "spawn as fallen" leaves you working out what a ticked one means.
+*@
+
+<button type="button" class="sem-toggle" aria-pressed="@(Fallen ? "true" : "false")"
+        @onclick="() => Session.Edit(d => d.SpawnAsFallen = d.SpawnAsFallen != true)">
+    @(Fallen
+        ? "Starts as a fallen empire"
+        : "Starts as an ordinary empire")
+</button>
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    private bool Fallen => Session.Current!.SpawnAsFallen == true;
+}

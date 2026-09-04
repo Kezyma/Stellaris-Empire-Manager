@@ -1,9 +1,9 @@
 @*
-    What the empire is called: its name, its adjectival form, and the prefix its ships wear.
+    What the empire is called: its name and its adjectival form.
 
-    The three belong together and are edited together. The ship prefix had sat under the shipset,
-    which is what the fleet looks like rather than what it is called; a design that changes its
-    shipset keeps its prefix, and one that never touches its shipset still has one. It is a name.
+    The ship prefix went back to the fleet. It is a name, which is why it was here, but it is also
+    the only thing about a fleet that is not the shipset - and on the lite card the shipset panel
+    had a spare line while this dialog had three fields for two questions.
 
     A component rather than markup inside the Empire section because both editors name an empire —
     the sections through the section, the lite card by pressing the name on it — and two copies of
@@ -36,11 +36,6 @@
                   OnChange="value => Session.Edit(d => d.Adjective.SetLiteral(value))" />
     </div>
 
-    <div class="sem-field">
-        <label for="ship-prefix">@Session.Localizer.Label("SHIP_PREFIX", "Ship Prefix")</label>
-        <input id="ship-prefix" type="text" value="@Session.Localizer.Name(Design.ShipPrefix)"
-               @onchange="e => Session.Edit(d => d.ShipPrefix.SetLiteral(e.Value?.ToString() ?? string.Empty))" />
-    </div>
 </div>
 
 @if (_clash is { } rejected)

@@ -2,14 +2,19 @@
     The empire's own settings, as distinct from its species'. A human empire is not called "Human",
     and the two are changed independently, so they sit in different places.
 
-    Three things, each its own component: what the empire is called, which scripted country flags it
-    claims, and whether it may turn up in somebody else's game. They are components because the lite
-    card reaches for them one at a time — it names an empire by pressing its name, and cycles the
-    spawn setting on the card itself — and one editor per thing is what keeps the two shells from
-    disagreeing about any of them.
+    Five things, each its own component: what the empire is called, what its ships are called, which
+    scripted country flags it claims, whether it may turn up in somebody else's game, and whether it
+    arrives already ancient. They are components because the lite card reaches for them one at a
+    time — it names an empire by pressing its name, and edits the rest on the card itself — and one
+    editor per thing is what keeps the two shells from disagreeing about any of them.
 *@
 
 <EmpireNaming />
+
+<div class="sem-field">
+    <label for="ship-prefix">@Session.Localizer.Label("SHIP_PREFIX", "Ship Prefix")</label>
+    <ShipPrefixField Id="ship-prefix" />
+</div>
 
 <div class="sem-field">
     <label for="empire-flag-set">Special empire flags</label>
@@ -17,3 +22,18 @@
 </div>
 
 <SpawnToggle />
+
+@*
+    Whether it arrives already ancient. The designs file has carried spawn_as_fallen all along with
+    nothing able to set it, so an empire written with it kept the setting and an empire made here
+    could never have one.
+*@
+<div class="sem-field spaced">
+    <label>Fallen empire</label>
+    <FallenToggle />
+</div>
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+}

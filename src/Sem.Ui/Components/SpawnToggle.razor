@@ -7,39 +7,22 @@
     small enough that a second copy would have been the easier mistake.
 *@
 
-@if (Compact)
-{
-    @* On the lite card's panel head, where the name beside it would be a second heading. *@
-    <button type="button" class="badge" title="@Named" aria-label="@Named" @onclick="Cycle">
+<div class="sem-spawn-row">
+    <button type="button" class="sem-spawn" title="@Description" @onclick="Cycle">
         @if (Icon is { Length: > 0 } icon)
         {
-            <img src="@Session.Data.AssetUrl(icon)" alt="">
+            <img src="@Session.Data.AssetUrl(icon)" alt="@Name">
         }
         else
         {
-            <span>@Name</span>
+            <span class="initials">@Name</span>
         }
     </button>
-}
-else
-{
-    <div class="sem-spawn-row">
-        <button type="button" class="sem-spawn" title="@Description" @onclick="Cycle">
-            @if (Icon is { Length: > 0 } icon)
-            {
-                <img src="@Session.Data.AssetUrl(icon)" alt="@Name">
-            }
-            else
-            {
-                <span class="initials">@Name</span>
-            }
-        </button>
 
-        <div>
-            <div class="name">@Name</div>
-        </div>
+    <div>
+        <div class="name">@Name</div>
     </div>
-}
+</div>
 
 @code {
     /// <summary>
@@ -63,17 +46,6 @@ else
     [CascadingParameter]
     public required DesignSession Session { get; set; }
 
-    /// <summary>
-    /// Whether to draw the button alone rather than with its state written beside it.
-    /// </summary>
-    /// <remarks>
-    /// The section has room to say which of the three states is held; a panel's corner does not,
-    /// and the picture says it anyway once you know the three. The word is still on the button, as
-    /// its title and its label.
-    /// </remarks>
-    [Parameter]
-    public bool Compact { get; set; }
-
     private EmpireDesign Design => Session.Current!;
 
     private (string Value, string NameKey, int Frame) State =>
@@ -94,9 +66,6 @@ else
 
     private string? Icon => Session.Data.Database.Icons
         .GetValueOrDefault($"GFX_button_empire_spawn_setting|{State.Frame}");
-
-    /// <summary>The state and the sentence about it, for a button with no room for either.</summary>
-    private string Named => Description is { Length: > 0 } why ? $"{Name}. {why}" : Name;
 
     private void Cycle()
     {

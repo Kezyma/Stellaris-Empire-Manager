@@ -7,9 +7,13 @@
 
     Every panel is shaped the same way, because they are all the same kind of thing: a picture on
     the left, a name at the top of the rest, the other forms of that name bracketed beside it, small
-    settings as icons in the corner, and labelled rows only for what genuinely needs a label. A
+    settings as icons on the same line, and labelled rows only for what genuinely needs a label. A
     species' plural is not a fact about a species - it is the species' name again, so it reads as
     one rather than taking a line of its own.
+
+    No panel is headed. Each already says what it is on its first line - the empire's name, the
+    government it derives, the species, the ruler, the world - and a heading over that was a line
+    spent repeating it.
 
     Pressing anything opens the editor for that one thing. The exceptions are the two the game
     itself joins: a name comes with its other forms, and a portrait comes with what decides which
@@ -40,14 +44,7 @@
         <div class="sem-lite-panels">
 
             @* ------------------------------------------------------------- the empire *@
-            <section class="sem-panel">
-                <div class="head">
-                    <h3>Empire</h3>
-
-                    @* Whether it may turn up in somebody else's game: one setting, one icon. *@
-                    <SpawnToggle Compact="true" />
-                </div>
-
+            <section class="sem-lite-panel">
                 <div class="body">
                     <button type="button" class="face-button" title="Edit the flag"
                             @onclick="() => Open(LitePart.Flag)">
@@ -55,17 +52,16 @@
                     </button>
 
                     <div class="about">
-                        @Named(Session.Localizer.Name(Design.Name, Design.Key),
-                               [View.Adjective],
-                               Session.Localizer.Name(Design.ShipPrefix, string.Empty) is { Length: > 0 } prefix
-                                   ? $"{prefix} - ship prefix"
-                                   : null,
-                               LitePart.Naming, "Edit the empire's name")
+                        <div class="titles">
+                            @Named(Session.Localizer.Name(Design.Name, Design.Key),
+                                   [View.Adjective], null,
+                                   LitePart.Naming, "Edit the empire's name")
+                        </div>
 
                         <div class="sem-lite-choices">
                             @*
-                                The scripted country flags. Nothing to do with the flag beside them,
-                                which is why they are named in full - see docs/empire-flags.md,
+                                The scripted country flags. Nothing to do with the drawn flag beside
+                                them, which is why they are named in full - see docs/empire-flags.md,
                                 written because the two were confusable enough to need it.
                             *@
                             <div class="sem-lite-chips">
@@ -86,51 +82,61 @@
                                     }
                                 </div>
                             </div>
+
+                            @* Whether it may turn up in somebody else's game, and how it arrives. *@
+                            <div class="sem-lite-chips">
+                                <span class="heading">@Session.Localizer.Heading("EMPIRE_SPAWN", "Spawning")</span>
+                                <div class="chips"><SpawnToggle /></div>
+                            </div>
+
+                            <div class="sem-lite-chips">
+                                <span class="heading">Fallen empire</span>
+                                <div class="chips"><FallenToggle /></div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
             @* ------------------------------------------------------------- how it is governed *@
-            <section class="sem-panel">
-                <div class="head">
-                    <h3>Government</h3>
-                </div>
-
+            <section class="sem-lite-panel">
                 <div class="body">
                     <div class="about">
-                        @Named(View.Government, [], null, LitePart.Government,
-                               "Edit ethics, authority and civics together",
-                               warning: View.HasGovernment ? null : "no government matches these")
+                        <div class="titles">
+                            @Named(View.Government, [], null, LitePart.Government,
+                                   "Edit ethics, authority and civics together",
+                                   warning: View.HasGovernment ? null : "no government matches these")
+                        </div>
 
                         <div class="sem-lite-choices">
                             @Chips(Session.Localizer.Heading("ETHICS", "Ethics"), View.Ethics, LitePart.Ethics)
                             @Chips(Session.Localizer.Heading("GOVERNMENT_AUTHORITY_AND_TYPE", "Authority"),
                                    View.AuthorityChoice, LitePart.Authority)
                             @Chips(Session.Localizer.Heading("CIVICS_LABEL", "Civics"), View.Civics, LitePart.Civics)
+
+                            @*
+                                Not an authority, but the game keeps it beside them and it rules out
+                                a good many civics. Its only sign on the card was the arkship row
+                                appearing in another panel.
+                            *@
+                            @Row(Session.Localizer.Heading("IS_NOMADIC", "Nomadic"),
+                                 Design.IsNomadic == true ? "Yes" : "No", LitePart.Authority)
                         </div>
                     </div>
                 </div>
             </section>
 
             @* ------------------------------------------------------------- who lives in it *@
-            @Species(Design.Species, "Species", LitePart.Species, LitePart.Portrait, LitePart.Traits)
+            @Species(Design.Species, true, LitePart.Species, LitePart.Portrait, LitePart.Traits)
 
             @if (Design.SecondarySpecies is { } second)
             {
-                @Species(second, "Second species", LitePart.SecondSpecies, LitePart.SecondPortrait,
+                @Species(second, false, LitePart.SecondSpecies, LitePart.SecondPortrait,
                          LitePart.SecondTraits)
             }
 
             @* ------------------------------------------------------------- who rules it *@
-            <section class="sem-panel">
-                <div class="head">
-                    <h3>Ruler</h3>
-
-                    @Icon(GenderPicker.Held(Design.Ruler.Gender), LitePart.Ruler)
-                    @Icon((RulerClassName, RulerClass?.Icon), LitePart.Ruler, sprite: false)
-                </div>
-
+            <section class="sem-lite-panel">
                 <div class="body">
                     @*
                         The ruler as they actually look, not the species' stock face: the design's
@@ -142,28 +148,34 @@
                     </button>
 
                     <div class="about">
-                        @Named(View.RulerName is { Length: > 0 } named ? named : "No ruler named",
-                               [], View.RulerTitle, LitePart.Ruler, "Edit the ruler's name and titles")
+                        <div class="titles">
+                            @Named(View.RulerName is { Length: > 0 } named ? named : "No ruler named",
+                                   [Read(Design.Ruler.TitleFemale)], View.RulerTitle,
+                                   LitePart.Ruler, "Edit the ruler's name and titles")
+
+                            @Icon(GenderPicker.Held(Design.Ruler.Gender), LitePart.Ruler)
+                            @Icon((RulerClassName, RulerClass?.Icon), LitePart.Ruler, sprite: false)
+                        </div>
 
                         <div class="sem-lite-choices">
                             @Chips(Session.Localizer.Heading("TRAITS", "Traits"), View.RulerTraits,
                                    LitePart.RulerTraits)
-                        </div>
 
-                        <BiographyField Value="@RulerBiography"
-                                        For="@Session.Localizer.Heading("RULER_TITLE", "Ruler")"
-                                        Placeholder="Who this ruler is, and how they came to rule."
-                                        OnChange="SetRulerBiography" />
+                            @* Only where the design holds one: most governments elect their rulers. *@
+                            @if (HeirTitles is { Length: > 0 } heirs)
+                            {
+                                @Row(Session.Localizer.Heading("HEIR_TITLE", "Heir Titles"), heirs, LitePart.Ruler)
+                            }
+
+                            @Row(Session.Localizer.Label("BIOGRAPHY", "Biography"),
+                                 OneLine(RulerBiography), LitePart.Ruler)
+                        </div>
                     </div>
                 </div>
             </section>
 
             @* ------------------------------------------------------------- where it starts *@
-            <section class="sem-panel">
-                <div class="head">
-                    <h3>Origin</h3>
-                </div>
-
+            <section class="sem-lite-panel">
                 <div class="body">
                     @*
                         The world itself, as a picture, the way a species has one. It was a tile
@@ -183,10 +195,12 @@
                     </button>
 
                     <div class="about">
-                        @Named(Session.Localizer.Name(Design.PlanetName, "Unnamed world"),
-                               [Session.Localizer.Name(Design.SystemName, string.Empty)],
-                               Session.Localizer.Text(View.Context.EffectivePlanetClass),
-                               LitePart.Homeworld, "Edit the homeworld and its system")
+                        <div class="titles">
+                            @Named(Session.Localizer.Name(Design.PlanetName, "Unnamed world"),
+                                   [Session.Localizer.Name(Design.SystemName, string.Empty)],
+                                   Session.Localizer.Text(View.Context.EffectivePlanetClass),
+                                   LitePart.Homeworld, "Edit the homeworld and its system")
+                        </div>
 
                         <div class="sem-lite-choices">
                             @Chips(Session.Localizer.Heading("ORIGIN", "Origin"), View.OriginChoice, LitePart.Origin)
@@ -206,12 +220,16 @@
                 </div>
             </section>
 
-            @* ------------------------------------------------------------- what it flies *@
-            <section class="sem-panel">
-                <div class="head">
-                    <h3>@Session.Localizer.Heading("SHIPSETS_LABEL", "Shipset")</h3>
-                </div>
+            @*
+                ------------------------------------------------------------- what it flies, and
+                the two small things that belong to nothing else.
 
+                The advisor voice is not what the empire looks like, nor how it is run, nor where it
+                starts, and it changes nothing about the empire - which is why its chip has no
+                effects to show. The ship prefix is the one thing about a fleet that is not the
+                shipset. Three near-empty panels, or one.
+            *@
+            <section class="sem-lite-panel">
                 <div class="body">
                     <button type="button" class="face-button" title="Edit the shipset"
                             @onclick="() => Open(LitePart.Shipset)">
@@ -226,27 +244,36 @@
                     </button>
 
                     <div class="about">
-                        @Named(View.CultureName(Design.GraphicalCulture) ?? "not set", [], null,
-                               LitePart.Shipset, "Edit the shipset")
-                    </div>
-                </div>
-            </section>
+                        <div class="titles">
+                            @Named(View.CultureName(Design.GraphicalCulture) ?? "not set", [], null,
+                                   LitePart.Shipset, "Edit the shipset")
+                        </div>
 
-            @*
-                ------------------------------------------------------------- the voice
+                        <div class="sem-lite-choices">
+                            @Chips(Session.Localizer.Heading("EMPIRE_ADVISOR", "Advisor Voice"),
+                                   View.AdvisorChoice, LitePart.Advisor, empty: "Automatic")
 
-                Its own panel because it belongs to none of the others: it is not what the empire
-                looks like, nor how it is run, nor where it starts. It changes nothing about the
-                empire either, which is why its chip has no effects to show.
-            *@
-            <section class="sem-panel">
-                <div class="head">
-                    <h3>@Session.Localizer.Heading("EMPIRE_ADVISOR", "Advisor Voice")</h3>
-                </div>
+                            @* Edited where it is read, as the flag sets are. *@
+                            <div class="sem-lite-chips">
+                                <span class="heading">@Session.Localizer.Heading("SHIP_PREFIX", "Ship Prefix")</span>
 
-                <div class="body">
-                    <div class="about">
-                        @Chips(null, View.AdvisorChoice, LitePart.Advisor, empty: "Automatic")
+                                <div class="chips">
+                                    @if (_prefixing)
+                                    {
+                                        <ShipPrefixField OnDone="() => _prefixing = false" />
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="value" title="Edit the ship prefix"
+                                                @onclick="() => _prefixing = true">
+                                            @(Session.Localizer.Name(Design.ShipPrefix, string.Empty) is { Length: > 0 } worn
+                                                ? worn
+                                                : "not set")
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -259,8 +286,11 @@
         every header and the showcase beside them carried the messages, and a lite user got neither.
     *@
     <div class="sem-lite-totals">
-        <ProblemsPanel Report="@View.Report" />
-        <CombinedEffects Context="@View.Context" Baseline="@Baseline" />
+        <div class="inner">
+            <ProblemsPanel Report="@View.Report" />
+            <CombinedEffects Context="@View.Context" Baseline="@Baseline" />
+            <OptionModifiers Contributions="@View.Contributions" />
+        </div>
     </div>
 </div>
 
@@ -290,6 +320,31 @@
     protected override void OnParametersSet() => _view = null;
 
     private Task Open(LitePart part) => OnEdit.InvokeAsync(part);
+
+    /// <summary>Whether the prefix box is showing in place of the value it holds.</summary>
+    private bool _prefixing;
+
+    /// <summary>
+    /// A block of text as one line, for a row that shows its beginning.
+    /// </summary>
+    /// <remarks>
+    /// Only the line breaks are taken out; the cut itself is the stylesheet's, so the text runs to
+    /// whatever width the panel has rather than to a number of characters chosen here.
+    /// </remarks>
+    private static string? OneLine(string? text) => text is { Length: > 0 }
+        ? text.ReplaceLineEndings(" ").Trim()
+        : null;
+
+    /// <summary>What a title reads as, or nothing where the design holds none.</summary>
+    private string Read(LocRef? title) =>
+        title is null ? string.Empty : Session.Localizer.Name(title, string.Empty);
+
+    /// <summary>What the ruler's successor is called, in whichever forms the design holds.</summary>
+    private string HeirTitles => string.Join(
+        ", ",
+        new[] { Read(Design.Ruler.HeirTitle), Read(Design.Ruler.HeirTitleFemale) }
+            .Where(t => t.Length > 0)
+            .Distinct(StringComparer.CurrentCulture));
 
     /// <summary>The kind of leader who rules, where the design names one.</summary>
     private LeaderClassDefinition? RulerClass => Session.Data.Database.LeaderClasses
@@ -332,16 +387,9 @@
     /// reason the species editor itself serves both. Only which editors its presses open differ,
     /// and those are handed in.
     /// </remarks>
-    private RenderFragment Species(SpeciesDesign species, string title, LitePart names,
+    private RenderFragment Species(SpeciesDesign species, bool founder, LitePart names,
                                    LitePart portrait, LitePart traits) =>
-        @<section class="sem-panel">
-            <div class="head">
-                <h3>@title</h3>
-
-                @* The gender decides which face of the group is worn, so it opens the portrait. *@
-                @Icon(GenderPicker.Held(species.Gender), portrait)
-            </div>
-
+        @<section class="sem-lite-panel">
             <div class="body">
                 <button type="button" class="face-button" title="Edit the portrait, class and gender"
                         @onclick="() => Open(portrait)">
@@ -356,22 +404,37 @@
                 </button>
 
                 <div class="about">
-                    @Named(Session.Localizer.Name(species.Name, species.Class),
-                           [Session.Localizer.Name(species.Plural, string.Empty),
-                            Session.Localizer.Name(species.Adjective, string.Empty)],
-                           Session.Localizer.Text(species.Class),
-                           names, "Edit the species' names")
+                    <div class="titles">
+                        @Named(Session.Localizer.Name(species.Name, species.Class),
+                               [Session.Localizer.Name(species.Plural, string.Empty),
+                                Session.Localizer.Name(species.Adjective, string.Empty)],
+                               Session.Localizer.Text(species.Class),
+                               names, "Edit the species' names")
+
+                        @* The gender decides which face of the group is worn, so it opens the portrait. *@
+                        @Icon(GenderPicker.Held(species.Gender), portrait)
+                    </div>
 
                     <div class="sem-lite-choices">
                         @Row(Session.Localizer.Heading("NAME_LIST", "Name List"),
                              Session.Localizer.Text(species.NameList), names)
                         @Chips(Session.Localizer.Heading("TRAITS", "Traits"), View.TraitsOf(species), traits)
-                    </div>
 
-                    <BiographyField Value="@species.Biography"
-                                    For="@Session.Localizer.Name(species.Name, "this species")"
-                                    Placeholder="What this species is, and where it came from."
-                                    OnChange="value => Session.Edit(_ => species.Biography = value)" />
+                        @*
+                            Whether the galaxy may hand this face to somebody else. An empire-level
+                            rule, so it is drawn once - against the founder, whose portrait it is
+                            about - and not again under a second species.
+                        *@
+                        @if (founder)
+                        {
+                            @Row("Portrait duplication",
+                                 Design.IgnorePortraitDuplication == true ? "May be shared" : "Kept to this empire",
+                                 portrait)
+                        }
+
+                        @Row(Session.Localizer.Label("BIOGRAPHY", "Biography"),
+                             OneLine(species.Biography), names)
+                    </div>
                 </div>
             </div>
         </section>;

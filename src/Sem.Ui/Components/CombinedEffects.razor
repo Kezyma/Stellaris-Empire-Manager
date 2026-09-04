@@ -8,9 +8,20 @@
 
 @using Sem.Rules
 
-<div class="sem-combined">
+<div class="sem-combined @(_open ? null : "collapsed")">
     <div class="heading">
-        <h4>@Session.Localizer.Label("SUMMARY_EMPIRE_MODIFIERS", "Empire Modifiers")</h4>
+        @*
+            The heading itself folds the panel. Not a details element wrapping the row: the compare
+            button lives in this row, and a button inside a summary toggles the fold when it is
+            pressed. Component state and aria-expanded, for the same reason the flag and room
+            pickers use them - a details element's open state belongs to the browser and Blazor
+            never re-emits it.
+        *@
+        <button type="button" class="fold" aria-expanded="@(_open ? "true" : "false")"
+                @onclick="() => _open = !_open">
+            <span class="chevron" aria-hidden="true">@(_open ? "▾" : "▸")</span>
+            <h4>@Session.Localizer.Label("SUMMARY_EMPIRE_MODIFIERS", "Empire Modifiers")</h4>
+        </button>
 
         @*
             Only where there is something to compare with: an empire nobody is editing, or one
@@ -26,7 +37,11 @@
         }
     </div>
 
-    @if (_changes && Baseline is not null)
+    @if (!_open)
+    {
+        @* Folded, so the heading is the whole of it. *@
+    }
+    else if (_changes && Baseline is not null)
     {
         @if (Changes.Count == 0)
         {
@@ -117,6 +132,9 @@
 
     /// <summary>Whether the panel is showing what changed rather than what the empire comes to.</summary>
     private bool _changes;
+
+    /// <summary>Whether the list is showing at all.</summary>
+    private bool _open = true;
 
     /// <summary>One modifier that is not what it was.</summary>
     /// <param name="Key">The modifier.</param>

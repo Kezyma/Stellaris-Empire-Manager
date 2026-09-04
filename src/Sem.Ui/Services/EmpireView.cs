@@ -15,6 +15,15 @@ namespace Sem.Ui.Services;
 public sealed record EmpireChoice(string Key, string Name, string? Icon, EffectSet? Effects);
 
 /// <summary>
+/// One option the empire has chosen, and the modifiers it actually contributed.
+/// </summary>
+/// <param name="Option">The option itself, for its name and its icon.</param>
+/// <param name="Modifiers">What it added, already formatted and ordered.</param>
+public sealed record OptionContribution(
+    EmpireChoice Option,
+    IReadOnlyList<FormattedModifier> Modifiers);
+
+/// <summary>
 /// Everything a card needs to know about an empire, worked out once.
 /// </summary>
 /// <remarks>
@@ -260,6 +269,76 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
 
     private EmpireChoice Chip(string key, string? icon, EffectSet? effects) =>
         new(key, _session.Localizer.Text(key), icon, effects);
+
+    /// <summary>
+    /// Each chosen option that changes something, with the numbers it changed.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// From the same sequence the totals are built from - <see cref="DesignEffects.Selected"/> is
+    /// what <see cref="DesignEffects.Combine"/> iterates - so a breakdown of the totals cannot list
+    /// a different set of options from the totals it breaks down.
+    /// </para>
+    /// <para>
+    /// And the numbers that counted rather than the numbers an option prints: Applying settles the
+    /// conditional groups against this empire, so an option whose bonus depends on something this
+    /// empire does not have contributes nothing and is left out rather than listed as zero. Summed
+    /// per key first, because a set may name one modifier in its own list and again under a
+    /// condition that holds.
+    /// </para>
+    /// </remarks>
+    public IReadOnlyList<OptionContribution> Contributions
+    {
+        get
+        {
+            var found = new List<OptionContribution>();
+
+            foreach (var (key, effects) in DesignEffects.Selected(Context))
+            {
+                var applied = DesignEffects.Applying(effects, Context)
+                    .GroupBy(m => m.Key, StringComparer.Ordinal)
+                    .ToDictionary(g => g.Key, g => g.Sum(m => m.Value), StringComparer.Ordinal);
+
+                if (_session.Modifiers.Format(applied) is not { Count: > 0 } modifiers)
+                {
+                    continue;
+                }
+
+                found.Add(new OptionContribution(Named(key), modifiers));
+            }
+
+            return found;
+        }
+    }
+
+    /// <summary>
+    /// One option by key, whatever kind of option it is.
+    /// </summary>
+    /// <remarks>
+    /// The contributions arrive as keys alone, and the four kinds that carry effects are spread
+    /// across three collections. Looked up in the order they are cheapest to rule out.
+    /// </remarks>
+    private EmpireChoice Named(string key)
+    {
+        if (Database.Ethics.FirstOrDefault(e => e.Key == key) is { } ethic)
+        {
+            return Chip(key, ethic.Icon, ethic.Effects);
+        }
+
+        if (Database.Authorities.FirstOrDefault(a => a.Key == key) is { } authority)
+        {
+            return Chip(key, authority.Icon, authority.Effects);
+        }
+
+        if (Database.Civics.FirstOrDefault(c => c.Key == key) is { } civic)
+        {
+            return Chip(key, civic.Icon, civic.Effects);
+        }
+
+        var trait = Database.Traits.FirstOrDefault(t => t.Key == key);
+
+        return Chip(key, trait?.Icon, trait?.Effects);
+    }
 
     /// <summary>The empire's adjectival name, or nothing where it has none.</summary>
     public string Adjective => _session.Localizer.Name(_design.Adjective, string.Empty);

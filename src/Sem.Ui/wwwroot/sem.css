@@ -3346,7 +3346,7 @@ button.icon .sem-action-icon { display: block; }
     The minimum is what a portrait needs to be recognised at all, for the case where the text is
     shorter than the picture rather than longer.
 */
-.sem-panel .face-button > .face,
+.sem-lite-panel .face-button > .face,
 .sem-showcase .species .face {
     align-self: stretch;
     width: var(--face-lg-w);
@@ -3360,7 +3360,7 @@ button.icon .sem-action-icon { display: block; }
     background: var(--bg-void);
 }
 
-.sem-panel > .body > .about,
+.sem-lite-panel > .body > .about,
 .sem-showcase .species .about {
     display: flex;
     flex-direction: column;
@@ -3368,11 +3368,11 @@ button.icon .sem-action-icon { display: block; }
     min-width: 0;
 }
 
-.sem-panel .name { font-weight: 600; }
+.sem-lite-panel .name { font-weight: 600; }
 
 .sem-showcase .species .name { font-weight: 600; }
 
-.sem-panel .kind,
+.sem-lite-panel .kind,
 .sem-showcase .species .kind {
     color: var(--text-dim);
     font-size: var(--text-sm);
@@ -3844,8 +3844,11 @@ button.icon .sem-action-icon { display: block; }
     grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
     gap: var(--gap);
 
-    /* Load-bearing: without it the totals column stretches to the row and sticky does nothing. */
-    align-items: start;
+    /*
+       Stretched on purpose: it is what makes the totals column exactly as tall as the panels beside
+       it, which is the whole of "never taller than the preview". The sticking moved inside it.
+    */
+    align-items: stretch;
 
     background: var(--bg-panel);
     border: 1px solid var(--border);
@@ -3864,30 +3867,59 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
-   The right column. No overflow, no position beyond the sticking, and no z-index: each of those
-   makes a box that traps a popover, and every chip in the left column hangs one. The scroll goes on
-   the list of modifiers inside instead - see the note on the sections' own summary pane.
+   The right column, which never grows taller than the panels beside it.
+
+   That is what the stretched grid cell is for: the row's height is the panels' height, so this cell
+   is too, and the inner panel is capped at whichever is smaller - the column, or what is left of
+   the window under the header. The sections inside shrink and scroll rather than push the column
+   past either.
+
+   The sticking is on the inner wrapper rather than the cell, because a stretched cell cannot stick
+   to anything. Nothing here takes an overflow, a position or a z-index that would trap a popover;
+   the sections below take the overflow instead, and hold no chips.
 */
 .sem-lite-totals {
+    min-width: 0;
+    min-height: 0;
+}
+
+.sem-lite-totals > .inner {
     position: sticky;
     top: var(--sticky-top);
     display: flex;
     flex-direction: column;
     gap: var(--gap);
-    min-width: 0;
+    min-height: 0;
+    max-height: min(100%, calc(100vh - var(--sticky-top) - var(--gap)));
 }
 
-.sem-lite .sem-modifiers {
-    max-height: calc(100vh - var(--sticky-top) - 8rem);
+/* Each section shrinks only as far as it must, and scrolls the rest. */
+.sem-lite-totals > .inner > * {
+    min-height: 0;
+    flex-shrink: 1;
+}
+
+.sem-lite .sem-combined,
+.sem-lite .sem-contributions {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.sem-lite .sem-combined > .sem-modifiers,
+.sem-lite .sem-combined > .sem-hint,
+.sem-lite .sem-contributions > .body {
+    min-height: 0;
     overflow-y: auto;
 }
 
 @media (max-width: 1100px) {
     .sem-lite { grid-template-columns: minmax(0, 1fr); }
 
-    .sem-lite-totals { position: static; }
-
-    .sem-lite .sem-modifiers { max-height: 420px; }
+    .sem-lite-totals > .inner {
+        position: static;
+        max-height: none;
+    }
 }
 
 .sem-lite-shell {
@@ -3903,25 +3935,34 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
-   The panels, two at most.
+   The panels, two columns at most, packed rather than ruled into rows.
 
-   Three fitted at 1440 and read as a wall: the rows inside are short and the eye has to cross two
-   of them to get from a panel's name to its contents. Two columns keep a panel wide enough that a
-   row is one line, and one column below the width where two would each be too narrow for that.
+   Columns rather than a grid: a grid puts every panel in a row with its neighbour, so a short panel
+   beside a tall one leaves a hole the height of the difference and the next row starts below both.
+   Columns flow and balance, which is what packing upward means. Nothing inside a panel is sticky,
+   which is multicol's one real limitation, and the chip popovers are in the top layer regardless.
+
+   There is no row gap in multicol, so the panels space themselves - see the margin below.
 */
 .sem-lite-panels {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--gap);
-    align-items: start;
+    columns: 1;
+    column-gap: var(--gap);
 }
 
 @media (min-width: 1100px) {
-    .sem-lite-panels { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .sem-lite-panels { columns: 2; }
 }
 
-/* One box, not a box inside a box: the panel is the frame and its body only arranges. */
-.sem-panel {
+/*
+   One box, not a box inside a box: the panel is the frame and its body only arranges.
+
+   Named for the card rather than sharing the sheet's generic .sem-panel, which sets a padding and a
+   margin of its own. This used to carry that class, overrode its background and padding, and left
+   its margin-bottom - so every panel had a bottom margin on top of the grid's own gap.
+*/
+.sem-lite-panel {
+    break-inside: avoid;
+    margin-bottom: var(--gap);
     display: flex;
     flex-direction: column;
     gap: var(--space-sm);
@@ -3933,28 +3974,24 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
-   The panel's name, and in the space beside it the settings that are one glyph each - a gender, a
-   leader class, whether the empire spawns. They were labelled rows, which spent two lines of panel
-   apiece saying what the picture says, and left this line empty.
+   The name, and on the same line the settings that are one glyph each - a gender, a leader class.
+   They were labelled rows, which spent two lines of panel apiece saying what the picture says.
+
+   This was a heading row until the heading came out: a panel's first line already names it, and a
+   heading over that repeated it.
 */
-.sem-panel > .head {
+.sem-lite-panel > .body > .about > .titles {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: var(--space-sm);
-    min-height: var(--icon-btn);
 }
 
-.sem-panel > .head > h3 {
-    margin: 0;
+.sem-lite-panel > .body > .about > .titles > .name-button {
     flex: 1;
     min-width: 0;
-    font-size: var(--text-xs);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--text-faint);
 }
 
-.sem-panel .badge {
+.sem-lite-panel .badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -3971,25 +4008,25 @@ button.icon .sem-action-icon { display: block; }
     cursor: pointer;
 }
 
-.sem-panel .badge:hover {
+.sem-lite-panel .badge:hover {
     background: var(--bg-hover);
     border-color: var(--accent-dim);
 }
 
-.sem-panel .badge img {
+.sem-lite-panel .badge img {
     width: var(--icon);
     height: var(--icon);
     object-fit: contain;
 }
 
-.sem-panel > .body {
+.sem-lite-panel > .body {
     display: flex;
     gap: var(--space-lg);
     align-items: flex-start;
     flex: 1;
 }
 
-.sem-panel > .body > .about {
+.sem-lite-panel > .body > .about {
     display: flex;
     flex-direction: column;
     gap: var(--space-sm);
@@ -3997,11 +4034,16 @@ button.icon .sem-action-icon { display: block; }
     min-width: 0;
 }
 
-/* Top, not stretched: a portrait shorter than the words beside it should not be pulled out to
-   meet them. */
-.sem-panel .face-button > .face {
-    align-self: flex-start;
-    height: auto;
+/*
+   The fixed box the portraits have always had, and the crop that goes with it.
+
+   height:auto together with min-height:0 left nothing constraining the box, so an image rendered at
+   its own ratio inside the 80px width and the object-fit:cover / object-position:top center above
+   became no-ops - the box already matched the picture, so there was nothing to crop. The species
+   faces went one way and the ruler figure, which states its height, stayed the other.
+*/
+.sem-lite-panel .face-button > .face {
+    height: var(--face-lg-h);
     min-height: 0;
 }
 
@@ -4015,7 +4057,7 @@ button.icon .sem-action-icon { display: block; }
    width left a thumbnail of a ruler adrift in a tall box. Centred by origin rather than by an
    offset, because the canvas is a different width for every portrait.
 */
-.sem-panel .face-button.figure {
+.sem-lite-panel .face-button.figure {
     position: relative;
     width: var(--face-lg-w);
     height: var(--face-lg-h);
@@ -4026,7 +4068,7 @@ button.icon .sem-action-icon { display: block; }
     border-radius: var(--radius);
 }
 
-.sem-panel .face-button.figure .sem-figure {
+.sem-lite-panel .face-button.figure .sem-figure {
     position: absolute;
     top: 0;
     left: 50%;
@@ -4034,7 +4076,7 @@ button.icon .sem-action-icon { display: block; }
     transform-origin: top center;
 }
 
-.sem-panel .face-button.figure .sem-thumb {
+.sem-lite-panel .face-button.figure .sem-thumb {
     width: 100%;
     height: auto;
 }
@@ -4136,7 +4178,7 @@ button.icon .sem-action-icon { display: block; }
 .sem-lite .name-button > .kind { display: block; }
 
 /* A planet or a ship render is not a face: shown whole rather than cropped to fill. */
-.sem-panel .face-button > .face.contain {
+.sem-lite-panel .face-button > .face.contain {
     object-fit: contain;
     background: var(--bg-void);
 }
@@ -4225,9 +4267,37 @@ button.icon .sem-action-icon { display: block; }
     font-size: var(--text-sm);
 }
 
+/*
+   One line, cut where the panel ends. A biography is the case this is for: it runs to a thousand
+   characters and the row shows its opening.
+*/
 .sem-lite-chips .value {
     color: var(--text-dim);
     font-size: var(--text-sm);
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/*
+   The spawn button in a row rather than in a section. Its own 38x34 is what the section's column
+   wants; here it has to be a row's height like everything beside it, or one line of the panel sits
+   five pixels lower than the rest.
+*/
+.sem-lite-chips .sem-spawn {
+    width: var(--icon-btn);
+    height: var(--icon-btn);
+}
+
+.sem-lite-chips .sem-spawn-row {
+    gap: var(--space-sm);
+    font-size: var(--text-sm);
+}
+
+.sem-lite-chips .sem-spawn-row .name {
+    color: var(--text-dim);
+    font-weight: 400;
 }
 
 /* A value that is a picture: sized to the row rather than to the sprite, which is 24 or 28. */
@@ -4240,6 +4310,35 @@ button.icon .sem-action-icon { display: block; }
 .sem-lite-chips .value.icon img {
     width: var(--icon);
     height: var(--icon);
+}
+
+/*
+   The totals taken apart again, one option at a time. Wears the picker's fold so it reads as the
+   same kind of thing as the panels it sits under.
+*/
+.sem-contributions > .body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding: var(--space-sm) 0 0;
+}
+
+.sem-contributions .option > .name {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-2xs);
+    font-size: var(--text-sm);
+}
+
+.sem-contributions .option > .name img {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+}
+
+/* Indented under the option that caused them, so the two levels are told apart at a glance. */
+.sem-contributions .option > .sem-modifiers {
+    margin: 0 0 0 calc(var(--icon-sm) + var(--space-sm));
 }
 
 @media (max-width: 900px) {
