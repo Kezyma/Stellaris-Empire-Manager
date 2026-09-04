@@ -544,8 +544,8 @@
         return @<div class="sem-lite-chips @(label is null ? "bare" : null)">
             @if (label is not null)
             {
-                <button type="button" class="heading" title="@($"Edit {label}")"
-                        @onclick="() => Open(part)">@label</button>
+                @* Says what the row is. What the row holds is beside it, and that is what opens. *@
+                <span class="heading">@label</span>
             }
 
             <div class="chips">
@@ -568,8 +568,7 @@
     /// <summary>One fact the game has no picture for, as a labelled line.</summary>
     private RenderFragment Row(string label, string? value, LitePart part) =>
         @<div class="sem-lite-chips">
-            <button type="button" class="heading" title="@($"Edit {label}")"
-                    @onclick="() => Open(part)">@label</button>
+            <span class="heading">@label</span>
 
             <div class="chips">
                 <button type="button" class="value" title="@($"Edit {label}")"

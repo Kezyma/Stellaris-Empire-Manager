@@ -4200,23 +4200,43 @@ button.icon .sem-action-icon { display: block; }
    so it set the row's height and pushed every setting under it down by the difference. Sized to the
    picture rather than to a button, since the sprite carries its own margin.
 */
+/*
+   The spawn setting, in the panel's own corner.
+
+   Its padding was already nothing and it still sat in a ring of space, because the space is inside
+   the picture: the sprite is a 74x58 sheet carrying 50x34 of phoenix with twelve transparent pixels
+   on every side. Drawn at 48 square it lost its shape as well - 74x58 is not square, and the bird
+   was being squashed by a quarter.
+
+   So it is drawn at its own proportions and the window is smaller than the picture, which crops the
+   margin rather than displaying it. At 0.8 the sheet is 59x46 and the phoenix 40x27; a 46x33 window
+   leaves three pixels of clear space around it, which is what the gender buttons have.
+*/
 .sem-lite-panel .badge.large {
     position: absolute;
     top: var(--space-sm);
     right: var(--space-sm);
-    width: auto;
-    height: auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 46px;
+    height: 33px;
     padding: 0;
+    overflow: hidden;
 }
 
 .sem-lite-panel .badge.large img {
-    width: calc(var(--icon) * 2);
-    height: calc(var(--icon) * 2);
+    flex: none;
+    width: 59px;
+    height: 46px;
+    max-width: none;
 }
 
 /* Room for it, so a long name does not run underneath. */
 .sem-lite-panel:has(.badge.large) > .body > .about > .titles {
-    padding-right: calc(var(--icon) * 2 + var(--space-sm));
+    padding-right: calc(46px + var(--space-sm));
 }
 
 .sem-lite-panel > .body {
@@ -4245,6 +4265,14 @@ button.icon .sem-action-icon { display: block; }
 .sem-lite-panel .face-button > .face {
     height: var(--face-lg-h);
     min-height: 0;
+
+    /*
+       Block, or the picture sits on a text baseline and the button keeps five pixels under it for
+       the descenders of letters that are not there. Invisible until the button is hovered, and then
+       a band of highlight along the bottom of every planet, ship and portrait - but not under the
+       ruler, whose figure is a div and never sat on the line in the first place.
+    */
+    display: block;
 }
 
 /*
@@ -4291,8 +4319,7 @@ button.icon .sem-action-icon { display: block; }
 .sem-lite-scene,
 .sem-lite .face-button,
 .sem-lite .name-button,
-.sem-lite-chips > .heading,
-.sem-lite-chips .value,
+.sem-lite-chips button.value,
 .sem-lite-chips .sem-lite-empty {
     font: inherit;
     color: inherit;
@@ -4307,11 +4334,26 @@ button.icon .sem-action-icon { display: block; }
 .sem-lite-scene:hover,
 .sem-lite .face-button:hover,
 .sem-lite .name-button:hover,
-.sem-lite-chips > .heading:hover,
-.sem-lite-chips .value:hover,
+.sem-lite-chips button.value:hover,
 .sem-lite-chips .sem-lite-empty:hover {
     background: var(--bg-hover);
     border-color: var(--accent-dim);
+}
+
+/*
+   button.value rather than .value, because a chip's popover holds its modifiers in spans of the
+   same name - and a descendant selector gave "-5%" a pointer and a hover highlight inside a panel
+   nothing in it can be pressed.
+
+   The label is not one of them. It says what the row is, and the row's value is on screen beside
+   it, so pressing the word "Homeworld" was a second way to reach an editor that the homeworld
+   itself already opens - and it lit up on hover, which is a promise that there is something here a
+   press would tell you. Only the values answer now, and the label is left looking like the label
+   it is.
+*/
+.sem-lite-chips > .heading {
+    padding: var(--space-2xs) var(--space-xs);
+    border: 1px solid transparent;
 }
 
 /*
