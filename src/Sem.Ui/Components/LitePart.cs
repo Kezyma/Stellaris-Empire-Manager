@@ -5,15 +5,19 @@ namespace Sem.Ui.Components;
 /// </summary>
 /// <remarks>
 /// <para>
-/// One member per editor, and an editor covers exactly what you pressed. Pressing the ethics opens
-/// the ethics and not the authority beside them; pressing the species' name opens its names and not
+/// One member per editor, and an editor covers exactly what was pressed. Pressing the ethics opens
+/// the ethics and not the authority beside them; pressing a species' name opens its names and not
 /// its portrait and traits as well.
 /// </para>
 /// <para>
-/// The exceptions are the three places the game itself treats several fields as one decision: the
-/// homeworld's class, its name, its system and a nomad's arkship are all where the empire starts,
-/// and the room and the city are one picture. Splitting those would mean opening three windows to
-/// answer one question.
+/// Two kinds of exception, both because splitting them would mean opening two windows to answer one
+/// question. A name comes with the other forms of itself - an empire's adjective and ship prefix, a
+/// species' plural. And a portrait comes with the things that decide which portrait is worn: the
+/// species class, the gender, and whether the game may reuse the likeness.
+/// </para>
+/// <para>
+/// Where the empire starts is the third: the world's class, its name, its system and a nomad's
+/// arkship are all one question.
 /// </para>
 /// </remarks>
 public enum LitePart
@@ -45,8 +49,14 @@ public enum LitePart
     /// <summary>Its traits.</summary>
     Traits,
 
-    /// <summary>The second species some origins bring, where there is one.</summary>
+    /// <summary>The second species' names, name list and story.</summary>
     SecondSpecies,
+
+    /// <summary>The second species' portrait, class and gender.</summary>
+    SecondPortrait,
+
+    /// <summary>The second species' traits.</summary>
+    SecondTraits,
 
     /// <summary>Who the ruler is: name, titles, gender, class and biography.</summary>
     Ruler,

@@ -3324,11 +3324,10 @@ button.icon .sem-action-icon { display: block; }
    Recessed rather than raised: this is a readout inside the showcase card, and --bg-raised with a
    border is what a tile you can click looks like everywhere else in the sheet.
 
-   .sem-block is the same panel on the lite card, which groups the empire, its government, its
-   species and its ruler into four of them. Sharing the selector rather than copying the rules is
-   what stops the two cards drifting into two looks for one idea.
+   The lite card's panels are boxes of their own, so only the parts inside are shared below - the
+   portrait, the name and the kind under it. Sharing the container as well drew a panel inside a
+   panel.
 */
-.sem-block,
 .sem-showcase .species {
     display: flex;
     gap: var(--space-lg);
@@ -3347,7 +3346,7 @@ button.icon .sem-action-icon { display: block; }
     The minimum is what a portrait needs to be recognised at all, for the case where the text is
     shorter than the picture rather than longer.
 */
-.sem-block > .face-button > .face,
+.sem-panel .face-button > .face,
 .sem-showcase .species .face {
     align-self: stretch;
     width: var(--face-lg-w);
@@ -3361,7 +3360,7 @@ button.icon .sem-action-icon { display: block; }
     background: var(--bg-void);
 }
 
-.sem-block > .about,
+.sem-panel > .body > .about,
 .sem-showcase .species .about {
     display: flex;
     flex-direction: column;
@@ -3369,11 +3368,11 @@ button.icon .sem-action-icon { display: block; }
     min-width: 0;
 }
 
-.sem-block .name { font-weight: 600; }
+.sem-panel .name { font-weight: 600; }
 
 .sem-showcase .species .name { font-weight: 600; }
 
-.sem-block .kind,
+.sem-panel .kind,
 .sem-showcase .species .kind {
     color: var(--text-dim);
     font-size: var(--text-sm);
@@ -3904,6 +3903,101 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
+   The panels, two at most.
+
+   Three fitted at 1440 and read as a wall: the rows inside are short and the eye has to cross two
+   of them to get from a panel's name to its contents. Two columns keep a panel wide enough that a
+   row is one line, and one column below the width where two would each be too narrow for that.
+*/
+.sem-lite-panels {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--gap);
+    align-items: start;
+}
+
+@media (min-width: 1100px) {
+    .sem-lite-panels { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* One box, not a box inside a box: the panel is the frame and its body only arranges. */
+.sem-panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    min-width: 0;
+    padding: var(--space-md);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.sem-panel > h3 {
+    margin: 0;
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-faint);
+}
+
+.sem-panel > .body {
+    display: flex;
+    gap: var(--space-lg);
+    align-items: flex-start;
+    flex: 1;
+}
+
+.sem-panel > .body > .about {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    flex: 1;
+    min-width: 0;
+}
+
+/* Top, not stretched: a portrait shorter than the words beside it should not be pulled out to
+   meet them. */
+.sem-panel .face-button > .face {
+    align-self: flex-start;
+    height: auto;
+    min-height: 0;
+}
+
+/*
+   The ruler is drawn from stacked layers at the artwork's own size, which is several times a
+   panel's width. Scaled as a whole rather than resized, since every layer's position is recorded
+   against that size and the pieces are placed inside it rather than fitted to it.
+
+   Framed to the same box as a species' face beside it, and scaled so the height fills rather than
+   the width: the canvas is landscape and mostly empty either side of the figure, so fitting the
+   width left a thumbnail of a ruler adrift in a tall box. Centred by origin rather than by an
+   offset, because the canvas is a different width for every portrait.
+*/
+.sem-panel .face-button.figure {
+    position: relative;
+    width: var(--face-lg-w);
+    height: var(--face-lg-h);
+    align-self: flex-start;
+    overflow: hidden;
+    background: var(--bg-void);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+}
+
+.sem-panel .face-button.figure .sem-figure {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%) scale(0.44);
+    transform-origin: top center;
+}
+
+.sem-panel .face-button.figure .sem-thumb {
+    width: 100%;
+    height: auto;
+}
+
+/*
    Every pressable thing the card draws itself, named one by one.
 
    Not `.sem-lite button`. The card holds other components' controls - the gender icons, the spawn
@@ -3974,10 +4068,14 @@ button.icon .sem-action-icon { display: block; }
     .sem-lite-hint { opacity: 1; }
 }
 
+/*
+   Top, not stretched. A flag or a face shorter than the rows beside it was pulled down the height
+   of the panel and floated in the middle of it, level with nothing.
+*/
 .sem-lite .face-button {
     padding: 0;
     flex-shrink: 0;
-    align-self: stretch;
+    align-self: flex-start;
 }
 
 .sem-lite .name-button {
@@ -3991,6 +4089,13 @@ button.icon .sem-action-icon { display: block; }
     font-weight: 600;
     line-height: 1.2;
 }
+
+/*
+   The kind under the name rather than after it. In the showcase these are divs and stack on their
+   own; here they are spans inside one button, so "HUM" and "Humanoid" ran together into a phrase
+   that read as neither.
+*/
+.sem-lite .name-button > .kind { display: block; }
 
 .sem-lite .name-button > .aside {
     margin-left: var(--space-xs);
@@ -4033,17 +4138,21 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
-   The rows of choices, sharing one label gutter.
+   The rows of choices, sharing one label gutter and one height.
 
    subgrid rather than a width on each heading: the rows are separate elements, so only a track they
    all inherit can make them agree, and a fixed gutter would either truncate "Authority" or waste
    the difference on "Traits". Without it every row started its chips at a different place, which is
    a ragged edge straight down the middle of the card.
+
+   The height is stated for the same reason. A row holding a chip is taller than one holding a
+   word, so a panel of both climbed and dropped down its own length; at one height they are a
+   table, which is what they are.
 */
 .sem-lite-choices {
     display: grid;
-    grid-template-columns: fit-content(11rem) minmax(0, 1fr);
-    gap: var(--space-sm) var(--space-lg);
+    grid-template-columns: fit-content(9rem) minmax(0, 1fr);
+    gap: var(--space-2xs) var(--space-md);
     align-items: start;
 }
 
@@ -4051,12 +4160,20 @@ button.icon .sem-action-icon { display: block; }
     display: grid;
     grid-template-columns: subgrid;
     grid-column: 1 / -1;
-    align-items: start;
+    align-items: center;
+    min-height: var(--control-h);
+}
+
+/* A row whose panel already names it keeps no gutter of its own. */
+.sem-lite-chips.bare {
+    display: block;
+    grid-column: 1 / -1;
 }
 
 /* start, not stretch: the hover border should hug the word, not the whole gutter. */
 .sem-lite-chips > .heading {
     justify-self: start;
+    align-self: center;
     white-space: nowrap;
 }
 
@@ -4076,6 +4193,18 @@ button.icon .sem-action-icon { display: block; }
 .sem-lite-chips .value {
     color: var(--text-dim);
     font-size: var(--text-sm);
+}
+
+/* A value that is a picture: sized to the row rather than to the sprite, which is 24 or 28. */
+.sem-lite-chips .value.icon {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 var(--space-2xs);
+}
+
+.sem-lite-chips .value.icon img {
+    width: var(--icon);
+    height: var(--icon);
 }
 
 /*
@@ -4155,6 +4284,27 @@ button.icon .sem-action-icon { display: block; }
     padding: 0;
     gap: 0;
     overflow: hidden;
+}
+
+/*
+   A sheet sized to a form rather than to a picker.
+
+   The wide one exists for the grids - three hundred emblems, a hundred and seventeen traits, a
+   picker with its description panel beside it. A handful of labelled boxes in the same sheet is
+   mostly empty sheet.
+
+   And it must not clip. A ComboBox drops its list as an absolutely positioned child, so the sheet's
+   overflow and the scrolling body between them would cut it off exactly as a section once did - the
+   note further up this file records that fix. A form of three fields never needs to scroll, so it
+   is given nothing to scroll in.
+*/
+.sem-editor-modal.sem-editor-compact > .sheet {
+    width: min(34rem, 100%);
+    overflow: visible;
+}
+
+.sem-editor-modal.sem-editor-compact > .sheet > .body {
+    overflow: visible;
 }
 
 .sem-editor-modal > .sheet > .head {

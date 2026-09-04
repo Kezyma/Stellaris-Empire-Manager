@@ -11,7 +11,8 @@
 *@
 
 @* Set on the box rather than by marking an option - see the note in HomeworldTab. *@
-<select id="@Id" value="@(Design.PrescriptedFlag ?? string.Empty)" @onchange="Choose">
+<select id="@Id" value="@(Design.PrescriptedFlag ?? string.Empty)"
+        @onchange="Choose" @onblur="OnDone">
     <option value="">None</option>
 
     @if (Design.PrescriptedFlag is { Length: > 0 } held && !FlagSets.Any(s => s.Key == held))
@@ -33,9 +34,16 @@
     [Parameter]
     public string? Id { get; set; }
 
-    /// <summary>Told after a choice, so a caller showing this in place of a value can stop.</summary>
+    /// <summary>
+    /// Told when this is finished with, so a caller showing it in place of a value can stop.
+    /// </summary>
+    /// <remarks>
+    /// On leaving as well as on choosing. Opened in place of the value it holds, a box that only
+    /// closed on a change stayed open over an empire nobody was editing the flags of - dismissing
+    /// the list is as much an answer as picking from it.
+    /// </remarks>
     [Parameter]
-    public EventCallback OnChosen { get; set; }
+    public EventCallback OnDone { get; set; }
 
     private EmpireDesign Design => Session.Current!;
 
@@ -48,6 +56,6 @@
 
         Session.Edit(d => d.PrescriptedFlag = key);
 
-        await OnChosen.InvokeAsync();
+        await OnDone.InvokeAsync();
     }
 }

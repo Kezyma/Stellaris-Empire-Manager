@@ -86,6 +86,8 @@
         LitePart.Portrait => "Portrait",
         LitePart.Traits => "Traits",
         LitePart.SecondSpecies => "Second species",
+        LitePart.SecondPortrait => "Second species portrait",
+        LitePart.SecondTraits => "Second species traits",
         LitePart.Ruler => "Ruler",
         LitePart.RulerAppearance => "Ruler appearance",
         LitePart.RulerTraits => "Ruler traits",
@@ -104,9 +106,13 @@
     /// a picker with a description panel beside it. A handful of labelled boxes in the same sheet is
     /// a lot of empty sheet, and the two naming dialogs need the narrow one for a second reason:
     /// their comboboxes drop a list that the scrolling body of a tall sheet would clip.
+    ///
+    /// Only the two forms, then. The shipsets and the advisor voices are pickers like the rest -
+    /// twenty-seven voices in a compact sheet, which does not scroll, ran off the bottom of the
+    /// page.
     /// </remarks>
     private static bool IsCompact(LitePart part) =>
-        part is LitePart.Naming or LitePart.Ruler or LitePart.Shipset or LitePart.Advisor;
+        part is LitePart.Naming or LitePart.Ruler;
 
     /// <summary>
     /// The editor for one part, which is in every case a component the sections already use.
@@ -170,9 +176,21 @@
                 builder.CloseComponent();
                 break;
 
-            case LitePart.SecondSpecies when design.SecondarySpecies is { } second:
-                builder.OpenComponent<SpeciesTab>(110);
-                builder.AddComponentParameter(111, nameof(SpeciesTab.Species), second);
+            case LitePart.SecondSpecies when design.SecondarySpecies is { } named:
+                builder.OpenComponent<SpeciesNames>(110);
+                builder.AddComponentParameter(111, nameof(SpeciesNames.Species), named);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.SecondPortrait when design.SecondarySpecies is { } shown:
+                builder.OpenComponent<PortraitPicker>(200);
+                builder.AddComponentParameter(201, nameof(PortraitPicker.Species), shown);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.SecondTraits when design.SecondarySpecies is { } gifted:
+                builder.OpenComponent<TraitPicker>(210);
+                builder.AddComponentParameter(211, nameof(TraitPicker.Species), gifted);
                 builder.CloseComponent();
                 break;
 
@@ -217,8 +235,8 @@
                 break;
 
             default:
-                // SecondSpecies with no second species, which the card cannot offer and a stale
-                // click could still ask for.
+                // One of the second species' parts with no second species, which the card cannot
+                // offer and a stale click could still ask for.
                 break;
         }
     };
