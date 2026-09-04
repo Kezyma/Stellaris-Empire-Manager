@@ -209,7 +209,7 @@ else
     private async Task CopyLink(EmpireDesign design)
     {
         var origin = Files.ShareBaseUri ?? Navigation.BaseUri;
-        var link = $"{origin}designer?{DesignLink.Parameter}={DesignLink.Encode(design)}";
+        var link = $"{origin}e/{DesignLink.Encode(design)}";
 
         _copyWorked = await Files.CopyToClipboardAsync(link);
         _copiedFrom = design;

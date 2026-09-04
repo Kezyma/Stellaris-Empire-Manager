@@ -73,6 +73,23 @@ public sealed class DesignLinkTests
     }
 
     [Fact]
+    public void TheLinkIsSafeAsAPathSegmentAndNotOnlyAsAQuery()
+    {
+        // A link carries the empire in the path now - "…/e/<payload>" - which is nine characters
+        // shorter than the query it replaced and leaves no question mark or equals sign for a chat
+        // client to read as punctuation. That only holds while every character the packing can emit
+        // is one a path segment takes as itself: a slash would end the segment, and a percent would
+        // be decoded on the way back in and hand the decoder bytes it never wrote.
+        var encoded = DesignLink.Encode(Load());
+
+        Assert.Equal(encoded, Uri.EscapeDataString(encoded));
+        Assert.DoesNotContain('/', encoded);
+        Assert.DoesNotContain('%', encoded);
+        Assert.DoesNotContain('?', encoded);
+        Assert.DoesNotContain('#', encoded);
+    }
+
+    [Fact]
     public void AnEmpireWithAQuotationMarkInItsNameStillTravels()
     {
         // The key is written between quotation marks, so one inside it closed them early and the

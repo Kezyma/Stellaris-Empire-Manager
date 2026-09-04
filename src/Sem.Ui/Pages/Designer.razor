@@ -1,4 +1,5 @@
 @page "/designer"
+@page "/e/{Shared}"
 @implements IDisposable
 @inject SessionHost Host
 @inject IFileExchange Files
@@ -101,6 +102,16 @@ else
 }
 
 @code {
+    /// <summary>
+    /// The empire a link carried, taken from the address itself rather than from a query.
+    /// </summary>
+    /// <remarks>
+    /// Null whenever the page was reached any other way - the Empires button, a Create, or one of
+    /// the links written before the route was shortened, which still arrive as "designer?d=…".
+    /// </remarks>
+    [Parameter]
+    public string? Shared { get; set; }
+
     /// <summary>
     /// The row of things you can do to the empire, shared by both editors.
     /// </summary>
@@ -327,10 +338,14 @@ else
     /// Whether a destination is this same page under a different query.
     /// </summary>
     /// <remarks>
-    /// The destination arrives however it was written — "designer?d=…" from this page's own address
-    /// rewrite, "" from the Empires button, and an absolute address from a link. ToBaseRelativePath
-    /// looks like the tool for this and is not: it throws on anything already relative, and a guard
-    /// that throws is a guard that lets everything past.
+    /// The destination arrives however it was written — "e/…" from this page's own address rewrite,
+    /// "" from the Empires button, and an absolute address from a link. ToBaseRelativePath looks like
+    /// the tool for this and is not: it throws on anything already relative, and a guard that throws
+    /// is a guard that lets everything past.
+    ///
+    /// Both spellings of the page count. The rewrite writes the short one; the old one still arrives
+    /// from every link shared before it existed, and a destination this does not recognise is read
+    /// as leaving - which latches the page shut and stops the address bar ever updating again.
     /// </remarks>
     private bool StaysOnThisPage(string target)
     {
@@ -338,7 +353,9 @@ else
             ? target[Navigation.BaseUri.Length..]
             : target;
 
-        return path.Split('?')[0].Trim('/') == "designer";
+        var route = path.Split('?')[0].Trim('/');
+
+        return route is "designer" or "e" || route.StartsWith("e/", StringComparison.Ordinal);
     }
 
     private async Task SaveAndLeave()
@@ -408,10 +425,7 @@ else
     /// </remarks>
     private void OpenSharedDesign()
     {
-        var query = new Uri(Navigation.Uri).Query;
-
-        if (System.Web.HttpUtility.ParseQueryString(query)[DesignLink.Parameter] is not { Length: > 0 } shared ||
-            DesignLink.Decode(shared) is not { } design)
+        if (SharedDesign() is not { Length: > 0 } shared || DesignLink.Decode(shared) is not { } design)
         {
             return;
         }
@@ -488,8 +502,25 @@ else
         }
 
         _shown = encoded;
-        Navigation.NavigateTo($"designer?{DesignLink.Parameter}={encoded}", replace: true);
+        Navigation.NavigateTo(Address(encoded), replace: true);
     }
+
+    /// <summary>Where an empire lives, relative to wherever the app is served from.</summary>
+    private static string Address(string encoded) => $"e/{encoded}";
+
+    /// <summary>
+    /// The packed empire this page was opened with, whichever way it was written.
+    /// </summary>
+    /// <remarks>
+    /// The path is what links carry now - nine characters shorter than the query it replaced, and
+    /// with no question mark or equals sign for a chat client to decide is punctuation. The query
+    /// is still read, and always will be: it is what every link shared before this carries, and a
+    /// link somebody sent is not ours to expire.
+    /// </remarks>
+    private string? SharedDesign() =>
+        Shared is { Length: > 0 } fromPath
+            ? fromPath
+            : System.Web.HttpUtility.ParseQueryString(new Uri(Navigation.Uri).Query)[DesignLink.Parameter];
 
     /// <summary>What the share button says, which depends on whether the last press worked.</summary>
     private string ShareTitle => _copied switch
@@ -513,7 +544,7 @@ else
         // published site rather than the window's own origin — a web view serves the app from
         // somewhere only this process can reach.
         var origin = Files.ShareBaseUri ?? Navigation.BaseUri;
-        var link = $"{origin}designer?{DesignLink.Parameter}={DesignLink.Encode(design)}";
+        var link = origin + Address(DesignLink.Encode(design));
 
         _copied = await Files.CopyToClipboardAsync(link);
     }
