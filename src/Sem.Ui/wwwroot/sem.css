@@ -2982,29 +2982,24 @@ button.icon .sem-action-icon { display: block; }
 
 /* ------------------------------------------------- pickers that pair up
 
-   The flag's patterns and symbols, and the room's rooms and cities. Two long lists of pictures that
-   belong to one decision, so they sit side by side where there is room and fold away one at a time
-   where there is not.
+   The flag's patterns and symbols, and the room's rooms and cities. Two long lists of pictures
+   that belong to one decision, so one is shown at a time and a strip of tabs says which.
 
-   Deliberately not a <details>, and the reason is worth keeping: a details element's open state is
-   an attribute the browser owns, which no stylesheet can write and which Blazor never re-emits once
-   it has rendered it. Shut one on a laptop, plug in a monitor, and the wide-screen column would be
-   empty for ever with nothing able to reopen it. Held as a class instead, the media query below is
-   free to ignore it — which is exactly how the empire summary already folds itself on a phone. */
+   They used to sit side by side where there was room and fold one above the other where there was
+   not, and neither was worth what it cost. Side by side, each list gets half a width and scrolls
+   twice as far as it needs to. Stacked, two boxes of pictures under a picture is a section taller
+   than the window it opens in - and in a dialog, which is where both of these are now reached,
+   there was never room for the first arrangement anyway.
+
+   What makes it safe to show one is that the answer to both is drawn above them and does not move:
+   the flag wears its pattern and its emblem, the scene has its room and its city in it. The list
+   you are not looking at has nothing to tell you that the picture is not already telling you - so
+   its tab carries only the name of what is chosen in it, which is what the folded strip carried. */
 
 .sem-pickers {
-    display: grid;
-
-    /*
-        auto-fit against the space these actually have rather than a viewport width, for the reason
-        the paired subsections give: the pickers are two containers deep inside the designer's left
-        column, so a window measurement is a guess about them. At 1500 that column is around 960
-        pixels, which takes two; below it they fall to one on their own.
-    */
-    grid-template-columns: repeat(auto-fit, minmax(min(460px, 100%), 1fr));
-    gap: var(--gap);
-    align-items: start;
-    margin-top: var(--gap);
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
 }
 
 .sem-picker {
@@ -3014,58 +3009,83 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
-    The strip that names the picker. Above the breakpoint it is a heading and nothing else: no
-    pointer, no chevron, and nothing it can be pressed to do.
+    The list that is not on show. A class rather than the hidden attribute, because .sem-picker is a
+    flex container and a bare [hidden] would lose to it.
 */
-.sem-picker > .head {
+.sem-pickers > .sem-picker.away { display: none; }
+
+/*
+    The tabs. Each is the strip that used to head its own list - a title, what is chosen under it,
+    square at the bottom where the list carries on - and there were always two of them; the change
+    is that only one list hangs off them now.
+
+    Full width between them and sharing their border, so the strip's whole lower edge is tab and the
+    box below can open into the pressed one without a seam to explain. Halves rather than tight to
+    their text because each carries a name that can run long, and a strip whose tabs resize as the
+    empire changes emblem is a strip that moves under the pointer.
+*/
+.sem-picker-tabs {
     display: flex;
-    align-items: baseline;
-    gap: var(--space-md);
+    margin-top: var(--gap);
+}
+
+.sem-picker-tabs button {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
     padding: var(--space-sm) var(--space-lg);
     background: var(--bg-raised);
     border: 1px solid var(--border);
-    border-bottom-color: transparent;
     border-radius: var(--radius) var(--radius) 0 0;
-    color: var(--text);
+    color: var(--text-dim);
     font: inherit;
     text-align: left;
+    cursor: pointer;
+}
+
+/* One border between neighbours rather than two. */
+.sem-picker-tabs button + button { margin-left: -1px; }
+
+.sem-picker-tabs button:hover { background: var(--bg-hover); }
+
+/*
+    The pressed one is the box below, carried up: the same surface, and no edge between them. The
+    others keep their lower border and stay a step above it, which is the difference between a lid
+    that is off and a lid that is on.
+*/
+.sem-picker-tabs button[aria-pressed="true"] {
+    background: var(--bg);
+    border-bottom-color: transparent;
+    color: var(--text);
     cursor: default;
 }
 
-.sem-picker > .head .chevron {
-    width: 12px;
-    color: var(--text-faint);
-
-    /* Only meaningful where the picker folds, so it is not drawn where it does not. */
-    display: none;
-}
-
-.sem-picker > .head .title {
+.sem-picker-tabs button .title {
     font-size: var(--text-xs);
     text-transform: uppercase;
     letter-spacing: 0.06em;
 }
 
-/* What is chosen, for a folded picker that is not showing it. */
-.sem-picker > .head .state {
-    flex: 1;
+/* What is chosen behind the tab, which is the whole of what a tab you are not on has to say. */
+.sem-picker-tabs button .state {
     min-width: 0;
     overflow: hidden;
-    color: var(--text-dim);
     font-size: var(--text-sm);
     white-space: nowrap;
     text-overflow: ellipsis;
 }
 
-/* The list continues the frame its strip opens, so the two read as one box. */
+/* The list continues the frame the tabs open, so the two read as one box. */
 .sem-picker > .sem-scroll-list {
     border-top: none;
     border-radius: 0 0 var(--radius) var(--radius);
 
     /*
-        A height rather than a ceiling, so that two of these side by side are the same height. As a
-        ceiling the taller list reached it and the shorter one stopped where its contents did, and
-        the pair sat forty pixels out of step with each other.
+        A height rather than a ceiling, so that switching tabs does not resize the box. Sixty-six
+        rooms and eleven cities, as ceilings, are two boxes hundreds of pixels apart - and the
+        difference would come out of the page the moment the other tab was pressed.
     */
     height: clamp(240px, 34vh, 560px);
     max-height: none;
@@ -3080,26 +3100,6 @@ button.icon .sem-action-icon { display: block; }
 .sem-picker .sem-thumbs.sem-patterns {
     max-height: none;
     overflow: visible;
-}
-
-/*
-    Below the width that takes two columns, the strip becomes a control and the list folds behind it.
-    Every rule that makes it one lives in here, so above the breakpoint the whole apparatus is simply
-    not applied and a picker the reader once shut is open again.
-*/
-@media (max-width: 1499px) {
-    .sem-picker > .head { cursor: pointer; }
-
-    .sem-picker > .head:hover { background: var(--bg-hover); }
-
-    .sem-picker > .head .chevron { display: inline; }
-
-    .sem-picker.collapsed > .head {
-        border-bottom-color: var(--border);
-        border-radius: var(--radius);
-    }
-
-    .sem-picker.collapsed > .sem-scroll-list { display: none; }
 }
 
 /*
@@ -3773,7 +3773,7 @@ button.icon .sem-action-icon { display: block; }
     .sem-section > .head,
     .sem-class-list button,
     .sem-fold > summary,
-    .sem-picker > .head,
+    .sem-picker-tabs button,
     .sem-showcase-problems > summary { padding: 12px 10px; }
 
     .sem-dlc-summary { padding: 12px 10px; }

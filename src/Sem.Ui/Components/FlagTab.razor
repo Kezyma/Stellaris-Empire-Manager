@@ -47,29 +47,32 @@
 </div>
 
 @*
-    The two halves of a flag, side by side where there is room for them and folded away one at a time
-    where there is not.
+    The two halves of a flag, one at a time.
 
-    Not a <details>. Its open state is an attribute the browser owns and no stylesheet can write, and
-    here it is a constant in the render tree besides, so Blazor never re-emits it either — fold one
-    shut on a laptop, plug in a monitor, and the column stays empty for good with nothing able to
-    reopen it. A class the media query is free to ignore has no such problem, which is how the
-    empire summary already does this.
+    They used to sit side by side where there was room and fold one above the other where there was
+    not. Neither arrangement was worth what it cost: forty patterns and two hundred and eighty-three
+    emblems side by side are two half-width boxes, each scrolling twice as far as it needs to, and
+    stacked they are a section taller than any window that opens it — which in a dialog is the only
+    arrangement there was ever room for.
+
+    Nothing is lost by showing one. Picking a pattern and picking an emblem are two halves of one
+    decision, and the answer to both is the flag drawn above, which does not move. So each list gets
+    the whole width, and the tab you are not on says what it holds.
 *@
+<PickerTabs Label="Flag" Selected="_tab" SelectedChanged="Show"
+            Tabs="@(new PickerTabs.Tab[]
+                    {
+                        new(Session.Localizer.Label("EMBLEM_BACKGROUND_PATTERN", "Patterns"), PatternName),
+                        new(Session.Localizer.Label("CHOOSE_SYMBOL", "Choose Symbol"), EmblemName),
+                    })" />
+
 <div class="sem-pickers">
     @*
         Patterns as pictures, drawn in the empire's own colours. The pattern files themselves cannot
         be shown — each is three shapes packed into a red, a green and a blue channel and reads as
         coloured wedges — so each tile is the flag that pattern would make.
     *@
-    <section class="sem-picker @(_patterns ? null : "collapsed")">
-        <button type="button" class="head" aria-expanded="@(_patterns ? "true" : "false")"
-                @onclick="() => _patterns = !_patterns">
-            <span class="chevron" aria-hidden="true">@(_patterns ? "▾" : "▸")</span>
-            <span class="title">@Session.Localizer.Label("EMBLEM_BACKGROUND_PATTERN", "Patterns")</span>
-            <span class="state">@PatternName</span>
-        </button>
-
+    <section class="sem-picker @(_tab == PatternList ? null : "away")">
         <div class="sem-scroll-list">
             <div class="sem-thumbs sem-patterns">
                 @foreach (var file in BackgroundFiles)
@@ -96,14 +99,7 @@
         eighty-three tiles is a great deal to put on a page and nothing at all to put in a box that
         scrolls.
     *@
-    <section class="sem-picker @(_emblemsOpen ? null : "collapsed")">
-        <button type="button" class="head" aria-expanded="@(_emblemsOpen ? "true" : "false")"
-                @onclick="ToggleEmblems">
-            <span class="chevron" aria-hidden="true">@(_emblemsOpen ? "▾" : "▸")</span>
-            <span class="title">@Session.Localizer.Label("CHOOSE_SYMBOL", "Choose Symbol")</span>
-            <span class="state">@EmblemName</span>
-        </button>
-
+    <section class="sem-picker @(_tab == EmblemList ? null : "away")">
         @*
             The game's own categories first, then the three its designer never draws. Kept apart for
             the same reason the rooms are: a design may name any of them and the game accepts it —
@@ -129,16 +125,16 @@
 
     private EmpireDesign Design => Session.Current!;
 
-    /// <summary>
-    /// Whether each picker is unfolded, which only matters below the width where both fit.
-    /// </summary>
+    private const int PatternList = 0;
+    private const int EmblemList = 1;
+
+    /// <summary>Which of the two lists is on show.</summary>
     /// <remarks>
-    /// Held as a flag and rendered as a class, so that the stylesheet can disregard it: above the
-    /// breakpoint the collapsing apparatus is not applied at all and both are simply open, whatever
-    /// the reader last did to them on a narrower screen.
+    /// The patterns, to begin with, which is the order the game asks for them in and the order they
+    /// go on the flag. Not remembered between openings: the tab you last used is a poor guess at
+    /// the one you came back for, and both are one press away.
     /// </remarks>
-    private bool _patterns = true;
-    private bool _emblemsOpen = true;
+    private int _tab = PatternList;
 
     /// <summary>The scrolling box of emblems, so the chosen one can be brought into it.</summary>
     private ElementReference _emblems;
@@ -146,35 +142,21 @@
     private IJSObjectReference? _module;
 
     /// <summary>
-    /// Opens the emblems on the one the design already has, and again whenever the box is unfolded.
+    /// Shows one of the two lists, and opens the emblems on the one the design already has.
     /// </summary>
     /// <remarks>
     /// Two hundred and eighty-three of them under eighteen headings: without this the box opens on
     /// the first category every time, and the emblem the empire actually wears is somewhere below.
-    /// A shut fold has no layout, so the call does nothing when it is being shut, which is what is
-    /// wanted — the event does not say which way it went.
+    /// A list that is not on show is not drawn, so it has no height to scroll and forgets where it
+    /// was — which is why this is here rather than done once when the tab is built.
+    ///
+    /// The patterns need none of it. There are forty and they fit.
     /// </remarks>
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private async Task Show(int tab)
     {
-        if (firstRender)
-        {
-            await Reveal().ConfigureAwait(true);
-        }
-    }
+        _tab = tab;
 
-    /// <summary>
-    /// Unfolds or folds the emblems, and puts the chosen one back in view when it reappears.
-    /// </summary>
-    /// <remarks>
-    /// A folded box is not drawn, so it has no height to scroll and forgets where it was: opening
-    /// it again showed the first of eighteen categories rather than the emblem the empire wears.
-    /// This used to hang off the <c>toggle</c> event, which a &lt;details&gt; raised for us.
-    /// </remarks>
-    private async Task ToggleEmblems()
-    {
-        _emblemsOpen = !_emblemsOpen;
-
-        if (_emblemsOpen)
+        if (tab == EmblemList)
         {
             // After the browser has drawn it, or there is still nothing to measure.
             await Task.Yield();

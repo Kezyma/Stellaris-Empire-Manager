@@ -1,0 +1,60 @@
+@*
+    Which of a picker's lists is on show: the flag's patterns or its emblems, the room or the city.
+
+    The strip these replace was already shaped like a tab - a title, what is chosen under it, square
+    corners at the bottom where the list carries on. There were simply two of them, one above the
+    other, each opening a list of its own. So there are still two strips and they are still the same
+    strip; only one list hangs off them now, and which one is a choice rather than a scroll.
+
+    aria-pressed rather than role="tab", as the view toggles here already do. A real tablist owes the
+    reader arrow-key movement between its tabs, and a group of buttons that each say whether they are
+    pressed owes nothing it does not deliver.
+*@
+
+<div class="sem-picker-tabs" role="group" aria-label="@Label">
+    @for (var i = 0; i < Tabs.Count; i++)
+    {
+        var index = i;
+
+        <button type="button" aria-pressed="@(index == Selected ? "true" : "false")"
+                @onclick="() => Choose(index)">
+            <span class="title">@Tabs[index].Title</span>
+            <span class="state">@Tabs[index].State</span>
+        </button>
+    }
+</div>
+
+@code {
+    /// <summary>One list: what it is called, and what is currently chosen inside it.</summary>
+    /// <remarks>
+    /// The chosen name rides on the tab because the tab is where it was: a folded picker's strip
+    /// carried it, and the reason still holds. Looking at the patterns, which emblem the empire
+    /// wears is worth knowing without having to go and look.
+    /// </remarks>
+    public readonly record struct Tab(string Title, string? State);
+
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<Tab> Tabs { get; set; }
+
+    /// <summary>What the group of them is, for a reader who cannot see the list underneath.</summary>
+    [Parameter, EditorRequired]
+    public required string Label { get; set; }
+
+    /// <summary>Which tab is showing.</summary>
+    [Parameter]
+    public int Selected { get; set; }
+
+    [Parameter]
+    public EventCallback<int> SelectedChanged { get; set; }
+
+    /// <summary>
+    /// Announced upwards rather than held here.
+    /// </summary>
+    /// <remarks>
+    /// The owner has to know: a list that was not drawn has no height to scroll, so the one being
+    /// shown has to be scrolled to what it holds once it is on the page again. Pressing the tab
+    /// already showing is not a change and does not send one.
+    /// </remarks>
+    private Task Choose(int index) =>
+        index == Selected ? Task.CompletedTask : SelectedChanged.InvokeAsync(index);
+}
