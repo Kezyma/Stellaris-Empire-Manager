@@ -114,4 +114,27 @@ public sealed class CwParserTests
         var error = Assert.Throws<CwSyntaxException>(() => CwDocument.ParseText("authority="));
         Assert.Contains("authority", error.Message, StringComparison.Ordinal);
     }
+
+    [Fact]
+    public void NestingDeeperThanAnyRealFileIsReportedRatherThanFatal()
+    {
+        // Parsing a block recurses, so the depth of the input was the depth of the stack and a file
+        // of nothing but opening braces overflowed it. That is not something a catch block can turn
+        // into "this file will not load": .NET ends the process where it stands, which in the
+        // browser takes the tab and whatever was unsaved in it. Import accepts sixteen megabytes.
+        var error = Assert.Throws<CwSyntaxException>(
+            () => CwDocument.ParseText(new string('{', 5_000)));
+
+        Assert.Contains("nested more than", error.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void NestingAsDeepAsTheGameGoesStillParses()
+    {
+        // Thirteen is the deepest of the 2,040 script files Stellaris ships. The limit has to be
+        // clear of that by enough that no real file is ever refused.
+        var deep = new string('{', 13) + new string('}', 13);
+
+        Assert.Single(CwDocument.ParseText("nested=" + deep).Nodes);
+    }
 }

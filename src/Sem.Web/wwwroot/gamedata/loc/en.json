@@ -5020,8 +5020,6 @@
   "EMPIRE_CREATION_ROOM_APPEARANCE": "Room",
   "EMPIRE_CREATION_CITY_APPEARANCE": "City",
   "SHIPSETS_LABEL": "Shipsets",
-  "SETTINGS_VOICE_TYPE_auto_advisor_voice_type": "Based on Government",
-  "SETTINGS_VOICE_TYPE_auto_advisor_voice_type_DESC": "Automatic Advisor Voice selection based on Empire creation choices",
   "SHIPSET_MECHANICAL": "Mechanical",
   "SHIPSET_BIOLOGICAL": "Biological",
   "EMPIRE_FLAG": "Flag",

@@ -196,7 +196,19 @@ public sealed class DesignSession
     /// Choosing a different empire abandons the copy held of the last one. Nothing is lost by that:
     /// the only way to leave the designer is past a question about unsaved work.
     /// </remarks>
-    public void Select(EmpireDesign? design)
+    public void Select(EmpireDesign? design) => Select(design, announce: true);
+
+    /// <summary>
+    /// The same, for a caller that has more to set before anyone should hear about it.
+    /// </summary>
+    /// <remarks>
+    /// Selecting clears the modified flag and then announces the change, so a caller that goes on
+    /// to set that flag has already been overheard saying the opposite. That is how a brand-new
+    /// empire reached the address bar: the bar is written for a design that is not modified, this
+    /// said so, and CreateEmpire set the flag two lines later. Reloading then read the bar as a
+    /// stranger's link and made a second copy of the blank empire.
+    /// </remarks>
+    private void Select(EmpireDesign? design, bool announce)
     {
         // Turning to a different empire abandons one that was never saved, so it goes back out of
         // the file. This is also what deleting one does, and what reverting one does.
@@ -210,7 +222,11 @@ public sealed class DesignSession
         _saved = design?.Snapshot();
         _savedContext = null;
         IsModified = false;
-        Recompute();
+
+        if (announce)
+        {
+            Recompute();
+        }
     }
 
     /// <summary>
@@ -232,7 +248,7 @@ public sealed class DesignSession
 
         var design = add(File!);
 
-        Select(design);
+        Select(design, announce: false);
 
         _unsaved = design;
         IsModified = true;

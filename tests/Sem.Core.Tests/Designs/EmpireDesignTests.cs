@@ -776,4 +776,49 @@ public sealed class EmpireDesignTests
             "Spare Parts",
             EmpireDesignsFile.LoadText(file.Document.ToText()).Designs[0].Name.Key);
     }
+
+    [Fact]
+    public void SettingNoCivicsOnAnEmpireThatHasNoneWritesNothing()
+    {
+        // Reaching the list through GetOrAddBlock made the block before discovering there was
+        // nothing to put in it, so every empire the app created carried "civics={}" - which the
+        // game itself never writes. The trait list was guarded against exactly this and the civics
+        // list was not, which showed up side by side in the extracted blank template.
+        var file = EmpireDesignsFile.LoadText(BlankEmpire);
+        var design = file.Designs[0];
+
+        design.SetCivics([]);
+
+        Assert.DoesNotContain("civics", file.Document.ToText(), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void SettingNoCivicsOnAnEmpireThatHasSomeEmptiesTheList()
+    {
+        var file = EmpireDesignsFile.LoadText(EmpireWithCivics);
+        var design = file.Designs[0];
+
+        design.SetCivics([]);
+
+        Assert.Empty(design.Civics);
+        Assert.DoesNotContain("civic_anglers", file.Document.ToText(), StringComparison.Ordinal);
+    }
+
+    private const string BlankEmpire = """
+        "Blank"=
+        {
+        	key="Blank"
+        }
+        """;
+
+    private const string EmpireWithCivics = """
+        "Some"=
+        {
+        	key="Some"
+        	civics=
+        	{
+        		"civic_anglers"
+        	}
+        }
+        """;
 }

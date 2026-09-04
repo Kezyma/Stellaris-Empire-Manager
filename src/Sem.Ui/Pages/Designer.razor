@@ -57,9 +57,16 @@ else
     }
     else if (_confirming == Asking.Leaving)
     {
+        @*
+            Dismissing answers "stay here" rather than merely hiding the question. Escape and a
+            click on the backdrop both arrive as OnDismiss, and a dismissal that only cleared the
+            dialog left whoever asked waiting on an answer that never came: the navigation neither
+            happened nor was called off, the click that started it was swallowed, and the page was
+            left believing it was on its way out for the rest of the session.
+        *@
         <ConfirmDialog Title="@($"Save your changes to {Title}?")"
                        Message="Leaving without saving puts the empire back to how it was when you opened it."
-                       OnDismiss="() => _confirming = Asking.None">
+                       OnDismiss="() => Answer(false)">
             <button type="button" @onclick="() => Answer(false)">Stay here</button>
             <button type="button" class="danger" @onclick="DiscardAndLeave">Discard changes</button>
             <button type="button" class="primary" @onclick="SaveAndLeave">Save and leave</button>
@@ -290,6 +297,11 @@ else
         {
             return Task.FromResult(true);
         }
+
+        // Whoever is still waiting is told to stay, rather than being left holding a task that
+        // will never complete. Asking twice over should not be possible, but a dropped answer is
+        // silent and this is one line.
+        _answer?.TrySetResult(false);
 
         _answer = new TaskCompletionSource<bool>();
         _confirming = Asking.Leaving;
