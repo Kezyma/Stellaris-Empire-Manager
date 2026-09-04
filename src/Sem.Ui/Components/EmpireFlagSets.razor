@@ -1,0 +1,53 @@
+@*
+    The set of scripted country flags an empire claims.
+
+    Nothing to do with the flag you draw, despite the name the game gives it. These are the markers
+    events and triggers read with has_country_flag — taking a set is how a custom empire tells the
+    rest of the game's scripts "I am that empire". See docs/empire-flags.md, which exists because
+    the two were confusable enough to need writing down.
+
+    Only the box, with no label of its own, so the section can put a caption over it and the lite
+    card can swap it in where the value was being read.
+*@
+
+@* Set on the box rather than by marking an option - see the note in HomeworldTab. *@
+<select id="@Id" value="@(Design.PrescriptedFlag ?? string.Empty)" @onchange="Choose">
+    <option value="">None</option>
+
+    @if (Design.PrescriptedFlag is { Length: > 0 } held && !FlagSets.Any(s => s.Key == held))
+    {
+        <option value="@held">@Localizer.Prettify(held) - not offered for this empire</option>
+    }
+
+    @foreach (var set in FlagSets)
+    {
+        <option value="@set.Key">@EmpireView.FlagSetName(Session, set)</option>
+    }
+</select>
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>What a caption points at, where a caller writes one.</summary>
+    [Parameter]
+    public string? Id { get; set; }
+
+    /// <summary>Told after a choice, so a caller showing this in place of a value can stop.</summary>
+    [Parameter]
+    public EventCallback OnChosen { get; set; }
+
+    private EmpireDesign Design => Session.Current!;
+
+    private IReadOnlyList<EmpireFlagSet> FlagSets => Session.Data.Database.EmpireFlagSets;
+
+    private async Task Choose(ChangeEventArgs e)
+    {
+        // The empty choice writes nothing rather than an empty string.
+        var key = e.Value?.ToString() is { Length: > 0 } chosen ? chosen : null;
+
+        Session.Edit(d => d.PrescriptedFlag = key);
+
+        await OnChosen.InvokeAsync();
+    }
+}

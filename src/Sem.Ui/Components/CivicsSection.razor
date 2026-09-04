@@ -1,0 +1,74 @@
+@*
+    What an empire does with the room its ethics and authority leave it.
+
+    The heading carries its own class rather than relying on sitting inside a subsection. It used to
+    take its look from `.sem-subsections > section > .heading`, which is a child selector — shown on
+    its own in a dialog the row lost its layout and the view toggle dropped onto a line of its own.
+*@
+
+<div class="sem-heading-row">
+    <h4>@Session.Localizer.Heading("CIVICS_LABEL", "Civics")</h4>
+
+    <ViewToggle ViewKey="Civics" List="@_asList" ListChanged="v => _asList = v" />
+</div>
+
+<BudgetBar Key="POINTS_LEFT_CIVICS" Fallback="Civic Picks Left: $POINTS|H$"
+           Label="CIVICS_LABEL" LabelFallback="Civics" Value="@Session.Rules.GetCivicsBudget(Context)" />
+
+<OptionGrid Options="@Civics"
+            AsList="@_asList"
+            Label="Civics"
+            OnSelect="Toggle" />
+
+@code {
+    /// <summary>Which way they are drawn. The toggle owns the remembering; this mirrors it.</summary>
+    private bool _asList = true;
+
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    private EmpireDesign Design => Session.Current!;
+
+    private DesignContext Context => Session.Context!;
+
+    private IReadOnlyList<OptionGrid.GridOption> Civics
+    {
+        get
+        {
+            var byKey = Session.Data.Database.Civics.ToDictionary(c => c.Key, StringComparer.Ordinal);
+
+            var states = Session.Rules.GetCivicOptions(Context)
+                .OrderBy(o => Session.Localizer.Text(o.Key), StringComparer.CurrentCulture);
+
+            return GridOptions.Build(
+                Session,
+                states,
+                key => (byKey.GetValueOrDefault(key)?.Icon, byKey.GetValueOrDefault(key)?.Effects),
+                Design.Civics.Contains);
+        }
+    }
+
+    private void Toggle(string key)
+    {
+        Session.Edit(d =>
+        {
+            var civics = d.Civics.ToList();
+
+            if (!civics.Remove(key))
+            {
+                // The allowance is fixed, and a full slate is refused rather than made room in:
+                // choosing a third used to remove the first, which is a press that took something
+                // away while appearing to add one. The rules mark the rest unavailable while the
+                // slots are full, so this is the guard for a key that arrives some other way.
+                if (civics.Count >= Session.Data.Database.Defines.CivicPoints)
+                {
+                    return;
+                }
+
+                civics.Add(key);
+            }
+
+            d.SetCivics(civics);
+        });
+    }
+}

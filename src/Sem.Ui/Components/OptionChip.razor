@@ -17,7 +17,14 @@
 @implements IAsyncDisposable
 
 <span class="sem-chip">
-    <button type="button" @ref="_anchor" popovertarget="@_id" aria-describedby="@_id">
+    @*
+        popovertarget only when nothing else wants the press. It is the attribute that makes the
+        browser toggle the panel on click, so a chip that opens an editor must not carry it, or one
+        press would do both. Hover and focus still describe the chip either way - bindPopover has
+        always shown it on those, and the click handler only pinned it open for a finger.
+    *@
+    <button type="button" @ref="_anchor" aria-describedby="@_id"
+            popovertarget="@(Opens ? null : _id)" @onclick="OnSelect">
         @if (Icon is { Length: > 0 } icon)
         {
             <img src="@Session.Data.AssetUrl(icon)" alt="" loading="lazy">
@@ -62,6 +69,20 @@
     [Parameter]
     public Sem.GameData.EffectSet? Effects { get; set; }
 
+    /// <summary>
+    /// What pressing the chip should do, where pressing it should do something.
+    /// </summary>
+    /// <remarks>
+    /// The lite card wants a chip to open the editor that chose it, so that pressing a civic and
+    /// pressing the word "Civics" above it do the same thing. Left unset - which is every use in
+    /// the sections and on the front page - the chip is a description and nothing else.
+    /// </remarks>
+    [Parameter]
+    public EventCallback OnSelect { get; set; }
+
+    /// <summary>Whether pressing this chip opens something.</summary>
+    private bool Opens => OnSelect.HasDelegate;
+
     private ElementReference _anchor;
     private ElementReference _panel;
 
@@ -84,7 +105,7 @@
         }
 
         _module = await Js.InvokeAsync<IJSObjectReference>("import", "./_content/Sem.Ui/sem.js");
-        await _module.InvokeVoidAsync("bindPopover", _anchor, _panel);
+        await _module.InvokeVoidAsync("bindPopover", _anchor, _panel, !Opens);
     }
 
     public async ValueTask DisposeAsync()

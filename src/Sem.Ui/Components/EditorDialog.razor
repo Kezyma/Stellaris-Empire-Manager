@@ -13,7 +13,7 @@
     from also reading as a press on the backdrop behind it.
 *@
 
-<div class="sem-modal sem-editor-modal" @onclick="Close">
+<div class="sem-modal sem-editor-modal @(Compact ? "sem-editor-compact" : null)" @onclick="Close">
     <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="@_titleId"
          tabindex="-1" @ref="_sheet" @onkeydown="OnKey" @onclick:stopPropagation="true">
 
@@ -65,6 +65,18 @@
     /// <summary>Called when the dialog is closed, however it was closed.</summary>
     [Parameter]
     public EventCallback OnClose { get; set; }
+
+    /// <summary>
+    /// Whether this holds a form rather than a picker.
+    /// </summary>
+    /// <remarks>
+    /// Three fields do not want a sixty-four-rem sheet with a scrolling middle. A compact one is
+    /// narrow, sized to its content, and - the part that matters - does not clip: a ComboBox drops
+    /// its list as an absolutely positioned child, and the scrolling body would cut it off exactly
+    /// as it once did inside a section.
+    /// </remarks>
+    [Parameter]
+    public bool Compact { get; set; }
 
     /// <summary>
     /// Takes the keyboard when the dialog appears, so Escape reaches it and Tab stays inside.

@@ -36,7 +36,7 @@
 
         @if (_editing is { } part)
         {
-            <EditorDialog Title="@TitleOf(part)" OnClose="Close">
+            <EditorDialog Title="@TitleOf(part)" Compact="@IsCompact(part)" OnClose="Close">
                 @Editor(part)
             </EditorDialog>
         }
@@ -72,12 +72,14 @@
     /// The names the sections already use, rather than a second set looked up from the game's keys.
     /// The same editor opened from either shell has to be called the same thing, and the game's keys
     /// name whole screens rather than single editors: they titled the empire's settings "Empire
-    /// Name", which is the one thing that dialog does not hold, and the species editor "Species
-    /// Class", which is one field of the several in it.
+    /// Name", which is the one thing that dialog does not hold.
     /// </remarks>
     private static string TitleOf(LitePart part) => part switch
     {
-        LitePart.Empire => "Empire",
+        LitePart.Naming => "Name",
+        LitePart.Ethics => "Ethics",
+        LitePart.Authority => "Authority",
+        LitePart.Civics => "Civics",
         LitePart.Government => "Government",
         LitePart.Origin => "Origin",
         LitePart.Species => "Species",
@@ -85,6 +87,8 @@
         LitePart.Traits => "Traits",
         LitePart.SecondSpecies => "Second species",
         LitePart.Ruler => "Ruler",
+        LitePart.RulerAppearance => "Ruler appearance",
+        LitePart.RulerTraits => "Ruler traits",
         LitePart.Homeworld => "Homeworld",
         LitePart.Flag => "Flag",
         LitePart.Room => "Room",
@@ -93,12 +97,23 @@
     };
 
     /// <summary>
+    /// Whether the editor is a form rather than a picker, and wants a sheet sized to it.
+    /// </summary>
+    /// <remarks>
+    /// The wide sheet exists for the grids - three hundred emblems, a hundred and seventeen traits,
+    /// a picker with a description panel beside it. A handful of labelled boxes in the same sheet is
+    /// a lot of empty sheet, and the two naming dialogs need the narrow one for a second reason:
+    /// their comboboxes drop a list that the scrolling body of a tall sheet would clip.
+    /// </remarks>
+    private static bool IsCompact(LitePart part) =>
+        part is LitePart.Naming or LitePart.Ruler or LitePart.Shipset or LitePart.Advisor;
+
+    /// <summary>
     /// The editor for one part, which is in every case a component the sections already use.
     /// </summary>
     /// <remarks>
-    /// Eleven of them need nothing but the cascading session and go in as they are. The four about a
-    /// species need to be told which one, and that is the only thing this decides - the founders,
-    /// except for the second-species dialog.
+    /// Each case takes a block of ten sequence numbers, so a case that gains a parameter cannot
+    /// collide with the next one along.
     /// </remarks>
     private RenderFragment Editor(LitePart part) => builder =>
     {
@@ -106,74 +121,98 @@
 
         switch (part)
         {
-            case LitePart.Empire:
-                builder.OpenComponent<EmpireSection>(10);
+            case LitePart.Naming:
+                builder.OpenComponent<EmpireNaming>(20);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.Ethics:
+                builder.OpenComponent<EthicsSection>(30);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.Authority:
+                builder.OpenComponent<AuthoritySection>(40);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.Civics:
+                builder.OpenComponent<CivicsSection>(50);
                 builder.CloseComponent();
                 break;
 
             case LitePart.Government:
-                builder.OpenComponent<GovernmentTab>(20);
+                builder.OpenComponent<GovernmentTab>(60);
                 builder.CloseComponent();
                 break;
 
             case LitePart.Origin:
-                builder.OpenComponent<OriginTab>(30);
+                builder.OpenComponent<OriginTab>(70);
                 builder.CloseComponent();
                 break;
 
             case LitePart.Species:
-                builder.OpenComponent<SpeciesTab>(40);
-                builder.AddComponentParameter(41, nameof(SpeciesTab.Species), design.Species);
-                builder.AddComponentParameter(42, nameof(SpeciesTab.Founder), true);
+                builder.OpenComponent<SpeciesNames>(80);
+                builder.AddComponentParameter(81, nameof(SpeciesNames.Species), design.Species);
                 builder.CloseComponent();
                 break;
 
             case LitePart.Portrait:
-                builder.OpenComponent<PortraitPicker>(50);
-                builder.AddComponentParameter(51, nameof(PortraitPicker.Species), design.Species);
-                builder.AddComponentParameter(52, nameof(PortraitPicker.Founder), true);
+                builder.OpenComponent<PortraitPicker>(90);
+                builder.AddComponentParameter(91, nameof(PortraitPicker.Species), design.Species);
+                builder.AddComponentParameter(92, nameof(PortraitPicker.Founder), true);
                 builder.CloseComponent();
                 break;
 
             case LitePart.Traits:
-                builder.OpenComponent<TraitPicker>(60);
-                builder.AddComponentParameter(61, nameof(TraitPicker.Species), design.Species);
+                builder.OpenComponent<TraitPicker>(100);
+                builder.AddComponentParameter(101, nameof(TraitPicker.Species), design.Species);
                 builder.CloseComponent();
                 break;
 
             case LitePart.SecondSpecies when design.SecondarySpecies is { } second:
-                builder.OpenComponent<SpeciesTab>(70);
-                builder.AddComponentParameter(71, nameof(SpeciesTab.Species), second);
+                builder.OpenComponent<SpeciesTab>(110);
+                builder.AddComponentParameter(111, nameof(SpeciesTab.Species), second);
                 builder.CloseComponent();
                 break;
 
             case LitePart.Ruler:
-                builder.OpenComponent<RulerTab>(80);
+                builder.OpenComponent<RulerNaming>(120);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.RulerAppearance:
+                builder.OpenComponent<RulerAppearance>(130);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.RulerTraits:
+                builder.OpenComponent<RulerTraits>(140);
                 builder.CloseComponent();
                 break;
 
             case LitePart.Homeworld:
-                builder.OpenComponent<HomeworldTab>(90);
+                builder.OpenComponent<HomeworldTab>(150);
                 builder.CloseComponent();
                 break;
 
             case LitePart.Flag:
-                builder.OpenComponent<FlagTab>(100);
+                builder.OpenComponent<FlagTab>(160);
                 builder.CloseComponent();
                 break;
 
             case LitePart.Room:
-                builder.OpenComponent<RoomTab>(110);
+                builder.OpenComponent<RoomTab>(170);
                 builder.CloseComponent();
                 break;
 
             case LitePart.Shipset:
-                builder.OpenComponent<ShipsetTab>(120);
+                builder.OpenComponent<ShipsetTab>(180);
                 builder.CloseComponent();
                 break;
 
             case LitePart.Advisor:
-                builder.OpenComponent<AdvisorTab>(130);
+                builder.OpenComponent<AdvisorTab>(190);
                 builder.CloseComponent();
                 break;
 

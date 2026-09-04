@@ -161,35 +161,9 @@
         one. In the designer it is the opposite — the problems have to live somewhere, the sections
         show only a count, and the messages exist nowhere else.
     *@
-    @if (ShowProblems && Problems > 0)
+    @if (ShowProblems)
     {
-        <details class="sem-showcase-problems">
-            <summary>
-                <span class="chevron" aria-hidden="true">▸</span>
-                <span class="title">@ProblemSummary</span>
-            </summary>
-
-            @foreach (var problem in Report.Errors)
-            {
-                <div class="sem-problem">
-                    <div class="area">@AreaName(problem.Area)</div>
-                    <div>@Describe(problem)</div>
-
-                    @foreach (var reason in problem.Reasons.Distinct())
-                    {
-                        <div class="why">@Session.Localizer.Text(reason)</div>
-                    }
-                </div>
-            }
-
-            @foreach (var problem in Report.Warnings)
-            {
-                <div class="sem-problem warning">
-                    <div class="area">@AreaName(problem.Area)</div>
-                    <div>@Describe(problem)</div>
-                </div>
-            }
-        </details>
+        <ProblemsPanel Report="@Report" />
     }
     </div>
 </div>
@@ -241,60 +215,6 @@
     /// </remarks>
     [Parameter]
     public DesignContext? Baseline { get; set; }
-
-    private int Problems => Report.Errors.Count + Report.Warnings.Count;
-
-    /// <summary>
-    /// What the heading says, which is what there is rather than always "problems".
-    /// </summary>
-    private string ProblemSummary
-    {
-        get
-        {
-            var parts = new List<string>();
-
-            if (Report.Errors.Count is var errors and > 0)
-            {
-                parts.Add($"{errors} problem{(errors == 1 ? string.Empty : "s")}");
-            }
-
-            if (Report.Warnings.Count is var warnings and > 0)
-            {
-                parts.Add($"{warnings} warning{(warnings == 1 ? string.Empty : "s")}");
-            }
-
-            return string.Join(", ", parts);
-        }
-    }
-
-    /// <summary>
-    /// A problem's message with the things it names spelled out.
-    /// </summary>
-    /// <remarks>
-    /// The rules know nothing about language, so a message that has to name something the game
-    /// defines leaves a numbered blank and hands over the key. Filling them here is what turns
-    /// "This origin starts the empire on 'pc_volcanic'" into the words a player would recognise.
-    /// </remarks>
-    private string Describe(ValidationProblem problem) =>
-        problem.Arguments.Count == 0
-            ? problem.Message
-            : string.Format(
-                System.Globalization.CultureInfo.CurrentCulture,
-                problem.Message,
-                [.. problem.Arguments.Select(key => Session.Localizer.Text(key))]);
-
-    /// <summary>
-    /// What to call the part of the empire a problem belongs to.
-    /// </summary>
-    /// <remarks>
-    /// The enum's own name is shouted and run together — SECONDARYSPECIES — which is the same fault
-    /// as printing a key.
-    /// </remarks>
-    private static string AreaName(ValidationArea area) => area switch
-    {
-        ValidationArea.SecondarySpecies => "Second species",
-        _ => Localizer.Prettify(area.ToString()),
-    };
 
     /// <summary>
     /// The localisation key of the blurb the game writes for one of its own empires, where this is
@@ -409,7 +329,7 @@
             builder.OpenComponent<OptionChip>(5);
             builder.SetKey(choice.Key);
             builder.AddComponentParameter(6, nameof(OptionChip.Key), choice.Key);
-            builder.AddComponentParameter(7, nameof(OptionChip.Name), Session.Localizer.Text(choice.Key));
+            builder.AddComponentParameter(7, nameof(OptionChip.Name), choice.Name);
             builder.AddComponentParameter(8, nameof(OptionChip.Icon), choice.Icon);
             builder.AddComponentParameter(9, nameof(OptionChip.Effects), choice.Effects);
             builder.CloseComponent();

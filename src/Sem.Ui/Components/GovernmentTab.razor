@@ -2,6 +2,10 @@
     An empire's politics: what it believes, how it is run, and what it does with the room that
     leaves. The government's name is not chosen — the game works it out from all three — so it is
     shown in the preview rather than given a panel of its own here.
+
+    All three together, because in the sections they are one decision: picking gestalt greys out most
+    authorities and about half the civics, and seeing that happen in the same view is the point. The
+    lite card takes them one at a time instead, and shows the consequence on the card behind.
 *@
 
 <div class="sem-subsections paired">
@@ -19,128 +23,15 @@
             is a row or two of icons — a panel four hundred deep to describe them left most of
             itself empty.
         *@
-        <OptionGrid Options="@Authorities"
-                    OnSelect="key => Session.Edit(d => d.Authority = key)">
-            <Aside>
-                @*
-                    Nomadic is not an authority, but the game puts it beside them and it belongs
-                    there: it changes what an empire may govern with, ruling out a good many
-                    civics on its own. Beside the grid rather than in it, as the game also has
-                    it — a container of its own next to the authorities, so that it does not
-                    read as one more of them — and an icon rather than a labelled row, which
-                    read as a section.
-                *@
-                <button type="button"
-                        class="sem-icon-option sem-nomad @(Design.IsNomadic == true ? "selected" : null)"
-                        title="@NomadicLabel"
-                        aria-pressed="@(Design.IsNomadic == true ? "true" : "false")"
-                        @onclick="() => Session.Edit(d => d.IsNomadic = d.IsNomadic != true)">
-
-                    @if (Session.Data.Database.Icons.GetValueOrDefault(NomadSprite) is { Length: > 0 } icon)
-                    {
-                        <img src="@Session.Data.AssetUrl(icon)" alt="@NomadicLabel">
-                    }
-                    else
-                    {
-                        <span class="initials">@NomadicLabel</span>
-                    }
-                </button>
-            </Aside>
-        </OptionGrid>
+        <AuthoritySection />
     </section>
 
     <section>
-        @*
-            The heading and the control that changes how the choices under it are drawn, on one
-            line, as the empire modifiers panel already has it. The wrapper is why the stylesheet
-            has to know about `.heading` as well as a bare h4: the rules that give a subsection
-            heading its spacing and its small dim treatment are child selectors, and a heading
-            inside a div is no longer a child.
-        *@
-        <div class="heading">
-            <h4>@Session.Localizer.Heading("CIVICS_LABEL", "Civics")</h4>
-
-            <ViewToggle ViewKey="Civics" List="@_civicsAsList" ListChanged="v => _civicsAsList = v" />
-        </div>
-
-        <BudgetBar Key="POINTS_LEFT_CIVICS" Fallback="Civic Picks Left: $POINTS|H$"
-                   Label="CIVICS_LABEL" LabelFallback="Civics" Value="@Session.Rules.GetCivicsBudget(Context)" />
-
-        <OptionGrid Options="@Civics"
-                    AsList="@_civicsAsList"
-                    Label="Civics"
-                    OnSelect="Toggle" />
+        <CivicsSection />
     </section>
 </div>
 
 @code {
-    /// <summary>The sprite the game's own nomad toggle wears.</summary>
-    private const string NomadSprite = "GFX_toggle_nomad";
-
-    /// <summary>Which way the civics are drawn. The toggle owns the remembering; this mirrors it.</summary>
-    private bool _civicsAsList = true;
-
     [CascadingParameter]
     public required DesignSession Session { get; set; }
-
-    private EmpireDesign Design => Session.Current!;
-
-    private string NomadicLabel => Session.Localizer.Text("IS_NOMADIC", "Is a Nomadic Empire");
-
-    private DesignContext Context => Session.Context!;
-
-    private IReadOnlyList<OptionGrid.GridOption> Authorities
-    {
-        get
-        {
-            var byKey = Session.Data.Database.Authorities.ToDictionary(a => a.Key, StringComparer.Ordinal);
-
-            return GridOptions.Build(
-                Session,
-                Session.Rules.GetAuthorityOptions(Context),
-                key => (byKey.GetValueOrDefault(key)?.Icon, byKey.GetValueOrDefault(key)?.Effects),
-                key => key == Design.Authority);
-        }
-    }
-
-    private IReadOnlyList<OptionGrid.GridOption> Civics
-    {
-        get
-        {
-            var byKey = Session.Data.Database.Civics.ToDictionary(c => c.Key, StringComparer.Ordinal);
-
-            var states = Session.Rules.GetCivicOptions(Context)
-                .OrderBy(o => Session.Localizer.Text(o.Key), StringComparer.CurrentCulture);
-
-            return GridOptions.Build(
-                Session,
-                states,
-                key => (byKey.GetValueOrDefault(key)?.Icon, byKey.GetValueOrDefault(key)?.Effects),
-                Design.Civics.Contains);
-        }
-    }
-
-    private void Toggle(string key)
-    {
-        Session.Edit(d =>
-        {
-            var civics = d.Civics.ToList();
-
-            if (!civics.Remove(key))
-            {
-                // The allowance is fixed, and a full slate is refused rather than made room in:
-                // choosing a third used to remove the first, which is a press that took something
-                // away while appearing to add one. The rules mark the rest unavailable while the
-                // slots are full, so this is the guard for a key that arrives some other way.
-                if (civics.Count >= Session.Data.Database.Defines.CivicPoints)
-                {
-                    return;
-                }
-
-                civics.Add(key);
-            }
-
-            d.SetCivics(civics);
-        });
-    }
 }

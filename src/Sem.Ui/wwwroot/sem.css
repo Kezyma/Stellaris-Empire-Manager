@@ -214,6 +214,7 @@ h5 { font-size: var(--text-sm); }
 .sem-combined h4,
 .sem-subsections > section > h4,
 .sem-subsections > section > .heading > h4,
+.sem-heading-row > h4,
 .sem-showcase-chips .heading {
     font-size: var(--text-xs);
     text-transform: uppercase;
@@ -2435,7 +2436,12 @@ button.icon .sem-action-icon { display: block; }
     the row, because the heading is no longer the thing the section spaces away from what follows -
     two rules give a subsection heading its look and both are child selectors, so a wrapper has to
     be named in each rather than the selectors loosened for four other places that share them.
+
+    .sem-heading-row is the same row without the ancestry. Civics is shown both inside a subsection
+    and alone in a dialog, and a child selector cannot follow it into the second - shown on its own
+    the row lost its layout and the view toggle dropped onto a line of its own under the heading.
 */
+.sem-heading-row,
 .sem-subsections > section > .heading {
     display: flex;
     align-items: baseline;
@@ -2444,6 +2450,7 @@ button.icon .sem-action-icon { display: block; }
     margin: 0 0 var(--space-lg);
 }
 
+.sem-heading-row > h4,
 .sem-subsections > section > .heading > h4 {
     margin: 0;
 }
@@ -3316,7 +3323,12 @@ button.icon .sem-action-icon { display: block; }
 
    Recessed rather than raised: this is a readout inside the showcase card, and --bg-raised with a
    border is what a tile you can click looks like everywhere else in the sheet.
+
+   .sem-block is the same panel on the lite card, which groups the empire, its government, its
+   species and its ruler into four of them. Sharing the selector rather than copying the rules is
+   what stops the two cards drifting into two looks for one idea.
 */
+.sem-block,
 .sem-showcase .species {
     display: flex;
     gap: var(--space-lg);
@@ -3335,6 +3347,7 @@ button.icon .sem-action-icon { display: block; }
     The minimum is what a portrait needs to be recognised at all, for the case where the text is
     shorter than the picture rather than longer.
 */
+.sem-block > .face-button > .face,
 .sem-showcase .species .face {
     align-self: stretch;
     width: var(--face-lg-w);
@@ -3348,6 +3361,7 @@ button.icon .sem-action-icon { display: block; }
     background: var(--bg-void);
 }
 
+.sem-block > .about,
 .sem-showcase .species .about {
     display: flex;
     flex-direction: column;
@@ -3355,8 +3369,11 @@ button.icon .sem-action-icon { display: block; }
     min-width: 0;
 }
 
+.sem-block .name { font-weight: 600; }
+
 .sem-showcase .species .name { font-weight: 600; }
 
+.sem-block .kind,
 .sem-showcase .species .kind {
     color: var(--text-dim);
     font-size: var(--text-sm);
@@ -3816,39 +3833,62 @@ button.icon .sem-action-icon { display: block; }
 
    The card, with everything on it pressable.
 
-   The whole visual idea is that this reads as the empire and not as a form: no field borders, no
-   labels floating over boxes. So every target is a bare button that inherits its surroundings and
-   only admits to being a button when the pointer is over it. The hover treatment is the one thing
-   holding the affordance up, which is why it is a border and a background rather than a colour
-   change alone - a colour alone would be invisible to anyone who cannot see it, and the focus ring
-   below is what answers that.
+   Two columns, as the sections' editor has: the empire on the left and what it adds up to on the
+   right, following the page. The same breakpoints too - a card that reflowed at different widths
+   from the editor it toggles with would be two answers to one question.
+
+   It used to carry max-width: 56rem. With html at 81.25% that is 728px inside a container that
+   allows 1800, so it used well under half the page.
 */
 .sem-lite {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
     gap: var(--gap);
+
+    /* Load-bearing: without it the totals column stretches to the row and sticky does nothing. */
+    align-items: start;
+
     background: var(--bg-panel);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: var(--space-lg);
-    max-width: 56rem;
 }
 
-/* Every pressable thing on the card, which is nearly all of it. */
-.sem-lite button {
-    font: inherit;
-    color: inherit;
-    text-align: left;
-    background: none;
-    border: 1px solid transparent;
-    border-radius: var(--radius);
-    padding: var(--space-2xs) var(--space-xs);
-    cursor: pointer;
+@media (min-width: 1500px) { .sem-lite { grid-template-columns: minmax(0, 1fr) 400px; } }
+@media (min-width: 1800px) { .sem-lite { grid-template-columns: minmax(0, 1fr) 440px; } }
+
+.sem-lite-main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+    min-width: 0;
 }
 
-.sem-lite button:hover {
-    background: var(--bg-hover);
-    border-color: var(--accent-dim);
+/*
+   The right column. No overflow, no position beyond the sticking, and no z-index: each of those
+   makes a box that traps a popover, and every chip in the left column hangs one. The scroll goes on
+   the list of modifiers inside instead - see the note on the sections' own summary pane.
+*/
+.sem-lite-totals {
+    position: sticky;
+    top: var(--sticky-top);
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+    min-width: 0;
+}
+
+.sem-lite .sem-modifiers {
+    max-height: calc(100vh - var(--sticky-top) - 8rem);
+    overflow-y: auto;
+}
+
+@media (max-width: 1100px) {
+    .sem-lite { grid-template-columns: minmax(0, 1fr); }
+
+    .sem-lite-totals { position: static; }
+
+    .sem-lite .sem-modifiers { max-height: 420px; }
 }
 
 .sem-lite-shell {
@@ -3863,11 +3903,54 @@ button.icon .sem-action-icon { display: block; }
     justify-content: flex-end;
 }
 
-/* The scene, which is the biggest target and the one that looks least like a button. */
+/*
+   Every pressable thing the card draws itself, named one by one.
+
+   Not `.sem-lite button`. The card holds other components' controls - the gender icons, the spawn
+   phoenix, the chips, the fold over the problem list - and a rule that broad beat every one of
+   them on specificity and repainted them all as blank rectangles.
+*/
+.sem-lite-scene,
+.sem-lite .face-button,
+.sem-lite .name-button,
+.sem-lite-chips > .heading,
+.sem-lite-chips .value,
+.sem-lite-chips .sem-lite-empty,
+.sem-lite-field > .value,
+.sem-lite-tile {
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    background: none;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    padding: var(--space-2xs) var(--space-xs);
+    cursor: pointer;
+}
+
+.sem-lite-scene:hover,
+.sem-lite .face-button:hover,
+.sem-lite .name-button:hover,
+.sem-lite-chips > .heading:hover,
+.sem-lite-chips .value:hover,
+.sem-lite-chips .sem-lite-empty:hover,
+.sem-lite-field > .value:hover,
+.sem-lite-tile:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent-dim);
+}
+
+/*
+   The scene, which is the biggest target and the one that looks least like a button.
+
+   Capped at the room artwork's own width, so it is never drawn larger than the picture behind it -
+   the same rule the appearance tab's scene keeps.
+*/
 .sem-lite-scene {
     position: relative;
     padding: 0;
     overflow: hidden;
+    max-width: 952px;
 }
 
 /* The pencil that admits the scene is pressable, since nothing else about a photograph does. */
@@ -3891,113 +3974,121 @@ button.icon .sem-action-icon { display: block; }
     .sem-lite-hint { opacity: 1; }
 }
 
-.sem-lite-identity {
+.sem-lite .face-button {
+    padding: 0;
+    flex-shrink: 0;
+    align-self: stretch;
+}
+
+.sem-lite .name-button {
+    display: block;
+    width: 100%;
+    margin-left: calc(var(--space-xs) * -1);
+}
+
+.sem-lite .name-button > .name {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.sem-lite .name-button > .aside {
+    margin-left: var(--space-xs);
+    color: var(--text-dim);
+    font-style: italic;
+}
+
+.sem-lite .name-button > .aside.bad {
+    color: var(--bad);
+    font-style: normal;
+}
+
+.sem-lite .noface {
+    display: block;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+}
+
+/* A label and the one value beside it, for a setting that is a word rather than a picture. */
+.sem-lite-field {
     display: flex;
     align-items: center;
-    gap: var(--gap);
-}
-
-.sem-lite-flag { padding: var(--space-2xs); flex-shrink: 0; }
-
-.sem-lite-titles { flex: 1; min-width: 0; }
-
-.sem-lite-name {
-    display: block;
-    width: 100%;
-    font-size: var(--text-xl);
-    font-weight: 600;
-    line-height: 1.2;
-}
-
-/* The field that replaces it, sized to sit exactly where the name was. */
-.sem-lite-name-field {
-    width: 100%;
-    font-size: var(--text-xl);
-    font-weight: 600;
-    line-height: 1.2;
-    padding: var(--space-2xs) var(--space-xs);
-}
-
-.sem-lite-sub {
-    display: block;
-    width: 100%;
-    color: var(--text-dim);
-    font-size: var(--text-sm);
-}
-
-.sem-lite-sub.faint { color: var(--text-faint); }
-
-.sem-lite-settings { flex-shrink: 0; }
-
-.sem-lite-species {
-    display: flex;
-    gap: var(--gap);
-    align-items: flex-start;
-}
-
-.sem-lite-face { padding: 0; flex-shrink: 0; }
-
-.sem-lite-face img,
-.sem-lite-noface {
-    display: block;
-    width: var(--face-w);
-    height: var(--face-h);
-    object-fit: cover;
-    object-position: top center;
-    border-radius: var(--radius);
-}
-
-.sem-lite-noface { background: var(--bg-raised); border: 1px solid var(--border); }
-
-.sem-lite-about {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2xs);
-    align-items: flex-start;
-}
-
-.sem-lite-species-name { display: block; }
-
-.sem-lite-species-name .name { font-weight: 600; }
-
-.sem-lite-species-name .kind {
-    display: block;
-    color: var(--text-dim);
-    font-size: var(--text-sm);
-}
-
-.sem-lite-empty { color: var(--text-faint); font-size: var(--text-sm); }
-
-/*
-   A row of chips. The row is a plain container and its label is the button, because each chip is
-   already a button of its own - it opens the popover describing the option - and one cannot sit
-   inside the other.
-*/
-.sem-lite-chips {
-    display: flex;
     flex-wrap: wrap;
-    align-items: center;
     gap: var(--space-sm);
 }
 
-.sem-lite-chips .heading {
+.sem-lite-field > .label,
+.sem-lite-chips > .heading {
     color: var(--text-dim);
     font-size: var(--text-xs);
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    flex-shrink: 0;
+}
+
+/* Gender beside leader class: two sets of icons that mean two different things. */
+.sem-lite-pickers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xl);
 }
 
 /*
-   The rest, as tiles. Artwork where the game has any and words where it has none, which is why the
-   picture is optional and the label and value are not.
+   The rows of choices, sharing one label gutter.
+
+   subgrid rather than a width on each heading: the rows are separate elements, so only a track they
+   all inherit can make them agree, and a fixed gutter would either truncate "Authority" or waste
+   the difference on "Traits". Without it every row started its chips at a different place, which is
+   a ragged edge straight down the middle of the card.
+*/
+.sem-lite-choices {
+    display: grid;
+    grid-template-columns: fit-content(11rem) minmax(0, 1fr);
+    gap: var(--space-sm) var(--space-lg);
+    align-items: start;
+}
+
+.sem-lite-chips {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
+    align-items: start;
+}
+
+/* start, not stretch: the hover border should hug the word, not the whole gutter. */
+.sem-lite-chips > .heading {
+    justify-self: start;
+    white-space: nowrap;
+}
+
+.sem-lite-chips > .chips {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-sm);
+    min-width: 0;
+}
+
+.sem-lite-chips .sem-lite-empty {
+    color: var(--text-faint);
+    font-size: var(--text-sm);
+}
+
+.sem-lite-chips .value {
+    color: var(--text-dim);
+    font-size: var(--text-sm);
+}
+
+/*
+   The choices the game draws a real picture for. Capped at three tracks: there are two of these, or
+   three for a nomad, and left to the column's width auto-fill made seven of which four were always
+   empty. Capped here rather than by widening the track, so a shipset tile is the same size whether
+   or not the empire flies an arkship.
 */
 .sem-lite-tiles {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: var(--space-md);
+    max-width: 640px;
 }
 
 .sem-lite-tile {
@@ -4012,11 +4103,9 @@ button.icon .sem-action-icon { display: block; }
 /*
    A fixed height rather than a ratio, and the words pushed to the foot of the tile below.
 
-   These pictures are nothing like each other: a planet is a circle, a ship render is a wide strip,
-   a city is a thin silhouette, and four of the tiles have no picture at all. Sized by ratio they
-   each took a different amount of room, so no two labels in a row started at the same height and a
-   tile with no art put its label where its neighbour put its picture. Same box for every picture,
-   same line for every label.
+   These pictures are nothing like each other: a planet is a circle and a ship render is a wide
+   strip. Sized by ratio they each took a different amount of room, so no two labels in a row
+   started at the same height.
 */
 .sem-lite-tile .art {
     display: block;
@@ -4026,9 +4115,8 @@ button.icon .sem-action-icon { display: block; }
     border-radius: var(--radius);
 }
 
-.sem-lite-tile .label { margin-top: auto; }
-
 .sem-lite-tile .label {
+    margin-top: auto;
     color: var(--text-dim);
     font-size: var(--text-xs);
     text-transform: uppercase;
@@ -4042,8 +4130,11 @@ button.icon .sem-action-icon { display: block; }
     white-space: nowrap;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 900px) {
     .sem-lite { padding: var(--space-md); }
+
+    /* No room for a gutter; the label goes back above its chips, as the showcase does it. */
+    .sem-lite-choices { grid-template-columns: minmax(0, 1fr); }
 
     .sem-lite-tiles { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
 }
