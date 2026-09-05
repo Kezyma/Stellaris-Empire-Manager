@@ -51,12 +51,17 @@
         {
             <h4>@Name</h4>
 
-            @if (Session.Localizer.Html($"{Key}_desc", string.Empty) is { Length: > 0 } lore)
+            @if (Lore is { Length: > 0 } lore)
             {
                 <div class="sem-detail-lore">@((MarkupString)lore)</div>
             }
 
-            <EffectsList Effects="@Effects" ShowNothing="true" />
+            @*
+                "No effects" only where the panel would otherwise be empty. A homeworld has prose and
+                no numbers of its own, and a line saying so under a paragraph that has already
+                answered the question is a line that makes the panel look broken.
+            *@
+            <EffectsList Effects="@Effects" ShowNothing="@(Lore.Length == 0)" />
         }
     </div>
 </span>
@@ -76,6 +81,17 @@
     /// <summary>Its picture, where it has one.</summary>
     [Parameter]
     public string? Icon { get; set; }
+
+    /// <summary>
+    /// Where its prose lives, when that is not its own key with <c>_desc</c> after it.
+    /// </summary>
+    /// <remarks>
+    /// Almost everything is described under its own key. A homeworld is not: a planet class says
+    /// nothing about itself and borrows the description of the habitability trait it grants, and an
+    /// arkship keeps its own under a different suffix again.
+    /// </remarks>
+    [Parameter]
+    public string? DescriptionKey { get; set; }
 
     /// <summary>What it does, shown in the panel behind it.</summary>
     [Parameter]
@@ -106,6 +122,10 @@
 
     /// <summary>Whether pressing this chip opens something.</summary>
     private bool Opens => OnSelect.HasDelegate;
+
+    /// <summary>What the game says about it, from wherever it says it.</summary>
+    private string Lore =>
+        Session.Localizer.Html(DescriptionKey ?? $"{Key}_desc", string.Empty) ?? string.Empty;
 
     private ElementReference _anchor;
     private ElementReference _panel;

@@ -12,7 +12,18 @@ namespace Sem.Ui.Services;
 /// voice borrows an ethic's or a trait's name, so its key says nothing about what it is called.</param>
 /// <param name="Icon">Its artwork, where the game has any.</param>
 /// <param name="Effects">What it does, so a chip can say so without a second lookup.</param>
-public sealed record EmpireChoice(string Key, string Name, string? Icon, EffectSet? Effects);
+public sealed record EmpireChoice(string Key, string Name, string? Icon, EffectSet? Effects)
+{
+    /// <summary>
+    /// Where its prose lives, when that is not its own key with <c>_desc</c> after it.
+    /// </summary>
+    /// <remarks>
+    /// Almost everything the game describes is described under its own key. The two that are not
+    /// are both homeworlds: a world says nothing about itself and borrows the description of the
+    /// habitability trait it grants, and an arkship keeps its under <c>_selector_desc</c>.
+    /// </remarks>
+    public string? Description { get; init; }
+}
 
 /// <summary>
 /// One option the empire has chosen, and the modifiers it actually contributed.

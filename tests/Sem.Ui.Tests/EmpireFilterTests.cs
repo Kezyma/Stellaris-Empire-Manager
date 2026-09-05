@@ -1,4 +1,5 @@
 using Sem.Designs;
+using Sem.GameData;
 using Sem.Ui.Services;
 
 namespace Sem.Ui.Tests;
@@ -57,6 +58,41 @@ public sealed class EmpireFilterTests
 
         Assert.True(filter.Matches(Row("Both", civics: ["civic_anglers", "civic_agrarian_idyll"])));
         Assert.False(filter.Matches(Row("One", civics: ["civic_anglers"])));
+    }
+
+    /// <summary>
+    /// A heading whose answer is yes or no matches on the answer, either way round.
+    /// </summary>
+    /// <remarks>
+    /// These read as ordinary headings with two choices, which is what gives them three states out
+    /// of one control: yes, no, and - ticking neither - all of them.
+    /// </remarks>
+    [Fact]
+    public void AYesOrNoHeadingMatchesEitherAnswer()
+    {
+        var preset = new EmpireFilter();
+        preset.Keys("preset").Add("yes");
+
+        Assert.True(preset.Matches(Row("One of the game's", preset: true)));
+        Assert.False(preset.Matches(Row("One of mine")));
+
+        var mine = new EmpireFilter();
+        mine.Keys("preset").Add("no");
+
+        Assert.False(mine.Matches(Row("One of the game's", preset: true)));
+        Assert.True(mine.Matches(Row("One of mine")));
+    }
+
+    /// <summary>Ticking both answers is the same as ticking neither, which is how "all" is said.</summary>
+    [Fact]
+    public void TickingBothAnswersAsksForEveryEmpire()
+    {
+        var filter = new EmpireFilter();
+        filter.Keys("nomadic").Add("yes");
+        filter.Keys("nomadic").Add("no");
+
+        Assert.True(filter.Matches(Row("Wanderers", nomadic: true)));
+        Assert.True(filter.Matches(Row("Settlers")));
     }
 
     /// <summary>Only the headings an empire can hold several of are offered the choice.</summary>
@@ -211,12 +247,17 @@ public sealed class EmpireFilterTests
         string? text = null,
         IReadOnlyList<string>? civics = null,
         IReadOnlyList<string>? ethics = null,
-        string? origin = null) =>
+        string? origin = null,
+        bool preset = false,
+        bool nomadic = false) =>
         new()
         {
             Design = EmpireDesignsFile.CreateEmpty().Add(name),
+            Preset = preset ? new PrescriptedEmpireSummary(name, "test") : null,
+            Nomadic = nomadic,
             Name = name,
             Text = text ?? name,
+            AuthorityChips = [],
             Ethics = [.. (ethics ?? []).Select(Choice)],
             Civics = [.. (civics ?? []).Select(Choice)],
             Origin = origin is null ? null : Choice(origin),

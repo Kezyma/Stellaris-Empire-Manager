@@ -545,7 +545,10 @@ export async function copyText(text) {
  * @param {object} owner what to tell when a card has been moved
  */
 export function enableCardReorder(list, owner) {
-    if (!list || list.dataset.semReorder) {
+    // dataset rather than the element itself, because a reference to an element that was never
+    // rendered does not arrive as nothing - it arrives as an object with none of an element's
+    // properties, and asking that one for a dataset is what threw.
+    if (!list?.dataset || list.dataset.semReorder) {
         return;
     }
 

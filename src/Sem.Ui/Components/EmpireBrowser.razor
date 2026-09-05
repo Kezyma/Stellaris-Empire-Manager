@@ -165,7 +165,10 @@
     /// </remarks>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender)
+        // The list is inside the branch that draws a file, so on a first render with none there is
+        // no element to hand over - and an unrendered reference is not null, it is an object the
+        // script cannot use. Nothing to drag yet either way.
+        if (!firstRender || Session.File is null)
         {
             return;
         }

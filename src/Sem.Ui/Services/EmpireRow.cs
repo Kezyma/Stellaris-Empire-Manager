@@ -66,6 +66,20 @@ public sealed record EmpireRow
 
     public EmpireChoice? Authority { get; init; }
 
+    /// <summary>
+    /// The authority as the card draws it, which for a nomad is the authority and the nomad marker.
+    /// </summary>
+    /// <remarks>
+    /// Two lists for one heading, because the column and the filter want different things. Nomadic
+    /// is not an authority - the game puts it beside them because it rules out a good many civics -
+    /// so it belongs in the cell, and offering it among the authorities to filter by would be
+    /// offering a fifth thing that is not one of the four.
+    /// </remarks>
+    public required IReadOnlyList<EmpireChoice> AuthorityChips { get; init; }
+
+    /// <summary>Whether the empire wanders rather than settling, which is a heading of its own.</summary>
+    public bool Nomadic { get; init; }
+
     public required IReadOnlyList<EmpireChoice> Ethics { get; init; }
 
     public required IReadOnlyList<EmpireChoice> Civics { get; init; }
@@ -109,6 +123,33 @@ public sealed record EmpireRow
     /// view is thrown away afterwards: it holds a context, and ninety of those kept alive to answer
     /// questions nobody is asking is a great deal of memory for a list.
     /// </remarks>
+    /// <summary>
+    /// A world, described by what living on it would do to the species that does.
+    /// </summary>
+    /// <remarks>
+    /// A planet class says nothing about itself in the game's files - no description, no effects -
+    /// so both come from the habitability trait it grants, which is where the homeworld editor gets
+    /// them too. Without this the chip had a picture and a name and a panel with nothing in it.
+    /// </remarks>
+    private static EmpireChoice Habitable(
+        DesignSession session,
+        GameDatabase database,
+        EmpireView view,
+        PlanetClassDefinition world)
+    {
+        var preference = session.Rules.HabitabilityTraitFor(view.Context);
+        var trait = preference is null ? null : database.Traits.FirstOrDefault(t => t.Key == preference);
+
+        return new EmpireChoice(
+            world.Key,
+            session.Localizer.Text(world.Key),
+            world.Icon,
+            trait?.Effects ?? EffectSet.None)
+        {
+            Description = preference is { Length: > 0 } ? $"{preference}_desc" : null,
+        };
+    }
+
     public static EmpireRow Read(
         DesignSession session,
         EmpireDesign design,
@@ -171,6 +212,9 @@ public sealed record EmpireRow
                     authority.Effects)
                 : null,
 
+            AuthorityChips = [.. view.AuthorityChoice],
+            Nomadic = design.IsNomadic == true,
+
             Ethics = [.. view.Ethics],
             Civics = [.. view.Civics],
 
@@ -188,9 +232,23 @@ public sealed record EmpireRow
 
             Traits = [.. view.Traits],
 
-            PlanetClass = world is { } home
-                ? new EmpireChoice(home.Key, loc.Text(home.Key), home.Icon, null)
-                : null,
+            // A nomad's homeworld is its ship. The class underneath still reads pc_ark, because
+            // that is what the game records, but a picture of the ark world says nothing about an
+            // empire whose whole point is that it does not live on one.
+            PlanetClass = design.IsNomadic == true && view.Arkship is { } ark
+                ? new EmpireChoice(
+                    ark.Key,
+                    loc.Text(ark.NameKey, Localizer.Prettify(ark.Key)),
+                    ark.Preview is { Length: > 0 } render ? render : ark.Icon,
+                    EffectSet.None)
+                {
+                    // Written out by hand in the same entry as its prose, so composing an effect
+                    // set from the ship size would put the same numbers on the panel twice.
+                    Description = ark.DescriptionKey,
+                }
+                : world is { } home
+                    ? Habitable(session, database, view, home)
+                    : null,
 
             // No icon: a starting system is a description of a place rather than a thing with a
             // picture, and the game gives these none.
@@ -254,8 +312,10 @@ public sealed record EmpireFacet(
     /// <summary>Every heading with a list behind it, which is everything that is picked rather than typed.</summary>
     public static IReadOnlyList<EmpireFacet> All { get; } =
     [
+        new("preset", "Preset", r => YesOrNo(r.Preset is not null)),
         new("government", "Government", r => Some(r.Government)),
         new("authority", "Authority", r => Some(r.Authority)),
+        new("nomadic", "Nomadic", r => YesOrNo(r.Nomadic)),
         new("ethics", "Ethics", r => r.Ethics),
         new("civics", "Civics", r => r.Civics),
         new("origin", "Origin", r => Some(r.Origin)),
@@ -278,6 +338,22 @@ public sealed record EmpireFacet(
 
     internal static IReadOnlyList<EmpireChoice> Some(EmpireChoice? choice) =>
         choice is null ? [] : [choice];
+
+    /// <summary>
+    /// A heading whose answer is yes or no, as the one choice an empire holds under it.
+    /// </summary>
+    /// <remarks>
+    /// Which makes it the same kind of heading as every other: ticking Yes asks for the empires that
+    /// are, ticking No for the ones that are not, and ticking neither - or both - asks for all of
+    /// them. Three answers out of the control the other eleven already use, rather than a twelfth
+    /// kind of control that only these two would want.
+    /// </remarks>
+    private static IReadOnlyList<EmpireChoice> YesOrNo(bool held) =>
+        [held ? Yes : No];
+
+    private static readonly EmpireChoice Yes = new("yes", "Yes", null, null);
+
+    private static readonly EmpireChoice No = new("no", "No", null, null);
 }
 
 /// <summary>
@@ -307,8 +383,14 @@ public sealed record EmpireColumn(
     /// </remarks>
     public static IReadOnlyList<EmpireColumn> All { get; } =
     [
+        Picked("preset", false),
         Picked("government", true),
-        Picked("authority", true),
+
+        // The one column that is not read straight off its heading: nomadic belongs in the cell
+        // beside the authority, where the game puts it and where the card already draws it.
+        new("authority", "Authority", true, r => r.AuthorityChips),
+
+        Picked("nomadic", false),
         Picked("ethics", true),
         Picked("civics", true),
         Picked("origin", true),
