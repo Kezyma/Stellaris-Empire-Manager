@@ -75,7 +75,8 @@ else
             <div class="preview" @ref="_preview">
                 @if (Previewed is { } previewed)
                 {
-                    <EmpireShowcase Design="previewed" Lore="@_previewSource?.DescriptionKey">
+                    <EmpireShowcase Design="previewed" Lore="@_previewSource?.DescriptionKey"
+                                    FoldModifiers="true">
                         <Actions>
                             @*
                                 Glyphs, in the same order and the same shapes the designer puts them
