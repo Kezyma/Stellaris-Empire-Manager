@@ -63,12 +63,18 @@ else if (Thumbnail is { Length: > 0 } thumbnail)
     /// A design stores the group — the game's own United Nations of Earth records
     /// <c>portrait = "human"</c> — and the group picks a face by gender. The wardrobe is keyed by
     /// the face rather than the group, so it is the face that has to be looked up.
+    ///
+    /// Both halves come from the ruler where the ruler has them and from the species where they do
+    /// not, which is what makes the gender buttons change the face: a ruler with no portrait of
+    /// their own used to have no likeness at all here, and the panel drew nothing.
     /// </remarks>
     private string? Likeness => PortraitArtwork.Resolve(
-        Session.Data.Database, Design.Ruler.Portrait, Design.Ruler.Gender);
+        Session.Data.Database,
+        PortraitArtwork.RulerPortrait(Design),
+        PortraitArtwork.RulerGender(Design));
 
     private PortraitDefinition? Portrait => Session.Data.Database.Portraits
-        .FirstOrDefault(p => p.Key == Design.Ruler.Portrait);
+        .FirstOrDefault(p => p.Key == PortraitArtwork.RulerPortrait(Design));
 
     private string? Thumbnail => Session.Data.Database.Portraits
         .FirstOrDefault(p => p.Key == Likeness)?.Thumbnail;

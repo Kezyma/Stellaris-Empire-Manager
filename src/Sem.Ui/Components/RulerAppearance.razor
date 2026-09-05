@@ -24,6 +24,15 @@
     </div>
 
     <div class="controls">
+        @*
+            Which face of the group is worn, which is what gender decides. First, because it is the
+            coarsest of the choices here - the phenotype below picks among the faces this leaves.
+        *@
+        <div class="sem-field flush">
+            <label>@Session.Localizer.Label("GENDER", "Gender")</label>
+            <GenderPicker Value="@Design.Ruler.Gender" OnChange="ChooseGender" />
+        </div>
+
         @if (Members.Count > 1)
         {
             <Stepper Label="@Session.Localizer.Label("LEADER_SUB_PORTRAIT", "Phenotype")"
@@ -110,12 +119,18 @@
     /// A design stores the group — the game's own United Nations of Earth records
     /// <c>portrait = "human"</c> — and the group picks a face by gender. The wardrobe is keyed by
     /// the face rather than the group, so it is the face that has to be looked up.
+    ///
+    /// Both halves come from the ruler where the ruler has them and from the species where they do
+    /// not, which is what makes the gender buttons change the face: a ruler with no portrait of
+    /// their own used to have no likeness at all here, and the panel drew nothing.
     /// </remarks>
     private string? Likeness => PortraitArtwork.Resolve(
-        Session.Data.Database, Design.Ruler.Portrait, Design.Ruler.Gender);
+        Session.Data.Database,
+        PortraitArtwork.RulerPortrait(Design),
+        PortraitArtwork.RulerGender(Design));
 
     private PortraitDefinition? Portrait => Session.Data.Database.Portraits
-        .FirstOrDefault(p => p.Key == Design.Ruler.Portrait);
+        .FirstOrDefault(p => p.Key == PortraitArtwork.RulerPortrait(Design));
 
     /// <summary>
     /// The group the worn likeness belongs to, whether the design named the group or the face.
@@ -149,19 +164,58 @@
     /// female ones, and its editor offers whichever run matches the ruler. A ruler of no stated
     /// gender is offered everything the group has.
     /// </remarks>
-    private IReadOnlyList<string> Members
-    {
-        get
-        {
-            if (Group is not { } group)
-            {
-                return [];
-            }
+    private IReadOnlyList<string> Members => FacesFor(Design.Ruler.Gender);
 
-            return group.PhenotypesFor(Design.Ruler.Gender) is { Count: > 0 } forGender
-                ? forGender
-                : [.. group.Phenotypes.Values.SelectMany(f => f).Distinct(StringComparer.Ordinal)];
+    /// <summary>The faces the group offers for one gender, or all of them where it names none.</summary>
+    private IReadOnlyList<string> FacesFor(string? gender)
+    {
+        if (Group is not { } group)
+        {
+            return [];
         }
+
+        return group.PhenotypesFor(gender) is { Count: > 0 } forGender
+            ? forGender
+            : [.. group.Phenotypes.Values.SelectMany(f => f).Distinct(StringComparer.Ordinal)];
+    }
+
+    /// <summary>
+    /// Sets the ruler's gender, and moves their face to the matching one.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Only where the design holds a face rather than a group. A group is resolved by gender every
+    /// time it is drawn, so pressing Male is enough and there is nothing to write; a face is already
+    /// chosen, and left alone the picture stayed female while every control under it counted through
+    /// the male ones. The stepper said one thing and the portrait showed another.
+    /// </para>
+    /// <para>
+    /// The position is kept rather than the face reset: the fourth of the five female humans becomes
+    /// the fourth of the five male ones, which is what the game's own spinner does. And a face the
+    /// new gender already offers is left exactly as it is - going to "no preference" widens the run
+    /// to all of them rather than choosing again within it.
+    /// </para>
+    /// </remarks>
+    private void ChooseGender(string key)
+    {
+        // Read before the edit. Both are worked out from the gender being replaced, and afterwards
+        // they describe the run the ruler has just moved to rather than the one they came from.
+        var index = PhenotypeIndex;
+        var faces = FacesFor(key);
+
+        var named = Design.Ruler.Portrait is { Length: > 0 } own
+            && Session.Data.Database.Portraits.FirstOrDefault(p => p.Key == own) is { IsGroup: false } face
+            && !faces.Contains(face.Key, StringComparer.Ordinal);
+
+        Session.Edit(d =>
+        {
+            d.Ruler.Gender = key;
+
+            if (named && faces.Count > 0)
+            {
+                d.Ruler.Portrait = faces[Math.Min(index, faces.Count - 1)];
+            }
+        });
     }
 
     private int PhenotypeIndex => Likeness is { } face

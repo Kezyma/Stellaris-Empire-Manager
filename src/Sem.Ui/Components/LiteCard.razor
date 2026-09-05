@@ -27,6 +27,21 @@
 @using Sem.Rules
 
 <div class="sem-lite">
+    @*
+        The row of things you can do to the empire, in the card rather than above it. It belongs to
+        the empire, and the empire is what the card is - a row floating over the top read as the
+        page's furniture, and in a dialog there is no page for it to be the furniture of.
+
+        A cell of the card's own grid, written first and placed by the stylesheet, rather than a
+        child of the column it appears to sit in. That is what lets one column put it at the top:
+        the totals fall below the panels there, and buttons inside them would be a phone's worth of
+        scrolling away from Save.
+    *@
+    @if (Actions is not null)
+    {
+        <div class="sem-lite-actions">@Actions</div>
+    }
+
     <div class="sem-lite-main">
 
         @*
@@ -277,7 +292,8 @@
                                    [Read(Design.Ruler.TitleFemale)], View.RulerTitle,
                                    LitePart.Ruler, "Edit the ruler's name and titles")
 
-                            @Icon(GenderPicker.Held(Design.Ruler.Gender), LitePart.Ruler)
+                            @* The gender decides which face of the group is worn, so it opens the appearance. *@
+                            @Icon(GenderPicker.Held(Design.Ruler.Gender), LitePart.RulerAppearance)
                             @Icon((RulerClassName, RulerClass?.Icon), LitePart.Ruler, sprite: false)
                         </div>
 
@@ -325,6 +341,14 @@
     /// <summary>Raised with the part whose editor should open.</summary>
     [Parameter]
     public EventCallback<LitePart> OnEdit { get; set; }
+
+    /// <summary>The save, revert, delete and share row, which the card draws in its corner.</summary>
+    /// <remarks>
+    /// Handed in rather than built here. What the buttons do is the editor's business - it holds
+    /// the empire, the guard and the questions - and the card only knows where they sit.
+    /// </remarks>
+    [Parameter]
+    public RenderFragment? Actions { get; set; }
 
     /// <summary>The empire as it was last saved, for the totals to compare against.</summary>
     [Parameter]
