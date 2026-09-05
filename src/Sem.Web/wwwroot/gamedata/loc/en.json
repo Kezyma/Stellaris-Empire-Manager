@@ -1,4 +1,13 @@
 {
+  "tradition_cybernetics": "Cybernetics",
+  "tradition_genetics": "Genetics",
+  "tradition_purity": "Purity",
+  "tradition_cloning": "Cloning",
+  "tradition_mutation": "Mutation",
+  "tradition_psionics": "Psionics",
+  "tradition_synthetics": "Synthetics",
+  "TRADITIONS": "Traditions",
+  "ASCENSION_PERKS": "Ascension Perks",
   "BIOLOGICAL": "Biological",
   "ROBOT": "Mechanical",
   "MACHINE": "Machine",
