@@ -351,29 +351,6 @@
     /// <summary>The box that number goes in, so it can be given the keyboard when it appears.</summary>
     private ElementReference _spinner;
 
-    /// <summary>Handed to the script that watches for a press outside the open box.</summary>
-    private DotNetObjectReference<EmpireTable>? _self;
-
-    /// <summary>
-    /// Puts the number back, the reader having pressed something else.
-    /// </summary>
-    /// <remarks>
-    /// Called from the page rather than from the box losing focus. Focus was the obvious signal and
-    /// turned out not to be a dependable one - blur does not bubble, and focusout wants the window
-    /// to be the focused one - so a number pressed once stayed a box for the rest of the session.
-    /// </remarks>
-    [JSInvokable]
-    public void StopMoving()
-    {
-        if (_moving is null)
-        {
-            return;
-        }
-
-        _moving = null;
-        StateHasChanged();
-    }
-
     /// <summary>Whether it is waiting to be focused, which is true for exactly one render.</summary>
     /// <remarks>
     /// Focused from here rather than with the autofocus attribute, which the browser only honours
@@ -425,9 +402,7 @@
 
             await _module.InvokeVoidAsync("bindPopoversWhenPointed", _wrap).ConfigureAwait(true);
 
-            _self ??= DotNetObjectReference.Create(this);
-            await _module.InvokeVoidAsync("closeSpinnerOnOutsidePress", _wrap, _self)
-                .ConfigureAwait(true);
+            await _module.InvokeVoidAsync("closeSpinnerOnOutsidePress").ConfigureAwait(true);
 
             // Every render, because what fits changes with the columns as well as with the window,
             // and only one of those is something the browser can watch for itself.
@@ -447,8 +422,6 @@
 
     public async ValueTask DisposeAsync()
     {
-        _self?.Dispose();
-
         if (_module is null)
         {
             return;
@@ -570,6 +543,15 @@
     /// to be translated.
     /// </remarks>
     /// <summary>Puts the number back without moving anything, for somebody who changed their mind.</summary>
+    /// <summary>
+    /// Puts the number back, the box having been given up on.
+    /// </summary>
+    /// <remarks>
+    /// Two things arrive here. One is a reader pressing Escape, which is what it was written for.
+    /// The other is a press somewhere else on the page: the script watching for that presses Escape
+    /// at the box rather than calling in, so there is one way to close a box rather than two, and
+    /// nothing on the page holds a handle on this component in order to say so.
+    /// </remarks>
     private void Leave(KeyboardEventArgs e)
     {
         if (e.Key == "Escape")

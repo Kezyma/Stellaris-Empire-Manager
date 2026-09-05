@@ -246,32 +246,43 @@ export function bindPopoversWhenPointed(root) {
 }
 
 /**
- * Puts a table's open number box away when the next press lands somewhere else.
+ * Puts an open number box away when the next press lands somewhere else.
  *
  * The obvious way to do this is the focus leaving the box, and that is what it did at first. It is
  * not reliable enough: blur does not bubble, and focusout depends on the document having the
  * window's focus at all - so a box opened, focused and then left alone stayed a box.
  *
- * A press is something the page can always see. This is the same listener the suggestion lists use
- * and for the same reason, captured so that nothing inside the page can stop it arriving first.
+ * One listener for the page, and the flag that says so belongs to the module. It used to belong to
+ * the table's own box, and that box is thrown away and built again whenever the filter empties the
+ * table - so each new one carried no flag and added another listener to the document that nothing
+ * ever took away, every one of them holding a detached table and a handle on managed code that had
+ * since been disposed. An element's flag is a true statement about listeners hanging off that
+ * element, which is what the popover binding above uses it for: those die when it does. It says
+ * nothing whatever about a listener on the document.
  *
- * @param {HTMLElement} wrap the box around the table
- * @param {object} owner what to tell when the press was outside
+ * Nothing is called back into managed code either, for the same reason the suggestion lists press
+ * their own arrow: the box already closes itself on Escape, so pressing Escape at it says what
+ * needs saying and leaves nothing to keep in step.
  */
-export function closeSpinnerOnOutsidePress(wrap, owner) {
-    if (!wrap || wrap.dataset.semSpinner) {
+let watchingForSpinnerPress = false;
+
+export function closeSpinnerOnOutsidePress() {
+    if (watchingForSpinnerPress) {
         return;
     }
 
-    wrap.dataset.semSpinner = 'on';
+    watchingForSpinnerPress = true;
 
+    // Captured, so a press is seen before anything inside the page can stop it travelling.
     document.addEventListener('pointerdown', event => {
-        const open = wrap.querySelector('td.index input');
-
         // The cell rather than the box, so the arrows a number box draws inside itself are a press
         // on the thing being typed into rather than a press somewhere else.
-        if (open && !event.target.closest?.('td.index')) {
-            owner.invokeMethodAsync('StopMoving');
+        if (event.target.closest?.('td.index')) {
+            return;
+        }
+
+        for (const open of document.querySelectorAll('td.index input')) {
+            open.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
         }
     }, true);
 }
