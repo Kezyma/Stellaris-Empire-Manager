@@ -22,7 +22,7 @@
         cannot hold buttons. So the parts that do something are buttons, and the space between them
         opens the list.
     *@
-    <div class="control" @onclick="() => _open = true">
+    <div class="control" @onclick="Show">
         @Leading
 
         @if (Selected.Count == 0)
@@ -62,18 +62,35 @@
         <button type="button" class="toggle" aria-expanded="@(_open ? "true" : "false")"
                 title="@(_open ? "Close the list" : "Show every option")"
                 aria-label="@(_open ? "Close the list" : "Show every option")"
-                @onclick="() => _open = !_open" @onclick:stopPropagation="true">▾</button>
+                @onclick="Flip" @onclick:stopPropagation="true">▾</button>
     </div>
 
     @if (_open)
     {
+        @*
+            A way through a long list. These offer what an empire may be given rather than what the
+            empires in front of the reader hold, which for portraits is two hundred and ninety-five
+            and for traits two hundred and eight - and a list that long is one to give up on rather
+            than to read. Short lists get no box, since scrolling four names is faster than typing.
+        *@
+        @if (Options.Count > Searchable)
+        {
+            <div class="search">
+                <input type="text" placeholder="Find" value="@_search" @ref="_box"
+                       @oninput="e => _search = e.Value?.ToString() ?? string.Empty"
+                       @onclick:stopPropagation="true" />
+            </div>
+        }
+
         <ul class="options">
-            @if (Options.Count == 0)
+            @if (Shown.Count == 0)
             {
-                <li class="sem-hint none">Nothing to choose from.</li>
+                <li class="sem-hint none">
+                    @(Options.Count == 0 ? "Nothing to choose from." : "Nothing matches.")
+                </li>
             }
 
-            @foreach (var option in Options)
+            @foreach (var option in Shown)
             {
                 var held = Selected.Contains(option.Key);
 
@@ -142,6 +159,30 @@
 
     private bool _open;
 
+    /// <summary>Above this many options the panel offers a way to search them.</summary>
+    private const int Searchable = 12;
+
+    /// <summary>What has been typed into that box, which narrows the list and nothing else.</summary>
+    private string _search = string.Empty;
+
+    private ElementReference _box;
+
+    /// <summary>Whether the box is waiting to be given the keyboard, which is one render.</summary>
+    private bool _focusBox;
+
+    /// <summary>
+    /// The options the panel is showing, which is all of them until something is typed.
+    /// </summary>
+    /// <remarks>
+    /// Matched anywhere in the name rather than at the start of it: the game's names put the
+    /// distinguishing word last as often as first - Fanatic Purifiers, Agrarian Idyll - and a
+    /// reader looking for purifiers should not have to know that.
+    /// </remarks>
+    private IReadOnlyList<EmpireChoice> Shown =>
+        _search.Length == 0
+            ? Options
+            : [.. Options.Where(o => o.Name.Contains(_search, StringComparison.CurrentCultureIgnoreCase))];
+
     private IJSObjectReference? _module;
 
     private async Task Toggle(string key)
@@ -156,10 +197,42 @@
 
     private void Dismiss(KeyboardEventArgs e)
     {
-        if (e.Key == "Escape")
+        if (e.Key != "Escape")
         {
-            _open = false;
+            return;
         }
+
+        // The typing goes first, since somebody who has narrowed the list and changed their mind
+        // means the narrowing rather than the panel.
+        if (_search.Length > 0)
+        {
+            _search = string.Empty;
+            return;
+        }
+
+        _open = false;
+    }
+
+    private void Show()
+    {
+        if (!_open)
+        {
+            Flip();
+        }
+    }
+
+    /// <summary>
+    /// Opens or closes the panel, forgetting what was typed into it either way.
+    /// </summary>
+    /// <remarks>
+    /// A panel that reopened still narrowed to whatever was last searched for would look like a
+    /// list with most of its options missing.
+    /// </remarks>
+    private void Flip()
+    {
+        _open = !_open;
+        _search = string.Empty;
+        _focusBox = _open && Options.Count > Searchable;
     }
 
     /// <summary>
@@ -167,6 +240,14 @@
     /// </summary>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        // Given the keyboard from here rather than with the autofocus attribute, which a browser
+        // only honours for an element that was in the document when the page loaded.
+        if (_focusBox)
+        {
+            _focusBox = false;
+            await _box.FocusAsync();
+        }
+
         if (!firstRender)
         {
             return;

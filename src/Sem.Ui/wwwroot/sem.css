@@ -3601,6 +3601,16 @@ button.icon .sem-action-icon { display: block; }
     min-width: 0;
 }
 
+/* The box that narrows a long list, held above it rather than scrolling away with it. */
+.sem-combo.sem-multi .search {
+    padding: var(--space-2xs);
+    border-bottom: 1px solid var(--border);
+}
+
+.sem-combo.sem-multi .search input {
+    padding: var(--space-2xs) var(--space-sm);
+}
+
 .sem-combo.sem-multi .options .none {
     padding: var(--space-sm) var(--space-md);
 }

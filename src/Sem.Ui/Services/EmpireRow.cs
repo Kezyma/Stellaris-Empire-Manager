@@ -1,5 +1,6 @@
 using Sem.Designs;
 using Sem.GameData;
+using Sem.Rules;
 using Sem.Ui.Components;
 
 namespace Sem.Ui.Services;
@@ -445,39 +446,44 @@ public sealed record EmpireFacet(
     string Key,
     string Label,
     Func<EmpireRow, IReadOnlyList<EmpireChoice>> Values,
-    Func<DesignSession, IReadOnlyList<EmpireChoice>>? Fixed = null)
+    Func<EmpireOptions, IReadOnlyList<EmpireChoice>>? Fixed = null)
 {
     /// <summary>Every heading with a list behind it, which is everything that is picked rather than typed.</summary>
     public static IReadOnlyList<EmpireFacet> All { get; } =
     [
         new("preset", "Preset", r => YesOrNo(r.Preset is not null)),
+
+        // Derived rather than chosen: a government is what an authority, some ethics and some
+        // civics add up to, and the hundred and seventy the game defines are not a list anybody
+        // picks from. What is offered is what these empires came to.
         new("government", "Government", r => Some(r.Government)),
-        new("authority", "Authority", r => Some(r.Authority)),
+
+        new("authority", "Authority", r => Some(r.Authority), o => o.Authorities),
         new("nomadic", "Nomadic", r => YesOrNo(r.Nomadic)),
-        new("ethics", "Ethics", r => r.Ethics),
-        new("civics", "Civics", r => r.Civics),
-        new("origin", "Origin", r => Some(r.Origin)),
-        new("class", "Species", r => Some(r.SpeciesClass)),
-        new("portrait", "Portrait", r => Some(r.Portrait)),
-        new("gender", "Gender", r => Some(r.Gender), Genders),
-        new("namelist", "Name list", r => Some(r.NameList)),
-        new("traits", "Traits", r => r.Traits),
+        new("ethics", "Ethics", r => r.Ethics, o => o.Ethics),
+        new("civics", "Civics", r => r.Civics, o => o.Civics),
+        new("origin", "Origin", r => Some(r.Origin), o => o.Origins),
+        new("class", "Species", r => Some(r.SpeciesClass), o => o.SpeciesClasses),
+        new("portrait", "Portrait", r => Some(r.Portrait), o => o.Portraits),
+        new("gender", "Gender", r => Some(r.Gender), o => o.Genders),
+        new("namelist", "Name list", r => Some(r.NameList), o => o.NameLists),
+        new("traits", "Traits", r => r.Traits, o => o.Traits),
         new("second", "Second species", r => YesOrNo(r.HasSecondSpecies)),
-        new("secondclass", "Second species kind", r => Some(r.SecondClass)),
-        new("secondtraits", "Second species traits", r => r.SecondTraits),
-        new("homeworld", "Homeworld", r => Some(r.PlanetClass)),
-        new("system", "Starting system", r => Some(r.StartingSystem)),
-        new("room", "Room", r => Some(r.Room)),
-        new("shipset", "Shipset", r => Some(r.Shipset)),
+        new("secondclass", "Second species kind", r => Some(r.SecondClass), o => o.SpeciesClasses),
+        new("secondtraits", "Second species traits", r => r.SecondTraits, o => o.Traits),
+        new("homeworld", "Homeworld", r => Some(r.PlanetClass), o => o.Homeworlds),
+        new("system", "Starting system", r => Some(r.StartingSystem), o => o.StartingSystems),
+        new("room", "Room", r => Some(r.Room), o => o.Rooms),
+        new("shipset", "Shipset", r => Some(r.Shipset), o => o.Shipsets),
         new("bioship", "Bioships", r => YesOrNo(r.Bioship)),
-        new("advisor", "Advisor voice", r => Some(r.Advisor)),
-        new("rulerclass", "Ruler class", r => Some(r.RulerClass)),
-        new("rulerportrait", "Ruler portrait", r => Some(r.RulerPortrait)),
-        new("rulergender", "Ruler gender", r => Some(r.RulerGender), Genders),
-        new("rulertraits", "Ruler traits", r => r.RulerTraits),
-        new("spawn", "AI spawning", r => Some(r.Spawn), Spawning),
+        new("advisor", "Advisor voice", r => Some(r.Advisor), o => o.Advisors),
+        new("rulerclass", "Ruler class", r => Some(r.RulerClass), o => o.RulerClasses),
+        new("rulerportrait", "Ruler portrait", r => Some(r.RulerPortrait), o => o.Portraits),
+        new("rulergender", "Ruler gender", r => Some(r.RulerGender), o => o.Genders),
+        new("rulertraits", "Ruler traits", r => r.RulerTraits, o => o.RulerTraits),
+        new("spawn", "AI spawning", r => Some(r.Spawn), o => o.Spawning),
         new("fallen", "Fallen empire", r => YesOrNo(r.Fallen)),
-        new("flagset", "Special flags", r => Some(r.FlagSet)),
+        new("flagset", "Special flags", r => Some(r.FlagSet), o => o.FlagSets),
     ];
 
     /// <summary>
@@ -499,19 +505,6 @@ public sealed record EmpireFacet(
 
     internal static IReadOnlyList<EmpireChoice> Some(EmpireChoice? choice) =>
         choice is null ? [] : [choice];
-
-    /// <summary>The four genders a design may hold, whichever of them anything in the list holds.</summary>
-    private static IReadOnlyList<EmpireChoice> Genders(DesignSession session) =>
-    [
-        .. GenderPicker.Offered.Select(g => new EmpireChoice(
-            g.Key, g.Label, session.Data.Database.Icons.GetValueOrDefault(g.Icon), null))
-    ];
-
-    /// <summary>The three states of the spawn setting, likewise.</summary>
-    private static IReadOnlyList<EmpireChoice> Spawning(DesignSession session) =>
-    [
-        .. SpawnToggle.Offered(session).Select(s => new EmpireChoice(s.Value, s.Name, s.Icon, null))
-    ];
 
     /// <summary>
     /// A heading whose answer is yes or no, as the one choice an empire holds under it.
@@ -713,4 +706,221 @@ public sealed class EmpireFilter
 
         public bool All { get; set; }
     }
+}
+
+/// <summary>
+/// Everything an empire the player builds could be given, heading by heading.
+/// </summary>
+/// <remarks>
+/// <para>
+/// The lists a filter offers should be the lists the editor offers. Narrower than that - only what
+/// the empires in front of the reader happen to hold - and a heading quietly says the rest do not
+/// exist; wider, and it is the game's whole database, of which the great majority is not something
+/// an empire can be given at all: 1127 traits, 546 portraits, 358 civics, 170 government types.
+/// </para>
+/// <para>
+/// So every heading asks whoever already answers the question. The pickers do it through the rules,
+/// against an empire with nothing chosen yet, and take what is visible rather than what is enabled -
+/// visible is "an empire may have this", enabled is "this one may have it now", and a filter wants
+/// the first. The few shelves with no rule behind them are read the way their picker reads them.
+/// </para>
+/// <para>
+/// Built once per set of rows and held: each of these is a pass over a database collection, and the
+/// card draws them on every keystroke in the search box.
+/// </para>
+/// </remarks>
+public sealed class EmpireOptions(DesignSession session)
+{
+    private readonly DesignSession _session = session;
+
+    private DesignContext? _blank;
+
+    private GameDatabase Database => _session.Data.Database;
+
+    private Localizer Loc => _session.Localizer;
+
+    /// <summary>
+    /// An empire with nothing chosen, which is what the pickers are asked about.
+    /// </summary>
+    /// <remarks>
+    /// The same scratch empire the front page builds to judge which of the game's own are playable.
+    /// It carries the player's content packs, so a heading offers what they own and no more.
+    /// </remarks>
+    private DesignContext Blank => _blank ??= _session.Rules.CreateContext(
+        EmpireDesignsFile.CreateEmpty().Add("scratch"),
+        _session.OwnedDlc);
+
+    public IReadOnlyList<EmpireChoice> Ethics =>
+        Named(Visible(_session.Rules.GetEthicOptions(Blank)), key =>
+        {
+            var ethic = Database.Ethics.FirstOrDefault(e => e.Key == key);
+            return new EmpireChoice(key, Loc.Text(key), ethic?.Icon, ethic?.Effects);
+        });
+
+    public IReadOnlyList<EmpireChoice> Civics =>
+        Named(Visible(_session.Rules.GetCivicOptions(Blank)), key => Civic(key));
+
+    public IReadOnlyList<EmpireChoice> Origins =>
+        Named(Visible(_session.Rules.GetOriginOptions(Blank)), key =>
+        {
+            var origin = Database.Civics.FirstOrDefault(c => c.Key == key);
+            return new EmpireChoice(
+                key,
+                Loc.Text(origin?.NameKey, Localizer.Prettify(key)),
+                origin?.Icon,
+                origin?.Effects);
+        });
+
+    public IReadOnlyList<EmpireChoice> Authorities =>
+        Named(Visible(_session.Rules.GetAuthorityOptions(Blank)), key =>
+        {
+            var authority = Database.Authorities.FirstOrDefault(a => a.Key == key);
+            return new EmpireChoice(
+                key,
+                Loc.Text(authority?.NameKey, Localizer.Prettify(key)),
+                authority?.Icon,
+                authority?.Effects);
+        });
+
+    public IReadOnlyList<EmpireChoice> SpeciesClasses =>
+        Named(Visible(_session.Rules.GetSpeciesClassOptions(Blank)), key =>
+            new EmpireChoice(key, Loc.Text(key), null, null));
+
+    public IReadOnlyList<EmpireChoice> Traits =>
+        Named(Visible(_session.Rules.GetSpeciesTraitOptions(Blank)), key => Trait(key));
+
+    public IReadOnlyList<EmpireChoice> RulerTraits =>
+        Named(Visible(_session.Rules.GetRulerTraitOptions(Blank)), key => Trait(key));
+
+    /// <summary>Every likeness the picker offers, which is its categories flattened.</summary>
+    public IReadOnlyList<EmpireChoice> Portraits =>
+        Named(
+            _session.Rules.GetPortraitOptions(Blank)
+                .SelectMany(group => group.Portraits)
+                .Where(o => o.Visible)
+                .Select(o => o.Key),
+            key => new EmpireChoice(
+                key,
+                Loc.Text(key, Localizer.Prettify(key)),
+                PortraitArtwork.For(Database, key, null),
+                null));
+
+    public IReadOnlyList<EmpireChoice> Homeworlds =>
+        Named(_session.Rules.GetHomeworldOptions(Blank), key =>
+            new EmpireChoice(
+                key,
+                Loc.Text(key),
+                Database.PlanetClasses.FirstOrDefault(p => p.Key == key)?.Icon,
+                null));
+
+    public IReadOnlyList<EmpireChoice> StartingSystems =>
+        Named(_session.Rules.GetStartingSystemOptions(Blank), key =>
+        {
+            var start = Database.Initializers.FirstOrDefault(i => i.Key == key);
+            return new EmpireChoice(key, Loc.Text(start?.NameKey, Localizer.Prettify(key)), null, null);
+        });
+
+    /// <summary>The rooms the picker offers, which is the ones the game marks as choosable.</summary>
+    public IReadOnlyList<EmpireChoice> Rooms =>
+        Named(
+            Database.Rooms.Where(r => r.IsOffered).Select(r => r.Key),
+            key => new EmpireChoice(key, Loc.Text(key, Localizer.Prettify(key)), null, null));
+
+    /// <summary>The shipsets the picker offers, which the rules have already narrowed.</summary>
+    public IReadOnlyList<EmpireChoice> Shipsets =>
+        Named(
+            Database.GraphicalCultures
+                .Where(c => _session.Rules.Database.GraphicalCultures.Contains(c))
+                .Select(c => c.Key),
+            key =>
+            {
+                var set = Database.GraphicalCultures.FirstOrDefault(c => c.Key == key);
+                return new EmpireChoice(
+                    key,
+                    Loc.Text(key.ToUpperInvariant(), Localizer.Prettify(key)),
+                    set?.ShipPreview,
+                    EffectSet.None)
+                {
+                    Description = set?.DescriptionKey,
+                };
+            });
+
+    public IReadOnlyList<EmpireChoice> Advisors =>
+        Named(
+            Database.AdvisorVoices.Select(v => v.Key),
+            key =>
+            {
+                var voice = Database.AdvisorVoices.FirstOrDefault(v => v.Key == key);
+                return new EmpireChoice(
+                    key, Loc.Text(voice?.NameKey, Localizer.Prettify(key)), voice?.Icon, null);
+            });
+
+    public IReadOnlyList<EmpireChoice> RulerClasses =>
+        Named(
+            Database.LeaderClasses.Where(c => c.CanRule).Select(c => c.Key),
+            key =>
+            {
+                var held = Database.LeaderClasses.FirstOrDefault(c => c.Key == key);
+                return new EmpireChoice(
+                    key, Loc.Text(held?.NameKey, Localizer.Prettify(key)), held?.Icon, null);
+            });
+
+    public IReadOnlyList<EmpireChoice> NameLists =>
+        Named(
+            Database.NameLists.Select(n => n.Key),
+            key => new EmpireChoice(key, Loc.Text(key, Localizer.Prettify(key)), null, null));
+
+    public IReadOnlyList<EmpireChoice> FlagSets =>
+        Named(
+            Database.EmpireFlagSets.Select(f => f.Key),
+            key =>
+            {
+                var set = Database.EmpireFlagSets.FirstOrDefault(f => f.Key == key);
+                return new EmpireChoice(
+                    key,
+                    set is null ? Localizer.Prettify(key) : EmpireView.FlagSetName(_session, set),
+                    null,
+                    null);
+            });
+
+    /// <summary>The four genders a design may hold, named and pictured by the picker that owns them.</summary>
+    public IReadOnlyList<EmpireChoice> Genders =>
+    [
+        .. GenderPicker.Offered.Select(g => new EmpireChoice(
+            g.Key, g.Label, Database.Icons.GetValueOrDefault(g.Icon), null))
+    ];
+
+    /// <summary>The three states of the spawn setting, likewise.</summary>
+    public IReadOnlyList<EmpireChoice> Spawning =>
+    [
+        .. SpawnToggle.Offered(_session).Select(s => new EmpireChoice(s.Value, s.Name, s.Icon, null))
+    ];
+
+    private EmpireChoice Civic(string key)
+    {
+        var civic = Database.Civics.FirstOrDefault(c => c.Key == key);
+
+        return new EmpireChoice(key, Loc.Text(key), civic?.Icon, civic?.Effects);
+    }
+
+    private EmpireChoice Trait(string key)
+    {
+        var trait = Database.Traits.FirstOrDefault(t => t.Key == key);
+
+        return new EmpireChoice(key, Loc.Text(key), trait?.Icon, trait?.Effects);
+    }
+
+    /// <summary>What an empire may have, which is not the same as what it may have right now.</summary>
+    private static IEnumerable<string> Visible(IEnumerable<OptionState> options) =>
+        options.Where(o => o.Visible).Select(o => o.Key);
+
+    private static IReadOnlyList<EmpireChoice> Named(
+        IEnumerable<string> keys,
+        Func<string, EmpireChoice> name) =>
+    [
+        .. keys
+            .Distinct(StringComparer.Ordinal)
+            .Select(name)
+            .OrderBy(c => c.Name, StringComparer.CurrentCulture)
+    ];
 }
