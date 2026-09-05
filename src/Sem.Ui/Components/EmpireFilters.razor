@@ -1,0 +1,331 @@
+@implements IDisposable
+
+@*
+    What the reader is looking for, in a card above the lists.
+
+    Above rather than inside the table, and deliberately: a filter row wedged into a header is a row
+    that fights the columns for width, disappears when its column is hidden, and has nowhere to put
+    a control that narrows something the table is not currently showing. These narrow the empires,
+    not the columns, so they sit with the question rather than with the answer.
+
+    One set for both lists. "Which of these are Fanatic Purifiers" is not a question about the
+    player's empires or about the game's, and answering it twice with two sets of controls would be
+    two chances to have them disagree.
+
+    Written from the table of headings rather than one block per heading. There are thirteen, every
+    one is the same control asking the same question of a different field, and thirteen copies is
+    thirteen chances for one of them to be wired to the wrong set.
+*@
+
+<div class="sem-filters @(_open ? "open" : null)">
+    <div class="head">
+        @*
+            The heading is the way in, and the way back out. The card starts shut: twenty-eight
+            controls in four tabs is a wall between the reader and the empires they came for, and
+            every one of them is a question they have not asked yet.
+        *@
+        <button type="button" class="fold" aria-expanded="@(_open ? "true" : "false")"
+                @onclick="() => _open = !_open">
+            <span class="chevron" aria-hidden="true">@(_open ? "▾" : "▸")</span>
+            <h2>Empire Filter</h2>
+        </button>
+
+        @if (Filter.Any)
+        {
+            @*
+                Outside the fold, so a filter somebody folded away can still be cleared - and so a
+                card that is narrowing the lists says so while it is shut.
+            *@
+            <button type="button" class="sem-clear" @onclick="Clear">Clear</button>
+        }
+    </div>
+
+    @*
+        Nothing under the fold is drawn while the fold is shut.
+
+        The card starts shut, and hiding the controls in the stylesheet still built every one of
+        them: twenty-eight headings, each asking a game collection what it could offer, on every
+        redraw of a page whose filters nobody had opened. The box stays so the rule that hides it
+        still has something to hide, and so a card with nothing in it is not a padded empty one.
+    *@
+    <div class="body">
+        @if (_open)
+        {
+        @*
+            Twenty-eight headings in four tabs. All of them at once was a wall to read rather than a
+            card to use.
+
+            The search box used to sit above them, and folding the card away - which is what a
+            reader did about the wall, and is now what the card does by itself - took the broadest
+            control in it out of reach. It lives on the table's heading row instead, where nothing
+            can fold it away.
+
+            The funnel says a tab has something set under it. Without it, folding twenty-one
+            headings out of sight is a good way to leave a filter on and spend a while wondering why
+            the list is short.
+
+            aria-pressed rather than role="tab", as the view toggles and the picker tabs here
+            already do: a real tablist owes the reader arrow-key movement between its tabs, and a
+            group of buttons that each say whether they are pressed owes nothing it does not give.
+        *@
+        <div class="sem-filter-tabs" role="group" aria-label="Which filters to show">
+            @foreach (var group in EmpireFacet.Groups)
+            {
+                var set = Narrowing(group);
+
+                <button type="button" aria-pressed="@(group == _group ? "true" : "false")"
+                        title="@(set ? $"{group} - something is set here" : group)"
+                        @onclick="() => _group = group">
+                    <span>@group</span>
+
+                    @if (set)
+                    {
+                        <ActionIcon Name="filter" />
+                    }
+                </button>
+            }
+        </div>
+
+    <div class="controls">
+        @foreach (var facet in EmpireFacet.All.Where(f => f.Group == _group))
+        {
+            var options = Offered(facet);
+
+            <div class="sem-field flush">
+                <label>@facet.Label</label>
+
+                @*
+                    Two answers and a way of asking neither, which is a dropdown rather than a list
+                    of ticks: ticking both boxes and ticking neither meant the same thing, and a
+                    control with two ways to say All is a control that has to be worked out.
+                *@
+                @if (facet.YesNo)
+                {
+                    <select value="@Answer(facet)"
+                            @onchange="e => Answering(facet, e.Value?.ToString())">
+                        <option value="">All</option>
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                }
+                else
+                {
+                <MultiSelect Label="Any" Options="@options" Selected="@Filter.Keys(facet.Key)"
+                             OnChanged="OnChanged">
+                    <Leading>
+                        @*
+                            Any or all, for a heading an empire can hold several of, and inside the
+                            control it acts on rather than floating above it: it is a question about
+                            this list, and a row of its own said it was about something else.
+
+                            Two overlapping rings, shaded to say which part is being asked for. Not
+                            offered where an empire holds one - asking for all of two authorities is
+                            a question with no answer, and a control that can only ever empty the
+                            list is a control that looks broken.
+                        *@
+                        @if (facet.Several)
+                        {
+                            <button type="button" class="mode" aria-label="@Switching(facet)"
+                                    aria-pressed="@(Filter.RequiresAll(facet.Key) ? "true" : "false")"
+                                    title="@Switching(facet)"
+                                    @onclick="() => Switch(facet.Key)" @onclick:stopPropagation="true">
+                                <ActionIcon Name="@(Filter.RequiresAll(facet.Key) ? "all" : "any")" />
+                            </button>
+                        }
+                    </Leading>
+                </MultiSelect>
+                }
+            </div>
+        }
+    </div>
+        }
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// Every empire there is, both lists together, which is what the choices are drawn from.
+    /// </summary>
+    /// <remarks>
+    /// Offered rather than exhaustive: the game has eighty-one civics and a file has a handful, and
+    /// a list of eighty-one where seventy-four find nothing is a list to scroll past rather than to
+    /// read. What is here is what something in one of the two lists actually holds.
+    /// </remarks>
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<EmpireRow> Rows { get; set; }
+
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    [Parameter, EditorRequired]
+    public required EmpireFilter Filter { get; set; }
+
+    /// <summary>Raised whenever the filter changed, so the page can draw the lists again.</summary>
+    [Parameter]
+    public EventCallback OnChanged { get; set; }
+
+    /// <summary>The choices under each heading, worked out once for the rows in hand.</summary>
+    private readonly Dictionary<string, IReadOnlyList<EmpireChoice>> _offered =
+        new(StringComparer.Ordinal);
+
+    /// <summary>
+    /// Whether the card is showing its controls, which to begin with it is not.
+    /// </summary>
+    /// <remarks>
+    /// Shut on every window. It used to open wherever there was room, which meant asking the
+    /// browser how wide it was before the card could be drawn - and that answer only ever shut the
+    /// card, never opened one that was already open, so starting shut says the same thing on a
+    /// phone and says it without the round trip.
+    ///
+    /// Shut is also the right state on a desktop, which is the part the width was answering
+    /// wrongly. The reader arriving at the list has not asked any of these questions yet, and a
+    /// card of them standing between the page and the empires is answered by folding it away -
+    /// which is what the fold was for, and what a reader had to do first every time.
+    /// </remarks>
+    private bool _open;
+
+    /// <summary>Which tab of headings is showing.</summary>
+    private string _group = EmpireFacet.Groups[0];
+
+    /// <summary>Whether anything under one tab is narrowing the lists, so the tab can say so.</summary>
+    private bool Narrowing(string group) =>
+        EmpireFacet.All.Any(f => f.Group == group && Filter.Keys(f.Key).Count > 0);
+
+    /// <summary>What the editor would offer under each heading, worked out once and held.</summary>
+    private EmpireOptions? _options;
+
+    /// <summary>
+    /// Built when a heading is first asked, rather than when the card is drawn.
+    /// </summary>
+    /// <remarks>
+    /// A card nobody opens asks nothing of the game, and a session change nobody looks at throws
+    /// away something that was never built.
+    /// </remarks>
+    private EmpireOptions Options => _options ??= new EmpireOptions(Session);
+
+    /// <summary>The rows the offers were drawn from, which is the only thing that dates them.</summary>
+    private IReadOnlyList<EmpireRow>? _builtFor;
+
+    /// <summary>
+    /// Forgets the offers when, and only when, the rows they were drawn from have changed.
+    /// </summary>
+    /// <remarks>
+    /// This runs whenever the page above draws, not only when something handed down is different.
+    /// Clearing every time, which is what it did, threw the lists away on each tick of a filter and
+    /// each column turned on or off, and worked all twenty-eight of them out again from the game's
+    /// own collections to answer a question nobody had asked.
+    /// </remarks>
+    protected override void OnParametersSet()
+    {
+        if (ReferenceEquals(Rows, _builtFor))
+        {
+            return;
+        }
+
+        _builtFor = Rows;
+        _offered.Clear();
+    }
+
+    protected override void OnInitialized() => Session.Changed += Forget;
+
+    /// <summary>
+    /// Forgets the offers when the player's content packs change.
+    /// </summary>
+    /// <remarks>
+    /// What a heading may offer depends on what the player owns, and that is not a fact about the
+    /// rows. It happens that switching a pack off also rebuilds the rows and so hands this a new
+    /// list, which the check above would catch - but that is a promise the page makes, not this
+    /// card, and it would go quietly the day the page gets cleverer about which rows to rebuild.
+    /// What is left behind is a heading offering civics from a pack that has been turned off.
+    ///
+    /// Nothing is redrawn from here. The page listens to the same event and draws everything under
+    /// it; a second render for every change would cost more than these lists save.
+    /// </remarks>
+    private void Forget()
+    {
+        _offered.Clear();
+        _options = null;
+    }
+
+    public void Dispose() => Session.Changed -= Forget;
+
+    /// <summary>What the any-or-all switch is doing, said the same way in the label and the tip.</summary>
+    private string Switching(EmpireFacet facet) =>
+        Filter.RequiresAll(facet.Key)
+            ? $"Asking for empires with every one of the {facet.Label.ToLowerInvariant()} ticked"
+            : $"Asking for empires with any of the {facet.Label.ToLowerInvariant()} ticked";
+
+    /// <summary>Everything the rows hold under one heading, once each, in the order it reads in.</summary>
+    private IReadOnlyList<EmpireChoice> Offered(EmpireFacet facet)
+    {
+        if (_offered.TryGetValue(facet.Key, out var known))
+        {
+            return known;
+        }
+
+        // What the editor would offer, and then whatever these empires hold on top of it. The
+        // second half is not redundant: the offer is made for an empire with nothing chosen yet,
+        // and a few shelves narrow as choices are made - the traits a machine may take are not the
+        // traits a mammal may. Anything a listed empire actually holds is by definition something
+        // an empire may hold, so it belongs in the list whether or not the blank one was offered it.
+        IReadOnlyList<EmpireChoice> options =
+        [
+            .. (facet.Fixed is { } offered ? offered(Options) : [])
+                .Concat(Rows.SelectMany(facet.Values))
+                .DistinctBy(c => c.Key, StringComparer.Ordinal)
+                .OrderBy(c => c.Name, StringComparer.CurrentCulture)
+        ];
+
+        _offered[facet.Key] = options;
+        return options;
+    }
+
+    /// <summary>Which of the three a yes-or-no heading is set to, as the dropdown spells it.</summary>
+    private string Answer(EmpireFacet facet)
+    {
+        var keys = Filter.Keys(facet.Key);
+
+        return keys.Contains("yes") ? "yes" : keys.Contains("no") ? "no" : string.Empty;
+    }
+
+    /// <summary>
+    /// Sets a yes-or-no heading, All being the absence of an answer rather than a third one.
+    /// </summary>
+    /// <remarks>
+    /// Written into the same set every other heading uses, so the matching does not have to know
+    /// that these two are drawn differently from the rest.
+    /// </remarks>
+    private async Task Answering(EmpireFacet facet, string? answer)
+    {
+        var keys = Filter.Keys(facet.Key);
+        keys.Clear();
+
+        if (answer is { Length: > 0 })
+        {
+            keys.Add(answer);
+        }
+
+        await OnChanged.InvokeAsync();
+    }
+
+    private async Task Switch(string facet)
+    {
+        Filter.SetRequiresAll(facet, !Filter.RequiresAll(facet));
+        await OnChanged.InvokeAsync();
+    }
+
+    /// <summary>
+    /// Puts every heading back to asking for nothing, and empties the search box with them.
+    /// </summary>
+    /// <remarks>
+    /// The box is not in this card any more, and clearing it from here is still right: it narrows
+    /// the same list, it is the reason this button is showing whenever nothing else is set, and a
+    /// Clear that left a word behind would leave a reader looking at a short list with nothing on
+    /// screen claiming to have shortened it.
+    /// </remarks>
+    private async Task Clear()
+    {
+        Filter.Clear();
+        await OnChanged.InvokeAsync();
+    }
+}

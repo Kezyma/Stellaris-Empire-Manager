@@ -1628,11 +1628,20 @@ public sealed record PrescriptedEmpireSummary(string Key, string SourceFile)
     /// The key of the paragraph the game writes about it.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Every one of the game's empires has one, and it exists only as text: no prescripted country
     /// file mentions it, so it belongs to the game's empire rather than to a copy a player takes,
     /// which has nowhere to keep it.
+    /// </para>
+    /// <para>
+    /// Keyed on the empire rather than on its name, which is not the same thing and was read as
+    /// though it were. Ten of the fifty-two are named by a key that is not their own - the two
+    /// human variants share the original's name, three Machine Age empires drop a suffix, and five
+    /// are written in capitals while every description in the game is written in lower case. Those
+    /// five went without: the paragraph was asked for under a key nobody had written.
+    /// </para>
     /// </remarks>
-    public string? DescriptionKey => NameKey is { Length: > 0 } name ? $"{name}_desc" : null;
+    public string DescriptionKey => $"EMPIRE_DESIGN_{Key}_desc";
 
     /// <summary>
     /// The empire itself, written in the player's own designs format.

@@ -202,6 +202,140 @@ export function revealSelected(list, selector) {
 }
 
 /**
+ * Ties up a whole page of popovers at once, each one the first time it is pointed at.
+ *
+ * bindPopover costs a call into managed code per chip. One panel beside an empire is nothing; a
+ * table of twenty-five empires with six columns of them is a hundred and fifty-six calls every time
+ * the rows are sorted, filtered or paged, which is most of half a second the reader waits through
+ * for panels they have not opened.
+ *
+ * So the listening is done once, here, for everything inside a container. A chip is bound the first
+ * time a pointer or the keyboard reaches it, and then shown - the hover that triggered the binding
+ * would otherwise be the one hover that did nothing.
+ *
+ * @param {HTMLElement} root what holds the chips
+ */
+export function bindPopoversWhenPointed(root) {
+    if (!root || root.dataset.semDeferred) {
+        return;
+    }
+
+    root.dataset.semDeferred = 'on';
+
+    const bind = event => {
+        const anchor = event.target.closest?.('[aria-describedby]');
+
+        if (!anchor || anchor.dataset.semBound === 'yes') {
+            return;
+        }
+
+        const panel = document.getElementById(anchor.getAttribute('aria-describedby'));
+
+        if (!panel) {
+            return;
+        }
+
+        bindPopover(anchor, panel);
+
+        // The hover that did the binding happened before there was anything listening for it.
+        anchor.dispatchEvent(new MouseEvent('mouseenter'));
+    };
+
+    root.addEventListener('pointerover', bind);
+    root.addEventListener('focusin', bind);
+}
+
+/**
+ * Puts an open number box away when the next press lands somewhere else.
+ *
+ * The obvious way to do this is the focus leaving the box, and that is what it did at first. It is
+ * not reliable enough: blur does not bubble, and focusout depends on the document having the
+ * window's focus at all - so a box opened, focused and then left alone stayed a box.
+ *
+ * One listener for the page, and the flag that says so belongs to the module. It used to belong to
+ * the table's own box, and that box is thrown away and built again whenever the filter empties the
+ * table - so each new one carried no flag and added another listener to the document that nothing
+ * ever took away, every one of them holding a detached table and a handle on managed code that had
+ * since been disposed. An element's flag is a true statement about listeners hanging off that
+ * element, which is what the popover binding above uses it for: those die when it does. It says
+ * nothing whatever about a listener on the document.
+ *
+ * Nothing is called back into managed code either, for the same reason the suggestion lists press
+ * their own arrow: the box already closes itself on Escape, so pressing Escape at it says what
+ * needs saying and leaves nothing to keep in step.
+ */
+let watchingForSpinnerPress = false;
+
+export function closeSpinnerOnOutsidePress() {
+    if (watchingForSpinnerPress) {
+        return;
+    }
+
+    watchingForSpinnerPress = true;
+
+    // Captured, so a press is seen before anything inside the page can stop it travelling.
+    document.addEventListener('pointerdown', event => {
+        // The cell rather than the box, so the arrows a number box draws inside itself are a press
+        // on the thing being typed into rather than a press somewhere else.
+        if (event.target.closest?.('td.index')) {
+            return;
+        }
+
+        for (const open of document.querySelectorAll('td.index input')) {
+            open.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+        }
+    }, true);
+}
+
+/**
+ * Drops the labels off a table's chips when the table would otherwise scroll.
+ *
+ * A chip with an icon says most of what it says in the picture; the word beside it is what makes a
+ * column of them three times as wide. So the words go first, and only once there is no room - a
+ * table that fits keeps them, and one that has been narrowed until it fits gets them back.
+ *
+ * Measured with the labels on, every time, so the answer never depends on the answer before it.
+ * That is what stops it flickering between the two: the question asked is always "does the full
+ * table fit", not "does the table as it currently is".
+ *
+ * The box is watched rather than the table inside it. The box is as wide as the page gives it and
+ * does not change when the table within grows, so nothing here can set off the observer that called
+ * it - which a naive version of this does, for ever.
+ *
+ * @param {HTMLElement} wrap the scrolling box around the table
+ */
+export function fitTableToWidth(wrap) {
+    if (!wrap) {
+        return;
+    }
+
+    if (wrap.semFit) {
+        wrap.semFit();
+        return;
+    }
+
+    const fit = () => {
+        const table = wrap.querySelector('table');
+
+        if (!table) {
+            return;
+        }
+
+        wrap.classList.remove('compact');
+
+        // A pixel of slack, because a table measured against its own box is comparing two numbers
+        // that rounding can put either side of each other.
+        if (table.scrollWidth > wrap.clientWidth + 1) {
+            wrap.classList.add('compact');
+        }
+    };
+
+    wrap.semFit = fit;
+    new ResizeObserver(fit).observe(wrap);
+    fit();
+}
+
+/**
  * Closes an open suggestion list when the next press lands outside it.
  *
  * The list itself is drawn or not drawn by the component, on a flag the component owns. What this
@@ -298,8 +432,12 @@ export function bindPopover(anchor, panel, pinOnClick = true) {
             panel.showPopover();
         }
 
-        // After showing, so the panel has been laid out and has a size to place.
+        // After showing, so the panel has been laid out and has a size to place. And again on the
+        // next frame, because a panel that fills itself the first time it is pointed at has not
+        // finished doing so yet - placed against an empty box it would sit where a box that size
+        // belongs, which is nowhere near where this one ends up.
         place();
+        requestAnimationFrame(place);
     };
 
     const hide = () => {
@@ -405,7 +543,10 @@ export async function copyText(text) {
  * @param {object} owner what to tell when a card has been moved
  */
 export function enableCardReorder(list, owner) {
-    if (!list || list.dataset.semReorder) {
+    // dataset rather than the element itself, because a reference to an element that was never
+    // rendered does not arrive as nothing - it arrives as an object with none of an element's
+    // properties, and asking that one for a dataset is what threw.
+    if (!list?.dataset || list.dataset.semReorder) {
         return;
     }
 

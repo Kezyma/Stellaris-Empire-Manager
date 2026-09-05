@@ -11,7 +11,7 @@
 
 <div class="sem-budget @StateClass" title="@Session.Localizer.Counter(Key, Fallback, Value.Remaining)">
     <div class="track">
-        <div class="fill" style="width:@(Percent)%"></div>
+        <div class="fill" style="--pct:@Percent"></div>
         <span class="reading">@Session.Localizer.Gauge(Label, LabelFallback, $"{Value.Spent}/{Value.Available}")</span>
     </div>
 </div>

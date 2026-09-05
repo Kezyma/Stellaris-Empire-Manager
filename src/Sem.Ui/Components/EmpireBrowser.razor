@@ -1,4 +1,3 @@
-@using Microsoft.JSInterop
 @implements IDisposable
 @implements IAsyncDisposable
 @inject IJSRuntime Js
@@ -160,22 +159,35 @@
     /// Hands the list to the script that watches its grips for a drag.
     /// </summary>
     /// <remarks>
-    /// Once, and only after there is a list to hand over. The script guards against being asked
-    /// twice, as the one that closes open dropdowns does.
+    /// <para>
+    /// Every render, and only once there is a list to hand over. The script keeps its own flag on
+    /// the element, so being asked again costs one call and returns.
+    /// </para>
+    /// <para>
+    /// The condition is the branch that draws the list, rather than the one that draws a file. A
+    /// file with no empires in it yet draws neither - and an unrendered reference is not null, it
+    /// is an object the script cannot use, which the script has a guard against and which used to
+    /// arrive at it. Asking once was the worse half of that: a file that opened empty was the one
+    /// render this ever got, so when the first empire arrived there was nobody left to ask, and
+    /// dragging was gone until the page was loaded again.
+    /// </para>
     /// </remarks>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender)
+        if (Session.File is not { Designs.Count: > 0 })
         {
             return;
         }
 
         try
         {
-            _module = await Js.InvokeAsync<IJSObjectReference>(
+            // Both held rather than made again. This runs on every render now, and a fresh module
+            // handle or a fresh reference to this component per render is the same leak by another
+            // name - one of them disposed at the end and the rest simply dropped.
+            _module ??= await Js.InvokeAsync<IJSObjectReference>(
                 "import", "./_content/Sem.Ui/sem.js").ConfigureAwait(true);
 
-            _self = DotNetObjectReference.Create(this);
+            _self ??= DotNetObjectReference.Create(this);
 
             await _module.InvokeVoidAsync("enableCardReorder", _list, _self).ConfigureAwait(true);
         }

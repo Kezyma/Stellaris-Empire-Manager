@@ -281,12 +281,6 @@ code {
     gap: var(--space-md);
 }
 
-.sem-header-file {
-    color: var(--text-dim);
-    font-size: var(--text-sm);
-    white-space: nowrap;
-}
-
 /* A file that would not open. Full width under the header, since it is a sentence and not a chip. */
 .sem-header-error,
 .sem-header-note {
@@ -408,14 +402,6 @@ code {
     margin: 0 auto;
 }
 
-.sem-panel {
-    background: var(--bg-panel);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: var(--space-xl);
-    margin-bottom: var(--gap);
-}
-
 .sem-row {
     display: flex;
     gap: var(--gap);
@@ -454,8 +440,6 @@ code {
     buttons — gender and leader class, side by side, are six icons that mean two different things.
 */
 .sem-row.wide { gap: var(--space-2xl); }
-
-.sem-spacer { flex: 1; }
 
 /* ---------------------------------------------------------------- controls */
 
@@ -531,7 +515,7 @@ button.danger:hover:not(:disabled) {
     outline-offset: 1px;
 }
 
-input[type="text"], select, textarea {
+input[type="text"], input[type="number"], select, textarea {
     font: inherit;
     color: var(--text);
     background: var(--bg);
@@ -1041,11 +1025,23 @@ button.sem-tab:disabled:hover { background: none; }
     overflow: hidden;
 }
 
+/*
+   Scaled rather than widened. A width animates by laying the box out again on every frame, and this
+   is the one thing in the sheet that was still doing that; a transform is the browser's to do
+   without asking the page anything. The fill is out of flow inside a clipped track, so the reflow
+   could not reach anything - this is the sheet agreeing with itself rather than a measured win.
+
+   The reading comes in as a whole number and the dividing is done here, because a fraction written
+   from C# is formatted by the reader's own culture, and scaleX(0,42) is not a number.
+*/
 .sem-budget .fill {
     position: absolute;
     inset: 0 auto 0 0;
+    width: 100%;
+    transform: scaleX(calc(var(--pct) / 100));
+    transform-origin: left;
     background: var(--accent-dim);
-    transition: width 0.15s;
+    transition: transform 0.15s;
 }
 
 .sem-budget .reading {
@@ -1084,43 +1080,6 @@ button.sem-tab:disabled:hover { background: none; }
     how a status line ended up 14px from what it was reporting on where everything else is 12.
 */
 p.sem-status { margin: var(--gap) 0 0; }
-
-/*
-    The problem count in the designer's top bar, which opens the list beneath it. A button rather
-    than a word, because it does something; coloured like the status it replaced so the bar still
-    reads at a glance.
-*/
-.sem-status-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-sm);
-    padding: var(--space-2xs) var(--space-md);
-    background: none;
-    border: 1px solid currentcolor;
-    font-size: var(--text-sm);
-}
-
-.sem-status-toggle.bad { color: var(--bad); }
-.sem-status-toggle.warn { color: var(--warn); }
-
-.sem-status-toggle:hover:not(:disabled) {
-    background: var(--bg-hover);
-    border-color: currentcolor;
-}
-
-.sem-status-toggle .chevron { color: var(--text-faint); }
-
-/* The list the count opens, between the bar it belongs to and the sections it is about. */
-.sem-problems {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-md);
-    margin-bottom: var(--gap);
-    padding: var(--space-lg);
-    background: var(--bg-panel);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-}
 
 /*
    What is wrong with the empire, folded away at the foot of the panel that describes it.
@@ -3380,6 +3339,816 @@ button.icon .sem-action-icon { display: block; }
     The showcase's own face is a fixed 84 by 100 and does not move.
 */
 
+/* ---------------------------------------------------------------- the list view
+
+   Cards or a table, and the controls that choose between them.
+*/
+
+/*
+   The row above both views, holding the one control that belongs to neither of them.
+
+   The column picker used to sit at the other end of it. It went to the table, which is the only
+   thing it has anything to say about.
+*/
+.sem-list-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    margin-bottom: var(--gap);
+}
+
+.sem-columns {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    min-width: 14rem;
+
+    /*
+       And no wider than what holds it. The floor above is a floor, not a width - without this the
+       row took its size from the combo inside it and carried the whole page sideways.
+    */
+    max-width: 100%;
+}
+
+/*
+   The picker at the end of the table's heading row: pushed there by the margin, and centred on the
+   row rather than sitting on the heading's baseline, which is where a bordered control looks like
+   it has slipped. Wide enough to read a few column names in and no wider - left to grow it would
+   stretch to the table's full width, which is a long way to push one control.
+*/
+.sem-table-block > .head > .controls {
+    margin-left: auto;
+    align-self: center;
+    max-width: min(26rem, 100%);
+    min-width: 0;
+}
+
+/*
+   The search box in the heading's place, at the width the heading had rather than the full width a
+   text box takes by default. It shrinks before the picker does, since a word is legible in a narrow
+   box and a row of column chips is not.
+*/
+.sem-table-block > .head > .title {
+    flex: 0 1 20rem;
+    align-self: center;
+    min-width: 0;
+}
+
+.sem-search {
+    width: 100%;
+}
+
+.sem-columns > label {
+    color: var(--text-dim);
+    white-space: nowrap;
+}
+
+/*
+   The combo fills the row and may be squeezed to fit it.
+
+   A flex item will not shrink below its own contents unless it is told to, and with the chips on
+   one line those contents are every column name laid end to end. Left at auto the picker stood at
+   its full width, pushed past the right-hand edge of the table, and took the page sideways with
+   it - which is the same shrink the control inside it already asks for, one level further out.
+*/
+.sem-columns > .sem-combo {
+    flex: 1;
+    min-width: 0;
+}
+
+/*
+   A tick list that opens under a control, wearing the combo box's shell for the one listener that
+   closes it on a press outside. Everything below undoes the parts of that shell which assume a text
+   box: the combo is an input with a button beside it, and this is a row of pressable things.
+
+   A row rather than one big button, because what is in it is pressable: a chip naming something
+   chosen is the obvious place to press to stop asking for it, and a button cannot hold buttons.
+*/
+.sem-combo.sem-multi > .control {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+
+    /*
+       A flex item of the combo around it, and a flex item will not shrink below its own contents
+       unless told to. Left at auto the control took the width of every chip in it - eight civics
+       came to 893 pixels inside a 218-pixel column - and carried the whole page sideways with it.
+    */
+    flex: 1;
+    min-width: 0;
+
+    padding: 3px var(--space-2xs);
+    min-height: var(--icon-btn);
+
+    background: var(--bg);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    cursor: pointer;
+}
+
+.sem-combo.sem-multi > .control:hover {
+    border-color: var(--accent-dim);
+}
+
+/*
+   The column picker is the exception, and stays on one line whatever is ticked.
+
+   Every other one of these owns a row of the filter card and may grow down it. This one shares the
+   table's heading, so a second line moves the grid itself down the page - which is a strange thing
+   for ticking a column to do, and it happens at seven columns, well short of the eighteen on offer.
+   What does not fit is cut off rather than scrolled: the panel behind the arrow is the place these
+   are read, and it lists every one of them with a tick beside those in use.
+*/
+.sem-columns .sem-combo.sem-multi .face {
+    flex-wrap: nowrap;
+    overflow: hidden;
+}
+
+/*
+   What was chosen, drawn as the chips it is rather than counted, and wrapping onto as many lines as
+   it takes.
+
+   It scrolled on one line for a while, which kept every filter the same height - and hid whichever
+   choices did not fit behind a gesture nobody makes. A card whose whole job is saying what is being
+   asked for cannot keep half the answer off the end of a line. The control grows instead.
+*/
+.sem-combo.sem-multi .face {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+
+    flex: 1;
+    min-width: 0;
+}
+
+/* The label standing in for a choice is one line of text, and elides rather than scrolling. */
+.sem-combo.sem-multi .face.empty {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-left: var(--space-2xs);
+    color: var(--text-dim);
+}
+
+/*
+   One thing that was chosen, and the way to stop asking for it. A press lands here rather than on
+   the control behind, which is what makes the obvious gesture - press the thing you no longer want
+   - do the obvious thing.
+*/
+.sem-pick {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    flex: none;
+
+    padding: 1px var(--space-2xs) 1px 2px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    color: var(--text);
+    font: inherit;
+    font-size: var(--text-sm);
+    white-space: nowrap;
+}
+
+.sem-pick:hover {
+    background: var(--bad);
+    border-color: var(--bad);
+    color: var(--bg);
+}
+
+/* Nothing in front of a chip that has no icon, or the name sits off its own left edge. */
+.sem-pick:not(:has(.sem-icon)) {
+    padding-left: var(--space-sm);
+}
+
+.sem-pick .sem-icon {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+}
+
+.sem-pick > .drop {
+    color: var(--text-faint);
+}
+
+.sem-pick:hover > .drop {
+    color: var(--bg);
+}
+
+/*
+   The switch between any and all, inside the control it acts on. Flat and small: it is a setting
+   for the list beside it rather than a button in its own right, and drawn as one it read as a
+   second control with a job of its own.
+*/
+.sem-combo.sem-multi .mode {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+
+    width: 1.7rem;
+    height: 1.5rem;
+    padding: 0;
+
+    background: none;
+    border: none;
+    border-right: 1px solid var(--border);
+    border-radius: 0;
+    color: var(--text-dim);
+}
+
+.sem-combo.sem-multi .mode:hover {
+    background: none;
+    color: var(--accent);
+}
+
+.sem-combo.sem-multi .mode[aria-pressed="true"] {
+    color: var(--accent);
+}
+
+/* The arrow, which is the one part of the control that only ever opens the list. */
+.sem-combo.sem-multi > .control > .toggle {
+    position: static;
+    flex: none;
+
+    width: 1.4rem;
+    height: 1.5rem;
+    padding: 0;
+
+    background: none;
+    border: none;
+    border-radius: 0;
+    color: var(--text-dim);
+    font: inherit;
+}
+
+.sem-combo.sem-multi > .control > .toggle:hover {
+    background: none;
+    color: var(--text);
+}
+
+.sem-combo.sem-multi .options > li > button {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    width: 100%;
+    text-align: left;
+}
+
+/* A fixed box for the tick, so the names line up whether or not one is next to them. */
+.sem-combo.sem-multi .options .tick {
+    flex: none;
+    width: 1em;
+    color: var(--accent);
+}
+
+/*
+   The game's own icon beside the name. Half of these lists are things a player knows by their
+   picture first - an ethic, a trait, an origin - and a list of words is a list they have to read
+   rather than recognise.
+*/
+.sem-combo.sem-multi .options .sem-icon {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+}
+
+.sem-combo.sem-multi .options .name {
+    min-width: 0;
+}
+
+/*
+   What hangs under the control: the box that narrows a long list, and the list itself.
+
+   The positioning is here rather than on the list, which is where it used to be. With only the
+   list taken out of the flow the box stayed in it, and the control is a flex row - so the box was
+   laid beside the chips instead of above the options, taking their width and, being the taller of
+   the two, growing the row and the card around it every time a list opened.
+*/
+.sem-combo.sem-multi .panel {
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0;
+    right: 0;
+    z-index: 20;
+
+    background: var(--bg-panel);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-popup);
+
+    /* So the list's corners are the panel's corners, whether or not there is a box above it. */
+    overflow: hidden;
+}
+
+/*
+   Inside the panel the list is an ordinary block again, and the only part of it that scrolls.
+   Everything undone here is something the shared rule gives every combo's list on the way to
+   making it the panel - which this one is not any more.
+*/
+.sem-combo.sem-multi .panel > .options {
+    position: static;
+    background: none;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+/* The box that narrows a long list, held above it rather than scrolling away with it. */
+.sem-combo.sem-multi .search {
+    padding: var(--space-2xs);
+    border-bottom: 1px solid var(--border);
+}
+
+.sem-combo.sem-multi .search input {
+    padding: var(--space-2xs) var(--space-sm);
+}
+
+.sem-combo.sem-multi .options .none {
+    padding: var(--space-sm) var(--space-md);
+}
+
+/*
+   The filter card, above the tables and outside them.
+
+   Its own card because these are questions about the empires rather than about the table: they
+   survive a column being hidden, they narrow both lists at once, and a row of controls wedged into
+   a table header would have to fight the columns for width.
+*/
+.sem-filters {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--space-md);
+    margin-bottom: var(--gap);
+}
+
+/*
+   A line, not a banner. It is the lid on a box of controls rather than a section of the page, and
+   at a heading's size with a heading's room around it the card announced itself more loudly than
+   the empires underneath.
+*/
+.sem-filters > .head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    margin-bottom: var(--space-sm);
+}
+
+.sem-filters > .head h2 {
+    margin: 0;
+    font-size: var(--text-md);
+}
+
+/* Nothing under the line when there is nothing under the line. */
+.sem-filters:not(.open) > .head {
+    margin-bottom: 0;
+}
+
+/*
+   Which of the four sets of headings is showing.
+
+   A row of buttons that each say whether they are pressed, as the view toggle and the picker tabs
+   both are - a real tablist owes the reader arrow-key movement between its tabs, and this owes
+   nothing it does not give.
+
+   The funnel marks a tab with something set under it. Twenty-one of the twenty-eight headings are
+   out of sight at any moment, and a filter left on behind one of them is a short list with no
+   visible reason for being short.
+*/
+.sem-filter-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    margin: var(--space-md) 0;
+}
+
+.sem-filter-tabs button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    padding: var(--space-2xs) var(--space-md);
+}
+
+.sem-filter-tabs button[aria-pressed="true"] {
+    background: var(--bg-raised);
+    border-color: var(--accent-dim);
+    color: var(--text);
+}
+
+.sem-filter-tabs button .sem-action-icon {
+    width: 0.85em;
+    height: 0.85em;
+    color: var(--accent);
+}
+
+/* The one control above the tabs, and the widest thing in the card. */
+.sem-filters > .body > .search {
+    max-width: 30rem;
+}
+
+/*
+   Wide tracks, because what is in them is a row of names rather than a word: at eleven rems a
+   filter with two civics in it was scrolling before it had been read. Sixteen fits three of most
+   things, and the grid still gives a phone one column.
+*/
+.sem-filters .controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: var(--space-md);
+}
+
+
+@media (max-width: 560px) {
+    .sem-filters .controls { grid-template-columns: minmax(0, 1fr); }
+}
+
+.sem-filters .sem-hint {
+    margin: var(--space-md) 0 0;
+}
+
+.sem-clear {
+    padding: var(--space-2xs) var(--space-md);
+}
+
+/*
+   The heading, which is also the way to fold the card away.
+
+   A button drawn as a heading rather than a heading with a button beside it: the whole line is the
+   target, which on a phone is the difference between a fold and a game of hitting a chevron.
+*/
+.sem-filters .fold {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-sm);
+
+    padding: 0;
+    background: none;
+    border: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+}
+
+.sem-filters .fold:hover {
+    background: none;
+    color: var(--accent);
+}
+
+.sem-filters .fold > .chevron {
+    color: var(--text-dim);
+    font-size: var(--text-sm);
+}
+
+.sem-filters:not(.open) > .body {
+    display: none;
+}
+
+/* ---------------------------------------------------------------- the table */
+
+.sem-table-block {
+    margin-bottom: var(--space-2xl);
+}
+
+.sem-table-block > .head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+}
+
+.sem-table-block > .head h2 {
+    margin: 0;
+}
+
+/*
+   The one box that scrolls sideways.
+
+   Eighteen columns do not fit a phone and are not meant to: the wrapper takes the overflow so the
+   page never does, which is the rule everywhere else in this sheet. The column picker is how a
+   narrow screen asks for the four columns it came for.
+*/
+.sem-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-panel);
+}
+
+.sem-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+}
+
+/*
+   The head, which does not stick, and the reason is worth writing down so nobody adds it back.
+
+   The box around the table scrolls sideways, and a box that scrolls in one direction is a scroll
+   container in both - so a sticky head inside it measures itself against that box rather than
+   against the page. Given the header's own offset it was pushed that far down from the top of the
+   table and drawn over the first row: the column names sat under the first empire's name.
+
+   Sticking it to the box instead would mean giving the box a height of its own and a second
+   scrollbar inside the page, which on a phone is two things to drag past each other. A page of
+   twenty-five is short enough to read without it.
+*/
+.sem-table thead th {
+    background: var(--bg-raised);
+    border-bottom: 1px solid var(--border-strong);
+    padding: 0;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.sem-sort {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+
+    background: none;
+    border: none;
+    border-radius: 0;
+    color: var(--text-dim);
+    font: inherit;
+    font-weight: 600;
+    text-align: left;
+}
+
+.sem-sort:hover {
+    background: var(--bg-hover);
+    color: var(--text);
+}
+
+.sem-sort.sorted {
+    color: var(--accent);
+}
+
+/* Kept at a fixed width, or every heading shifts sideways as the sort moves between them. */
+.sem-sort > .arrow {
+    display: inline-block;
+    width: 0.8em;
+    font-size: var(--text-sm);
+}
+
+.sem-table tbody tr {
+    border-top: 1px solid var(--border);
+    cursor: pointer;
+}
+
+.sem-table tbody tr:hover {
+    background: var(--bg-hover);
+}
+
+/*
+   One line per row, whatever is in it.
+
+   Wrapped, a cell with five civics in it was five lines tall and every row a different height, so
+   comparing one empire with the one under it meant reading down a ragged column. The table grows
+   sideways instead and the box around it scrolls, which is what that box is for.
+*/
+.sem-table td,
+.sem-table tbody th {
+    padding: var(--space-sm) var(--space-md);
+    vertical-align: middle;
+    text-align: left;
+    font-weight: normal;
+    white-space: nowrap;
+}
+
+/*
+   Where the empire sits in the file. Narrow, and the digits line up: a column of numbers that do
+   not share a width is a column you cannot read down.
+*/
+.sem-table .index {
+    width: 1%;
+    padding-right: var(--space-sm);
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+/*
+   What can be done to a row, held against the right edge while the table scrolls under it.
+
+   Not a column in the picker: it is not something an empire is, it is what can be done to one, and
+   a table whose delete button can be turned off is a table with a setting nobody wants. Stuck
+   rather than merely last, because with twenty-eight columns to choose from the far end of the
+   table is somewhere a reader would have to go looking for.
+
+   A background of its own, since the rows slide beneath it - and the hover repeated, because a
+   sticky cell that keeps its own colour is the one cell of a row that does not light up.
+*/
+.sem-table .actions {
+    position: sticky;
+    right: 0;
+    z-index: 1;
+
+    width: 1%;
+    white-space: nowrap;
+    text-align: right;
+    background: var(--bg-panel);
+    border-left: 1px solid var(--border);
+}
+
+/* The buttons sit at the right of the cell; the heading reads left, like every other heading. */
+.sem-table thead th.actions {
+    background: var(--bg-raised);
+    text-align: left;
+}
+
+/*
+   What the game wrote about one of its own, as a panel of the card.
+
+   Prose rather than a row of controls, so the body is one column of text at a readable measure -
+   every other panel is a picture beside a list of choices, and the flex row that lays those out
+   would set this as one very long line.
+*/
+.sem-lore-panel > .body {
+    display: block;
+}
+
+.sem-lore-panel .about {
+    color: var(--text-dim);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+}
+
+.sem-table tbody tr:hover .actions {
+    background: var(--bg-hover);
+}
+
+.sem-table .actions button.icon {
+    width: 1.7rem;
+    height: 1.7rem;
+}
+
+.sem-position {
+    padding: 0 var(--space-2xs);
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font: inherit;
+    font-variant-numeric: tabular-nums;
+}
+
+.sem-position:hover {
+    background: none;
+    color: var(--accent);
+    text-decoration: underline;
+}
+
+/* Sized to the digits it holds; everything else about it is the app's own input. */
+.sem-table .index input {
+    width: 4.5rem;
+    padding: var(--space-2xs) var(--space-sm);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+/*
+   The name column, which is the row's heading rather than a cell of it - it is what the other
+   cells are about, and a screen reader reading across says which empire it is reading.
+*/
+.sem-table tbody th.name {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    white-space: nowrap;
+}
+
+.sem-table .sem-flag.tiny {
+    flex: none;
+    width: 26px;
+    height: 26px;
+}
+
+/*
+   The way in for a keyboard. The row carries the same press for a pointer, which can land anywhere
+   along a line eighteen columns wide, but a row cannot take focus and a table full of empires that
+   can only be opened with a mouse is a table half the readers cannot use.
+*/
+.sem-row-open {
+    padding: 0;
+    background: none;
+    border: none;
+    color: var(--text);
+    font: inherit;
+    font-weight: 600;
+    text-align: left;
+}
+
+.sem-row-open:hover {
+    background: none;
+    color: var(--accent);
+}
+
+/*
+   A value in a cell that has nothing more to say about itself - a shipset, a species class, a
+   starting system. Shaped like the chip beside it so a row of mixed cells reads as one row, but
+   flat: there is no description behind it and no panel to open.
+*/
+.sem-cell-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+
+    padding: 1px var(--space-sm);
+    margin-right: var(--space-2xs);
+
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    white-space: nowrap;
+}
+
+.sem-cell-chip .sem-icon {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+}
+
+/*
+   And a value that does have something to say wears the chip from the empire's own panel, which
+   already carries the icon and opens the description and effects on hover.
+*/
+.sem-table .sem-chip {
+    display: inline-block;
+    margin-right: var(--space-2xs);
+}
+
+/*
+   A table too wide for its box drops the words off every chip that has a picture.
+
+   The picture is most of what a chip says - a player knows an ethic by its icon long before they
+   read it - and the word beside it is what makes the column three times as wide. So the words go
+   first, and the table scrolls only once even the pictures will not fit. Which chips lose them is
+   asked of the chip: one with no icon keeps its word, since without it there would be nothing left.
+
+   Whether the table is too wide is not a question CSS can ask, so the class comes from a script
+   that measures it with the words on. What that script must not do is written down beside it.
+*/
+.sem-table-wrap.compact .sem-chip > button:has(img) > span,
+.sem-table-wrap.compact .sem-cell-chip:has(.sem-icon) > span {
+    display: none;
+}
+
+/* With the word gone the padding round it is a chip that is wider than it is tall. */
+.sem-table-wrap.compact .sem-chip > button:has(img) {
+    padding: var(--space-2xs);
+}
+
+.sem-table-wrap.compact .sem-cell-chip:has(.sem-icon) {
+    padding: 1px var(--space-2xs);
+}
+
+/*
+   How many at a time on the left, the way through them in the middle. The size belongs to the list
+   rather than to the view, and the two lists are not the same length - so it sits here rather than
+   with the column picker at the top of the page.
+*/
+.sem-pager {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    margin-top: var(--space-md);
+}
+
+.sem-pager > .rows {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    color: var(--text-dim);
+}
+
+.sem-pager > .rows select {
+    width: auto;
+    padding: var(--space-2xs) var(--space-sm);
+}
+
+.sem-pager > .turn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.sem-empty-line {
+    padding: var(--gap);
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-dim);
+    margin: 0;
+}
+
 /* ---------------------------------------------------------------- the select screen */
 
 /*
@@ -3960,6 +4729,17 @@ button.icon .sem-action-icon { display: block; }
    scrolls inside itself rather than growing, so there is no case where the middle of it is off the
    top of the screen.
 */
+/*
+   How wide the card is allowed to get: its two columns, the gap between them, the padding either
+   side and the border. Written once because the sheet in the dialog and the shell on the page are
+   the same card and have to stop at the same place - they held a copy each, and two copies of a
+   measurement are two things to remember to change. The 760px the layout collapses at comes from
+   the same sum, and a media query is the one place this cannot be read.
+*/
+:root {
+    --lite-width: calc(952px + 360px + var(--gap) + (var(--space-lg) * 2) + 2px);
+}
+
 .sem-lite-modal {
     place-items: center;
     padding: var(--space-lg);
@@ -3968,7 +4748,7 @@ button.icon .sem-action-icon { display: block; }
 
 .sem-lite-modal > .sheet {
     width: 100%;
-    max-width: calc(952px + 360px + var(--gap) + (var(--space-lg) * 2) + 2px);
+    max-width: var(--lite-width);
     max-height: 100%;
     overflow-y: auto;
 
@@ -4235,7 +5015,7 @@ button.icon .sem-action-icon { display: block; }
     flex-direction: column;
     gap: var(--gap);
     width: 100%;
-    max-width: calc(952px + 360px + var(--gap) + (var(--space-lg) * 2) + 2px);
+    max-width: var(--lite-width);
     margin-inline: auto;
 }
 
@@ -4299,9 +5079,10 @@ button.icon .sem-action-icon { display: block; }
 /*
    One box, not a box inside a box: the panel is the frame and its body only arranges.
 
-   Named for the card rather than sharing the sheet's generic .sem-panel, which sets a padding and a
-   margin of its own. This used to carry that class, overrode its background and padding, and left
-   its margin-bottom - so every panel had a bottom margin on top of the grid's own gap.
+   Named for the card rather than for the sheet. There was once a generic .sem-panel carrying a
+   padding and a margin of its own; this wore it, overrode its background and padding, and was left
+   holding its margin-bottom - so every panel had a bottom margin on top of the grid's own gap.
+   Nothing wears that class any more and it has gone.
 */
 .sem-lite-panel {
     position: relative;

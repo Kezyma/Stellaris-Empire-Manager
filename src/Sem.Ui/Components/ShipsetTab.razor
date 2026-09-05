@@ -77,15 +77,6 @@
         Session.Localizer.Text(culture.NameKey, Localizer.Prettify(culture.Key));
 
     /// <summary>
-    /// The shipsets, in the game's own two groups.
-    /// </summary>
-    /// <remarks>
-    /// A set that models no ships of its own is not a shipset. Solarpunk and Wilderness are the two:
-    /// they dress cities, and the game flies them in whatever their fallback builds — which is why
-    /// Wilderness showed a Biogenesis corvette, being a Biogenesis corvette. Both keep their place
-    /// in the city list under Room, which is what they are actually for.
-    /// </remarks>
-    /// <summary>
     /// The set the design names when the groups below will not be showing it.
     /// </summary>
     private GraphicalCultureDefinition? HeldButNotOffered
@@ -103,6 +94,15 @@
         }
     }
 
+    /// <summary>
+    /// The shipsets, in the game's own two groups.
+    /// </summary>
+    /// <remarks>
+    /// A set that models no ships of its own is not a shipset. Solarpunk and Wilderness are the two:
+    /// they dress cities, and the game flies them in whatever their fallback builds — which is why
+    /// Wilderness showed a Biogenesis corvette, being a Biogenesis corvette. Both keep their place
+    /// in the city list under Room, which is what they are actually for.
+    /// </remarks>
     private IEnumerable<KeyValuePair<ShipSetDefinition, IReadOnlyList<GraphicalCultureDefinition>>> ShipSetGroups
     {
         get

@@ -1,0 +1,676 @@
+@inject IJSRuntime Js
+@implements IAsyncDisposable
+
+@*
+    The empires as rows, sorted by whichever column was last pressed and shown a page at a time.
+
+    A real table, not a grid of divs: these are records with the same fields in the same order, a
+    reader compares them down a column, and a screen reader announcing "Civics, Fanatic Purifiers"
+    for the fourteenth cell is the whole reason the element exists.
+
+    Wide on purpose. Eighteen columns will not fit a phone and are not meant to - the wrapper
+    scrolls sideways on its own, which is what keeps the page from doing it, and the column picker
+    is how somebody on a narrow screen asks for the four they came for.
+*@
+
+<div class="sem-table-block">
+    <div class="head">
+        @*
+            The heading names the table for anything reading the page as a structure rather than as
+            a picture. Where the page hands in something to stand in its place it goes out of sight
+            rather than away: a table with no heading at all is one that nothing can announce and
+            nothing can jump to.
+        *@
+        <h2 class="@(Title is null ? null : "sem-visually-hidden")">@Heading</h2>
+
+        @if (Title is not null)
+        {
+            <div class="title">@Title</div>
+        }
+
+        <span class="sem-hint">@Counted</span>
+
+        @if (Controls is not null)
+        {
+            <div class="controls">@Controls</div>
+        }
+    </div>
+
+    @if (Rows.Count == 0)
+    {
+        <p class="sem-empty-line">@Empty</p>
+    }
+    else
+    {
+        <div class="sem-table-wrap" @ref="_wrap">
+            <table class="sem-table">
+                <thead>
+                    <tr>
+                        <th scope="col" class="index">@Header(PositionColumn, "#")</th>
+                        <th scope="col" class="name">@Header(NameColumn, "Empire")</th>
+
+                        @foreach (var column in Columns)
+                        {
+                            <th scope="col">@Header(column.Key, column.Header)</th>
+                        }
+
+                        @*
+                            Not in the picker and not sortable: it is not something an empire is, it
+                            is what can be done to one. Stuck to the right edge so a table scrolled
+                            sideways still has it - with twenty-eight columns to choose from, a
+                            column of buttons at the far end would be a column nobody reaches.
+                        *@
+                        <th scope="col" class="actions">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var row in Shown)
+                    {
+                        @*
+                            The row opens the empire, and so does the button naming it. The row is
+                            for the pointer, which is anywhere along a line eighteen columns wide;
+                            the button is the way in for a keyboard, which cannot focus a row at all.
+                            The button stops its own press travelling, or one click would open the
+                            empire twice.
+                        *@
+                        <tr @key="row.Design" @onclick="() => Open(row)">
+                            @*
+                                Where it sits in the file, and - where the list is the player's own -
+                                a way to say where it should sit instead. Pressing the number turns
+                                it into a box to type the new place into, which is the same thing
+                                dragging a card does and the only way to do it from a table: a row
+                                sorted by government has nowhere meaningful to be dragged to.
+                            *@
+                            <td class="index" @onclick:stopPropagation="true">
+                                @*
+                                    One of the game's has no number. It is not in the player's file
+                                    and has no place in it to be moved to - the order of those is
+                                    the game's, and a blank cell says that more plainly than a
+                                    number nobody can change.
+                                *@
+                                @if (row.Preset is not null)
+                                {
+                                }
+                                else if (_moving == row.Design)
+                                {
+                                    @*
+                                        focusout rather than blur. Blur does not bubble, and the
+                                        handler simply never ran: the box was focused, the focus
+                                        left it, and the number stayed a box for the rest of the
+                                        session. focusout is the same moment and does bubble.
+                                    *@
+                                    <input type="number" min="1" max="@Math.Max(1, Movable)"
+                                           value="@row.Position" @ref="_spinner"
+                                           @onchange="e => Move(row, e.Value?.ToString())"
+                                           @onfocusout="() => _moving = null"
+                                           @onkeydown="Leave" />
+                                }
+                                else if (OnMove.HasDelegate)
+                                {
+                                    <button type="button" class="sem-position"
+                                            title="@($"Move {row.Name} somewhere else in the file")"
+                                            aria-label="@($"{row.Name} is number {row.Position}. Move it.")"
+                                            @onclick="() => Edit(row)">@row.Position</button>
+                                }
+                                else
+                                {
+                                    @row.Position
+                                }
+                            </td>
+
+                            <th scope="row" class="name">
+                                @if (row.Flag is { } flag)
+                                {
+                                    <FlagPreview Flag="@flag" Class="tiny" />
+                                }
+
+                                <button type="button" class="sem-row-open"
+                                        @onclick="() => Open(row)" @onclick:stopPropagation="true">
+                                    @row.Name
+                                </button>
+                            </th>
+
+                            @foreach (var column in Columns)
+                            {
+                                <td>
+                                    @if (column.Choices is { } choices)
+                                    {
+                                        @*
+                                            Keyed, because these are components with a script
+                                            binding of their own and rebuilding one is not free.
+                                            Without it a filter that removed a single row rebuilt
+                                            every chip on the page - a hundred and fifty-six of
+                                            them, each asking the browser to tie a panel to a
+                                            button, which is most of half a second per keystroke.
+                                        *@
+                                        @foreach (var choice in choices(row))
+                                        {
+                                            @*
+                                                The same chip the empire's own panel draws, which is
+                                                where its description and its effects already live.
+                                                A civic in a table is the civic in the editor, and
+                                                pointing at it should say the same thing in both.
+
+                                                Only where there is something to say. A shipset and
+                                                a species class have no effects and no description,
+                                                and a panel that opens to say "no effects" is a
+                                                panel that teaches the reader to stop opening them.
+                                            *@
+                                            @if (choice.Effects is not null)
+                                            {
+                                                <OptionChip @key="choice.Key" Key="@choice.Key"
+                                                            Name="@choice.Name" Icon="@choice.Icon"
+                                                            Effects="@choice.Effects"
+                                                            DescriptionKey="@choice.Description"
+                                                            Deferred="true" />
+                                            }
+                                            else
+                                            {
+                                                <span class="sem-cell-chip" @key="choice.Key"
+                                                      title="@choice.Name"
+                                                      @onclick:stopPropagation="true">
+                                                    @if (choice.Icon is { Length: > 0 })
+                                                    {
+                                                        <GameIcon Path="@choice.Icon" Alt="" />
+                                                    }
+
+                                                    <span>@choice.Name</span>
+                                                </span>
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        @column.Text(row)
+                                    }
+                                </td>
+                            }
+
+                            <td class="actions" @onclick:stopPropagation="true">
+                                <button type="button" class="icon" title="@CopyTitle(row)"
+                                        aria-label="@($"Copy a link to {row.Name}")"
+                                        @onclick="() => OnCopyLink.InvokeAsync(row)">
+                                    <ActionIcon Name="share" />
+                                </button>
+
+                                @*
+                                    One of the game's cannot be deleted - it is not in the file to
+                                    remove - so it gets the link and nothing else.
+                                *@
+                                @if (row.Preset is null && OnDelete.HasDelegate)
+                                {
+                                    <button type="button" class="icon danger"
+                                            title="@($"Delete {row.Name}")"
+                                            aria-label="@($"Delete {row.Name}")"
+                                            @onclick="() => OnDelete.InvokeAsync(row)">
+                                        <ActionIcon Name="delete" />
+                                    </button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="sem-pager">
+            @*
+                How many at a time, beside the way through them rather than in the view controls at
+                the top: it is a fact about this list, and the two lists are not the same length.
+            *@
+            <label class="rows">
+                <span>Rows</span>
+                <select value="@_size" @onchange="Resize">
+                    @foreach (var size in Sizes)
+                    {
+                        <option value="@size">@(size == All ? "All" : size.ToString())</option>
+                    }
+                </select>
+            </label>
+
+            @if (Pages > 1)
+            {
+                <div class="turn">
+                    <button type="button" disabled="@(_page == 0)" @onclick="() => Turn(-1)">Previous</button>
+                    <span class="sem-hint">Page @(_page + 1) of @Pages</span>
+                    <button type="button" disabled="@(_page >= Pages - 1)" @onclick="() => Turn(1)">Next</button>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    /// <summary>What this list is called.</summary>
+    [Parameter, EditorRequired]
+    public required string Heading { get; set; }
+
+    /// <summary>
+    /// What to show in the heading's place, which for this table is the search box.
+    /// </summary>
+    /// <remarks>
+    /// A heading that only ever says "Empires" over a table of empires earns the row it sits on
+    /// from nobody. The page decides what is worth that space; the words stay for a screen reader
+    /// either way.
+    /// </remarks>
+    [Parameter]
+    public RenderFragment? Title { get; set; }
+
+    /// <summary>
+    /// Anything that belongs at the right-hand end of the heading row.
+    /// </summary>
+    /// <remarks>
+    /// The column picker, in practice. Handed in rather than built here, because which columns a
+    /// page offers and where it keeps that choice is the page's business; this draws what it is
+    /// given, and a table asked to show a fixed set of columns passes nothing.
+    ///
+    /// On the heading row rather than in a row above it. The control that changes the columns
+    /// belongs against the header it changes, and a strip of its own would spend a row of the page
+    /// on saying what a right-hand end already says.
+    /// </remarks>
+    [Parameter]
+    public RenderFragment? Controls { get; set; }
+
+    /// <summary>The empires to show, already narrowed by whatever the reader asked for.</summary>
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<EmpireRow> Rows { get; set; }
+
+    /// <summary>How many there were before the filter, so the count can say what was hidden.</summary>
+    [Parameter]
+    public int Total { get; set; }
+
+    /// <summary>
+    /// How many of them are the player's own, which is as far as a number may be moved.
+    /// </summary>
+    /// <remarks>
+    /// Not the row count. The game's empires share the table but not the file, so a list of ninety
+    /// offers places one to forty-seven.
+    /// </remarks>
+    [Parameter]
+    public int Movable { get; set; }
+
+    /// <summary>The columns to draw, beside the name, in order.</summary>
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<EmpireColumn> Columns { get; set; }
+
+    /// <summary>
+    /// What this list's page size is remembered under.
+    /// </summary>
+    /// <remarks>
+    /// One per list. Forty-seven of the player's own and forty-five of the game's are different
+    /// lists with different reasons to be paged, and a reader who wants all of one rarely wants all
+    /// of the other.
+    /// </remarks>
+    [Parameter, EditorRequired]
+    public required string Setting { get; set; }
+
+    [CascadingParameter]
+    public DesignSession? Session { get; set; }
+
+    /// <summary>The sizes on offer, and the one that means no paging at all.</summary>
+    private static readonly int[] Sizes = [10, 25, 50, 100, All];
+
+    private const int All = int.MaxValue;
+
+    private int _size = 25;
+
+    /// <summary>What to say when the filter has left nothing.</summary>
+    [Parameter]
+    public string Empty { get; set; } = "Nothing here matches.";
+
+    [Parameter]
+    public EventCallback<EmpireRow> OnOpen { get; set; }
+
+    /// <summary>
+    /// Raised with an empire and the place in the file it should move to, counting from one.
+    /// </summary>
+    /// <remarks>
+    /// Unset for the game's own empires, whose order is theirs rather than the player's - and the
+    /// column draws a plain number rather than a control that would not do anything.
+    /// </remarks>
+    [Parameter]
+    public EventCallback<(EmpireRow Row, int To)> OnMove { get; set; }
+
+    /// <summary>Puts a link to one empire on the clipboard, without opening it.</summary>
+    [Parameter]
+    public EventCallback<EmpireRow> OnCopyLink { get; set; }
+
+    /// <summary>Asks to remove one of the player's own, which the page confirms before doing.</summary>
+    [Parameter]
+    public EventCallback<EmpireRow> OnDelete { get; set; }
+
+    /// <summary>What one row's share button says, which is only ever news about that row.</summary>
+    [Parameter]
+    public Func<EmpireRow, string> CopyTitle { get; set; } = _ => "Copy a link to this empire";
+
+    /// <summary>Which empire's number is being typed into, and nothing while none is.</summary>
+    private EmpireDesign? _moving;
+
+    /// <summary>The box that number goes in, so it can be given the keyboard when it appears.</summary>
+    private ElementReference _spinner;
+
+    /// <summary>Whether it is waiting to be focused, which is true for exactly one render.</summary>
+    /// <remarks>
+    /// Focused from here rather than with the autofocus attribute, which the browser only honours
+    /// for an element that was in the document when the page loaded. On one put there afterwards it
+    /// does nothing at all - so the box never had the keyboard, never lost it, and never fired the
+    /// blur that was supposed to close it. Pressing a number left it editable for good.
+    /// </remarks>
+    private bool _focusSpinner;
+
+    /// <summary>The name column's sort key, which is not in the picker and so has none of its own.</summary>
+    private const string NameColumn = "name";
+
+    /// <summary>The number column's, which sorts by the file's own order.</summary>
+    private const string PositionColumn = "position";
+
+    /// <summary>Which column the rows are in the order of, which to begin with is the file's.</summary>
+    private string _sort = PositionColumn;
+
+    private bool _descending;
+
+    private int _page;
+
+    /// <summary>Whether the kept page size has been read, which happens once.</summary>
+    private bool _read;
+
+    /// <summary>The box holding the rows, which is what listens for the first hover on a chip.</summary>
+    private ElementReference _wrap;
+
+    private IJSObjectReference? _module;
+
+    /// <summary>
+    /// Asks for the one listener that ties up this table's chips as they are pointed at.
+    /// </summary>
+    /// <remarks>
+    /// Every render, because the box is thrown away whenever the filter empties the table and comes
+    /// back a different element. The script keeps its own flag, so asking twice costs nothing.
+    /// </remarks>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Rows.Count == 0)
+        {
+            return;
+        }
+
+        try
+        {
+            _module ??= await Js.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/Sem.Ui/sem.js").ConfigureAwait(true);
+
+            await _module.InvokeVoidAsync("bindPopoversWhenPointed", _wrap).ConfigureAwait(true);
+
+            await _module.InvokeVoidAsync("closeSpinnerOnOutsidePress").ConfigureAwait(true);
+
+            // Every render, because what fits changes with the columns as well as with the window,
+            // and only one of those is something the browser can watch for itself.
+            await _module.InvokeVoidAsync("fitTableToWidth", _wrap).ConfigureAwait(true);
+
+            if (_focusSpinner)
+            {
+                _focusSpinner = false;
+                await _spinner.FocusAsync().ConfigureAwait(true);
+            }
+        }
+        catch (JSDisconnectedException)
+        {
+            // The page went away between the render and the binding of it.
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_module is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await _module.DisposeAsync().ConfigureAwait(false);
+        }
+        catch (JSDisconnectedException)
+        {
+            // The page went away first; there is nothing left to release.
+        }
+    }
+
+    /// <summary>
+    /// The list the page number was last settled against.
+    /// </summary>
+    /// <remarks>
+    /// The list itself rather than how long it was. Two filters can leave the same number of
+    /// empires, and a reader on the third page of one was left on the third page of the other.
+    ///
+    /// This only became a safe thing to compare when the page above stopped building that list
+    /// afresh in the markup on every render - before that every render was a new list, and asking
+    /// this way would have sent the reader back to the first page constantly.
+    /// </remarks>
+    private IReadOnlyList<EmpireRow>? _drawnFor;
+
+    /// <summary>
+    /// Back to the first page whenever the filter changes what there is to page through.
+    /// </summary>
+    /// <remarks>
+    /// Left alone, narrowing forty empires to three while reading page two showed an empty table
+    /// with no way to tell that it was not the filter's answer - the pager is gone at that point,
+    /// so there is nothing on screen offering to go back.
+    /// </remarks>
+    protected override void OnParametersSet()
+    {
+        if (!_read)
+        {
+            _read = true;
+
+            if (int.TryParse(Session?.Preferences.Get(Setting), out var kept) && Sizes.Contains(kept))
+            {
+                _size = kept;
+            }
+        }
+
+        if (ReferenceEquals(Rows, _drawnFor))
+        {
+            return;
+        }
+
+        _drawnFor = Rows;
+        _page = 0;
+    }
+
+    /// <summary>
+    /// Changes how many rows a page holds, and starts again from the first of them.
+    /// </summary>
+    /// <remarks>
+    /// From the first, because the page number means something different afterwards: page four of
+    /// ten at twenty-five a page is page one at a hundred, and staying on four would have shown an
+    /// empty table.
+    /// </remarks>
+    private void Resize(ChangeEventArgs e)
+    {
+        if (!int.TryParse(e.Value?.ToString(), out var size) || !Sizes.Contains(size))
+        {
+            return;
+        }
+
+        _size = size;
+        _page = 0;
+
+        Session?.Preferences.Set(Setting, size.ToString());
+    }
+
+    private int Pages => Rows.Count == 0 ? 1 : ((Rows.Count - 1) / _size) + 1;
+
+    private IEnumerable<EmpireRow> Shown => Sorted.Skip(_page * _size).Take(_size);
+
+    /// <summary>
+    /// The ordering, worked out once for a given list, column and direction.
+    /// </summary>
+    /// <remarks>
+    /// It was worked out on every render, and for a column whose cell holds several things - civics,
+    /// ethics, traits - what it sorts by is those things joined into one string, built for every row
+    /// and thrown away again, to settle an order that had not changed. Nothing ever draws that
+    /// string; the cells draw the things themselves.
+    ///
+    /// Kept against the list rather than a count of it, so this is only worked out again when the
+    /// page above has actually asked a different question.
+    /// </remarks>
+    private IReadOnlyList<EmpireRow> Sorted
+    {
+        get
+        {
+            if (_ordered is { } held
+                && ReferenceEquals(Rows, _orderedFor)
+                && _orderedBy == _sort
+                && _orderedDown == _descending)
+            {
+                return held;
+            }
+
+            _orderedFor = Rows;
+            _orderedBy = _sort;
+            _orderedDown = _descending;
+
+            return _ordered = [.. Ordering];
+        }
+    }
+
+    private IReadOnlyList<EmpireRow>? _ordered;
+    private IReadOnlyList<EmpireRow>? _orderedFor;
+    private string? _orderedBy;
+    private bool _orderedDown;
+
+    /// <summary>
+    /// The rows in the order the header asked for, with the name always breaking the tie.
+    /// </summary>
+    /// <remarks>
+    /// Sorting by government puts a hundred empires in twelve groups, and the order within a group
+    /// would otherwise be the file's - so the same list, sorted the same way, reads differently
+    /// depending on what it happened to be sorted by before. The name settles it.
+    /// </remarks>
+    private IEnumerable<EmpireRow> Ordering
+    {
+        get
+        {
+            // The one column that is a number. Sorted as text, ten would come between one and two.
+            //
+            // The game's empires have no number, so they follow the player's rather than leading
+            // them: a column of blanks at the top of a list somebody sorted by position is the
+            // file's order with the file pushed off the bottom of the page.
+            if (_sort == PositionColumn)
+            {
+                var placed = Rows
+                    .OrderBy(r => r.Preset is null ? 0 : 1)
+                    .ThenBy(r => r.Position)
+                    .ThenBy(r => r.Name, StringComparer.CurrentCulture);
+
+                return _descending ? placed.Reverse() : placed;
+            }
+
+            var by = Of(_sort);
+
+            var ordered = _descending
+                ? Rows.OrderByDescending(by, StringComparer.CurrentCulture)
+                : Rows.OrderBy(by, StringComparer.CurrentCulture);
+
+            return _sort == NameColumn
+                ? ordered
+                : ordered.ThenBy(r => r.Name, StringComparer.CurrentCulture);
+        }
+    }
+
+    /// <summary>
+    /// Puts the number back, the box having been given up on.
+    /// </summary>
+    /// <remarks>
+    /// Two things arrive here. One is a reader pressing Escape, which is what it was written for.
+    /// The other is a press somewhere else on the page: the script watching for that presses Escape
+    /// at the box rather than calling in, so there is one way to close a box rather than two, and
+    /// nothing on the page holds a handle on this component in order to say so.
+    /// </remarks>
+    private void Leave(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape")
+        {
+            _moving = null;
+        }
+    }
+
+    /// <summary>Turns one row's number into a box, and asks for the keyboard to be put in it.</summary>
+    private void Edit(EmpireRow row)
+    {
+        _moving = row.Design;
+        _focusSpinner = true;
+    }
+
+    /// <summary>
+    /// Takes the number that was typed and moves the empire there.
+    /// </summary>
+    /// <remarks>
+    /// Clamped rather than refused: a reader typing 99 into a file of twelve means the end of it,
+    /// and an empire that stayed where it was with no word said would read as a control that does
+    /// not work. Counting from one here and from zero in the file, which is the one place that has
+    /// to be translated.
+    /// </remarks>
+    private async Task Move(EmpireRow row, string? typed)
+    {
+        _moving = null;
+
+        if (!int.TryParse(typed, out var wanted))
+        {
+            return;
+        }
+
+        var to = Math.Clamp(wanted, 1, Math.Max(1, Movable)) - 1;
+
+        if (to != row.Position - 1)
+        {
+            await OnMove.InvokeAsync((row, to));
+        }
+    }
+
+    /// <summary>
+    /// What a column sorts by, or the name for the column that has no reading of its own.
+    /// </summary>
+    /// <remarks>
+    /// Written out rather than as a null-conditional, because what is being reached for is a method
+    /// rather than a value and a method group cannot be made nullable.
+    /// </remarks>
+    private static Func<EmpireRow, string> Of(string key) =>
+        EmpireColumn.All.FirstOrDefault(c => c.Key == key) is { } column
+            ? column.Text
+            : row => row.Name;
+
+    private string Counted => Total > Rows.Count
+        ? $"{Rows.Count} of {Total}"
+        : Rows.Count == 1 ? "1 empire" : $"{Rows.Count} empires";
+
+    private RenderFragment Header(string key, string label) => @<text>
+        <button type="button" class="sem-sort @(_sort == key ? "sorted" : null)"
+                aria-label="@($"Sort by {label}")"
+                @onclick="() => SortBy(key)">
+            @label
+            <span class="arrow" aria-hidden="true">@(_sort == key ? (_descending ? "▾" : "▴") : string.Empty)</span>
+        </button>
+    </text>;
+
+    /// <summary>Sorts by a column, or turns it round when it is already the one being sorted by.</summary>
+    private void SortBy(string key)
+    {
+        if (_sort == key)
+        {
+            _descending = !_descending;
+        }
+        else
+        {
+            _sort = key;
+            _descending = false;
+        }
+
+        _page = 0;
+    }
+
+    private void Turn(int by) => _page = Math.Clamp(_page + by, 0, Pages - 1);
+
+    private Task Open(EmpireRow row) => OnOpen.InvokeAsync(row);
+}

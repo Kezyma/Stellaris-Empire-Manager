@@ -1,0 +1,298 @@
+@inject IJSRuntime Js
+@implements IAsyncDisposable
+
+@*
+    Any number of one list, chosen from a panel that opens under a control.
+
+    Not a native <select multiple>, which is a scrolling box that takes up as much room as it is
+    given and asks the reader to hold ctrl to pick a second thing. And not checkboxes laid out in
+    the card, because there are thirteen of these and one of them offers eighty-one civics.
+
+    It wears .sem-combo so that the one document-level listener that closes a list on a press outside
+    it finds this too - that script looks for .sem-combo.open and presses the .toggle inside. One
+    listener for every list on the page is the point of it; a second mechanism here would be a second
+    thing to get wrong on a phone, where there is no blur to listen for.
+*@
+
+<div class="sem-combo sem-multi @(_open ? "open" : null)" @onkeydown="Dismiss">
+    @*
+        The control is a row rather than one button, because what is in it is pressable: a chip
+        naming something chosen is the obvious place to press to stop asking for it, and a button
+        cannot hold buttons. So the parts that do something are buttons, and the space between them
+        opens the list.
+    *@
+    <div class="control" @onclick="Show">
+        @Leading
+
+        @if (Selected.Count == 0)
+        {
+            <span class="face empty">@Label</span>
+        }
+        else
+        {
+            @*
+                What was chosen, spelled out rather than counted, wearing the same icons the list
+                does. "3 selected" is a number you have to open the panel to read, and these sit in
+                a card whose whole job is saying what is being asked for.
+
+                How many lines that takes is the stylesheet's to say, and it says two things. A
+                filter wraps onto as many rows as it needs, because a card whose job is stating the
+                question should not hide half of it. The column picker keeps to one line and lets
+                the rest run past its edge, because it shares the table's heading, and a second
+                line there moves the grid itself down the page.
+            *@
+            <span class="face">
+                @foreach (var option in Options.Where(o => Selected.Contains(o.Key)))
+                {
+                    <button type="button" class="sem-pick" @key="option.Key"
+                            title="@($"Stop asking for {option.Name}")"
+                            aria-label="@($"Stop asking for {option.Name}")"
+                            @onclick="() => Toggle(option.Key)" @onclick:stopPropagation="true">
+                        @if (option.Icon is { Length: > 0 })
+                        {
+                            <GameIcon Path="@option.Icon" Alt="" />
+                        }
+
+                        <span>@option.Name</span>
+                        <span class="drop" aria-hidden="true">×</span>
+                    </button>
+                }
+            </span>
+        }
+
+        <button type="button" class="toggle" aria-expanded="@(_open ? "true" : "false")"
+                title="@(_open ? "Close the list" : "Show every option")"
+                aria-label="@(_open ? "Close the list" : "Show every option")"
+                @onclick="Flip" @onclick:stopPropagation="true">▾</button>
+    </div>
+
+    @if (_open)
+    {
+        @*
+            The box and the list in one panel, because one thing hangs under the control, not two.
+
+            They were separate, and only the list was taken out of the flow. That left the box in
+            it - and the control is a flex row, so the box was laid beside the chips rather than
+            above the options: it took a hundred and sixty pixels of the width they were drawn in,
+            and being the taller of the two it grew the row, the field, and the card the field is
+            in, every time a list was opened. One box comes out of the flow now, and what is inside
+            it stacks the ordinary way.
+        *@
+        <div class="panel">
+            @*
+                A way through a long list. These offer what an empire may be given rather than what
+                the empires in front of the reader hold, which for portraits is two hundred and
+                ninety-five and for traits two hundred and eight - and a list that long is one to
+                give up on rather than to read. Short lists get no box, since scrolling four names
+                is faster than typing.
+            *@
+            @if (Options.Count > Searchable)
+            {
+                <div class="search">
+                    <input type="text" placeholder="Find" value="@_search" @ref="_box"
+                           @oninput="e => _search = e.Value?.ToString() ?? string.Empty"
+                           @onclick:stopPropagation="true" />
+                </div>
+            }
+
+            <ul class="options">
+                @if (Shown.Count == 0)
+                {
+                    <li class="sem-hint none">
+                        @(Options.Count == 0 ? "Nothing to choose from." : "Nothing matches.")
+                    </li>
+                }
+
+                @foreach (var option in Shown)
+                {
+                    var held = Selected.Contains(option.Key);
+
+                    <li>
+                        @*
+                            Suppressing the mousedown keeps the press from moving focus out of the
+                            panel before the click lands, which is what would otherwise close it
+                            under the pointer - the same reason the combo box does it.
+                        *@
+                        <button type="button" class="@(held ? "selected" : null)"
+                                role="menuitemcheckbox" aria-checked="@(held ? "true" : "false")"
+                                @onmousedown:preventDefault="true"
+                                @onclick="() => Toggle(option.Key)">
+                            <span class="tick" aria-hidden="true">@(held ? "✓" : string.Empty)</span>
+
+                            @*
+                                The game's own icon, where the thing has one. Half of these lists
+                                are things the player knows by their picture before they know them
+                                by name.
+                            *@
+                            @if (option.Icon is { Length: > 0 })
+                            {
+                                <GameIcon Path="@option.Icon" Alt="" />
+                            }
+
+                            <span class="name">@option.Name</span>
+                        </button>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+</div>
+
+@code {
+    /// <summary>What this narrows, said in the control when nothing is chosen.</summary>
+    [Parameter, EditorRequired]
+    public required string Label { get; set; }
+
+    /// <summary>Everything that can be chosen, in the order to offer it.</summary>
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<EmpireChoice> Options { get; set; }
+
+    /// <summary>
+    /// What is chosen, which this edits in place.
+    /// </summary>
+    /// <remarks>
+    /// The set itself rather than a copy, because the filter it belongs to is read by two tables and
+    /// a count on the page, and handing each of them a different copy is how those stop agreeing.
+    /// </remarks>
+    [Parameter, EditorRequired]
+    public required HashSet<string> Selected { get; set; }
+
+    /// <summary>
+    /// Anything that belongs inside the control, before what was chosen.
+    /// </summary>
+    /// <remarks>
+    /// For the switch between any and all, which is a question about this list and belongs on it
+    /// rather than floating above it as a second control with a row of its own. What the switch
+    /// means is the filter's business rather than this one's, so it is handed in.
+    /// </remarks>
+    [Parameter]
+    public RenderFragment? Leading { get; set; }
+
+    /// <summary>Raised after every change, so whoever owns the filter can redraw.</summary>
+    [Parameter]
+    public EventCallback OnChanged { get; set; }
+
+    private bool _open;
+
+    /// <summary>
+    /// Above this many options the panel offers a way to search them.
+    /// </summary>
+    /// <remarks>
+    /// Low, because the box is only worth leaving out where scrolling is plainly faster than
+    /// typing - four genders, three classes that may rule. A reader who has learned that typing
+    /// narrows one of these lists should not have to learn which ones.
+    /// </remarks>
+    private const int Searchable = 6;
+
+    /// <summary>What has been typed into that box, which narrows the list and nothing else.</summary>
+    private string _search = string.Empty;
+
+    private ElementReference _box;
+
+    /// <summary>Whether the box is waiting to be given the keyboard, which is one render.</summary>
+    private bool _focusBox;
+
+    /// <summary>
+    /// The options the panel is showing, which is all of them until something is typed.
+    /// </summary>
+    /// <remarks>
+    /// Matched anywhere in the name rather than at the start of it: the game's names put the
+    /// distinguishing word last as often as first - Fanatic Purifiers, Agrarian Idyll - and a
+    /// reader looking for purifiers should not have to know that.
+    /// </remarks>
+    private IReadOnlyList<EmpireChoice> Shown =>
+        _search.Length == 0
+            ? Options
+            : [.. Options.Where(o => o.Name.Contains(_search, StringComparison.CurrentCultureIgnoreCase))];
+
+    private IJSObjectReference? _module;
+
+    private async Task Toggle(string key)
+    {
+        if (!Selected.Remove(key))
+        {
+            Selected.Add(key);
+        }
+
+        await OnChanged.InvokeAsync();
+    }
+
+    private void Dismiss(KeyboardEventArgs e)
+    {
+        if (e.Key != "Escape")
+        {
+            return;
+        }
+
+        // The typing goes first, since somebody who has narrowed the list and changed their mind
+        // means the narrowing rather than the panel.
+        if (_search.Length > 0)
+        {
+            _search = string.Empty;
+            return;
+        }
+
+        _open = false;
+    }
+
+    private void Show()
+    {
+        if (!_open)
+        {
+            Flip();
+        }
+    }
+
+    /// <summary>
+    /// Opens or closes the panel, forgetting what was typed into it either way.
+    /// </summary>
+    /// <remarks>
+    /// A panel that reopened still narrowed to whatever was last searched for would look like a
+    /// list with most of its options missing.
+    /// </remarks>
+    private void Flip()
+    {
+        _open = !_open;
+        _search = string.Empty;
+        _focusBox = _open && Options.Count > Searchable;
+    }
+
+    /// <summary>
+    /// Asks for the one document-level listener that closes an open list on a press outside it.
+    /// </summary>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Given the keyboard from here rather than with the autofocus attribute, which a browser
+        // only honours for an element that was in the document when the page loaded.
+        if (_focusBox)
+        {
+            _focusBox = false;
+            await _box.FocusAsync();
+        }
+
+        if (!firstRender)
+        {
+            return;
+        }
+
+        _module = await Js.InvokeAsync<IJSObjectReference>("import", "./_content/Sem.Ui/sem.js");
+        await _module.InvokeVoidAsync("closeListsOnOutsidePress");
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_module is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await _module.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+            // The page went away first; there is nothing left to release.
+        }
+    }
+}

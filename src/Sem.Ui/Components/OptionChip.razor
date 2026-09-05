@@ -12,7 +12,6 @@
     does the hovering: a chip is not worth a round trip into managed code on every mouse move.
 *@
 
-@using Microsoft.JSInterop
 @inject IJSRuntime Js
 @implements IAsyncDisposable
 
@@ -23,8 +22,20 @@
         press would do both. Hover and focus still describe the chip either way - bindPopover has
         always shown it on those, and the click handler only pinned it open for a finger.
     *@
-    <button type="button" @ref="_anchor" aria-describedby="@_id"
-            popovertarget="@(Opens ? null : _id)" @onclick="OnSelect">
+    @*
+        Named in a title as well as in the panel. The panel is the better answer and is not always
+        an answer at all - a chip whose option has no prose and no numbers opens an empty one - and
+        where the table has been squeezed the name is not written on the chip either. A title costs
+        nothing and means a chip always says what it is.
+
+        The press is stopped here. In a table the row underneath opens the empire, and on a phone,
+        where there is no hover, pressing the chip is how its panel is opened at all - so a tap
+        meant to read what a civic does was opening the editor instead.
+    *@
+    <button type="button" @ref="_anchor" aria-describedby="@_id" title="@Name"
+            popovertarget="@(Opens ? null : _id)" @onclick="OnSelect"
+            @onclick:stopPropagation="true"
+            @onmouseover="Reveal" @onfocus="Reveal">
         @if (Icon is { Length: > 0 } icon)
         {
             <img src="@Session.Data.AssetUrl(icon)" alt="" loading="lazy">
@@ -38,14 +49,30 @@
         when the next one opens. Only one of these is ever wanted at a time.
     *@
     <div id="@_id" popover="auto" role="tooltip" class="sem-chip-detail" @ref="_panel">
-        <h4>@Name</h4>
+        @*
+            Empty until it is asked for, where the caller says there will be a great many of these.
 
-        @if (Session.Localizer.Html($"{Key}_desc", string.Empty) is { Length: > 0 } lore)
+            A panel is a heading, a paragraph of the game's own prose and a list of effects - twenty
+            or thirty elements that nobody has looked at. One beside an empire is nothing. The empire
+            table draws a hundred and fifty-eight, rebuilt on every sort and every page, and building
+            the panels was most of half a second the reader waited through each time.
+        *@
+        @if (_revealed)
         {
-            <div class="sem-detail-lore">@((MarkupString)lore)</div>
-        }
+            <h4>@Name</h4>
 
-        <EffectsList Effects="@Effects" ShowNothing="true" />
+            @if (Lore is { Length: > 0 } lore)
+            {
+                <div class="sem-detail-lore">@((MarkupString)lore)</div>
+            }
+
+            @*
+                "No effects" only where the panel would otherwise be empty. A homeworld has prose and
+                no numbers of its own, and a line saying so under a paragraph that has already
+                answered the question is a line that makes the panel look broken.
+            *@
+            <EffectsList Effects="@Effects" ShowNothing="@(Lore.Length == 0)" />
+        }
     </div>
 </span>
 
@@ -65,6 +92,17 @@
     [Parameter]
     public string? Icon { get; set; }
 
+    /// <summary>
+    /// Where its prose lives, when that is not its own key with <c>_desc</c> after it.
+    /// </summary>
+    /// <remarks>
+    /// Almost everything is described under its own key. A homeworld is not: a planet class says
+    /// nothing about itself and borrows the description of the habitability trait it grants, and an
+    /// arkship keeps its own under a different suffix again.
+    /// </remarks>
+    [Parameter]
+    public string? DescriptionKey { get; set; }
+
     /// <summary>What it does, shown in the panel behind it.</summary>
     [Parameter]
     public Sem.GameData.EffectSet? Effects { get; set; }
@@ -80,11 +118,41 @@
     [Parameter]
     public EventCallback OnSelect { get; set; }
 
+    /// <summary>
+    /// Whether something else will tie the panel to the button, the first time it is pointed at.
+    /// </summary>
+    /// <remarks>
+    /// For a page with a great many of these on it at once. Tying them up costs a call into the
+    /// browser each, which one chip beside an empire never notices and a table of them does: the
+    /// empire table has a hundred and fifty-six, rebuilt on every sort, and binds them from one
+    /// listener of its own instead.
+    /// </remarks>
+    [Parameter]
+    public bool Deferred { get; set; }
+
     /// <summary>Whether pressing this chip opens something.</summary>
     private bool Opens => OnSelect.HasDelegate;
 
+    /// <summary>What the game says about it, from wherever it says it.</summary>
+    private string Lore =>
+        Session.Localizer.Html(DescriptionKey ?? $"{Key}_desc", string.Empty) ?? string.Empty;
+
     private ElementReference _anchor;
     private ElementReference _panel;
+
+    /// <summary>
+    /// Whether the panel has been filled in, which it is the first time the chip is reached.
+    /// </summary>
+    /// <remarks>
+    /// Always, rather than only when deferred: a chip that is not deferred is built with its panel
+    /// already open for business, so this starts true for it and nothing here ever runs.
+    /// </remarks>
+    private bool _revealed;
+
+    protected override void OnInitialized() => _revealed = !Deferred;
+
+    /// <summary>Fills the panel in, the first time a pointer or the keyboard arrives.</summary>
+    private void Reveal() => _revealed = true;
 
     /// <summary>
     /// Ties the panel to its button, uniquely on the page.
@@ -99,7 +167,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender)
+        if (!firstRender || Deferred)
         {
             return;
         }

@@ -57,6 +57,16 @@
     private string Current => Value is { Length: > 0 } set ? set : "not_set";
 
     /// <summary>
+    /// All four, for somewhere that lists them rather than offering them as buttons.
+    /// </summary>
+    /// <remarks>
+    /// A filter has to name every gender a design could hold, not only the ones some empire in the
+    /// list happens to hold - a heading that offers three of four is a heading that quietly says
+    /// the fourth does not exist.
+    /// </remarks>
+    public static IReadOnlyList<(string Key, string Label, string Icon)> Offered => Genders;
+
+    /// <summary>
     /// The sprite and the word for one gender, for somewhere that shows the held one rather than
     /// offering all four.
     /// </summary>
