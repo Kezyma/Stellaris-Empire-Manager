@@ -1,0 +1,150 @@
+@using Microsoft.JSInterop
+@inject IJSRuntime Js
+@implements IAsyncDisposable
+
+@*
+    Any number of one list, chosen from a panel that opens under a button.
+
+    Not a native <select multiple>, which is a scrolling box that takes up as much room as it is
+    given and asks the reader to hold ctrl to pick a second thing. And not checkboxes laid out in
+    the card, because there are six of these and one of them offers eighty-one civics.
+
+    It wears .sem-combo so that the one document-level listener that closes a list on a press outside
+    it finds this too - that script looks for .sem-combo.open and presses the .toggle inside. One
+    listener for every list on the page is the point of it; a second mechanism here would be a second
+    thing to get wrong on a phone, where there is no blur to listen for.
+*@
+
+<div class="sem-combo sem-multi @(_open ? "open" : null)" @onkeydown="Dismiss">
+    <button type="button" class="toggle" aria-expanded="@(_open ? "true" : "false")"
+            title="@Label" @onclick="() => _open = !_open">
+        <span class="face @(Selected.Count == 0 ? "empty" : null)">@Face</span>
+        <span class="caret" aria-hidden="true">▾</span>
+    </button>
+
+    @if (_open)
+    {
+        <ul class="options">
+            @if (Options.Count == 0)
+            {
+                <li class="sem-hint none">Nothing to choose from.</li>
+            }
+
+            @foreach (var option in Options)
+            {
+                var held = Selected.Contains(option.Key);
+
+                <li>
+                    @*
+                        Suppressing the mousedown keeps the press from moving focus out of the panel
+                        before the click lands, which is what would otherwise close it under the
+                        pointer - the same reason the combo box does it.
+                    *@
+                    <button type="button" class="@(held ? "selected" : null)"
+                            role="menuitemcheckbox" aria-checked="@(held ? "true" : "false")"
+                            @onmousedown:preventDefault="true"
+                            @onclick="() => Toggle(option.Key)">
+                        <span class="tick" aria-hidden="true">@(held ? "✓" : string.Empty)</span>
+                        <span class="name">@option.Name</span>
+                    </button>
+                </li>
+            }
+        </ul>
+    }
+</div>
+
+@code {
+    /// <summary>What this narrows, said in the button when nothing is chosen.</summary>
+    [Parameter, EditorRequired]
+    public required string Label { get; set; }
+
+    /// <summary>Everything that can be chosen, in the order to offer it.</summary>
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<EmpireChoice> Options { get; set; }
+
+    /// <summary>
+    /// What is chosen, which this edits in place.
+    /// </summary>
+    /// <remarks>
+    /// The set itself rather than a copy, because the filter it belongs to is read by two tables and
+    /// a count on the page, and handing each of them a different copy is how those stop agreeing.
+    /// </remarks>
+    [Parameter, EditorRequired]
+    public required HashSet<string> Selected { get; set; }
+
+    /// <summary>Raised after every change, so whoever owns the filter can redraw.</summary>
+    [Parameter]
+    public EventCallback OnChanged { get; set; }
+
+    private bool _open;
+
+    private IJSObjectReference? _module;
+
+    /// <summary>
+    /// What the button says: the label while nothing is chosen, and otherwise what was chosen.
+    /// </summary>
+    /// <remarks>
+    /// One choice is named. Several are counted, because six of these across a card cannot each
+    /// grow to hold a list, and the count says the useful half of it - how much has been asked for,
+    /// with the panel a press away for exactly which.
+    ///
+    /// The label is not repeated in the count. Every one of these has its name written beside it,
+    /// and the label is what stands in for a choice rather than a title for one, so a filter with
+    /// two civics ticked read "Any: 2" - which is the placeholder and the answer at once.
+    /// </remarks>
+    private string Face => Selected.Count switch
+    {
+        0 => Label,
+        1 => Options.FirstOrDefault(o => Selected.Contains(o.Key))?.Name ?? Label,
+        _ => $"{Selected.Count} selected",
+    };
+
+    private async Task Toggle(string key)
+    {
+        if (!Selected.Remove(key))
+        {
+            Selected.Add(key);
+        }
+
+        await OnChanged.InvokeAsync();
+    }
+
+    private void Dismiss(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape")
+        {
+            _open = false;
+        }
+    }
+
+    /// <summary>
+    /// Asks for the one document-level listener that closes an open list on a press outside it.
+    /// </summary>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        _module = await Js.InvokeAsync<IJSObjectReference>("import", "./_content/Sem.Ui/sem.js");
+        await _module.InvokeVoidAsync("closeListsOnOutsidePress");
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_module is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await _module.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+            // The page went away first; there is nothing left to release.
+        }
+    }
+}

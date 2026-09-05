@@ -57,6 +57,53 @@ else
 
     <CascadingValue Value="_session">
         @*
+            Two ways of being shown the same empires, and the controls that decide which.
+
+            Cards answer "which one is that" - a flag, a face, and the two lines that tell one
+            empire from another at a glance. The table answers the questions a card cannot, because
+            they are questions about the set rather than about any one of them: which of these are
+            Fanatic Purifiers, what does the file hold three of, which of the game's empires start
+            on a Relic World. Neither is a better version of the other.
+        *@
+        <div class="sem-list-head">
+            <div class="sem-view-toggle" role="group" aria-label="How to show the empires">
+                <button type="button" aria-pressed="@(_listView ? "false" : "true")"
+                        @onclick="() => ShowList(false)">Cards</button>
+
+                <button type="button" aria-pressed="@(_listView ? "true" : "false")"
+                        @onclick="() => ShowList(true)">List</button>
+            </div>
+
+            @if (_listView)
+            {
+                @*
+                    Which columns, beside the toggle rather than in the filter card: it says what the
+                    table looks like, not which empires are in it, and a reader clearing the filters
+                    should not find their columns cleared with them.
+                *@
+                <div class="sem-columns">
+                    <label id="column-picker">Columns</label>
+                    <MultiSelect Label="Choose" Options="@ColumnOptions" Selected="@_visible"
+                                 OnChanged="RememberColumns" />
+                </div>
+            }
+        </div>
+
+        @if (_listView)
+        {
+            <EmpireFilters Rows="@AllRows" Filter="@_filter" OnChanged="StateHasChanged" />
+
+            <EmpireTable Heading="Your empires" Rows="@Narrowed(OwnRows)" Total="@OwnRows.Count"
+                         Columns="@VisibleColumns" OnOpen="OpenRow"
+                         Empty="None of your empires match." />
+
+            <EmpireTable Heading="The game's empires" Rows="@Narrowed(PresetRows)"
+                         Total="@PresetRows.Count" Columns="@VisibleColumns" OnOpen="OpenRow"
+                         Empty="None of the game's empires match." />
+        }
+        else
+        {
+        @*
             The lists, and the editor over them when one is open.
 
             There is no preview panel beside them any more. It was a column-wide summary of an empire
@@ -102,6 +149,7 @@ else
                 </div>
             </div>
         </div>
+        }
 
         @if (Editing)
         {
@@ -175,6 +223,23 @@ else
     /// <summary>Whether the session has loaded and any shared link has been opened.</summary>
     private bool _ready;
 
+    /// <summary>Whether the empires are drawn as a table rather than as cards.</summary>
+    private bool _listView;
+
+    /// <summary>What the reader has narrowed both lists down to.</summary>
+    private readonly EmpireFilter _filter = new();
+
+    /// <summary>Which columns the table draws, beside the name.</summary>
+    private HashSet<string> _visible = [];
+
+    /// <summary>What the two settings above are remembered under.</summary>
+    private const string ViewSetting = "empire-view";
+
+    private const string ColumnSetting = "empire-columns";
+
+    /// <summary>The value of the view setting that means the table.</summary>
+    private const string ListView = "list";
+
     /// <summary>
     /// Set from the editor closing until the address it left behind has been cleared.
     /// </summary>
@@ -241,6 +306,12 @@ else
         if (_session is not null)
         {
             _session.Changed += OnChanged;
+
+            // Read before anything is drawn, so somebody who chose the table is not shown the cards
+            // for a frame on the way to it.
+            _listView = _session.Preferences.Get(ViewSetting) == ListView;
+            _visible = KeptColumns();
+
             OpenSharedDesign();
 
             // Last, and only here. Until the link has been read there is nothing to say about the
@@ -491,9 +562,90 @@ else
 
     private void OnChanged()
     {
-        // The content packs decide which empires are listed, so the list is worked out again.
+        // The content packs decide which empires are listed, so the list is worked out again - and
+        // the rows with it, since every one of them is a reading of an empire that may have just
+        // been edited, and a government that is no longer the empire's is worse than no government.
         _prescripted = null;
+        _rows = null;
+        _ownRows = null;
+        _presetRows = null;
+
         InvokeAsync(StateHasChanged);
+    }
+
+    /// <summary>
+    /// Both lists as rows, which is what the table sorts and the filters offer choices from.
+    /// </summary>
+    /// <remarks>
+    /// Held, and only built when the table is actually being drawn. Each row costs a rules context
+    /// - a government is derived rather than stored - and ninety of those on every keystroke in the
+    /// search box would be a filter you could watch happening. Cleared with the prescripted list,
+    /// which is to say whenever anything about the session changes.
+    /// </remarks>
+    private IReadOnlyList<EmpireRow> AllRows => _rows ??= [.. OwnRows, .. PresetRows];
+
+    private IReadOnlyList<EmpireRow> OwnRows => _ownRows ??=
+    [
+        .. (_session!.File?.Designs ?? []).Select(d => EmpireRow.Read(_session, d))
+    ];
+
+    private IReadOnlyList<EmpireRow> PresetRows => _presetRows ??=
+    [
+        .. Prescripted
+            .Select(e => (Empire: e, Read: Read(e)))
+            .Where(p => p.Read is not null)
+            .Select(p => EmpireRow.Read(_session!, p.Read!.Design, p.Empire))
+    ];
+
+    private IReadOnlyList<EmpireRow>? _rows;
+    private IReadOnlyList<EmpireRow>? _ownRows;
+    private IReadOnlyList<EmpireRow>? _presetRows;
+
+    /// <summary>One list, narrowed by whatever is in the filter card.</summary>
+    private IReadOnlyList<EmpireRow> Narrowed(IReadOnlyList<EmpireRow> rows) =>
+        _filter.Any ? [.. rows.Where(_filter.Matches)] : rows;
+
+    /// <summary>The columns on offer, named as the picker shows them.</summary>
+    private IReadOnlyList<EmpireChoice> ColumnOptions { get; } =
+    [
+        .. EmpireColumn.All.Select(c => new EmpireChoice(c.Key, c.Header, null, null))
+    ];
+
+    /// <summary>The chosen columns, in the order the table declares rather than the order ticked.</summary>
+    private IReadOnlyList<EmpireColumn> VisibleColumns =>
+        [.. EmpireColumn.All.Where(c => _visible.Contains(c.Key))];
+
+    /// <summary>Swaps the views, and remembers it.</summary>
+    private void ShowList(bool list)
+    {
+        _listView = list;
+        _session?.Preferences.Set(ViewSetting, list ? ListView : "cards");
+    }
+
+    /// <summary>
+    /// Keeps the chosen columns, written as their keys.
+    /// </summary>
+    /// <remarks>
+    /// An empty choice is stored as a single space rather than as nothing, because nothing is what
+    /// an unanswered setting looks like - and a reader who turned every column off would have found
+    /// the defaults back on the next time they opened the page.
+    /// </remarks>
+    private void RememberColumns() =>
+        _session?.Preferences.Set(
+            ColumnSetting,
+            _visible.Count == 0 ? " " : string.Join(",", _visible));
+
+    /// <summary>Opens whichever list the row came from, the same way pressing its card would.</summary>
+    private void OpenRow(EmpireRow row)
+    {
+        if (row.Preset is { } preset)
+        {
+            OpenPrescripted(preset);
+        }
+        else
+        {
+            OpenOwn(row.Design);
+        }
     }
 
     /// <summary>
@@ -599,6 +751,29 @@ else
             // One unreadable built-in empire should not take the page down with it.
             return null;
         }
+    }
+
+    /// <summary>
+    /// Which columns to draw, from what was kept, or the ones worth having at first sight.
+    /// </summary>
+    /// <remarks>
+    /// The defaults are what a player would put on a card if a card had room: what the empire is
+    /// called, how it is run, what it believes, and what lives there. The rest are here for the
+    /// questions somebody comes to a table with, and are off until they are asked for.
+    /// </remarks>
+    private HashSet<string> KeptColumns()
+    {
+        if (_session?.Preferences.Get(ColumnSetting) is not { Length: > 0 } kept)
+        {
+            return [.. EmpireColumn.All.Where(c => c.OnByDefault).Select(c => c.Key)];
+        }
+
+        return
+        [
+            .. kept
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Where(key => EmpireColumn.All.Any(c => c.Key == key))
+        ];
     }
 
     /// <summary>A name nothing in the file has yet.</summary>

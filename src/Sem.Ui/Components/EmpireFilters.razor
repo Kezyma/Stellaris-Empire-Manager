@@ -1,0 +1,151 @@
+@*
+    What the reader is looking for, in a card above the lists.
+
+    Above rather than inside the table, and deliberately: a filter row wedged into a header is a row
+    that fights the columns for width, disappears when its column is hidden, and has nowhere to put
+    a control that narrows something the table is not currently showing. These narrow the empires,
+    not the columns, so they sit with the question rather than with the answer.
+
+    One set for both lists. "Which of these are Fanatic Purifiers" is not a question about the
+    player's empires or about the game's, and answering it twice with two sets of controls would be
+    two chances to have them disagree.
+*@
+
+<div class="sem-filters">
+    <div class="head">
+        <h2>Narrow it down</h2>
+
+        @if (Filter.Any)
+        {
+            <button type="button" class="sem-clear" @onclick="Clear">Clear</button>
+        }
+    </div>
+
+    <div class="controls">
+        <div class="sem-field flush search">
+            <label for="empire-search">Name</label>
+            <input id="empire-search" type="text" placeholder="Any name"
+                   value="@Filter.Search"
+                   @oninput="e => Search(e.Value?.ToString())" />
+        </div>
+
+        <div class="sem-field flush">
+            <label>Authority</label>
+            <MultiSelect Label="Any" Options="@Authorities" Selected="@Filter.Authorities"
+                         OnChanged="OnChanged" />
+        </div>
+
+        <div class="sem-field flush">
+            <label>Ethics</label>
+            <MultiSelect Label="Any" Options="@Ethics" Selected="@Filter.Ethics"
+                         OnChanged="OnChanged" />
+        </div>
+
+        <div class="sem-field flush">
+            <label>Civics</label>
+            <MultiSelect Label="Any" Options="@Civics" Selected="@Filter.Civics"
+                         OnChanged="OnChanged" />
+        </div>
+
+        <div class="sem-field flush">
+            <label>Origin</label>
+            <MultiSelect Label="Any" Options="@Origins" Selected="@Filter.Origins"
+                         OnChanged="OnChanged" />
+        </div>
+
+        <div class="sem-field flush">
+            <label>Species</label>
+            <MultiSelect Label="Any" Options="@Classes" Selected="@Filter.Classes"
+                         OnChanged="OnChanged" />
+        </div>
+
+        <div class="sem-field flush">
+            <label>Traits</label>
+            <MultiSelect Label="Any" Options="@Traits" Selected="@Filter.Traits"
+                         OnChanged="OnChanged" />
+        </div>
+    </div>
+
+    @*
+        Said once, here, rather than repeated under six controls. Two civics means either, and a
+        civic and an ethic means both - which is what a set of tick boxes reads as, but not what
+        everyone assumes, and the assumption is only visible in a result nobody can explain.
+    *@
+    <p class="sem-hint">
+        Any of the things ticked under one heading; all of the headings you use.
+    </p>
+</div>
+
+@code {
+    /// <summary>
+    /// Every empire there is, both lists together, which is what the choices are drawn from.
+    /// </summary>
+    /// <remarks>
+    /// Offered rather than exhaustive: the game has eighty-one civics and a file has a handful, and
+    /// a list of eighty-one where seventy-four find nothing is a list to scroll past rather than to
+    /// read. What is here is what something in one of the two lists actually holds.
+    /// </remarks>
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<EmpireRow> Rows { get; set; }
+
+    [Parameter, EditorRequired]
+    public required EmpireFilter Filter { get; set; }
+
+    /// <summary>Raised whenever the filter changed, so the page can draw the lists again.</summary>
+    [Parameter]
+    public EventCallback OnChanged { get; set; }
+
+    private IReadOnlyList<EmpireChoice> Authorities => _authorities ??= Offered(r => One(r.Authority));
+
+    private IReadOnlyList<EmpireChoice> Ethics => _ethics ??= Offered(r => r.Ethics);
+
+    private IReadOnlyList<EmpireChoice> Civics => _civics ??= Offered(r => r.Civics);
+
+    private IReadOnlyList<EmpireChoice> Origins => _origins ??= Offered(r => One(r.Origin));
+
+    private IReadOnlyList<EmpireChoice> Classes => _classes ??= Offered(r => One(r.SpeciesClass));
+
+    private IReadOnlyList<EmpireChoice> Traits => _traits ??= Offered(r => r.Traits);
+
+    private IReadOnlyList<EmpireChoice>? _authorities;
+    private IReadOnlyList<EmpireChoice>? _ethics;
+    private IReadOnlyList<EmpireChoice>? _civics;
+    private IReadOnlyList<EmpireChoice>? _origins;
+    private IReadOnlyList<EmpireChoice>? _classes;
+    private IReadOnlyList<EmpireChoice>? _traits;
+
+    /// <summary>The lists are worked out from the rows, so a change of rows forgets them.</summary>
+    protected override void OnParametersSet()
+    {
+        _authorities = null;
+        _ethics = null;
+        _civics = null;
+        _origins = null;
+        _classes = null;
+        _traits = null;
+    }
+
+    private static IReadOnlyList<EmpireChoice> One(EmpireChoice? choice) =>
+        choice is null ? [] : [choice];
+
+    /// <summary>Everything the rows hold under one heading, once each, in the order it reads in.</summary>
+    private IReadOnlyList<EmpireChoice> Offered(Func<EmpireRow, IReadOnlyList<EmpireChoice>> held) =>
+    [
+        .. Rows
+            .SelectMany(held)
+            .DistinctBy(c => c.Key, StringComparer.Ordinal)
+            .OrderBy(c => c.Name, StringComparer.CurrentCulture)
+    ];
+
+    private async Task Search(string? text)
+    {
+        Filter.Search = text ?? string.Empty;
+        await OnChanged.InvokeAsync();
+    }
+
+    private async Task Clear()
+    {
+        Filter.Clear();
+        await OnChanged.InvokeAsync();
+    }
+}

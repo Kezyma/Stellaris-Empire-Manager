@@ -1,0 +1,217 @@
+@*
+    The empires as rows, sorted by whichever column was last pressed and shown a page at a time.
+
+    A real table, not a grid of divs: these are records with the same fields in the same order, a
+    reader compares them down a column, and a screen reader announcing "Civics, Fanatic Purifiers"
+    for the fourteenth cell is the whole reason the element exists.
+
+    Wide on purpose. Eighteen columns will not fit a phone and are not meant to - the wrapper
+    scrolls sideways on its own, which is what keeps the page from doing it, and the column picker
+    is how somebody on a narrow screen asks for the four they came for.
+*@
+
+<div class="sem-table-block">
+    <div class="head">
+        <h2>@Heading</h2>
+        <span class="sem-hint">@Counted</span>
+    </div>
+
+    @if (Rows.Count == 0)
+    {
+        <p class="sem-empty-line">@Empty</p>
+    }
+    else
+    {
+        <div class="sem-table-wrap">
+            <table class="sem-table">
+                <thead>
+                    <tr>
+                        <th scope="col" class="name">@Header(NameColumn, "Empire")</th>
+
+                        @foreach (var column in Columns)
+                        {
+                            <th scope="col">@Header(column.Key, column.Header)</th>
+                        }
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var row in Shown)
+                    {
+                        @*
+                            The row opens the empire, and so does the button naming it. The row is
+                            for the pointer, which is anywhere along a line eighteen columns wide;
+                            the button is the way in for a keyboard, which cannot focus a row at all.
+                            The button stops its own press travelling, or one click would open the
+                            empire twice.
+                        *@
+                        <tr @key="row.Design" @onclick="() => Open(row)">
+                            <th scope="row" class="name">
+                                @if (row.Flag is { } flag)
+                                {
+                                    <FlagPreview Flag="@flag" Class="tiny" />
+                                }
+
+                                <button type="button" class="sem-row-open"
+                                        @onclick="() => Open(row)" @onclick:stopPropagation="true">
+                                    @row.Name
+                                </button>
+                            </th>
+
+                            @foreach (var column in Columns)
+                            {
+                                <td>
+                                    @if (column.Chips is { } chips)
+                                    {
+                                        @foreach (var choice in chips(row))
+                                        {
+                                            <span class="sem-cell-chip">@choice.Name</span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        @column.Text(row)
+                                    }
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (Pages > 1)
+        {
+            <div class="sem-pager">
+                <button type="button" disabled="@(_page == 0)" @onclick="() => Turn(-1)">Previous</button>
+                <span class="sem-hint">Page @(_page + 1) of @Pages</span>
+                <button type="button" disabled="@(_page >= Pages - 1)" @onclick="() => Turn(1)">Next</button>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    /// <summary>What this list is called.</summary>
+    [Parameter, EditorRequired]
+    public required string Heading { get; set; }
+
+    /// <summary>The empires to show, already narrowed by whatever the reader asked for.</summary>
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<EmpireRow> Rows { get; set; }
+
+    /// <summary>How many there were before the filter, so the count can say what was hidden.</summary>
+    [Parameter]
+    public int Total { get; set; }
+
+    /// <summary>The columns to draw, beside the name, in order.</summary>
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<EmpireColumn> Columns { get; set; }
+
+    /// <summary>How many rows at a time.</summary>
+    [Parameter]
+    public int PageSize { get; set; } = 25;
+
+    /// <summary>What to say when the filter has left nothing.</summary>
+    [Parameter]
+    public string Empty { get; set; } = "Nothing here matches.";
+
+    [Parameter]
+    public EventCallback<EmpireRow> OnOpen { get; set; }
+
+    /// <summary>The name column's sort key, which is not in the picker and so has none of its own.</summary>
+    private const string NameColumn = "name";
+
+    /// <summary>Which column the rows are in the order of.</summary>
+    private string _sort = NameColumn;
+
+    private bool _descending;
+
+    private int _page;
+
+    /// <summary>How many rows the filter left, which the last render was drawn against.</summary>
+    private int _drawnFor = -1;
+
+    /// <summary>
+    /// Back to the first page whenever the filter changes what there is to page through.
+    /// </summary>
+    /// <remarks>
+    /// Left alone, narrowing forty empires to three while reading page two showed an empty table
+    /// with no way to tell that it was not the filter's answer - the pager is gone at that point,
+    /// so there is nothing on screen offering to go back.
+    /// </remarks>
+    protected override void OnParametersSet()
+    {
+        if (_drawnFor == Rows.Count)
+        {
+            return;
+        }
+
+        _drawnFor = Rows.Count;
+        _page = 0;
+    }
+
+    private int Pages => Rows.Count == 0 ? 1 : ((Rows.Count - 1) / Math.Max(1, PageSize)) + 1;
+
+    private IEnumerable<EmpireRow> Shown => Sorted.Skip(_page * PageSize).Take(PageSize);
+
+    /// <summary>
+    /// The rows in the order the header asked for, with the name always breaking the tie.
+    /// </summary>
+    /// <remarks>
+    /// Sorting by government puts a hundred empires in twelve groups, and the order within a group
+    /// would otherwise be the file's - so the same list, sorted the same way, reads differently
+    /// depending on what it happened to be sorted by before. The name settles it.
+    /// </remarks>
+    private IEnumerable<EmpireRow> Sorted
+    {
+        get
+        {
+            var by = Of(_sort);
+
+            var ordered = _descending
+                ? Rows.OrderByDescending(by, StringComparer.CurrentCulture)
+                : Rows.OrderBy(by, StringComparer.CurrentCulture);
+
+            return _sort == NameColumn
+                ? ordered
+                : ordered.ThenBy(r => r.Name, StringComparer.CurrentCulture);
+        }
+    }
+
+    private Func<EmpireRow, string> Of(string key) =>
+        EmpireColumn.All.FirstOrDefault(c => c.Key == key)?.Text ?? (r => r.Name);
+
+    private string Counted => Total > Rows.Count
+        ? $"{Rows.Count} of {Total}"
+        : Rows.Count == 1 ? "1 empire" : $"{Rows.Count} empires";
+
+    private RenderFragment Header(string key, string label) => @<text>
+        <button type="button" class="sem-sort @(_sort == key ? "sorted" : null)"
+                aria-label="@($"Sort by {label}")"
+                @onclick="() => SortBy(key)">
+            @label
+            <span class="arrow" aria-hidden="true">@(_sort == key ? (_descending ? "▾" : "▴") : string.Empty)</span>
+        </button>
+    </text>;
+
+    /// <summary>Sorts by a column, or turns it round when it is already the one being sorted by.</summary>
+    private void SortBy(string key)
+    {
+        if (_sort == key)
+        {
+            _descending = !_descending;
+        }
+        else
+        {
+            _sort = key;
+            _descending = false;
+        }
+
+        _page = 0;
+    }
+
+    private void Turn(int by) => _page = Math.Clamp(_page + by, 0, Pages - 1);
+
+    private Task Open(EmpireRow row) => OnOpen.InvokeAsync(row);
+}

@@ -3380,6 +3380,333 @@ button.icon .sem-action-icon { display: block; }
     The showcase's own face is a fixed 84 by 100 and does not move.
 */
 
+/* ---------------------------------------------------------------- the list view
+
+   Cards or a table, and the controls that choose between them.
+*/
+
+/*
+   The row above both views. The toggle on the left because it decides what is underneath, and the
+   columns on the right because they only mean anything once the table is the thing underneath.
+*/
+.sem-list-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    margin-bottom: var(--gap);
+}
+
+.sem-columns {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    min-width: 14rem;
+}
+
+.sem-columns > label {
+    color: var(--text-dim);
+    white-space: nowrap;
+}
+
+.sem-columns > .sem-combo {
+    flex: 1;
+}
+
+/*
+   A tick list that opens under a button, wearing the combo box's shell for the one listener that
+   closes it on a press outside. Everything below undoes the parts of that shell which assume a text
+   box: the combo is an input with a button beside it, and this is one button that is the whole
+   control.
+*/
+.sem-combo.sem-multi > .toggle {
+    position: static;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+
+    width: 100%;
+    height: auto;
+    padding: var(--space-sm) var(--space-md);
+
+    background: var(--bg);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    color: var(--text);
+    font: inherit;
+    text-align: left;
+}
+
+.sem-combo.sem-multi > .toggle > .face {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* The label standing in for a choice, which is a placeholder and reads as one. */
+.sem-combo.sem-multi > .toggle > .face.empty {
+    color: var(--text-dim);
+}
+
+.sem-combo.sem-multi > .toggle > .caret {
+    flex: none;
+    color: var(--text-dim);
+}
+
+.sem-combo.sem-multi > .toggle:hover {
+    border-color: var(--accent-dim);
+}
+
+.sem-combo.sem-multi .options > li > button {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    width: 100%;
+    text-align: left;
+}
+
+/* A fixed box for the tick, so the names line up whether or not one is next to them. */
+.sem-combo.sem-multi .options .tick {
+    flex: none;
+    width: 1em;
+    color: var(--accent);
+}
+
+.sem-combo.sem-multi .options .none {
+    padding: var(--space-sm) var(--space-md);
+}
+
+/*
+   The filter card, above the tables and outside them.
+
+   Its own card because these are questions about the empires rather than about the table: they
+   survive a column being hidden, they narrow both lists at once, and a row of controls wedged into
+   a table header would have to fight the columns for width.
+*/
+.sem-filters {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--gap);
+    margin-bottom: var(--gap);
+}
+
+.sem-filters > .head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+}
+
+.sem-filters > .head h2 {
+    margin: 0;
+    font-size: var(--text-lg);
+}
+
+.sem-filters > .controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: var(--space-md);
+}
+
+/* The name box earns two tracks: it is the one that is typed into rather than picked from. */
+.sem-filters > .controls > .search {
+    grid-column: span 2;
+}
+
+@media (max-width: 560px) {
+    .sem-filters > .controls { grid-template-columns: minmax(0, 1fr); }
+    .sem-filters > .controls > .search { grid-column: auto; }
+}
+
+.sem-filters > .sem-hint {
+    margin: var(--space-md) 0 0;
+}
+
+.sem-clear {
+    padding: var(--space-2xs) var(--space-md);
+}
+
+/* ---------------------------------------------------------------- the table */
+
+.sem-table-block {
+    margin-bottom: var(--space-2xl);
+}
+
+.sem-table-block > .head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+}
+
+.sem-table-block > .head h2 {
+    margin: 0;
+}
+
+/*
+   The one box that scrolls sideways.
+
+   Eighteen columns do not fit a phone and are not meant to: the wrapper takes the overflow so the
+   page never does, which is the rule everywhere else in this sheet. The column picker is how a
+   narrow screen asks for the four columns it came for.
+*/
+.sem-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-panel);
+}
+
+.sem-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+}
+
+/*
+   The head, which does not stick, and the reason is worth writing down so nobody adds it back.
+
+   The box around the table scrolls sideways, and a box that scrolls in one direction is a scroll
+   container in both - so a sticky head inside it measures itself against that box rather than
+   against the page. Given the header's own offset it was pushed that far down from the top of the
+   table and drawn over the first row: the column names sat under the first empire's name.
+
+   Sticking it to the box instead would mean giving the box a height of its own and a second
+   scrollbar inside the page, which on a phone is two things to drag past each other. A page of
+   twenty-five is short enough to read without it.
+*/
+.sem-table thead th {
+    background: var(--bg-raised);
+    border-bottom: 1px solid var(--border-strong);
+    padding: 0;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.sem-sort {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+
+    background: none;
+    border: none;
+    border-radius: 0;
+    color: var(--text-dim);
+    font: inherit;
+    font-weight: 600;
+    text-align: left;
+}
+
+.sem-sort:hover {
+    background: var(--bg-hover);
+    color: var(--text);
+}
+
+.sem-sort.sorted {
+    color: var(--accent);
+}
+
+/* Kept at a fixed width, or every heading shifts sideways as the sort moves between them. */
+.sem-sort > .arrow {
+    display: inline-block;
+    width: 0.8em;
+    font-size: var(--text-sm);
+}
+
+.sem-table tbody tr {
+    border-top: 1px solid var(--border);
+    cursor: pointer;
+}
+
+.sem-table tbody tr:hover {
+    background: var(--bg-hover);
+}
+
+.sem-table td,
+.sem-table tbody th {
+    padding: var(--space-sm) var(--space-md);
+    vertical-align: top;
+    text-align: left;
+    font-weight: normal;
+}
+
+/*
+   The name column, which is the row's heading rather than a cell of it - it is what the other
+   cells are about, and a screen reader reading across says which empire it is reading.
+*/
+.sem-table tbody th.name {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    white-space: nowrap;
+}
+
+.sem-table .sem-flag.tiny {
+    flex: none;
+    width: 26px;
+    height: 26px;
+}
+
+/*
+   The way in for a keyboard. The row carries the same press for a pointer, which can land anywhere
+   along a line eighteen columns wide, but a row cannot take focus and a table full of empires that
+   can only be opened with a mouse is a table half the readers cannot use.
+*/
+.sem-row-open {
+    padding: 0;
+    background: none;
+    border: none;
+    color: var(--text);
+    font: inherit;
+    font-weight: 600;
+    text-align: left;
+}
+
+.sem-row-open:hover {
+    background: none;
+    color: var(--accent);
+}
+
+/*
+   A value among several in one cell. Not the chips from the pickers, which carry an icon and a
+   panel of effects: at eighteen columns and twenty-five rows that is four hundred popovers nobody
+   opened, and the point of a cell here is to be compared with the one above it.
+*/
+.sem-cell-chip {
+    display: inline-block;
+    padding: 1px var(--space-sm);
+    margin: 0 var(--space-2xs) var(--space-2xs) 0;
+
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    white-space: nowrap;
+}
+
+.sem-pager {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
+    margin-top: var(--space-md);
+}
+
+.sem-empty-line {
+    padding: var(--gap);
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-dim);
+    margin: 0;
+}
+
 /* ---------------------------------------------------------------- the select screen */
 
 /*
