@@ -3386,8 +3386,10 @@ button.icon .sem-action-icon { display: block; }
 */
 
 /*
-   The row above both views. The toggle on the left because it decides what is underneath, and the
-   columns on the right because they only mean anything once the table is the thing underneath.
+   The row above both views, holding the one control that belongs to neither of them.
+
+   The column picker used to sit at the other end of it. It went to the table, which is the only
+   thing it has anything to say about.
 */
 .sem-list-head {
     display: flex;
@@ -3403,6 +3405,19 @@ button.icon .sem-action-icon { display: block; }
     align-items: center;
     gap: var(--space-sm);
     min-width: 14rem;
+}
+
+/*
+   The picker at the end of the table's heading row: pushed there by the margin, and centred on the
+   row rather than sitting on the heading's baseline, which is where a bordered control looks like
+   it has slipped. Wide enough to read a few column names in and no wider - left to grow it would
+   stretch to the table's full width, which is a long way to push one control.
+*/
+.sem-table-block > .head > .controls {
+    margin-left: auto;
+    align-self: center;
+    max-width: min(26rem, 100%);
+    min-width: 0;
 }
 
 .sem-columns > label {
@@ -3760,6 +3775,7 @@ button.icon .sem-action-icon { display: block; }
 
 .sem-table-block > .head {
     display: flex;
+    flex-wrap: wrap;
     align-items: baseline;
     gap: var(--space-md);
     margin-bottom: var(--space-md);

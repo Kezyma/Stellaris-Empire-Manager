@@ -18,6 +18,11 @@
     <div class="head">
         <h2>@Heading</h2>
         <span class="sem-hint">@Counted</span>
+
+        @if (Controls is not null)
+        {
+            <div class="controls">@Controls</div>
+        }
     </div>
 
     @if (Rows.Count == 0)
@@ -229,6 +234,21 @@
     /// <summary>What this list is called.</summary>
     [Parameter, EditorRequired]
     public required string Heading { get; set; }
+
+    /// <summary>
+    /// Anything that belongs at the right-hand end of the heading row.
+    /// </summary>
+    /// <remarks>
+    /// The column picker, in practice. Handed in rather than built here, because which columns a
+    /// page offers and where it keeps that choice is the page's business; this draws what it is
+    /// given, and a table asked to show a fixed set of columns passes nothing.
+    ///
+    /// On the heading row rather than in a row above it. The control that changes the columns
+    /// belongs against the header it changes, and a strip of its own would spend a row of the page
+    /// on saying what a right-hand end already says.
+    /// </remarks>
+    [Parameter]
+    public RenderFragment? Controls { get; set; }
 
     /// <summary>The empires to show, already narrowed by whatever the reader asked for.</summary>
     [Parameter, EditorRequired]

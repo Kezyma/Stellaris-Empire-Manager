@@ -1,7 +1,4 @@
-@using Microsoft.JSInterop
-@inject IJSRuntime Js
 @implements IDisposable
-@implements IAsyncDisposable
 
 @*
     What the reader is looking for, in a card above the lists.
@@ -23,9 +20,9 @@
 <div class="sem-filters @(_open ? "open" : null)">
     <div class="head">
         @*
-            The heading is the way to fold the card away. On a phone it is thirteen controls between
-            the reader and the empires they came for, and every one of them is a question they have
-            not asked yet.
+            The heading is the way in, and the way back out. The card starts shut: twenty-eight
+            controls in four tabs is a wall between the reader and the empires they came for, and
+            every one of them is a question they have not asked yet.
         *@
         <button type="button" class="fold" aria-expanded="@(_open ? "true" : "false")"
                 @onclick="() => _open = !_open">
@@ -171,16 +168,21 @@
     private readonly Dictionary<string, IReadOnlyList<EmpireChoice>> _offered =
         new(StringComparer.Ordinal);
 
-    /// <summary>Whether the card is showing its controls.</summary>
+    /// <summary>
+    /// Whether the card is showing its controls, which to begin with it is not.
+    /// </summary>
     /// <remarks>
-    /// Open where there is room for it and shut where there is not, which is a fact about the
-    /// window rather than about the reader - so it is read once, before anything is drawn, and
-    /// after that it is whatever they last pressed.
+    /// Shut on every window. It used to open wherever there was room, which meant asking the
+    /// browser how wide it was before the card could be drawn - and that answer only ever shut the
+    /// card, never opened one that was already open, so starting shut says the same thing on a
+    /// phone and says it without the round trip.
+    ///
+    /// Shut is also the right state on a desktop, which is the part the width was answering
+    /// wrongly. The reader arriving at the list has not asked any of these questions yet, and a
+    /// card of them standing between the page and the empires is answered by folding it away -
+    /// which is what the fold was for, and what a reader had to do first every time.
     /// </remarks>
-    private bool _open = true;
-
-    /// <summary>Below this the card starts folded, which is about where a phone is.</summary>
-    private const int RoomForControls = 900;
+    private bool _open;
 
     /// <summary>Which tab of headings is showing.</summary>
     private string _group = EmpireFacet.Groups[0];
@@ -188,8 +190,6 @@
     /// <summary>Whether anything under one tab is narrowing the lists, so the tab can say so.</summary>
     private bool Narrowing(string group) =>
         EmpireFacet.All.Any(f => f.Group == group && Filter.Keys(f.Key).Count > 0);
-
-    private IJSObjectReference? _module;
 
     /// <summary>What the editor would offer under each heading, worked out once and held.</summary>
     private EmpireOptions? _options;
@@ -199,39 +199,6 @@
     {
         _offered.Clear();
         _options = new EmpireOptions(Session);
-    }
-
-    /// <summary>
-    /// Folds the card away on a narrow window, once, before the reader has said anything.
-    /// </summary>
-    /// <remarks>
-    /// Asked of the browser rather than left to the stylesheet, which is where every other decision
-    /// about width in this app is made. CSS can hide the controls at a width but it cannot change
-    /// what the button says about them, and a chevron pointing down over a folded card is worse
-    /// than the one round trip this costs.
-    /// </remarks>
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (!firstRender)
-        {
-            return;
-        }
-
-        try
-        {
-            _module = await Js.InvokeAsync<IJSObjectReference>(
-                "import", "./_content/Sem.Ui/sem.js").ConfigureAwait(true);
-
-            if (await _module.InvokeAsync<int>("viewportWidth").ConfigureAwait(true) < RoomForControls)
-            {
-                _open = false;
-                StateHasChanged();
-            }
-        }
-        catch (JSDisconnectedException)
-        {
-            // The page went away first, and a card nobody is looking at may stay open.
-        }
     }
 
     /// <summary>What the any-or-all switch is doing, said the same way in the label and the tip.</summary>
@@ -337,25 +304,6 @@
     {
         _typing?.Cancel();
         _typing?.Dispose();
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        Dispose();
-
-        if (_module is null)
-        {
-            return;
-        }
-
-        try
-        {
-            await _module.DisposeAsync().ConfigureAwait(false);
-        }
-        catch (JSDisconnectedException)
-        {
-            // The page went away first; there is nothing left to release.
-        }
     }
 
     private async Task Clear()

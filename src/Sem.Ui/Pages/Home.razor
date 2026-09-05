@@ -89,19 +89,6 @@ else
                         @onclick="() => ShowList(true)">List</button>
             </div>
 
-            @if (_listView)
-            {
-                @*
-                    Which columns, beside the toggle rather than in the filter card: it says what the
-                    table looks like, not which empires are in it, and a reader clearing the filters
-                    should not find their columns cleared with them.
-                *@
-                <div class="sem-columns">
-                    <label id="column-picker">Columns</label>
-                    <MultiSelect Label="Choose" Options="@ColumnOptions" Selected="@_visible"
-                                 OnChanged="RememberColumns" />
-                </div>
-            }
         </div>
 
         @if (_listView)
@@ -119,7 +106,25 @@ else
                          Columns="@VisibleColumns" OnOpen="OpenRow" OnMove="MoveRow"
                          OnCopyLink="row => CopyLink(row.Design)" OnDelete="Confirm"
                          CopyTitle="row => CopyTitleFor(row.Design)"
-                         Empty="No empires match." />
+                         Empty="No empires match.">
+                <Controls>
+                    @*
+                        Which columns, on the table rather than in the filter card: it says what the
+                        table looks like, not which empires are in it, and a reader clearing the
+                        filters should not find their columns cleared with them.
+
+                        At the heading's right-hand end, which is where the columns it is about run
+                        out. Up beside the view toggle it was a control the reader passed on the way
+                        in, before there was a table to have an opinion about; here it is one they
+                        reach for with the table in front of them and a column in mind.
+                    *@
+                    <div class="sem-columns">
+                        <label id="column-picker">Columns</label>
+                        <MultiSelect Label="Choose" Options="@ColumnOptions" Selected="@_visible"
+                                     OnChanged="RememberColumns" />
+                    </div>
+                </Controls>
+            </EmpireTable>
         }
         else
         {

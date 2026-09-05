@@ -246,19 +246,6 @@ export function bindPopoversWhenPointed(root) {
 }
 
 /**
- * How wide the window is, for a decision that has to be made once before anything is drawn.
- *
- * The stylesheet answers most questions about width on its own and should keep doing so. This is
- * for the one it cannot: what a panel's state should be the first time somebody sees it, which is
- * a fact the markup has to carry and CSS has no way to set.
- *
- * @returns {number} the viewport width in CSS pixels
- */
-export function viewportWidth() {
-    return window.innerWidth;
-}
-
-/**
  * Puts a table's open number box away when the next press lands somewhere else.
  *
  * The obvious way to do this is the focus leaving the box, and that is what it did at first. It is
