@@ -1,4 +1,7 @@
+@using Microsoft.JSInterop
+@inject IJSRuntime Js
 @implements IDisposable
+@implements IAsyncDisposable
 
 @*
     What the reader is looking for, in a card above the lists.
@@ -17,16 +20,30 @@
     thirteen chances for one of them to be wired to the wrong set.
 *@
 
-<div class="sem-filters">
+<div class="sem-filters @(_open ? "open" : null)">
     <div class="head">
-        <h2>Narrow it down</h2>
+        @*
+            The heading is the way to fold the card away. On a phone it is thirteen controls between
+            the reader and the empires they came for, and every one of them is a question they have
+            not asked yet.
+        *@
+        <button type="button" class="fold" aria-expanded="@(_open ? "true" : "false")"
+                @onclick="() => _open = !_open">
+            <span class="chevron" aria-hidden="true">@(_open ? "▾" : "▸")</span>
+            <h2>Empire Filter</h2>
+        </button>
 
         @if (Filter.Any)
         {
+            @*
+                Outside the fold, so a filter somebody folded away can still be cleared - and so a
+                card that is narrowing the lists says so while it is shut.
+            *@
             <button type="button" class="sem-clear" @onclick="Clear">Clear</button>
         }
     </div>
 
+    <div class="body">
     <div class="controls">
         @*
             One box for everything somebody typed - the empire's name, its species, its world, its
@@ -45,34 +62,32 @@
             var options = Offered(facet);
 
             <div class="sem-field flush">
-                <div class="sem-filter-label">
-                    <label>@facet.Label</label>
-
-                    @*
-                        Any or all, for a heading an empire can hold several of. Written out rather
-                        than drawn as a symbol, for the reason the toggle beside the fallen-empire
-                        setting gives: the word says which of the two is in force, and there is no
-                        glyph for "and" that a reader does not have to be taught.
-
-                        Not offered where an empire holds one. Asking for all of two authorities is
-                        a question with no answer, and a control that can only ever empty the list
-                        is a control that looks broken.
-                    *@
-                    @if (facet.Several)
-                    {
-                        <button type="button" class="sem-toggle sem-anyall"
-                                aria-pressed="@(Filter.RequiresAll(facet.Key) ? "true" : "false")"
-                                title="@(Filter.RequiresAll(facet.Key)
-                                    ? $"Empires with every one of the {facet.Label.ToLowerInvariant()} ticked"
-                                    : $"Empires with any of the {facet.Label.ToLowerInvariant()} ticked")"
-                                @onclick="() => Switch(facet.Key)">
-                            @(Filter.RequiresAll(facet.Key) ? "all" : "any")
-                        </button>
-                    }
-                </div>
+                <label>@facet.Label</label>
 
                 <MultiSelect Label="Any" Options="@options" Selected="@Filter.Keys(facet.Key)"
-                             OnChanged="OnChanged" />
+                             OnChanged="OnChanged">
+                    <Leading>
+                        @*
+                            Any or all, for a heading an empire can hold several of, and inside the
+                            control it acts on rather than floating above it: it is a question about
+                            this list, and a row of its own said it was about something else.
+
+                            Two overlapping rings, shaded to say which part is being asked for. Not
+                            offered where an empire holds one - asking for all of two authorities is
+                            a question with no answer, and a control that can only ever empty the
+                            list is a control that looks broken.
+                        *@
+                        @if (facet.Several)
+                        {
+                            <button type="button" class="mode" aria-label="@Switching(facet)"
+                                    aria-pressed="@(Filter.RequiresAll(facet.Key) ? "true" : "false")"
+                                    title="@Switching(facet)"
+                                    @onclick="() => Switch(facet.Key)" @onclick:stopPropagation="true">
+                                <ActionIcon Name="@(Filter.RequiresAll(facet.Key) ? "all" : "any")" />
+                            </button>
+                        }
+                    </Leading>
+                </MultiSelect>
             </div>
         }
     </div>
@@ -86,6 +101,7 @@
         Any of the things ticked under one heading, unless it is switched to all; and always all of
         the headings you use.
     </p>
+    </div>
 </div>
 
 @code {
@@ -111,8 +127,60 @@
     private readonly Dictionary<string, IReadOnlyList<EmpireChoice>> _offered =
         new(StringComparer.Ordinal);
 
+    /// <summary>Whether the card is showing its controls.</summary>
+    /// <remarks>
+    /// Open where there is room for it and shut where there is not, which is a fact about the
+    /// window rather than about the reader - so it is read once, before anything is drawn, and
+    /// after that it is whatever they last pressed.
+    /// </remarks>
+    private bool _open = true;
+
+    /// <summary>Below this the card starts folded, which is about where a phone is.</summary>
+    private const int RoomForControls = 900;
+
+    private IJSObjectReference? _module;
+
     /// <summary>The lists are worked out from the rows, so a change of rows forgets them.</summary>
     protected override void OnParametersSet() => _offered.Clear();
+
+    /// <summary>
+    /// Folds the card away on a narrow window, once, before the reader has said anything.
+    /// </summary>
+    /// <remarks>
+    /// Asked of the browser rather than left to the stylesheet, which is where every other decision
+    /// about width in this app is made. CSS can hide the controls at a width but it cannot change
+    /// what the button says about them, and a chevron pointing down over a folded card is worse
+    /// than the one round trip this costs.
+    /// </remarks>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        try
+        {
+            _module = await Js.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/Sem.Ui/sem.js").ConfigureAwait(true);
+
+            if (await _module.InvokeAsync<int>("viewportWidth").ConfigureAwait(true) < RoomForControls)
+            {
+                _open = false;
+                StateHasChanged();
+            }
+        }
+        catch (JSDisconnectedException)
+        {
+            // The page went away first, and a card nobody is looking at may stay open.
+        }
+    }
+
+    /// <summary>What the any-or-all switch is doing, said the same way in the label and the tip.</summary>
+    private string Switching(EmpireFacet facet) =>
+        Filter.RequiresAll(facet.Key)
+            ? $"Asking for empires with every one of the {facet.Label.ToLowerInvariant()} ticked"
+            : $"Asking for empires with any of the {facet.Label.ToLowerInvariant()} ticked";
 
     /// <summary>Everything the rows hold under one heading, once each, in the order it reads in.</summary>
     private IReadOnlyList<EmpireChoice> Offered(EmpireFacet facet)
@@ -178,6 +246,25 @@
     {
         _typing?.Cancel();
         _typing?.Dispose();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        Dispose();
+
+        if (_module is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await _module.DisposeAsync().ConfigureAwait(false);
+        }
+        catch (JSDisconnectedException)
+        {
+            // The page went away first; there is nothing left to release.
+        }
     }
 
     private async Task Clear()

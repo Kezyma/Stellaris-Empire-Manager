@@ -37,6 +37,16 @@ public sealed record EmpireRow
 
     public required string Name { get; init; }
 
+    /// <summary>
+    /// Where the empire sits in the list it came from, counting from one.
+    /// </summary>
+    /// <remarks>
+    /// The file's order, not the table's. Sorted by government, the numbers run about the page in
+    /// no order at all - which is the point of showing them: the column says where an empire is
+    /// kept, and the table says what it is. Sorting by the number is how you get the file back.
+    /// </remarks>
+    public int Position { get; init; }
+
     /// <summary>The flag, for the cell that names the empire.</summary>
     public EmpireFlag? Flag { get; init; }
 

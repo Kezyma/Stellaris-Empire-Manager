@@ -95,7 +95,7 @@ else
 
             <EmpireTable Heading="Your empires" Setting="rows-own"
                          Rows="@Narrowed(OwnRows)" Total="@OwnRows.Count"
-                         Columns="@VisibleColumns" OnOpen="OpenRow"
+                         Columns="@VisibleColumns" OnOpen="OpenRow" OnMove="MoveRow"
                          Empty="None of your empires match." />
 
             <EmpireTable Heading="The game's empires" Setting="rows-preset"
@@ -588,7 +588,8 @@ else
 
     private IReadOnlyList<EmpireRow> OwnRows => _ownRows ??=
     [
-        .. (_session!.File?.Designs ?? []).Select(d => EmpireRow.Read(_session, d))
+        .. (_session!.File?.Designs ?? [])
+            .Select((design, at) => EmpireRow.Read(_session, design) with { Position = at + 1 })
     ];
 
     private IReadOnlyList<EmpireRow> PresetRows => _presetRows ??=
@@ -596,7 +597,7 @@ else
         .. Prescripted
             .Select(e => (Empire: e, Read: Read(e)))
             .Where(p => p.Read is not null)
-            .Select(p => EmpireRow.Read(_session!, p.Read!.Design, p.Empire))
+            .Select((p, at) => EmpireRow.Read(_session!, p.Read!.Design, p.Empire) with { Position = at + 1 })
     ];
 
     private IReadOnlyList<EmpireRow>? _rows;
@@ -636,6 +637,14 @@ else
         _session?.Preferences.Set(
             ColumnSetting,
             _visible.Count == 0 ? " " : string.Join(",", _visible));
+
+    /// <summary>Puts one of the player's empires somewhere else in the file.</summary>
+    /// <remarks>
+    /// The same move dragging a card makes, and through the same door - so it is written back and
+    /// kept exactly as that one is. The game's empires have no move: their order is the game's.
+    /// </remarks>
+    private void MoveRow((EmpireRow Row, int To) move) =>
+        _session!.MoveEmpire(move.Row.Design, move.To);
 
     /// <summary>Opens whichever list the row came from, the same way pressing its card would.</summary>
     private void OpenRow(EmpireRow row)

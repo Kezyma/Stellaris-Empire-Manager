@@ -80,13 +80,33 @@
             @* The pencil again, small, for the hint that a thing on the card can be pressed. *@
             <path d="M4 20h4L20 8a2.8 2.8 0 0 0-4-4L4 16z" />
             break;
+
+        @*
+            Two overlapping circles, filled to say which part of them is being asked for. It is the
+            one picture for this that a reader does not have to be taught: everybody has seen the
+            two rings, and the shaded part is the answer.
+        *@
+        case "any":
+            @* Both rings shaded: an empire under either of them will do. *@
+            <circle cx="9" cy="12" r="6" fill="currentColor" fill-opacity="0.4" />
+            <circle cx="15" cy="12" r="6" fill="currentColor" fill-opacity="0.4" />
+            break;
+
+        case "all":
+            @* Only the lens where they cross: an empire has to be under both. *@
+            <circle cx="9" cy="12" r="6" />
+            <circle cx="15" cy="12" r="6" />
+            <path d="M12 6.8A6 6 0 0 1 12 17.2 6 6 0 0 1 12 6.8Z"
+                  fill="currentColor" fill-opacity="0.85" stroke="none" />
+            break;
     }
 </svg>
 
 @code {
     /// <summary>
     /// Which glyph: <c>save</c>, <c>share</c>, <c>delete</c>, <c>revert</c>, <c>edit</c>,
-    /// <c>duplicate</c>, <c>close</c>, <c>edit-pencil</c>, <c>lite</c> or <c>advanced</c>.
+    /// <c>duplicate</c>, <c>close</c>, <c>edit-pencil</c>, <c>lite</c>, <c>advanced</c>,
+    /// <c>back</c>, <c>any</c> or <c>all</c>.
     /// </summary>
     [Parameter, EditorRequired]
     public required string Name { get; set; }

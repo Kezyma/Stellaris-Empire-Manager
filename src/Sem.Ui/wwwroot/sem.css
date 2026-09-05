@@ -3415,60 +3415,97 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
-   A tick list that opens under a button, wearing the combo box's shell for the one listener that
+   A tick list that opens under a control, wearing the combo box's shell for the one listener that
    closes it on a press outside. Everything below undoes the parts of that shell which assume a text
-   box: the combo is an input with a button beside it, and this is one button that is the whole
-   control.
+   box: the combo is an input with a button beside it, and this is a row of pressable things.
+
+   A row rather than one big button, because what is in it is pressable: a chip naming something
+   chosen is the obvious place to press to stop asking for it, and a button cannot hold buttons.
 */
-.sem-combo.sem-multi > .toggle {
-    position: static;
+.sem-combo.sem-multi > .control {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: var(--space-sm);
+    gap: var(--space-2xs);
 
-    width: 100%;
-    height: auto;
-    padding: var(--space-sm) var(--space-md);
+    /*
+       A flex item of the combo around it, and a flex item will not shrink below its own contents
+       unless told to. Left at auto the control took the width of every chip in it - eight civics
+       came to 893 pixels inside a 218-pixel column - and carried the whole page sideways with it.
+    */
+    flex: 1;
+    min-width: 0;
+
+    padding: 3px var(--space-2xs);
+    min-height: var(--icon-btn);
 
     background: var(--bg);
     border: 1px solid var(--border-strong);
     border-radius: var(--radius);
-    color: var(--text);
-    font: inherit;
-    text-align: left;
+    cursor: pointer;
+}
+
+.sem-combo.sem-multi > .control:hover {
+    border-color: var(--accent-dim);
 }
 
 /*
-   What was chosen, drawn as the chips it is rather than counted. It wraps, and the control grows
-   with it: a filter card whose whole job is saying what is being asked for cannot answer "3
-   selected" and send the reader back into the panel to find out which three.
+   What was chosen, drawn as the chips it is rather than counted, on one line that scrolls.
+
+   Wrapped, a heading with six things ticked was three rows tall and pushed everything under it
+   down the card - so the control a reader was looking at changed height as they ticked it. One
+   line keeps every filter in the row the same height whatever is in it, and the ones that do not
+   fit are a drag away rather than a redesign.
 */
-.sem-combo.sem-multi > .toggle > .face {
+.sem-combo.sem-multi .face {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: var(--space-2xs);
+
+    flex: 1;
     min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
 }
 
-/* The label standing in for a choice is one line and elides; a list of chips is not. */
-.sem-combo.sem-multi > .toggle > .face.empty {
+.sem-combo.sem-multi .face::-webkit-scrollbar {
+    display: none;
+}
+
+/* The label standing in for a choice is one line of text, and elides rather than scrolling. */
+.sem-combo.sem-multi .face.empty {
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    padding-left: var(--space-2xs);
+    color: var(--text-dim);
 }
 
+/*
+   One thing that was chosen, and the way to stop asking for it. A press lands here rather than on
+   the control behind, which is what makes the obvious gesture - press the thing you no longer want
+   - do the obvious thing.
+*/
 .sem-pick {
     display: inline-flex;
     align-items: center;
     gap: var(--space-2xs);
+    flex: none;
 
-    padding: 1px var(--space-sm) 1px 2px;
+    padding: 1px var(--space-2xs) 1px 2px;
     background: var(--bg-raised);
     border: 1px solid var(--border);
     border-radius: var(--radius-pill);
+    color: var(--text);
+    font: inherit;
     font-size: var(--text-sm);
+    white-space: nowrap;
+}
+
+.sem-pick:hover {
+    background: var(--bad);
+    border-color: var(--bad);
+    color: var(--bg);
 }
 
 /* Nothing in front of a chip that has no icon, or the name sits off its own left edge. */
@@ -3481,18 +3518,64 @@ button.icon .sem-action-icon { display: block; }
     height: var(--icon-sm);
 }
 
-/* The label standing in for a choice, which is a placeholder and reads as one. */
-.sem-combo.sem-multi > .toggle > .face.empty {
-    color: var(--text-dim);
+.sem-pick > .drop {
+    color: var(--text-faint);
 }
 
-.sem-combo.sem-multi > .toggle > .caret {
+.sem-pick:hover > .drop {
+    color: var(--bg);
+}
+
+/*
+   The switch between any and all, inside the control it acts on. Flat and small: it is a setting
+   for the list beside it rather than a button in its own right, and drawn as one it read as a
+   second control with a job of its own.
+*/
+.sem-combo.sem-multi .mode {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     flex: none;
+
+    width: 1.7rem;
+    height: 1.5rem;
+    padding: 0;
+
+    background: none;
+    border: none;
+    border-right: 1px solid var(--border);
+    border-radius: 0;
     color: var(--text-dim);
 }
 
-.sem-combo.sem-multi > .toggle:hover {
-    border-color: var(--accent-dim);
+.sem-combo.sem-multi .mode:hover {
+    background: none;
+    color: var(--accent);
+}
+
+.sem-combo.sem-multi .mode[aria-pressed="true"] {
+    color: var(--accent);
+}
+
+/* The arrow, which is the one part of the control that only ever opens the list. */
+.sem-combo.sem-multi > .control > .toggle {
+    position: static;
+    flex: none;
+
+    width: 1.4rem;
+    height: 1.5rem;
+    padding: 0;
+
+    background: none;
+    border: none;
+    border-radius: 0;
+    color: var(--text-dim);
+    font: inherit;
+}
+
+.sem-combo.sem-multi > .control > .toggle:hover {
+    background: none;
+    color: var(--text);
 }
 
 .sem-combo.sem-multi .options > li > button {
@@ -3556,23 +3639,28 @@ button.icon .sem-action-icon { display: block; }
     font-size: var(--text-lg);
 }
 
-.sem-filters > .controls {
+/*
+   Wide tracks, because what is in them is a row of names rather than a word: at eleven rems a
+   filter with two civics in it was scrolling before it had been read. Sixteen fits three of most
+   things, and the grid still gives a phone one column.
+*/
+.sem-filters .controls {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
     gap: var(--space-md);
 }
 
 /* The name box earns two tracks: it is the one that is typed into rather than picked from. */
-.sem-filters > .controls > .search {
+.sem-filters .controls > .search {
     grid-column: span 2;
 }
 
 @media (max-width: 560px) {
-    .sem-filters > .controls { grid-template-columns: minmax(0, 1fr); }
-    .sem-filters > .controls > .search { grid-column: auto; }
+    .sem-filters .controls { grid-template-columns: minmax(0, 1fr); }
+    .sem-filters .controls > .search { grid-column: auto; }
 }
 
-.sem-filters > .sem-hint {
+.sem-filters .sem-hint {
     margin: var(--space-md) 0 0;
 }
 
@@ -3581,28 +3669,36 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
-   The heading's name, and beside it whether the ticks under it mean any or all.
+   The heading, which is also the way to fold the card away.
 
-   The switch is a word rather than a symbol, for the reason the toggle beside the fallen-empire
-   setting gives at length: the button says which of the two is in force, and there is no glyph for
-   "and" that a reader does not first have to be taught.
+   A button drawn as a heading rather than a heading with a button beside it: the whole line is the
+   target, which on a phone is the difference between a fold and a game of hitting a chevron.
 */
-.sem-filter-label {
+.sem-filters .fold {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    align-items: baseline;
     gap: var(--space-sm);
-    margin-bottom: var(--space-2xs);
+
+    padding: 0;
+    background: none;
+    border: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
 }
 
-.sem-filter-label > label {
-    margin: 0;
+.sem-filters .fold:hover {
+    background: none;
+    color: var(--accent);
 }
 
-.sem-anyall {
-    padding: 0 var(--space-sm);
+.sem-filters .fold > .chevron {
+    color: var(--text-dim);
     font-size: var(--text-sm);
-    line-height: 1.6;
+}
+
+.sem-filters:not(.open) > .body {
+    display: none;
 }
 
 /* ---------------------------------------------------------------- the table */
@@ -3704,12 +3800,54 @@ button.icon .sem-action-icon { display: block; }
     background: var(--bg-hover);
 }
 
+/*
+   One line per row, whatever is in it.
+
+   Wrapped, a cell with five civics in it was five lines tall and every row a different height, so
+   comparing one empire with the one under it meant reading down a ragged column. The table grows
+   sideways instead and the box around it scrolls, which is what that box is for.
+*/
 .sem-table td,
 .sem-table tbody th {
     padding: var(--space-sm) var(--space-md);
-    vertical-align: top;
+    vertical-align: middle;
     text-align: left;
     font-weight: normal;
+    white-space: nowrap;
+}
+
+/*
+   Where the empire sits in the file. Narrow, and the digits line up: a column of numbers that do
+   not share a width is a column you cannot read down.
+*/
+.sem-table .index {
+    width: 1%;
+    padding-right: var(--space-sm);
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+.sem-position {
+    padding: 0 var(--space-2xs);
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font: inherit;
+    font-variant-numeric: tabular-nums;
+}
+
+.sem-position:hover {
+    background: none;
+    color: var(--accent);
+    text-decoration: underline;
+}
+
+.sem-table .index input {
+    width: 4rem;
+    padding: 0 var(--space-2xs);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
 }
 
 /*
@@ -3760,7 +3898,7 @@ button.icon .sem-action-icon { display: block; }
     gap: var(--space-2xs);
 
     padding: 1px var(--space-sm);
-    margin: 0 var(--space-2xs) var(--space-2xs) 0;
+    margin-right: var(--space-2xs);
 
     background: var(--bg-raised);
     border: 1px solid var(--border);
@@ -3775,12 +3913,11 @@ button.icon .sem-action-icon { display: block; }
 
 /*
    And a value that does have something to say wears the chip from the empire's own panel, which
-   already carries the icon and opens the description and effects on hover. Given a little room
-   under it, since several in a cell wrap onto their own lines.
+   already carries the icon and opens the description and effects on hover.
 */
 .sem-table .sem-chip {
     display: inline-block;
-    margin: 0 var(--space-2xs) var(--space-2xs) 0;
+    margin-right: var(--space-2xs);
 }
 
 /*

@@ -3,11 +3,11 @@
 @implements IAsyncDisposable
 
 @*
-    Any number of one list, chosen from a panel that opens under a button.
+    Any number of one list, chosen from a panel that opens under a control.
 
     Not a native <select multiple>, which is a scrolling box that takes up as much room as it is
     given and asks the reader to hold ctrl to pick a second thing. And not checkboxes laid out in
-    the card, because there are six of these and one of them offers eighty-one civics.
+    the card, because there are thirteen of these and one of them offers eighty-one civics.
 
     It wears .sem-combo so that the one document-level listener that closes a list on a press outside
     it finds this too - that script looks for .sem-combo.open and presses the .toggle inside. One
@@ -16,36 +16,54 @@
 *@
 
 <div class="sem-combo sem-multi @(_open ? "open" : null)" @onkeydown="Dismiss">
-    <button type="button" class="toggle" aria-expanded="@(_open ? "true" : "false")"
-            title="@Label" @onclick="() => _open = !_open">
-        @*
-            What was chosen, spelled out rather than counted. "3 selected" is a number you have to
-            open the panel to read, and these sit in a card whose whole job is saying what is being
-            asked for - so the answer is on the face of it, wearing the same icons the list does.
-        *@
+    @*
+        The control is a row rather than one button, because what is in it is pressable: a chip
+        naming something chosen is the obvious place to press to stop asking for it, and a button
+        cannot hold buttons. So the parts that do something are buttons, and the space between them
+        opens the list.
+    *@
+    <div class="control" @onclick="() => _open = true">
+        @Leading
+
         @if (Selected.Count == 0)
         {
             <span class="face empty">@Label</span>
         }
         else
         {
+            @*
+                What was chosen, spelled out rather than counted, wearing the same icons the list
+                does. "3 selected" is a number you have to open the panel to read, and these sit in
+                a card whose whole job is saying what is being asked for.
+
+                One line, and it scrolls. Wrapped, a heading with six things ticked was three rows
+                tall and pushed everything under it down the card - so the row a reader is looking
+                at changed height as they ticked.
+            *@
             <span class="face">
                 @foreach (var option in Options.Where(o => Selected.Contains(o.Key)))
                 {
-                    <span class="sem-pick">
+                    <button type="button" class="sem-pick" @key="option.Key"
+                            title="@($"Stop asking for {option.Name}")"
+                            aria-label="@($"Stop asking for {option.Name}")"
+                            @onclick="() => Toggle(option.Key)" @onclick:stopPropagation="true">
                         @if (option.Icon is { Length: > 0 })
                         {
-                            <GameIcon Path="@option.Icon" />
+                            <GameIcon Path="@option.Icon" Alt="" />
                         }
 
                         <span>@option.Name</span>
-                    </span>
+                        <span class="drop" aria-hidden="true">×</span>
+                    </button>
                 }
             </span>
         }
 
-        <span class="caret" aria-hidden="true">▾</span>
-    </button>
+        <button type="button" class="toggle" aria-expanded="@(_open ? "true" : "false")"
+                title="@(_open ? "Close the list" : "Show every option")"
+                aria-label="@(_open ? "Close the list" : "Show every option")"
+                @onclick="() => _open = !_open" @onclick:stopPropagation="true">▾</button>
+    </div>
 
     @if (_open)
     {
@@ -89,7 +107,7 @@
 </div>
 
 @code {
-    /// <summary>What this narrows, said in the button when nothing is chosen.</summary>
+    /// <summary>What this narrows, said in the control when nothing is chosen.</summary>
     [Parameter, EditorRequired]
     public required string Label { get; set; }
 
@@ -106,6 +124,17 @@
     /// </remarks>
     [Parameter, EditorRequired]
     public required HashSet<string> Selected { get; set; }
+
+    /// <summary>
+    /// Anything that belongs inside the control, before what was chosen.
+    /// </summary>
+    /// <remarks>
+    /// For the switch between any and all, which is a question about this list and belongs on it
+    /// rather than floating above it as a second control with a row of its own. What the switch
+    /// means is the filter's business rather than this one's, so it is handed in.
+    /// </remarks>
+    [Parameter]
+    public RenderFragment? Leading { get; set; }
 
     /// <summary>Raised after every change, so whoever owns the filter can redraw.</summary>
     [Parameter]
