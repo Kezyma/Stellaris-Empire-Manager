@@ -3654,6 +3654,48 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
+   Which of the four sets of headings is showing.
+
+   A row of buttons that each say whether they are pressed, as the view toggle and the picker tabs
+   both are - a real tablist owes the reader arrow-key movement between its tabs, and this owes
+   nothing it does not give.
+
+   The funnel marks a tab with something set under it. Twenty-one of the twenty-eight headings are
+   out of sight at any moment, and a filter left on behind one of them is a short list with no
+   visible reason for being short.
+*/
+.sem-filter-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    margin: var(--space-md) 0;
+}
+
+.sem-filter-tabs button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    padding: var(--space-2xs) var(--space-md);
+}
+
+.sem-filter-tabs button[aria-pressed="true"] {
+    background: var(--bg-raised);
+    border-color: var(--accent-dim);
+    color: var(--text);
+}
+
+.sem-filter-tabs button .sem-action-icon {
+    width: 0.85em;
+    height: 0.85em;
+    color: var(--accent);
+}
+
+/* The one control above the tabs, and the widest thing in the card. */
+.sem-filters > .body > .search {
+    max-width: 30rem;
+}
+
+/*
    Wide tracks, because what is in them is a row of names rather than a word: at eleven rems a
    filter with two civics in it was scrolling before it had been read. Sixteen fits three of most
    things, and the grid still gives a phone one column.
@@ -3664,14 +3706,9 @@ button.icon .sem-action-icon { display: block; }
     gap: var(--space-md);
 }
 
-/* The name box earns two tracks: it is the one that is typed into rather than picked from. */
-.sem-filters .controls > .search {
-    grid-column: span 2;
-}
 
 @media (max-width: 560px) {
     .sem-filters .controls { grid-template-columns: minmax(0, 1fr); }
-    .sem-filters .controls > .search { grid-column: auto; }
 }
 
 .sem-filters .sem-hint {

@@ -44,11 +44,14 @@
     </div>
 
     <div class="body">
-    <div class="controls">
         @*
             One box for everything somebody typed - the empire's name, its species, its world, its
             ruler, the prefix on its ships, and the biographies. Which field a word came from is
             rarely the question; the question is which empire it was.
+
+            Above the tabs rather than on one of them: it is the question you ask before you know
+            which heading you wanted, and putting it behind a tab would hide the broadest control
+            in the card behind the narrowest decision.
         *@
         <div class="sem-field flush search">
             <label for="empire-search">Search</label>
@@ -56,7 +59,39 @@
                    @oninput="e => Search(e.Value?.ToString())" />
         </div>
 
-        @foreach (var facet in EmpireFacet.All)
+        @*
+            Twenty-eight headings in four tabs. All of them at once was a wall to read rather than a
+            card to use - and folding the card away, which is what a reader did about it, took the
+            search box with them.
+
+            The funnel says a tab has something set under it. Without it, folding twenty-one
+            headings out of sight is a good way to leave a filter on and spend a while wondering why
+            the list is short.
+
+            aria-pressed rather than role="tab", as the view toggles and the picker tabs here
+            already do: a real tablist owes the reader arrow-key movement between its tabs, and a
+            group of buttons that each say whether they are pressed owes nothing it does not give.
+        *@
+        <div class="sem-filter-tabs" role="group" aria-label="Which filters to show">
+            @foreach (var group in EmpireFacet.Groups)
+            {
+                var set = Narrowing(group);
+
+                <button type="button" aria-pressed="@(group == _group ? "true" : "false")"
+                        title="@(set ? $"{group} - something is set here" : group)"
+                        @onclick="() => _group = group">
+                    <span>@group</span>
+
+                    @if (set)
+                    {
+                        <ActionIcon Name="filter" />
+                    }
+                </button>
+            }
+        </div>
+
+    <div class="controls">
+        @foreach (var facet in EmpireFacet.All.Where(f => f.Group == _group))
         {
             var options = Offered(facet);
 
@@ -146,6 +181,13 @@
 
     /// <summary>Below this the card starts folded, which is about where a phone is.</summary>
     private const int RoomForControls = 900;
+
+    /// <summary>Which tab of headings is showing.</summary>
+    private string _group = EmpireFacet.Groups[0];
+
+    /// <summary>Whether anything under one tab is narrowing the lists, so the tab can say so.</summary>
+    private bool Narrowing(string group) =>
+        EmpireFacet.All.Any(f => f.Group == group && Filter.Keys(f.Key).Count > 0);
 
     private IJSObjectReference? _module;
 

@@ -106,9 +106,9 @@ public sealed class EmpireFilterTests
     [Fact]
     public void OnlyTheYesOrNoHeadingsAreDrawnAsADropdown()
     {
-        var yesNo = EmpireFacet.All.Where(f => f.YesNo).Select(f => f.Key);
+        var yesNo = EmpireFacet.All.Where(f => f.YesNo).Select(f => f.Key).Order();
 
-        Assert.Equal(["preset", "nomadic", "second", "bioship", "fallen"], yesNo);
+        Assert.Equal(["bioship", "fallen", "nomadic", "preset", "second"], yesNo);
     }
 
     /// <summary>
@@ -134,6 +134,21 @@ public sealed class EmpireFilterTests
         Assert.Equal(["government"], without);
     }
 
+    /// <summary>
+    /// Every heading sits on a tab, and every tab has headings on it.
+    /// </summary>
+    /// <remarks>
+    /// The tabs are read off the headings, so a heading given a group nobody drew a tab for would
+    /// simply never be shown - a filter that exists, narrows the lists, and cannot be found or
+    /// cleared.
+    /// </remarks>
+    [Fact]
+    public void EveryHeadingSitsOnATabThatIsDrawn()
+    {
+        Assert.All(EmpireFacet.All, facet => Assert.Contains(facet.Group, EmpireFacet.Groups));
+        Assert.All(EmpireFacet.Groups, group => Assert.Contains(EmpireFacet.All, f => f.Group == group));
+    }
+
     /// <summary>Every heading offers something to choose, or it is a control that does nothing.</summary>
     [Fact]
     public void NoHeadingIsBothADropdownAndAListOfTicks()
@@ -150,9 +165,11 @@ public sealed class EmpireFilterTests
     [Fact]
     public void AllIsOfferedOnlyWhereAnEmpireCanHoldSeveral()
     {
-        var several = EmpireFacet.All.Where(f => f.Several).Select(f => f.Key);
+        // Sorted, because which headings these are is the point and the order they are declared in
+        // is the filter card's business - regrouping them into tabs moved every one of them.
+        var several = EmpireFacet.All.Where(f => f.Several).Select(f => f.Key).Order();
 
-        Assert.Equal(["ethics", "civics", "traits", "rulertraits"], several);
+        Assert.Equal(["civics", "ethics", "rulertraits", "traits"], several);
     }
 
     [Fact]

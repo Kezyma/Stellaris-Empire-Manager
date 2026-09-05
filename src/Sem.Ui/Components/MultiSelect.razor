@@ -159,8 +159,15 @@
 
     private bool _open;
 
-    /// <summary>Above this many options the panel offers a way to search them.</summary>
-    private const int Searchable = 12;
+    /// <summary>
+    /// Above this many options the panel offers a way to search them.
+    /// </summary>
+    /// <remarks>
+    /// Low, because the box is only worth leaving out where scrolling is plainly faster than
+    /// typing - four genders, three classes that may rule. A reader who has learned that typing
+    /// narrows one of these lists should not have to learn which ones.
+    /// </remarks>
+    private const int Searchable = 6;
 
     /// <summary>What has been typed into that box, which narrows the list and nothing else.</summary>
     private string _search = string.Empty;

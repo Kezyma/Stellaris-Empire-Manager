@@ -86,6 +86,11 @@
             one picture for this that a reader does not have to be taught: everybody has seen the
             two rings, and the shaded part is the answer.
         *@
+        case "filter":
+            @* A funnel, for a tab with something set under it. *@
+            <path d="M4 5h16l-6 7.5V19l-4 2v-8.5z" fill="currentColor" stroke="none" />
+            break;
+
         case "any":
             @* Both rings shaded: an empire under either of them will do. *@
             <circle cx="9" cy="12" r="6" fill="currentColor" fill-opacity="0.4" />
@@ -106,7 +111,7 @@
     /// <summary>
     /// Which glyph: <c>save</c>, <c>share</c>, <c>delete</c>, <c>revert</c>, <c>edit</c>,
     /// <c>duplicate</c>, <c>close</c>, <c>edit-pencil</c>, <c>lite</c>, <c>advanced</c>,
-    /// <c>back</c>, <c>any</c> or <c>all</c>.
+    /// <c>back</c>, <c>any</c>, <c>all</c> or <c>filter</c>.
     /// </summary>
     [Parameter, EditorRequired]
     public required string Name { get; set; }

@@ -442,12 +442,25 @@ public sealed record EmpireRow
 /// data - and nothing for the rest, which are offered whatever the empires in front of the reader
 /// actually hold.
 /// </param>
+/// <param name="Group">
+/// Which tab of the filter card it sits on. Twenty-eight controls in one grid is a wall to read
+/// rather than a card to use, and the four groups are the four things an empire is made of.
+/// </param>
 public sealed record EmpireFacet(
     string Key,
     string Label,
     Func<EmpireRow, IReadOnlyList<EmpireChoice>> Values,
-    Func<EmpireOptions, IReadOnlyList<EmpireChoice>>? Fixed = null)
+    Func<EmpireOptions, IReadOnlyList<EmpireChoice>>? Fixed = null,
+    string Group = "Empire")
 {
+    public const string Empire = "Empire";
+
+    public const string Species = "Species";
+
+    public const string Ruler = "Ruler";
+
+    public const string Galaxy = "Galaxy";
+
     /// <summary>Every heading with a list behind it, which is everything that is picked rather than typed.</summary>
     public static IReadOnlyList<EmpireFacet> All { get; } =
     [
@@ -463,28 +476,42 @@ public sealed record EmpireFacet(
         new("ethics", "Ethics", r => r.Ethics, o => o.Ethics),
         new("civics", "Civics", r => r.Civics, o => o.Civics),
         new("origin", "Origin", r => Some(r.Origin), o => o.Origins),
-        new("class", "Species", r => Some(r.SpeciesClass), o => o.SpeciesClasses),
-        new("portrait", "Portrait", r => Some(r.Portrait), o => o.Portraits),
-        new("gender", "Gender", r => Some(r.Gender), o => o.Genders),
-        new("namelist", "Name list", r => Some(r.NameList), o => o.NameLists),
-        new("traits", "Traits", r => r.Traits, o => o.Traits),
-        new("second", "Second species", r => YesOrNo(r.HasSecondSpecies)),
-        new("secondclass", "Second species kind", r => Some(r.SecondClass), o => o.SpeciesClasses),
-        new("secondtraits", "Second species traits", r => r.SecondTraits, o => o.Traits),
-        new("homeworld", "Homeworld", r => Some(r.PlanetClass), o => o.Homeworlds),
-        new("system", "Starting system", r => Some(r.StartingSystem), o => o.StartingSystems),
-        new("room", "Room", r => Some(r.Room), o => o.Rooms),
-        new("shipset", "Shipset", r => Some(r.Shipset), o => o.Shipsets),
-        new("bioship", "Bioships", r => YesOrNo(r.Bioship)),
-        new("advisor", "Advisor voice", r => Some(r.Advisor), o => o.Advisors),
-        new("rulerclass", "Ruler class", r => Some(r.RulerClass), o => o.RulerClasses),
-        new("rulerportrait", "Ruler portrait", r => Some(r.RulerPortrait), o => o.Portraits),
-        new("rulergender", "Ruler gender", r => Some(r.RulerGender), o => o.Genders),
-        new("rulertraits", "Ruler traits", r => r.RulerTraits, o => o.RulerTraits),
         new("spawn", "AI spawning", r => Some(r.Spawn), o => o.Spawning),
         new("fallen", "Fallen empire", r => YesOrNo(r.Fallen)),
         new("flagset", "Special flags", r => Some(r.FlagSet), o => o.FlagSets),
+        new("advisor", "Advisor voice", r => Some(r.Advisor), o => o.Advisors),
+
+        new("class", "Species", r => Some(r.SpeciesClass), o => o.SpeciesClasses, Species),
+        new("portrait", "Portrait", r => Some(r.Portrait), o => o.Portraits, Species),
+        new("gender", "Gender", r => Some(r.Gender), o => o.Genders, Species),
+        new("namelist", "Name list", r => Some(r.NameList), o => o.NameLists, Species),
+        new("traits", "Traits", r => r.Traits, o => o.Traits, Species),
+        new("second", "Second species", r => YesOrNo(r.HasSecondSpecies), Group: Species),
+        new("secondclass", "Second species kind", r => Some(r.SecondClass), o => o.SpeciesClasses, Species),
+        new("secondtraits", "Second species traits", r => r.SecondTraits, o => o.Traits, Species),
+
+        new("rulerclass", "Ruler class", r => Some(r.RulerClass), o => o.RulerClasses, Ruler),
+        new("rulerportrait", "Ruler portrait", r => Some(r.RulerPortrait), o => o.Portraits, Ruler),
+        new("rulergender", "Ruler gender", r => Some(r.RulerGender), o => o.Genders, Ruler),
+        new("rulertraits", "Ruler traits", r => r.RulerTraits, o => o.RulerTraits, Ruler),
+
+        new("homeworld", "Homeworld", r => Some(r.PlanetClass), o => o.Homeworlds, Galaxy),
+        new("system", "Starting system", r => Some(r.StartingSystem), o => o.StartingSystems, Galaxy),
+        new("room", "Room", r => Some(r.Room), o => o.Rooms, Galaxy),
+        new("shipset", "Shipset", r => Some(r.Shipset), o => o.Shipsets, Galaxy),
+        new("bioship", "Bioships", r => YesOrNo(r.Bioship), Group: Galaxy),
     ];
+
+    /// <summary>
+    /// The tabs, in the order they are drawn, which is the order the headings declare.
+    /// </summary>
+    /// <remarks>
+    /// Written after the headings themselves, and it has to be: a static field is filled in the
+    /// order it is declared, and read from above them this was reading a list that did not exist
+    /// yet.
+    /// </remarks>
+    public static IReadOnlyList<string> Groups { get; } =
+        [.. All.Select(f => f.Group).Distinct(StringComparer.Ordinal)];
 
     /// <summary>
     /// Whether the heading has two answers and wants a dropdown rather than a list of ticks.
