@@ -151,7 +151,8 @@
         into being the same forty lines twice, and a modifier shown one way here and another there is
         the sort of difference nobody notices until it matters.
     *@
-    <CombinedEffects Context="@Context" Baseline="@Baseline" />
+    <CombinedEffects Context="@Context" Baseline="@Baseline"
+                     Collapsible="@FoldModifiers" />
 
     @*
         And under that, what is wrong with it, folded away.
@@ -194,6 +195,17 @@
 
     /// <summary>Whether the detail is showing, where it can be folded away.</summary>
     private bool _expanded;
+
+    /// <summary>
+    /// Whether the modifiers inside this may be folded away on a narrow screen.
+    /// </summary>
+    /// <remarks>
+    /// The empire list wants it: below the width that puts the preview beside the list, the panel
+    /// sits on top of the empires and every modifier is a scroll away from choosing one. The
+    /// designer does not, because there the panel is what the page is for.
+    /// </remarks>
+    [Parameter]
+    public bool FoldModifiers { get; set; }
 
     /// <summary>
     /// Whether to list what is wrong with the empire under everything else.

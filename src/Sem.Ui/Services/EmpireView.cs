@@ -111,9 +111,8 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
         ? _session.Localizer.Text(key.ToUpperInvariant(), Localizer.Prettify(key))
         : null;
 
-    public string? RulerPortrait =>
-        PortraitArtwork.For(Database, _design.Ruler.Portrait, _design.Ruler.Gender)
-        ?? SpeciesPortrait;
+    public string? RulerPortrait => PortraitArtwork.For(
+        Database, PortraitArtwork.RulerPortrait(_design), PortraitArtwork.RulerGender(_design));
 
     public string? SpeciesPortrait =>
         PortraitArtwork.For(Database, _design.Species.Portrait, _design.Species.Gender);

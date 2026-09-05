@@ -13,9 +13,16 @@
     from also reading as a press on the backdrop behind it.
 *@
 
-<div class="sem-modal sem-editor-modal @(Compact ? "sem-editor-compact" : null)" @onclick="Close">
+@*
+    Stopped at the sheet, because there may be a dialog under this one: the lite editor is itself a
+    dialog on the list, and a press or an Escape that carried on up closed both of them at once -
+    the part being edited and the empire it belongs to, from one keystroke.
+*@
+<div class="sem-modal sem-editor-modal @(Compact ? "sem-editor-compact" : null)"
+     @onclick="Close" @onclick:stopPropagation="true">
     <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="@_titleId"
-         tabindex="-1" @ref="_sheet" @onkeydown="OnKey" @onclick:stopPropagation="true">
+         tabindex="-1" @ref="_sheet" @onkeydown="OnKey" @onkeydown:stopPropagation="true"
+         @onclick:stopPropagation="true">
 
         <div class="head">
             <h2 id="@_titleId">@Title</h2>

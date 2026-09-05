@@ -202,46 +202,6 @@ export function revealSelected(list, selector) {
 }
 
 /**
- * Scrolls the page to an element that answers what was just clicked, if it is not already on screen.
- *
- * The empire list writes its preview before the list, so where there is room for two columns the
- * preview sits beside the cards and where there is not it sits above them. In the second case
- * choosing an empire halfway down the page updates a panel that is off the top of the screen, and
- * the only way to see what you chose is to scroll back up looking for it.
- *
- * Only where the layout has stacked it, which the element says itself: the stylesheet makes the
- * preview sticky exactly when there is room for it beside the cards, so a sticky one is never what
- * this is for and the page is left alone. Asking the element beats writing the breakpoint here,
- * which would be the same width in a second place, free to drift from the sheet that decides it —
- * and beats asking whether it is on screen, because a preview taller than the window scrolls its
- * own top away even while stuck.
- *
- * Aligned to just under the sticky header rather than to the top of the page, since the header
- * would otherwise cover the first line of what was scrolled to.
- *
- * @param {HTMLElement} element what to bring on screen
- */
-export function revealOnPage(element) {
-    if (!element || getComputedStyle(element).position === 'sticky') {
-        return;
-    }
-
-    const box = element.getBoundingClientRect();
-
-    // The header's real height rather than the token, which is a length this file cannot read.
-    const header = document.querySelector('.sem-header');
-    const top = header ? header.getBoundingClientRect().height : 0;
-
-    if (box.top >= top && box.top < window.innerHeight) {
-        return;
-    }
-
-    // The gap the stylesheet leaves under the header for anything that sticks to it.
-    const gap = 10;
-    window.scrollTo({ top: Math.max(0, window.scrollY + box.top - top - gap), behavior: 'smooth' });
-}
-
-/**
  * Closes an open suggestion list when the next press lands outside it.
  *
  * The list itself is drawn or not drawn by the component, on a flag the component owns. What this
@@ -423,4 +383,168 @@ export async function copyText(text) {
     } catch {
         return false;
     }
+}
+
+/**
+ * Lets the cards in a list be dragged into a new order by their grips.
+ *
+ * Pointer events rather than HTML5 drag and drop, for two reasons. The card is a button and a
+ * browser will not begin a drag from inside one, which is why dragging the card did nothing at all.
+ * And HTML5 dragging is a mouse feature: it does not fire for a finger, on any browser, and this
+ * list is a single column on a phone. One pointer path covers a mouse, a finger and a pen.
+ *
+ * Every card is placed by a transform while a drag is in progress. The held one follows the pointer
+ * and the rest slide into the places they would take if it were dropped now, so the answer is
+ * visible before the drop rather than after it. Nothing is reordered until the pointer is released:
+ * the list itself does not change under the finger, only where each card is drawn.
+ *
+ * Positions are measured once, at the start. Reading them again during the drag would be reading
+ * the transforms back, and the cards would chase their own tails.
+ *
+ * @param {HTMLElement} list the container holding the cards
+ * @param {object} owner what to tell when a card has been moved
+ */
+export function enableCardReorder(list, owner) {
+    if (!list || list.dataset.semReorder) {
+        return;
+    }
+
+    list.dataset.semReorder = 'on';
+
+    let cards = [];
+    let places = [];
+    let held = null;
+    let from = -1;
+    let onto = -1;
+    let grabbed = { x: 0, y: 0 };
+
+    const settle = () => {
+        for (const card of cards) {
+            card.style.transform = '';
+            card.classList.remove('lifted');
+        }
+
+        list.classList.remove('sorting');
+        cards = [];
+        places = [];
+        held = null;
+        from = -1;
+        onto = -1;
+    };
+
+    /** Where each card should be drawn, given that the held one is heading for `target`. */
+    const layOut = target => {
+        const order = cards.map((_, i) => i);
+        order.splice(from, 1);
+        order.splice(target, 0, from);
+
+        order.forEach((was, becomes) => {
+            if (was === from) {
+                return;
+            }
+
+            const there = places[becomes];
+            const here = places[was];
+
+            cards[was].style.transform =
+                `translate(${there.left - here.left}px, ${there.top - here.top}px)`;
+        });
+    };
+
+    /** Which position the pointer is over, by distance to each place's middle. */
+    const nearest = (x, y) => {
+        let best = 0;
+        let closest = Infinity;
+
+        places.forEach((place, at) => {
+            const dx = x - (place.left + place.width / 2);
+            const dy = y - (place.top + place.height / 2);
+            const away = (dx * dx) + (dy * dy);
+
+            if (away < closest) {
+                closest = away;
+                best = at;
+            }
+        });
+
+        return best;
+    };
+
+    list.addEventListener('pointerdown', event => {
+        const grip = event.target.closest?.('[data-grip]');
+
+        if (!grip) {
+            return;
+        }
+
+        const card = grip.closest('[data-index]');
+
+        if (!card) {
+            return;
+        }
+
+        // Or the browser takes the gesture for itself: selecting text with a mouse, scrolling the
+        // page with a finger. The grip also carries touch-action:none, which is the half of this
+        // that a listener cannot do.
+        event.preventDefault();
+
+        cards = [...list.querySelectorAll('[data-index]')];
+        places = cards.map(one => {
+            const box = one.getBoundingClientRect();
+            return { left: box.left, top: box.top, width: box.width, height: box.height };
+        });
+
+        held = card;
+        from = cards.indexOf(card);
+        onto = from;
+        grabbed = { x: event.clientX, y: event.clientY };
+
+        card.classList.add('lifted');
+        list.classList.add('sorting');
+
+        // So the rest of the gesture keeps arriving here even once the finger has left the grip,
+        // which it does immediately. Not fatal if it is refused - the listeners are on the list and
+        // a drag inside it still arrives, so a browser that will not capture costs precision at the
+        // edges rather than the whole gesture.
+        try {
+            grip.setPointerCapture(event.pointerId);
+        } catch {
+            // Nothing to do about it, and nothing that has to stop.
+        }
+    });
+
+    list.addEventListener('pointermove', event => {
+        if (!held) {
+            return;
+        }
+
+        held.style.transform =
+            `translate(${event.clientX - grabbed.x}px, ${event.clientY - grabbed.y}px)`;
+
+        const target = nearest(event.clientX, event.clientY);
+
+        if (target !== onto) {
+            onto = target;
+            layOut(onto);
+        }
+    });
+
+    list.addEventListener('pointerup', () => {
+        if (!held) {
+            return;
+        }
+
+        const start = from;
+        const end = onto;
+
+        settle();
+
+        if (end >= 0 && end !== start) {
+            owner.invokeMethodAsync('Reorder', start, end);
+        }
+    });
+
+    // A cancelled pointer is the system taking the gesture away - a phone call, a gesture the OS
+    // claimed. Nothing moves, and every card goes back where it was.
+    list.addEventListener('pointercancel', settle);
 }

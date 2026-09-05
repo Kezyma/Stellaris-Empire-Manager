@@ -128,6 +128,138 @@ public sealed class EmpireDesignsFile
     }
 
     /// <summary>
+    /// Brings every empire from another file into this one.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// One that shares a key with an empire already here takes its place, in its place: the
+    /// incoming design is put at the position the old one held rather than at the end, so a file
+    /// merged with a newer copy of itself comes back in the order it went in. Everything else is
+    /// appended, in the order the other file had it.
+    /// </para>
+    /// <para>
+    /// The key is the empire's name and the file is keyed by it, so same-name is the only sense in
+    /// which two designs can be the same empire. Nothing here compares any other field.
+    /// </para>
+    /// <para>
+    /// Nodes are cloned rather than moved, so the file they came from is left whole and could be
+    /// merged again. <see cref="CwDocument.Insert"/> forgets the copy's remembered whitespace, which
+    /// is what stops an entry taken from the top of one file running onto the end of a line in this
+    /// one.
+    /// </para>
+    /// </remarks>
+    public void Merge(EmpireDesignsFile other)
+    {
+        ArgumentNullException.ThrowIfNull(other);
+
+        if (ReferenceEquals(other, this))
+        {
+            return;
+        }
+
+        foreach (var incoming in other.Designs)
+        {
+            var node = incoming.Node.Clone();
+
+            if (Find(incoming.Key) is { } existing)
+            {
+                var at = Document.Nodes.ToList().IndexOf(existing.Node);
+                var slot = _designs.IndexOf(existing);
+
+                // Neither index should be missing, and a merge that quietly appended instead would
+                // be a merge that reordered the file without saying so.
+                if (at < 0 || slot < 0)
+                {
+                    continue;
+                }
+
+                Document.RemoveAt(at);
+                Document.Insert(at, node);
+
+                _designs[slot] = new EmpireDesign(node);
+            }
+            else
+            {
+                Document.Add(node);
+                _designs.Add(new EmpireDesign(node));
+            }
+        }
+    }
+
+    /// <summary>
+    /// Moves an empire to another position in the file.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The list and the document are moved in together, as they are removed from together. The
+    /// document is what gets written, so a move that only reordered the list would show in the app
+    /// and in nothing else.
+    /// </para>
+    /// <para>
+    /// Placement is forgotten at both ends of the move, and that is the part worth explaining. A
+    /// token read from a file remembers the whitespace in front of it, which is what lets an
+    /// untouched file be written back byte for byte - and the entry at the top of a file remembers
+    /// having none. Move that entry down and it writes onto the end of the previous line, which is
+    /// the <c>}"Name"=</c> failure <see cref="CwNode.ForgetPlacement"/> exists to describe. So
+    /// whatever is at the top now, and whatever used to be, are both laid out afresh; everything
+    /// else keeps the spacing it arrived with.
+    /// </para>
+    /// </remarks>
+    public bool Move(EmpireDesign design, int toIndex)
+    {
+        ArgumentNullException.ThrowIfNull(design);
+
+        var from = _designs.IndexOf(design);
+
+        if (from < 0)
+        {
+            return false;
+        }
+
+        toIndex = Math.Clamp(toIndex, 0, _designs.Count - 1);
+
+        if (toIndex == from)
+        {
+            return false;
+        }
+
+        var wasFirst = Document.Nodes.Count > 0 ? Document.Nodes[0] : null;
+
+        if (!Document.Remove(design.Node))
+        {
+            return false;
+        }
+
+        _designs.RemoveAt(from);
+        _designs.Insert(toIndex, design);
+
+        // Ahead of whichever empire follows it now, or at the end when none does. Found by the
+        // following design rather than by counting, because the document may hold entries this
+        // model does not read and their positions are not ours to shuffle.
+        var follower = toIndex + 1 < _designs.Count ? _designs[toIndex + 1].Node : null;
+
+        Document.Insert(follower is null ? Document.Nodes.Count : PositionOf(follower), design.Node);
+
+        Document.Nodes[0].ForgetPlacement();
+        wasFirst?.ForgetPlacement();
+
+        return true;
+    }
+
+    private int PositionOf(CwNode node)
+    {
+        for (var i = 0; i < Document.Nodes.Count; i++)
+        {
+            if (ReferenceEquals(Document.Nodes[i], node))
+            {
+                return i;
+            }
+        }
+
+        return Document.Nodes.Count;
+    }
+
+    /// <summary>
     /// Removes an empire from the file.
     /// </summary>
     /// <remarks>

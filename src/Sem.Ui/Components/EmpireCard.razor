@@ -53,11 +53,44 @@
             <ActionIcon Name="share" />
         </button>
     }
+
+    @*
+        Something to take hold of. The card itself is a button, and a browser will not begin a drag
+        from inside one - which is why dragging the card did nothing at all: there was nowhere on it
+        to grab.
+
+        A button rather than a bare handle, so it is in the tab order like everything else here: the
+        arrow keys move the card once it has focus, which is the whole of what the two arrow buttons
+        did and none of the space they took.
+    *@
+    @if (OnMove.HasDelegate)
+    {
+        <button type="button" class="sem-empire-grip" data-grip
+                title="@($"Drag to move {Name}, or use the arrow keys")"
+                aria-label="@($"Move {Name}. Drag, or press the up and down arrow keys.")"
+                @onkeydown="Nudge">⠿</button>
+    }
 </div>
 
 @code {
     [CascadingParameter]
     public required DesignSession Session { get; set; }
+
+    /// <summary>Called with -1 or 1 to move this empire one place that way.</summary>
+    /// <remarks>
+    /// A direction rather than a position, because the card does not know where it sits and the
+    /// list it belongs to does.
+    /// </remarks>
+    [Parameter]
+    public EventCallback<int> OnMove { get; set; }
+
+    /// <summary>Moves the card with the arrow keys, for anyone who cannot drag one.</summary>
+    private Task Nudge(KeyboardEventArgs key) => key.Key switch
+    {
+        "ArrowUp" or "ArrowLeft" => OnMove.InvokeAsync(-1),
+        "ArrowDown" or "ArrowRight" => OnMove.InvokeAsync(1),
+        _ => Task.CompletedTask,
+    };
 
     /// <summary>The empire's flag, drawn as the game draws one.</summary>
     [Parameter]

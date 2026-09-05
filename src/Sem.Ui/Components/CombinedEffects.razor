@@ -8,9 +8,26 @@
 
 @using Sem.Rules
 
-<div class="sem-combined">
+<div class="sem-combined @(Collapsible ? "collapsible" : null) @(_open ? "open" : null)">
     <div class="heading">
-        <h4>@Session.Localizer.Label("SUMMARY_EMPIRE_MODIFIERS", "Empire Modifiers")</h4>
+        @*
+            A heading, or a way to fold the panel away - and which it is, is the stylesheet's to
+            decide. Held as a class rather than as markup for the reason the pickers give at length:
+            the width may change under a reader, and a fold they can only reopen by making the
+            window narrow again is a fold that has swallowed the panel.
+        *@
+        @if (Collapsible)
+        {
+            <button type="button" class="fold" aria-expanded="@(_open ? "true" : "false")"
+                    @onclick="() => _open = !_open">
+                <span class="chevron" aria-hidden="true">@(_open ? "▾" : "▸")</span>
+                <h4>@Session.Localizer.Label("SUMMARY_EMPIRE_MODIFIERS", "Empire Modifiers")</h4>
+            </button>
+        }
+        else
+        {
+            <h4>@Session.Localizer.Label("SUMMARY_EMPIRE_MODIFIERS", "Empire Modifiers")</h4>
+        }
 
         @*
             Three questions about one set of numbers: which choice did this, what does it all come
@@ -157,6 +174,20 @@
     /// </remarks>
     [Parameter]
     public DesignContext? Baseline { get; set; }
+
+    /// <summary>
+    /// Whether the panel may be folded away, which it is until asked otherwise.
+    /// </summary>
+    /// <remarks>
+    /// For where the panel sits above what the reader came for rather than beside it - the empire
+    /// list on a narrow screen, where every modifier is something to scroll past on the way to the
+    /// empires. The stylesheet ignores this entirely where there is room for two columns, so a wide
+    /// window shows the numbers whether or not anybody has pressed anything.
+    /// </remarks>
+    [Parameter]
+    public bool Collapsible { get; set; }
+
+    private bool _open;
 
     /// <summary>Which of the three questions the panel is answering.</summary>
     private enum View

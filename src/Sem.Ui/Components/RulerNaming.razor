@@ -73,14 +73,12 @@
     </div>
 </div>
 
-@* Gender and class as icons on one row. *@
+@*
+    The class as icons on a row of its own. Gender used to be beside it and is now with the ruler's
+    appearance, where the species' gender already sits with the species' - it decides which face of
+    a group is worn, so it is a question about the likeness rather than about the name.
+*@
 <div class="sem-row top wide">
-    <div class="sem-field flush">
-        <label>@Session.Localizer.Label("GENDER", "Gender")</label>
-        <GenderPicker Value="@Design.Ruler.Gender"
-                      OnChange="key => Session.Edit(d => d.Ruler.Gender = key)" />
-    </div>
-
     <div class="sem-field flush">
         <label>@Session.Localizer.Label("RULER_CLASS", "Leader Class")</label>
         <RulerClassPicker />

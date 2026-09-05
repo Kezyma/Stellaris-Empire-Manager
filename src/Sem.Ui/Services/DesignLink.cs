@@ -30,9 +30,14 @@ namespace Sem.Ui.Services;
 /// chain looks at what any field means, so the guarantee is unchanged: whatever goes in comes back.
 /// </para>
 /// <para>
-/// Measured over eighteen hand-built empires, that took the average link from 1,129 characters to
-/// 677 and the longest from 1,258 to 938 — a whole shared address, site and all, now fits inside a
-/// thousand characters. The table is what does most of it: compression alone reached 986.
+/// Measured over eighteen hand-built empires, that took the longest link from 1,258 characters to
+/// 938. It is superseded by <see cref="DesignLinkV2"/>, which reaches a median of 372 by writing
+/// the design as a tree rather than as text — but every word above still describes what a link
+/// stamped <c>0x01</c> holds, and those are still out there.
+/// </para>
+/// <para>
+/// The address around it is <c>…/e/&lt;payload&gt;</c>, 52 characters before the payload starts.
+/// <c>…/designer?d=</c> was nine longer and is still read.
 /// </para>
 /// </remarks>
 public static class DesignLink
@@ -176,6 +181,17 @@ public static class DesignLink
     ];
 
     /// <summary>Packs a design into a string that can be put in a URL.</summary>
+    /// <summary>
+    /// Where an empire lives, relative to wherever the app is served from.
+    /// </summary>
+    /// <remarks>
+    /// A path rather than a query - nine characters shorter, and with no question mark or equals
+    /// sign for a chat client to decide is punctuation. The query is still read, and always will
+    /// be: it is what every link shared before this carries, and a link somebody sent is not ours
+    /// to expire.
+    /// </remarks>
+    public static string Address(string encoded) => $"e/{encoded}";
+
     public static string Encode(EmpireDesign design)
     {
         ArgumentNullException.ThrowIfNull(design);

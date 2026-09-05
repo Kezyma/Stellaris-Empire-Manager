@@ -10,14 +10,20 @@
     description of what it does.
 *@
 
-<div class="sem-modal" @onclick="Dismiss">
+@*
+    Stopped at the backdrop as well, because there may be a dialog under this one: the lite editor
+    is itself a dialog on the list, and a press that carried on up dismissed the question and closed
+    the empire behind it from the one click.
+*@
+<div class="sem-modal" @onclick="Dismiss" @onclick:stopPropagation="true">
     @*
         Clicks inside the sheet are stopped from reaching the backdrop, which would otherwise read
         every press of a button as a press on the backdrop as well and close the dialog underneath
         whatever was clicked.
     *@
     <div class="sheet" role="alertdialog" aria-modal="true" aria-labelledby="@_titleId"
-         tabindex="-1" @ref="_sheet" @onkeydown="OnKey" @onclick:stopPropagation="true">
+         tabindex="-1" @ref="_sheet" @onkeydown="OnKey" @onkeydown:stopPropagation="true"
+         @onclick:stopPropagation="true">
         <h2 id="@_titleId">@Title</h2>
 
         @if (Message is { Length: > 0 })

@@ -131,6 +131,16 @@ public sealed class DesignSession
     public bool IsModified { get; private set; }
 
     /// <summary>
+    /// Whether the empire in hand is one that is not in the file until it is saved.
+    /// </summary>
+    /// <remarks>
+    /// A new empire, a shared one, or one of the game's own. It is in the file's list because the
+    /// editor has to have something to work on, and turning to anything else takes it out again -
+    /// so a caller closing the editor on one has to say so, or it is left behind.
+    /// </remarks>
+    public bool IsHeldOut => _unsaved is not null && ReferenceEquals(_unsaved, Current);
+
+    /// <summary>
     /// Whether the list of empires has changed since the file was last written.
     /// </summary>
     /// <remarks>
@@ -160,11 +170,55 @@ public sealed class DesignSession
     {
         ArgumentNullException.ThrowIfNull(contents);
 
-        File = EmpireDesignsFile.Load(contents);
+        Open(EmpireDesignsFile.Load(contents), fileName);
+    }
+
+    /// <summary>Opens a designs file already parsed.</summary>
+    /// <remarks>
+    /// Import parses before it asks what to do with the file, so that a file which will not parse
+    /// is refused with the error it deserves rather than behind a question about merging.
+    /// </remarks>
+    public void Open(EmpireDesignsFile file, string fileName)
+    {
+        ArgumentNullException.ThrowIfNull(file);
+
+        File = file;
         FileName = fileName;
         HasUnwrittenFileChanges = false;
         Select(File.Designs.FirstOrDefault());
         FileChanged?.Invoke();
+    }
+
+    /// <summary>
+    /// Folds another file's empires into the one that is open.
+    /// </summary>
+    /// <remarks>
+    /// An empire whose name is already here takes its place, in its place; everything else is
+    /// appended. The selection has to be looked at afterwards because a replaced empire is a
+    /// different object from the one it replaced, and Current would otherwise go on pointing at a
+    /// design the file no longer holds - the same care a delete takes.
+    /// </remarks>
+    public void Merge(EmpireDesignsFile other)
+    {
+        ArgumentNullException.ThrowIfNull(other);
+
+        if (File is null)
+        {
+            Open(other, FileName ?? EmpireDesignsFile.FileName);
+            return;
+        }
+
+        var wasEditing = Current?.Key;
+
+        EditFile(file => file.Merge(other));
+
+        if (Current is null || File.Designs.Contains(Current))
+        {
+            return;
+        }
+
+        Select(wasEditing is not null ? File.Find(wasEditing) ?? File.Designs.FirstOrDefault()
+                                      : File.Designs.FirstOrDefault());
     }
 
     /// <summary>Opens a designs file already in hand as text.</summary>
@@ -172,11 +226,7 @@ public sealed class DesignSession
     {
         ArgumentNullException.ThrowIfNull(contents);
 
-        File = EmpireDesignsFile.LoadText(contents);
-        FileName = fileName;
-        HasUnwrittenFileChanges = false;
-        Select(File.Designs.FirstOrDefault());
-        FileChanged?.Invoke();
+        Open(EmpireDesignsFile.LoadText(contents), fileName);
     }
 
     /// <summary>Starts an empty file, for someone who has none yet.</summary>
@@ -187,6 +237,24 @@ public sealed class DesignSession
         HasUnwrittenFileChanges = false;
         Select(null);
         FileChanged?.Invoke();
+    }
+
+    /// <summary>
+    /// Moves an empire to another place in the list.
+    /// </summary>
+    /// <remarks>
+    /// Through EditFile, so it settles the way adding and deleting do: the browser keeps the file
+    /// at once, the desktop says it has something unwritten, and the empire being edited is not
+    /// touched - the order of the list is not one of its fields.
+    /// </remarks>
+    public void MoveEmpire(EmpireDesign design, int toIndex)
+    {
+        ArgumentNullException.ThrowIfNull(design);
+
+        if (File?.Designs.Contains(design) is true)
+        {
+            EditFile(file => file.Move(design, toIndex));
+        }
     }
 
     /// <summary>
@@ -233,11 +301,20 @@ public sealed class DesignSession
     /// Starts an empire that is not in the file until it is saved.
     /// </summary>
     /// <remarks>
-    /// Unlike <see cref="EditFile"/> this announces nothing, so the host does not store it. It
-    /// counts as unsaved from the first moment, which is what makes leaving the designer ask about
-    /// it exactly as it would for an empire somebody had edited.
+    /// <para>
+    /// Unlike <see cref="EditFile"/> this announces nothing, so the host does not store it.
+    /// </para>
+    /// <para>
+    /// It counts as unsaved from the first moment by default, which is what makes leaving a new
+    /// empire ask about it exactly as it would for one somebody had edited. One of the game's own
+    /// does not: it is opened to be read as often as to be taken, and it cannot be lost - the copy
+    /// can always be made again from the same shelf. Asked about on every close, the question was
+    /// one to dismiss rather than one to answer, which is how a question stops being read.
+    /// </para>
     /// </remarks>
-    public EmpireDesign? CreateEmpire(Func<EmpireDesignsFile, EmpireDesign> add)
+    public EmpireDesign? CreateEmpire(
+        Func<EmpireDesignsFile, EmpireDesign> add,
+        bool countsAsUnsavedWork = true)
     {
         ArgumentNullException.ThrowIfNull(add);
 
@@ -251,7 +328,7 @@ public sealed class DesignSession
         Select(design, announce: false);
 
         _unsaved = design;
-        IsModified = true;
+        IsModified = countsAsUnsavedWork;
         Recompute();
 
         return design;

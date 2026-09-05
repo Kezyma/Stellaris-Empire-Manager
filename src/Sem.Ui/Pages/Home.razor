@@ -1,11 +1,11 @@
 @page "/"
-@using Microsoft.JSInterop
+@page "/e/{Shared}"
 @implements IDisposable
-@implements IAsyncDisposable
 @inject SessionHost Host
 @inject IFileExchange Files
 @inject NavigationManager Navigation
-@inject IJSRuntime Js
+@inject UnsavedWorkGuard Unsaved
+@inject EditorState Editor
 
 <PageTitle>Empires - Stellaris Empire Manager</PageTitle>
 
@@ -33,16 +33,6 @@ else
         No card of file buttons here any more. Create, Import and Export are in the header, where
         they are reachable from the designer too and are not written out twice.
     *@
-    @if (_deleting is { } doomed)
-    {
-        <ConfirmDialog Title="@($"Delete {_session.Localizer.Name(doomed.Name, doomed.Key)}?")"
-                       Message="The empire is removed from your file. There is no undo."
-                       OnDismiss="() => _deleting = null">
-            <button type="button" @onclick="() => _deleting = null">Keep it</button>
-            <button type="button" class="danger" @onclick="() => Delete(doomed)">Delete</button>
-        </ConfirmDialog>
-    }
-
     @*
         What is open. It used to sit in the header beside the buttons that act on it, which made the
         header four items and a sentence; this is the file's own page, so it says so here.
@@ -65,76 +55,18 @@ else
         }
     </p>
 
-    @*
-        The select screen: the empires to choose from on one side, and whichever one is highlighted
-        shown in full on the other. On a narrow screen the preview comes first, as it does in the
-        designer — it is the answer, and the lists are the way to change the question.
-    *@
     <CascadingValue Value="_session">
+        @*
+            The lists, and the editor over them when one is open.
+
+            There is no preview panel beside them any more. It was a column-wide summary of an empire
+            you had to open the designer to change, which meant every real question about an empire
+            was answered on another page; pressing one now opens the empire itself, in full, over the
+            list it came from. What the preview showed is in there, in the card's second column.
+        *@
         <div class="sem-select">
-            <div class="preview" @ref="_preview">
-                @if (Previewed is { } previewed)
-                {
-                    <EmpireShowcase Design="previewed" Lore="@_previewSource?.DescriptionKey">
-                        <Actions>
-                            @*
-                                Glyphs, in the same order and the same shapes the designer puts them
-                                in: a link, then whatever is destructive, then the one thing the
-                                button is really for. A player who has been in the designer already
-                                knows this row.
-                            *@
-                            <button type="button" class="icon" title="@CopyTitleFor(previewed)"
-                                    aria-label="Copy a link to this empire"
-                                    @onclick="() => CopyLink(previewed)">
-                                <ActionIcon Name="share" />
-                            </button>
-
-                            @if (_previewOwn)
-                            {
-                                @*
-                                    Beside Edit rather than inside the designer: opening an empire in
-                                    order to throw it away is a strange way round, and the list is
-                                    where you are when you decide you no longer want one.
-                                *@
-                                <button type="button" class="icon danger" title="Delete this empire"
-                                        aria-label="Delete this empire"
-                                        @onclick="() => _deleting = previewed">
-                                    <ActionIcon Name="delete" />
-                                </button>
-
-                                <button type="button" class="icon primary" title="Edit this empire"
-                                        aria-label="Edit this empire"
-                                        @onclick="() => OpenDesigner(previewed)">
-                                    <ActionIcon Name="edit" />
-                                </button>
-                            }
-                            else if (_previewSource is { } source)
-                            {
-                                @*
-                                    "Duplicate", not "copy into your file", which it also is: the
-                                    button beside it copies a link, and two glyphs whose labels both
-                                    begin "Copy" is a riddle rather than a pair of choices.
-                                *@
-                                <button type="button" class="icon primary"
-                                        title="Duplicate this empire"
-                                        aria-label="Duplicate this empire"
-                                        @onclick="() => Duplicate(source)">
-                                    <ActionIcon Name="duplicate" />
-                                </button>
-                            }
-                        </Actions>
-                    </EmpireShowcase>
-                }
-                else
-                {
-                    <div class="sem-empty">
-                        <p>Pick an empire to see it here.</p>
-                    </div>
-                }
-            </div>
-
             <div class="lists">
-                <EmpireBrowser Session="_session" OnSelected="PreviewOwn"
+                <EmpireBrowser Session="_session" OnSelected="OpenOwn"
                                OnCopyLink="CopyLink" CopyTitle="CopyTitleFor" />
 
                 @*
@@ -161,24 +93,112 @@ else
                                         Name="@_session.Localizer.Text(empire.NameKey, empire.Key)"
                                         Government="@read?.Government"
                                         SpeciesClass="@ClassOf(empire)"
-                                        Selected="@ReferenceEquals(empire, _previewSource)"
                                         Disabled="@(read is null)"
                                         OnCopyLink="@(read is null ? default : EventCallback.Factory.Create(this, () => CopyLink(read.Design)))"
                                         CopyTitle="@(read is null ? string.Empty : CopyTitleFor(read.Design))"
-                                        OnClick="() => PreviewPrescripted(empire)" />
+                                        OnClick="() => OpenPrescripted(empire)" />
                         }
                     </div>
                 </div>
             </div>
         </div>
+
+        @if (Editing)
+        {
+            @*
+                The editor, over the list rather than on a page of its own.
+
+                A dialog inside a dialog, since the card opens one of its own for whichever part was
+                pressed. Both are fixed to the viewport and neither ancestor gives them a containing
+                block, so the inner one covers this and is covered in turn by a question - which is
+                the order they have to be in.
+            *@
+            <div class="sem-modal sem-lite-modal" @onclick="Close">
+                <div class="sheet" role="dialog" aria-modal="true" aria-label="@($"Editing {Name}")"
+                     tabindex="-1" @ref="_sheet" @onkeydown="OnKey" @onclick:stopPropagation="true">
+
+                    <EmpireEditor Session="_session" StaysHere="SameEmpire" TracksAddress="true"
+                                  InDialog="true" OnBack="Close" OnDeleted="Finished">
+                        <Body Context="actions">
+                            <LiteShell Session="_session" Actions="@actions"
+                                       OnPartClosed="() => _focused = false" />
+                        </Body>
+                        <Across>
+                            @*
+                                The other editor, named for what it does rather than for what it is
+                                called: the same empire, as it stands, in a page of sections. The
+                                empire goes across unsaved and comes back the same way, so nothing
+                                is asked on the way through.
+                            *@
+                            <button type="button" class="icon primary" title="Open the advanced editor"
+                                    aria-label="Open the advanced editor" @onclick="OpenAdvanced">
+                                <ActionIcon Name="edit" />
+                            </button>
+                        </Across>
+                    </EmpireEditor>
+                </div>
+            </div>
+        }
     </CascadingValue>
 }
 
 @code {
     private DesignSession? _session;
 
-    /// <summary>The empire the delete question is about, and nothing when nothing is being asked.</summary>
-    private EmpireDesign? _deleting;
+    /// <summary>
+    /// The empire a link carried, taken from the address itself rather than from a query.
+    /// </summary>
+    /// <remarks>
+    /// Null whenever the page was reached any other way - the Empires button, a Create, or one of
+    /// the links written before the route was shortened, which still arrive as "designer?d=…".
+    /// </remarks>
+    [Parameter]
+    public string? Shared { get; set; }
+
+    /// <summary>Whether the editor is drawn over the list.</summary>
+    /// <remarks>
+    /// Kept in a service rather than here, because two of the things that open it are not on this
+    /// page: the header's Create, and the way back from the advanced editor.
+    /// </remarks>
+    private bool Editing => Editor.IsOpen && _session?.Current is not null;
+
+    private string Name => _session?.Current is { } design
+        ? _session.Localizer.Name(design.Name, design.Key)
+        : "empire";
+
+    /// <summary>The dialog, so Escape reaches it and Tab stays inside.</summary>
+    private ElementReference _sheet;
+
+    /// <summary>Whether the dialog has taken the keyboard, so it is only taken once.</summary>
+    private bool _focused;
+
+    /// <summary>Whether the session has loaded and any shared link has been opened.</summary>
+    private bool _ready;
+
+    /// <summary>
+    /// Set from the editor closing until the address it left behind has been cleared.
+    /// </summary>
+    /// <remarks>
+    /// Closing may change the empire in hand - one of the game's goes back out of the file, and the
+    /// next one along is selected - and that change is written into the address by an editor that
+    /// has not finished unmounting. Without this the page read its own leftover address as somebody
+    /// opening a link and put the editor straight back up, on whichever empire the close had landed
+    /// on. Clicking outside the dialog on one of the game's empires reopened it on the first of the
+    /// player's own.
+    ///
+    /// Here rather than in the editor, which cannot see two of the three ways out: the backdrop and
+    /// Escape are this page's, and only the button is the editor's own.
+    /// </remarks>
+    private bool _closing;
+
+    /// <summary>
+    /// Set while stepping across to the advanced editor, so the guard reads it as the same empire.
+    /// </summary>
+    /// <remarks>
+    /// The button is the only way to that page from here, but the guard is asked about every
+    /// destination and "designer" is not one it should wave through on a link somebody else wrote.
+    /// </remarks>
+    private bool _crossing;
 
     /// <summary>The empire the last link was copied from, and whether the clipboard took it.</summary>
     /// <remarks>
@@ -191,42 +211,25 @@ else
 
     private bool _copyWorked;
 
-    /// <summary>What one empire's share button says, which is only ever news about that one.</summary>
-    private string CopyTitleFor(EmpireDesign? design) =>
-        design is not null && ReferenceEquals(design, _copiedFrom)
-            ? _copyWorked ? "Link copied" : "The clipboard would not take it"
-            : "Copy a link to this empire";
-
     /// <summary>
-    /// Puts a link to one empire on the clipboard, without opening it.
+    /// Opens an empire the address gained while this page was already on screen.
     /// </summary>
     /// <remarks>
-    /// The same link the designer offers, and built the same way — against the address the app is
-    /// published at, since on the desktop the window's own origin is somewhere only this process
-    /// can reach. Offered from the list because taking a link used to mean opening the empire
-    /// first, which for one of the game's own meant copying it into your file to get at it.
+    /// Which is the Back button, in practice: opening an empire writes it into the address and
+    /// closing takes it out again, so going back asks for the one just closed. Without this the
+    /// address changed and nothing else did, and the clearing below then undid the Back.
+    ///
+    /// The editor being shut is what makes this safe to run on any change. The address is also
+    /// rewritten every time the empire is saved, and that happens with the editor open - which this
+    /// ignores, rather than reading the page's own bookkeeping as a fresh link.
     /// </remarks>
-    private async Task CopyLink(EmpireDesign design)
+    protected override void OnParametersSet()
     {
-        var origin = Files.ShareBaseUri ?? Navigation.BaseUri;
-        var link = $"{origin}designer?{DesignLink.Parameter}={DesignLink.Encode(design)}";
-
-        _copyWorked = await Files.CopyToClipboardAsync(link);
-        _copiedFrom = design;
+        if (_ready && !Editing && !_closing && Shared is { Length: > 0 })
+        {
+            OpenSharedDesign();
+        }
     }
-
-    /// <summary>Whether the panel is showing one of the player's own empires or one of the game's.</summary>
-    private bool _previewOwn;
-
-    /// <summary>The built-in empire being shown, and the design read out of it.</summary>
-    private PrescriptedEmpireSummary? _previewSource;
-
-    /// <summary>The preview panel, so choosing an empire can bring it on screen.</summary>
-    private ElementReference _preview;
-
-    private IJSObjectReference? _module;
-
-    private EmpireDesign? _previewDesign;
 
     protected override async Task OnInitializedAsync()
     {
@@ -238,86 +241,245 @@ else
         if (_session is not null)
         {
             _session.Changed += OnChanged;
+            OpenSharedDesign();
 
-            // Coming back from the designer, the empire that was being edited is the one to show.
-            _previewDesign = _session.Current;
-            _previewOwn = _previewDesign is not null;
+            // Last, and only here. Until the link has been read there is nothing to say about the
+            // address, and saying it early is what wiped the link.
+            _ready = true;
         }
     }
 
     /// <summary>
-    /// The empire the panel is showing, whichever list it came from.
+    /// Takes the keyboard when the editor appears, so Escape reaches it.
     /// </summary>
     /// <remarks>
-    /// It stops being shown once it leaves the list beside it: one of the player's own when a
-    /// different file is opened, one of the game's when the content pack it needs is turned off.
-    /// A panel describing an empire that is no longer there would be describing nothing.
+    /// Once, rather than on every render. The card's own dialogs take the focus while they are open
+    /// and this page redraws under them on every edit; grabbing it back each time would put the
+    /// caret outside whatever was being typed into.
     /// </remarks>
-    private EmpireDesign? Previewed => _previewDesign is { } design && StillListed ? design : null;
-
-    private bool StillListed =>
-        _previewOwn
-            ? _session?.File?.Designs.Contains(_previewDesign!) is true
-            : _previewSource is { } source && Prescripted.Contains(source);
-
-    private async Task PreviewOwn(EmpireDesign design)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        _previewDesign = design;
-        _previewOwn = true;
-        _previewSource = null;
+        if (Editing)
+        {
+            if (!_focused)
+            {
+                _focused = true;
+                await _sheet.FocusAsync();
+            }
 
-        await RevealPreview().ConfigureAwait(true);
+            return;
+        }
+
+        _focused = false;
+
+        // The editor keeps the empire in the address while it is open, and writes there once more
+        // on its way out: reverting an empire that was never saved selects another, and that change
+        // reaches the address after the dialog has already gone. Cleared here rather than as the
+        // editor closes, because here there is nothing still queued to undo it - and an address
+        // left naming an empire nobody has open would reopen it on the next reload.
+        //
+        // Never before the link has been read. The first render happens while the game data is
+        // still being awaited, so this ran with no session, no editor open and the payload sitting
+        // in the address - and cleared it before anything had looked at it. A shared link opened
+        // the bare list.
+        if (_ready && Shared is { Length: > 0 })
+        {
+            Navigation.NavigateTo(string.Empty, replace: true);
+            return;
+        }
+
+        // The address is clear, so whatever turns up in it next really is somebody opening a link.
+        _closing = false;
+    }
+
+    private Task OnKey(KeyboardEventArgs e) => e.Key == "Escape" ? Close() : Task.CompletedTask;
+
+    /// <summary>What one empire's share button says, which is only ever news about that one.</summary>
+    private string CopyTitleFor(EmpireDesign? design) =>
+        design is not null && ReferenceEquals(design, _copiedFrom)
+            ? _copyWorked ? "Link copied" : "The clipboard would not take it"
+            : "Copy a link to this empire";
+
+    /// <summary>
+    /// Puts a link to one empire on the clipboard, without opening it.
+    /// </summary>
+    /// <remarks>
+    /// The same link the editor offers, and built the same way — against the address the app is
+    /// published at, since on the desktop the window's own origin is somewhere only this process
+    /// can reach. Offered from the list because taking a link used to mean opening the empire
+    /// first, which for one of the game's own meant copying it into your file to get at it.
+    /// </remarks>
+    private async Task CopyLink(EmpireDesign design)
+    {
+        var origin = Files.ShareBaseUri ?? Navigation.BaseUri;
+
+        _copyWorked = await Files.CopyToClipboardAsync(
+            origin + DesignLink.Address(DesignLink.Encode(design)));
+
+        _copiedFrom = design;
+    }
+
+    /// <summary>Opens one of the player's own empires in the editor.</summary>
+    private void OpenOwn(EmpireDesign design)
+    {
+        _session!.Select(design);
+        Editor.IsOpen = true;
     }
 
     /// <summary>
-    /// Shows one of the game's own empires without copying it into the player's file.
+    /// Opens one of the game's empires as a copy, which is the only way it can be edited.
     /// </summary>
     /// <remarks>
-    /// Read into a file of its own, which nothing ever saves — the same reading the list beside it
-    /// already did to learn what the empire's government is called, so it costs nothing here.
+    /// <para>
+    /// A copy, not a link: the game's own file is not ours to write. Held out of the player's file
+    /// until they press Save, the same as a new empire and the same as a shared one - opening one of
+    /// the game's to see how it is put together should not leave a copy behind. The name gains a
+    /// number where one is already taken, as a duplicate of anything else would.
+    /// </para>
+    /// <para>
+    /// Not counted as unsaved work, though, which the other two are. Nothing is at stake in an
+    /// empire that can be opened again from the same shelf, and being asked whether to save it
+    /// every time one is closed made the question something to dismiss rather than to read. It
+    /// becomes unsaved work the moment anything in it is changed.
+    /// </para>
     /// </remarks>
-    private async Task PreviewPrescripted(PrescriptedEmpireSummary empire)
+    private void OpenPrescripted(PrescriptedEmpireSummary empire)
     {
-        if (Read(empire) is not { } preset)
+        if (empire.Design is not { Length: > 0 } design)
         {
             return;
         }
 
-        _previewDesign = preset.Design;
-        _previewSource = empire;
-        _previewOwn = false;
+        _session!.CreateEmpire(
+            file => file.AddFromTemplate(
+                design, Available(_session.Localizer.Text(empire.NameKey, empire.Key))),
+            countsAsUnsavedWork: false);
 
-        await RevealPreview().ConfigureAwait(true);
+        Editor.IsOpen = true;
+    }
+
+    /// <summary>Closes the editor, once whatever is unsaved has been dealt with.</summary>
+    /// <remarks>
+    /// Through the shared guard, which is the question the editor itself registered. Closing the
+    /// dialog is not a navigation, so nothing else would have asked.
+    /// </remarks>
+    private async Task Close()
+    {
+        if (await Unsaved.ConfirmAsync())
+        {
+            Finished();
+        }
+    }
+
+    /// <summary>Takes the editor down. The address follows on the next render.</summary>
+    /// <remarks>
+    /// An empire that was never in the file goes back out of it. Unsaved work has already been dealt
+    /// with by the time this runs - saved, or put back - but one of the game's own carries none, so
+    /// nothing else would have taken it out and it would have stayed in the list looking like an
+    /// empire the player owned.
+    /// </remarks>
+    private void Finished()
+    {
+        _closing = true;
+        Editor.IsOpen = false;
+
+        if (_session is { IsHeldOut: true, IsModified: false })
+        {
+            _session.Revert();
+        }
+    }
+
+    /// <summary>Opens the same empire, as it stands, in the page of sections.</summary>
+    private void OpenAdvanced()
+    {
+        _crossing = true;
+        Editor.IsOpen = false;
+        Navigation.NavigateTo("designer");
     }
 
     /// <summary>
-    /// Brings the preview on screen when choosing an empire has just changed what is in it.
+    /// Whether a destination is still this page, or the same empire in the other editor.
     /// </summary>
     /// <remarks>
-    /// The preview is written before the lists, so where the page is too narrow for two columns it
-    /// sits above them: choosing a card halfway down updated a panel off the top of the screen, and
-    /// the only way to see the answer was to go looking for it. The script does nothing when the
-    /// panel is already in view, which is the case at every width where it sits beside the cards.
+    /// This page rewrites its own address on every save, to keep the shareable link current, so most
+    /// of what arrives here is the page describing itself. The sections count too, but only while
+    /// the button across is being pressed: the empire is in hand either side, unsaved work and all.
     /// </remarks>
-    /// <remarks>
-    /// On the click and not on a render. Selecting raises <c>Changed</c>, which re-renders this page
-    /// from two directions, and a page that scrolled every time anything changed would drag a reader
-    /// back to the top while they were part-way down the list.
-    /// </remarks>
-    private async Task RevealPreview()
-    {
-        try
-        {
-            _module ??= await Js.InvokeAsync<IJSObjectReference>(
-                "import", "./_content/Sem.Ui/sem.js").ConfigureAwait(true);
+    private bool SameEmpire(string route) =>
+        route is "" or "e"
+        || route.StartsWith("e/", StringComparison.Ordinal)
+        || (_crossing && route is "designer");
 
-            await _module.InvokeVoidAsync("revealOnPage", _preview).ConfigureAwait(true);
-        }
-        catch (JSDisconnectedException)
+    /// <summary>
+    /// Opens an empire someone sent a link to, without giving it to the player until they say so.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Offered rather than swapped in: the link is a gift, not a replacement for the empires the
+    /// player already has. A name already taken gets a number after it, as a copy would. And a gift
+    /// is not kept until it is accepted - the empire is created rather than added, so it lives in
+    /// the file only for as long as the editor is looking at it and is written nowhere until Save.
+    /// </para>
+    /// <para>
+    /// An empire the file already holds is selected instead of copied. That matters now that the
+    /// address bar always carries the empire being edited: without it, every reload of an ordinary
+    /// editing session would add another copy of the same empire.
+    /// </para>
+    /// </remarks>
+    private void OpenSharedDesign()
+    {
+        if (SharedDesign() is not { Length: > 0 } shared || DesignLink.Decode(shared) is not { } design)
         {
-            // The page went away between the click and the scrolling of it.
+            return;
         }
+
+        Editor.IsOpen = true;
+
+        // Compared as encoded text because that is exactly what a link carries: two designs with the
+        // same encoding are the same empire down to the byte, and no field has to be named here.
+        if (_session!.File?.Designs.FirstOrDefault(d => DesignLink.Encode(d) == shared) is { } already)
+        {
+            _session.Select(already);
+            return;
+        }
+
+        // Created rather than added to the file, which is the whole difference between looking at
+        // somebody's empire and being given it. A created empire is held out of the player's file
+        // until they press Save - it is in there only because the editor has to have something to
+        // work on - and turning to anything else takes it back out again. Added, it was theirs
+        // before they had seen it: EditFile announces the change, the host keeps the file, and it
+        // was in browser storage by the time the page finished drawing.
+        //
+        // Selecting inside the change was the second half of that. Select takes a saved snapshot,
+        // so the empire arrived already looking saved: the Save button was disabled, the revert
+        // icon was not drawn, and leaving asked nothing. There was no way to accept a shared empire
+        // even deliberately.
+        _session.CreateEmpire(file =>
+        {
+            var key = design.Key;
+
+            for (var attempt = 2; file.Find(key) is not null; attempt++)
+            {
+                key = $"{design.Key} {attempt}";
+            }
+
+            return file.AddCopy(design, key);
+        });
     }
+
+    /// <summary>
+    /// The packed empire this page was opened with, whichever way it was written.
+    /// </summary>
+    /// <remarks>
+    /// The path is what links carry now - nine characters shorter than the query it replaced, and
+    /// with no question mark or equals sign for a chat client to decide is punctuation. The query
+    /// is still read, and always will be: it is what every link shared before this carries, and a
+    /// link somebody sent is not ours to expire.
+    /// </remarks>
+    private string? SharedDesign() =>
+        Shared is { Length: > 0 } fromPath
+            ? fromPath
+            : System.Web.HttpUtility.ParseQueryString(new Uri(Navigation.Uri).Query)[DesignLink.Parameter];
 
     public void Dispose()
     {
@@ -327,50 +489,11 @@ else
         }
     }
 
-    /// <summary>Releases the script reference, as every other interop holder in the app does.</summary>
-    public async ValueTask DisposeAsync()
-    {
-        Dispose();
-
-        if (_module is null)
-        {
-            return;
-        }
-
-        try
-        {
-            await _module.DisposeAsync().ConfigureAwait(false);
-        }
-        catch (JSDisconnectedException)
-        {
-            // The page went away first; there is nothing left to release.
-        }
-    }
-
     private void OnChanged()
     {
         // The content packs decide which empires are listed, so the list is worked out again.
         _prescripted = null;
         InvokeAsync(StateHasChanged);
-    }
-
-    private void Delete(EmpireDesign design)
-    {
-        _deleting = null;
-
-        _session!.EditFile(file => file.Remove(design));
-
-        // The panel was showing this empire. Nothing else is obviously the one to show instead, and
-        // guessing at a neighbour would be a stranger answer than an empty panel.
-        if (ReferenceEquals(_previewDesign, design))
-        {
-            _previewDesign = null;
-        }
-
-        if (ReferenceEquals(_session.Current, design))
-        {
-            _session.Select(_session.File?.Designs.FirstOrDefault());
-        }
     }
 
     /// <summary>
@@ -478,28 +601,6 @@ else
         }
     }
 
-    /// <summary>
-    /// Copies one of the game's empires into the player's file and opens it.
-    /// </summary>
-    /// <remarks>
-    /// A copy, not a link: the point is to edit it. The name gains a number where one is already
-    /// taken, as a duplicate of anything else would.
-    /// </remarks>
-    private void Duplicate(PrescriptedEmpireSummary empire)
-    {
-        if (empire.Design is not { Length: > 0 } design)
-        {
-            return;
-        }
-
-        var name = Available(_session!.Localizer.Text(empire.NameKey, empire.Key));
-
-        // Held out of the file until it is saved, the same as a new empire: copying one of the
-        // game's in order to look at how it is put together should not leave a copy behind.
-        _session.CreateEmpire(file => file.AddFromTemplate(design, name));
-        Navigation.NavigateTo("designer");
-    }
-
     /// <summary>A name nothing in the file has yet.</summary>
     private string Available(string wanted)
     {
@@ -516,11 +617,5 @@ else
                 return candidate;
             }
         }
-    }
-
-    private void OpenDesigner(EmpireDesign design)
-    {
-        _session!.Select(design);
-        Navigation.NavigateTo("designer");
     }
 }
