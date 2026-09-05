@@ -433,8 +433,13 @@ export async function copyText(text) {
  * And HTML5 dragging is a mouse feature: it does not fire for a finger, on any browser, and this
  * list is a single column on a phone. One pointer path covers a mouse, a finger and a pen.
  *
- * Which card the pointer is over is the one question C# cannot answer for itself, so the work is
- * here and only the two positions go back.
+ * Every card is placed by a transform while a drag is in progress. The held one follows the pointer
+ * and the rest slide into the places they would take if it were dropped now, so the answer is
+ * visible before the drop rather than after it. Nothing is reordered until the pointer is released:
+ * the list itself does not change under the finger, only where each card is drawn.
+ *
+ * Positions are measured once, at the start. Reading them again during the drag would be reading
+ * the transforms back, and the cards would chase their own tails.
  *
  * @param {HTMLElement} list the container holding the cards
  * @param {object} owner what to tell when a card has been moved
@@ -446,24 +451,63 @@ export function enableCardReorder(list, owner) {
 
     list.dataset.semReorder = 'on';
 
+    let cards = [];
+    let places = [];
     let held = null;
     let from = -1;
     let onto = -1;
+    let grabbed = { x: 0, y: 0 };
 
-    const cardAt = (x, y) => document.elementFromPoint(x, y)?.closest('[data-index]');
-
-    const positionOf = card => Number.parseInt(card.dataset.index, 10);
-
-    const release = () => {
-        held?.classList.remove('lifted');
-
-        for (const marked of list.querySelectorAll('.over')) {
-            marked.classList.remove('over');
+    const settle = () => {
+        for (const card of cards) {
+            card.style.transform = '';
+            card.classList.remove('lifted');
         }
 
+        list.classList.remove('sorting');
+        cards = [];
+        places = [];
         held = null;
         from = -1;
         onto = -1;
+    };
+
+    /** Where each card should be drawn, given that the held one is heading for `target`. */
+    const layOut = target => {
+        const order = cards.map((_, i) => i);
+        order.splice(from, 1);
+        order.splice(target, 0, from);
+
+        order.forEach((was, becomes) => {
+            if (was === from) {
+                return;
+            }
+
+            const there = places[becomes];
+            const here = places[was];
+
+            cards[was].style.transform =
+                `translate(${there.left - here.left}px, ${there.top - here.top}px)`;
+        });
+    };
+
+    /** Which position the pointer is over, by distance to each place's middle. */
+    const nearest = (x, y) => {
+        let best = 0;
+        let closest = Infinity;
+
+        places.forEach((place, at) => {
+            const dx = x - (place.left + place.width / 2);
+            const dy = y - (place.top + place.height / 2);
+            const away = (dx * dx) + (dy * dy);
+
+            if (away < closest) {
+                closest = away;
+                best = at;
+            }
+        });
+
+        return best;
     };
 
     list.addEventListener('pointerdown', event => {
@@ -484,14 +528,29 @@ export function enableCardReorder(list, owner) {
         // that a listener cannot do.
         event.preventDefault();
 
+        cards = [...list.querySelectorAll('[data-index]')];
+        places = cards.map(one => {
+            const box = one.getBoundingClientRect();
+            return { left: box.left, top: box.top, width: box.width, height: box.height };
+        });
+
         held = card;
-        from = positionOf(card);
+        from = cards.indexOf(card);
         onto = from;
+        grabbed = { x: event.clientX, y: event.clientY };
+
         card.classList.add('lifted');
+        list.classList.add('sorting');
 
         // So the rest of the gesture keeps arriving here even once the finger has left the grip,
-        // which it does immediately.
-        grip.setPointerCapture(event.pointerId);
+        // which it does immediately. Not fatal if it is refused - the listeners are on the list and
+        // a drag inside it still arrives, so a browser that will not capture costs precision at the
+        // edges rather than the whole gesture.
+        try {
+            grip.setPointerCapture(event.pointerId);
+        } catch {
+            // Nothing to do about it, and nothing that has to stop.
+        }
     });
 
     list.addEventListener('pointermove', event => {
@@ -499,18 +558,15 @@ export function enableCardReorder(list, owner) {
             return;
         }
 
-        const over = cardAt(event.clientX, event.clientY);
+        held.style.transform =
+            `translate(${event.clientX - grabbed.x}px, ${event.clientY - grabbed.y}px)`;
 
-        if (!over || over === held) {
-            return;
+        const target = nearest(event.clientX, event.clientY);
+
+        if (target !== onto) {
+            onto = target;
+            layOut(onto);
         }
-
-        for (const marked of list.querySelectorAll('.over')) {
-            marked.classList.remove('over');
-        }
-
-        over.classList.add('over');
-        onto = positionOf(over);
     });
 
     list.addEventListener('pointerup', () => {
@@ -521,7 +577,7 @@ export function enableCardReorder(list, owner) {
         const start = from;
         const end = onto;
 
-        release();
+        settle();
 
         if (end >= 0 && end !== start) {
             owner.invokeMethodAsync('Reorder', start, end);
@@ -529,6 +585,6 @@ export function enableCardReorder(list, owner) {
     });
 
     // A cancelled pointer is the system taking the gesture away - a phone call, a gesture the OS
-    // claimed. Nothing moves, and the card goes back to looking like the others.
-    list.addEventListener('pointercancel', release);
+    // claimed. Nothing moves, and every card goes back where it was.
+    list.addEventListener('pointercancel', settle);
 }

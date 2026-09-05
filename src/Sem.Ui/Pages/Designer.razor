@@ -120,6 +120,16 @@ else
     /// of Save is a second thing to keep right.
     /// </remarks>
     private RenderFragment EditorActions => @<text>
+        @*
+            Back to the list. The same destination the header's Empires button has, and reached the
+            same way - an ordinary navigation, so the guard that asks about unsaved work is the one
+            already listening rather than a second copy of the question.
+        *@
+        <button type="button" class="icon" title="Back to the empire list"
+                aria-label="Back to the empire list" @onclick='() => Navigation.NavigateTo("")'>
+            <ActionIcon Name="back" />
+        </button>
+
         @* A copy that did not happen says so, rather than looking exactly like one that did. *@
         <button type="button" class="icon" title="@ShareTitle"
                 aria-label="Copy a link to this empire" @onclick="CopyLink">

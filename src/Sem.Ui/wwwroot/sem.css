@@ -1308,13 +1308,23 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     position: absolute;
     right: var(--space-xs);
     bottom: var(--space-xs);
-    background: var(--bg-panel);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
+
+    /* The same box as the share button above it, and nothing drawn around it: a grip is a texture
+       to take hold of rather than a thing to press, and a second bordered square in the corner read
+       as a second button. Matched to the share button rather than the other way round, since
+       growing either is the card growing. */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--icon-btn);
+    height: var(--icon-btn);
+    padding: 0;
+
+    background: none;
+    border: none;
     color: var(--text-faint);
     font: inherit;
     line-height: 1;
-    padding: 2px var(--space-xs);
     cursor: grab;
     touch-action: none;
     opacity: 0;
@@ -1330,17 +1340,34 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 }
 
 /*
-   The card while it is being carried, and the one it would land on. Enough to say which is which
-   without moving anything else, since the list re-lays itself out the moment it lands.
+   The cards while one of them is being carried.
+
+   Every card is placed by a transform the script sets, so the one under the pointer follows it and
+   the others slide into the places they would take if it were dropped now. The list itself does not
+   change until it is: what moves is only where each card is drawn, so nothing reflows under the
+   finger and the answer is visible before the drop rather than after it.
+
+   The transition is on the others and not on the held one, which has to keep up with the pointer
+   exactly.
 */
-.sem-empire-drag.lifted .sem-empire {
-    opacity: 0.4;
-    border-color: var(--accent);
+.sem-empires.sorting .sem-empire-drag {
+    transition: transform 160ms ease;
 }
 
-.sem-empire-drag.over .sem-empire {
+.sem-empires.sorting .sem-empire-drag.lifted {
+    transition: none;
+    position: relative;
+    z-index: 2;
+}
+
+.sem-empire-drag.lifted .sem-empire {
     border-color: var(--accent);
-    box-shadow: inset 0 0 0 1px var(--accent-dim);
+    box-shadow: 0 6px 18px rgb(0 0 0 / 45%);
+    cursor: grabbing;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sem-empires.sorting .sem-empire-drag { transition: none; }
 }
 
 /*
