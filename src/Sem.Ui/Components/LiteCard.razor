@@ -24,7 +24,6 @@
     what an empire is - only about how it is laid out, which is the whole point of there being two.
 *@
 
-@using Sem.Rules
 
 <div class="sem-lite">
     @*
@@ -441,22 +440,6 @@
     /// species' biography beside it is a bare quoted string. That asymmetry is the game's.
     /// </remarks>
     private string? RulerBiography => Session.Localizer.Name(Design.Ruler.CustomBiography, string.Empty);
-
-    private void SetRulerBiography(string? value)
-    {
-        Session.Edit(d =>
-        {
-            // An emptied box takes the block out rather than leaving an empty one, so a design
-            // nobody wrote a biography for stays as it was.
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                d.Ruler.RemoveCustomBiography();
-                return;
-            }
-
-            d.Ruler.GetOrAddCustomBiography().SetLiteral(value);
-        });
-    }
 
     /// <summary>
     /// One species, founder or second, as a panel of its own.

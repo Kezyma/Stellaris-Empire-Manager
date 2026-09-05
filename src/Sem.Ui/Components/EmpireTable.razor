@@ -1,4 +1,3 @@
-@using Microsoft.JSInterop
 @inject IJSRuntime Js
 @implements IAsyncDisposable
 
@@ -534,16 +533,6 @@
     }
 
     /// <summary>
-    /// Takes the number that was typed and moves the empire there.
-    /// </summary>
-    /// <remarks>
-    /// Clamped rather than refused: a reader typing 99 into a file of twelve means the end of it,
-    /// and an empire that stayed where it was with no word said would read as a control that does
-    /// not work. Counting from one here and from zero in the file, which is the one place that has
-    /// to be translated.
-    /// </remarks>
-    /// <summary>Puts the number back without moving anything, for somebody who changed their mind.</summary>
-    /// <summary>
     /// Puts the number back, the box having been given up on.
     /// </summary>
     /// <remarks>
@@ -567,6 +556,15 @@
         _focusSpinner = true;
     }
 
+    /// <summary>
+    /// Takes the number that was typed and moves the empire there.
+    /// </summary>
+    /// <remarks>
+    /// Clamped rather than refused: a reader typing 99 into a file of twelve means the end of it,
+    /// and an empire that stayed where it was with no word said would read as a control that does
+    /// not work. Counting from one here and from zero in the file, which is the one place that has
+    /// to be translated.
+    /// </remarks>
     private async Task Move(EmpireRow row, string? typed)
     {
         _moving = null;

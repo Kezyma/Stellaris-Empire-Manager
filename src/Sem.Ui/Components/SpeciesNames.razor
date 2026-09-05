@@ -145,6 +145,13 @@
     private const string NotOffered = "Not offered in the game";
 
     /// <summary>
+    /// Every list the box has an entry for, so that a design naming something else can be shown
+    /// holding it rather than appearing to hold whatever happens to be first.
+    /// </summary>
+    private IReadOnlySet<string> Offered =>
+        Session.Data.Database.NameLists.Select(n => n.Key).ToHashSet(StringComparer.Ordinal);
+
+    /// <summary>
     /// The name lists a player may choose.
     /// </summary>
     /// <remarks>
@@ -154,13 +161,6 @@
     /// names, and an empire named from one was checked in game and plays. Unselectable here means
     /// the designer does not draw it, not that the game refuses it.
     /// </remarks>
-    /// <summary>
-    /// Every list the box has an entry for, so that a design naming something else can be shown
-    /// holding it rather than appearing to hold whatever happens to be first.
-    /// </summary>
-    private IReadOnlySet<string> Offered =>
-        Session.Data.Database.NameLists.Select(n => n.Key).ToHashSet(StringComparer.Ordinal);
-
     private IEnumerable<IGrouping<string, NameListDefinition>> NameLists =>
         Session.Data.Database.NameLists
             .GroupBy(n => _evaluator.IsSatisfied(n.Selectable, Context) ? n.Category ?? "Other" : NotOffered)

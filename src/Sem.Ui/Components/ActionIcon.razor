@@ -60,17 +60,6 @@
             <path d="M15 5H5v12" />
             break;
 
-        case "lite":
-            @* One large pane over two small ones: the card, which is one thing to read. *@
-            <path d="M4 4h16v9H4z" />
-            <path d="M4 17h7v3H4zM13 17h7v3h-7z" />
-            break;
-
-        case "advanced":
-            @* A stack of rows: the sections, which are a list of them. *@
-            <path d="M4 5h16M4 10h16M4 15h16M4 20h16" />
-            break;
-
         case "close":
             @* A cross, for the corner of a dialog. *@
             <path d="M6 6l12 12M18 6L6 18" />
@@ -81,16 +70,16 @@
             <path d="M4 20h4L20 8a2.8 2.8 0 0 0-4-4L4 16z" />
             break;
 
-        @*
-            Two overlapping circles, filled to say which part of them is being asked for. It is the
-            one picture for this that a reader does not have to be taught: everybody has seen the
-            two rings, and the shaded part is the answer.
-        *@
         case "filter":
             @* A funnel, for a tab with something set under it. *@
             <path d="M4 5h16l-6 7.5V19l-4 2v-8.5z" fill="currentColor" stroke="none" />
             break;
 
+        @*
+            Two overlapping circles, filled to say which part of them is being asked for. It is the
+            one picture for this that a reader does not have to be taught: everybody has seen the
+            two rings, and the shaded part is the answer.
+        *@
         case "any":
             @* Both rings shaded: an empire under either of them will do. *@
             <circle cx="9" cy="12" r="6" fill="currentColor" fill-opacity="0.4" />

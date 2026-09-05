@@ -57,15 +57,6 @@
     private string Current => Value is { Length: > 0 } set ? set : "not_set";
 
     /// <summary>
-    /// The sprite and the word for one gender, for somewhere that shows the held one rather than
-    /// offering all four.
-    /// </summary>
-    /// <remarks>
-    /// The card shows the answer and opens this picker to change it, so the four live here and are
-    /// read from here - a second list of the game's four sprites would be a second thing to keep
-    /// right.
-    /// </remarks>
-    /// <summary>
     /// All four, for somewhere that lists them rather than offering them as buttons.
     /// </summary>
     /// <remarks>
@@ -75,6 +66,15 @@
     /// </remarks>
     public static IReadOnlyList<(string Key, string Label, string Icon)> Offered => Genders;
 
+    /// <summary>
+    /// The sprite and the word for one gender, for somewhere that shows the held one rather than
+    /// offering all four.
+    /// </summary>
+    /// <remarks>
+    /// The card shows the answer and opens this picker to change it, so the four live here and are
+    /// read from here - a second list of the game's four sprites would be a second thing to keep
+    /// right.
+    /// </remarks>
     public static (string Label, string Icon) Held(string? gender)
     {
         var key = gender is { Length: > 0 } set ? set : "not_set";

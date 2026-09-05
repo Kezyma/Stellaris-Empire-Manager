@@ -281,12 +281,6 @@ code {
     gap: var(--space-md);
 }
 
-.sem-header-file {
-    color: var(--text-dim);
-    font-size: var(--text-sm);
-    white-space: nowrap;
-}
-
 /* A file that would not open. Full width under the header, since it is a sentence and not a chip. */
 .sem-header-error,
 .sem-header-note {
@@ -408,14 +402,6 @@ code {
     margin: 0 auto;
 }
 
-.sem-panel {
-    background: var(--bg-panel);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: var(--space-xl);
-    margin-bottom: var(--gap);
-}
-
 .sem-row {
     display: flex;
     gap: var(--gap);
@@ -454,8 +440,6 @@ code {
     buttons — gender and leader class, side by side, are six icons that mean two different things.
 */
 .sem-row.wide { gap: var(--space-2xl); }
-
-.sem-spacer { flex: 1; }
 
 /* ---------------------------------------------------------------- controls */
 
@@ -1041,11 +1025,23 @@ button.sem-tab:disabled:hover { background: none; }
     overflow: hidden;
 }
 
+/*
+   Scaled rather than widened. A width animates by laying the box out again on every frame, and this
+   is the one thing in the sheet that was still doing that; a transform is the browser's to do
+   without asking the page anything. The fill is out of flow inside a clipped track, so the reflow
+   could not reach anything - this is the sheet agreeing with itself rather than a measured win.
+
+   The reading comes in as a whole number and the dividing is done here, because a fraction written
+   from C# is formatted by the reader's own culture, and scaleX(0,42) is not a number.
+*/
 .sem-budget .fill {
     position: absolute;
     inset: 0 auto 0 0;
+    width: 100%;
+    transform: scaleX(calc(var(--pct) / 100));
+    transform-origin: left;
     background: var(--accent-dim);
-    transition: width 0.15s;
+    transition: transform 0.15s;
 }
 
 .sem-budget .reading {
@@ -1084,43 +1080,6 @@ button.sem-tab:disabled:hover { background: none; }
     how a status line ended up 14px from what it was reporting on where everything else is 12.
 */
 p.sem-status { margin: var(--gap) 0 0; }
-
-/*
-    The problem count in the designer's top bar, which opens the list beneath it. A button rather
-    than a word, because it does something; coloured like the status it replaced so the bar still
-    reads at a glance.
-*/
-.sem-status-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-sm);
-    padding: var(--space-2xs) var(--space-md);
-    background: none;
-    border: 1px solid currentcolor;
-    font-size: var(--text-sm);
-}
-
-.sem-status-toggle.bad { color: var(--bad); }
-.sem-status-toggle.warn { color: var(--warn); }
-
-.sem-status-toggle:hover:not(:disabled) {
-    background: var(--bg-hover);
-    border-color: currentcolor;
-}
-
-.sem-status-toggle .chevron { color: var(--text-faint); }
-
-/* The list the count opens, between the bar it belongs to and the sections it is about. */
-.sem-problems {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-md);
-    margin-bottom: var(--gap);
-    padding: var(--space-lg);
-    background: var(--bg-panel);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-}
 
 /*
    What is wrong with the empire, folded away at the foot of the panel that describes it.
@@ -4770,6 +4729,17 @@ button.icon .sem-action-icon { display: block; }
    scrolls inside itself rather than growing, so there is no case where the middle of it is off the
    top of the screen.
 */
+/*
+   How wide the card is allowed to get: its two columns, the gap between them, the padding either
+   side and the border. Written once because the sheet in the dialog and the shell on the page are
+   the same card and have to stop at the same place - they held a copy each, and two copies of a
+   measurement are two things to remember to change. The 760px the layout collapses at comes from
+   the same sum, and a media query is the one place this cannot be read.
+*/
+:root {
+    --lite-width: calc(952px + 360px + var(--gap) + (var(--space-lg) * 2) + 2px);
+}
+
 .sem-lite-modal {
     place-items: center;
     padding: var(--space-lg);
@@ -4778,7 +4748,7 @@ button.icon .sem-action-icon { display: block; }
 
 .sem-lite-modal > .sheet {
     width: 100%;
-    max-width: calc(952px + 360px + var(--gap) + (var(--space-lg) * 2) + 2px);
+    max-width: var(--lite-width);
     max-height: 100%;
     overflow-y: auto;
 
@@ -5045,7 +5015,7 @@ button.icon .sem-action-icon { display: block; }
     flex-direction: column;
     gap: var(--gap);
     width: 100%;
-    max-width: calc(952px + 360px + var(--gap) + (var(--space-lg) * 2) + 2px);
+    max-width: var(--lite-width);
     margin-inline: auto;
 }
 
@@ -5109,9 +5079,10 @@ button.icon .sem-action-icon { display: block; }
 /*
    One box, not a box inside a box: the panel is the frame and its body only arranges.
 
-   Named for the card rather than sharing the sheet's generic .sem-panel, which sets a padding and a
-   margin of its own. This used to carry that class, overrode its background and padding, and left
-   its margin-bottom - so every panel had a bottom margin on top of the grid's own gap.
+   Named for the card rather than for the sheet. There was once a generic .sem-panel carrying a
+   padding and a margin of its own; this wore it, overrode its background and padding, and was left
+   holding its margin-bottom - so every panel had a bottom margin on top of the grid's own gap.
+   Nothing wears that class any more and it has gone.
 */
 .sem-lite-panel {
     position: relative;
