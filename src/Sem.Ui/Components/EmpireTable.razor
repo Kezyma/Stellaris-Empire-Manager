@@ -152,7 +152,8 @@
                                             else
                                             {
                                                 <span class="sem-cell-chip" @key="choice.Key"
-                                                      title="@choice.Name">
+                                                      title="@choice.Name"
+                                                      @onclick:stopPropagation="true">
                                                     @if (choice.Icon is { Length: > 0 })
                                                     {
                                                         <GameIcon Path="@choice.Icon" Alt="" />

@@ -578,7 +578,7 @@ public sealed record EmpireColumn(
     public static IReadOnlyList<EmpireColumn> All { get; } =
     [
         Picked("preset", false),
-        Picked("government", true),
+        Picked("government", false),
 
         // The one column that is not read straight off its heading: nomadic belongs in the cell
         // beside the authority, where the game puts it and where the card already draws it.
@@ -597,12 +597,12 @@ public sealed record EmpireColumn(
         Picked("second", false),
         Picked("secondclass", false),
         Picked("secondtraits", false),
-        Picked("homeworld", false),
+        Picked("homeworld", true),
         new("planet", "Planet", false, Line: r => r.PlanetName),
         Picked("system", false),
         Picked("room", false),
         Picked("shipset", false),
-        Picked("bioship", false),
+        Picked("bioship", true),
         Picked("advisor", false),
         new("ruler", "Ruler", false, Line: r => r.RulerName),
         Picked("rulerclass", false),
@@ -762,6 +762,8 @@ public sealed class EmpireOptions(DesignSession session)
 
     private DesignContext? _blank;
 
+    private readonly RequirementEvaluator _evaluator = new();
+
     private GameDatabase Database => _session.Data.Database;
 
     private Localizer Loc => _session.Localizer;
@@ -832,13 +834,33 @@ public sealed class EmpireOptions(DesignSession session)
                 PortraitArtwork.For(Database, key, null),
                 null));
 
+    /// <summary>
+    /// Where an empire may begin, which is a world for most of them and a ship for a nomad.
+    /// </summary>
+    /// <remarks>
+    /// The rules answer in planet classes, and for a nomad they answer with the ark world - but a
+    /// nomad's row carries the arkship instead, because the class underneath says pc_ark whichever
+    /// of the three it is and a picture of the ark world says nothing about an empire whose whole
+    /// point is that it does not live on one. So the two were in different key spaces, and the
+    /// heading offered one arkship: the one an empire in the list happened to be flying.
+    /// </remarks>
     public IReadOnlyList<EmpireChoice> Homeworlds =>
-        Named(_session.Rules.GetHomeworldOptions(Blank), key =>
-            new EmpireChoice(
-                key,
-                Loc.Text(key),
-                Database.PlanetClasses.FirstOrDefault(p => p.Key == key)?.Icon,
-                null));
+        Named(
+            _session.Rules.GetHomeworldOptions(Blank).Concat(Database.Arkships.Select(a => a.Key)),
+            key => Database.Arkships.FirstOrDefault(a => a.Key == key) is { } ark
+                ? new EmpireChoice(
+                    ark.Key,
+                    Loc.Text(ark.NameKey, Localizer.Prettify(ark.Key)),
+                    ark.Preview is { Length: > 0 } render ? render : ark.Icon,
+                    EffectSet.None)
+                {
+                    Description = ark.DescriptionKey,
+                }
+                : new EmpireChoice(
+                    key,
+                    Loc.Text(key),
+                    Database.PlanetClasses.FirstOrDefault(p => p.Key == key)?.Icon,
+                    null));
 
     public IReadOnlyList<EmpireChoice> StartingSystems =>
         Named(_session.Rules.GetStartingSystemOptions(Blank), key =>
@@ -853,11 +875,22 @@ public sealed class EmpireOptions(DesignSession session)
             Database.Rooms.Where(r => r.IsOffered).Select(r => r.Key),
             key => new EmpireChoice(key, Loc.Text(key, Localizer.Prettify(key)), null, null));
 
-    /// <summary>The shipsets the picker offers, which the rules have already narrowed.</summary>
+    /// <summary>
+    /// The shipsets the picker offers.
+    /// </summary>
+    /// <remarks>
+    /// Three conditions, all of them the picker's. Being in the rules' own list is the least of
+    /// them and was for a while the only one taken, which offered all fifty-two graphical cultures:
+    /// the pirates, the swarm, the fallen empires, the arkships and the sets that only dress a city
+    /// - twenty-five things no empire can be given. A set has to model ships of its own, and it has
+    /// to be one the game says may be selected.
+    /// </remarks>
     public IReadOnlyList<EmpireChoice> Shipsets =>
         Named(
             Database.GraphicalCultures
                 .Where(c => _session.Rules.Database.GraphicalCultures.Contains(c))
+                .Where(c => c.ShipCategory is not null)
+                .Where(c => _evaluator.IsSatisfied(c.Selectable, Blank))
                 .Select(c => c.Key),
             key =>
             {

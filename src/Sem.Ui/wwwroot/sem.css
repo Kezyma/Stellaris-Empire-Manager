@@ -3902,8 +3902,27 @@ button.icon .sem-action-icon { display: block; }
     border-left: 1px solid var(--border);
 }
 
+/* The buttons sit at the right of the cell; the heading reads left, like every other heading. */
 .sem-table thead th.actions {
     background: var(--bg-raised);
+    text-align: left;
+}
+
+/*
+   What the game wrote about one of its own, as a panel of the card.
+
+   Prose rather than a row of controls, so the body is one column of text at a readable measure -
+   every other panel is a picture beside a list of choices, and the flex row that lays those out
+   would set this as one very long line.
+*/
+.sem-lore-panel > .body {
+    display: block;
+}
+
+.sem-lore-panel .about {
+    color: var(--text-dim);
+    font-size: var(--text-sm);
+    line-height: 1.5;
 }
 
 .sem-table tbody tr:hover .actions {

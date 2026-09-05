@@ -23,8 +23,19 @@
         press would do both. Hover and focus still describe the chip either way - bindPopover has
         always shown it on those, and the click handler only pinned it open for a finger.
     *@
-    <button type="button" @ref="_anchor" aria-describedby="@_id"
+    @*
+        Named in a title as well as in the panel. The panel is the better answer and is not always
+        an answer at all - a chip whose option has no prose and no numbers opens an empty one - and
+        where the table has been squeezed the name is not written on the chip either. A title costs
+        nothing and means a chip always says what it is.
+
+        The press is stopped here. In a table the row underneath opens the empire, and on a phone,
+        where there is no hover, pressing the chip is how its panel is opened at all - so a tap
+        meant to read what a civic does was opening the editor instead.
+    *@
+    <button type="button" @ref="_anchor" aria-describedby="@_id" title="@Name"
             popovertarget="@(Opens ? null : _id)" @onclick="OnSelect"
+            @onclick:stopPropagation="true"
             @onmouseover="Reveal" @onfocus="Reveal">
         @if (Icon is { Length: > 0 } icon)
         {

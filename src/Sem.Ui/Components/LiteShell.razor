@@ -28,7 +28,7 @@
     else
     {
         <LiteCard Design="Session.Current" Baseline="@Session.SavedContext" OnEdit="Open"
-                  Actions="@Actions" />
+                  Actions="@Actions" Lore="@Lore" />
 
         @if (_editing is { } part)
         {
@@ -47,6 +47,16 @@
     /// <summary>The save, revert, delete and share row, which both editors get from the page.</summary>
     [Parameter]
     public RenderFragment? Actions { get; set; }
+
+    /// <summary>
+    /// Where the game's own description of this empire lives, while it is still one of the game's.
+    /// </summary>
+    /// <remarks>
+    /// Handed in rather than found here, because whether the empire in hand came off the game's
+    /// shelf is the list's business: the design itself carries no mark of where it was copied from.
+    /// </remarks>
+    [Parameter]
+    public string? Lore { get; set; }
 
     /// <summary>
     /// Raised when the editor for a part closes, so whatever is underneath can take the keyboard.

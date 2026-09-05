@@ -313,6 +313,24 @@
                     </div>
                 </div>
             </section>
+
+            @*
+                What the game says about one of its own, while the copy is still a copy.
+
+                A panel of the card rather than a note above it, and last in the column that holds
+                the people: it is a paragraph about who these are, and it belongs where the species
+                and the ruler are rather than floating over the whole editor. It goes when the
+                empire is saved, because at that point the empire is the player's and the paragraph
+                describes something they have begun to change.
+            *@
+            @if (Session.Localizer.Html(Lore, string.Empty) is { Length: > 0 } lore)
+            {
+                <section class="sem-lite-panel sem-lore-panel" style="--panel-order: 8">
+                    <div class="body">
+                        <div class="about">@((MarkupString)lore)</div>
+                    </div>
+                </section>
+            }
             </div>
         </div>
     </div>
@@ -341,6 +359,16 @@
     /// <summary>Raised with the part whose editor should open.</summary>
     [Parameter]
     public EventCallback<LitePart> OnEdit { get; set; }
+
+    /// <summary>
+    /// Where the game's own description of this empire lives, while it is still one of the game's.
+    /// </summary>
+    /// <remarks>
+    /// Handed in rather than found here, because whether the empire in hand came off the game's
+    /// shelf is the list's business: the design itself carries no mark of where it was copied from.
+    /// </remarks>
+    [Parameter]
+    public string? Lore { get; set; }
 
     /// <summary>The save, revert, delete and share row, which the card draws in its corner.</summary>
     /// <remarks>

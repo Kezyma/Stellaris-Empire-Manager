@@ -202,7 +202,16 @@
         Changes,
     }
 
-    private View _view = View.Combined;
+    /// <summary>
+    /// Which view the panel opens on, which is the one that says where the numbers came from.
+    /// </summary>
+    /// <remarks>
+    /// The combined view is a column of totals, and a total is only useful once you already know
+    /// what went into it. Reading an empire, the question is what each of its choices is doing -
+    /// which is the individual view, and is a press away from the total rather than the other way
+    /// about.
+    /// </remarks>
+    private View _view = View.Individual;
 
     /// <summary>
     /// The view actually drawn, which is not always the one asked for.

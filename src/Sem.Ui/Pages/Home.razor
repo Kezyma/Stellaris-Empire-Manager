@@ -188,7 +188,7 @@ else
                     <EmpireEditor Session="_session" StaysHere="SameEmpire" TracksAddress="true"
                                   InDialog="true" OnBack="Close" OnDeleted="Finished">
                         <Body Context="actions">
-                            <LiteShell Session="_session" Actions="@actions"
+                            <LiteShell Session="_session" Actions="@actions" Lore="@PresetLore"
                                        OnPartClosed="() => _focused = false" />
                         </Body>
                         <Across>
@@ -255,7 +255,16 @@ else
     /// <summary>What the two settings above are remembered under.</summary>
     private const string ViewSetting = "empire-view";
 
-    private const string ColumnSetting = "empire-columns";
+    /// <summary>
+    /// What the chosen columns are remembered under.
+    /// </summary>
+    /// <remarks>
+    /// Named for the second set of defaults rather than the first. A stored choice beats a default,
+    /// which is right - but it also means a change to what the table opens on reaches nobody who
+    /// has ever touched the picker, and the columns it opens on had moved on enough to be worth
+    /// everyone seeing.
+    /// </remarks>
+    private const string ColumnSetting = "empire-columns-v2";
 
     /// <summary>The value of the view setting that means the table.</summary>
     private const string ListView = "list";
@@ -414,6 +423,7 @@ else
     private void OpenOwn(EmpireDesign design)
     {
         _session!.Select(design);
+        _opened = null;
         Editor.IsOpen = true;
     }
 
@@ -446,8 +456,23 @@ else
                 design, Available(_session.Localizer.Text(empire.NameKey, empire.Key))),
             countsAsUnsavedWork: false);
 
+        _opened = empire;
         Editor.IsOpen = true;
     }
+
+    /// <summary>The entry an open copy came off, and nothing when the empire is the player's own.</summary>
+    private PrescriptedEmpireSummary? _opened;
+
+    /// <summary>
+    /// The game's description of the empire being looked at, while it is still the game's.
+    /// </summary>
+    /// <remarks>
+    /// Held out means not yet saved, which is exactly the window the paragraph belongs to: pressing
+    /// Save makes the copy the player's, and what the game wrote about the original stops being a
+    /// description of what is on screen.
+    /// </remarks>
+    private string? PresetLore =>
+        _opened is { } preset && _session?.IsHeldOut is true ? preset.DescriptionKey : null;
 
     /// <summary>Closes the editor, once whatever is unsaved has been dealt with.</summary>
     /// <remarks>
@@ -472,6 +497,7 @@ else
     private void Finished()
     {
         _closing = true;
+        _opened = null;
         Editor.IsOpen = false;
 
         if (_session is { IsHeldOut: true, IsModified: false })
