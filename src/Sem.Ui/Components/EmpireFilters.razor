@@ -122,6 +122,9 @@
     [Parameter, EditorRequired]
     public required IReadOnlyList<EmpireRow> Rows { get; set; }
 
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
     [Parameter, EditorRequired]
     public required EmpireFilter Filter { get; set; }
 
@@ -196,13 +199,22 @@
             return known;
         }
 
-        IReadOnlyList<EmpireChoice> options =
-        [
-            .. Rows
-                .SelectMany(facet.Values)
-                .DistinctBy(c => c.Key, StringComparer.Ordinal)
-                .OrderBy(c => c.Name, StringComparer.CurrentCulture)
-        ];
+        @*
+            A heading that is a setting lists every state it has; one that is a shelf of the game's
+            data lists what the empires in front of the reader hold. The second is deliberate and
+            the numbers are why: the game defines 1127 traits, 546 portraits and 358 civics, most of
+            which no empire can hold and none of which any of these do - a control offering them is
+            a thousand lines to scroll past on the way to the twenty that mean something.
+        *@
+        IReadOnlyList<EmpireChoice> options = facet.Fixed is { } every
+            ? every(Session)
+            :
+            [
+                .. Rows
+                    .SelectMany(facet.Values)
+                    .DistinctBy(c => c.Key, StringComparer.Ordinal)
+                    .OrderBy(c => c.Name, StringComparer.CurrentCulture)
+            ];
 
         _offered[facet.Key] = options;
         return options;

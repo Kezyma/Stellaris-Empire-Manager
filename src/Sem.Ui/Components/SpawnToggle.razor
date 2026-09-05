@@ -79,6 +79,38 @@ else
     private (string Value, string NameKey, int Frame) State =>
         States.FirstOrDefault(s => s.Value == Design.SpawnEnabled, States[0]);
 
+    /// <summary>
+    /// All three states, named and pictured, for somewhere that lists them rather than cycling them.
+    /// </summary>
+    /// <remarks>
+    /// Here rather than wherever they are listed, for the reason the gender picker gives: the three
+    /// values, the three localisation keys and the three sprite frames are one table, and a second
+    /// copy of it is a second thing to keep right. The table also settles what a design that says
+    /// nothing means, which is the first of them.
+    /// </remarks>
+    public static IReadOnlyList<(string Value, string Name, string? Icon)> Offered(DesignSession session)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+
+        return
+        [
+            .. States.Select(state => (
+                state.Value,
+                session.Localizer.Text(state.NameKey, Localizer.Prettify(state.Value)),
+                session.Data.Database.Icons.GetValueOrDefault(Sprite(state.Frame))))
+        ];
+    }
+
+    /// <summary>Which of the three a design holds, a design that says nothing holding the first.</summary>
+    public static (string Value, string Name, string? Icon) Held(DesignSession session, string? stored)
+    {
+        var all = Offered(session);
+
+        return all.FirstOrDefault(s => s.Value == stored, all[0]);
+    }
+
+    private static string Sprite(int frame) => $"GFX_button_empire_spawn_setting|{frame}";
+
     private string Name => Session.Localizer.Text(State.NameKey, "Empire Spawning Forbidden");
 
     /// <summary>
@@ -92,8 +124,7 @@ else
         .Text($"{State.NameKey}_DESC", string.Empty)
         .Replace("$TEMPLATE$", Session.Localizer.Name(Design.Name, Design.Key), StringComparison.Ordinal);
 
-    private string? Icon => Session.Data.Database.Icons
-        .GetValueOrDefault($"GFX_button_empire_spawn_setting|{State.Frame}");
+    private string? Icon => Session.Data.Database.Icons.GetValueOrDefault(Sprite(State.Frame));
 
     /// <summary>The state and the sentence about it, for a button with no room to print either.</summary>
     private string Told => Description is { Length: > 0 } why ? $"{Name}. {why}" : Name;

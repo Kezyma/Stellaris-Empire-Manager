@@ -173,13 +173,9 @@ public sealed record EmpireRow
     /// <summary>What the game calls a fleet it grows rather than builds.</summary>
     private const string BioFleet = "bio_ship";
 
-    /// <summary>How often the galaxy may generate this empire, said in words rather than in keys.</summary>
-    private static string Spawning(string stored) => stored switch
-    {
-        "no" => "Never",
-        "always" => "Always",
-        _ => "Sometimes",
-    };
+    /// <summary>One of the spawn setting's three states as a choice.</summary>
+    private static EmpireChoice Chosen((string Value, string Name, string? Icon) state) =>
+        new(state.Value, state.Name, state.Icon, null);
 
     /// <summary>A portrait as a choice, wearing the face it actually resolves to.</summary>
     /// <remarks>
@@ -198,7 +194,9 @@ public sealed record EmpireRow
     /// <summary>A gender as a choice, wearing the game's own button sprite.</summary>
     private static EmpireChoice? Gendered(DesignSession session, string? gender)
     {
-        var held = gender is { Length: > 0 } set ? set : "not_set";
+        // The first of the four is what a design holds when it says nothing, which the picker
+        // states and is not worth writing down a second time here.
+        var held = gender is { Length: > 0 } set ? set : GenderPicker.Offered[0].Key;
         var (label, icon) = GenderPicker.Held(held);
 
         return new EmpireChoice(
@@ -304,11 +302,11 @@ public sealed record EmpireRow
             Nomadic = design.IsNomadic == true,
             Bioship = shipset?.ShipCategory == BioFleet,
 
-            // Written unquoted as no, yes or always - "yes" meaning sometimes, which is why the
-            // word the game stores is not the word to show.
-            Spawn = design.SpawnEnabled is { Length: > 0 } spawn
-                ? new EmpireChoice(spawn, Spawning(spawn), null, null)
-                : null,
+            // Always one of the three, never nothing: a design that says nothing about spawning is
+            // one that may not spawn, which is what the game makes of a blank and what the toggle
+            // on the card already shows. Read as nothing, every empire that had never been asked
+            // was missing from the heading entirely.
+            Spawn = Chosen(SpawnToggle.Held(session, design.SpawnEnabled)),
 
             Fallen = design.SpawnAsFallen == true,
 
@@ -438,10 +436,16 @@ public sealed record EmpireRow
 /// <param name="Key">What the choice is remembered under, and what the column shares with it.</param>
 /// <param name="Label">What the heading is called in the filter card.</param>
 /// <param name="Values">What an empire holds under it, which may be none, one or several.</param>
+/// <param name="Fixed">
+/// Every option there is, for a heading whose options are a setting rather than a shelf of game
+/// data - and nothing for the rest, which are offered whatever the empires in front of the reader
+/// actually hold.
+/// </param>
 public sealed record EmpireFacet(
     string Key,
     string Label,
-    Func<EmpireRow, IReadOnlyList<EmpireChoice>> Values)
+    Func<EmpireRow, IReadOnlyList<EmpireChoice>> Values,
+    Func<DesignSession, IReadOnlyList<EmpireChoice>>? Fixed = null)
 {
     /// <summary>Every heading with a list behind it, which is everything that is picked rather than typed.</summary>
     public static IReadOnlyList<EmpireFacet> All { get; } =
@@ -455,7 +459,7 @@ public sealed record EmpireFacet(
         new("origin", "Origin", r => Some(r.Origin)),
         new("class", "Species", r => Some(r.SpeciesClass)),
         new("portrait", "Portrait", r => Some(r.Portrait)),
-        new("gender", "Gender", r => Some(r.Gender)),
+        new("gender", "Gender", r => Some(r.Gender), Genders),
         new("namelist", "Name list", r => Some(r.NameList)),
         new("traits", "Traits", r => r.Traits),
         new("second", "Second species", r => YesOrNo(r.HasSecondSpecies)),
@@ -469,9 +473,9 @@ public sealed record EmpireFacet(
         new("advisor", "Advisor voice", r => Some(r.Advisor)),
         new("rulerclass", "Ruler class", r => Some(r.RulerClass)),
         new("rulerportrait", "Ruler portrait", r => Some(r.RulerPortrait)),
-        new("rulergender", "Ruler gender", r => Some(r.RulerGender)),
+        new("rulergender", "Ruler gender", r => Some(r.RulerGender), Genders),
         new("rulertraits", "Ruler traits", r => r.RulerTraits),
-        new("spawn", "AI spawning", r => Some(r.Spawn)),
+        new("spawn", "AI spawning", r => Some(r.Spawn), Spawning),
         new("fallen", "Fallen empire", r => YesOrNo(r.Fallen)),
         new("flagset", "Special flags", r => Some(r.FlagSet)),
     ];
@@ -495,6 +499,19 @@ public sealed record EmpireFacet(
 
     internal static IReadOnlyList<EmpireChoice> Some(EmpireChoice? choice) =>
         choice is null ? [] : [choice];
+
+    /// <summary>The four genders a design may hold, whichever of them anything in the list holds.</summary>
+    private static IReadOnlyList<EmpireChoice> Genders(DesignSession session) =>
+    [
+        .. GenderPicker.Offered.Select(g => new EmpireChoice(
+            g.Key, g.Label, session.Data.Database.Icons.GetValueOrDefault(g.Icon), null))
+    ];
+
+    /// <summary>The three states of the spawn setting, likewise.</summary>
+    private static IReadOnlyList<EmpireChoice> Spawning(DesignSession session) =>
+    [
+        .. SpawnToggle.Offered(session).Select(s => new EmpireChoice(s.Value, s.Name, s.Icon, null))
+    ];
 
     /// <summary>
     /// A heading whose answer is yes or no, as the one choice an empire holds under it.

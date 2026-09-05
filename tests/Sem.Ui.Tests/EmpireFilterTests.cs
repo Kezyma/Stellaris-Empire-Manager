@@ -111,6 +111,26 @@ public sealed class EmpireFilterTests
         Assert.Equal(["preset", "nomadic", "second", "bioship", "fallen"], yesNo);
     }
 
+    /// <summary>
+    /// The headings that list every option they have are the ones that are settings.
+    /// </summary>
+    /// <remarks>
+    /// A setting has a fixed set of states and has to offer all of them: AI spawning has three, and
+    /// offering only the ones some empire happens to hold showed two - every one of the game's own
+    /// empires is set the same way, so two of the three were invisible.
+    ///
+    /// The rest are shelves of the game's data and are offered what the empires in front of the
+    /// reader actually hold. The game defines 1127 traits, 546 portraits and 358 civics; a control
+    /// listing them is a thousand lines to scroll past on the way to the twenty that mean anything.
+    /// </remarks>
+    [Fact]
+    public void OnlyTheSettingsListEveryOptionTheyHave()
+    {
+        var fixedLists = EmpireFacet.All.Where(f => f.Fixed is not null).Select(f => f.Key);
+
+        Assert.Equal(["gender", "rulergender", "spawn"], fixedLists);
+    }
+
     /// <summary>Every heading offers something to choose, or it is a control that does nothing.</summary>
     [Fact]
     public void NoHeadingIsBothADropdownAndAListOfTicks()

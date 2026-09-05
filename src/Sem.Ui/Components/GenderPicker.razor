@@ -65,6 +65,16 @@
     /// read from here - a second list of the game's four sprites would be a second thing to keep
     /// right.
     /// </remarks>
+    /// <summary>
+    /// All four, for somewhere that lists them rather than offering them as buttons.
+    /// </summary>
+    /// <remarks>
+    /// A filter has to name every gender a design could hold, not only the ones some empire in the
+    /// list happens to hold - a heading that offers three of four is a heading that quietly says
+    /// the fourth does not exist.
+    /// </remarks>
+    public static IReadOnlyList<(string Key, string Label, string Icon)> Offered => Genders;
+
     public static (string Label, string Icon) Held(string? gender)
     {
         var key = gender is { Length: > 0 } set ? set : "not_set";
