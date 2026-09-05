@@ -9,6 +9,20 @@
 
 <PageTitle>Empires - Stellaris Empire Manager</PageTitle>
 
+@*
+    What the page is, for the keyboard and for anything reading the page as a structure.
+
+    Above the loading branch rather than inside it. The router moves focus to the first h1 after a
+    navigation, once, from its own first render - which is while the game data is still on its way
+    and the branch below is still the loading one. A heading further down would be the right markup
+    and would still never be found, which is the kind of fix that looks done in a diff.
+
+    Out of sight because the page says what it is well enough already: the empires are on it. It is
+    hidden by size rather than by display, so it keeps its place in the tab order and focus can
+    still land on it.
+*@
+<h1 class="sem-visually-hidden">Empires</h1>
+
 @if (_session is null)
 {
     <div class="sem-loading">

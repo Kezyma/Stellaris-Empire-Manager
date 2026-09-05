@@ -15,6 +15,12 @@
     It has no route of its own for a shared link any more. A link opens the list, which is where the
     editor lives now, and this page is reached from that editor by the button across.
 *@
+@*
+    As on the list: above the branches, because the router looks for it while the session is still
+    on its way. Title reads without one, which is why the page title above can already use it.
+*@
+<h1 class="sem-visually-hidden">@Title</h1>
+
 @if (_session is null && Host.LoadError is { } loadError)
 {
     <div class="sem-empty">
