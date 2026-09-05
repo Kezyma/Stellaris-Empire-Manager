@@ -36,9 +36,11 @@
                 does. "3 selected" is a number you have to open the panel to read, and these sit in
                 a card whose whole job is saying what is being asked for.
 
-                One line, and it scrolls. Wrapped, a heading with six things ticked was three rows
-                tall and pushed everything under it down the card - so the row a reader is looking
-                at changed height as they ticked.
+                How many lines that takes is the stylesheet's to say, and it says two things. A
+                filter wraps onto as many rows as it needs, because a card whose job is stating the
+                question should not hide half of it. The column picker keeps to one line and lets
+                the rest run past its edge, because it shares the table's heading, and a second
+                line there moves the grid itself down the page.
             *@
             <span class="face">
                 @foreach (var option in Options.Where(o => Selected.Contains(o.Key)))
@@ -68,58 +70,72 @@
     @if (_open)
     {
         @*
-            A way through a long list. These offer what an empire may be given rather than what the
-            empires in front of the reader hold, which for portraits is two hundred and ninety-five
-            and for traits two hundred and eight - and a list that long is one to give up on rather
-            than to read. Short lists get no box, since scrolling four names is faster than typing.
+            The box and the list in one panel, because one thing hangs under the control, not two.
+
+            They were separate, and only the list was taken out of the flow. That left the box in
+            it - and the control is a flex row, so the box was laid beside the chips rather than
+            above the options: it took a hundred and sixty pixels of the width they were drawn in,
+            and being the taller of the two it grew the row, the field, and the card the field is
+            in, every time a list was opened. One box comes out of the flow now, and what is inside
+            it stacks the ordinary way.
         *@
-        @if (Options.Count > Searchable)
-        {
-            <div class="search">
-                <input type="text" placeholder="Find" value="@_search" @ref="_box"
-                       @oninput="e => _search = e.Value?.ToString() ?? string.Empty"
-                       @onclick:stopPropagation="true" />
-            </div>
-        }
-
-        <ul class="options">
-            @if (Shown.Count == 0)
+        <div class="panel">
+            @*
+                A way through a long list. These offer what an empire may be given rather than what
+                the empires in front of the reader hold, which for portraits is two hundred and
+                ninety-five and for traits two hundred and eight - and a list that long is one to
+                give up on rather than to read. Short lists get no box, since scrolling four names
+                is faster than typing.
+            *@
+            @if (Options.Count > Searchable)
             {
-                <li class="sem-hint none">
-                    @(Options.Count == 0 ? "Nothing to choose from." : "Nothing matches.")
-                </li>
+                <div class="search">
+                    <input type="text" placeholder="Find" value="@_search" @ref="_box"
+                           @oninput="e => _search = e.Value?.ToString() ?? string.Empty"
+                           @onclick:stopPropagation="true" />
+                </div>
             }
 
-            @foreach (var option in Shown)
-            {
-                var held = Selected.Contains(option.Key);
+            <ul class="options">
+                @if (Shown.Count == 0)
+                {
+                    <li class="sem-hint none">
+                        @(Options.Count == 0 ? "Nothing to choose from." : "Nothing matches.")
+                    </li>
+                }
 
-                <li>
-                    @*
-                        Suppressing the mousedown keeps the press from moving focus out of the panel
-                        before the click lands, which is what would otherwise close it under the
-                        pointer - the same reason the combo box does it.
-                    *@
-                    <button type="button" class="@(held ? "selected" : null)"
-                            role="menuitemcheckbox" aria-checked="@(held ? "true" : "false")"
-                            @onmousedown:preventDefault="true"
-                            @onclick="() => Toggle(option.Key)">
-                        <span class="tick" aria-hidden="true">@(held ? "✓" : string.Empty)</span>
+                @foreach (var option in Shown)
+                {
+                    var held = Selected.Contains(option.Key);
 
+                    <li>
                         @*
-                            The game's own icon, where the thing has one. Half of these lists are
-                            things the player knows by their picture before they know them by name.
+                            Suppressing the mousedown keeps the press from moving focus out of the
+                            panel before the click lands, which is what would otherwise close it
+                            under the pointer - the same reason the combo box does it.
                         *@
-                        @if (option.Icon is { Length: > 0 })
-                        {
-                            <GameIcon Path="@option.Icon" Alt="" />
-                        }
+                        <button type="button" class="@(held ? "selected" : null)"
+                                role="menuitemcheckbox" aria-checked="@(held ? "true" : "false")"
+                                @onmousedown:preventDefault="true"
+                                @onclick="() => Toggle(option.Key)">
+                            <span class="tick" aria-hidden="true">@(held ? "✓" : string.Empty)</span>
 
-                        <span class="name">@option.Name</span>
-                    </button>
-                </li>
-            }
-        </ul>
+                            @*
+                                The game's own icon, where the thing has one. Half of these lists
+                                are things the player knows by their picture before they know them
+                                by name.
+                            *@
+                            @if (option.Icon is { Length: > 0 })
+                            {
+                                <GameIcon Path="@option.Icon" Alt="" />
+                            }
+
+                            <span class="name">@option.Name</span>
+                        </button>
+                    </li>
+                }
+            </ul>
+        </div>
     }
 </div>
 

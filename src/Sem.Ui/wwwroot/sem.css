@@ -3660,6 +3660,43 @@ button.icon .sem-action-icon { display: block; }
     min-width: 0;
 }
 
+/*
+   What hangs under the control: the box that narrows a long list, and the list itself.
+
+   The positioning is here rather than on the list, which is where it used to be. With only the
+   list taken out of the flow the box stayed in it, and the control is a flex row - so the box was
+   laid beside the chips instead of above the options, taking their width and, being the taller of
+   the two, growing the row and the card around it every time a list opened.
+*/
+.sem-combo.sem-multi .panel {
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0;
+    right: 0;
+    z-index: 20;
+
+    background: var(--bg-panel);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-popup);
+
+    /* So the list's corners are the panel's corners, whether or not there is a box above it. */
+    overflow: hidden;
+}
+
+/*
+   Inside the panel the list is an ordinary block again, and the only part of it that scrolls.
+   Everything undone here is something the shared rule gives every combo's list on the way to
+   making it the panel - which this one is not any more.
+*/
+.sem-combo.sem-multi .panel > .options {
+    position: static;
+    background: none;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+
 /* The box that narrows a long list, held above it rather than scrolling away with it. */
 .sem-combo.sem-multi .search {
     padding: var(--space-2xs);
