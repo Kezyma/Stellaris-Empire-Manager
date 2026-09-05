@@ -764,6 +764,38 @@ public sealed class EmpireOptions(DesignSession session)
 
     private readonly RequirementEvaluator _evaluator = new();
 
+    /*
+       One field per heading, because each of these was worked out again every single time it was
+       read. The class has said since it was written that they are built once and held, and they
+       were not: every one is a pass over a game collection, through the rules, and then a name
+       looked up for each key that survived - and the card reads seven of them to draw one tab.
+
+       Two of them twice over. A species is asked for its class and its second species' class, and
+       for its traits and its second species' traits, and each pair names the same property - so the
+       Species tab walked the game's eleven hundred traits twice to draw one card.
+
+       Held rather than built up front, because the reader has asked nothing yet when the list first
+       draws, and Portraits and Traits are the two most expensive things here.
+    */
+    private IReadOnlyList<EmpireChoice>? _ethics;
+    private IReadOnlyList<EmpireChoice>? _civics;
+    private IReadOnlyList<EmpireChoice>? _origins;
+    private IReadOnlyList<EmpireChoice>? _authorities;
+    private IReadOnlyList<EmpireChoice>? _speciesClasses;
+    private IReadOnlyList<EmpireChoice>? _traits;
+    private IReadOnlyList<EmpireChoice>? _rulerTraits;
+    private IReadOnlyList<EmpireChoice>? _portraits;
+    private IReadOnlyList<EmpireChoice>? _homeworlds;
+    private IReadOnlyList<EmpireChoice>? _startingSystems;
+    private IReadOnlyList<EmpireChoice>? _rooms;
+    private IReadOnlyList<EmpireChoice>? _shipsets;
+    private IReadOnlyList<EmpireChoice>? _advisors;
+    private IReadOnlyList<EmpireChoice>? _rulerClasses;
+    private IReadOnlyList<EmpireChoice>? _nameLists;
+    private IReadOnlyList<EmpireChoice>? _flagSets;
+    private IReadOnlyList<EmpireChoice>? _genders;
+    private IReadOnlyList<EmpireChoice>? _spawning;
+
     private GameDatabase Database => _session.Data.Database;
 
     private Localizer Loc => _session.Localizer;
@@ -779,17 +811,17 @@ public sealed class EmpireOptions(DesignSession session)
         EmpireDesignsFile.CreateEmpty().Add("scratch"),
         _session.OwnedDlc);
 
-    public IReadOnlyList<EmpireChoice> Ethics =>
+    public IReadOnlyList<EmpireChoice> Ethics => _ethics ??=
         Named(Visible(_session.Rules.GetEthicOptions(Blank)), key =>
         {
             var ethic = Database.Ethics.FirstOrDefault(e => e.Key == key);
             return new EmpireChoice(key, Loc.Text(key), ethic?.Icon, ethic?.Effects);
         });
 
-    public IReadOnlyList<EmpireChoice> Civics =>
+    public IReadOnlyList<EmpireChoice> Civics => _civics ??=
         Named(Visible(_session.Rules.GetCivicOptions(Blank)), key => Civic(key));
 
-    public IReadOnlyList<EmpireChoice> Origins =>
+    public IReadOnlyList<EmpireChoice> Origins => _origins ??=
         Named(Visible(_session.Rules.GetOriginOptions(Blank)), key =>
         {
             var origin = Database.Civics.FirstOrDefault(c => c.Key == key);
@@ -800,7 +832,7 @@ public sealed class EmpireOptions(DesignSession session)
                 origin?.Effects);
         });
 
-    public IReadOnlyList<EmpireChoice> Authorities =>
+    public IReadOnlyList<EmpireChoice> Authorities => _authorities ??=
         Named(Visible(_session.Rules.GetAuthorityOptions(Blank)), key =>
         {
             var authority = Database.Authorities.FirstOrDefault(a => a.Key == key);
@@ -811,18 +843,18 @@ public sealed class EmpireOptions(DesignSession session)
                 authority?.Effects);
         });
 
-    public IReadOnlyList<EmpireChoice> SpeciesClasses =>
+    public IReadOnlyList<EmpireChoice> SpeciesClasses => _speciesClasses ??=
         Named(Visible(_session.Rules.GetSpeciesClassOptions(Blank)), key =>
             new EmpireChoice(key, Loc.Text(key), null, null));
 
-    public IReadOnlyList<EmpireChoice> Traits =>
+    public IReadOnlyList<EmpireChoice> Traits => _traits ??=
         Named(Visible(_session.Rules.GetSpeciesTraitOptions(Blank)), key => Trait(key));
 
-    public IReadOnlyList<EmpireChoice> RulerTraits =>
+    public IReadOnlyList<EmpireChoice> RulerTraits => _rulerTraits ??=
         Named(Visible(_session.Rules.GetRulerTraitOptions(Blank)), key => Trait(key));
 
     /// <summary>Every likeness the picker offers, which is its categories flattened.</summary>
-    public IReadOnlyList<EmpireChoice> Portraits =>
+    public IReadOnlyList<EmpireChoice> Portraits => _portraits ??=
         Named(
             _session.Rules.GetPortraitOptions(Blank)
                 .SelectMany(group => group.Portraits)
@@ -844,7 +876,7 @@ public sealed class EmpireOptions(DesignSession session)
     /// point is that it does not live on one. So the two were in different key spaces, and the
     /// heading offered one arkship: the one an empire in the list happened to be flying.
     /// </remarks>
-    public IReadOnlyList<EmpireChoice> Homeworlds =>
+    public IReadOnlyList<EmpireChoice> Homeworlds => _homeworlds ??=
         Named(
             _session.Rules.GetHomeworldOptions(Blank).Concat(Database.Arkships.Select(a => a.Key)),
             key => Database.Arkships.FirstOrDefault(a => a.Key == key) is { } ark
@@ -862,7 +894,7 @@ public sealed class EmpireOptions(DesignSession session)
                     Database.PlanetClasses.FirstOrDefault(p => p.Key == key)?.Icon,
                     null));
 
-    public IReadOnlyList<EmpireChoice> StartingSystems =>
+    public IReadOnlyList<EmpireChoice> StartingSystems => _startingSystems ??=
         Named(_session.Rules.GetStartingSystemOptions(Blank), key =>
         {
             var start = Database.Initializers.FirstOrDefault(i => i.Key == key);
@@ -870,7 +902,7 @@ public sealed class EmpireOptions(DesignSession session)
         });
 
     /// <summary>The rooms the picker offers, which is the ones the game marks as choosable.</summary>
-    public IReadOnlyList<EmpireChoice> Rooms =>
+    public IReadOnlyList<EmpireChoice> Rooms => _rooms ??=
         Named(
             Database.Rooms.Where(r => r.IsOffered).Select(r => r.Key),
             key => new EmpireChoice(key, Loc.Text(key, Localizer.Prettify(key)), null, null));
@@ -885,7 +917,7 @@ public sealed class EmpireOptions(DesignSession session)
     /// - twenty-five things no empire can be given. A set has to model ships of its own, and it has
     /// to be one the game says may be selected.
     /// </remarks>
-    public IReadOnlyList<EmpireChoice> Shipsets =>
+    public IReadOnlyList<EmpireChoice> Shipsets => _shipsets ??=
         Named(
             Database.GraphicalCultures
                 .Where(c => _session.Rules.Database.GraphicalCultures.Contains(c))
@@ -905,7 +937,7 @@ public sealed class EmpireOptions(DesignSession session)
                 };
             });
 
-    public IReadOnlyList<EmpireChoice> Advisors =>
+    public IReadOnlyList<EmpireChoice> Advisors => _advisors ??=
         Named(
             Database.AdvisorVoices.Select(v => v.Key),
             key =>
@@ -915,7 +947,7 @@ public sealed class EmpireOptions(DesignSession session)
                     key, Loc.Text(voice?.NameKey, Localizer.Prettify(key)), voice?.Icon, null);
             });
 
-    public IReadOnlyList<EmpireChoice> RulerClasses =>
+    public IReadOnlyList<EmpireChoice> RulerClasses => _rulerClasses ??=
         Named(
             Database.LeaderClasses.Where(c => c.CanRule).Select(c => c.Key),
             key =>
@@ -925,12 +957,12 @@ public sealed class EmpireOptions(DesignSession session)
                     key, Loc.Text(held?.NameKey, Localizer.Prettify(key)), held?.Icon, null);
             });
 
-    public IReadOnlyList<EmpireChoice> NameLists =>
+    public IReadOnlyList<EmpireChoice> NameLists => _nameLists ??=
         Named(
             Database.NameLists.Select(n => n.Key),
             key => new EmpireChoice(key, Loc.Text(key, Localizer.Prettify(key)), null, null));
 
-    public IReadOnlyList<EmpireChoice> FlagSets =>
+    public IReadOnlyList<EmpireChoice> FlagSets => _flagSets ??=
         Named(
             Database.EmpireFlagSets.Select(f => f.Key),
             key =>
@@ -944,14 +976,14 @@ public sealed class EmpireOptions(DesignSession session)
             });
 
     /// <summary>The four genders a design may hold, named and pictured by the picker that owns them.</summary>
-    public IReadOnlyList<EmpireChoice> Genders =>
+    public IReadOnlyList<EmpireChoice> Genders => _genders ??=
     [
         .. GenderPicker.Offered.Select(g => new EmpireChoice(
             g.Key, g.Label, Database.Icons.GetValueOrDefault(g.Icon), null))
     ];
 
     /// <summary>The three states of the spawn setting, likewise.</summary>
-    public IReadOnlyList<EmpireChoice> Spawning =>
+    public IReadOnlyList<EmpireChoice> Spawning => _spawning ??=
     [
         .. SpawnToggle.Offered(_session).Select(s => new EmpireChoice(s.Value, s.Name, s.Icon, null))
     ];

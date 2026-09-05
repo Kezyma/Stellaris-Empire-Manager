@@ -1,3 +1,5 @@
+@implements IDisposable
+
 @*
     What the reader is looking for, in a card above the lists.
 
@@ -38,7 +40,17 @@
         }
     </div>
 
+    @*
+        Nothing under the fold is drawn while the fold is shut.
+
+        The card starts shut, and hiding the controls in the stylesheet still built every one of
+        them: twenty-eight headings, each asking a game collection what it could offer, on every
+        redraw of a page whose filters nobody had opened. The box stays so the rule that hides it
+        still has something to hide, and so a card with nothing in it is not a padded empty one.
+    *@
     <div class="body">
+        @if (_open)
+        {
         @*
             Twenty-eight headings in four tabs. All of them at once was a wall to read rather than a
             card to use.
@@ -126,6 +138,7 @@
             </div>
         }
     </div>
+        }
     </div>
 </div>
 
@@ -181,12 +194,60 @@
     /// <summary>What the editor would offer under each heading, worked out once and held.</summary>
     private EmpireOptions? _options;
 
-    /// <summary>The lists are worked out from the rows, so a change of rows forgets them.</summary>
+    /// <summary>
+    /// Built when a heading is first asked, rather than when the card is drawn.
+    /// </summary>
+    /// <remarks>
+    /// A card nobody opens asks nothing of the game, and a session change nobody looks at throws
+    /// away something that was never built.
+    /// </remarks>
+    private EmpireOptions Options => _options ??= new EmpireOptions(Session);
+
+    /// <summary>The rows the offers were drawn from, which is the only thing that dates them.</summary>
+    private IReadOnlyList<EmpireRow>? _builtFor;
+
+    /// <summary>
+    /// Forgets the offers when, and only when, the rows they were drawn from have changed.
+    /// </summary>
+    /// <remarks>
+    /// This runs whenever the page above draws, not only when something handed down is different.
+    /// Clearing every time, which is what it did, threw the lists away on each tick of a filter and
+    /// each column turned on or off, and worked all twenty-eight of them out again from the game's
+    /// own collections to answer a question nobody had asked.
+    /// </remarks>
     protected override void OnParametersSet()
     {
+        if (ReferenceEquals(Rows, _builtFor))
+        {
+            return;
+        }
+
+        _builtFor = Rows;
         _offered.Clear();
-        _options = new EmpireOptions(Session);
     }
+
+    protected override void OnInitialized() => Session.Changed += Forget;
+
+    /// <summary>
+    /// Forgets the offers when the player's content packs change.
+    /// </summary>
+    /// <remarks>
+    /// What a heading may offer depends on what the player owns, and that is not a fact about the
+    /// rows. It happens that switching a pack off also rebuilds the rows and so hands this a new
+    /// list, which the check above would catch - but that is a promise the page makes, not this
+    /// card, and it would go quietly the day the page gets cleverer about which rows to rebuild.
+    /// What is left behind is a heading offering civics from a pack that has been turned off.
+    ///
+    /// Nothing is redrawn from here. The page listens to the same event and draws everything under
+    /// it; a second render for every change would cost more than these lists save.
+    /// </remarks>
+    private void Forget()
+    {
+        _offered.Clear();
+        _options = null;
+    }
+
+    public void Dispose() => Session.Changed -= Forget;
 
     /// <summary>What the any-or-all switch is doing, said the same way in the label and the tip.</summary>
     private string Switching(EmpireFacet facet) =>
@@ -209,7 +270,7 @@
         // an empire may hold, so it belongs in the list whether or not the blank one was offered it.
         IReadOnlyList<EmpireChoice> options =
         [
-            .. (facet.Fixed is { } offered ? offered(_options!) : [])
+            .. (facet.Fixed is { } offered ? offered(Options) : [])
                 .Concat(Rows.SelectMany(facet.Values))
                 .DistinctBy(c => c.Key, StringComparer.Ordinal)
                 .OrderBy(c => c.Name, StringComparer.CurrentCulture)
