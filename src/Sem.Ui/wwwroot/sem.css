@@ -575,6 +575,22 @@ label {
 /* A field set off from whatever it follows, where it is not one of a stack that already spaces. */
 .sem-field.spaced { margin-top: var(--gap); }
 
+/*
+   A plan as the game will show it.
+
+   Drawn like the box it stands in for rather than like a quotation, because that is what it is: the
+   biography, written here instead of typed. The line breaks are the plan's own, so they are kept.
+*/
+.sem-plan-preview {
+    padding: var(--space-sm) var(--space-lg);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text-dim);
+    font-size: var(--text-sm);
+    white-space: pre-wrap;
+}
+
 /* ---------------------------------------------------------------- tabs */
 
 

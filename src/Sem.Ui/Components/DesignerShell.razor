@@ -96,6 +96,20 @@
                 <DesignerSection OpenSection="@_open" OnToggle="Open" Title="Advisor Voice" Summary="@AdvisorSummary">
                     <AdvisorTab />
                 </DesignerSection>
+
+                @*
+                    Last, and after the game's own sections rather than among them. The others run in
+                    the order the game's designer runs them, which is what lets somebody who knows
+                    that one find their way around this one. A plan is not one of the game's
+                    sections at all - the game has no idea an empire has one - so putting it fifth
+                    for prominence would cost that promise to buy nothing.
+
+                    No problem count. A plan cannot make a design invalid, because the game never
+                    reads it, so it contributes nothing to the panel that lists what is wrong.
+                *@
+                <DesignerSection OpenSection="@_open" OnToggle="Open" Title="Plan" Summary="@PlanSummary">
+                    <PlanTab />
+                </DesignerSection>
             </div>
 
             <aside class="sem-summary-pane">
@@ -233,6 +247,23 @@
     private string? AdvisorSummary => Session.Current!.AdvisorVoiceType is { Length: > 0 } voice
         ? Session.Localizer.Text(voice, Localizer.Prettify(voice))
         : null;
+
+    /// <summary>
+    /// What is planned, or nothing at all when the empire is not being planned.
+    /// </summary>
+    /// <remarks>
+    /// Silent rather than saying "no plan", because every other heading here summarises something
+    /// the empire has and this is a heading for something most empires will not.
+    /// </remarks>
+    private string? PlanSummary
+    {
+        get
+        {
+            var plan = Session.Plans.PlanOf(Session.Current, Session.PlanVocabulary);
+
+            return plan.Any ? Session.Plans.Text.PathName(plan.Path) : null;
+        }
+    }
 
     /// <summary>
     /// What the game calls a set of artwork. It names them by their key shouted and names only the

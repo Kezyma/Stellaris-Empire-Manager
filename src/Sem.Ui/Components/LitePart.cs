@@ -81,4 +81,7 @@ public enum LitePart
 
     /// <summary>The voice that narrates its game.</summary>
     Advisor,
+
+    /// <summary>How the player means to play it, which the game keeps but does not read.</summary>
+    Plan,
 }

@@ -97,6 +97,20 @@ public sealed class DesignSession
     /// <summary>Turns the reasons the rules give into sentences.</summary>
     public ReasonWriter Reasons { get; }
 
+    /// <summary>Reading and writing the plan an empire carries in one of its biographies.</summary>
+    public EmpirePlans Plans => _plans ??= new EmpirePlans(new PlanText(Localizer));
+
+    private EmpirePlans? _plans;
+
+    /// <summary>
+    /// What a plan may name, which is what this empire could actually be given.
+    /// </summary>
+    /// <remarks>
+    /// Empty while the traditions and the ascension perks are not yet extracted. The paths need
+    /// nothing from it: they are seven, they are fixed, and this app carries the list itself.
+    /// </remarks>
+    public PlanVocabulary PlanVocabulary => PlanVocabulary.Empty;
+
     /// <summary>Turns modifiers into the lines the game would show for them.</summary>
     public ModifierFormatter Modifiers { get; }
 

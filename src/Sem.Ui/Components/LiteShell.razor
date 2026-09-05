@@ -116,6 +116,7 @@
         LitePart.Flag => "Flag",
         LitePart.Room => "Room",
         LitePart.Shipset => "Shipset",
+        LitePart.Plan => "Plan",
         _ => "Advisor Voice",
     };
 
@@ -252,6 +253,11 @@
 
             case LitePart.Advisor:
                 builder.OpenComponent<AdvisorTab>(190);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.Plan:
+                builder.OpenComponent<PlanTab>(200);
                 builder.CloseComponent();
                 break;
 

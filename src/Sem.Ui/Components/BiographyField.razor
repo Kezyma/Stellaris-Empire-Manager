@@ -30,9 +30,26 @@
         the keyboard alone reaches an unnamed box — and there are two of these on the page, one for
         the species and one for the ruler, which the heading alone does not tell apart.
     *@
-    <textarea rows="6" maxlength="1000" placeholder="@Placeholder" aria-label="@Named"
-              value="@Value"
-              @onchange="e => OnChange.InvokeAsync(e.Value?.ToString() ?? string.Empty)"></textarea>
+    @if (Spoken)
+    {
+        @*
+            Shown rather than editable, because a plan lives in this field and is written from the
+            plan section. Typing over it would not damage the design - a biography that no longer
+            reads as a plan is simply a biography again - but it would silently throw the plan away,
+            and a box that discards what it is told is worse than one that will not take it.
+        *@
+        <textarea rows="6" readonly aria-label="@Named" value="@Value"></textarea>
+
+        <p class="sem-hint">
+            This is the empire's plan. Edit it under Plan, or turn planning off to write here again.
+        </p>
+    }
+    else
+    {
+        <textarea rows="6" maxlength="1000" placeholder="@Placeholder" aria-label="@Named"
+                  value="@Value"
+                  @onchange="e => OnChange.InvokeAsync(e.Value?.ToString() ?? string.Empty)"></textarea>
+    }
 </details>
 
 @code {
@@ -91,4 +108,13 @@
     /// <summary>Called with the whole text whenever the box is left.</summary>
     [Parameter]
     public EventCallback<string> OnChange { get; set; }
+
+    /// <summary>
+    /// Whether a plan is using this field, in which case it is read here and written elsewhere.
+    /// </summary>
+    /// <remarks>
+    /// Asked of the text rather than of a setting, which is the same question the plan section asks
+    /// and the reason nothing has to be kept in step: a biography that reads as a plan is one.
+    /// </remarks>
+    private bool Spoken => Session.Plans.Text.IsPlan(Value, Session.PlanVocabulary);
 }
