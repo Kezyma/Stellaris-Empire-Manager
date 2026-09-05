@@ -1,0 +1,78 @@
+@implements IDisposable
+
+@*
+    One box for everything somebody typed - the empire's name, its species, its world, its ruler,
+    the prefix on its ships, and the biographies. Which field a word came from is rarely the
+    question; the question is which empire it was.
+
+    It stands where the table's heading was, rather than in the filter card. The card is shut when
+    the page opens, and a word the reader already has in mind is the first thing they want to type,
+    not something to go looking for behind a fold. The heading it replaced said "Empires" over a
+    table of empires, which was the least any part of that row was doing.
+
+    No label. The box is the first thing on the list it narrows and there is nothing else it could
+    be for, so the name it needs is the one nobody has to look at.
+*@
+
+<input id="empire-search" class="sem-search" type="text" value="@Filter.Search"
+       aria-label="Search empires" @oninput="e => Run(e.Value?.ToString())" />
+
+@code {
+    /// <summary>
+    /// What the page is narrowing its list by, which this writes to in place.
+    /// </summary>
+    /// <remarks>
+    /// The filter itself rather than a copy of the word in it, because the same filter is read by
+    /// the table and by the card of headings, and handing each of them their own copy is how those
+    /// two stop agreeing about which empires are being shown.
+    /// </remarks>
+    [Parameter, EditorRequired]
+    public required EmpireFilter Filter { get; set; }
+
+    /// <summary>Raised once the typing stops, so whoever owns the list can redraw it.</summary>
+    [Parameter]
+    public EventCallback OnChanged { get; set; }
+
+    /// <summary>Cancels the wait when another key arrives before the last one was acted on.</summary>
+    private CancellationTokenSource? _typing;
+
+    /// <summary>
+    /// Takes what was typed, and redraws the list once the typing stops.
+    /// </summary>
+    /// <remarks>
+    /// Every other control acts at once, because pressing one is a decision. Typing is not: a
+    /// five-letter word is five decisions to redraw a table of ninety empires, four of which are
+    /// thrown away by the next keystroke, and each of them costs long enough to be felt on the way
+    /// to the word.
+    ///
+    /// The word itself goes in straight away and only the redraw waits, so nothing that reads the
+    /// filter can see a stale one. The box is not redrawn from here while it waits either - what
+    /// was typed is already in it, and putting it back is how a caret ends up at the start of a
+    /// word.
+    /// </remarks>
+    private async Task Run(string? text)
+    {
+        Filter.Search = text ?? string.Empty;
+
+        _typing?.Cancel();
+        _typing?.Dispose();
+        _typing = new CancellationTokenSource();
+
+        try
+        {
+            await Task.Delay(250, _typing.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
+        await OnChanged.InvokeAsync();
+    }
+
+    public void Dispose()
+    {
+        _typing?.Cancel();
+        _typing?.Dispose();
+    }
+}

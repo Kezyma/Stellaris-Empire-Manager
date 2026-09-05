@@ -3405,6 +3405,12 @@ button.icon .sem-action-icon { display: block; }
     align-items: center;
     gap: var(--space-sm);
     min-width: 14rem;
+
+    /*
+       And no wider than what holds it. The floor above is a floor, not a width - without this the
+       row took its size from the combo inside it and carried the whole page sideways.
+    */
+    max-width: 100%;
 }
 
 /*
@@ -3420,13 +3426,37 @@ button.icon .sem-action-icon { display: block; }
     min-width: 0;
 }
 
+/*
+   The search box in the heading's place, at the width the heading had rather than the full width a
+   text box takes by default. It shrinks before the picker does, since a word is legible in a narrow
+   box and a row of column chips is not.
+*/
+.sem-table-block > .head > .title {
+    flex: 0 1 20rem;
+    align-self: center;
+    min-width: 0;
+}
+
+.sem-search {
+    width: 100%;
+}
+
 .sem-columns > label {
     color: var(--text-dim);
     white-space: nowrap;
 }
 
+/*
+   The combo fills the row and may be squeezed to fit it.
+
+   A flex item will not shrink below its own contents unless it is told to, and with the chips on
+   one line those contents are every column name laid end to end. Left at auto the picker stood at
+   its full width, pushed past the right-hand edge of the table, and took the page sideways with
+   it - which is the same shrink the control inside it already asks for, one level further out.
+*/
 .sem-columns > .sem-combo {
     flex: 1;
+    min-width: 0;
 }
 
 /*
@@ -3461,6 +3491,20 @@ button.icon .sem-action-icon { display: block; }
 
 .sem-combo.sem-multi > .control:hover {
     border-color: var(--accent-dim);
+}
+
+/*
+   The column picker is the exception, and stays on one line whatever is ticked.
+
+   Every other one of these owns a row of the filter card and may grow down it. This one shares the
+   table's heading, so a second line moves the grid itself down the page - which is a strange thing
+   for ticking a column to do, and it happens at seven columns, well short of the eighteen on offer.
+   What does not fit is cut off rather than scrolled: the panel behind the arrow is the place these
+   are read, and it lists every one of them with a tick beside those in use.
+*/
+.sem-columns .sem-combo.sem-multi .face {
+    flex-wrap: nowrap;
+    overflow: hidden;
 }
 
 /*

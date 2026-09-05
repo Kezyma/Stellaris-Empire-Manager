@@ -16,7 +16,19 @@
 
 <div class="sem-table-block">
     <div class="head">
-        <h2>@Heading</h2>
+        @*
+            The heading names the table for anything reading the page as a structure rather than as
+            a picture. Where the page hands in something to stand in its place it goes out of sight
+            rather than away: a table with no heading at all is one that nothing can announce and
+            nothing can jump to.
+        *@
+        <h2 class="@(Title is null ? null : "sem-visually-hidden")">@Heading</h2>
+
+        @if (Title is not null)
+        {
+            <div class="title">@Title</div>
+        }
+
         <span class="sem-hint">@Counted</span>
 
         @if (Controls is not null)
@@ -234,6 +246,17 @@
     /// <summary>What this list is called.</summary>
     [Parameter, EditorRequired]
     public required string Heading { get; set; }
+
+    /// <summary>
+    /// What to show in the heading's place, which for this table is the search box.
+    /// </summary>
+    /// <remarks>
+    /// A heading that only ever says "Empires" over a table of empires earns the row it sits on
+    /// from nobody. The page decides what is worth that space; the words stay for a screen reader
+    /// either way.
+    /// </remarks>
+    [Parameter]
+    public RenderFragment? Title { get; set; }
 
     /// <summary>
     /// Anything that belongs at the right-hand end of the heading row.

@@ -1,5 +1,3 @@
-@implements IDisposable
-
 @*
     What the reader is looking for, in a card above the lists.
 
@@ -42,24 +40,13 @@
 
     <div class="body">
         @*
-            One box for everything somebody typed - the empire's name, its species, its world, its
-            ruler, the prefix on its ships, and the biographies. Which field a word came from is
-            rarely the question; the question is which empire it was.
-
-            Above the tabs rather than on one of them: it is the question you ask before you know
-            which heading you wanted, and putting it behind a tab would hide the broadest control
-            in the card behind the narrowest decision.
-        *@
-        <div class="sem-field flush search">
-            <label for="empire-search">Search</label>
-            <input id="empire-search" type="text" value="@Filter.Search"
-                   @oninput="e => Search(e.Value?.ToString())" />
-        </div>
-
-        @*
             Twenty-eight headings in four tabs. All of them at once was a wall to read rather than a
-            card to use - and folding the card away, which is what a reader did about it, took the
-            search box with them.
+            card to use.
+
+            The search box used to sit above them, and folding the card away - which is what a
+            reader did about the wall, and is now what the card does by itself - took the broadest
+            control in it out of reach. It lives on the table's heading row instead, where nothing
+            can fold it away.
 
             The funnel says a tab has something set under it. Without it, folding twenty-one
             headings out of sight is a good way to leave a filter on and spend a while wondering why
@@ -266,51 +253,17 @@
         await OnChanged.InvokeAsync();
     }
 
-    /// <summary>Cancels the wait when another key arrives before the last one was acted on.</summary>
-    private CancellationTokenSource? _typing;
-
     /// <summary>
-    /// Takes what was typed, and redraws the lists once the typing stops.
+    /// Puts every heading back to asking for nothing, and empties the search box with them.
     /// </summary>
     /// <remarks>
-    /// Every other control here acts at once, because pressing one is a decision. Typing is not: a
-    /// five-letter word is five decisions to redraw two tables, four of which are thrown away by
-    /// the next keystroke, and each of them costs long enough to be felt on the way to the word.
-    ///
-    /// The box is not redrawn while it waits - what was typed is already in it, and putting it back
-    /// from here is how a caret ends up at the start of a word.
+    /// The box is not in this card any more, and clearing it from here is still right: it narrows
+    /// the same list, it is the reason this button is showing whenever nothing else is set, and a
+    /// Clear that left a word behind would leave a reader looking at a short list with nothing on
+    /// screen claiming to have shortened it.
     /// </remarks>
-    private async Task Search(string? text)
-    {
-        Filter.Search = text ?? string.Empty;
-
-        _typing?.Cancel();
-        _typing?.Dispose();
-        _typing = new CancellationTokenSource();
-
-        try
-        {
-            await Task.Delay(250, _typing.Token);
-        }
-        catch (OperationCanceledException)
-        {
-            return;
-        }
-
-        await OnChanged.InvokeAsync();
-    }
-
-    public void Dispose()
-    {
-        _typing?.Cancel();
-        _typing?.Dispose();
-    }
-
     private async Task Clear()
     {
-        // Nothing left to wait for, and a pending keystroke would put the search back a moment later.
-        _typing?.Cancel();
-
         Filter.Clear();
         await OnChanged.InvokeAsync();
     }

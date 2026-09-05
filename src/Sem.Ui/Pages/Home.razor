@@ -107,6 +107,10 @@ else
                          OnCopyLink="row => CopyLink(row.Design)" OnDelete="Confirm"
                          CopyTitle="row => CopyTitleFor(row.Design)"
                          Empty="No empires match.">
+                <Title>
+                    <EmpireSearch Filter="@_filter" OnChanged="StateHasChanged" />
+                </Title>
+
                 <Controls>
                     @*
                         Which columns, on the table rather than in the filter card: it says what the
