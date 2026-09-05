@@ -142,4 +142,17 @@ public enum SelectionCategory
     /// <c>default</c>.
     /// </summary>
     CountryType,
+
+    /// <summary>
+    /// One of the ascension perks the plan says the empire means to take.
+    /// </summary>
+    /// <remarks>
+    /// Not part of a design, and so not answerable at all until a plan exists to answer it. That is
+    /// what makes the game's own exclusions enforceable here: nearly every one is of the form "not
+    /// if you have taken that other perk", and the plan is exactly the list of perks taken.
+    /// </remarks>
+    AscensionPerk,
+
+    /// <summary>One of the tradition trees the plan says the empire means to open.</summary>
+    TraditionTree,
 }

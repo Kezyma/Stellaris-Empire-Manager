@@ -731,6 +731,40 @@ public sealed class EmpireRules(GameDatabase database)
     }
 
     /// <summary>
+    /// The ascension perks a plan may name, with the ones the game would refuse disabled.
+    /// </summary>
+    /// <remarks>
+    /// The chosen perks are handed in rather than read from the design, because a design has no
+    /// field for them - they live in a plan. They go into the context, which is what makes the
+    /// game's own exclusions work: nearly every one is written "not if that other perk is taken",
+    /// and now something can answer that.
+    /// </remarks>
+    public IReadOnlyList<OptionState> GetAscensionPerkOptions(
+        DesignContext context,
+        IReadOnlyCollection<string> chosen)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(chosen);
+
+        var planned = context.WithPlan(chosen, context.TraditionTrees);
+
+        var options = Options(
+            _database.AscensionPerks,
+            p => p.Key,
+            p => p.Potential,
+            p => p.Possible,
+            planned);
+
+        return chosen.Count < _database.Defines.AscensionPerkSlots
+            ? options
+            : [.. options.Select(o => chosen.Contains(o.Key) ? o : Blocked(o, RuleReasons.NoPerkSlotsLeft))];
+    }
+
+    /// <summary>How many ascension perks are named against how many a game grants.</summary>
+    public Budget GetAscensionPerkBudget(int chosen) =>
+        new(chosen, _database.Defines.AscensionPerkSlots);
+
+    /// <summary>
     /// Closes an option off for a reason of the designer's rather than the game's.
     /// </summary>
     /// <remarks>

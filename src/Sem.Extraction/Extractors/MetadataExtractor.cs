@@ -107,6 +107,7 @@ internal static class MetadataExtractor
             // a patch moves these, rather than leaving every budget at zero.
             EthicsPoints = FindInt(defines, "ETHOS_MAX_POINTS") ?? 3,
             CivicPoints = FindInt(defines, "GOVERNMENT_CIVIC_POINTS_BASE") ?? 2,
+            AscensionPerkSlots = FindInt(defines, "ASCENSION_PERKS_SLOTS") ?? 8,
             DefaultCityPreviewPlanetClass =
                 Find(defines, "CITY_SELECTION_DEFAULT_PLANET_CLASS")?.Trim('"'),
 

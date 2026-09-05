@@ -1,10 +1,11 @@
 {
-  "schemaVersion": 3,
+  "schemaVersion": 4,
   "gameVersion": "v4.4.6",
-  "extractorVersion": "0.1.0\u002B66790c4b5531b8defe39dc82b12b8b58407ea1a6",
+  "extractorVersion": "0.1.0\u002B1d3cb3bffd3e4b9e9cde8fc20e5f507d508c47c6",
   "defines": {
     "ethicsPoints": 3,
     "civicPoints": 2,
+    "ascensionPerkSlots": 8,
     "defaultCityPreviewPlanetClass": "pc_continental",
     "cityPopLevel": 4
   },
@@ -26353,9 +26354,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "any",
@@ -26383,9 +26383,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "any",
@@ -26411,9 +26410,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "always",
@@ -26430,9 +26428,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "always",
@@ -26449,9 +26446,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "all",
@@ -30124,9 +30120,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "any",
@@ -30204,9 +30199,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "any",
@@ -32387,9 +32381,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "all",
@@ -32411,19 +32404,19 @@
                       "kind": "any",
                       "items": [
                         {
-                          "kind": "unknown",
-                          "name": "has_tradition",
-                          "assume": true
+                          "kind": "selection",
+                          "category": "TraditionTree",
+                          "key": "tr_purity_stage_3_swap"
                         },
                         {
-                          "kind": "unknown",
-                          "name": "has_tradition",
-                          "assume": true
+                          "kind": "selection",
+                          "category": "TraditionTree",
+                          "key": "tr_cloning_stage_3_swap"
                         },
                         {
-                          "kind": "unknown",
-                          "name": "has_tradition",
-                          "assume": true
+                          "kind": "selection",
+                          "category": "TraditionTree",
+                          "key": "tr_mutation_stage_3_swap"
                         }
                       ]
                     }
@@ -46573,9 +46566,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "always",
@@ -46592,9 +46584,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "always",
@@ -46611,9 +46602,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "always",
@@ -46630,9 +46620,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "always",
@@ -46649,9 +46638,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "always",
@@ -46669,9 +46657,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "always",
@@ -46688,9 +46675,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "always",
@@ -46707,9 +46693,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "always",
@@ -46726,9 +46711,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "always",
@@ -46745,9 +46729,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "always",
@@ -46808,9 +46791,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "not",
@@ -46831,9 +46813,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "unknown",
@@ -46894,9 +46875,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "not",
@@ -46917,9 +46897,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "unknown",
@@ -46980,9 +46959,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "not",
@@ -47003,9 +46981,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "unknown",
@@ -47066,9 +47043,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "not",
@@ -47089,9 +47065,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "unknown",
@@ -47152,9 +47127,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "not",
@@ -47175,9 +47149,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "unknown",
@@ -47239,9 +47212,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "not",
@@ -47263,9 +47235,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "unknown",
@@ -47327,9 +47298,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "not",
@@ -47350,9 +47320,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "unknown",
@@ -47413,9 +47382,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "not",
@@ -47436,9 +47404,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "unknown",
@@ -47544,9 +47511,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "not",
@@ -47567,9 +47533,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "unknown",
@@ -47630,9 +47595,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "not",
@@ -47653,9 +47617,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "unknown",
@@ -47716,9 +47679,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "not",
@@ -47739,9 +47701,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "unknown",
@@ -47802,9 +47763,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "not",
@@ -47825,9 +47785,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "unknown",
@@ -47888,9 +47847,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "not",
@@ -47911,9 +47869,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "unknown",
@@ -47975,9 +47932,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "not",
@@ -47999,9 +47955,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "unknown",
@@ -48063,9 +48018,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "not",
@@ -48086,9 +48040,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "unknown",
@@ -48149,9 +48102,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "not",
@@ -48172,9 +48124,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "unknown",
@@ -56417,6 +56368,167 @@
     "country_exhibit_unlocking_cost_mult": {
       "isPercentage": true,
       "isGood": false,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "damage_vs_country_type_extradimensional_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "damage_vs_country_type_extradimensional_2_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "damage_vs_country_type_extradimensional_3_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "damage_vs_country_type_gray_goo_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "damage_vs_player_crisis_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "damage_vs_country_type_voidworms_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "damage_vs_country_type_voidworms_crisis_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "damage_vs_country_type_voidworms_treasure_hunters_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "damage_vs_country_type_frenzied_voidworms_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "terraforming_ocean_cost_mult": {
+      "isPercentage": true,
+      "isGood": false,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "starbase_defense_platform_capacity_add": {
+      "isPercentage": false,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "ship_military_station_small_upkeep_mult": {
+      "isPercentage": true,
+      "isGood": false,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "waystation_armor_hardening_add": {
+      "isPercentage": false,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "waystation_shield_hardening_add": {
+      "isPercentage": false,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "waystation_hull_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "starbase_waystations_alloys_cost_mult": {
+      "isPercentage": true,
+      "isGood": false,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "arkship_fire_rate": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "damage_vs_country_type_fallen_empire_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "damage_vs_country_type_awakened_fallen_empire_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "damage_vs_country_type_gate_builders_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "l_slot_weapon_damage_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "x_slot_weapon_damage_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "t_slot_weapon_damage_mult": {
+      "isPercentage": true,
+      "isGood": true,
       "isNeutral": false,
       "decimals": 2,
       "declared": false
@@ -65853,6 +65965,10 @@
     "t3_mult": 5,
     "ai_selection_high": 5,
     "ai_selection_low": 0.1,
+    "ascension_path_base_weight": 500,
+    "ascension_path_synergy_weight": 2,
+    "ascension_path_anti_synergy_weight": 0.25,
+    "ascension_path_mindwardens_present": 0.3,
     "jumps": 3,
     "asteroid_min_size": 2,
     "asteroid_max_size": 4,
@@ -67224,9 +67340,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "predicate",
@@ -67323,9 +67438,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "predicate",
@@ -67421,9 +67535,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "predicate",
@@ -67518,9 +67631,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "predicate",
@@ -67600,9 +67712,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "predicate",
@@ -67682,9 +67793,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "predicate",
@@ -67751,9 +67861,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "predicate",
@@ -67852,9 +67961,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "exists",
-                  "assume": true
+                  "kind": "always",
+                  "value": false
                 },
                 {
                   "kind": "predicate",
@@ -100155,6 +100263,5581 @@
       "icon": "icons/civics/civic_corporate_star_seekers.png",
       "nameKey": "civic_corporate_star_seekers",
       "effectsKey": "civic_star_seekers_effect_tooltip"
+    }
+  ],
+  "ascensionPerks": [
+    {
+      "key": "ap_engineered_evolution",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_engineered_evolution"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_the_flesh_is_weak"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_organo_machine_interfacing"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_organo_machine_interfacing_assimilator"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_synthetic_evolution"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_mind_over_matter"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_synthetic_age"
+                },
+                {
+                  "kind": "predicate",
+                  "name": "is_machine_empire"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_shroudwalker_apprentice"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_cybernetic_creed"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_synthetic_fertility"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_endbringers"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Traits",
+                  "key": "trait_mechanical"
+                },
+                {
+                  "kind": "always",
+                  "value": false
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_individual_machine"
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Traits",
+                  "key": "trait_cybernetic"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Traits",
+                  "key": "trait_unplugged_cybernetic_positives_3"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Traits",
+                  "key": "trait_unplugged_cybernetic_positives_2"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Traits",
+                  "key": "trait_unplugged_cybernetic_positives_1"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_natural_design"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_hive_natural_design"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "Civics",
+              "key": "civic_augmentation_bazaars"
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_chosen"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_hive_chosen"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_machine_chosen"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_corporate_chosen"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_machine"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_hive_mind"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_corporate"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "Traits",
+              "key": "trait_mechanical"
+            },
+            "failureText": "synthetic_empire_biological_ascension"
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "not",
+                  "item": {
+                    "kind": "selection",
+                    "category": "Origin",
+                    "key": "origin_clone_army"
+                  }
+                }
+              },
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "not",
+                    "item": {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_clone_army"
+                    }
+                  },
+                  {
+                    "kind": "always",
+                    "value": true,
+                    "failureText": "requires_ascension_perks_2"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_the_flesh_is_weak"
+            },
+            "failureText": "requires_not_ap_the_flesh_is_weak"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_organo_machine_interfacing"
+            },
+            "failureText": "requires_not_ap_organo_machine_interfacing"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_mind_over_matter"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_shroudwalker_apprentice"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_endbringers"
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_chosen"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_hive_chosen"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_machine_chosen"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_corporate_chosen"
+                    }
+                  ]
+                },
+                {
+                  "kind": "all",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_shroud_forged"
+                    },
+                    {
+                      "kind": "always",
+                      "value": false
+                    }
+                  ]
+                }
+              ]
+            },
+            "failureText": "requires_not_ap_mind_over_matter"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_synthetic_evolution"
+            },
+            "failureText": "requires_not_ap_synthetic_evolution"
+          },
+          {
+            "kind": "always",
+            "value": true,
+            "failureText": "requires_free_tradition_tree"
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_clone_army"
+                }
+              },
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "selection",
+                    "category": "Origin",
+                    "key": "origin_clone_army"
+                  },
+                  {
+                    "kind": "any",
+                    "items": [
+                      {
+                        "kind": "always",
+                        "value": false
+                      },
+                      {
+                        "kind": "always",
+                        "value": false
+                      }
+                    ],
+                    "failureText": "clone_soldier_locked_genes"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "category": "ap_category_ascensions",
+      "isPath": true,
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/ascension_perks/ap_engineered_evolution.png",
+      "nameKey": "ap_engineered_evolution",
+      "descriptionKey": "ap_engineered_evolution_desc"
+    },
+    {
+      "key": "ap_the_flesh_is_weak",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_engineered_evolution"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_the_flesh_is_weak"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_organo_machine_interfacing"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_organo_machine_interfacing_assimilator"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_synthetic_evolution"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_mind_over_matter"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_synthetic_age"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_shroudwalker_apprentice"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_cybernetic_creed"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_synthetic_fertility"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_evolutionary_predators"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_endbringers"
+                },
+                {
+                  "kind": "all",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_unplugged"
+                    },
+                    {
+                      "kind": "any",
+                      "items": [
+                        {
+                          "kind": "always",
+                          "value": false
+                        },
+                        {
+                          "kind": "always",
+                          "value": false
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_gestalt"
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_individual_machine"
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_natural_design"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_hive_natural_design"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_chosen"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_hive_chosen"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_machine_chosen"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_corporate_chosen"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "Traits",
+              "key": "trait_unplugged_decyberized"
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_machine"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_hive_mind"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_corporate"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "Traits",
+              "key": "trait_mechanical"
+            },
+            "failureText": "synthetic_empire_synthetic_ascension"
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "always",
+                "value": true
+              },
+              {
+                "kind": "selection",
+                "category": "Origin",
+                "key": "origin_cybernetic_creed"
+              },
+              {
+                "kind": "selection",
+                "category": "Origin",
+                "key": "origin_unplugged"
+              }
+            ],
+            "failureText": "requires_ascension_perks_2"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_engineered_evolution"
+            },
+            "failureText": "requires_not_ap_engineered_evolution"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_mind_over_matter"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_shroudwalker_apprentice"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_endbringers"
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_chosen"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_hive_chosen"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_machine_chosen"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_corporate_chosen"
+                    }
+                  ]
+                },
+                {
+                  "kind": "all",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_shroud_forged"
+                    },
+                    {
+                      "kind": "always",
+                      "value": false
+                    }
+                  ]
+                }
+              ]
+            },
+            "failureText": "requires_not_ap_mind_over_matter"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_synthetic_evolution"
+            },
+            "failureText": "requires_not_ap_synthetic_evolution"
+          },
+          {
+            "kind": "always",
+            "value": true,
+            "failureText": "requires_free_tradition_tree"
+          }
+        ]
+      },
+      "category": "ap_category_ascensions",
+      "isPath": true,
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/ascension_perks/ap_the_flesh_is_weak.png",
+      "nameKey": "ap_the_flesh_is_weak",
+      "descriptionKey": "ap_the_flesh_is_weak_desc"
+    },
+    {
+      "key": "ap_organo_machine_interfacing",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_engineered_evolution"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_the_flesh_is_weak"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_organo_machine_interfacing"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_organo_machine_interfacing_assimilator"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_synthetic_evolution"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_mind_over_matter"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_synthetic_age"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_evolutionary_predators"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_wilderness"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_endbringers"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "predicate",
+            "name": "is_hive_empire"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_natural_design"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_hive_natural_design"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_chosen"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_hive_chosen"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_machine_chosen"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_corporate_chosen"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_machine"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_hive_mind"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_corporate"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true,
+            "failureText": "requires_ascension_perks_2"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_engineered_evolution"
+            },
+            "failureText": "requires_not_ap_engineered_evolution"
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "dlc",
+                  "name": "Shadows of the Shroud"
+                }
+              },
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "dlc",
+                    "name": "Shadows of the Shroud"
+                  },
+                  {
+                    "kind": "all",
+                    "items": [
+                      {
+                        "kind": "not",
+                        "item": {
+                          "kind": "any",
+                          "items": [
+                            {
+                              "kind": "selection",
+                              "category": "AscensionPerk",
+                              "key": "ap_mind_over_matter"
+                            },
+                            {
+                              "kind": "selection",
+                              "category": "Origin",
+                              "key": "origin_shroudwalker_apprentice"
+                            },
+                            {
+                              "kind": "selection",
+                              "category": "Origin",
+                              "key": "origin_endbringers"
+                            },
+                            {
+                              "kind": "any",
+                              "items": [
+                                {
+                                  "kind": "selection",
+                                  "category": "Civics",
+                                  "key": "civic_chosen"
+                                },
+                                {
+                                  "kind": "selection",
+                                  "category": "Civics",
+                                  "key": "civic_hive_chosen"
+                                },
+                                {
+                                  "kind": "selection",
+                                  "category": "Civics",
+                                  "key": "civic_machine_chosen"
+                                },
+                                {
+                                  "kind": "selection",
+                                  "category": "Civics",
+                                  "key": "civic_corporate_chosen"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "all",
+                              "items": [
+                                {
+                                  "kind": "selection",
+                                  "category": "Origin",
+                                  "key": "origin_shroud_forged"
+                                },
+                                {
+                                  "kind": "always",
+                                  "value": false
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        "failureText": "requires_not_ap_mind_over_matter"
+                      },
+                      {
+                        "kind": "not",
+                        "item": {
+                          "kind": "always",
+                          "value": false
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "always",
+            "value": true,
+            "failureText": "requires_free_tradition_tree"
+          }
+        ]
+      },
+      "category": "ap_category_ascensions",
+      "isPath": true,
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/ascension_perks/ap_organo_machine_interfacing.png",
+      "nameKey": "ap_organo_machine_interfacing",
+      "descriptionKey": "ap_organo_machine_interfacing_desc"
+    },
+    {
+      "key": "ap_organo_machine_interfacing_assimilator",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_engineered_evolution"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_the_flesh_is_weak"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_organo_machine_interfacing"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_organo_machine_interfacing_assimilator"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_synthetic_evolution"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_mind_over_matter"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_synthetic_age"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_endbringers"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "selection",
+            "category": "Civics",
+            "key": "civic_machine_assimilator"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_chosen"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_hive_chosen"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_machine_chosen"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_corporate_chosen"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_machine"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_hive_mind"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_corporate"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true,
+            "failureText": "requires_ascension_perks_2"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_synthetic_age"
+            },
+            "failureText": "requires_not_ap_synthetic_age"
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "dlc",
+                  "name": "Shadows of the Shroud"
+                }
+              },
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "dlc",
+                    "name": "Shadows of the Shroud"
+                  },
+                  {
+                    "kind": "all",
+                    "items": [
+                      {
+                        "kind": "not",
+                        "item": {
+                          "kind": "any",
+                          "items": [
+                            {
+                              "kind": "selection",
+                              "category": "AscensionPerk",
+                              "key": "ap_mind_over_matter"
+                            },
+                            {
+                              "kind": "selection",
+                              "category": "Origin",
+                              "key": "origin_shroudwalker_apprentice"
+                            },
+                            {
+                              "kind": "selection",
+                              "category": "Origin",
+                              "key": "origin_endbringers"
+                            },
+                            {
+                              "kind": "any",
+                              "items": [
+                                {
+                                  "kind": "selection",
+                                  "category": "Civics",
+                                  "key": "civic_chosen"
+                                },
+                                {
+                                  "kind": "selection",
+                                  "category": "Civics",
+                                  "key": "civic_hive_chosen"
+                                },
+                                {
+                                  "kind": "selection",
+                                  "category": "Civics",
+                                  "key": "civic_machine_chosen"
+                                },
+                                {
+                                  "kind": "selection",
+                                  "category": "Civics",
+                                  "key": "civic_corporate_chosen"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "all",
+                              "items": [
+                                {
+                                  "kind": "selection",
+                                  "category": "Origin",
+                                  "key": "origin_shroud_forged"
+                                },
+                                {
+                                  "kind": "always",
+                                  "value": false
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        "failureText": "requires_not_ap_interdimensional_processing"
+                      },
+                      {
+                        "kind": "not",
+                        "item": {
+                          "kind": "always",
+                          "value": false
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "always",
+            "value": true,
+            "failureText": "requires_free_tradition_tree"
+          }
+        ]
+      },
+      "category": "ap_category_ascensions",
+      "isPath": true,
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/ascension_perks/ap_organo_machine_interfacing_assimilator.png",
+      "nameKey": "ap_organo_machine_interfacing_assimilator",
+      "descriptionKey": "ap_organo_machine_interfacing_assimilator_desc"
+    },
+    {
+      "key": "ap_synthetic_evolution",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_engineered_evolution"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_the_flesh_is_weak"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_organo_machine_interfacing"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_organo_machine_interfacing_assimilator"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_synthetic_evolution"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_mind_over_matter"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_synthetic_age"
+                },
+                {
+                  "kind": "predicate",
+                  "name": "is_machine_empire"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_shroudwalker_apprentice"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_cybernetic_creed"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_synthetic_fertility"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_evolutionary_predators"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_endbringers"
+                },
+                {
+                  "kind": "selection",
+                  "category": "TraditionTree",
+                  "key": "tr_cybernetics_adopt"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_gestalt"
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Traits",
+                  "key": "trait_mechanical"
+                },
+                {
+                  "kind": "always",
+                  "value": false
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_natural_design"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_hive_natural_design"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "Civics",
+              "key": "civic_augmentation_bazaars"
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_individual_machine"
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "Traits",
+              "key": "trait_unplugged_decyberized"
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_chosen"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_hive_chosen"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_machine_chosen"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_corporate_chosen"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_galvanic_symbiosis"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_hive_galvanic_symbiosis"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_corporate_galvanic_symbiosis"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_machine_galvanic_symbiosis"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_machine"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_hive_mind"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_corporate"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "Traits",
+              "key": "trait_mechanical"
+            },
+            "failureText": "synthetic_empire_synthetic_ascension"
+          },
+          {
+            "kind": "always",
+            "value": true,
+            "failureText": "requires_ascension_perks_2"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_engineered_evolution"
+            },
+            "failureText": "requires_not_ap_engineered_evolution"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_the_flesh_is_weak"
+            },
+            "failureText": "requires_not_ap_the_flesh_is_weak"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_mind_over_matter"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_shroudwalker_apprentice"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_endbringers"
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_chosen"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_hive_chosen"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_machine_chosen"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_corporate_chosen"
+                    }
+                  ]
+                },
+                {
+                  "kind": "all",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_shroud_forged"
+                    },
+                    {
+                      "kind": "always",
+                      "value": false
+                    }
+                  ]
+                }
+              ]
+            },
+            "failureText": "requires_not_ap_mind_over_matter"
+          },
+          {
+            "kind": "always",
+            "value": true,
+            "failureText": "requires_free_tradition_tree"
+          }
+        ]
+      },
+      "category": "ap_category_ascensions",
+      "isPath": true,
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/ascension_perks/ap_synthetic_evolution.png",
+      "nameKey": "ap_synthetic_evolution",
+      "descriptionKey": "ap_synthetic_evolution_desc"
+    },
+    {
+      "key": "ap_mind_over_matter",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_engineered_evolution"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_the_flesh_is_weak"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_organo_machine_interfacing"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_organo_machine_interfacing_assimilator"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_synthetic_evolution"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_mind_over_matter"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_synthetic_age"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_shroudwalker_apprentice"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_cybernetic_creed"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_synthetic_fertility"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_evolutionary_predators"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_wilderness"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_augmentation_bazaars"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_mindwardens"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_endbringers"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "dlc",
+                "name": "Shadows of the Shroud"
+              },
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "not",
+                    "item": {
+                      "kind": "predicate",
+                      "name": "is_gestalt"
+                    }
+                  },
+                  {
+                    "kind": "not",
+                    "item": {
+                      "kind": "any",
+                      "items": [
+                        {
+                          "kind": "selection",
+                          "category": "Traits",
+                          "key": "trait_mechanical"
+                        },
+                        {
+                          "kind": "always",
+                          "value": false
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "kind": "any",
+                    "items": [
+                      {
+                        "kind": "not",
+                        "item": {
+                          "kind": "any",
+                          "items": [
+                            {
+                              "kind": "selection",
+                              "category": "Traits",
+                              "key": "trait_cybernetic"
+                            },
+                            {
+                              "kind": "selection",
+                              "category": "Traits",
+                              "key": "trait_unplugged_cybernetic_positives_3"
+                            },
+                            {
+                              "kind": "selection",
+                              "category": "Traits",
+                              "key": "trait_unplugged_cybernetic_positives_2"
+                            },
+                            {
+                              "kind": "selection",
+                              "category": "Traits",
+                              "key": "trait_unplugged_cybernetic_positives_1"
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "kind": "all",
+                        "items": [
+                          {
+                            "kind": "selection",
+                            "category": "Origin",
+                            "key": "origin_unplugged"
+                          },
+                          {
+                            "kind": "not",
+                            "item": {
+                              "kind": "always",
+                              "value": false
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "not",
+                    "item": {
+                      "kind": "predicate",
+                      "name": "is_individual_machine"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_natural_design"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_hive_natural_design"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_shroud_forged"
+                }
+              },
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "selection",
+                    "category": "Origin",
+                    "key": "origin_shroud_forged"
+                  },
+                  {
+                    "kind": "not",
+                    "item": {
+                      "kind": "always",
+                      "value": false
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "possible": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "Traits",
+              "key": "trait_mechanical"
+            },
+            "failureText": "synthetic_empire_psionic_ascension"
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "not",
+                      "item": {
+                        "kind": "any",
+                        "items": [
+                          {
+                            "kind": "always",
+                            "value": false
+                          },
+                          {
+                            "kind": "predicate",
+                            "name": "is_machine_empire"
+                          },
+                          {
+                            "kind": "predicate",
+                            "name": "is_individual_machine"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_shroud_forged"
+                    },
+                    {
+                      "kind": "any",
+                      "items": [
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_chosen"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_hive_chosen"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_machine_chosen"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_corporate_chosen"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "any",
+                    "items": [
+                      {
+                        "kind": "not",
+                        "item": {
+                          "kind": "any",
+                          "items": [
+                            {
+                              "kind": "always",
+                              "value": false
+                            },
+                            {
+                              "kind": "predicate",
+                              "name": "is_machine_empire"
+                            },
+                            {
+                              "kind": "predicate",
+                              "name": "is_individual_machine"
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "kind": "selection",
+                        "category": "Origin",
+                        "key": "origin_shroud_forged"
+                      },
+                      {
+                        "kind": "any",
+                        "items": [
+                          {
+                            "kind": "selection",
+                            "category": "Civics",
+                            "key": "civic_chosen"
+                          },
+                          {
+                            "kind": "selection",
+                            "category": "Civics",
+                            "key": "civic_hive_chosen"
+                          },
+                          {
+                            "kind": "selection",
+                            "category": "Civics",
+                            "key": "civic_machine_chosen"
+                          },
+                          {
+                            "kind": "selection",
+                            "category": "Civics",
+                            "key": "civic_corporate_chosen"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "always",
+                    "value": true,
+                    "failureText": "requires_ascension_perks_2"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "always",
+            "value": true
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_engineered_evolution"
+            },
+            "failureText": "requires_not_ap_engineered_evolution"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_the_flesh_is_weak"
+            },
+            "failureText": "requires_not_ap_the_flesh_is_weak"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_synthetic_evolution"
+            },
+            "failureText": "requires_not_ap_synthetic_evolution"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_synthetic_age"
+            },
+            "failureText": "requires_not_ap_synthetic_age"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_organo_machine_interfacing"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_organo_machine_interfacing_assimilator"
+                }
+              ]
+            },
+            "failureText": "requires_not_ap_organo_machine_interfacing"
+          },
+          {
+            "kind": "always",
+            "value": true,
+            "failureText": "requires_free_tradition_tree"
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_unplugged"
+                }
+              },
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "selection",
+                    "category": "Origin",
+                    "key": "origin_unplugged"
+                  },
+                  {
+                    "kind": "always",
+                    "value": false,
+                    "failureText": "requires_unplugged_decyberized"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_shroud_forged"
+                }
+              },
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "selection",
+                    "category": "Origin",
+                    "key": "origin_shroud_forged"
+                  },
+                  {
+                    "kind": "all",
+                    "items": [
+                      {
+                        "kind": "any",
+                        "items": [
+                          {
+                            "kind": "not",
+                            "item": {
+                              "kind": "always",
+                              "value": false
+                            }
+                          },
+                          {
+                            "kind": "all",
+                            "items": [
+                              {
+                                "kind": "always",
+                                "value": false
+                              },
+                              {
+                                "kind": "always",
+                                "value": false,
+                                "failureText": "shroud_forged_situation_ongoing"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "kind": "always",
+                        "value": true
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "category": "ap_category_ascensions",
+      "isPath": true,
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/ascension_perks/ap_mind_over_matter.png",
+      "nameKey": "ap_mind_over_matter",
+      "descriptionKey": "ap_mind_over_matter_desc"
+    },
+    {
+      "key": "ap_synthetic_age",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "predicate",
+                "name": "is_machine_empire"
+              },
+              {
+                "kind": "predicate",
+                "name": "is_individual_machine"
+              }
+            ]
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_engineered_evolution"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_the_flesh_is_weak"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_organo_machine_interfacing"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_organo_machine_interfacing_assimilator"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_synthetic_evolution"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_mind_over_matter"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_synthetic_age"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_shroudwalker_apprentice"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_endbringers"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_natural_design"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_hive_natural_design"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_chosen"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_hive_chosen"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_machine_chosen"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_corporate_chosen"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_machine"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_hive_mind"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_corporate"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true,
+            "failureText": "requires_ascension_perks_2"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_organo_machine_interfacing_assimilator"
+            },
+            "failureText": "requires_not_ap_organo_machine_interfacing"
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "dlc",
+                  "name": "Shadows of the Shroud"
+                }
+              },
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "dlc",
+                    "name": "Shadows of the Shroud"
+                  },
+                  {
+                    "kind": "all",
+                    "items": [
+                      {
+                        "kind": "not",
+                        "item": {
+                          "kind": "any",
+                          "items": [
+                            {
+                              "kind": "selection",
+                              "category": "AscensionPerk",
+                              "key": "ap_mind_over_matter"
+                            },
+                            {
+                              "kind": "selection",
+                              "category": "Origin",
+                              "key": "origin_shroudwalker_apprentice"
+                            },
+                            {
+                              "kind": "selection",
+                              "category": "Origin",
+                              "key": "origin_endbringers"
+                            },
+                            {
+                              "kind": "any",
+                              "items": [
+                                {
+                                  "kind": "selection",
+                                  "category": "Civics",
+                                  "key": "civic_chosen"
+                                },
+                                {
+                                  "kind": "selection",
+                                  "category": "Civics",
+                                  "key": "civic_hive_chosen"
+                                },
+                                {
+                                  "kind": "selection",
+                                  "category": "Civics",
+                                  "key": "civic_machine_chosen"
+                                },
+                                {
+                                  "kind": "selection",
+                                  "category": "Civics",
+                                  "key": "civic_corporate_chosen"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "all",
+                              "items": [
+                                {
+                                  "kind": "selection",
+                                  "category": "Origin",
+                                  "key": "origin_shroud_forged"
+                                },
+                                {
+                                  "kind": "always",
+                                  "value": false
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        "failureText": "requires_not_ap_interdimensional_processing"
+                      },
+                      {
+                        "kind": "not",
+                        "item": {
+                          "kind": "always",
+                          "value": false
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "always",
+            "value": true,
+            "failureText": "requires_free_tradition_tree"
+          }
+        ]
+      },
+      "category": "ap_category_ascensions",
+      "isPath": true,
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "synthetic_age_tooltip",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/ascension_perks/ap_synthetic_age.png",
+      "nameKey": "ap_synthetic_age",
+      "descriptionKey": "ap_synthetic_age_desc"
+    },
+    {
+      "key": "ap_defender_of_the_galaxy_nomads",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "dlc",
+            "name": "Nomads"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_defender_of_the_galaxy"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_defender_of_the_galaxy_nomads"
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_become_the_crisis"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_cosmogenesis"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_behemoths"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_galactic_hyperthermia"
+                    },
+                    {
+                      "kind": "always",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_endbringers"
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_fanatic_purifiers"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_machine_terminator"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_hive_devouring_swarm"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_barbaric_despoilers"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_scorched_earth"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_hive_scorched_earth"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true,
+            "failureText": "requires_ascension_perks_3"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Ethics",
+                  "key": "ethic_fanatic_xenophobe"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_inwards_perfection"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "always",
+              "value": false
+            },
+            "failureText": "requires_actor_not_khan"
+          }
+        ]
+      },
+      "category": "ap_category_ambitions",
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "add_attunement_the_cradle_of_souls": 30
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "add_attunement_the_cradle_of_souls": 30
+        }
+      },
+      "icon": "icons/ascension_perks/ap_defender_of_the_galaxy_nomads.png",
+      "nameKey": "ap_defender_of_the_galaxy_nomads",
+      "descriptionKey": "ap_defender_of_the_galaxy_nomads_desc"
+    },
+    {
+      "key": "ap_defender_of_the_galaxy",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "not",
+            "item": {
+              "kind": "dlc",
+              "name": "Nomads"
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_defender_of_the_galaxy"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_defender_of_the_galaxy_nomads"
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_become_the_crisis"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_cosmogenesis"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_behemoths"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_galactic_hyperthermia"
+                    },
+                    {
+                      "kind": "always",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_endbringers"
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_fanatic_purifiers"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_machine_terminator"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_hive_devouring_swarm"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_barbaric_despoilers"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_scorched_earth"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_hive_scorched_earth"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true,
+            "failureText": "requires_ascension_perks_3"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Ethics",
+                  "key": "ethic_fanatic_xenophobe"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_inwards_perfection"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "always",
+              "value": false
+            },
+            "failureText": "requires_actor_not_khan"
+          }
+        ]
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "damage_vs_country_type_synth_queen_mult": 0.5,
+          "damage_vs_country_type_awakened_synth_queen_mult": 0.5,
+          "damage_vs_country_type_synth_queen_convoys_mult": 0.5,
+          "damage_vs_country_type_synth_queen_outposts_mult": 0.5,
+          "damage_vs_country_type_swarm_mult": 0.5,
+          "damage_vs_country_type_extradimensional_mult": 0.5,
+          "damage_vs_country_type_extradimensional_2_mult": 0.5,
+          "damage_vs_country_type_extradimensional_3_mult": 0.5,
+          "damage_vs_country_type_ai_empire_mult": 0.5,
+          "damage_vs_country_type_gray_goo_mult": 0.5,
+          "damage_vs_player_crisis_mult": 0.5,
+          "damage_vs_country_type_voidworms_mult": 0.25,
+          "damage_vs_country_type_voidworms_crisis_mult": 0.25,
+          "damage_vs_country_type_voidworms_treasure_hunters_mult": 0.25,
+          "damage_vs_country_type_frenzied_voidworms_mult": 0.25,
+          "add_attunement_the_cradle_of_souls": 30
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "ap_defender_of_the_galaxy_modifier_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/ascension_perks/ap_defender_of_the_galaxy.png",
+      "nameKey": "ap_defender_of_the_galaxy",
+      "descriptionKey": "ap_defender_of_the_galaxy_desc"
+    },
+    {
+      "key": "ap_become_the_crisis",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "dlc",
+            "name": "Nemesis"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_become_the_crisis"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_cosmogenesis"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_behemoths"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_galactic_hyperthermia"
+                    },
+                    {
+                      "kind": "always",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_defender_of_the_galaxy"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_defender_of_the_galaxy_nomads"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_slavers"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_endbringers"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_wilderness_empire"
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "not",
+            "item": {
+              "kind": "always",
+              "value": false
+            },
+            "failureText": "requires_independence"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "always",
+              "value": false
+            },
+            "failureText": "must_not_be_custodian"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "always",
+              "value": false
+            },
+            "failureText": "must_not_be_emperor"
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_shroud_forged"
+                }
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "always",
+                  "value": false
+                }
+              }
+            ],
+            "failureText": "must_finish_shroud_forged_situation"
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_shroud_forged"
+                }
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "always",
+                  "value": false
+                }
+              }
+            ],
+            "failureText": "locked_by_shroud_forged_situation"
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "not",
+                      "item": {
+                        "kind": "selection",
+                        "category": "Origin",
+                        "key": "origin_shroud_forged"
+                      }
+                    },
+                    {
+                      "kind": "not",
+                      "item": {
+                        "kind": "always",
+                        "value": false
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "any",
+                    "items": [
+                      {
+                        "kind": "not",
+                        "item": {
+                          "kind": "selection",
+                          "category": "Origin",
+                          "key": "origin_shroud_forged"
+                        }
+                      },
+                      {
+                        "kind": "not",
+                        "item": {
+                          "kind": "always",
+                          "value": false
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "all",
+                    "items": [
+                      {
+                        "kind": "always",
+                        "value": true,
+                        "failureText": "requires_ascension_perks_3"
+                      },
+                      {
+                        "kind": "not",
+                        "item": {
+                          "kind": "any",
+                          "items": [
+                            {
+                              "kind": "any",
+                              "items": [
+                                {
+                                  "kind": "selection",
+                                  "category": "Ethics",
+                                  "key": "ethic_xenophile"
+                                },
+                                {
+                                  "kind": "selection",
+                                  "category": "Ethics",
+                                  "key": "ethic_fanatic_xenophile"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "any",
+                              "items": [
+                                {
+                                  "kind": "selection",
+                                  "category": "Ethics",
+                                  "key": "ethic_pacifist"
+                                },
+                                {
+                                  "kind": "selection",
+                                  "category": "Ethics",
+                                  "key": "ethic_fanatic_pacifist"
+                                }
+                              ]
+                            },
+                            {
+                              "kind": "selection",
+                              "category": "Civics",
+                              "key": "civic_machine_servitor"
+                            },
+                            {
+                              "kind": "selection",
+                              "category": "Civics",
+                              "key": "civic_hive_familiar_face"
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "category": "ap_category_ambitions",
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "refugee_attraction": -0.5
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "refugee_attraction": -0.5
+        }
+      },
+      "icon": "icons/ascension_perks/ap_become_the_crisis.png",
+      "nameKey": "ap_become_the_crisis",
+      "descriptionKey": "ap_become_the_crisis_desc"
+    },
+    {
+      "key": "ap_cosmogenesis",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "dlc",
+            "name": "The Machine Age"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_become_the_crisis"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_cosmogenesis"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_behemoths"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_galactic_hyperthermia"
+                    },
+                    {
+                      "kind": "always",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_defender_of_the_galaxy"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_defender_of_the_galaxy_nomads"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_slavers"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_endbringers"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_wilderness_empire"
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true,
+            "failureText": "requires_ascension_perks_3"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "always",
+              "value": false
+            },
+            "failureText": "requires_independence"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "always",
+              "value": false
+            },
+            "failureText": "must_not_be_custodian"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "always",
+              "value": false
+            },
+            "failureText": "must_not_be_emperor"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_nomadic"
+            }
+          }
+        ]
+      },
+      "category": "ap_category_ambitions",
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "refugee_attraction": -0.5
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "refugee_attraction": -0.5
+        }
+      },
+      "icon": "icons/ascension_perks/ap_cosmogenesis.png",
+      "nameKey": "ap_cosmogenesis",
+      "descriptionKey": "ap_cosmogenesis_desc"
+    },
+    {
+      "key": "ap_behemoths",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "dlc",
+            "name": "BioGenesis"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_become_the_crisis"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_cosmogenesis"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_behemoths"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_galactic_hyperthermia"
+                    },
+                    {
+                      "kind": "always",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_defender_of_the_galaxy"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_defender_of_the_galaxy_nomads"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_slavers"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_endbringers"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true,
+            "failureText": "requires_ascension_perks_3"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "always",
+              "value": false
+            },
+            "failureText": "requires_independence"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "always",
+              "value": false
+            },
+            "failureText": "must_not_be_custodian"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "always",
+              "value": false
+            },
+            "failureText": "must_not_be_emperor"
+          },
+          {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "always",
+                "value": false
+              }
+            ],
+            "failureText": "must_use_bioships"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Ethics",
+                  "key": "ethic_xenophile"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Ethics",
+                  "key": "ethic_fanatic_xenophile"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Ethics",
+                  "key": "ethic_pacifist"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Ethics",
+                  "key": "ethic_fanatic_pacifist"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "category": "ap_category_ambitions",
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "refugee_attraction": -0.5
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "refugee_attraction": -0.5
+        }
+      },
+      "icon": "icons/ascension_perks/ap_behemoths.png",
+      "nameKey": "ap_behemoths",
+      "descriptionKey": "ap_behemoths_desc"
+    },
+    {
+      "key": "ap_galactic_hyperthermia",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "dlc",
+            "name": "Infernals Species Pack"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_become_the_crisis"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_cosmogenesis"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_behemoths"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_galactic_hyperthermia"
+                    },
+                    {
+                      "kind": "always",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_defender_of_the_galaxy"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_defender_of_the_galaxy_nomads"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_slavers"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_endbringers"
+                },
+                {
+                  "kind": "predicate",
+                  "name": "is_wilderness_empire"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "always",
+                "value": true
+              },
+              {
+                "kind": "always",
+                "value": false
+              }
+            ],
+            "failureText": "requires_ascension_perks_3"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "always",
+              "value": false
+            },
+            "failureText": "requires_independence"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "always",
+              "value": false
+            },
+            "failureText": "must_not_be_custodian"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "always",
+              "value": false
+            },
+            "failureText": "must_not_be_emperor"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_xenophile"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_fanatic_xenophile"
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_pacifist"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_fanatic_pacifist"
+                    }
+                  ]
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_hive_familiar_face"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "category": "ap_category_ambitions",
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "refugee_attraction": -0.5
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "refugee_attraction": -0.5
+        }
+      },
+      "icon": "icons/ascension_perks/ap_galactic_hyperthermia.png",
+      "nameKey": "ap_galactic_hyperthermia",
+      "descriptionKey": "ap_galactic_hyperthermia_desc"
+    },
+    {
+      "key": "ap_wanderlust",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "dlc",
+            "name": "Nomads"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_wanderlust"
+            }
+          },
+          {
+            "kind": "predicate",
+            "name": "is_nomadic"
+          }
+        ]
+      },
+      "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/ascension_perks/ap_wanderlust.png",
+      "nameKey": "ap_wanderlust",
+      "descriptionKey": "ap_wanderlust_desc"
+    },
+    {
+      "key": "ap_archaeoengineers",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "dlc",
+            "name": "Ancient Relics Story Pack"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_archaeoengineers"
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "always",
+        "value": false,
+        "failureText": "requires_technology_tech_archaeostudies"
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "country_scientist_cap_add": 1,
+          "weapon_archaeotech_weapon_damage_mult": 0.33,
+          "starbase_shipyard_build_minor_artifacts_cost_mult": -0.2
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "country_scientist_cap_add": 1,
+          "weapon_archaeotech_weapon_damage_mult": 0.33,
+          "starbase_shipyard_build_minor_artifacts_cost_mult": -0.2
+        }
+      },
+      "icon": "icons/ascension_perks/ap_archaeoengineers.png",
+      "nameKey": "ap_archaeoengineers",
+      "descriptionKey": "ap_archaeoengineers_desc"
+    },
+    {
+      "key": "ap_lord_of_war",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "dlc",
+            "name": "Overlord"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_lord_of_war"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_fanatic_purifiers"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_scorched_earth"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "predicate",
+                "name": "is_regular_empire"
+              },
+              {
+                "kind": "selection",
+                "category": "Civics",
+                "key": "civic_machine_tactical_algorithms"
+              }
+            ]
+          }
+        ]
+      },
+      "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "country_enclave_capacity_add": 1,
+          "diplo_weight_naval_mult": 0.25
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "country_enclave_capacity_add": 1,
+          "diplo_weight_naval_mult": 0.25
+        }
+      },
+      "icon": "icons/ascension_perks/ap_lord_of_war.png",
+      "nameKey": "ap_lord_of_war",
+      "descriptionKey": "ap_lord_of_war_desc"
+    },
+    {
+      "key": "ap_hydrocentric",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "dlc",
+            "name": "Aquatics Species Pack"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_hydrocentric"
+            }
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Traits",
+                "key": "trait_pc_ocean_preference"
+              },
+              {
+                "kind": "selection",
+                "category": "Traits",
+                "key": "trait_robot_aquatic"
+              },
+              {
+                "kind": "selection",
+                "category": "Traits",
+                "key": "trait_auto_hab_preference"
+              }
+            ]
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_nomadic"
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": false
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Traits",
+                "key": "trait_aquatic"
+              },
+              {
+                "kind": "selection",
+                "category": "Traits",
+                "key": "trait_robot_aquatic"
+              },
+              {
+                "kind": "selection",
+                "category": "Traits",
+                "key": "trait_auto_hab_preference"
+              }
+            ]
+          }
+        ]
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "terraforming_ocean_cost_mult": -0.25,
+          "add_attunement_the_composer_of_strands": 30
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "terraforming_ocean_cost_mult": -0.25,
+          "add_attunement_the_composer_of_strands": 30
+        }
+      },
+      "icon": "icons/ascension_perks/ap_hydrocentric.png",
+      "nameKey": "ap_hydrocentric",
+      "descriptionKey": "ap_hydrocentric_desc"
+    },
+    {
+      "key": "ap_enigmatic_engineering",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "dlc",
+            "name": "Apocalypse"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_enigmatic_engineering"
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "always",
+        "value": true,
+        "failureText": "requires_ascension_perks_1"
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "intel_encryption_add": 2,
+          "add_attunement_the_cradle_of_souls": 30
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "intel_encryption_add": 2,
+          "add_attunement_the_cradle_of_souls": 30
+        }
+      },
+      "icon": "icons/ascension_perks/ap_enigmatic_engineering.png",
+      "nameKey": "ap_enigmatic_engineering",
+      "descriptionKey": "ap_enigmatic_engineering_desc"
+    },
+    {
+      "key": "ap_nihilistic_acquisition",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "dlc",
+            "name": "Apocalypse"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_nihilistic_acquisition"
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_barbaric_despoilers"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_slavers"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_khan_successor"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_wilderness"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "any",
+        "items": [
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_authoritarian"
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_authoritarian"
+              }
+            ]
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_xenophobe"
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_xenophobe"
+              }
+            ]
+          },
+          {
+            "kind": "selection",
+            "category": "Ethics",
+            "key": "ethic_gestalt_consciousness"
+          }
+        ]
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/ascension_perks/ap_nihilistic_acquisition.png",
+      "nameKey": "ap_nihilistic_acquisition",
+      "descriptionKey": "ap_nihilistic_acquisition_desc"
+    },
+    {
+      "key": "ap_colossus",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "dlc",
+            "name": "Apocalypse"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_colossus"
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": false
+          },
+          {
+            "kind": "always",
+            "value": true,
+            "failureText": "requires_ascension_perks_3"
+          }
+        ]
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "country_war_exhaustion_mult": -0.15,
+          "ships_upkeep_mult": -0.05,
+          "add_attunement_the_eater_of_worlds": 30
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "country_war_exhaustion_mult": -0.15,
+          "ships_upkeep_mult": -0.05,
+          "add_attunement_the_eater_of_worlds": 30
+        }
+      },
+      "icon": "icons/ascension_perks/ap_colossus.png",
+      "nameKey": "ap_colossus",
+      "descriptionKey": "ap_colossus_desc"
+    },
+    {
+      "key": "ap_world_shaper",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_nomadic"
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_world_shaper"
+            }
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "predicate",
+                  "name": "is_hive_empire"
+                }
+              },
+              {
+                "kind": "predicate",
+                "name": "is_wilderness_empire"
+              }
+            ]
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "predicate",
+                  "name": "is_machine_empire"
+                }
+              },
+              {
+                "kind": "selection",
+                "category": "Civics",
+                "key": "civic_machine_servitor"
+              },
+              {
+                "kind": "selection",
+                "category": "Civics",
+                "key": "civic_machine_assimilator"
+              }
+            ]
+          }
+        ]
+      },
+      "possible": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": false,
+            "failureText": "requires_technology_tech_climate_restoration"
+          },
+          {
+            "kind": "always",
+            "value": true,
+            "failureText": "requires_ascension_perks_1"
+          }
+        ]
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "terraforming_cost_mult": -0.25,
+          "add_attunement_the_composer_of_strands": 30
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "terraforming_cost_mult": -0.25,
+          "add_attunement_the_composer_of_strands": 30
+        }
+      },
+      "icon": "icons/ascension_perks/ap_world_shaper.png",
+      "nameKey": "ap_world_shaper",
+      "descriptionKey": "ap_world_shaper_desc"
+    },
+    {
+      "key": "ap_galactic_force_projection",
+      "potential": {
+        "kind": "not",
+        "item": {
+          "kind": "selection",
+          "category": "AscensionPerk",
+          "key": "ap_galactic_force_projection"
+        }
+      },
+      "possible": {
+        "kind": "always",
+        "value": true,
+        "failureText": "requires_ascension_perks_2"
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "country_power_projection_influence_produces_add": 2,
+          "country_commander_cap_add": 1,
+          "country_naval_cap_add": 150,
+          "command_limit_mult": 0.2,
+          "add_attunement_the_eater_of_worlds": 30
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "country_power_projection_influence_produces_add": 2,
+          "country_commander_cap_add": 1,
+          "country_naval_cap_add": 150,
+          "command_limit_mult": 0.2,
+          "add_attunement_the_eater_of_worlds": 30
+        }
+      },
+      "icon": "icons/ascension_perks/ap_galactic_force_projection.png",
+      "nameKey": "ap_galactic_force_projection",
+      "descriptionKey": "ap_galactic_force_projection_desc"
+    },
+    {
+      "key": "ap_interstellar_dominion",
+      "potential": {
+        "kind": "not",
+        "item": {
+          "kind": "selection",
+          "category": "AscensionPerk",
+          "key": "ap_interstellar_dominion"
+        }
+      },
+      "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/ascension_perks/ap_interstellar_dominion.png",
+      "nameKey": "ap_interstellar_dominion",
+      "descriptionKey": "ap_interstellar_dominion_desc"
+    },
+    {
+      "key": "ap_grasp_the_void",
+      "potential": {
+        "kind": "not",
+        "item": {
+          "kind": "selection",
+          "category": "AscensionPerk",
+          "key": "ap_grasp_the_void"
+        }
+      },
+      "possible": {
+        "kind": "always",
+        "value": true,
+        "failureText": "requires_ascension_perks_1"
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "country_starbase_capacity_add": 5,
+          "add_attunement_the_composer_of_strands": 30
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "country_starbase_capacity_add": 5,
+          "add_attunement_the_composer_of_strands": 30
+        }
+      },
+      "icon": "icons/ascension_perks/ap_grasp_the_void.png",
+      "nameKey": "ap_grasp_the_void",
+      "descriptionKey": "ap_grasp_the_void_desc"
+    },
+    {
+      "key": "ap_eternal_vigilance",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_nomadic"
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_eternal_vigilance"
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "any",
+        "items": [
+          {
+            "kind": "always",
+            "value": false
+          },
+          {
+            "kind": "selection",
+            "category": "TraditionTree",
+            "key": "tr_unyielding_finish"
+          }
+        ],
+        "failureText": "requires_technology_starbase_4"
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "country_commander_cap_add": 1,
+          "shipclass_starbase_damage_mult": 0.25,
+          "shipclass_starbase_hull_mult": 0.25,
+          "shipclass_military_station_damage_mult": 0.25,
+          "starbase_defense_platform_capacity_add": 5,
+          "ship_military_station_small_upkeep_mult": -0.5,
+          "ship_home_territory_fire_rate_mult": 0.2,
+          "add_attunement_the_cradle_of_souls": 30
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "country_commander_cap_add": 1,
+          "shipclass_starbase_damage_mult": 0.25,
+          "shipclass_starbase_hull_mult": 0.25,
+          "shipclass_military_station_damage_mult": 0.25,
+          "starbase_defense_platform_capacity_add": 5,
+          "ship_military_station_small_upkeep_mult": -0.5,
+          "ship_home_territory_fire_rate_mult": 0.2,
+          "add_attunement_the_cradle_of_souls": 30
+        }
+      },
+      "icon": "icons/ascension_perks/ap_eternal_vigilance.png",
+      "nameKey": "ap_eternal_vigilance",
+      "descriptionKey": "ap_eternal_vigilance_desc"
+    },
+    {
+      "key": "ap_eternal_vigilance_nomads",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "predicate",
+            "name": "is_nomadic"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_eternal_vigilance_nomads"
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "any",
+        "items": [
+          {
+            "kind": "always",
+            "value": false
+          },
+          {
+            "kind": "selection",
+            "category": "TraditionTree",
+            "key": "tr_expansion_finish"
+          }
+        ],
+        "failureText": "requires_technology_waystation_3"
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "country_commander_cap_add": 1,
+          "waystation_armor_hardening_add": 0.25,
+          "waystation_shield_hardening_add": 0.15,
+          "waystation_hull_mult": 0.25,
+          "starbase_waystations_alloys_cost_mult": -0.25,
+          "arkship_fire_rate": 0.25,
+          "ship_hull_mult": 0.25,
+          "add_attunement_the_cradle_of_souls": 30
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "country_commander_cap_add": 1,
+          "waystation_armor_hardening_add": 0.25,
+          "waystation_shield_hardening_add": 0.15,
+          "waystation_hull_mult": 0.25,
+          "starbase_waystations_alloys_cost_mult": -0.25,
+          "arkship_fire_rate": 0.25,
+          "ship_hull_mult": 0.25,
+          "add_attunement_the_cradle_of_souls": 30
+        }
+      },
+      "icon": "icons/ascension_perks/ap_eternal_vigilance_nomads.png",
+      "nameKey": "ap_eternal_vigilance_nomads",
+      "descriptionKey": "ap_eternal_vigilance_nomads_desc"
+    },
+    {
+      "key": "ap_galactic_contender",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_galactic_contender"
+            }
+          },
+          {
+            "kind": "always",
+            "value": false
+          }
+        ]
+      },
+      "possible": {
+        "kind": "always",
+        "value": true,
+        "failureText": "requires_ascension_perks_3"
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "diplo_weight_mult": 0.2,
+          "damage_vs_country_type_fallen_empire_mult": 0.33,
+          "damage_vs_country_type_awakened_fallen_empire_mult": 0.33,
+          "damage_vs_country_type_gate_builders_mult": 0.33,
+          "add_attunement_the_cradle_of_souls": 30
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "diplo_weight_mult": 0.2,
+          "damage_vs_country_type_fallen_empire_mult": 0.33,
+          "damage_vs_country_type_awakened_fallen_empire_mult": 0.33,
+          "damage_vs_country_type_gate_builders_mult": 0.33,
+          "add_attunement_the_cradle_of_souls": 30
+        }
+      },
+      "icon": "icons/ascension_perks/ap_galactic_contender.png",
+      "nameKey": "ap_galactic_contender",
+      "descriptionKey": "ap_galactic_contender_desc"
+    },
+    {
+      "key": "ap_technological_ascendancy",
+      "potential": {
+        "kind": "not",
+        "item": {
+          "kind": "selection",
+          "category": "AscensionPerk",
+          "key": "ap_technological_ascendancy"
+        }
+      },
+      "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "rare_tech_draw_chance_mult": 0.5
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "ap_technological_ascendancy_tt",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "rare_tech_draw_chance_mult": 0.5
+        }
+      },
+      "icon": "icons/ascension_perks/ap_technological_ascendancy.png",
+      "nameKey": "ap_technological_ascendancy",
+      "descriptionKey": "ap_technological_ascendancy_desc"
+    },
+    {
+      "key": "ap_one_vision",
+      "potential": {
+        "kind": "not",
+        "item": {
+          "kind": "all",
+          "items": [
+            {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_one_vision"
+            },
+            {
+              "kind": "predicate",
+              "name": "is_machine_empire"
+            }
+          ]
+        }
+      },
+      "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "country_unity_produces_mult": 0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "country_unity_produces_mult": 0.1
+        }
+      },
+      "icon": "icons/ascension_perks/ap_one_vision.png",
+      "nameKey": "ap_one_vision",
+      "descriptionKey": "ap_one_vision_desc"
+    },
+    {
+      "key": "ap_consecrated_worlds",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_consecrated_worlds"
+            }
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_spiritualist"
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_spiritualist"
+              }
+            ]
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_nomadic"
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "add_attunement_the_composer_of_strands": 30
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "add_attunement_the_composer_of_strands": 30
+        }
+      },
+      "icon": "icons/ascension_perks/ap_consecrated_worlds.png",
+      "nameKey": "ap_consecrated_worlds",
+      "descriptionKey": "ap_consecrated_worlds_desc"
+    },
+    {
+      "key": "ap_mastery_of_nature",
+      "potential": {
+        "kind": "not",
+        "item": {
+          "kind": "any",
+          "items": [
+            {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_mastery_of_nature"
+            },
+            {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_environmental_architects"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_environmental_architects_hive"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_environmental_architects_machine"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_environmental_architects_megacorp"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "deposit_blockers_cost_mult": -0.33,
+          "add_attunement_the_instrument_of_desire": 30
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "deposit_blockers_cost_mult": -0.33,
+          "add_attunement_the_instrument_of_desire": 30
+        }
+      },
+      "icon": "icons/ascension_perks/ap_mastery_of_nature.png",
+      "nameKey": "ap_mastery_of_nature",
+      "descriptionKey": "ap_mastery_of_nature_desc"
+    },
+    {
+      "key": "ap_imperial_prerogative",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_imperial_prerogative"
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_megacorp"
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/ascension_perks/ap_imperial_prerogative.png",
+      "nameKey": "ap_imperial_prerogative",
+      "descriptionKey": "ap_imperial_prerogative_desc"
+    },
+    {
+      "key": "ap_executive_vigor",
+      "potential": {
+        "kind": "not",
+        "item": {
+          "kind": "selection",
+          "category": "AscensionPerk",
+          "key": "ap_executive_vigor"
+        }
+      },
+      "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "country_edict_fund_add": 100,
+          "council_agenda_progress_speed": 0.15,
+          "add_attunement_the_instrument_of_desire": 30
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "country_edict_fund_add": 100,
+          "council_agenda_progress_speed": 0.15,
+          "add_attunement_the_instrument_of_desire": 30
+        }
+      },
+      "icon": "icons/ascension_perks/ap_executive_vigor.png",
+      "nameKey": "ap_executive_vigor",
+      "descriptionKey": "ap_executive_vigor_desc"
+    },
+    {
+      "key": "ap_transcendent_learning",
+      "potential": {
+        "kind": "not",
+        "item": {
+          "kind": "selection",
+          "category": "AscensionPerk",
+          "key": "ap_transcendent_learning"
+        }
+      },
+      "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "country_scientist_cap_add": 2,
+          "species_leader_exp_gain": 0.25,
+          "leaders_upkeep_mult": -0.15
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "country_scientist_cap_add": 2,
+          "species_leader_exp_gain": 0.25,
+          "leaders_upkeep_mult": -0.15
+        }
+      },
+      "icon": "icons/ascension_perks/ap_transcendent_learning.png",
+      "nameKey": "ap_transcendent_learning",
+      "descriptionKey": "ap_transcendent_learning_desc"
+    },
+    {
+      "key": "ap_shared_destiny",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_fanatic_purifiers"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_machine_terminator"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_hive_devouring_swarm"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_scorched_earth"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_hive_scorched_earth"
+                    },
+                    {
+                      "kind": "always",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_inwards_perfection"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_shared_destiny"
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "divided_patrongage_max_subjects": 1,
+          "specialist_subject_conversion_time_mult": -0.2,
+          "envoys_add": 2,
+          "add_attunement_the_instrument_of_desire": 30
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "divided_patrongage_max_subjects": 1,
+          "specialist_subject_conversion_time_mult": -0.2,
+          "envoys_add": 2,
+          "add_attunement_the_instrument_of_desire": 30
+        }
+      },
+      "icon": "icons/ascension_perks/ap_shared_destiny.png",
+      "nameKey": "ap_shared_destiny",
+      "descriptionKey": "ap_shared_destiny_desc"
+    },
+    {
+      "key": "ap_voidborn",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_voidborn"
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_void_dwellers"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_void_machines"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_wilderness_empire"
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "any",
+        "items": [
+          {
+            "kind": "always",
+            "value": false,
+            "failureText": "requires_technology_habitat_1"
+          },
+          {
+            "kind": "always",
+            "value": false,
+            "failureText": "requires_tech_arkship_tier_2"
+          }
+        ]
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "habitat_max_districts_add": 2,
+          "megastructures_habitat_cost_mult": -0.2,
+          "planet_districts_hab_cost_mult": -0.2,
+          "habitat_districts_minor_add": 0.25,
+          "habitat_district_jobs_mult": 0.5
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "habitat_max_districts_add": 2,
+          "megastructures_habitat_cost_mult": -0.2,
+          "planet_districts_hab_cost_mult": -0.2,
+          "habitat_districts_minor_add": 0.25,
+          "habitat_district_jobs_mult": 0.5
+        }
+      },
+      "icon": "icons/ascension_perks/ap_voidborn.png",
+      "nameKey": "ap_voidborn",
+      "descriptionKey": "ap_voidborn_desc"
+    },
+    {
+      "key": "ap_master_builders",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_nomadic"
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_master_builders"
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true,
+            "failureText": "requires_ascension_perks_2"
+          },
+          {
+            "kind": "always",
+            "value": false,
+            "failureText": "requires_mega_engineering"
+          }
+        ]
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "megastructure_build_speed_mult": 0.5,
+          "country_megastructure_build_cap_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "megastructure_build_speed_mult": 0.5,
+          "country_megastructure_build_cap_add": 1
+        }
+      },
+      "icon": "icons/ascension_perks/ap_master_builders.png",
+      "nameKey": "ap_master_builders",
+      "descriptionKey": "ap_master_builders_desc"
+    },
+    {
+      "key": "ap_galactic_wonders",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_nomadic"
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_galactic_wonders"
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": false,
+            "failureText": "requires_mega_engineering"
+          },
+          {
+            "kind": "always",
+            "value": false,
+            "failureText": "requires_built_or_repaired_megastructure"
+          }
+        ]
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/ascension_perks/ap_galactic_wonders.png",
+      "nameKey": "ap_galactic_wonders",
+      "descriptionKey": "ap_galactic_wonders_desc"
+    },
+    {
+      "key": "ap_galactic_wonders_utopia",
+      "potential": {
+        "kind": "always",
+        "value": false
+      },
+      "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/ascension_perks/ap_galactic_wonders_utopia.png",
+      "nameKey": "ap_galactic_wonders_utopia",
+      "descriptionKey": "ap_galactic_wonders_utopia_desc"
+    },
+    {
+      "key": "ap_galactic_wonders_megacorp",
+      "potential": {
+        "kind": "always",
+        "value": false
+      },
+      "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/ascension_perks/ap_galactic_wonders_megacorp.png",
+      "nameKey": "ap_galactic_wonders_megacorp",
+      "descriptionKey": "ap_galactic_wonders_megacorp_desc"
+    },
+    {
+      "key": "ap_galactic_wonders_utopia_and_megacorp",
+      "potential": {
+        "kind": "always",
+        "value": false
+      },
+      "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/ascension_perks/ap_galactic_wonders_utopia_and_megacorp.png",
+      "nameKey": "ap_galactic_wonders_utopia_and_megacorp",
+      "descriptionKey": "ap_galactic_wonders_utopia_and_megacorp_desc"
+    },
+    {
+      "key": "ap_machine_worlds",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "predicate",
+            "name": "is_machine_empire"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_nomadic"
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_machine_worlds"
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "selection",
+                "category": "Origin",
+                "key": "origin_machine"
+              }
+            ],
+            "failureText": "requires_technology_tech_climate_restoration"
+          },
+          {
+            "kind": "always",
+            "value": true,
+            "failureText": "requires_ascension_perks_2"
+          }
+        ]
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "add_attunement_the_instrument_of_desire": 30
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "add_attunement_the_instrument_of_desire": 30
+        }
+      },
+      "icon": "icons/ascension_perks/ap_machine_worlds.png",
+      "nameKey": "ap_machine_worlds",
+      "descriptionKey": "ap_machine_worlds_desc"
+    },
+    {
+      "key": "ap_hive_worlds",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "predicate",
+            "name": "is_hive_empire"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_nomadic"
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_hive_worlds"
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_hive_devouring_swarm"
+                },
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "selection",
+                    "category": "Origin",
+                    "key": "origin_wilderness"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_wilderness_empire"
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": false,
+            "failureText": "requires_technology_tech_climate_restoration"
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "always",
+                "value": true
+              },
+              {
+                "kind": "selection",
+                "category": "Origin",
+                "key": "origin_fallen_empire_hive"
+              }
+            ],
+            "failureText": "requires_ascension_perks_2"
+          }
+        ]
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "add_attunement_the_composer_of_strands": 30
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "add_attunement_the_composer_of_strands": 30
+        }
+      },
+      "icon": "icons/ascension_perks/ap_hive_worlds.png",
+      "nameKey": "ap_hive_worlds",
+      "descriptionKey": "ap_hive_worlds_desc"
+    },
+    {
+      "key": "ap_arcology_project",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "dlc",
+            "name": "Megacorp"
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "predicate",
+                "name": "is_regular_empire"
+              },
+              {
+                "kind": "selection",
+                "category": "Civics",
+                "key": "civic_machine_servitor"
+              }
+            ]
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "Civics",
+              "key": "civic_agrarian_idyll"
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_arcology_project"
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_nomadic"
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": false,
+            "failureText": "requires_technology_housing_2"
+          },
+          {
+            "kind": "always",
+            "value": true,
+            "failureText": "requires_ascension_perks_2"
+          }
+        ]
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "add_attunement_the_instrument_of_desire": 30
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "add_attunement_the_instrument_of_desire": 30
+        }
+      },
+      "icon": "icons/ascension_perks/ap_arcology_project.png",
+      "nameKey": "ap_arcology_project",
+      "descriptionKey": "ap_arcology_project_desc"
+    },
+    {
+      "key": "ap_xeno_compatibility",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "dlc",
+            "name": "Megacorp"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_xeno_compatibility"
+            }
+          },
+          {
+            "kind": "predicate",
+            "name": "is_regular_empire"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_wilderness_empire"
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_xenophile"
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_xenophile"
+              }
+            ],
+            "failureText": "requires_xenophile"
+          },
+          {
+            "kind": "always",
+            "value": false,
+            "failureText": "requires_xeno_species"
+          },
+          {
+            "kind": "always",
+            "value": false,
+            "failureText": "requires_technology_gene_tailoring"
+          }
+        ]
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "planet_resettlement_unemployed_destination_mult": 0.33,
+          "refugee_attraction": 1,
+          "add_attunement_the_composer_of_strands": 30
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_resettlement_unemployed_destination_mult": 0.33,
+          "refugee_attraction": 1,
+          "add_attunement_the_composer_of_strands": 30
+        }
+      },
+      "icon": "icons/ascension_perks/ap_xeno_compatibility.png",
+      "nameKey": "ap_xeno_compatibility",
+      "descriptionKey": "ap_xeno_compatibility_desc"
+    },
+    {
+      "key": "ap_universal_transactions",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "dlc",
+            "name": "Megacorp"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_universal_transactions"
+            }
+          },
+          {
+            "kind": "predicate",
+            "name": "is_megacorp"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_criminal_syndicate"
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "country_official_cap_add": 1,
+          "planet_branch_offices_cost_mult": -0.15,
+          "add_attunement_the_instrument_of_desire": 30
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "country_official_cap_add": 1,
+          "planet_branch_offices_cost_mult": -0.15,
+          "add_attunement_the_instrument_of_desire": 30
+        }
+      },
+      "icon": "icons/ascension_perks/ap_universal_transactions.png",
+      "nameKey": "ap_universal_transactions",
+      "descriptionKey": "ap_universal_transactions_desc"
+    },
+    {
+      "key": "ap_detox",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "dlc",
+            "name": "Toxoids Species Pack"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_detox"
+                },
+                {
+                  "kind": "always",
+                  "value": false
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_nomadic"
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "always",
+        "value": false,
+        "failureText": "requires_technology_tech_climate_restoration"
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "add_attunement_the_composer_of_strands": 30
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "add_attunement_the_composer_of_strands": 30
+        }
+      },
+      "icon": "icons/ascension_perks/ap_detox.png",
+      "nameKey": "ap_detox",
+      "descriptionKey": "ap_detox_desc"
+    },
+    {
+      "key": "ap_mechromancy",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "dlc",
+            "name": "Necroids Species Pack"
+          },
+          {
+            "kind": "predicate",
+            "name": "is_machine_empire"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_mechromancy"
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "l_slot_weapon_damage_mult": 0.15,
+          "x_slot_weapon_damage_mult": 0.15,
+          "t_slot_weapon_damage_mult": 0.15,
+          "add_attunement_the_eater_of_worlds": 30
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "l_slot_weapon_damage_mult": 0.15,
+          "x_slot_weapon_damage_mult": 0.15,
+          "t_slot_weapon_damage_mult": 0.15,
+          "add_attunement_the_eater_of_worlds": 30
+        }
+      },
+      "icon": "icons/ascension_perks/ap_mechromancy.png",
+      "nameKey": "ap_mechromancy",
+      "descriptionKey": "ap_mechromancy_desc"
+    },
+    {
+      "key": "ap_weather_control",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "dlc",
+            "name": "Cosmic Storms"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "AscensionPerk",
+              "key": "ap_weather_control"
+            }
+          }
+        ]
+      },
+      "possible": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": false,
+            "failureText": "requires_technology_tech_advanced_storm_manipulation"
+          },
+          {
+            "kind": "always",
+            "value": true,
+            "failureText": "requires_ascension_perks_1"
+          }
+        ]
+      },
+      "isPath": false,
+      "effects": {
+        "modifiers": {
+          "add_attunement_the_cradle_of_souls": 30
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "add_attunement_the_cradle_of_souls": 30
+        }
+      },
+      "icon": "icons/ascension_perks/ap_weather_control.png",
+      "nameKey": "ap_weather_control",
+      "descriptionKey": "ap_weather_control_desc"
     }
   ],
   "governmentTypes": [
@@ -187060,9 +192743,7 @@
   "newEmpireTemplate": "\u0022New Empire\u0022=\r\n{\r\n\tkey=\u0022New Empire\u0022\r\n\tship_prefix=\r\n\t{\r\n\t\tkey=\u0022\u0022\r\n\t}\r\n\tspecies=\r\n\t{\r\n\t\tclass=\u0022HUM\u0022\r\n\t\tportrait=\u0022human\u0022\r\n\t\tname_list=\u0022HUM1\u0022\r\n\t\tgender=not_set\r\n\t\ttrait=\u0022trait_organic\u0022\r\n\t}\r\n\tname=\r\n\t{\r\n\t\tkey=\u0022\u0022\r\n\t}\r\n\tadjective=\r\n\t{\r\n\t\tkey=\u0022\u0022\r\n\t}\r\n\tauthority=\u0022auth_democratic\u0022\r\n\tgovernment=\u0022gov_despotic_empire\u0022\r\n\tplanet_name=\r\n\t{\r\n\t\tkey=\u0022\u0022\r\n\t}\r\n\tplanet_class=\u0022pc_continental\u0022\r\n\tship_size=\u0022civilian_arkship_tier_1\u0022\r\n\tsystem_name=\r\n\t{\r\n\t\tkey=\u0022\u0022\r\n\t}\r\n\tinitializer=\u0022\u0022\r\n\tgraphical_culture=\u0022mammalian_01\u0022\r\n\tcity_graphical_culture=\u0022mammalian_01\u0022\r\n\tempire_flag=\r\n\t{\r\n\t\ticon=\r\n\t\t{\r\n\t\t\tcategory=\u0022pointy\u0022\r\n\t\t\tfile=\u0022flag_pointy_2.dds\u0022\r\n\t\t}\r\n\t\tbackground=\r\n\t\t{\r\n\t\t\tcategory=\u0022backgrounds\u0022\r\n\t\t\tfile=\u0022v.dds\u0022\r\n\t\t}\r\n\t\tcolors=\r\n\t\t{\r\n\t\t\t\u0022red\u0022\r\n\t\t\t\u0022black\u0022\r\n\t\t\t\u0022null\u0022\r\n\t\t\t\u0022null\u0022\r\n\t\t}\r\n\t}\r\n\truler=\r\n\t{\r\n\t\tgender=female\r\n\t\tname=\r\n\t\t{\r\n\t\t\tfull_names=\r\n\t\t\t{\r\n\t\t\t\tkey=\u0022\u0022\r\n\t\t\t}\r\n\t\t}\r\n\t\tportrait=\u0022human_female_04\u0022\r\n\t\ttexture=0\r\n\t\tevolution_mask=0\r\n\t\tattachment=0\r\n\t\tclothes=4\r\n\t\tleader_class=official\r\n\t}\r\n\tspawn_as_fallen=no\r\n\tignore_portrait_duplication=no\r\n\troom=\u0022default_room\u0022\r\n\tspawn_enabled=no\r\n\torigin=\u0022origin_default\u0022\r\n}\r\n",
   "unrecognisedTriggers": {},
   "unrecognisedEffectConditions": {
-    "exists": 60,
     "has_active_tradition": 37,
-    "has_tradition": 3,
     "is_species_class": 1,
     "is_scope_valid": 1
   }

@@ -59,6 +59,9 @@ public static class RuleReasons
     /// </remarks>
     public const string NoCivicSlotsLeft = "sem.civic.picks";
 
+    /// <summary>The plan already names as many ascension perks as a game grants.</summary>
+    public const string NoPerkSlotsLeft = "sem.perk.picks";
+
     /// <summary>An origin is already chosen, and an empire has only the one.</summary>
     public const string OriginAlreadyChosen = "sem.origin.chosen";
 
@@ -97,6 +100,7 @@ public static class RuleReasons
             or NoPicksLeft
             or NotEnoughEthicsPoints
             or NoCivicSlotsLeft
+            or NoPerkSlotsLeft
             or OriginAlreadyChosen
             or RulerTraitTaken;
 

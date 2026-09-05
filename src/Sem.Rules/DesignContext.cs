@@ -129,6 +129,41 @@ public sealed class DesignContext
     public IReadOnlySet<string> OwnedDlc { get; private init; } = new HashSet<string>();
 
     /// <summary>
+    /// The ascension perks the plan means to take, which is empty for an empire nobody has planned.
+    /// </summary>
+    /// <remarks>
+    /// Not part of the design and not written by the game. It is here because the game's own
+    /// conditions ask about it: almost every rule keeping two perks apart is written as "not if that
+    /// one is already taken", and a plan is the only thing that can say whether it is. Empty means
+    /// none taken, which makes those conditions pass - which is right.
+    /// </remarks>
+    public IReadOnlySet<string> AscensionPerks { get; private set; } =
+        new HashSet<string>(StringComparer.Ordinal);
+
+    /// <summary>The tradition trees the plan means to open, on the same terms.</summary>
+    public IReadOnlySet<string> TraditionTrees { get; private set; } =
+        new HashSet<string>(StringComparer.Ordinal);
+
+    /// <summary>
+    /// The same design, asked as though a plan named these.
+    /// </summary>
+    /// <remarks>
+    /// A copy rather than a change, because a context is shared - the page holds one and hands it to
+    /// everything that asks a question. The picker needs to ask "what would still be allowed if
+    /// these were taken", which is a different question about the same empire, and the answer must
+    /// not leak back into the one everybody else is holding.
+    /// </remarks>
+    internal DesignContext WithPlan(IEnumerable<string> perks, IEnumerable<string> trees)
+    {
+        var copy = (DesignContext)MemberwiseClone();
+
+        copy.AscensionPerks = new HashSet<string>(perks, StringComparer.Ordinal);
+        copy.TraditionTrees = new HashSet<string>(trees, StringComparer.Ordinal);
+
+        return copy;
+    }
+
+    /// <summary>
     /// True when the empire is a hive mind or a machine intelligence.
     /// </summary>
     /// <remarks>
@@ -162,6 +197,15 @@ public sealed class DesignContext
 
     /// <summary>True when the empire is a megacorporation.</summary>
     public bool IsMegacorp => Authority == "auth_corporate";
+
+    /// <summary>
+    /// A megacorp that took the criminal heritage, which the game asks about by one name.
+    /// </summary>
+    /// <remarks>
+    /// Both halves are things a design holds, so this is answerable here rather than being one more
+    /// question only a game in progress could settle.
+    /// </remarks>
+    public bool IsCriminalSyndicate => IsMegacorp && Civics.Contains("civic_criminal_heritage");
 
     /// <summary>True when the founder species belongs to the wilderness class.</summary>
     public bool IsWildernessEmpire => SpeciesClass == "WILDERNESS";
@@ -258,6 +302,12 @@ public sealed class DesignContext
 
         // An empire being designed is always an ordinary playable country.
         SelectionCategory.CountryType => key == "default",
+
+        // What the plan says is meant to be taken. Empty for a design nobody has planned, which
+        // makes every "not if you have that one" condition pass - correctly, since nothing has been
+        // taken.
+        SelectionCategory.AscensionPerk => AscensionPerks.Contains(key),
+        SelectionCategory.TraditionTree => TraditionTrees.Contains(key),
         _ => false,
     };
 
@@ -270,6 +320,7 @@ public sealed class DesignContext
         DesignPredicates.IsIndividualMachine => IsIndividualMachine,
         DesignPredicates.IsRobotEmpire => IsRobotEmpire,
         DesignPredicates.IsMegacorp => IsMegacorp,
+        DesignPredicates.IsCriminalSyndicate => IsCriminalSyndicate,
         DesignPredicates.IsWildernessEmpire => IsWildernessEmpire,
         DesignPredicates.IsRegularEmpire => true,
         DesignPredicates.IsNomadic => IsNomadic,
@@ -295,6 +346,7 @@ public sealed class DesignContext
         DesignPredicates.IsIndividualMachine or
         DesignPredicates.IsRobotEmpire or
         DesignPredicates.IsMegacorp or
+        DesignPredicates.IsCriminalSyndicate or
         DesignPredicates.IsWildernessEmpire or
         DesignPredicates.IsRegularEmpire or
         DesignPredicates.IsNomadic;

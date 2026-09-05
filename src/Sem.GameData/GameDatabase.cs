@@ -19,7 +19,7 @@ public sealed record GameDatabase
     /// site published with a database one version behind was read anyway, with whatever the shape had
     /// gained since taking its default and no sign that anything was missing.
     /// </remarks>
-    public const int CurrentSchemaVersion = 3;
+    public const int CurrentSchemaVersion = 4;
 
     /// <summary>Version of this file's own shape, so an old cache can be detected and rebuilt.</summary>
     public required int SchemaVersion { get; init; }
@@ -104,6 +104,15 @@ public sealed record GameDatabase
 
     /// <summary>Civics and origins, which the game defines together.</summary>
     public IReadOnlyList<CivicDefinition> Civics { get; init; } = [];
+
+    /// <summary>
+    /// The ascension perks, which a design cannot hold but a plan for one can.
+    /// </summary>
+    /// <remarks>
+    /// Here rather than somewhere apart, because the rules read them the same way they read civics:
+    /// a list of things with conditions on them, some of which rule others out.
+    /// </remarks>
+    public IReadOnlyList<AscensionPerkDefinition> AscensionPerks { get; init; } = [];
 
     /// <summary>
     /// Government types, in the order the game would consider them. The designer derives the
@@ -233,6 +242,17 @@ public sealed record GameDatabase
             yield return authority.Possible;
         }
 
+        foreach (var perk in AscensionPerks)
+        {
+            yield return perk.Potential;
+            yield return perk.Possible;
+
+            foreach (var conditional in perk.Effects.Conditional)
+            {
+                yield return conditional.When;
+            }
+        }
+
         foreach (var civic in Civics)
         {
             yield return civic.Playable;
@@ -293,6 +313,15 @@ public sealed record GameDefines
 
     /// <summary>How many civics an empire may take. Two in an unmodified game.</summary>
     public required int CivicPoints { get; init; }
+
+    /// <summary>
+    /// How many ascension perks a game allows. Eight in an unmodified one.
+    /// </summary>
+    /// <remarks>
+    /// Not required, unlike the two above, so that the databases tests build by hand do not all have
+    /// to know about a number none of them cares about.
+    /// </remarks>
+    public int AscensionPerkSlots { get; init; } = 8;
 
     /// <summary>The planet class the city appearance preview defaults to.</summary>
     public string? DefaultCityPreviewPlanetClass { get; init; }
@@ -761,6 +790,44 @@ public sealed record AuthorityDefinition(string Key)
 }
 
 /// <summary>A civic, or an origin, which the game defines in the same files.</summary>
+/// <summary>
+/// One ascension perk: something a game grants over time, and a plan may say it means to take.
+/// </summary>
+/// <remarks>
+/// The game has no name for a perk apart from its key - the key is the localisation entry - and no
+/// icon field either; the picture is a sprite named after it, which is not always named after the
+/// file it draws.
+/// </remarks>
+public sealed record AscensionPerkDefinition(string Key)
+{
+    /// <summary>Whether it appears in the list at all, which is mostly a check on owning content.</summary>
+    public Requirement Potential { get; init; } = new AlwaysRequirement(true);
+
+    /// <summary>
+    /// Whether it may be taken given everything else. A perk failing this is shown but blocked,
+    /// with the game's own explanation of why.
+    /// </summary>
+    public Requirement Possible { get; init; } = new AlwaysRequirement(true);
+
+    /// <summary>The game's own grouping, which is how the ascension paths are known.</summary>
+    public string? Category { get; init; }
+
+    /// <summary>Whether taking this puts an empire on an ascension path.</summary>
+    public bool IsPath { get; init; }
+
+    /// <summary>What it does, and how the game describes it.</summary>
+    public EffectSet Effects { get; init; } = EffectSet.None;
+
+    /// <summary>Where its picture was written, if it has one.</summary>
+    public string? Icon { get; init; }
+
+    /// <summary>The key is the name, which is unusual and is the game's doing.</summary>
+    public string NameKey => Key;
+
+    /// <summary>And the description hangs off it.</summary>
+    public string DescriptionKey => $"{Key}_desc";
+}
+
 public sealed record CivicDefinition(string Key, bool IsOrigin)
 {
     /// <summary>Whether this is offered at all, usually a check on owning content.</summary>

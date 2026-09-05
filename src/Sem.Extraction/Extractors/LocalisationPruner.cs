@@ -137,6 +137,17 @@ internal static partial class LocalisationPruner
         Add("TRADITIONS");
         Add("ASCENSION_PERKS");
 
+        foreach (var perk in database.AscensionPerks)
+        {
+            Add(perk.NameKey);
+            Add(perk.DescriptionKey);
+
+            // The sentences behind a blocked perk, which are the game's own words for why.
+            AddRequirement(perk.Potential);
+            AddRequirement(perk.Possible);
+            AddEffects(perk.Effects);
+        }
+
         foreach (var archetype in database.Archetypes)
         {
             Add(archetype.NameKey);

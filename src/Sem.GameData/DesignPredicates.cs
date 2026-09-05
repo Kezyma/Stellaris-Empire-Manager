@@ -29,6 +29,9 @@ public static class DesignPredicates
     /// <summary>The empire uses the corporate authority.</summary>
     public const string IsMegacorp = "is_megacorp";
 
+    /// <summary>A megacorp built on crime, which is the corporate authority and one civic.</summary>
+    public const string IsCriminalSyndicate = "is_criminal_syndicate";
+
     /// <summary>The empire's founder species is of the wilderness class.</summary>
     public const string IsWildernessEmpire = "is_wilderness_empire";
 
@@ -47,6 +50,7 @@ public static class DesignPredicates
         IsIndividualMachine,
         IsRobotEmpire,
         IsMegacorp,
+        IsCriminalSyndicate,
         IsWildernessEmpire,
         IsRegularEmpire,
         IsNomadic,
@@ -77,6 +81,44 @@ public static class DesignPredicates
         "has_country_flag",
         "has_global_flag",
         "has_planet_flag",
+
+        // Things a game in progress has and a design does not. The ascension perks ask about all of
+        // these, because they are written to be judged in the middle of a game - and at the point an
+        // empire is being planned, none of them has happened yet.
+        "country_has_situation",
+        "any_situation",
+        "any_relation",
+        "has_technology",
+
+        // The crisis path's own perks, which are a separate track a design cannot be on.
+        "has_menace_perk",
+
+        // Positions and relationships the galaxy hands out once a game is running.
+        "is_subject",
+        "is_galactic_custodian",
+        "is_galactic_emperor",
+
+        // Scopes over things a design has none of: pops, fleets, other countries.
+        "exists",
+        "species",
+        "any_owned_pop_group",
+        "uses_ship_category",
+    };
+
+    /// <summary>
+    /// Counts of things taken so far, which a plan cannot answer the way a game can.
+    /// </summary>
+    /// <remarks>
+    /// Every one of these in the ascension perks is a lower bound - "you must already have two" -
+    /// which is about the order a game grants things in, not about whether two choices can sit
+    /// together. A plan names what an empire is aiming at, so refusing the first perk for not
+    /// following two others would refuse every plan at its first step. They are read as satisfied,
+    /// and what the plan may hold in total is the budget's business instead.
+    /// </remarks>
+    public static IReadOnlySet<string> CountedInAGameNotAPlan { get; } = new HashSet<string>(StringComparer.Ordinal)
+    {
+        "num_ascension_perks",
+        "num_tradition_categories",
     };
 
     /// <summary>

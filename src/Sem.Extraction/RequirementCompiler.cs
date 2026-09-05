@@ -50,6 +50,12 @@ public sealed class RequirementCompiler
         ["has_origin"] = SelectionCategory.Origin,
         ["has_trait"] = SelectionCategory.Traits,
         ["has_species_class"] = SelectionCategory.SpeciesClass,
+
+        // Answerable because a plan answers them. Both were unreadable while an empire was only a
+        // design - nothing in a design says which perks a game would grant - and both become
+        // ordinary questions once the plan says which are meant to be taken.
+        ["has_ascension_perk"] = SelectionCategory.AscensionPerk,
+        ["has_tradition"] = SelectionCategory.TraditionTree,
     };
 
     private readonly Dictionary<string, CwBlock> _scriptedTriggers = new(StringComparer.Ordinal);
@@ -306,8 +312,26 @@ public sealed class RequirementCompiler
                 return new NotRequirement(CompileTrigger(node.Block, depth + 1));
 
             // Triggers that name a scope rather than a condition; the design is always the country.
-            case "country" or "owner" or "this" or "root" or "from" when node.Block is not null:
+            // owner_species among them: the species a design's questions are about is its founder,
+            // which is the species this context already answers for.
+            case "country" or "owner" or "this" or "root" or "from" or "owner_species"
+                when node.Block is not null:
                 return CompileTrigger(node.Block, depth + 1);
+
+            // "custom_tooltip = { fail_text = "..." <conditions> }" is the game giving one rule a
+            // sentence of its own. The conditions inside are the rule and the text is what to say
+            // when it fails, which is exactly the shape a requirement already has - so unwrapping it
+            // is what turns almost every ascension perk's exclusions from unreadable into enforced.
+            case "custom_tooltip" when node.Block is not null:
+                return WithText(
+                    CompileTriggerExcluding(node.Block, "fail_text", depth + 1),
+                    node.Block.Nodes.FirstOrDefault(n => n.Key == "fail_text")?.ScalarValue);
+
+            // The other half of an if, which the game uses to say "and otherwise, this instead".
+            // Read permissively: an else branch is an alternative rather than a requirement, and
+            // treating one as a rule would block an option the game would allow.
+            case "else" or "else_if" when node.Block is not null:
+                return new AlwaysRequirement(true);
 
             // An empire being designed is always an ordinary playable country.
             case "is_country_type" when node.ScalarValue is { } countryType:
@@ -345,6 +369,15 @@ public sealed class RequirementCompiler
         }
 
         if (DesignPredicates.AssumedTrueInDesigner.Contains(key))
+        {
+            return new AlwaysRequirement(true);
+        }
+
+        // A count of what has been taken so far, which is a question about the order a game hands
+        // things out in rather than about whether two choices can sit together. Every one of these
+        // in the ascension perks is a lower bound, so reading them as unmet would refuse a plan its
+        // own first step.
+        if (DesignPredicates.CountedInAGameNotAPlan.Contains(key))
         {
             return new AlwaysRequirement(true);
         }
