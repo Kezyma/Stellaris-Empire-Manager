@@ -52,8 +52,7 @@
         *@
         <div class="sem-field flush search">
             <label for="empire-search">Search</label>
-            <input id="empire-search" type="text" placeholder="Any word anyone typed"
-                   value="@Filter.Search"
+            <input id="empire-search" type="text" value="@Filter.Search"
                    @oninput="e => Search(e.Value?.ToString())" />
         </div>
 
@@ -91,16 +90,6 @@
             </div>
         }
     </div>
-
-    @*
-        Said once, here, rather than under every control. Two civics means either, and a civic and
-        an ethic means both - which is what a set of tick boxes reads as, but not what everyone
-        assumes, and the assumption is only visible in a result nobody can explain.
-    *@
-    <p class="sem-hint">
-        Any of the things ticked under one heading, unless it is switched to all; and always all of
-        the headings you use.
-    </p>
     </div>
 </div>
 

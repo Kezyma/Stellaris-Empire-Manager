@@ -531,7 +531,7 @@ button.danger:hover:not(:disabled) {
     outline-offset: 1px;
 }
 
-input[type="text"], select, textarea {
+input[type="text"], input[type="number"], select, textarea {
     font: inherit;
     color: var(--text);
     background: var(--bg);
@@ -3449,26 +3449,20 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
-   What was chosen, drawn as the chips it is rather than counted, on one line that scrolls.
+   What was chosen, drawn as the chips it is rather than counted, and wrapping onto as many lines as
+   it takes.
 
-   Wrapped, a heading with six things ticked was three rows tall and pushed everything under it
-   down the card - so the control a reader was looking at changed height as they ticked it. One
-   line keeps every filter in the row the same height whatever is in it, and the ones that do not
-   fit are a drag away rather than a redesign.
+   It scrolled on one line for a while, which kept every filter the same height - and hid whichever
+   choices did not fit behind a gesture nobody makes. A card whose whole job is saying what is being
+   asked for cannot keep half the answer off the end of a line. The control grows instead.
 */
 .sem-combo.sem-multi .face {
     display: flex;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     gap: var(--space-2xs);
 
     flex: 1;
     min-width: 0;
-    overflow-x: auto;
-    scrollbar-width: none;
-}
-
-.sem-combo.sem-multi .face::-webkit-scrollbar {
-    display: none;
 }
 
 /* The label standing in for a choice is one line of text, and elides rather than scrolling. */
@@ -3622,21 +3616,31 @@ button.icon .sem-action-icon { display: block; }
     background: var(--bg-panel);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: var(--gap);
+    padding: var(--space-md);
     margin-bottom: var(--gap);
 }
 
+/*
+   A line, not a banner. It is the lid on a box of controls rather than a section of the page, and
+   at a heading's size with a heading's room around it the card announced itself more loudly than
+   the empires underneath.
+*/
 .sem-filters > .head {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
     gap: var(--space-md);
-    margin-bottom: var(--space-md);
+    margin-bottom: var(--space-sm);
 }
 
 .sem-filters > .head h2 {
     margin: 0;
-    font-size: var(--text-lg);
+    font-size: var(--text-md);
+}
+
+/* Nothing under the line when there is nothing under the line. */
+.sem-filters:not(.open) > .head {
+    margin-bottom: 0;
 }
 
 /*
@@ -3843,9 +3847,10 @@ button.icon .sem-action-icon { display: block; }
     text-decoration: underline;
 }
 
+/* Sized to the digits it holds; everything else about it is the app's own input. */
 .sem-table .index input {
-    width: 4rem;
-    padding: 0 var(--space-2xs);
+    width: 4.5rem;
+    padding: var(--space-2xs) var(--space-sm);
     font-variant-numeric: tabular-nums;
     text-align: right;
 }
@@ -3918,6 +3923,31 @@ button.icon .sem-action-icon { display: block; }
 .sem-table .sem-chip {
     display: inline-block;
     margin-right: var(--space-2xs);
+}
+
+/*
+   A table too wide for its box drops the words off every chip that has a picture.
+
+   The picture is most of what a chip says - a player knows an ethic by its icon long before they
+   read it - and the word beside it is what makes the column three times as wide. So the words go
+   first, and the table scrolls only once even the pictures will not fit. Which chips lose them is
+   asked of the chip: one with no icon keeps its word, since without it there would be nothing left.
+
+   Whether the table is too wide is not a question CSS can ask, so the class comes from a script
+   that measures it with the words on. What that script must not do is written down beside it.
+*/
+.sem-table-wrap.compact .sem-chip > button:has(img) > span,
+.sem-table-wrap.compact .sem-cell-chip:has(.sem-icon) > span {
+    display: none;
+}
+
+/* With the word gone the padding round it is a chip that is wider than it is tall. */
+.sem-table-wrap.compact .sem-chip > button:has(img) {
+    padding: var(--space-2xs);
+}
+
+.sem-table-wrap.compact .sem-cell-chip:has(.sem-icon) {
+    padding: 1px var(--space-2xs);
 }
 
 /*

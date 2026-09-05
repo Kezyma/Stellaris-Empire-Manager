@@ -61,17 +61,24 @@
                             <td class="index" @onclick:stopPropagation="true">
                                 @if (_moving == row.Design)
                                 {
+                                    @*
+                                        focusout rather than blur. Blur does not bubble, and the
+                                        handler simply never ran: the box was focused, the focus
+                                        left it, and the number stayed a box for the rest of the
+                                        session. focusout is the same moment and does bubble.
+                                    *@
                                     <input type="number" min="1" max="@Math.Max(1, Total)"
-                                           value="@row.Position" autofocus
+                                           value="@row.Position" @ref="_spinner"
                                            @onchange="e => Move(row, e.Value?.ToString())"
-                                           @onblur="() => _moving = null" />
+                                           @onfocusout="() => _moving = null"
+                                           @onkeydown="Leave" />
                                 }
                                 else if (OnMove.HasDelegate)
                                 {
                                     <button type="button" class="sem-position"
                                             title="@($"Move {row.Name} somewhere else in the file")"
                                             aria-label="@($"{row.Name} is number {row.Position}. Move it.")"
-                                            @onclick="() => _moving = row.Design">@row.Position</button>
+                                            @onclick="() => Edit(row)">@row.Position</button>
                                 }
                                 else
                                 {
@@ -125,7 +132,8 @@
                                             }
                                             else
                                             {
-                                                <span class="sem-cell-chip" @key="choice.Key">
+                                                <span class="sem-cell-chip" @key="choice.Key"
+                                                      title="@choice.Name">
                                                     @if (choice.Icon is { Length: > 0 })
                                                     {
                                                         <GameIcon Path="@choice.Icon" Alt="" />
@@ -233,6 +241,41 @@
     /// <summary>Which empire's number is being typed into, and nothing while none is.</summary>
     private EmpireDesign? _moving;
 
+    /// <summary>The box that number goes in, so it can be given the keyboard when it appears.</summary>
+    private ElementReference _spinner;
+
+    /// <summary>Handed to the script that watches for a press outside the open box.</summary>
+    private DotNetObjectReference<EmpireTable>? _self;
+
+    /// <summary>
+    /// Puts the number back, the reader having pressed something else.
+    /// </summary>
+    /// <remarks>
+    /// Called from the page rather than from the box losing focus. Focus was the obvious signal and
+    /// turned out not to be a dependable one - blur does not bubble, and focusout wants the window
+    /// to be the focused one - so a number pressed once stayed a box for the rest of the session.
+    /// </remarks>
+    [JSInvokable]
+    public void StopMoving()
+    {
+        if (_moving is null)
+        {
+            return;
+        }
+
+        _moving = null;
+        StateHasChanged();
+    }
+
+    /// <summary>Whether it is waiting to be focused, which is true for exactly one render.</summary>
+    /// <remarks>
+    /// Focused from here rather than with the autofocus attribute, which the browser only honours
+    /// for an element that was in the document when the page loaded. On one put there afterwards it
+    /// does nothing at all - so the box never had the keyboard, never lost it, and never fired the
+    /// blur that was supposed to close it. Pressing a number left it editable for good.
+    /// </remarks>
+    private bool _focusSpinner;
+
     /// <summary>The name column's sort key, which is not in the picker and so has none of its own.</summary>
     private const string NameColumn = "name";
 
@@ -274,6 +317,20 @@
                 "import", "./_content/Sem.Ui/sem.js").ConfigureAwait(true);
 
             await _module.InvokeVoidAsync("bindPopoversWhenPointed", _wrap).ConfigureAwait(true);
+
+            _self ??= DotNetObjectReference.Create(this);
+            await _module.InvokeVoidAsync("closeSpinnerOnOutsidePress", _wrap, _self)
+                .ConfigureAwait(true);
+
+            // Every render, because what fits changes with the columns as well as with the window,
+            // and only one of those is something the browser can watch for itself.
+            await _module.InvokeVoidAsync("fitTableToWidth", _wrap).ConfigureAwait(true);
+
+            if (_focusSpinner)
+            {
+                _focusSpinner = false;
+                await _spinner.FocusAsync().ConfigureAwait(true);
+            }
         }
         catch (JSDisconnectedException)
         {
@@ -283,6 +340,8 @@
 
     public async ValueTask DisposeAsync()
     {
+        _self?.Dispose();
+
         if (_module is null)
         {
             return;
@@ -396,6 +455,22 @@
     /// not work. Counting from one here and from zero in the file, which is the one place that has
     /// to be translated.
     /// </remarks>
+    /// <summary>Puts the number back without moving anything, for somebody who changed their mind.</summary>
+    private void Leave(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape")
+        {
+            _moving = null;
+        }
+    }
+
+    /// <summary>Turns one row's number into a box, and asks for the keyboard to be put in it.</summary>
+    private void Edit(EmpireRow row)
+    {
+        _moving = row.Design;
+        _focusSpinner = true;
+    }
+
     private async Task Move(EmpireRow row, string? typed)
     {
         _moving = null;

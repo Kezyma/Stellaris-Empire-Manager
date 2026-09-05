@@ -259,6 +259,85 @@ export function viewportWidth() {
 }
 
 /**
+ * Puts a table's open number box away when the next press lands somewhere else.
+ *
+ * The obvious way to do this is the focus leaving the box, and that is what it did at first. It is
+ * not reliable enough: blur does not bubble, and focusout depends on the document having the
+ * window's focus at all - so a box opened, focused and then left alone stayed a box.
+ *
+ * A press is something the page can always see. This is the same listener the suggestion lists use
+ * and for the same reason, captured so that nothing inside the page can stop it arriving first.
+ *
+ * @param {HTMLElement} wrap the box around the table
+ * @param {object} owner what to tell when the press was outside
+ */
+export function closeSpinnerOnOutsidePress(wrap, owner) {
+    if (!wrap || wrap.dataset.semSpinner) {
+        return;
+    }
+
+    wrap.dataset.semSpinner = 'on';
+
+    document.addEventListener('pointerdown', event => {
+        const open = wrap.querySelector('td.index input');
+
+        // The cell rather than the box, so the arrows a number box draws inside itself are a press
+        // on the thing being typed into rather than a press somewhere else.
+        if (open && !event.target.closest?.('td.index')) {
+            owner.invokeMethodAsync('StopMoving');
+        }
+    }, true);
+}
+
+/**
+ * Drops the labels off a table's chips when the table would otherwise scroll.
+ *
+ * A chip with an icon says most of what it says in the picture; the word beside it is what makes a
+ * column of them three times as wide. So the words go first, and only once there is no room - a
+ * table that fits keeps them, and one that has been narrowed until it fits gets them back.
+ *
+ * Measured with the labels on, every time, so the answer never depends on the answer before it.
+ * That is what stops it flickering between the two: the question asked is always "does the full
+ * table fit", not "does the table as it currently is".
+ *
+ * The box is watched rather than the table inside it. The box is as wide as the page gives it and
+ * does not change when the table within grows, so nothing here can set off the observer that called
+ * it - which a naive version of this does, for ever.
+ *
+ * @param {HTMLElement} wrap the scrolling box around the table
+ */
+export function fitTableToWidth(wrap) {
+    if (!wrap) {
+        return;
+    }
+
+    if (wrap.semFit) {
+        wrap.semFit();
+        return;
+    }
+
+    const fit = () => {
+        const table = wrap.querySelector('table');
+
+        if (!table) {
+            return;
+        }
+
+        wrap.classList.remove('compact');
+
+        // A pixel of slack, because a table measured against its own box is comparing two numbers
+        // that rounding can put either side of each other.
+        if (table.scrollWidth > wrap.clientWidth + 1) {
+            wrap.classList.add('compact');
+        }
+    };
+
+    wrap.semFit = fit;
+    new ResizeObserver(fit).observe(wrap);
+    fit();
+}
+
+/**
  * Closes an open suggestion list when the next press lands outside it.
  *
  * The list itself is drawn or not drawn by the component, on a flag the component owns. What this
