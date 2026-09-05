@@ -424,3 +424,111 @@ export async function copyText(text) {
         return false;
     }
 }
+
+/**
+ * Lets the cards in a list be dragged into a new order by their grips.
+ *
+ * Pointer events rather than HTML5 drag and drop, for two reasons. The card is a button and a
+ * browser will not begin a drag from inside one, which is why dragging the card did nothing at all.
+ * And HTML5 dragging is a mouse feature: it does not fire for a finger, on any browser, and this
+ * list is a single column on a phone. One pointer path covers a mouse, a finger and a pen.
+ *
+ * Which card the pointer is over is the one question C# cannot answer for itself, so the work is
+ * here and only the two positions go back.
+ *
+ * @param {HTMLElement} list the container holding the cards
+ * @param {object} owner what to tell when a card has been moved
+ */
+export function enableCardReorder(list, owner) {
+    if (!list || list.dataset.semReorder) {
+        return;
+    }
+
+    list.dataset.semReorder = 'on';
+
+    let held = null;
+    let from = -1;
+    let onto = -1;
+
+    const cardAt = (x, y) => document.elementFromPoint(x, y)?.closest('[data-index]');
+
+    const positionOf = card => Number.parseInt(card.dataset.index, 10);
+
+    const release = () => {
+        held?.classList.remove('lifted');
+
+        for (const marked of list.querySelectorAll('.over')) {
+            marked.classList.remove('over');
+        }
+
+        held = null;
+        from = -1;
+        onto = -1;
+    };
+
+    list.addEventListener('pointerdown', event => {
+        const grip = event.target.closest?.('[data-grip]');
+
+        if (!grip) {
+            return;
+        }
+
+        const card = grip.closest('[data-index]');
+
+        if (!card) {
+            return;
+        }
+
+        // Or the browser takes the gesture for itself: selecting text with a mouse, scrolling the
+        // page with a finger. The grip also carries touch-action:none, which is the half of this
+        // that a listener cannot do.
+        event.preventDefault();
+
+        held = card;
+        from = positionOf(card);
+        onto = from;
+        card.classList.add('lifted');
+
+        // So the rest of the gesture keeps arriving here even once the finger has left the grip,
+        // which it does immediately.
+        grip.setPointerCapture(event.pointerId);
+    });
+
+    list.addEventListener('pointermove', event => {
+        if (!held) {
+            return;
+        }
+
+        const over = cardAt(event.clientX, event.clientY);
+
+        if (!over || over === held) {
+            return;
+        }
+
+        for (const marked of list.querySelectorAll('.over')) {
+            marked.classList.remove('over');
+        }
+
+        over.classList.add('over');
+        onto = positionOf(over);
+    });
+
+    list.addEventListener('pointerup', () => {
+        if (!held) {
+            return;
+        }
+
+        const start = from;
+        const end = onto;
+
+        release();
+
+        if (end >= 0 && end !== start) {
+            owner.invokeMethodAsync('Reorder', start, end);
+        }
+    });
+
+    // A cancelled pointer is the system taking the gesture away - a phone call, a gesture the OS
+    // claimed. Nothing moves, and the card goes back to looking like the others.
+    list.addEventListener('pointercancel', release);
+}

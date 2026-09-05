@@ -55,21 +55,20 @@
     }
 
     @*
-        Dragging is the quick way and it is only a way for some: a finger cannot do it, and neither
-        can a keyboard. These two can do both, and being ordinary buttons they are in the tab order
-        already - so the list can be reordered without a pointer at all.
+        Something to take hold of. The card itself is a button, and a browser will not begin a drag
+        from inside one - which is why dragging the card did nothing at all: there was nowhere on it
+        to grab.
+
+        A button rather than a bare handle, so it is in the tab order like everything else here: the
+        arrow keys move the card once it has focus, which is the whole of what the two arrow buttons
+        did and none of the space they took.
     *@
     @if (OnMove.HasDelegate)
     {
-        <div class="sem-empire-order">
-            <button type="button" class="icon" disabled="@IsFirst"
-                    title="@($"Move {Name} up")" aria-label="@($"Move {Name} up")"
-                    @onclick="() => OnMove.InvokeAsync(-1)">▴</button>
-
-            <button type="button" class="icon" disabled="@IsLast"
-                    title="@($"Move {Name} down")" aria-label="@($"Move {Name} down")"
-                    @onclick="() => OnMove.InvokeAsync(1)">▾</button>
-        </div>
+        <button type="button" class="sem-empire-grip" data-grip
+                title="@($"Drag to move {Name}, or use the arrow keys")"
+                aria-label="@($"Move {Name}. Drag, or press the up and down arrow keys.")"
+                @onkeydown="Nudge">⠿</button>
     }
 </div>
 
@@ -85,13 +84,13 @@
     [Parameter]
     public EventCallback<int> OnMove { get; set; }
 
-    /// <summary>Whether there is nowhere above to go, which greys the control rather than hiding it.</summary>
-    [Parameter]
-    public bool IsFirst { get; set; }
-
-    /// <summary>Whether there is nowhere below to go.</summary>
-    [Parameter]
-    public bool IsLast { get; set; }
+    /// <summary>Moves the card with the arrow keys, for anyone who cannot drag one.</summary>
+    private Task Nudge(KeyboardEventArgs key) => key.Key switch
+    {
+        "ArrowUp" or "ArrowLeft" => OnMove.InvokeAsync(-1),
+        "ArrowDown" or "ArrowRight" => OnMove.InvokeAsync(1),
+        _ => Task.CompletedTask,
+    };
 
     /// <summary>The empire's flag, drawn as the game draws one.</summary>
     [Parameter]

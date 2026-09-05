@@ -1295,53 +1295,52 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 }
 
 /*
-   Up and down, under the share button and hidden by the same rule.
+   Somewhere to take hold of the card.
 
-   Dragging is the quick way to reorder and it is only a way for some - a finger cannot drag a card
-   and neither can a keyboard - so these are the way that always works.
+   The card is a button, and a browser will not begin a drag from inside one - so with the whole
+   face of the card being that button there was nothing to grab, and dragging did nothing at all.
+   This is the part that is not the button.
 
-   Side by side at the bottom, with the share button alone at the top. Stacked into a column they
-   ran into it: a card is 71 pixels tall and three controls of 28 do not fit one above another, so
-   the up arrow sat underneath the share and could be neither seen nor pressed. Measured, not
-   guessed at.
-
-   Disabled rather than removed at the ends of the list, so the pair does not change size under the
-   pointer as a card moves.
+   touch-action:none is half of what stops a finger scrolling the page instead of moving the card;
+   preventDefault on the pointer press is the other half, and neither works without the other.
 */
-.sem-empire-order {
+.sem-empire-grip {
     position: absolute;
     right: var(--space-xs);
     bottom: var(--space-xs);
-    display: flex;
-    gap: 1px;
-    opacity: 0;
-}
-
-.sem-empire-order button {
     background: var(--bg-panel);
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
+    color: var(--text-faint);
+    font: inherit;
     line-height: 1;
-    padding: 1px var(--space-xs);
+    padding: 2px var(--space-xs);
+    cursor: grab;
+    touch-action: none;
+    opacity: 0;
 }
 
-.sem-empire-order button:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-}
+.sem-empire-grip:hover { color: var(--text); }
 
-.sem-empire-slot:hover .sem-empire-order,
-.sem-empire-slot:focus-within .sem-empire-order {
+.sem-empire-grip:active { cursor: grabbing; }
+
+.sem-empire-slot:hover .sem-empire-grip,
+.sem-empire-slot:focus-within .sem-empire-grip {
     opacity: 1;
 }
 
 /*
-   The card while it is being carried. Enough to say which one is in the air without moving anything
-   else, since the list re-lays itself out the moment it lands.
+   The card while it is being carried, and the one it would land on. Enough to say which is which
+   without moving anything else, since the list re-lays itself out the moment it lands.
 */
 .sem-empire-drag.lifted .sem-empire {
     opacity: 0.4;
     border-color: var(--accent);
+}
+
+.sem-empire-drag.over .sem-empire {
+    border-color: var(--accent);
+    box-shadow: inset 0 0 0 1px var(--accent-dim);
 }
 
 /*
@@ -1352,11 +1351,10 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 */
 @media (hover: none) {
     .sem-empire-share,
-    .sem-empire-order { opacity: 1; }
+    .sem-empire-grip { opacity: 1; }
 
-    /* Two of them side by side now, so the card gives up twice the width. */
     .sem-empire-slot .sem-empire {
-        padding-right: calc((var(--icon-btn) * 2) + var(--space-lg));
+        padding-right: calc(var(--icon-btn) + var(--space-lg));
     }
 }
 

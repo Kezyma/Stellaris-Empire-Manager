@@ -1,4 +1,7 @@
+@using Microsoft.JSInterop
 @implements IDisposable
+@implements IAsyncDisposable
+@inject IJSRuntime Js
 
 @*
     The empires in the loaded file, with whichever ones the game would refuse marked as such.
@@ -20,11 +23,15 @@
     else
     {
         @*
-            Dropping is allowed anywhere in the list, and the card the pointer is over decides where
-            the dragged one lands. preventDefault on dragover is what makes a target a target at
-            all - without it the browser refuses every drop and nothing says why.
+            Reordering is driven by pointer events rather than by HTML5 drag and drop, and the grip
+            is the reason: dragging is the only way to reorder now, and HTML5 dragging does nothing
+            whatever on a touch screen. One pointer path covers a mouse, a finger and a pen, and the
+            arrow keys on the grip cover anyone who has none of them.
+
+            Which card the pointer is over is a question only the browser can answer, so the
+            listening is in sem.js and it reports back the two positions.
         *@
-        <div class="sem-empires">
+        <div class="sem-empires" @ref="_list">
             @for (var position = 0; position < Session.File.Designs.Count; position++)
             {
                 var index = position;
@@ -37,14 +44,7 @@
                 *@
                 var context = Read(design);
 
-                <div class="sem-empire-drag @(ReferenceEquals(design, _dragging) ? "lifted" : null)"
-                     draggable="true"
-                     @key="design"
-                     @ondragstart="() => _dragging = design"
-                     @ondragend="() => _dragging = null"
-                     @ondragover:preventDefault="true"
-                     @ondragover="() => { }"
-                     @ondrop="() => Drop(index)">
+                <div class="sem-empire-drag" data-index="@index" @key="design">
                 <EmpireCard Flag="@design.Flag"
                             Portrait="@Thumbnail(design)"
                             Name="@Session.Localizer.Name(design.Name, design.Key)"
@@ -54,8 +54,6 @@
                             Broken="@(!Session.Rules.Validate(context, design).IsValid)"
                             OnCopyLink="@(OnCopyLink.HasDelegate ? EventCallback.Factory.Create(this, () => OnCopyLink.InvokeAsync(design)) : default)"
                             CopyTitle="@(CopyTitle?.Invoke(design) ?? "Copy a link to this empire")"
-                            IsFirst="@(index == 0)"
-                            IsLast="@(index == Session.File.Designs.Count - 1)"
                             OnMove="@(by => Move(design, index + by))"
                             OnClick="() => Choose(design)" />
                 </div>
@@ -93,6 +91,38 @@
 
     public void Dispose() => Session.Changed -= OnChanged;
 
+    /// <summary>
+    /// Lets go of the script and of the reference it was calling back through.
+    /// </summary>
+    /// <remarks>
+    /// The renderer calls this one rather than the other when a component has both, so it does the
+    /// unsubscribing too - as the empire list on the front page does. Disconnection is caught
+    /// because a page that has already gone cannot be told anything.
+    /// </remarks>
+    public async ValueTask DisposeAsync()
+    {
+        Dispose();
+
+        _self?.Dispose();
+        _self = null;
+
+        if (_module is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await _module.DisposeAsync().ConfigureAwait(false);
+        }
+        catch (JSDisconnectedException)
+        {
+            // Nothing left to release.
+        }
+
+        _module = null;
+    }
+
     private void OnChanged()
     {
         // What the rules make of an empire only changes when the empire or the packs do, and both
@@ -122,17 +152,56 @@
 
     private readonly Dictionary<EmpireDesign, DesignContext> _read = [];
 
-    /// <summary>The empire a drag is carrying, or nothing while none is in the air.</summary>
-    private EmpireDesign? _dragging;
+    private ElementReference _list;
+    private IJSObjectReference? _module;
+    private DotNetObjectReference<EmpireBrowser>? _self;
 
-    /// <summary>Puts the dragged empire where the card it was dropped on sits.</summary>
-    private void Drop(int index)
+    /// <summary>
+    /// Hands the list to the script that watches its grips for a drag.
+    /// </summary>
+    /// <remarks>
+    /// Once, and only after there is a list to hand over. The script guards against being asked
+    /// twice, as the one that closes open dropdowns does.
+    /// </remarks>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (_dragging is { } design)
+        if (!firstRender)
         {
-            Move(design, index);
-            _dragging = null;
+            return;
         }
+
+        try
+        {
+            _module = await Js.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/Sem.Ui/sem.js").ConfigureAwait(true);
+
+            _self = DotNetObjectReference.Create(this);
+
+            await _module.InvokeVoidAsync("enableCardReorder", _list, _self).ConfigureAwait(true);
+        }
+        catch (JSDisconnectedException)
+        {
+            // The page went away first; there is nothing left to drag.
+        }
+    }
+
+    /// <summary>
+    /// Called from the script when a card has been dragged from one position to another.
+    /// </summary>
+    /// <remarks>
+    /// Positions rather than keys, because the script knows where the cards sit and nothing else
+    /// about them. Checked rather than trusted: what arrives is whatever the page said.
+    /// </remarks>
+    [JSInvokable]
+    public void Reorder(int from, int to)
+    {
+        if (Session.File?.Designs is not { } designs
+            || from < 0 || from >= designs.Count || to < 0 || to >= designs.Count)
+        {
+            return;
+        }
+
+        Move(designs[from], to);
     }
 
     /// <summary>Moves an empire, and tells whoever is showing the list to draw it again.</summary>
