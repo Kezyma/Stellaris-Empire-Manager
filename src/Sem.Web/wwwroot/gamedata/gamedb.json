@@ -1,11 +1,12 @@
 {
-  "schemaVersion": 4,
+  "schemaVersion": 5,
   "gameVersion": "v4.4.6",
-  "extractorVersion": "0.1.0\u002B1d3cb3bffd3e4b9e9cde8fc20e5f507d508c47c6",
+  "extractorVersion": "0.1.0\u002Bf2fd0f0f2465cc606b0ad87a7a06b3d394fb9127",
   "defines": {
     "ethicsPoints": 3,
     "civicPoints": 2,
     "ascensionPerkSlots": 8,
+    "traditionSlots": 7,
     "defaultCityPreviewPlanetClass": "pc_continental",
     "cityPopLevel": 4
   },
@@ -105838,6 +105839,2601 @@
       "icon": "icons/ascension_perks/ap_weather_control.png",
       "nameKey": "ap_weather_control",
       "descriptionKey": "ap_weather_control_desc"
+    }
+  ],
+  "traditionTrees": [
+    {
+      "key": "tradition_adaptability",
+      "potential": {
+        "kind": "not",
+        "item": {
+          "kind": "predicate",
+          "name": "is_machine_empire"
+        }
+      },
+      "adoptionBonus": "tr_adaptability_adopt",
+      "finishBonus": "tr_adaptability_finish",
+      "traditions": [
+        "tr_adaptability_recycling",
+        "tr_adaptability_survival_fittest",
+        "tr_adaptability_environmental_diversification",
+        "tr_adaptability_adaptive_ecology",
+        "tr_adaptability_appropriation"
+      ],
+      "icon": "icons/traditions/tradition_adaptability.png",
+      "nameKey": "tradition_adaptability",
+      "descriptionKey": "tradition_adaptability_desc"
+    },
+    {
+      "key": "tradition_aptitude",
+      "potential": {
+        "kind": "dlc",
+        "name": "Galactic Paragons"
+      },
+      "adoptionBonus": "tr_aptitude_adopt",
+      "finishBonus": "tr_aptitude_finish",
+      "traditions": [
+        "tr_aptitude_the_empire_needs_you",
+        "tr_aptitude_specialist_training",
+        "tr_aptitude_psychological_profiling",
+        "tr_aptitude_healthcare_program",
+        "tr_aptitude_champions_of_the_empire"
+      ],
+      "icon": "icons/traditions/tradition_aptitude.png",
+      "nameKey": "tradition_aptitude",
+      "descriptionKey": "tradition_aptitude_desc"
+    },
+    {
+      "key": "tradition_archivism",
+      "potential": {
+        "kind": "dlc",
+        "name": "Grand Archive"
+      },
+      "adoptionBonus": "tr_archivism_adopt",
+      "finishBonus": "tr_archivism_finish",
+      "traditions": [
+        "tr_archivism_xeno_paleontology",
+        "tr_archivism_frontier_archaeology",
+        "tr_archivism_expert_negociation",
+        "tr_archivism_flawless_display",
+        "tr_archivism_exhibition_specialization"
+      ],
+      "icon": "icons/traditions/tradition_archivism.png",
+      "nameKey": "tradition_archivism",
+      "descriptionKey": "tradition_archivism_desc"
+    },
+    {
+      "key": "tradition_mercantile",
+      "potential": {
+        "kind": "predicate",
+        "name": "is_regular_empire"
+      },
+      "adoptionBonus": "tr_mercantile_adopt",
+      "finishBonus": "tr_mercantile_finish",
+      "traditions": [
+        "tr_mercantile_trickle_up_economics",
+        "tr_mercantile_commercial_enterprise",
+        "tr_mercantile_adaptive_economic_policies",
+        "tr_mercantile_marketplace_of_better_ideas",
+        "tr_mercantile_insider_trading"
+      ],
+      "icon": "icons/traditions/tradition_mercantile.png",
+      "nameKey": "tradition_mercantile",
+      "descriptionKey": "tradition_mercantile_desc"
+    },
+    {
+      "key": "tradition_diplomacy",
+      "potential": {
+        "kind": "not",
+        "item": {
+          "kind": "any",
+          "items": [
+            {
+              "kind": "selection",
+              "category": "Civics",
+              "key": "civic_inwards_perfection"
+            },
+            {
+              "kind": "selection",
+              "category": "Civics",
+              "key": "civic_hive_devouring_swarm"
+            },
+            {
+              "kind": "selection",
+              "category": "Origin",
+              "key": "origin_endbringers"
+            }
+          ]
+        }
+      },
+      "adoptionBonus": "tr_diplomacy_adopt",
+      "finishBonus": "tr_diplomacy_finish",
+      "traditions": [
+        "tr_diplomacy_the_federation",
+        "tr_diplomacy_entente_coordination",
+        "tr_diplomacy_diplomatic_networking",
+        "tr_diplomacy_direct_diplomacy",
+        "tr_diplomacy_eminent_diplomats"
+      ],
+      "icon": "icons/traditions/tradition_diplomacy.png",
+      "nameKey": "tradition_diplomacy",
+      "descriptionKey": "tradition_diplomacy_desc"
+    },
+    {
+      "key": "tradition_discovery",
+      "potential": {
+        "kind": "always",
+        "value": true
+      },
+      "adoptionBonus": "tr_discovery_adopt",
+      "finishBonus": "tr_discovery_finish",
+      "traditions": [
+        "tr_discovery_to_boldly_go",
+        "tr_discovery_databank_uplinks",
+        "tr_discovery_science_division",
+        "tr_discovery_polytechnic_education",
+        "tr_discovery_faith_in_science"
+      ],
+      "icon": "icons/traditions/tradition_discovery.png",
+      "nameKey": "tradition_discovery",
+      "descriptionKey": "tradition_discovery_desc"
+    },
+    {
+      "key": "tradition_domestication",
+      "potential": {
+        "kind": "dlc",
+        "name": "Grand Archive"
+      },
+      "adoptionBonus": "tr_domestication_adopt",
+      "finishBonus": "tr_domestication_finish",
+      "traditions": [
+        "tr_domestication_containment_protocols",
+        "tr_domestication_bio_repurposing",
+        "tr_domestication_astrozoology",
+        "tr_domestication_metabolic_regulation",
+        "tr_domestication_killer_instinct"
+      ],
+      "icon": "icons/traditions/tradition_domestication.png",
+      "nameKey": "tradition_domestication",
+      "descriptionKey": "tradition_domestication_desc"
+    },
+    {
+      "key": "tradition_domination",
+      "potential": {
+        "kind": "always",
+        "value": true
+      },
+      "adoptionBonus": "tr_domination_adopt",
+      "finishBonus": "tr_domination_finish",
+      "traditions": [
+        "tr_domination_colonial_viceroys",
+        "tr_domination_imperious_architecture",
+        "tr_domination_judgment_corps",
+        "tr_domination_grand_council",
+        "tr_domination_workplace_motivators"
+      ],
+      "icon": "icons/traditions/tradition_domination.png",
+      "nameKey": "tradition_domination",
+      "descriptionKey": "tradition_domination_desc"
+    },
+    {
+      "key": "tradition_enmity",
+      "potential": {
+        "kind": "not",
+        "item": {
+          "kind": "any",
+          "items": [
+            {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_fanatic_purifiers"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_machine_terminator"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_hive_devouring_swarm"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_scorched_earth"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_hive_scorched_earth"
+                },
+                {
+                  "kind": "always",
+                  "value": false
+                }
+              ]
+            },
+            {
+              "kind": "selection",
+              "category": "Civics",
+              "key": "civic_machine_assimilator"
+            },
+            {
+              "kind": "selection",
+              "category": "Civics",
+              "key": "civic_inwards_perfection"
+            }
+          ]
+        }
+      },
+      "adoptionBonus": "tr_enmity_adopt",
+      "finishBonus": "tr_enmity_finish",
+      "traditions": [
+        "tr_enmity_rise_to_the_occasion",
+        "tr_enmity_consumate_contrarian",
+        "tr_enmity_match",
+        "tr_enmity_outpace",
+        "tr_enmity_eclipse"
+      ],
+      "icon": "icons/traditions/tradition_enmity.png",
+      "nameKey": "tradition_enmity",
+      "descriptionKey": "tradition_enmity_desc"
+    },
+    {
+      "key": "tradition_expansion",
+      "potential": {
+        "kind": "always",
+        "value": true
+      },
+      "adoptionBonus": "tr_expansion_adopt",
+      "finishBonus": "tr_expansion_finish",
+      "traditions": [
+        "tr_expansion_reach_for_the_stars",
+        "tr_expansion_colonization_fever",
+        "tr_expansion_courier_network",
+        "tr_expansion_galactic_ambition",
+        "tr_expansion_a_new_life"
+      ],
+      "icon": "icons/traditions/tradition_expansion.png",
+      "nameKey": "tradition_expansion",
+      "descriptionKey": "tradition_expansion_desc"
+    },
+    {
+      "key": "tradition_unyielding",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_nomadic"
+            }
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "dlc",
+                "name": "Apocalypse"
+              },
+              {
+                "kind": "dlc",
+                "name": "Overlord"
+              }
+            ]
+          }
+        ]
+      },
+      "adoptionBonus": "tr_unyielding_adopt",
+      "finishBonus": "tr_unyielding_finish",
+      "traditions": [
+        "tr_unyielding_resistance_is_frugal",
+        "tr_unyielding_never_surrender",
+        "tr_unyielding_bulwark_of_harmony",
+        "tr_unyielding_defensive_zeal",
+        "tr_unyielding_fortress_doctrine"
+      ],
+      "icon": "icons/traditions/tradition_unyielding.png",
+      "nameKey": "tradition_unyielding",
+      "descriptionKey": "tradition_unyielding_desc"
+    },
+    {
+      "key": "tradition_harmony",
+      "potential": {
+        "kind": "not",
+        "item": {
+          "kind": "predicate",
+          "name": "is_gestalt"
+        }
+      },
+      "adoptionBonus": "tr_harmony_adopt",
+      "finishBonus": "tr_harmony_finish",
+      "traditions": [
+        "tr_harmony_mind_and_body",
+        "tr_harmony_kinship",
+        "tr_harmony_the_greater_good",
+        "tr_harmony_harmonious_directives",
+        "tr_harmony_utopian_dream"
+      ],
+      "icon": "icons/traditions/tradition_harmony.png",
+      "nameKey": "tradition_harmony",
+      "descriptionKey": "tradition_harmony_desc"
+    },
+    {
+      "key": "tradition_logistics",
+      "potential": {
+        "kind": "predicate",
+        "name": "is_gestalt"
+      },
+      "adoptionBonus": "tr_logistics_adopt",
+      "finishBonus": "tr_logistics_finish",
+      "traditions": [
+        "tr_logistics_1",
+        "tr_logistics_2",
+        "tr_logistics_3",
+        "tr_logistics_4",
+        "tr_logistics_5"
+      ],
+      "icon": "icons/traditions/tradition_logistics.png",
+      "nameKey": "tradition_logistics",
+      "descriptionKey": "tradition_logistics_desc"
+    },
+    {
+      "key": "tradition_politics",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "dlc",
+            "name": "Federations"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_fanatic_purifiers"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_machine_terminator"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_hive_devouring_swarm"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_scorched_earth"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_hive_scorched_earth"
+                },
+                {
+                  "kind": "always",
+                  "value": false
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "adoptionBonus": "tr_politics_adopt",
+      "finishBonus": "tr_politics_finish",
+      "traditions": [
+        "tr_politics_quid_pro_quo",
+        "tr_politics_gravitas",
+        "tr_politics_national_agenda",
+        "tr_politics_persistent_petitioners",
+        "tr_politics_extraordinary_powers"
+      ],
+      "icon": "icons/traditions/tradition_politics.png",
+      "nameKey": "tradition_politics",
+      "descriptionKey": "tradition_politics_desc"
+    },
+    {
+      "key": "tradition_prosperity",
+      "potential": {
+        "kind": "always",
+        "value": true
+      },
+      "adoptionBonus": "tr_prosperity_adopt",
+      "finishBonus": "tr_prosperity_finish",
+      "traditions": [
+        "tr_prosperity_administrative_operations",
+        "tr_prosperity_sct",
+        "tr_prosperity_pursuit_of_profit",
+        "tr_prosperity_interstellar_franchising",
+        "tr_prosperity_public_works"
+      ],
+      "icon": "icons/traditions/tradition_prosperity.png",
+      "nameKey": "tradition_prosperity",
+      "descriptionKey": "tradition_prosperity_desc"
+    },
+    {
+      "key": "tradition_statecraft",
+      "potential": {
+        "kind": "dlc",
+        "name": "Galactic Paragons"
+      },
+      "adoptionBonus": "tr_statecraft_adopt",
+      "finishBonus": "tr_statecraft_finish",
+      "traditions": [
+        "tr_statecraft_constitutional_focus",
+        "tr_statecraft_inspiring_agendas",
+        "tr_statecraft_immutable_directives",
+        "tr_statecraft_amongst_peers",
+        "tr_statecraft_shared_benefits"
+      ],
+      "icon": "icons/traditions/tradition_statecraft.png",
+      "nameKey": "tradition_statecraft",
+      "descriptionKey": "tradition_statecraft_desc"
+    },
+    {
+      "key": "tradition_subterfuge",
+      "potential": {
+        "kind": "dlc",
+        "name": "Nemesis"
+      },
+      "adoptionBonus": "tr_subterfuge_adopt",
+      "finishBonus": "tr_subterfuge_finish",
+      "traditions": [
+        "tr_subterfuge_information_security",
+        "tr_subterfuge_operational_security",
+        "tr_subterfuge_nda",
+        "tr_subterfuge_double_agents",
+        "tr_subterfuge_shadow_recruits"
+      ],
+      "icon": "icons/traditions/tradition_subterfuge.png",
+      "nameKey": "tradition_subterfuge",
+      "descriptionKey": "tradition_subterfuge_desc"
+    },
+    {
+      "key": "tradition_supremacy",
+      "potential": {
+        "kind": "always",
+        "value": true
+      },
+      "adoptionBonus": "tr_supremacy_adopt",
+      "finishBonus": "tr_supremacy_finish",
+      "traditions": [
+        "tr_supremacy_master_shipwrights",
+        "tr_supremacy_fleet_logistical_corps",
+        "tr_supremacy_overwhelming_force",
+        "tr_supremacy_war_games",
+        "tr_supremacy_great_game"
+      ],
+      "icon": "icons/traditions/tradition_supremacy.png",
+      "nameKey": "tradition_supremacy",
+      "descriptionKey": "tradition_supremacy_desc"
+    },
+    {
+      "key": "tradition_synchronicity",
+      "potential": {
+        "kind": "predicate",
+        "name": "is_gestalt"
+      },
+      "adoptionBonus": "tr_synchronicity_adopt",
+      "finishBonus": "tr_synchronicity_finish",
+      "traditions": [
+        "tr_synchronicity_cloned_organs",
+        "tr_synchronicity_kinship_gestalt",
+        "tr_synchronicity_integrated_preservation",
+        "tr_synchronicity_harmonious_directives",
+        "tr_synchronicity_collective_reasoning"
+      ],
+      "icon": "icons/traditions/tradition_synchronicity.png",
+      "nameKey": "tradition_synchronicity",
+      "descriptionKey": "tradition_synchronicity_desc"
+    },
+    {
+      "key": "tradition_versatility",
+      "potential": {
+        "kind": "predicate",
+        "name": "is_machine_empire"
+      },
+      "adoptionBonus": "tr_versatility_adopt",
+      "finishBonus": "tr_versatility_finish",
+      "traditions": [
+        "tr_versatility_universal_compatibility",
+        "tr_versatility_adaptive_programming",
+        "tr_versatility_spatial_optimization",
+        "tr_versatility_material_analysis",
+        "tr_versatility_operational_proxies"
+      ],
+      "icon": "icons/traditions/tradition_versatility.png",
+      "nameKey": "tradition_versatility",
+      "descriptionKey": "tradition_versatility_desc"
+    },
+    {
+      "key": "tradition_cloning",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "dlc",
+            "name": "BioGenesis"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_machine_empire"
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_machine"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_hive_mind"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_corporate"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_the_flesh_is_weak"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_organo_machine_interfacing"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_organo_machine_interfacing_assimilator"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_cybernetic_creed"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_augmentation_bazaars"
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_mind_over_matter"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_shroudwalker_apprentice"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_endbringers"
+                    },
+                    {
+                      "kind": "any",
+                      "items": [
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_chosen"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_hive_chosen"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_machine_chosen"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_corporate_chosen"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "all",
+                      "items": [
+                        {
+                          "kind": "selection",
+                          "category": "Origin",
+                          "key": "origin_shroud_forged"
+                        },
+                        {
+                          "kind": "always",
+                          "value": false
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_synthetic_evolution"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_synthetic_age"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_synthetic_fertility"
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_natural_design"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_hive_natural_design"
+                    }
+                  ]
+                },
+                {
+                  "kind": "predicate",
+                  "name": "is_individual_machine"
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "always",
+                      "value": false
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_wilderness"
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "always",
+                      "value": false
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_evolutionary_predators"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "adoptionBonus": "tr_cloning_adopt",
+      "finishBonus": "tr_cloning_finish",
+      "traditions": [
+        "tr_cloning_evolutionary_extrapolation",
+        "tr_cloning_somatic_synthesization",
+        "tr_cloning_stage_1_swap",
+        "tr_cloning_stage_3_swap",
+        "tr_cloning_stage_2_swap"
+      ],
+      "icon": "icons/traditions/tradition_cloning.png",
+      "nameKey": "tradition_cloning",
+      "descriptionKey": "tradition_cloning_desc"
+    },
+    {
+      "key": "tradition_cybernetics",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_machine_empire"
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_wilderness_empire"
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_machine"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_hive_mind"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_corporate"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_engineered_evolution"
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_mind_over_matter"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_shroudwalker_apprentice"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_endbringers"
+                    },
+                    {
+                      "kind": "any",
+                      "items": [
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_chosen"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_hive_chosen"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_machine_chosen"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_corporate_chosen"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "all",
+                      "items": [
+                        {
+                          "kind": "selection",
+                          "category": "Origin",
+                          "key": "origin_shroud_forged"
+                        },
+                        {
+                          "kind": "always",
+                          "value": false
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_synthetic_evolution"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_synthetic_age"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_synthetic_fertility"
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_natural_design"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_hive_natural_design"
+                    }
+                  ]
+                },
+                {
+                  "kind": "predicate",
+                  "name": "is_individual_machine"
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "always",
+                      "value": false
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_wilderness"
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "always",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "always",
+                      "value": false
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_evolutionary_predators"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "adoptionBonus": "tr_cybernetics_adopt",
+      "finishBonus": "tr_cybernetics_finish",
+      "traditions": [
+        "tr_cybernetics_transubstantiation_synthesis",
+        "tr_cybernetics_metabolic_reprocessing",
+        "tr_cybernetics_integrated_anatomy",
+        "tr_cybernetics_augmentation_overload",
+        "tr_cybernetics_modular_cybernetics"
+      ],
+      "icon": "icons/traditions/tradition_cybernetics.png",
+      "nameKey": "tradition_cybernetics",
+      "descriptionKey": "tradition_cybernetics_desc"
+    },
+    {
+      "key": "tradition_cybernetics_assimilator",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "selection",
+            "category": "Civics",
+            "key": "civic_machine_assimilator"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_synthetic_evolution"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_synthetic_age"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_synthetic_fertility"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "adoptionBonus": "tr_cybernetics_assimilator_adopt",
+      "finishBonus": "tr_cybernetics_assimilator_finish",
+      "traditions": [
+        "tr_cybernetics_assimilator_inevitable_assimilation",
+        "tr_cybernetics_assimilator_metabolic_reprocessing",
+        "tr_cybernetics_assimilator_integrated_anatomy",
+        "tr_cybernetics_assimilator_augmentation_centers",
+        "tr_cybernetics_assimilator_modular_cybernetics"
+      ],
+      "icon": "icons/traditions/tradition_cybernetics_assimilator.png",
+      "nameKey": "tradition_cybernetics_assimilator",
+      "descriptionKey": "tradition_cybernetics_assimilator_desc"
+    },
+    {
+      "key": "tradition_genetics",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "not",
+            "item": {
+              "kind": "dlc",
+              "name": "BioGenesis"
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_machine_empire"
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_machine"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_hive_mind"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_corporate"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_the_flesh_is_weak"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_organo_machine_interfacing"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_organo_machine_interfacing_assimilator"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_cybernetic_creed"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_augmentation_bazaars"
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_mind_over_matter"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_shroudwalker_apprentice"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_endbringers"
+                    },
+                    {
+                      "kind": "any",
+                      "items": [
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_chosen"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_hive_chosen"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_machine_chosen"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_corporate_chosen"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "all",
+                      "items": [
+                        {
+                          "kind": "selection",
+                          "category": "Origin",
+                          "key": "origin_shroud_forged"
+                        },
+                        {
+                          "kind": "always",
+                          "value": false
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_synthetic_evolution"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_synthetic_age"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_synthetic_fertility"
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_natural_design"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_hive_natural_design"
+                    }
+                  ]
+                },
+                {
+                  "kind": "predicate",
+                  "name": "is_individual_machine"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "adoptionBonus": "tr_genetics_adopt",
+      "finishBonus": "tr_genetics_finish",
+      "traditions": [
+        "tr_genetics_resequencing",
+        "tr_genetics_creation",
+        "tr_genetics_enhanced_expression",
+        "tr_genetics_retrovirus",
+        "tr_genetics_efficient_cloning"
+      ],
+      "icon": "icons/traditions/tradition_genetics.png",
+      "nameKey": "tradition_genetics",
+      "descriptionKey": "tradition_genetics_desc"
+    },
+    {
+      "key": "tradition_modularity",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "dlc",
+            "name": "The Machine Age"
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "predicate",
+                "name": "is_machine_empire"
+              },
+              {
+                "kind": "predicate",
+                "name": "is_individual_machine"
+              }
+            ]
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "TraditionTree",
+                  "key": "tr_nanotech_adopt"
+                },
+                {
+                  "kind": "selection",
+                  "category": "TraditionTree",
+                  "key": "tr_virtuality_adopt"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_organo_machine_interfacing_assimilator"
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_mind_over_matter"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_shroudwalker_apprentice"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_endbringers"
+                    },
+                    {
+                      "kind": "any",
+                      "items": [
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_chosen"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_hive_chosen"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_machine_chosen"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_corporate_chosen"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "all",
+                      "items": [
+                        {
+                          "kind": "selection",
+                          "category": "Origin",
+                          "key": "origin_shroud_forged"
+                        },
+                        {
+                          "kind": "always",
+                          "value": false
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "adoptionBonus": "tr_modularity_adopt",
+      "finishBonus": "tr_modularity_finish",
+      "traditions": [
+        "tr_modularity_1",
+        "tr_modularity_2",
+        "tr_modularity_3",
+        "tr_modularity_4",
+        "tr_modularity_5"
+      ],
+      "icon": "icons/traditions/tradition_modularity.png",
+      "nameKey": "tradition_modularity",
+      "descriptionKey": "tradition_modularity_desc"
+    },
+    {
+      "key": "tradition_mutation",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "dlc",
+            "name": "BioGenesis"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_machine_empire"
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_machine"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_hive_mind"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_corporate"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_the_flesh_is_weak"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_organo_machine_interfacing"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_organo_machine_interfacing_assimilator"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_cybernetic_creed"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_augmentation_bazaars"
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_mind_over_matter"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_shroudwalker_apprentice"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_endbringers"
+                    },
+                    {
+                      "kind": "any",
+                      "items": [
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_chosen"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_hive_chosen"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_machine_chosen"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_corporate_chosen"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "all",
+                      "items": [
+                        {
+                          "kind": "selection",
+                          "category": "Origin",
+                          "key": "origin_shroud_forged"
+                        },
+                        {
+                          "kind": "always",
+                          "value": false
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_synthetic_evolution"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_synthetic_age"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_synthetic_fertility"
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_natural_design"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_hive_natural_design"
+                    }
+                  ]
+                },
+                {
+                  "kind": "predicate",
+                  "name": "is_individual_machine"
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "always",
+                      "value": false
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_wilderness"
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "always",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "always",
+                  "value": false
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "adoptionBonus": "tr_mutation_adopt",
+      "finishBonus": "tr_mutation_finish",
+      "traditions": [
+        "tr_mutation_stage_1_swap",
+        "tr_mutation_planned_polymorphism",
+        "tr_mutation_stage_2_swap",
+        "tr_mutation_stage_3_swap",
+        "tr_mutation_unnatural_selection"
+      ],
+      "icon": "icons/traditions/tradition_mutation.png",
+      "nameKey": "tradition_mutation",
+      "descriptionKey": "tradition_mutation_desc"
+    },
+    {
+      "key": "tradition_nanotech",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "dlc",
+            "name": "The Machine Age"
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "predicate",
+                "name": "is_machine_empire"
+              },
+              {
+                "kind": "predicate",
+                "name": "is_individual_machine"
+              }
+            ]
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_machine"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_hive_mind"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_corporate"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "TraditionTree",
+                  "key": "tr_virtuality_adopt"
+                },
+                {
+                  "kind": "selection",
+                  "category": "TraditionTree",
+                  "key": "tr_modularity_adopt"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_organo_machine_interfacing_assimilator"
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_mind_over_matter"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_shroudwalker_apprentice"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_endbringers"
+                    },
+                    {
+                      "kind": "any",
+                      "items": [
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_chosen"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_hive_chosen"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_machine_chosen"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_corporate_chosen"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "all",
+                      "items": [
+                        {
+                          "kind": "selection",
+                          "category": "Origin",
+                          "key": "origin_shroud_forged"
+                        },
+                        {
+                          "kind": "always",
+                          "value": false
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "adoptionBonus": "tr_nanotech_adopt",
+      "finishBonus": "tr_nanotech_finish",
+      "traditions": [
+        "tr_nanotech_1",
+        "tr_nanotech_2",
+        "tr_nanotech_3",
+        "tr_nanotech_4",
+        "tr_nanotech_5"
+      ],
+      "icon": "icons/traditions/tradition_nanotech.png",
+      "nameKey": "tradition_nanotech",
+      "descriptionKey": "tradition_nanotech_desc"
+    },
+    {
+      "key": "tradition_psionics",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "not",
+            "item": {
+              "kind": "dlc",
+              "name": "Shadows of the Shroud"
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_gestalt"
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_the_flesh_is_weak"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_organo_machine_interfacing"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_organo_machine_interfacing_assimilator"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_cybernetic_creed"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_augmentation_bazaars"
+                    }
+                  ]
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_engineered_evolution"
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_synthetic_evolution"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_synthetic_age"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_synthetic_fertility"
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_natural_design"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_hive_natural_design"
+                    }
+                  ]
+                },
+                {
+                  "kind": "predicate",
+                  "name": "is_individual_machine"
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "always",
+                      "value": false
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_wilderness"
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "always",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "always",
+                      "value": false
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_evolutionary_predators"
+                    }
+                  ]
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_mindwardens"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "adoptionBonus": "tr_psionics_adopt",
+      "finishBonus": "tr_psionics_finish",
+      "traditions": [
+        "tr_psionics_psi_corps",
+        "tr_psionics_mind_readers",
+        "tr_psionics_psionic_assimilation",
+        "tr_psionics_breach_shroud",
+        "tr_psionics_shrouded_encryption"
+      ],
+      "icon": "icons/traditions/tradition_psionics.png",
+      "nameKey": "tradition_psionics",
+      "descriptionKey": "tradition_psionics_desc"
+    },
+    {
+      "key": "tradition_psionics_shroud",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "dlc",
+            "name": "Shadows of the Shroud"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_the_flesh_is_weak"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_organo_machine_interfacing"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_organo_machine_interfacing_assimilator"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_cybernetic_creed"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_augmentation_bazaars"
+                    }
+                  ]
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_engineered_evolution"
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_synthetic_evolution"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_synthetic_age"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_synthetic_fertility"
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_natural_design"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_hive_natural_design"
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "always",
+                      "value": false
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_wilderness"
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "always",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "always",
+                      "value": false
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_evolutionary_predators"
+                    }
+                  ]
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_mindwardens"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "adoptionBonus": "tr_psionics_shroud_adopt",
+      "finishBonus": "tr_psionics_shroud_finish",
+      "traditions": [
+        "tr_psionics_shroud_psi_corps",
+        "tr_psionics_shroud_great_awakening",
+        "tr_psionics_shroud_telekinesis",
+        "tr_psionics_shroud_clairvoyance",
+        "tr_psionics_shroud_psychometry"
+      ],
+      "icon": "icons/traditions/tradition_psionics_shroud.png",
+      "nameKey": "tradition_psionics_shroud",
+      "descriptionKey": "tradition_psionics_shroud_desc"
+    },
+    {
+      "key": "tradition_purity",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "dlc",
+            "name": "BioGenesis"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_machine_empire"
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_machine"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_hive_mind"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_corporate"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_the_flesh_is_weak"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_organo_machine_interfacing"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_organo_machine_interfacing_assimilator"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_cybernetic_creed"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_augmentation_bazaars"
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_mind_over_matter"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_shroudwalker_apprentice"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_endbringers"
+                    },
+                    {
+                      "kind": "any",
+                      "items": [
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_chosen"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_hive_chosen"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_machine_chosen"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_corporate_chosen"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "all",
+                      "items": [
+                        {
+                          "kind": "selection",
+                          "category": "Origin",
+                          "key": "origin_shroud_forged"
+                        },
+                        {
+                          "kind": "always",
+                          "value": false
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_synthetic_evolution"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_synthetic_age"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_synthetic_fertility"
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_natural_design"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_hive_natural_design"
+                    }
+                  ]
+                },
+                {
+                  "kind": "predicate",
+                  "name": "is_individual_machine"
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "always",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "always",
+                      "value": false
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_evolutionary_predators"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "adoptionBonus": "tr_purity_adopt",
+      "finishBonus": "tr_purity_finish",
+      "traditions": [
+        "tr_purity_genotype_regeneration",
+        "tr_purity_exemplary_genetics",
+        "tr_purity_stage_1_swap",
+        "tr_purity_stage_2_swap",
+        "tr_purity_stage_3_swap"
+      ],
+      "icon": "icons/traditions/tradition_purity.png",
+      "nameKey": "tradition_purity",
+      "descriptionKey": "tradition_purity_desc"
+    },
+    {
+      "key": "tradition_synthetics",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "predicate",
+                    "name": "is_regular_empire"
+                  },
+                  {
+                    "kind": "not",
+                    "item": {
+                      "kind": "predicate",
+                      "name": "is_individual_machine"
+                    }
+                  }
+                ]
+              },
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "predicate",
+                    "name": "is_machine_empire"
+                  },
+                  {
+                    "kind": "not",
+                    "item": {
+                      "kind": "dlc",
+                      "name": "The Machine Age"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_machine"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_hive_mind"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_corporate"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_the_flesh_is_weak"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_organo_machine_interfacing"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_organo_machine_interfacing_assimilator"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_cybernetic_creed"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_augmentation_bazaars"
+                    }
+                  ]
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_engineered_evolution"
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_mind_over_matter"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_shroudwalker_apprentice"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_endbringers"
+                    },
+                    {
+                      "kind": "any",
+                      "items": [
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_chosen"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_hive_chosen"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_machine_chosen"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_corporate_chosen"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "all",
+                      "items": [
+                        {
+                          "kind": "selection",
+                          "category": "Origin",
+                          "key": "origin_shroud_forged"
+                        },
+                        {
+                          "kind": "always",
+                          "value": false
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_natural_design"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Civics",
+                      "key": "civic_hive_natural_design"
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "always",
+                      "value": false
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_wilderness"
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "always",
+                      "value": false
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "always",
+                      "value": false
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_evolutionary_predators"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "adoptionBonus": "tr_synthetics_adopt",
+      "finishBonus": "tr_synthetics_finish",
+      "traditions": [
+        "tr_synthetics_maintenance_protocols",
+        "tr_synthetics_optimization_algorithms",
+        "tr_synthetics_transubstatiation_synthesis",
+        "tr_synthetics_power_systems",
+        "tr_synthetics_prefabricated_components"
+      ],
+      "icon": "icons/traditions/tradition_synthetics.png",
+      "nameKey": "tradition_synthetics",
+      "descriptionKey": "tradition_synthetics_desc"
+    },
+    {
+      "key": "tradition_virtuality",
+      "potential": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "dlc",
+            "name": "The Machine Age"
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "predicate",
+                "name": "is_machine_empire"
+              },
+              {
+                "kind": "predicate",
+                "name": "is_individual_machine"
+              }
+            ]
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_machine"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_hive_mind"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_entropy_drinkers_corporate"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "TraditionTree",
+                  "key": "tr_nanotech_adopt"
+                },
+                {
+                  "kind": "selection",
+                  "category": "TraditionTree",
+                  "key": "tr_modularity_adopt"
+                },
+                {
+                  "kind": "selection",
+                  "category": "AscensionPerk",
+                  "key": "ap_organo_machine_interfacing_assimilator"
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_mind_over_matter"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_shroudwalker_apprentice"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Origin",
+                      "key": "origin_endbringers"
+                    },
+                    {
+                      "kind": "any",
+                      "items": [
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_chosen"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_hive_chosen"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_machine_chosen"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Civics",
+                          "key": "civic_corporate_chosen"
+                        }
+                      ]
+                    },
+                    {
+                      "kind": "all",
+                      "items": [
+                        {
+                          "kind": "selection",
+                          "category": "Origin",
+                          "key": "origin_shroud_forged"
+                        },
+                        {
+                          "kind": "always",
+                          "value": false
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "adoptionBonus": "tr_virtuality_adopt",
+      "finishBonus": "tr_virtuality_finish",
+      "traditions": [
+        "tr_virtuality_1",
+        "tr_virtuality_2",
+        "tr_virtuality_3",
+        "tr_virtuality_4",
+        "tr_virtuality_5"
+      ],
+      "icon": "icons/traditions/tradition_virtuality.png",
+      "nameKey": "tradition_virtuality",
+      "descriptionKey": "tradition_virtuality_desc"
     }
   ],
   "governmentTypes": [

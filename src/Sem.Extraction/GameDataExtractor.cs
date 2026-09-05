@@ -107,8 +107,9 @@ public sealed class GameDataExtractor(LayeredContent content)
         var civics = GovernmentExtractor.ExtractCivics(loader, requirements, assets);
         var governmentTypes = GovernmentExtractor.ExtractGovernmentTypes(loader, requirements);
 
-        Report("Reading ascension perks");
+        Report("Reading ascension perks and tradition trees");
         var ascensionPerks = AscensionExtractor.Extract(loader, requirements, assets);
+        var traditionTrees = AscensionExtractor.ExtractTrees(loader, requirements, assets);
 
         Report("Reading worlds and starting systems");
         var planetClasses = WorldExtractor.ExtractPlanetClasses(loader, requirements, assets);
@@ -168,6 +169,7 @@ public sealed class GameDataExtractor(LayeredContent content)
             Authorities = authorities,
             Civics = civics,
             AscensionPerks = ascensionPerks,
+            TraditionTrees = traditionTrees,
             GovernmentTypes = governmentTypes,
             PlanetClasses = planetClasses,
             PortraitCategories = portraitCategories,

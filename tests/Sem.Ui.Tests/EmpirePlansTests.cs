@@ -1,4 +1,5 @@
 using Sem.Designs;
+using Sem.GameData;
 using Sem.Ui.Services;
 
 namespace Sem.Ui.Tests;
@@ -128,6 +129,40 @@ public sealed class EmpirePlansTests
         Assert.NotNull(design.Species.Biography);
         Assert.Equal(PlanHome.Species, plans.HomeOf(design, Vocabulary));
         Assert.Equal(PlanPath.Unset, plans.PlanOf(design, Vocabulary).Path);
+    }
+
+    /// <summary>
+    /// The session's vocabulary names both halves of a plan, not just one.
+    /// </summary>
+    /// <remarks>
+    /// This is a real defect caught in the browser rather than a hypothetical. The vocabulary was
+    /// built from the ascension perks alone, so a tradition tree could be written into a biography
+    /// and then not read back out of it - the picker took the click, the plan was saved, and the
+    /// tree vanished on the next render with nothing said. Anything a plan can name has to be
+    /// nameable in both directions.
+    /// </remarks>
+    [Fact]
+    public void TheSessionCanNameEverythingAPlanMayHold()
+    {
+        var session = new DesignSession(new Sem.Ui.Services.GameData(
+            new GameDatabase
+            {
+                SchemaVersion = GameDatabase.CurrentSchemaVersion,
+                GameVersion = "test",
+                ExtractorVersion = "test",
+                Defines = new GameDefines { EthicsPoints = 3, CivicPoints = 2, CityPopLevel = 4 },
+                AscensionPerks = [new AscensionPerkDefinition("ap_flesh")],
+                TraditionTrees = [new TraditionTreeDefinition("tradition_cybernetics")],
+            },
+            new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                ["ap_flesh"] = "The Flesh is Weak",
+                ["tradition_cybernetics"] = "Cybernetics",
+            },
+            "assets"));
+
+        Assert.Equal("ap_flesh", session.PlanVocabulary.Perk("The Flesh is Weak"));
+        Assert.Equal("tradition_cybernetics", session.PlanVocabulary.Tree("Cybernetics"));
     }
 
     private static EmpirePlan Cybernetic => new(PlanPath.Cybernetic, [], []);

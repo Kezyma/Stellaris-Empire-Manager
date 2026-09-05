@@ -1,0 +1,149 @@
+@*
+    One part of a plan, arranged the way the species traits are: what may be taken on the left, what
+    the plan names on the right, whatever the pointer is over described below.
+
+    The same arrangement because it is the same job, and because a player who has used the trait
+    picker already knows how this one works. It wears that picker's own classes rather than a second
+    set that would have to be kept looking like the first.
+
+    It knows nothing about what it is showing. The perks and the tradition trees differ in where they
+    are read from and in nothing a reader can see, so they share this and differ only in the two
+    dozen lines that fill it.
+*@
+
+<div class="sem-budgets">
+    <BudgetBar Key="@BudgetKey" Fallback="@Heading" Label="@BudgetKey" LabelFallback="@Heading"
+               Value="@Budget" />
+</div>
+
+<div class="sem-trait-lists">
+    <div class="sem-trait-list" role="group" aria-label="@($"{Heading} on offer")">
+        @if (Available.Count == 0)
+        {
+            <p class="sem-hint padded">Nothing else this empire can take.</p>
+        }
+
+        @foreach (var option in Available)
+        {
+            @Row(option, chosen: false)
+        }
+    </div>
+
+    <div class="chosen-column">
+        <div class="sem-trait-list chosen" role="group" aria-label="@($"{Heading} planned")">
+            @if (Chosen.Count == 0)
+            {
+                <p class="sem-hint padded">Nothing planned yet.</p>
+            }
+
+            @foreach (var option in Chosen)
+            {
+                @Row(option, chosen: true)
+            }
+        </div>
+
+        <div class="sem-trait-detail">
+            @if (Described is { } described)
+            {
+                <h4>@described.Name</h4>
+
+                @if (described.Lore is { Length: > 0 } lore)
+                {
+                    <div class="sem-detail-lore">@((MarkupString)lore)</div>
+                }
+
+                <EffectsList Effects="@described.Effects" ShowNothing="true" />
+
+                @if (described.Reasons.Count > 0)
+                {
+                    <ul class="sem-blocked">
+                        @foreach (var reason in described.Reasons)
+                        {
+                            <li>@reason</li>
+                        }
+                    </ul>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>What this part of the plan is called, for the bar and for a screen reader.</summary>
+    [Parameter, EditorRequired]
+    public required string Heading { get; set; }
+
+    /// <summary>The game's key for that word, so it reads in the player's language.</summary>
+    [Parameter, EditorRequired]
+    public required string BudgetKey { get; set; }
+
+    /// <summary>How much of the allowance the plan has spent.</summary>
+    [Parameter]
+    public Budget Budget { get; set; }
+
+    /// <summary>What may still be taken.</summary>
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<PlanOption> Available { get; set; }
+
+    /// <summary>What the plan names, in the order it was chosen.</summary>
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<PlanOption> Chosen { get; set; }
+
+    /// <summary>Raised with the key pressed and whether it was one of the chosen ones.</summary>
+    [Parameter]
+    public EventCallback<(string Key, bool Chosen)> OnToggle { get; set; }
+
+    /// <summary>
+    /// What the detail box is describing, kept after the pointer leaves rather than cleared.
+    /// </summary>
+    /// <remarks>
+    /// A box that empties between rows flickers as the pointer crosses the list, which the trait
+    /// picker found out first.
+    /// </remarks>
+    private string? _described;
+
+    private PlanOption? Described =>
+        _described is { } key ? Available.Concat(Chosen).FirstOrDefault(o => o.Key == key) : null;
+
+    /// <summary>
+    /// Presses a row, unless it is one that cannot be taken.
+    /// </summary>
+    /// <remarks>
+    /// A blocked row does nothing rather than being taken and then complained about, which is how
+    /// the option grid treats one and is the difference between a rule and a warning. Letting one go
+    /// is always allowed - it is what unblocks the rest.
+    /// </remarks>
+    private async Task Press(PlanOption option, bool chosen)
+    {
+        if (!chosen && !option.Enabled)
+        {
+            return;
+        }
+
+        await OnToggle.InvokeAsync((option.Key, chosen));
+    }
+
+    private RenderFragment Row(PlanOption option, bool chosen) =>
+        @<button type="button"
+                 class="sem-trait-row @(option.Enabled || chosen ? null : "blocked")"
+                 aria-pressed="@(chosen ? "true" : "false")"
+                 title="@option.Name"
+                 @onmouseenter="() => _described = option.Key"
+                 @onfocus="() => _described = option.Key"
+                 @onclick="() => Press(option, chosen)">
+
+            @if (option.Icon is { Length: > 0 } icon)
+            {
+                <img src="@Session.Data.AssetUrl(icon)" alt="" loading="lazy">
+            }
+            else
+            {
+                <span class="no-icon" aria-hidden="true"></span>
+            }
+
+            <span class="name">@option.Name</span>
+        </button>;
+}

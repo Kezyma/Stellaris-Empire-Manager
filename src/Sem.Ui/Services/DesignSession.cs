@@ -111,7 +111,7 @@ public sealed class DesignSession
     /// name whether or not this empire may take the thing - so one for the session is enough.
     /// </remarks>
     public PlanVocabulary PlanVocabulary => _planVocabulary ??= new PlanVocabulary(
-        [],
+        Data.Database.TraditionTrees.Select(t => (t.Key, Localizer.Text(t.NameKey))),
         Data.Database.AscensionPerks.Select(p => (p.Key, Localizer.Text(p.NameKey))));
 
     private PlanVocabulary? _planVocabulary;

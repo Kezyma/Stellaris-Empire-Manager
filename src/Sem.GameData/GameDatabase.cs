@@ -19,7 +19,7 @@ public sealed record GameDatabase
     /// site published with a database one version behind was read anyway, with whatever the shape had
     /// gained since taking its default and no sign that anything was missing.
     /// </remarks>
-    public const int CurrentSchemaVersion = 4;
+    public const int CurrentSchemaVersion = 5;
 
     /// <summary>Version of this file's own shape, so an old cache can be detected and rebuilt.</summary>
     public required int SchemaVersion { get; init; }
@@ -113,6 +113,9 @@ public sealed record GameDatabase
     /// a list of things with conditions on them, some of which rule others out.
     /// </remarks>
     public IReadOnlyList<AscensionPerkDefinition> AscensionPerks { get; init; } = [];
+
+    /// <summary>The tradition trees, which is the level a plan for one is made at.</summary>
+    public IReadOnlyList<TraditionTreeDefinition> TraditionTrees { get; init; } = [];
 
     /// <summary>
     /// Government types, in the order the game would consider them. The designer derives the
@@ -242,6 +245,11 @@ public sealed record GameDatabase
             yield return authority.Possible;
         }
 
+        foreach (var tree in TraditionTrees)
+        {
+            yield return tree.Potential;
+        }
+
         foreach (var perk in AscensionPerks)
         {
             yield return perk.Potential;
@@ -322,6 +330,9 @@ public sealed record GameDefines
     /// to know about a number none of them cares about.
     /// </remarks>
     public int AscensionPerkSlots { get; init; } = 8;
+
+    /// <summary>How many tradition trees a game allows to be opened. Seven in an unmodified one.</summary>
+    public int TraditionSlots { get; init; } = 7;
 
     /// <summary>The planet class the city appearance preview defaults to.</summary>
     public string? DefaultCityPreviewPlanetClass { get; init; }
@@ -822,6 +833,38 @@ public sealed record AscensionPerkDefinition(string Key)
     public string? Icon { get; init; }
 
     /// <summary>The key is the name, which is unusual and is the game's doing.</summary>
+    public string NameKey => Key;
+
+    /// <summary>And the description hangs off it.</summary>
+    public string DescriptionKey => $"{Key}_desc";
+}
+
+/// <summary>
+/// One tradition tree, which is what a plan names rather than the five picks inside it.
+/// </summary>
+/// <remarks>
+/// The game's own exclusions between trees are written against the tradition that opens one - the
+/// adoption bonus - rather than against the tree, so anything asking whether a tree is open has to
+/// know both names.
+/// </remarks>
+public sealed record TraditionTreeDefinition(string Key)
+{
+    /// <summary>Whether an empire of this shape is offered the tree at all.</summary>
+    public Requirement Potential { get; init; } = new AlwaysRequirement(true);
+
+    /// <summary>The tradition taken to open it, which is how the game asks whether it is open.</summary>
+    public string? AdoptionBonus { get; init; }
+
+    /// <summary>And the one taken to finish it.</summary>
+    public string? FinishBonus { get; init; }
+
+    /// <summary>The picks inside, kept for counting and for whatever wants them later.</summary>
+    public IReadOnlyList<string> Traditions { get; init; } = [];
+
+    /// <summary>Where its picture was written, if it has one.</summary>
+    public string? Icon { get; init; }
+
+    /// <summary>The key is the name, as it is for a perk.</summary>
     public string NameKey => Key;
 
     /// <summary>And the description hangs off it.</summary>

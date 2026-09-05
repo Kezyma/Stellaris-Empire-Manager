@@ -74,7 +74,27 @@
         </div>
     </div>
 
-    <AscensionPerkPicker Plan="@Plan" OnChanged="Save" />
+    @*
+        One at a time. Forty-nine perks and thirty-two trees on one panel is two long lists competing
+        for the same eye, and they are decided separately.
+    *@
+    <PickerTabs Tabs="@Parts" Label="Which part of the plan" Selected="@_part"
+                SelectedChanged="p => _part = p" />
+
+    @if (_part == 0)
+    {
+        <PlanPicker Heading="Ascension Perks" BudgetKey="ASCENSION_PERKS"
+                    Budget="@Session.Rules.GetAscensionPerkBudget(Plan.Perks.Count)"
+                    Available="@PerkOptions(chosen: false)" Chosen="@PerkOptions(chosen: true)"
+                    OnToggle="TogglePerk" />
+    }
+    else
+    {
+        <PlanPicker Heading="Traditions" BudgetKey="TRADITIONS"
+                    Budget="@Session.Rules.GetTraditionBudget(Plan.Trees.Count)"
+                    Available="@TreeOptions(chosen: false)" Chosen="@TreeOptions(chosen: true)"
+                    OnToggle="ToggleTree" />
+    }
 
     @if (Written is { Length: > 0 } written)
     {
@@ -93,19 +113,124 @@
     [CascadingParameter]
     public required DesignSession Session { get; set; }
 
+    /// <summary>Which half of the plan is showing, since both are long lists.</summary>
+    private int _part;
+
+    /// <summary>
+    /// The two halves, each saying how much of its allowance the plan has spent.
+    /// </summary>
+    /// <remarks>
+    /// The count rides on the tab so the half that is not showing still says what is in it - the
+    /// same reason the flag picker's tabs carry the emblem's name.
+    /// </remarks>
+    private IReadOnlyList<PickerTabs.Tab> Parts =>
+    [
+        new("Ascension Perks", $"{Plan.Perks.Count}/{Session.Data.Database.Defines.AscensionPerkSlots}"),
+        new("Traditions", $"{Plan.Trees.Count}/{Session.Data.Database.Defines.TraditionSlots}"),
+    ];
+
     private EmpireDesign Design => Session.Current!;
 
     private PlanVocabulary Vocabulary => Session.PlanVocabulary;
 
     /// <summary>Which biography carries the plan, defaulting to the species' when none does yet.</summary>
-    private PlanHome Home =>
-        Session.Plans.HomeOf(Design, Vocabulary) ?? PlanHome.Species;
+    private PlanHome Home => Session.Plans.HomeOf(Design, Vocabulary) ?? PlanHome.Species;
 
     private bool Planning => Session.Plans.HomeOf(Design, Vocabulary) is not null;
 
     private EmpirePlan Plan => Session.Plans.PlanOf(Design, Vocabulary);
 
     private string Written => Session.Plans.Text.Write(Plan);
+
+    // ---------------------------------------------------------------- what each picker is given
+
+    private IReadOnlyList<PlanOption> PerkOptions(bool chosen) => Shape(
+        Session.Rules.GetAscensionPerkOptions(Session.Context!, Plan.Perks),
+        Plan.Perks,
+        chosen,
+        key => Session.Data.Database.AscensionPerks.FirstOrDefault(p => p.Key == key) is { } perk
+            ? (perk.NameKey, perk.DescriptionKey, perk.Icon, perk.Effects)
+            : (key, null, null, null));
+
+    private IReadOnlyList<PlanOption> TreeOptions(bool chosen) => Shape(
+        Session.Rules.GetTraditionTreeOptions(Session.Context!, Plan.Trees, Plan.Perks),
+        Plan.Trees,
+        chosen,
+        key => Session.Data.Database.TraditionTrees.FirstOrDefault(t => t.Key == key) is { } tree
+            ? (tree.NameKey, tree.DescriptionKey, tree.Icon, null)
+            : (key, null, null, null));
+
+    /// <summary>
+    /// Turns what the rules said into what a picker draws, for either half of the plan.
+    /// </summary>
+    /// <remarks>
+    /// The chosen list is built from the plan rather than from the options, so something the empire
+    /// can no longer take - a pack turned off since, say - is still shown as planned rather than
+    /// disappearing without a word. Letting it go is how it leaves.
+    /// </remarks>
+    private IReadOnlyList<PlanOption> Shape(
+        IReadOnlyList<OptionState> states,
+        IReadOnlyList<string> planned,
+        bool chosen,
+        Func<string, (string Name, string? Desc, string? Icon, EffectSet? Effects)> describe)
+    {
+        IReadOnlyList<string> keys = chosen
+            ? planned
+            : [.. states.Where(s => s.Visible && !planned.Contains(s.Key)).Select(s => s.Key)];
+
+        var options = keys.Select(key =>
+        {
+            var state = states.FirstOrDefault(s => s.Key == key) ?? OptionState.Available(key, 0);
+            var (name, description, icon, effects) = describe(key);
+
+            var reasons = Session.Reasons
+                .Describe([.. state.Reasons.Where(r => !RuleReasons.IsBudget(r))])
+                .ToList();
+
+            if (state.RequiredDlc is { Length: > 0 } dlc)
+            {
+                reasons.Add($"Requires {dlc}.");
+            }
+
+            // Being full is not the same objection as being wrong: one is undone by letting
+            // something go and the other is not, so only the second sinks to the bottom.
+            var full = !state.Enabled && state.Reasons.Count > 0 && state.Reasons.All(RuleReasons.IsBudget);
+
+            return new PlanOption(
+                key,
+                Session.Localizer.Text(name),
+                Session.Localizer.Html(description, string.Empty),
+                icon,
+                effects,
+                state.Enabled,
+                reasons,
+                Unavailable: !state.Enabled && !full);
+        });
+
+        return chosen
+            ? [.. options]
+            : [.. options.OrderBy(o => o.Unavailable).ThenBy(o => o.Name, StringComparer.CurrentCulture)];
+    }
+
+    // ---------------------------------------------------------------- and what pressing one does
+
+    private void TogglePerk((string Key, bool Chosen) pressed)
+    {
+        var perks = pressed.Chosen
+            ? Plan.Perks.Where(p => p != pressed.Key).ToList()
+            : [.. Plan.Perks, pressed.Key];
+
+        // The path is worked out again, because it is worked out from these.
+        Save(Plan with { Perks = perks, Path = PlanPaths.From(perks) });
+    }
+
+    private void ToggleTree((string Key, bool Chosen) pressed) =>
+        Save(Plan with
+        {
+            Trees = pressed.Chosen
+                ? Plan.Trees.Where(t => t != pressed.Key).ToList()
+                : [.. Plan.Trees, pressed.Key],
+        });
 
     /// <summary>
     /// Turns planning on, or off and gives the biography back.
@@ -166,7 +291,7 @@
         Session.Edit(d => Session.Plans.Write(d, plan, home, Vocabulary));
     }
 
-    /// <summary>Writes a plan the picker has changed back into the biography carrying it.</summary>
+    /// <summary>Writes a plan a picker has changed back into the biography carrying it.</summary>
     private void Save(EmpirePlan plan)
     {
         var home = Home;

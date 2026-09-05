@@ -765,6 +765,71 @@ public sealed class EmpireRules(GameDatabase database)
         new(chosen, _database.Defines.AscensionPerkSlots);
 
     /// <summary>
+    /// The tradition trees a plan may open, with the ones this empire could not disabled.
+    /// </summary>
+    /// <remarks>
+    /// The perks come in too, because the trees ask about them: an ascension tree's own condition is
+    /// a NOR over every other ascension, and those expand to the perks that grant them. So planning
+    /// a cybernetic perk takes the psionic and genetic trees off the list, exactly as taking it in
+    /// the game would.
+    ///
+    /// A tree has only a potential and no possible, so what an empire cannot open is hidden rather
+    /// than shown struck out - which is what the game does with them.
+    /// </remarks>
+    public IReadOnlyList<OptionState> GetTraditionTreeOptions(
+        DesignContext context,
+        IReadOnlyCollection<string> trees,
+        IReadOnlyCollection<string> perks)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(trees);
+        ArgumentNullException.ThrowIfNull(perks);
+
+        var planned = context.WithPlan(perks, Opened(trees));
+
+        var options = Options(
+            _database.TraditionTrees,
+            t => t.Key,
+            t => t.Potential,
+            _ => AlwaysAllowed,
+            planned);
+
+        return trees.Count < _database.Defines.TraditionSlots
+            ? options
+            : [.. options.Select(o => trees.Contains(o.Key)
+                ? o
+                : Blocked(o, RuleReasons.NoTraditionSlotsLeft))];
+    }
+
+    /// <summary>How many tradition trees are named against how many a game allows.</summary>
+    public Budget GetTraditionBudget(int chosen) => new(chosen, _database.Defines.TraditionSlots);
+
+    /// <summary>
+    /// The trees a plan opens, said both ways the game says it.
+    /// </summary>
+    /// <remarks>
+    /// The three Machine Age trees rule each other out, and they do it by asking whether the
+    /// tradition that opens the other has been taken - <c>has_tradition = tr_nanotech_adopt</c>, not
+    /// the tree's own name. So both names go in, or the condition looks at a set that cannot contain
+    /// what it is asking about and every one of those exclusions quietly never fires.
+    /// </remarks>
+    private IEnumerable<string> Opened(IEnumerable<string> trees)
+    {
+        foreach (var key in trees)
+        {
+            yield return key;
+
+            if (_database.TraditionTrees.FirstOrDefault(t => t.Key == key)?.AdoptionBonus is { } adopt)
+            {
+                yield return adopt;
+            }
+        }
+    }
+
+    /// <summary>Nothing standing in the way, for things the game gates only on being listed.</summary>
+    private static readonly Requirement AlwaysAllowed = new AlwaysRequirement(true);
+
+    /// <summary>
     /// Closes an option off for a reason of the designer's rather than the game's.
     /// </summary>
     /// <remarks>

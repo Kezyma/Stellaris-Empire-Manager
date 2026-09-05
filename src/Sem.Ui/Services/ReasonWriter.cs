@@ -44,6 +44,7 @@ public sealed class ReasonWriter(Localizer localizer)
             RuleReasons.NoPicksLeft => "No trait slots left",
             RuleReasons.NoCivicSlotsLeft => "No civic slots left - release one first",
             RuleReasons.NoPerkSlotsLeft => "No ascension perk slots left - release one first",
+            RuleReasons.NoTraditionSlotsLeft => "No tradition slots left - release one first",
             RuleReasons.OriginAlreadyChosen => "An origin is already chosen - clear it first",
             RuleReasons.RulerTraitTaken => "The ruler already has a trait - release it first",
             RuleReasons.WrongLeaderClass => $"For a {Names(subject)} ruler",
