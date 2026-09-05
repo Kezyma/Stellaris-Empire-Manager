@@ -63,6 +63,22 @@
             <div class="sem-field flush">
                 <label>@facet.Label</label>
 
+                @*
+                    Two answers and a way of asking neither, which is a dropdown rather than a list
+                    of ticks: ticking both boxes and ticking neither meant the same thing, and a
+                    control with two ways to say All is a control that has to be worked out.
+                *@
+                @if (facet.YesNo)
+                {
+                    <select value="@Answer(facet)"
+                            @onchange="e => Answering(facet, e.Value?.ToString())">
+                        <option value="">All</option>
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                }
+                else
+                {
                 <MultiSelect Label="Any" Options="@options" Selected="@Filter.Keys(facet.Key)"
                              OnChanged="OnChanged">
                     <Leading>
@@ -87,6 +103,7 @@
                         }
                     </Leading>
                 </MultiSelect>
+                }
             </div>
         }
     </div>
@@ -189,6 +206,34 @@
 
         _offered[facet.Key] = options;
         return options;
+    }
+
+    /// <summary>Which of the three a yes-or-no heading is set to, as the dropdown spells it.</summary>
+    private string Answer(EmpireFacet facet)
+    {
+        var keys = Filter.Keys(facet.Key);
+
+        return keys.Contains("yes") ? "yes" : keys.Contains("no") ? "no" : string.Empty;
+    }
+
+    /// <summary>
+    /// Sets a yes-or-no heading, All being the absence of an answer rather than a third one.
+    /// </summary>
+    /// <remarks>
+    /// Written into the same set every other heading uses, so the matching does not have to know
+    /// that these two are drawn differently from the rest.
+    /// </remarks>
+    private async Task Answering(EmpireFacet facet, string? answer)
+    {
+        var keys = Filter.Keys(facet.Key);
+        keys.Clear();
+
+        if (answer is { Length: > 0 })
+        {
+            keys.Add(answer);
+        }
+
+        await OnChanged.InvokeAsync();
     }
 
     private async Task Switch(string facet)

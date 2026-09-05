@@ -1,5 +1,6 @@
 using Sem.Designs;
 using Sem.GameData;
+using Sem.Ui.Components;
 
 namespace Sem.Ui.Services;
 
@@ -80,6 +81,52 @@ public sealed record EmpireRow
     /// <summary>Whether the empire wanders rather than settling, which is a heading of its own.</summary>
     public bool Nomadic { get; init; }
 
+    /// <summary>
+    /// Whether its fleet is grown rather than built.
+    /// </summary>
+    /// <remarks>
+    /// The game sorts its own shipset picker by this, and it is the one thing about a set that is
+    /// not simply which pictures it uses: a bioship fleet plays differently.
+    /// </remarks>
+    public bool Bioship { get; init; }
+
+    /// <summary>Whether the design may appear as an AI empire, and how often.</summary>
+    public EmpireChoice? Spawn { get; init; }
+
+    /// <summary>Whether the galaxy may generate it as a fallen empire.</summary>
+    public bool Fallen { get; init; }
+
+    /// <summary>The set of scripted country flags it claims, where it claims one.</summary>
+    public EmpireChoice? FlagSet { get; init; }
+
+    /// <summary>The room the ruler is shown standing in.</summary>
+    public EmpireChoice? Room { get; init; }
+
+    /// <summary>The founders' likeness, their gender, and the list their names come from.</summary>
+    public EmpireChoice? Portrait { get; init; }
+
+    public EmpireChoice? Gender { get; init; }
+
+    public EmpireChoice? NameList { get; init; }
+
+    /// <summary>The ruler's own likeness and gender, which need not be their people's.</summary>
+    public EmpireChoice? RulerPortrait { get; init; }
+
+    public EmpireChoice? RulerGender { get; init; }
+
+    /// <summary>
+    /// The second species an origin brought with it, where there is one.
+    /// </summary>
+    /// <remarks>
+    /// Half of some empires and invisible in every column until now: a Syncretic Evolution empire
+    /// is as much its servile species as its founders, and nothing on the page said so.
+    /// </remarks>
+    public bool HasSecondSpecies { get; init; }
+
+    public EmpireChoice? SecondClass { get; init; }
+
+    public required IReadOnlyList<EmpireChoice> SecondTraits { get; init; }
+
     public required IReadOnlyList<EmpireChoice> Ethics { get; init; }
 
     public required IReadOnlyList<EmpireChoice> Civics { get; init; }
@@ -123,6 +170,44 @@ public sealed record EmpireRow
     /// view is thrown away afterwards: it holds a context, and ninety of those kept alive to answer
     /// questions nobody is asking is a great deal of memory for a list.
     /// </remarks>
+    /// <summary>What the game calls a fleet it grows rather than builds.</summary>
+    private const string BioFleet = "bio_ship";
+
+    /// <summary>How often the galaxy may generate this empire, said in words rather than in keys.</summary>
+    private static string Spawning(string stored) => stored switch
+    {
+        "no" => "Never",
+        "always" => "Always",
+        _ => "Sometimes",
+    };
+
+    /// <summary>A portrait as a choice, wearing the face it actually resolves to.</summary>
+    /// <remarks>
+    /// Keyed by what the design stores - the group, usually - so two empires that both say "human"
+    /// are one thing to filter by, however differently the gender resolves them.
+    /// </remarks>
+    private static EmpireChoice? Likeness(DesignSession session, string? key, string? gender) =>
+        key is { Length: > 0 }
+            ? new EmpireChoice(
+                key,
+                session.Localizer.Text(key, Localizer.Prettify(key)),
+                PortraitArtwork.For(session.Data.Database, key, gender),
+                null)
+            : null;
+
+    /// <summary>A gender as a choice, wearing the game's own button sprite.</summary>
+    private static EmpireChoice? Gendered(DesignSession session, string? gender)
+    {
+        var held = gender is { Length: > 0 } set ? set : "not_set";
+        var (label, icon) = GenderPicker.Held(held);
+
+        return new EmpireChoice(
+            held,
+            label,
+            session.Data.Database.Icons.GetValueOrDefault(icon),
+            null);
+    }
+
     /// <summary>
     /// A world, described by what living on it would do to the species that does.
     /// </summary>
@@ -196,6 +281,9 @@ public sealed record EmpireRow
                     ruler,
                     design.Ruler.Title is { } title ? loc.Name(title, string.Empty) : string.Empty,
                     prefix,
+                    design.Key,
+                    design.Ruler.HeirTitle is { } heir ? loc.Name(heir, string.Empty) : string.Empty,
+                    design.SecondarySpecies is { } kin ? loc.Name(kin.Name, string.Empty) : string.Empty,
                     design.Species.Biography ?? string.Empty,
                     design.Ruler.CustomBiography is { } lore ? loc.Name(lore, string.Empty) : string.Empty,
                 }.Where(part => part.Length > 0)),
@@ -214,6 +302,44 @@ public sealed record EmpireRow
 
             AuthorityChips = [.. view.AuthorityChoice],
             Nomadic = design.IsNomadic == true,
+            Bioship = shipset?.ShipCategory == BioFleet,
+
+            // Written unquoted as no, yes or always - "yes" meaning sometimes, which is why the
+            // word the game stores is not the word to show.
+            Spawn = design.SpawnEnabled is { Length: > 0 } spawn
+                ? new EmpireChoice(spawn, Spawning(spawn), null, null)
+                : null,
+
+            Fallen = design.SpawnAsFallen == true,
+
+            FlagSet = view.FlagSet is { } flags
+                ? new EmpireChoice(flags.Key, EmpireView.FlagSetName(session, flags), null, null)
+                : null,
+
+            Room = view.Room is { } room
+                ? new EmpireChoice(room.Key, loc.Text(room.Key, Localizer.Prettify(room.Key)), null, null)
+                : null,
+
+            Portrait = Likeness(session, design.Species.Portrait, design.Species.Gender),
+            Gender = Gendered(session, design.Species.Gender),
+            NameList = design.Species.NameList is { Length: > 0 } list
+                ? new EmpireChoice(list, loc.Text(list, Localizer.Prettify(list)), null, null)
+                : null,
+
+            RulerPortrait = Likeness(
+                session,
+                PortraitArtwork.RulerPortrait(design),
+                PortraitArtwork.RulerGender(design)),
+
+            RulerGender = Gendered(session, design.Ruler.Gender),
+
+            HasSecondSpecies = design.SecondarySpecies is not null,
+
+            SecondClass = design.SecondarySpecies?.Class is { Length: > 0 } second
+                ? new EmpireChoice(second, loc.Text(second), null, null)
+                : null,
+
+            SecondTraits = design.SecondarySpecies is { } other ? [.. view.TraitsOf(other)] : [],
 
             Ethics = [.. view.Ethics],
             Civics = [.. view.Civics],
@@ -260,12 +386,20 @@ public sealed record EmpireRow
                     null)
                 : null,
 
+            // The game names two shipsets and no more: BIOGENESIS_01 and _02, which Biogenesis
+            // added, are the only two of fifty-two with a localisation entry - so every other set
+            // is called by its key made readable, and there is nothing to look up that would say
+            // otherwise. What each set does have is its own ship render and a description, and
+            // both are worth more than a name we would have to invent.
             Shipset = shipset is { } fleet
                 ? new EmpireChoice(
                     fleet.Key,
                     view.CultureName(fleet.Key) ?? Localizer.Prettify(fleet.Key),
-                    null,
-                    null)
+                    fleet.ShipPreview,
+                    EffectSet.None)
+                {
+                    Description = fleet.DescriptionKey,
+                }
                 : null,
 
             Advisor = advisor is { } voice
@@ -320,14 +454,37 @@ public sealed record EmpireFacet(
         new("civics", "Civics", r => r.Civics),
         new("origin", "Origin", r => Some(r.Origin)),
         new("class", "Species", r => Some(r.SpeciesClass)),
+        new("portrait", "Portrait", r => Some(r.Portrait)),
+        new("gender", "Gender", r => Some(r.Gender)),
+        new("namelist", "Name list", r => Some(r.NameList)),
         new("traits", "Traits", r => r.Traits),
+        new("second", "Second species", r => YesOrNo(r.HasSecondSpecies)),
+        new("secondclass", "Second species kind", r => Some(r.SecondClass)),
+        new("secondtraits", "Second species traits", r => r.SecondTraits),
         new("homeworld", "Homeworld", r => Some(r.PlanetClass)),
         new("system", "Starting system", r => Some(r.StartingSystem)),
+        new("room", "Room", r => Some(r.Room)),
         new("shipset", "Shipset", r => Some(r.Shipset)),
+        new("bioship", "Bioships", r => YesOrNo(r.Bioship)),
         new("advisor", "Advisor voice", r => Some(r.Advisor)),
         new("rulerclass", "Ruler class", r => Some(r.RulerClass)),
+        new("rulerportrait", "Ruler portrait", r => Some(r.RulerPortrait)),
+        new("rulergender", "Ruler gender", r => Some(r.RulerGender)),
         new("rulertraits", "Ruler traits", r => r.RulerTraits),
+        new("spawn", "AI spawning", r => Some(r.Spawn)),
+        new("fallen", "Fallen empire", r => YesOrNo(r.Fallen)),
+        new("flagset", "Special flags", r => Some(r.FlagSet)),
     ];
+
+    /// <summary>
+    /// Whether the heading has two answers and wants a dropdown rather than a list of ticks.
+    /// </summary>
+    /// <remarks>
+    /// Yes, no, or neither. Ticking both is the same as ticking neither, which is a thing a set of
+    /// tick boxes lets you do and a reader has to work out for themselves - so these say All, Yes
+    /// and No and only one at a time.
+    /// </remarks>
+    public bool YesNo => Key is "preset" or "nomadic" or "second" or "bioship" or "fallen";
 
     /// <summary>Whether more than one can be held at once, which is what makes "all" worth offering.</summary>
     /// <remarks>
@@ -396,16 +553,29 @@ public sealed record EmpireColumn(
         Picked("origin", true),
         Picked("class", true),
         new("speciesname", "Species name", false, Line: r => r.SpeciesName),
+        Picked("portrait", false),
+        Picked("gender", false),
+        Picked("namelist", false),
         Picked("traits", false),
+        Picked("second", false),
+        Picked("secondclass", false),
+        Picked("secondtraits", false),
         Picked("homeworld", false),
         new("planet", "Planet", false, Line: r => r.PlanetName),
         Picked("system", false),
+        Picked("room", false),
         Picked("shipset", false),
+        Picked("bioship", false),
         Picked("advisor", false),
         new("ruler", "Ruler", false, Line: r => r.RulerName),
         Picked("rulerclass", false),
+        Picked("rulerportrait", false),
+        Picked("rulergender", false),
         Picked("rulertraits", false),
         new("prefix", "Ship prefix", false, Line: r => r.ShipPrefix),
+        Picked("spawn", false),
+        Picked("fallen", false),
+        Picked("flagset", false),
     ];
 
     /// <summary>

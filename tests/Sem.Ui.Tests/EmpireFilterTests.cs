@@ -95,6 +95,29 @@ public sealed class EmpireFilterTests
         Assert.True(filter.Matches(Row("Settlers")));
     }
 
+    /// <summary>
+    /// The headings drawn as a dropdown are exactly the ones whose answer is yes or no.
+    /// </summary>
+    /// <remarks>
+    /// A heading with two answers has three states and only one of them at a time, which is a
+    /// dropdown; one with many has any number at once, which is a list of ticks. Getting this wrong
+    /// gives a reader a control that cannot say what they mean, so it is written down.
+    /// </remarks>
+    [Fact]
+    public void OnlyTheYesOrNoHeadingsAreDrawnAsADropdown()
+    {
+        var yesNo = EmpireFacet.All.Where(f => f.YesNo).Select(f => f.Key);
+
+        Assert.Equal(["preset", "nomadic", "second", "bioship", "fallen"], yesNo);
+    }
+
+    /// <summary>Every heading offers something to choose, or it is a control that does nothing.</summary>
+    [Fact]
+    public void NoHeadingIsBothADropdownAndAListOfTicks()
+    {
+        Assert.All(EmpireFacet.All, facet => Assert.False(facet.YesNo && facet.Several));
+    }
+
     /// <summary>Only the headings an empire can hold several of are offered the choice.</summary>
     /// <remarks>
     /// An empire has one authority and any number of civics, so asking for all of two authorities
@@ -258,6 +281,7 @@ public sealed class EmpireFilterTests
             Name = name,
             Text = text ?? name,
             AuthorityChips = [],
+            SecondTraits = [],
             Ethics = [.. (ethics ?? []).Select(Choice)],
             Civics = [.. (civics ?? []).Select(Choice)],
             Origin = origin is null ? null : Choice(origin),

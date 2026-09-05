@@ -37,6 +37,14 @@
                         {
                             <th scope="col">@Header(column.Key, column.Header)</th>
                         }
+
+                        @*
+                            Not in the picker and not sortable: it is not something an empire is, it
+                            is what can be done to one. Stuck to the right edge so a table scrolled
+                            sideways still has it - with twenty-eight columns to choose from, a
+                            column of buttons at the far end would be a column nobody reaches.
+                        *@
+                        <th scope="col" class="actions">Actions</th>
                     </tr>
                 </thead>
 
@@ -161,6 +169,28 @@
                                     }
                                 </td>
                             }
+
+                            <td class="actions" @onclick:stopPropagation="true">
+                                <button type="button" class="icon" title="@CopyTitle(row)"
+                                        aria-label="@($"Copy a link to {row.Name}")"
+                                        @onclick="() => OnCopyLink.InvokeAsync(row)">
+                                    <ActionIcon Name="share" />
+                                </button>
+
+                                @*
+                                    One of the game's cannot be deleted - it is not in the file to
+                                    remove - so it gets the link and nothing else.
+                                *@
+                                @if (row.Preset is null && OnDelete.HasDelegate)
+                                {
+                                    <button type="button" class="icon danger"
+                                            title="@($"Delete {row.Name}")"
+                                            aria-label="@($"Delete {row.Name}")"
+                                            @onclick="() => OnDelete.InvokeAsync(row)">
+                                        <ActionIcon Name="delete" />
+                                    </button>
+                                }
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -258,6 +288,18 @@
     /// </remarks>
     [Parameter]
     public EventCallback<(EmpireRow Row, int To)> OnMove { get; set; }
+
+    /// <summary>Puts a link to one empire on the clipboard, without opening it.</summary>
+    [Parameter]
+    public EventCallback<EmpireRow> OnCopyLink { get; set; }
+
+    /// <summary>Asks to remove one of the player's own, which the page confirms before doing.</summary>
+    [Parameter]
+    public EventCallback<EmpireRow> OnDelete { get; set; }
+
+    /// <summary>What one row's share button says, which is only ever news about that row.</summary>
+    [Parameter]
+    public Func<EmpireRow, string> CopyTitle { get; set; } = _ => "Copy a link to this empire";
 
     /// <summary>Which empire's number is being typed into, and nothing while none is.</summary>
     private EmpireDesign? _moving;

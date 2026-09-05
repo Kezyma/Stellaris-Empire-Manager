@@ -3832,6 +3832,42 @@ button.icon .sem-action-icon { display: block; }
     text-align: right;
 }
 
+/*
+   What can be done to a row, held against the right edge while the table scrolls under it.
+
+   Not a column in the picker: it is not something an empire is, it is what can be done to one, and
+   a table whose delete button can be turned off is a table with a setting nobody wants. Stuck
+   rather than merely last, because with twenty-eight columns to choose from the far end of the
+   table is somewhere a reader would have to go looking for.
+
+   A background of its own, since the rows slide beneath it - and the hover repeated, because a
+   sticky cell that keeps its own colour is the one cell of a row that does not light up.
+*/
+.sem-table .actions {
+    position: sticky;
+    right: 0;
+    z-index: 1;
+
+    width: 1%;
+    white-space: nowrap;
+    text-align: right;
+    background: var(--bg-panel);
+    border-left: 1px solid var(--border);
+}
+
+.sem-table thead th.actions {
+    background: var(--bg-raised);
+}
+
+.sem-table tbody tr:hover .actions {
+    background: var(--bg-hover);
+}
+
+.sem-table .actions button.icon {
+    width: 1.7rem;
+    height: 1.7rem;
+}
+
 .sem-position {
     padding: 0 var(--space-2xs);
     background: none;

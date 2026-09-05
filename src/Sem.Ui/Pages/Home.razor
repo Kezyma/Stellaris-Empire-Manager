@@ -55,6 +55,21 @@ else
         }
     </p>
 
+    @*
+        Asked before an empire goes, since there is no undo behind it. Here rather than in the row
+        that asked for it: a question is the page's to put on screen, and a table cell is a poor
+        place to grow a dialog out of.
+    *@
+    @if (_deleting is { } doomed)
+    {
+        <ConfirmDialog Title="@($"Delete {_session.Localizer.Name(doomed.Name, doomed.Key)}?")"
+                       Message="The empire is removed from your file. There is no undo."
+                       OnDismiss="() => _deleting = null">
+            <button type="button" @onclick="() => _deleting = null">Keep it</button>
+            <button type="button" class="danger" @onclick="() => Delete(doomed)">Delete</button>
+        </ConfirmDialog>
+    }
+
     <CascadingValue Value="_session">
         @*
             Two ways of being shown the same empires, and the controls that decide which.
@@ -102,6 +117,8 @@ else
             <EmpireTable Heading="Empires" Setting="rows"
                          Rows="@Narrowed(AllRows)" Total="@AllRows.Count" Movable="@OwnRows.Count"
                          Columns="@VisibleColumns" OnOpen="OpenRow" OnMove="MoveRow"
+                         OnCopyLink="row => CopyLink(row.Design)" OnDelete="Confirm"
+                         CopyTitle="row => CopyTitleFor(row.Design)"
                          Empty="No empires match." />
         }
         else
@@ -638,6 +655,32 @@ else
         _session?.Preferences.Set(
             ColumnSetting,
             _visible.Count == 0 ? " " : string.Join(",", _visible));
+
+    /// <summary>The empire the delete question is about, and nothing while nothing is being asked.</summary>
+    private EmpireDesign? _deleting;
+
+    /// <summary>Asks before removing one, since there is no undo behind it.</summary>
+    private void Confirm(EmpireRow row) => _deleting = row.Design;
+
+    /// <summary>
+    /// Removes one of the player's empires from the file.
+    /// </summary>
+    /// <remarks>
+    /// The same removal the editor's own delete makes, and through the same door. An empire being
+    /// edited when it goes takes the editor with it - there is nothing left for it to show.
+    /// </remarks>
+    private void Delete(EmpireDesign design)
+    {
+        _deleting = null;
+
+        _session!.EditFile(file => file.Remove(design));
+
+        if (ReferenceEquals(_session.Current, design))
+        {
+            Editor.IsOpen = false;
+            _session.Select(_session.File?.Designs.FirstOrDefault());
+        }
+    }
 
     /// <summary>Puts one of the player's empires somewhere else in the file.</summary>
     /// <remarks>
