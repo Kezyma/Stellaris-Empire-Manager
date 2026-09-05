@@ -436,8 +436,18 @@
         }
     }
 
-    /// <summary>How many rows the filter left, which the last render was drawn against.</summary>
-    private int _drawnFor = -1;
+    /// <summary>
+    /// The list the page number was last settled against.
+    /// </summary>
+    /// <remarks>
+    /// The list itself rather than how long it was. Two filters can leave the same number of
+    /// empires, and a reader on the third page of one was left on the third page of the other.
+    ///
+    /// This only became a safe thing to compare when the page above stopped building that list
+    /// afresh in the markup on every render - before that every render was a new list, and asking
+    /// this way would have sent the reader back to the first page constantly.
+    /// </remarks>
+    private IReadOnlyList<EmpireRow>? _drawnFor;
 
     /// <summary>
     /// Back to the first page whenever the filter changes what there is to page through.
@@ -459,12 +469,12 @@
             }
         }
 
-        if (_drawnFor == Rows.Count)
+        if (ReferenceEquals(Rows, _drawnFor))
         {
             return;
         }
 
-        _drawnFor = Rows.Count;
+        _drawnFor = Rows;
         _page = 0;
     }
 
@@ -494,6 +504,43 @@
     private IEnumerable<EmpireRow> Shown => Sorted.Skip(_page * _size).Take(_size);
 
     /// <summary>
+    /// The ordering, worked out once for a given list, column and direction.
+    /// </summary>
+    /// <remarks>
+    /// It was worked out on every render, and for a column whose cell holds several things - civics,
+    /// ethics, traits - what it sorts by is those things joined into one string, built for every row
+    /// and thrown away again, to settle an order that had not changed. Nothing ever draws that
+    /// string; the cells draw the things themselves.
+    ///
+    /// Kept against the list rather than a count of it, so this is only worked out again when the
+    /// page above has actually asked a different question.
+    /// </remarks>
+    private IReadOnlyList<EmpireRow> Sorted
+    {
+        get
+        {
+            if (_ordered is { } held
+                && ReferenceEquals(Rows, _orderedFor)
+                && _orderedBy == _sort
+                && _orderedDown == _descending)
+            {
+                return held;
+            }
+
+            _orderedFor = Rows;
+            _orderedBy = _sort;
+            _orderedDown = _descending;
+
+            return _ordered = [.. Ordering];
+        }
+    }
+
+    private IReadOnlyList<EmpireRow>? _ordered;
+    private IReadOnlyList<EmpireRow>? _orderedFor;
+    private string? _orderedBy;
+    private bool _orderedDown;
+
+    /// <summary>
     /// The rows in the order the header asked for, with the name always breaking the tie.
     /// </summary>
     /// <remarks>
@@ -501,7 +548,7 @@
     /// would otherwise be the file's - so the same list, sorted the same way, reads differently
     /// depending on what it happened to be sorted by before. The name settles it.
     /// </remarks>
-    private IEnumerable<EmpireRow> Sorted
+    private IEnumerable<EmpireRow> Ordering
     {
         get
         {

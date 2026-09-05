@@ -107,7 +107,7 @@ else
 
         @if (_listView)
         {
-            <EmpireFilters Rows="@AllRows" Filter="@_filter" OnChanged="StateHasChanged" />
+            <EmpireFilters Rows="@AllRows" Filter="@_filter" OnChanged="FilterChanged" />
 
             @*
                 One table for both. They were two, which is how the cards show them - and a table is
@@ -116,13 +116,13 @@ else
                 done twice and read once. Which list a row came from is a column like any other.
             *@
             <EmpireTable Heading="Empires" Setting="rows"
-                         Rows="@Narrowed(AllRows)" Total="@AllRows.Count" Movable="@OwnRows.Count"
+                         Rows="@Narrowed" Total="@AllRows.Count" Movable="@OwnRows.Count"
                          Columns="@VisibleColumns" OnOpen="OpenRow" OnMove="MoveRow"
                          OnCopyLink="row => CopyLink(row.Design)" OnDelete="Confirm"
                          CopyTitle="row => CopyTitleFor(row.Design)"
                          Empty="No empires match.">
                 <Title>
-                    <EmpireSearch Filter="@_filter" OnChanged="StateHasChanged" />
+                    <EmpireSearch Filter="@_filter" OnChanged="FilterChanged" />
                 </Title>
 
                 <Controls>
@@ -660,6 +660,7 @@ else
         _rows = null;
         _ownRows = null;
         _presetRows = null;
+        _narrowed = null;
 
         InvokeAsync(StateHasChanged);
     }
@@ -693,9 +694,37 @@ else
     private IReadOnlyList<EmpireRow>? _ownRows;
     private IReadOnlyList<EmpireRow>? _presetRows;
 
-    /// <summary>One list, narrowed by whatever is in the filter card.</summary>
-    private IReadOnlyList<EmpireRow> Narrowed(IReadOnlyList<EmpireRow> rows) =>
-        _filter.Any ? [.. rows.Where(_filter.Matches)] : rows;
+    /// <summary>
+    /// One list, narrowed by whatever is in the filter card, worked out once per question asked.
+    /// </summary>
+    /// <remarks>
+    /// Held, rather than written into the table's parameter where it was. An expression in a
+    /// parameter is evaluated on every render, so a column turned on or off put all ninety rows
+    /// through all twenty-eight headings to arrive at exactly the list already on screen.
+    ///
+    /// It also handed the table a different list object every time, which by itself is enough to
+    /// defeat anything below that holds a result against the rows it was given - the sorting does
+    /// that now, and could not have while this stood.
+    /// </remarks>
+    private IReadOnlyList<EmpireRow> Narrowed =>
+        _narrowed ??= _filter.Any ? [.. AllRows.Where(_filter.Matches)] : AllRows;
+
+    private IReadOnlyList<EmpireRow>? _narrowed;
+
+    /// <summary>
+    /// Takes a change to the filter, which is the only thing that alters what the table is handed.
+    /// </summary>
+    /// <remarks>
+    /// The search box writes the word straight into the filter and waits before saying so, which is
+    /// what keeps the list from churning through a word being typed. Anything that redraws the page
+    /// inside that quarter second shows the list as it was before the word - which is the point of
+    /// waiting, and it settles itself either way on the next change.
+    /// </remarks>
+    private void FilterChanged()
+    {
+        _narrowed = null;
+        StateHasChanged();
+    }
 
     /// <summary>The columns on offer, named as the picker shows them.</summary>
     private IReadOnlyList<EmpireChoice> ColumnOptions { get; } =
