@@ -131,6 +131,16 @@ public sealed class DesignSession
     public bool IsModified { get; private set; }
 
     /// <summary>
+    /// Whether the empire in hand is one that is not in the file until it is saved.
+    /// </summary>
+    /// <remarks>
+    /// A new empire, a shared one, or one of the game's own. It is in the file's list because the
+    /// editor has to have something to work on, and turning to anything else takes it out again -
+    /// so a caller closing the editor on one has to say so, or it is left behind.
+    /// </remarks>
+    public bool IsHeldOut => _unsaved is not null && ReferenceEquals(_unsaved, Current);
+
+    /// <summary>
     /// Whether the list of empires has changed since the file was last written.
     /// </summary>
     /// <remarks>
@@ -291,11 +301,20 @@ public sealed class DesignSession
     /// Starts an empire that is not in the file until it is saved.
     /// </summary>
     /// <remarks>
-    /// Unlike <see cref="EditFile"/> this announces nothing, so the host does not store it. It
-    /// counts as unsaved from the first moment, which is what makes leaving the designer ask about
-    /// it exactly as it would for an empire somebody had edited.
+    /// <para>
+    /// Unlike <see cref="EditFile"/> this announces nothing, so the host does not store it.
+    /// </para>
+    /// <para>
+    /// It counts as unsaved from the first moment by default, which is what makes leaving a new
+    /// empire ask about it exactly as it would for one somebody had edited. One of the game's own
+    /// does not: it is opened to be read as often as to be taken, and it cannot be lost - the copy
+    /// can always be made again from the same shelf. Asked about on every close, the question was
+    /// one to dismiss rather than one to answer, which is how a question stops being read.
+    /// </para>
     /// </remarks>
-    public EmpireDesign? CreateEmpire(Func<EmpireDesignsFile, EmpireDesign> add)
+    public EmpireDesign? CreateEmpire(
+        Func<EmpireDesignsFile, EmpireDesign> add,
+        bool countsAsUnsavedWork = true)
     {
         ArgumentNullException.ThrowIfNull(add);
 
@@ -309,7 +328,7 @@ public sealed class DesignSession
         Select(design, announce: false);
 
         _unsaved = design;
-        IsModified = true;
+        IsModified = countsAsUnsavedWork;
         Recompute();
 
         return design;

@@ -4,6 +4,7 @@
 @inject IFileExchange Files
 @inject NavigationManager Navigation
 @inject UnsavedWorkGuard Guard
+@inject EditorState Editor
 
 @*
     The file lives in the header: the empire list, a new empire, the file in, the file out, and
@@ -335,6 +336,7 @@
         // Nothing to weigh up: an empty file has nothing to lose, and neither has an empty import.
         if (_session!.File is not { Designs.Count: > 0 } || incoming.Designs.Count == 0)
         {
+            Editor.IsOpen = false;
             _session.Open(incoming, name);
             return;
         }
@@ -347,6 +349,10 @@
     {
         if (_importing is { } incoming)
         {
+            // Closed either way. Merging can replace the very empire the editor is holding, and
+            // replacing throws away the file it came from - and an editor left open over a file
+            // that has just changed underneath it is showing something nobody asked to see.
+            Editor.IsOpen = false;
             _session!.Merge(incoming.File);
             _importing = null;
         }
@@ -357,6 +363,7 @@
     {
         if (_importing is { } incoming)
         {
+            Editor.IsOpen = false;
             _session!.Open(incoming.File, incoming.Name);
             _importing = null;
         }
@@ -418,7 +425,11 @@
             return design;
         });
 
-        Navigation.NavigateTo("designer");
+        // To the list, which opens its editor on whatever is in hand. The empire is already made by
+        // now, so this is only a matter of getting to the page the editor lives on - and from the
+        // list itself it is not even a navigation.
+        Editor.IsOpen = true;
+        Navigation.NavigateTo(string.Empty);
     }
 
     /// <summary>A name nothing in the file has yet.</summary>
@@ -474,9 +485,10 @@
         _message = null;
         _session!.StartEmptyFile();
 
-        // Back to the list. The designer would otherwise be left holding an empire that no longer
-        // exists, and StartEmptyFile has already cleared the unsaved flag, so nothing asks again on
-        // the way out.
+        // Back to the list, with nothing open over it. The editor would otherwise be left holding
+        // an empire that no longer exists, and StartEmptyFile has already cleared the unsaved flag,
+        // so nothing asks again on the way out.
+        Editor.IsOpen = false;
         Navigation.NavigateTo(string.Empty);
     }
 

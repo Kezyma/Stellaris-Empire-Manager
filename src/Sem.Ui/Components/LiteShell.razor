@@ -27,12 +27,8 @@
     }
     else
     {
-        @if (Actions is not null)
-        {
-            <div class="sem-lite-actions">@Actions</div>
-        }
-
-        <LiteCard Design="Session.Current" Baseline="@Session.SavedContext" OnEdit="Open" />
+        <LiteCard Design="Session.Current" Baseline="@Session.SavedContext" OnEdit="Open"
+                  Actions="@Actions" />
 
         @if (_editing is { } part)
         {
@@ -52,6 +48,17 @@
     [Parameter]
     public RenderFragment? Actions { get; set; }
 
+    /// <summary>
+    /// Raised when the editor for a part closes, so whatever is underneath can take the keyboard.
+    /// </summary>
+    /// <remarks>
+    /// The dialog takes the focus when it opens and the browser gives it to the document when it
+    /// goes, which is nowhere: with this card itself in a dialog, Escape closed the part and then
+    /// stopped working, because the keydown had nothing left to bubble through.
+    /// </remarks>
+    [Parameter]
+    public EventCallback OnPartClosed { get; set; }
+
     /// <summary>Which editor is open, and nothing when none is.</summary>
     private LitePart? _editing;
 
@@ -63,7 +70,11 @@
 
     private void Open(LitePart part) => _editing = part;
 
-    private void Close() => _editing = null;
+    private async Task Close()
+    {
+        _editing = null;
+        await OnPartClosed.InvokeAsync();
+    }
 
     /// <summary>
     /// What the dialog is called.

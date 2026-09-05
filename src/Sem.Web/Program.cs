@@ -20,6 +20,7 @@ builder.Services.AddScoped<IFileExchange, BrowserFileExchange>();
 // The header can start an empire or open a file from any page, so the question about unsaved work
 // has to be askable from outside the designer that knows how to ask it.
 builder.Services.AddScoped<UnsavedWorkGuard>();
+builder.Services.AddScoped<EditorState>();
 
 // A tab that is closed should not take an evening's work with it, so the designs are kept in the
 // browser between visits.

@@ -181,6 +181,17 @@ public static class DesignLink
     ];
 
     /// <summary>Packs a design into a string that can be put in a URL.</summary>
+    /// <summary>
+    /// Where an empire lives, relative to wherever the app is served from.
+    /// </summary>
+    /// <remarks>
+    /// A path rather than a query - nine characters shorter, and with no question mark or equals
+    /// sign for a chat client to decide is punctuation. The query is still read, and always will
+    /// be: it is what every link shared before this carries, and a link somebody sent is not ours
+    /// to expire.
+    /// </remarks>
+    public static string Address(string encoded) => $"e/{encoded}";
+
     public static string Encode(EmpireDesign design)
     {
         ArgumentNullException.ThrowIfNull(design);

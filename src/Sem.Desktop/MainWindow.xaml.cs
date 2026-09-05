@@ -156,6 +156,7 @@ public partial class MainWindow : Window
 
         // Asked by the header before it starts an empire or opens a file, answered by the designer.
         services.AddScoped<UnsavedWorkGuard>();
+        services.AddScoped<EditorState>();
 
         WebView.Services = services.BuildServiceProvider();
         WebView.RootComponents.Add(new RootComponent

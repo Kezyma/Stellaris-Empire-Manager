@@ -26,6 +26,7 @@
     --accent-dim: #2d6a91;
     --gold: #e0c14a;
     --good: #5ec46a;
+    --good-dim: #35743d;
     --bad: #d95c5c;
     --warn: #d9a45c;
 
@@ -486,6 +487,22 @@ button.primary {
 
 button.primary:hover:not(:disabled) {
     background: var(--accent);
+}
+
+/*
+   Save, and only Save. The accent is the app's ordinary emphasis and it is spent all over the
+   editor - on the way across, on a chosen option, on the focus ring - so the one button that
+   commits the work was the same blue as the one that changed pages. Green says which of them puts
+   the empire in the file.
+*/
+button.good {
+    background: var(--good-dim);
+    border-color: var(--good);
+}
+
+button.good:hover:not(:disabled) {
+    background: var(--good);
+    color: var(--bg);
 }
 
 /*
@@ -1228,27 +1245,16 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     gap: var(--space-lg);
 }
 
-/* The game's own empires, in three columns and staying three. The shared rule above fits as many
-   300px columns as it can, which came out at three on a wide screen and four on a narrow one — an
-   accident of the page being 1400 with a 420 preview beside it rather than anything chosen. */
-.sem-empires-preset {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-@media (max-width: 900px) {
-    .sem-empires-preset { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-
 /*
-    minmax(0, 1fr) rather than 1fr wherever a grid drops to one column on a narrow screen. Every
-    such rule in this sheet does it, and for the reason set out on .sem-select: 1fr means
-    minmax(auto, 1fr), whose floor is the widest thing inside, so a column that should shrink to the
-    phone instead pushes past it. Seven rules had the bare form and two of them were visibly
-    scrolling the empire list sideways.
+   The game's empires take their columns from the rule above, as the player's own do.
+
+   They used to be pinned to a stated number at each width - three, then two, then one - because
+   the shared rule fitted as many 300px columns as it could and that came out at three on a wide
+   screen and four on a narrow one, which was the preview beside the list rather than anything
+   chosen. The preview has gone, both lists have the same width to fill, and one card is the same
+   size in either of them; so a second set of breakpoints was only a way for the two lists to
+   disagree about where a column fits.
 */
-@media (max-width: 640px) {
-    .sem-empires-preset { grid-template-columns: minmax(0, 1fr); }
-}
 
 /* A section rather than a panel: a heading, a line of hint, and the list. */
 .sem-prescripted {
@@ -3377,9 +3383,11 @@ button.icon .sem-action-icon { display: block; }
 /* ---------------------------------------------------------------- the select screen */
 
 /*
-    Empires to choose from on one side, the chosen one in full on the other. The preview is written
-    first in the markup so that a single-column screen puts it at the top, which is the same rule
-    the designer follows: the answer above the ways of changing the question.
+    The lists, and nothing beside them.
+
+    There was a preview panel here, a column-wide summary of an empire you had to open another page
+    to change. Pressing an empire opens the empire itself now, over the list, so the room the panel
+    took is the list's - which is a column and a half of cards on a wide screen.
 */
 .sem-select {
     display: grid;
@@ -3394,32 +3402,6 @@ button.icon .sem-action-icon { display: block; }
     grid-template-columns: minmax(0, 1fr);
     gap: var(--gap);
     align-items: start;
-}
-
-@media (min-width: 1100px) {
-    .sem-select {
-        /* The lists take the room they need for their cards; the preview takes the rest. */
-        grid-template-columns: minmax(0, 1fr) 420px;
-    }
-
-    .sem-select > .preview {
-        grid-column: 2;
-        position: sticky;
-        top: var(--sticky-top);
-    }
-
-    .sem-select > .lists { grid-column: 1; grid-row: 1; }
-}
-
-/*
-    Past this width the preview stops being a narrow column and becomes the thing worth looking at:
-    a room, a species, its politics and everything it adds up to, side by side rather than stacked
-    into a strip. The lists keep their three columns and the preview takes what is left.
-*/
-@media (min-width: 1500px) {
-    .sem-select {
-        grid-template-columns: minmax(0, 1fr) 620px;
-    }
 }
 
 /* ---------------------------------------------------------------- empire showcase */
@@ -3963,6 +3945,49 @@ button.icon .sem-action-icon { display: block; }
     gap: var(--gap);
 }
 
+/*
+   The lite editor, over the list it was opened from.
+
+   The card is the sheet: it carries its own panel background, its border and its padding, so
+   another set drawn round it would be a box in a box. What is left for the dialog is where it sits
+   and how tall it may be.
+
+   Started rather than centred, because a card taller than the window has no middle to be in - a
+   centred one hangs its top off the screen and scrolls up to nothing.
+*/
+.sem-lite-modal {
+    place-items: start center;
+    padding: var(--space-lg);
+}
+
+.sem-lite-modal > .sheet {
+    width: 100%;
+    max-width: calc(952px + 360px + var(--gap) + (var(--space-lg) * 2) + 2px);
+    max-height: 100%;
+    overflow-y: auto;
+
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: 0;
+}
+
+/*
+   No ring on the sheet. It is given the keyboard when it opens, so Escape has somewhere to land,
+   and a browser reading a programmatic focus as a keyboard one drew the accent outline round the
+   whole card - which opening a shared link did every time, since there is no pointer press before
+   it to say otherwise.
+*/
+.sem-lite-modal > .sheet:focus,
+.sem-lite-modal > .sheet:focus-visible {
+    outline: none;
+}
+
+/* A phone has no room to give a backdrop, and the card is the thing being looked at. */
+@media (max-width: 760px) {
+    .sem-lite-modal { padding: var(--space-xs); }
+}
+
 .sem-modal h2 {
     margin: 0;
     font-size: var(--text-lg);
@@ -4017,6 +4042,13 @@ button.icon .sem-action-icon { display: block; }
        rather than running the full width of a page the card no longer fills.
     */
     grid-template-columns: minmax(0, 952px) minmax(300px, 360px);
+
+    /*
+       Two rows, so the buttons can have the corner. The first is as tall as they are and the second
+       is everything left, which is what keeps the totals measured against the panels rather than
+       against the panels less a button.
+    */
+    grid-template-rows: auto minmax(0, 1fr);
     gap: var(--gap);
 
     /*
@@ -4040,7 +4072,20 @@ button.icon .sem-action-icon { display: block; }
    to stop growing, not to grow in one place.
 */
 
+/*
+   Where each of the three sits while there are two columns. Stated, because the row of buttons is
+   written first and would otherwise take the top-left cell - and because the panels have to span
+   both rows for the totals to be measured against all of them.
+*/
+.sem-lite-actions {
+    grid-column: 2;
+    grid-row: 1;
+}
+
 .sem-lite-main {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+
     display: flex;
     flex-direction: column;
     gap: var(--gap);
@@ -4064,6 +4109,9 @@ button.icon .sem-action-icon { display: block; }
    the height of the card, so it is on screen for as long as the card is.
 */
 .sem-lite-totals {
+    grid-column: 2;
+    grid-row: 2;
+
     position: relative;
     min-width: 0;
     min-height: 0;
@@ -4114,7 +4162,22 @@ button.icon .sem-action-icon { display: block; }
    still leaves a tablet held upright with both columns.
 */
 @media (max-width: 760px) {
-    .sem-lite { grid-template-columns: minmax(0, 1fr); }
+    .sem-lite {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: none;
+    }
+
+    /*
+       Placed nowhere in particular, which in one column means in the order they are written: the
+       buttons, the empire, then what it adds up to. Back and Save at the top of a phone rather than
+       under everything they act on.
+    */
+    .sem-lite-actions,
+    .sem-lite-main,
+    .sem-lite-totals {
+        grid-column: auto;
+        grid-row: auto;
+    }
 
     /*
        One column, so the totals follow the panels down the page - but no further than a screenful.
@@ -4170,8 +4233,15 @@ button.icon .sem-action-icon { display: block; }
     margin-inline: auto;
 }
 
+/*
+   The buttons, in the corner of the card above everything the empire adds up to.
+
+   Wrapping because five icons and a narrow column is not a promise that can be kept at every width,
+   and a row that overflows puts Save off the edge of the card.
+*/
 .sem-lite-actions {
     display: flex;
+    flex-wrap: wrap;
     gap: var(--space-sm);
     justify-content: flex-end;
 }
