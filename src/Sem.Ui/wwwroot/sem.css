@@ -576,6 +576,23 @@ label {
 .sem-field.spaced { margin-top: var(--gap); }
 
 /*
+   A value the plan works out rather than one the player sets.
+
+   Drawn like a field's value and plainly not a control: the ascension path follows from the perks,
+   the way it does in the game, so offering a box to set it would be offering a contradiction.
+*/
+.sem-plan-derived {
+    display: flex;
+    align-items: center;
+    height: var(--control-h);
+    padding: 0 var(--space-lg);
+    background: var(--bg);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    color: var(--text-dim);
+}
+
+/*
    A plan as the game will show it.
 
    Drawn like the box it stands in for rather than like a quotation, because that is what it is: the

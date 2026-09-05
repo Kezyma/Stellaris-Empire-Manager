@@ -59,19 +59,19 @@ public sealed class PlanText(Localizer localizer)
     /// Writes a plan as the biography that carries it.
     /// </summary>
     /// <remarks>
-    /// A line per part, and no line at all for a part nobody has decided - an empty heading reads as
-    /// something gone wrong rather than as something not yet chosen.
+    /// A line per part that has anything in it, and the path line always - which is what a plan
+    /// still being made has instead of nothing, and what lets it be read back before its first perk
+    /// is chosen.
     /// </remarks>
     public string Write(EmpirePlan plan)
     {
         ArgumentNullException.ThrowIfNull(plan);
 
-        var lines = new List<string>(3);
-
-        if (plan.Path is not PlanPath.Unset)
-        {
-            lines.Add($"{PathLabel}: {PathName(plan.Path)}");
-        }
+        // Always, even when nothing is decided. The path is worked out from the perks, so a plan
+        // being built has no path until the first one is chosen - and without this line there would
+        // be nothing in the biography to read the plan back from, so it would look like an empire
+        // nobody was planning at all.
+        var lines = new List<string> { $"{PathLabel}: {PathName(plan.Path)}" };
 
         if (plan.Trees.Count > 0)
         {
@@ -109,18 +109,23 @@ public sealed class PlanText(Localizer localizer)
     /// Reads a plan out of a biography, or nothing when the text is somebody's actual writing.
     /// </summary>
     /// <remarks>
-    /// Everything it cannot make sense of is left out rather than guessed at. A name the empire
-    /// could not take, a line whose heading is not one of the three, a tradition from a pack that has
-    /// since been turned off - each is dropped, and what is understood still comes back. A partial
-    /// plan is recoverable; a wrongly-read one is not.
+    /// Null and an empty plan are different answers, which is why this returns one that can be null.
+    /// A biography holding "Ascension path: Not decided" is a plan that has decided nothing yet, and
+    /// a biography holding somebody's prose is not a plan at all - and the difference decides whether
+    /// their writing is about to be overwritten.
+    ///
+    /// Everything it cannot make sense of is left out rather than guessed at. A name the empire could
+    /// not take, a line whose heading is not one of the three, a tradition from a pack since turned
+    /// off - each is dropped, and what is understood still comes back. A partial plan is recoverable;
+    /// a wrongly-read one is not.
     /// </remarks>
-    public EmpirePlan Read(string? biography, PlanVocabulary vocabulary)
+    public EmpirePlan? Read(string? biography, PlanVocabulary vocabulary)
     {
         ArgumentNullException.ThrowIfNull(vocabulary);
 
         if (biography is not { Length: > 0 })
         {
-            return EmpirePlan.Empty;
+            return null;
         }
 
         var path = PlanPath.Unset;
@@ -142,8 +147,14 @@ public sealed class PlanText(Localizer localizer)
 
             if (Same(heading, PathLabel) || Same(heading, PathFallback))
             {
-                path = ReadPath(written);
-                understood |= path is not PlanPath.Unset;
+                // Only a path this recognises counts. A line reading "Ascension path: something
+                // nobody has heard of" is somebody's own writing that happens to start with those
+                // words, and reading it as a plan would replace what they wrote.
+                if (ReadPath(written) is { } found)
+                {
+                    path = found;
+                    understood = true;
+                }
             }
             else if (Same(heading, TreesLabel))
             {
@@ -157,24 +168,31 @@ public sealed class PlanText(Localizer localizer)
             }
         }
 
-        return understood ? new EmpirePlan(path, trees, perks) : EmpirePlan.Empty;
+        return understood ? new EmpirePlan(path, trees, perks) : null;
     }
 
     /// <summary>Whether this biography is a plan rather than something the player wrote.</summary>
     public bool IsPlan(string? biography, PlanVocabulary vocabulary) =>
-        Read(biography, vocabulary).Any;
+        Read(biography, vocabulary) is not null;
 
-    private PlanPath ReadPath(string written)
+    /// <summary>
+    /// The path a line names, or nothing when it names none of them.
+    /// </summary>
+    /// <remarks>
+    /// "Not decided" is one of the answers rather than the absence of one: it is what a plan says
+    /// while its perks are still being chosen, and recognising it is what keeps such a plan readable.
+    /// </remarks>
+    private PlanPath? ReadPath(string written)
     {
         foreach (var candidate in PlanPaths.All)
         {
-            if (candidate is not PlanPath.Unset && Same(written, PathName(candidate)))
+            if (Same(written, PathName(candidate)))
             {
                 return candidate;
             }
         }
 
-        return PlanPath.Unset;
+        return null;
     }
 
     private static IEnumerable<string> Names(string written) =>

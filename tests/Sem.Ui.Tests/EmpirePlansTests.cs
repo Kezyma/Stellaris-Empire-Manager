@@ -107,9 +107,17 @@ public sealed class EmpirePlansTests
         Assert.Equal(theirs, design.Species.Biography);
     }
 
-    /// <summary>An empty plan empties the field, so nothing is left saying nothing.</summary>
+    /// <summary>
+    /// A plan that has decided nothing is still a plan, and is still there to go on deciding with.
+    /// </summary>
+    /// <remarks>
+    /// This used to empty the field, which was right until the path started being worked out from
+    /// the perks rather than chosen. Now releasing the last perk leaves a plan naming nothing, and
+    /// emptying the biography at that moment would switch planning off underneath the player in the
+    /// middle of editing. Emptying is Clear's job, and Clear is what the checkbox calls.
+    /// </remarks>
     [Fact]
-    public void AnEmptyPlanLeavesNoBiographyBehind()
+    public void APlanThatHasDecidedNothingIsStillAPlan()
     {
         var design = Design();
         var plans = Plans();
@@ -117,7 +125,9 @@ public sealed class EmpirePlansTests
         plans.Write(design, Cybernetic, PlanHome.Species, Vocabulary);
         plans.Write(design, EmpirePlan.Empty, PlanHome.Species, Vocabulary);
 
-        Assert.Null(design.Species.Biography);
+        Assert.NotNull(design.Species.Biography);
+        Assert.Equal(PlanHome.Species, plans.HomeOf(design, Vocabulary));
+        Assert.Equal(PlanPath.Unset, plans.PlanOf(design, Vocabulary).Path);
     }
 
     private static EmpirePlan Cybernetic => new(PlanPath.Cybernetic, [], []);

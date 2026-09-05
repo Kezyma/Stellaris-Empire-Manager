@@ -38,7 +38,7 @@ public sealed class PlanTextTests
         {
             var written = text.Write(new EmpirePlan(path, [], []));
 
-            Assert.Equal(path, text.Read(written, PlanVocabulary.Empty).Path);
+            Assert.Equal(path, text.Read(written, PlanVocabulary.Empty)!.Path);
         }
     }
 
@@ -59,7 +59,11 @@ public sealed class PlanTextTests
     public void OrdinaryWritingIsNotAPlan(string? biography)
     {
         Assert.False(English().IsPlan(biography, Vocabulary()));
-        Assert.Equal(EmpirePlan.Empty, English().Read(biography, Vocabulary()));
+
+        // Null rather than an empty plan. An empty plan is one that has decided nothing yet;
+        // this is not a plan at all, and the difference decides whether somebody's writing is
+        // about to be replaced.
+        Assert.Null(English().Read(biography, Vocabulary()));
     }
 
     /// <summary>
@@ -81,11 +85,11 @@ public sealed class PlanTextTests
         var assimilator = new PlanVocabulary(
             [("tradition_cybernetics_assimilator", "Cybernetics")], []);
 
-        Assert.Equal(["tradition_cybernetics_assimilator"], text.Read(written, assimilator).Trees);
+        Assert.Equal(["tradition_cybernetics_assimilator"], text.Read(written, assimilator)!.Trees);
 
         var ordinary = new PlanVocabulary([("tradition_cybernetics", "Cybernetics")], []);
 
-        Assert.Equal(["tradition_cybernetics"], text.Read(written, ordinary).Trees);
+        Assert.Equal(["tradition_cybernetics"], text.Read(written, ordinary)!.Trees);
     }
 
     /// <summary>Something the empire cannot take is dropped, not guessed at.</summary>
@@ -94,7 +98,7 @@ public sealed class PlanTextTests
     {
         var plan = English().Read(
             "Traditions: Harmony, Prosperity\nAscension Perks: Mind Over Matter",
-            new PlanVocabulary([("tradition_harmony", "Harmony")], []));
+            new PlanVocabulary([("tradition_harmony", "Harmony")], []))!;
 
         Assert.Equal(["tradition_harmony"], plan.Trees);
         Assert.Empty(plan.Perks);
@@ -116,7 +120,7 @@ public sealed class PlanTextTests
             PlanPath.Cybernetic, ["tradition_harmony"], ["ap_mind_over_matter"]));
 
         var cut = whole[..whole.IndexOf("Over", StringComparison.Ordinal)];
-        var plan = text.Read(cut, Vocabulary());
+        var plan = text.Read(cut, Vocabulary())!;
 
         Assert.Equal(PlanPath.Cybernetic, plan.Path);
         Assert.Equal(["tradition_harmony"], plan.Trees);
@@ -151,7 +155,7 @@ public sealed class PlanTextTests
     [Fact]
     public void CaseDoesNotMatter()
     {
-        var plan = English().Read("ascension path: cybernetics", PlanVocabulary.Empty);
+        var plan = English().Read("ascension path: cybernetics", PlanVocabulary.Empty)!;
 
         Assert.Equal(PlanPath.Cybernetic, plan.Path);
     }

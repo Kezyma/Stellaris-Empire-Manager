@@ -64,21 +64,17 @@
         </div>
 
         @*
-            A list rather than the icon grid the other pickers use, because a path has no picture of
-            its own yet - the tradition trees they are named for are not extracted. It becomes a grid
-            when they are.
+            Read rather than chosen. In the game an empire is on a path by having taken something
+            that puts it there, so a plan that let you name a path and then name perks disagreeing
+            with it would be offering a contradiction. Pick the perks; the path follows.
         *@
         <div class="sem-field">
-            <label for="plan-path">@Session.Localizer.Heading("SEM_ASCENSION_PATH", "Ascension path")</label>
-
-            <select id="plan-path" value="@Plan.Path.ToString()" @onchange="ChoosePath">
-                @foreach (var path in PlanPaths.All)
-                {
-                    <option value="@path.ToString()">@Session.Plans.Text.PathName(path)</option>
-                }
-            </select>
+            <label>@Session.Localizer.Heading("SEM_ASCENSION_PATH", "Ascension path")</label>
+            <div class="sem-plan-derived">@Session.Plans.Text.PathName(Plan.Path)</div>
         </div>
     </div>
+
+    <AscensionPerkPicker Plan="@Plan" OnChanged="Save" />
 
     @if (Written is { Length: > 0 } written)
     {
@@ -115,9 +111,9 @@
     /// Turns planning on, or off and gives the biography back.
     /// </summary>
     /// <remarks>
-    /// Turning it on writes a plan that says only that no path is decided, because a plan has to
-    /// exist somewhere for the rest of this to have anything to edit - and "not decided" is an
-    /// honest thing for a new plan to say.
+    /// Turning it on writes a plan that has decided nothing, because a plan has to exist somewhere
+    /// for the rest of this to have anything to edit - and "not decided" is the honest thing for a
+    /// new one to say, rather than claiming a choice nobody has made.
     /// </remarks>
     private void TogglePlanning(ChangeEventArgs e)
     {
@@ -126,8 +122,7 @@
             // Nothing at all when neither biography is free, which is what the disabled box says.
             if (FirstFree is { } free)
             {
-                Session.Edit(d =>
-                    Session.Plans.Write(d, new EmpirePlan(PlanPath.None, [], []), free, Vocabulary));
+                Session.Edit(d => Session.Plans.Write(d, EmpirePlan.Empty, free, Vocabulary));
             }
 
             return;
@@ -171,15 +166,10 @@
         Session.Edit(d => Session.Plans.Write(d, plan, home, Vocabulary));
     }
 
-    private void ChoosePath(ChangeEventArgs e)
+    /// <summary>Writes a plan the picker has changed back into the biography carrying it.</summary>
+    private void Save(EmpirePlan plan)
     {
-        if (!Enum.TryParse<PlanPath>(e.Value?.ToString(), out var path))
-        {
-            return;
-        }
-
         var home = Home;
-        var plan = Plan with { Path = path };
 
         Session.Edit(d => Session.Plans.Write(d, plan, home, Vocabulary));
     }

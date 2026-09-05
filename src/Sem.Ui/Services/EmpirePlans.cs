@@ -48,8 +48,8 @@ public sealed class EmpirePlans(PlanText text)
     public EmpirePlan PlanOf(EmpireDesign? design, PlanVocabulary vocabulary) =>
         HomeOf(design, vocabulary) switch
         {
-            PlanHome.Species => Text.Read(SpeciesBiography(design), vocabulary),
-            PlanHome.Ruler => Text.Read(RulerBiography(design), vocabulary),
+            PlanHome.Species => Text.Read(SpeciesBiography(design), vocabulary) ?? EmpirePlan.Empty,
+            PlanHome.Ruler => Text.Read(RulerBiography(design), vocabulary) ?? EmpirePlan.Empty,
             _ => EmpirePlan.Empty,
         };
 
@@ -76,20 +76,19 @@ public sealed class EmpirePlans(PlanText text)
 
         Clear(design, home is PlanHome.Species ? PlanHome.Ruler : PlanHome.Species, vocabulary);
 
-        var written = plan.Any ? Text.Write(plan) : null;
+        // Written even when it says nothing yet, because "nothing decided" is the state a plan is in
+        // while it is being made. Emptying the field is Clear's job and nothing else's - if writing
+        // an empty plan wiped the biography, the plan would switch itself off the moment its last
+        // perk was released.
+        var written = Text.Write(plan);
 
         if (home is PlanHome.Species)
         {
             design.Species.Biography = written;
+            return;
         }
-        else if (written is { Length: > 0 })
-        {
-            design.Ruler.GetOrAddCustomBiography().SetLiteral(written);
-        }
-        else
-        {
-            design.Ruler.RemoveCustomBiography();
-        }
+
+        design.Ruler.GetOrAddCustomBiography().SetLiteral(written);
     }
 
     /// <summary>

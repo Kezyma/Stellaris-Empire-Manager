@@ -103,13 +103,18 @@ public sealed class DesignSession
     private EmpirePlans? _plans;
 
     /// <summary>
-    /// What a plan may name, which is what this empire could actually be given.
+    /// What a plan may name, in the words the player would have written it in.
     /// </summary>
     /// <remarks>
-    /// Empty while the traditions and the ascension perks are not yet extracted. The paths need
-    /// nothing from it: they are seven, they are fixed, and this app carries the list itself.
+    /// Held, because building it walks every perk through the localisation and a plan is read
+    /// whenever a card is drawn. It does not depend on the design or the content packs - a name is a
+    /// name whether or not this empire may take the thing - so one for the session is enough.
     /// </remarks>
-    public PlanVocabulary PlanVocabulary => PlanVocabulary.Empty;
+    public PlanVocabulary PlanVocabulary => _planVocabulary ??= new PlanVocabulary(
+        [],
+        Data.Database.AscensionPerks.Select(p => (p.Key, Localizer.Text(p.NameKey))));
+
+    private PlanVocabulary? _planVocabulary;
 
     /// <summary>Turns modifiers into the lines the game would show for them.</summary>
     public ModifierFormatter Modifiers { get; }

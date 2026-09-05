@@ -145,6 +145,50 @@ public static class PlanPaths
     /// <summary>Every key this needs from the game's text, for whatever decides what to keep.</summary>
     public static IEnumerable<string> NameKeys =>
         All.Select(NameKey).OfType<string>();
+
+    /// <summary>
+    /// Which path each of the game's seven path perks puts an empire on.
+    /// </summary>
+    /// <remarks>
+    /// Read off the scripted triggers rather than guessed from the names: has_cybernetic_ascension
+    /// is satisfied by three different perks, and two perks lead to the synthetic path because the
+    /// Machine Age replaced one with the other. The three Biogenesis paths - purity, cloning and
+    /// mutation - are absent on purpose. No perk leads to them; the game marks them with a flag its
+    /// tradition trees set, so they are a tradition's doing and not a perk's.
+    /// </remarks>
+    public static PlanPath Of(string perk) => perk switch
+    {
+        "ap_engineered_evolution" => PlanPath.Genetic,
+        "ap_the_flesh_is_weak" or "ap_organo_machine_interfacing"
+            or "ap_organo_machine_interfacing_assimilator" => PlanPath.Cybernetic,
+        "ap_synthetic_evolution" or "ap_synthetic_age" => PlanPath.Synthetic,
+        "ap_mind_over_matter" => PlanPath.Psionic,
+        _ => PlanPath.Unset,
+    };
+
+    /// <summary>
+    /// The path a set of chosen perks puts an empire on, which is what the plan means by one.
+    /// </summary>
+    /// <remarks>
+    /// Derived rather than chosen, because in the game it is: an empire is on a path by having
+    /// taken something that puts it there. The first one found wins, and there cannot honestly be a
+    /// second - the perks that lead to different paths rule each other out, which the picker now
+    /// enforces.
+    /// </remarks>
+    public static PlanPath From(IEnumerable<string> perks)
+    {
+        ArgumentNullException.ThrowIfNull(perks);
+
+        foreach (var perk in perks)
+        {
+            if (Of(perk) is var path && path is not PlanPath.Unset)
+            {
+                return path;
+            }
+        }
+
+        return PlanPath.Unset;
+    }
 }
 
 /// <summary>Which of an empire's two biographies is carrying its plan.</summary>
