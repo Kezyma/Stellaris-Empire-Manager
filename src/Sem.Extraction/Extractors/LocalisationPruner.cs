@@ -291,6 +291,11 @@ internal static partial class LocalisationPruner
         foreach (var empire in database.PrescriptedEmpires)
         {
             Add(empire.NameKey);
+            Add(empire.DescriptionKey);
+
+            // The older shape as well. It is what forty-seven of the fifty-two answer to, the two
+            // agreeing wherever an empire is named after itself, and keeping both costs a key that
+            // does not exist and so is not kept.
             Add($"{empire.NameKey}_desc");
             AddRequirement(empire.Playable);
 

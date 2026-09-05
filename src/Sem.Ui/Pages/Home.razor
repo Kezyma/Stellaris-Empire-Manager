@@ -467,12 +467,34 @@ else
     /// The game's description of the empire being looked at, while it is still the game's.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Held out means not yet saved, which is exactly the window the paragraph belongs to: pressing
     /// Save makes the copy the player's, and what the game wrote about the original stops being a
     /// description of what is on screen.
+    /// </para>
+    /// <para>
+    /// Falling back to the origin's description, which is what the game does. One empire of the
+    /// fifty-two has no paragraph of its own - the Yatunan Radicals, whose entry the writers left
+    /// out - and it reads as Storm Chasers, the origin it is built around, rather than as nothing.
+    /// </para>
     /// </remarks>
-    private string? PresetLore =>
-        _opened is { } preset && _session?.IsHeldOut is true ? preset.DescriptionKey : null;
+    private string? PresetLore
+    {
+        get
+        {
+            if (_opened is not { } preset || _session?.IsHeldOut is not true)
+            {
+                return null;
+            }
+
+            if (_session.Localizer.Html(preset.DescriptionKey, string.Empty) is { Length: > 0 })
+            {
+                return preset.DescriptionKey;
+            }
+
+            return preset.Origin is { Length: > 0 } origin ? $"{origin}_desc" : null;
+        }
+    }
 
     /// <summary>Closes the editor, once whatever is unsaved has been dealt with.</summary>
     /// <remarks>
