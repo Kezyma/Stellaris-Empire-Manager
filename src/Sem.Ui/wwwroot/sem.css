@@ -3952,12 +3952,18 @@ button.icon .sem-action-icon { display: block; }
    another set drawn round it would be a box in a box. What is left for the dialog is where it sits
    and how tall it may be.
 
-   Started rather than centred, because a card taller than the window has no middle to be in - a
-   centred one hangs its top off the screen and scrolls up to nothing.
+   Centred, and darker behind than a question is. A dialog with a page under it wants the page to
+   stay legible; this one is the empire, drawn at the size the empire is drawn, and the list it came
+   from is only there to be gone back to. At six tenths the cards read through the room artwork.
+
+   Centring is safe because the sheet is capped at the height of the window: a card too tall to fit
+   scrolls inside itself rather than growing, so there is no case where the middle of it is off the
+   top of the screen.
 */
 .sem-lite-modal {
-    place-items: start center;
+    place-items: center;
     padding: var(--space-lg);
+    background: rgb(0 0 0 / 0.85);
 }
 
 .sem-lite-modal > .sheet {
