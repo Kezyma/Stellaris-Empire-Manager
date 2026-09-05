@@ -1,3 +1,5 @@
+@implements IDisposable
+
 @*
     What the reader is looking for, in a card above the lists.
 
@@ -9,6 +11,10 @@
     One set for both lists. "Which of these are Fanatic Purifiers" is not a question about the
     player's empires or about the game's, and answering it twice with two sets of controls would be
     two chances to have them disagree.
+
+    Written from the table of headings rather than one block per heading. There are thirteen, every
+    one is the same control asking the same question of a different field, and thirteen copies is
+    thirteen chances for one of them to be wired to the wrong set.
 *@
 
 <div class="sem-filters">
@@ -22,57 +28,63 @@
     </div>
 
     <div class="controls">
+        @*
+            One box for everything somebody typed - the empire's name, its species, its world, its
+            ruler, the prefix on its ships, and the biographies. Which field a word came from is
+            rarely the question; the question is which empire it was.
+        *@
         <div class="sem-field flush search">
-            <label for="empire-search">Name</label>
-            <input id="empire-search" type="text" placeholder="Any name"
+            <label for="empire-search">Search</label>
+            <input id="empire-search" type="text" placeholder="Any word anyone typed"
                    value="@Filter.Search"
                    @oninput="e => Search(e.Value?.ToString())" />
         </div>
 
-        <div class="sem-field flush">
-            <label>Authority</label>
-            <MultiSelect Label="Any" Options="@Authorities" Selected="@Filter.Authorities"
-                         OnChanged="OnChanged" />
-        </div>
+        @foreach (var facet in EmpireFacet.All)
+        {
+            var options = Offered(facet);
 
-        <div class="sem-field flush">
-            <label>Ethics</label>
-            <MultiSelect Label="Any" Options="@Ethics" Selected="@Filter.Ethics"
-                         OnChanged="OnChanged" />
-        </div>
+            <div class="sem-field flush">
+                <div class="sem-filter-label">
+                    <label>@facet.Label</label>
 
-        <div class="sem-field flush">
-            <label>Civics</label>
-            <MultiSelect Label="Any" Options="@Civics" Selected="@Filter.Civics"
-                         OnChanged="OnChanged" />
-        </div>
+                    @*
+                        Any or all, for a heading an empire can hold several of. Written out rather
+                        than drawn as a symbol, for the reason the toggle beside the fallen-empire
+                        setting gives: the word says which of the two is in force, and there is no
+                        glyph for "and" that a reader does not have to be taught.
 
-        <div class="sem-field flush">
-            <label>Origin</label>
-            <MultiSelect Label="Any" Options="@Origins" Selected="@Filter.Origins"
-                         OnChanged="OnChanged" />
-        </div>
+                        Not offered where an empire holds one. Asking for all of two authorities is
+                        a question with no answer, and a control that can only ever empty the list
+                        is a control that looks broken.
+                    *@
+                    @if (facet.Several)
+                    {
+                        <button type="button" class="sem-toggle sem-anyall"
+                                aria-pressed="@(Filter.RequiresAll(facet.Key) ? "true" : "false")"
+                                title="@(Filter.RequiresAll(facet.Key)
+                                    ? $"Empires with every one of the {facet.Label.ToLowerInvariant()} ticked"
+                                    : $"Empires with any of the {facet.Label.ToLowerInvariant()} ticked")"
+                                @onclick="() => Switch(facet.Key)">
+                            @(Filter.RequiresAll(facet.Key) ? "all" : "any")
+                        </button>
+                    }
+                </div>
 
-        <div class="sem-field flush">
-            <label>Species</label>
-            <MultiSelect Label="Any" Options="@Classes" Selected="@Filter.Classes"
-                         OnChanged="OnChanged" />
-        </div>
-
-        <div class="sem-field flush">
-            <label>Traits</label>
-            <MultiSelect Label="Any" Options="@Traits" Selected="@Filter.Traits"
-                         OnChanged="OnChanged" />
-        </div>
+                <MultiSelect Label="Any" Options="@options" Selected="@Filter.Keys(facet.Key)"
+                             OnChanged="OnChanged" />
+            </div>
+        }
     </div>
 
     @*
-        Said once, here, rather than repeated under six controls. Two civics means either, and a
-        civic and an ethic means both - which is what a set of tick boxes reads as, but not what
-        everyone assumes, and the assumption is only visible in a result nobody can explain.
+        Said once, here, rather than under every control. Two civics means either, and a civic and
+        an ethic means both - which is what a set of tick boxes reads as, but not what everyone
+        assumes, and the assumption is only visible in a result nobody can explain.
     *@
     <p class="sem-hint">
-        Any of the things ticked under one heading; all of the headings you use.
+        Any of the things ticked under one heading, unless it is switched to all; and always all of
+        the headings you use.
     </p>
 </div>
 
@@ -95,56 +107,84 @@
     [Parameter]
     public EventCallback OnChanged { get; set; }
 
-    private IReadOnlyList<EmpireChoice> Authorities => _authorities ??= Offered(r => One(r.Authority));
-
-    private IReadOnlyList<EmpireChoice> Ethics => _ethics ??= Offered(r => r.Ethics);
-
-    private IReadOnlyList<EmpireChoice> Civics => _civics ??= Offered(r => r.Civics);
-
-    private IReadOnlyList<EmpireChoice> Origins => _origins ??= Offered(r => One(r.Origin));
-
-    private IReadOnlyList<EmpireChoice> Classes => _classes ??= Offered(r => One(r.SpeciesClass));
-
-    private IReadOnlyList<EmpireChoice> Traits => _traits ??= Offered(r => r.Traits);
-
-    private IReadOnlyList<EmpireChoice>? _authorities;
-    private IReadOnlyList<EmpireChoice>? _ethics;
-    private IReadOnlyList<EmpireChoice>? _civics;
-    private IReadOnlyList<EmpireChoice>? _origins;
-    private IReadOnlyList<EmpireChoice>? _classes;
-    private IReadOnlyList<EmpireChoice>? _traits;
+    /// <summary>The choices under each heading, worked out once for the rows in hand.</summary>
+    private readonly Dictionary<string, IReadOnlyList<EmpireChoice>> _offered =
+        new(StringComparer.Ordinal);
 
     /// <summary>The lists are worked out from the rows, so a change of rows forgets them.</summary>
-    protected override void OnParametersSet()
-    {
-        _authorities = null;
-        _ethics = null;
-        _civics = null;
-        _origins = null;
-        _classes = null;
-        _traits = null;
-    }
-
-    private static IReadOnlyList<EmpireChoice> One(EmpireChoice? choice) =>
-        choice is null ? [] : [choice];
+    protected override void OnParametersSet() => _offered.Clear();
 
     /// <summary>Everything the rows hold under one heading, once each, in the order it reads in.</summary>
-    private IReadOnlyList<EmpireChoice> Offered(Func<EmpireRow, IReadOnlyList<EmpireChoice>> held) =>
-    [
-        .. Rows
-            .SelectMany(held)
-            .DistinctBy(c => c.Key, StringComparer.Ordinal)
-            .OrderBy(c => c.Name, StringComparer.CurrentCulture)
-    ];
+    private IReadOnlyList<EmpireChoice> Offered(EmpireFacet facet)
+    {
+        if (_offered.TryGetValue(facet.Key, out var known))
+        {
+            return known;
+        }
 
+        IReadOnlyList<EmpireChoice> options =
+        [
+            .. Rows
+                .SelectMany(facet.Values)
+                .DistinctBy(c => c.Key, StringComparer.Ordinal)
+                .OrderBy(c => c.Name, StringComparer.CurrentCulture)
+        ];
+
+        _offered[facet.Key] = options;
+        return options;
+    }
+
+    private async Task Switch(string facet)
+    {
+        Filter.SetRequiresAll(facet, !Filter.RequiresAll(facet));
+        await OnChanged.InvokeAsync();
+    }
+
+    /// <summary>Cancels the wait when another key arrives before the last one was acted on.</summary>
+    private CancellationTokenSource? _typing;
+
+    /// <summary>
+    /// Takes what was typed, and redraws the lists once the typing stops.
+    /// </summary>
+    /// <remarks>
+    /// Every other control here acts at once, because pressing one is a decision. Typing is not: a
+    /// five-letter word is five decisions to redraw two tables, four of which are thrown away by
+    /// the next keystroke, and each of them costs long enough to be felt on the way to the word.
+    ///
+    /// The box is not redrawn while it waits - what was typed is already in it, and putting it back
+    /// from here is how a caret ends up at the start of a word.
+    /// </remarks>
     private async Task Search(string? text)
     {
         Filter.Search = text ?? string.Empty;
+
+        _typing?.Cancel();
+        _typing?.Dispose();
+        _typing = new CancellationTokenSource();
+
+        try
+        {
+            await Task.Delay(250, _typing.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
         await OnChanged.InvokeAsync();
+    }
+
+    public void Dispose()
+    {
+        _typing?.Cancel();
+        _typing?.Dispose();
     }
 
     private async Task Clear()
     {
+        // Nothing left to wait for, and a pending keystroke would put the search back a moment later.
+        _typing?.Cancel();
+
         Filter.Clear();
         await OnChanged.InvokeAsync();
     }

@@ -24,7 +24,8 @@
         always shown it on those, and the click handler only pinned it open for a finger.
     *@
     <button type="button" @ref="_anchor" aria-describedby="@_id"
-            popovertarget="@(Opens ? null : _id)" @onclick="OnSelect">
+            popovertarget="@(Opens ? null : _id)" @onclick="OnSelect"
+            @onmouseover="Reveal" @onfocus="Reveal">
         @if (Icon is { Length: > 0 } icon)
         {
             <img src="@Session.Data.AssetUrl(icon)" alt="" loading="lazy">
@@ -38,14 +39,25 @@
         when the next one opens. Only one of these is ever wanted at a time.
     *@
     <div id="@_id" popover="auto" role="tooltip" class="sem-chip-detail" @ref="_panel">
-        <h4>@Name</h4>
+        @*
+            Empty until it is asked for, where the caller says there will be a great many of these.
 
-        @if (Session.Localizer.Html($"{Key}_desc", string.Empty) is { Length: > 0 } lore)
+            A panel is a heading, a paragraph of the game's own prose and a list of effects - twenty
+            or thirty elements that nobody has looked at. One beside an empire is nothing. The empire
+            table draws a hundred and fifty-eight, rebuilt on every sort and every page, and building
+            the panels was most of half a second the reader waited through each time.
+        *@
+        @if (_revealed)
         {
-            <div class="sem-detail-lore">@((MarkupString)lore)</div>
-        }
+            <h4>@Name</h4>
 
-        <EffectsList Effects="@Effects" ShowNothing="true" />
+            @if (Session.Localizer.Html($"{Key}_desc", string.Empty) is { Length: > 0 } lore)
+            {
+                <div class="sem-detail-lore">@((MarkupString)lore)</div>
+            }
+
+            <EffectsList Effects="@Effects" ShowNothing="true" />
+        }
     </div>
 </span>
 
@@ -80,11 +92,37 @@
     [Parameter]
     public EventCallback OnSelect { get; set; }
 
+    /// <summary>
+    /// Whether something else will tie the panel to the button, the first time it is pointed at.
+    /// </summary>
+    /// <remarks>
+    /// For a page with a great many of these on it at once. Tying them up costs a call into the
+    /// browser each, which one chip beside an empire never notices and a table of them does: the
+    /// empire table has a hundred and fifty-six, rebuilt on every sort, and binds them from one
+    /// listener of its own instead.
+    /// </remarks>
+    [Parameter]
+    public bool Deferred { get; set; }
+
     /// <summary>Whether pressing this chip opens something.</summary>
     private bool Opens => OnSelect.HasDelegate;
 
     private ElementReference _anchor;
     private ElementReference _panel;
+
+    /// <summary>
+    /// Whether the panel has been filled in, which it is the first time the chip is reached.
+    /// </summary>
+    /// <remarks>
+    /// Always, rather than only when deferred: a chip that is not deferred is built with its panel
+    /// already open for business, so this starts true for it and nothing here ever runs.
+    /// </remarks>
+    private bool _revealed;
+
+    protected override void OnInitialized() => _revealed = !Deferred;
+
+    /// <summary>Fills the panel in, the first time a pointer or the keyboard arrives.</summary>
+    private void Reveal() => _revealed = true;
 
     /// <summary>
     /// Ties the panel to its button, uniquely on the page.
@@ -99,7 +137,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender)
+        if (!firstRender || Deferred)
         {
             return;
         }

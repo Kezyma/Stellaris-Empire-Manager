@@ -3439,10 +3439,46 @@ button.icon .sem-action-icon { display: block; }
     text-align: left;
 }
 
+/*
+   What was chosen, drawn as the chips it is rather than counted. It wraps, and the control grows
+   with it: a filter card whose whole job is saying what is being asked for cannot answer "3
+   selected" and send the reader back into the panel to find out which three.
+*/
 .sem-combo.sem-multi > .toggle > .face {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    min-width: 0;
+}
+
+/* The label standing in for a choice is one line and elides; a list of chips is not. */
+.sem-combo.sem-multi > .toggle > .face.empty {
+    display: block;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.sem-pick {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+
+    padding: 1px var(--space-sm) 1px 2px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    font-size: var(--text-sm);
+}
+
+/* Nothing in front of a chip that has no icon, or the name sits off its own left edge. */
+.sem-pick:not(:has(.sem-icon)) {
+    padding-left: var(--space-sm);
+}
+
+.sem-pick .sem-icon {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
 }
 
 /* The label standing in for a choice, which is a placeholder and reads as one. */
@@ -3472,6 +3508,20 @@ button.icon .sem-action-icon { display: block; }
     flex: none;
     width: 1em;
     color: var(--accent);
+}
+
+/*
+   The game's own icon beside the name. Half of these lists are things a player knows by their
+   picture first - an ethic, a trait, an origin - and a list of words is a list they have to read
+   rather than recognise.
+*/
+.sem-combo.sem-multi .options .sem-icon {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+}
+
+.sem-combo.sem-multi .options .name {
+    min-width: 0;
 }
 
 .sem-combo.sem-multi .options .none {
@@ -3528,6 +3578,31 @@ button.icon .sem-action-icon { display: block; }
 
 .sem-clear {
     padding: var(--space-2xs) var(--space-md);
+}
+
+/*
+   The heading's name, and beside it whether the ticks under it mean any or all.
+
+   The switch is a word rather than a symbol, for the reason the toggle beside the fallen-empire
+   setting gives at length: the button says which of the two is in force, and there is no glyph for
+   "and" that a reader does not first have to be taught.
+*/
+.sem-filter-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-2xs);
+}
+
+.sem-filter-label > label {
+    margin: 0;
+}
+
+.sem-anyall {
+    padding: 0 var(--space-sm);
+    font-size: var(--text-sm);
+    line-height: 1.6;
 }
 
 /* ---------------------------------------------------------------- the table */
@@ -3675,12 +3750,15 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
-   A value among several in one cell. Not the chips from the pickers, which carry an icon and a
-   panel of effects: at eighteen columns and twenty-five rows that is four hundred popovers nobody
-   opened, and the point of a cell here is to be compared with the one above it.
+   A value in a cell that has nothing more to say about itself - a shipset, a species class, a
+   starting system. Shaped like the chip beside it so a row of mixed cells reads as one row, but
+   flat: there is no description behind it and no panel to open.
 */
 .sem-cell-chip {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+
     padding: 1px var(--space-sm);
     margin: 0 var(--space-2xs) var(--space-2xs) 0;
 
@@ -3690,12 +3768,51 @@ button.icon .sem-action-icon { display: block; }
     white-space: nowrap;
 }
 
+.sem-cell-chip .sem-icon {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+}
+
+/*
+   And a value that does have something to say wears the chip from the empire's own panel, which
+   already carries the icon and opens the description and effects on hover. Given a little room
+   under it, since several in a cell wrap onto their own lines.
+*/
+.sem-table .sem-chip {
+    display: inline-block;
+    margin: 0 var(--space-2xs) var(--space-2xs) 0;
+}
+
+/*
+   How many at a time on the left, the way through them in the middle. The size belongs to the list
+   rather than to the view, and the two lists are not the same length - so it sits here rather than
+   with the column picker at the top of the page.
+*/
 .sem-pager {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     gap: var(--space-md);
     margin-top: var(--space-md);
+}
+
+.sem-pager > .rows {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    color: var(--text-dim);
+}
+
+.sem-pager > .rows select {
+    width: auto;
+    padding: var(--space-2xs) var(--space-sm);
+}
+
+.sem-pager > .turn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
 }
 
 .sem-empty-line {

@@ -1,3 +1,7 @@
+@using Microsoft.JSInterop
+@inject IJSRuntime Js
+@implements IAsyncDisposable
+
 @*
     The empires as rows, sorted by whichever column was last pressed and shown a page at a time.
 
@@ -22,7 +26,7 @@
     }
     else
     {
-        <div class="sem-table-wrap">
+        <div class="sem-table-wrap" @ref="_wrap">
             <table class="sem-table">
                 <thead>
                     <tr>
@@ -61,11 +65,46 @@
                             @foreach (var column in Columns)
                             {
                                 <td>
-                                    @if (column.Chips is { } chips)
+                                    @if (column.Choices is { } choices)
                                     {
-                                        @foreach (var choice in chips(row))
+                                        @*
+                                            Keyed, because these are components with a script
+                                            binding of their own and rebuilding one is not free.
+                                            Without it a filter that removed a single row rebuilt
+                                            every chip on the page - a hundred and fifty-six of
+                                            them, each asking the browser to tie a panel to a
+                                            button, which is most of half a second per keystroke.
+                                        *@
+                                        @foreach (var choice in choices(row))
                                         {
-                                            <span class="sem-cell-chip">@choice.Name</span>
+                                            @*
+                                                The same chip the empire's own panel draws, which is
+                                                where its description and its effects already live.
+                                                A civic in a table is the civic in the editor, and
+                                                pointing at it should say the same thing in both.
+
+                                                Only where there is something to say. A shipset and
+                                                a species class have no effects and no description,
+                                                and a panel that opens to say "no effects" is a
+                                                panel that teaches the reader to stop opening them.
+                                            *@
+                                            @if (choice.Effects is not null)
+                                            {
+                                                <OptionChip @key="choice.Key" Key="@choice.Key"
+                                                            Name="@choice.Name" Icon="@choice.Icon"
+                                                            Effects="@choice.Effects" Deferred="true" />
+                                            }
+                                            else
+                                            {
+                                                <span class="sem-cell-chip" @key="choice.Key">
+                                                    @if (choice.Icon is { Length: > 0 })
+                                                    {
+                                                        <GameIcon Path="@choice.Icon" Alt="" />
+                                                    }
+
+                                                    <span>@choice.Name</span>
+                                                </span>
+                                            }
                                         }
                                     }
                                     else
@@ -80,14 +119,30 @@
             </table>
         </div>
 
-        @if (Pages > 1)
-        {
-            <div class="sem-pager">
-                <button type="button" disabled="@(_page == 0)" @onclick="() => Turn(-1)">Previous</button>
-                <span class="sem-hint">Page @(_page + 1) of @Pages</span>
-                <button type="button" disabled="@(_page >= Pages - 1)" @onclick="() => Turn(1)">Next</button>
-            </div>
-        }
+        <div class="sem-pager">
+            @*
+                How many at a time, beside the way through them rather than in the view controls at
+                the top: it is a fact about this list, and the two lists are not the same length.
+            *@
+            <label class="rows">
+                <span>Rows</span>
+                <select value="@_size" @onchange="Resize">
+                    @foreach (var size in Sizes)
+                    {
+                        <option value="@size">@(size == All ? "All" : size.ToString())</option>
+                    }
+                </select>
+            </label>
+
+            @if (Pages > 1)
+            {
+                <div class="turn">
+                    <button type="button" disabled="@(_page == 0)" @onclick="() => Turn(-1)">Previous</button>
+                    <span class="sem-hint">Page @(_page + 1) of @Pages</span>
+                    <button type="button" disabled="@(_page >= Pages - 1)" @onclick="() => Turn(1)">Next</button>
+                </div>
+            }
+        </div>
     }
 </div>
 
@@ -108,9 +163,26 @@
     [Parameter, EditorRequired]
     public required IReadOnlyList<EmpireColumn> Columns { get; set; }
 
-    /// <summary>How many rows at a time.</summary>
-    [Parameter]
-    public int PageSize { get; set; } = 25;
+    /// <summary>
+    /// What this list's page size is remembered under.
+    /// </summary>
+    /// <remarks>
+    /// One per list. Forty-seven of the player's own and forty-five of the game's are different
+    /// lists with different reasons to be paged, and a reader who wants all of one rarely wants all
+    /// of the other.
+    /// </remarks>
+    [Parameter, EditorRequired]
+    public required string Setting { get; set; }
+
+    [CascadingParameter]
+    public DesignSession? Session { get; set; }
+
+    /// <summary>The sizes on offer, and the one that means no paging at all.</summary>
+    private static readonly int[] Sizes = [10, 25, 50, 100, All];
+
+    private const int All = int.MaxValue;
+
+    private int _size = 25;
 
     /// <summary>What to say when the filter has left nothing.</summary>
     [Parameter]
@@ -129,6 +201,58 @@
 
     private int _page;
 
+    /// <summary>Whether the kept page size has been read, which happens once.</summary>
+    private bool _read;
+
+    /// <summary>The box holding the rows, which is what listens for the first hover on a chip.</summary>
+    private ElementReference _wrap;
+
+    private IJSObjectReference? _module;
+
+    /// <summary>
+    /// Asks for the one listener that ties up this table's chips as they are pointed at.
+    /// </summary>
+    /// <remarks>
+    /// Every render, because the box is thrown away whenever the filter empties the table and comes
+    /// back a different element. The script keeps its own flag, so asking twice costs nothing.
+    /// </remarks>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Rows.Count == 0)
+        {
+            return;
+        }
+
+        try
+        {
+            _module ??= await Js.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/Sem.Ui/sem.js").ConfigureAwait(true);
+
+            await _module.InvokeVoidAsync("bindPopoversWhenPointed", _wrap).ConfigureAwait(true);
+        }
+        catch (JSDisconnectedException)
+        {
+            // The page went away between the render and the binding of it.
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_module is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await _module.DisposeAsync().ConfigureAwait(false);
+        }
+        catch (JSDisconnectedException)
+        {
+            // The page went away first; there is nothing left to release.
+        }
+    }
+
     /// <summary>How many rows the filter left, which the last render was drawn against.</summary>
     private int _drawnFor = -1;
 
@@ -142,6 +266,16 @@
     /// </remarks>
     protected override void OnParametersSet()
     {
+        if (!_read)
+        {
+            _read = true;
+
+            if (int.TryParse(Session?.Preferences.Get(Setting), out var kept) && Sizes.Contains(kept))
+            {
+                _size = kept;
+            }
+        }
+
         if (_drawnFor == Rows.Count)
         {
             return;
@@ -151,9 +285,30 @@
         _page = 0;
     }
 
-    private int Pages => Rows.Count == 0 ? 1 : ((Rows.Count - 1) / Math.Max(1, PageSize)) + 1;
+    /// <summary>
+    /// Changes how many rows a page holds, and starts again from the first of them.
+    /// </summary>
+    /// <remarks>
+    /// From the first, because the page number means something different afterwards: page four of
+    /// ten at twenty-five a page is page one at a hundred, and staying on four would have shown an
+    /// empty table.
+    /// </remarks>
+    private void Resize(ChangeEventArgs e)
+    {
+        if (!int.TryParse(e.Value?.ToString(), out var size) || !Sizes.Contains(size))
+        {
+            return;
+        }
 
-    private IEnumerable<EmpireRow> Shown => Sorted.Skip(_page * PageSize).Take(PageSize);
+        _size = size;
+        _page = 0;
+
+        Session?.Preferences.Set(Setting, size.ToString());
+    }
+
+    private int Pages => Rows.Count == 0 ? 1 : ((Rows.Count - 1) / _size) + 1;
+
+    private IEnumerable<EmpireRow> Shown => Sorted.Skip(_page * _size).Take(_size);
 
     /// <summary>
     /// The rows in the order the header asked for, with the name always breaking the tie.
@@ -179,8 +334,17 @@
         }
     }
 
-    private Func<EmpireRow, string> Of(string key) =>
-        EmpireColumn.All.FirstOrDefault(c => c.Key == key)?.Text ?? (r => r.Name);
+    /// <summary>
+    /// What a column sorts by, or the name for the column that has no reading of its own.
+    /// </summary>
+    /// <remarks>
+    /// Written out rather than as a null-conditional, because what is being reached for is a method
+    /// rather than a value and a method group cannot be made nullable.
+    /// </remarks>
+    private static Func<EmpireRow, string> Of(string key) =>
+        EmpireColumn.All.FirstOrDefault(c => c.Key == key) is { } column
+            ? column.Text
+            : row => row.Name;
 
     private string Counted => Total > Rows.Count
         ? $"{Rows.Count} of {Total}"

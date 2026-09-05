@@ -18,7 +18,32 @@
 <div class="sem-combo sem-multi @(_open ? "open" : null)" @onkeydown="Dismiss">
     <button type="button" class="toggle" aria-expanded="@(_open ? "true" : "false")"
             title="@Label" @onclick="() => _open = !_open">
-        <span class="face @(Selected.Count == 0 ? "empty" : null)">@Face</span>
+        @*
+            What was chosen, spelled out rather than counted. "3 selected" is a number you have to
+            open the panel to read, and these sit in a card whose whole job is saying what is being
+            asked for - so the answer is on the face of it, wearing the same icons the list does.
+        *@
+        @if (Selected.Count == 0)
+        {
+            <span class="face empty">@Label</span>
+        }
+        else
+        {
+            <span class="face">
+                @foreach (var option in Options.Where(o => Selected.Contains(o.Key)))
+                {
+                    <span class="sem-pick">
+                        @if (option.Icon is { Length: > 0 })
+                        {
+                            <GameIcon Path="@option.Icon" />
+                        }
+
+                        <span>@option.Name</span>
+                    </span>
+                }
+            </span>
+        }
+
         <span class="caret" aria-hidden="true">▾</span>
     </button>
 
@@ -45,6 +70,16 @@
                             @onmousedown:preventDefault="true"
                             @onclick="() => Toggle(option.Key)">
                         <span class="tick" aria-hidden="true">@(held ? "✓" : string.Empty)</span>
+
+                        @*
+                            The game's own icon, where the thing has one. Half of these lists are
+                            things the player knows by their picture before they know them by name.
+                        *@
+                        @if (option.Icon is { Length: > 0 })
+                        {
+                            <GameIcon Path="@option.Icon" Alt="" />
+                        }
+
                         <span class="name">@option.Name</span>
                     </button>
                 </li>
@@ -79,25 +114,6 @@
     private bool _open;
 
     private IJSObjectReference? _module;
-
-    /// <summary>
-    /// What the button says: the label while nothing is chosen, and otherwise what was chosen.
-    /// </summary>
-    /// <remarks>
-    /// One choice is named. Several are counted, because six of these across a card cannot each
-    /// grow to hold a list, and the count says the useful half of it - how much has been asked for,
-    /// with the panel a press away for exactly which.
-    ///
-    /// The label is not repeated in the count. Every one of these has its name written beside it,
-    /// and the label is what stands in for a choice rather than a title for one, so a filter with
-    /// two civics ticked read "Any: 2" - which is the placeholder and the answer at once.
-    /// </remarks>
-    private string Face => Selected.Count switch
-    {
-        0 => Label,
-        1 => Options.FirstOrDefault(o => Selected.Contains(o.Key))?.Name ?? Label,
-        _ => $"{Selected.Count} selected",
-    };
 
     private async Task Toggle(string key)
     {

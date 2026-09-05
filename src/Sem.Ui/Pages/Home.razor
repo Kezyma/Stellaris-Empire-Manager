@@ -93,12 +93,14 @@ else
         {
             <EmpireFilters Rows="@AllRows" Filter="@_filter" OnChanged="StateHasChanged" />
 
-            <EmpireTable Heading="Your empires" Rows="@Narrowed(OwnRows)" Total="@OwnRows.Count"
+            <EmpireTable Heading="Your empires" Setting="rows-own"
+                         Rows="@Narrowed(OwnRows)" Total="@OwnRows.Count"
                          Columns="@VisibleColumns" OnOpen="OpenRow"
                          Empty="None of your empires match." />
 
-            <EmpireTable Heading="The game's empires" Rows="@Narrowed(PresetRows)"
-                         Total="@PresetRows.Count" Columns="@VisibleColumns" OnOpen="OpenRow"
+            <EmpireTable Heading="The game's empires" Setting="rows-preset"
+                         Rows="@Narrowed(PresetRows)" Total="@PresetRows.Count"
+                         Columns="@VisibleColumns" OnOpen="OpenRow"
                          Empty="None of the game's empires match." />
         }
         else

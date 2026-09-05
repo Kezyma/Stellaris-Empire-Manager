@@ -202,6 +202,50 @@ export function revealSelected(list, selector) {
 }
 
 /**
+ * Ties up a whole page of popovers at once, each one the first time it is pointed at.
+ *
+ * bindPopover costs a call into managed code per chip. One panel beside an empire is nothing; a
+ * table of twenty-five empires with six columns of them is a hundred and fifty-six calls every time
+ * the rows are sorted, filtered or paged, which is most of half a second the reader waits through
+ * for panels they have not opened.
+ *
+ * So the listening is done once, here, for everything inside a container. A chip is bound the first
+ * time a pointer or the keyboard reaches it, and then shown - the hover that triggered the binding
+ * would otherwise be the one hover that did nothing.
+ *
+ * @param {HTMLElement} root what holds the chips
+ */
+export function bindPopoversWhenPointed(root) {
+    if (!root || root.dataset.semDeferred) {
+        return;
+    }
+
+    root.dataset.semDeferred = 'on';
+
+    const bind = event => {
+        const anchor = event.target.closest?.('[aria-describedby]');
+
+        if (!anchor || anchor.dataset.semBound === 'yes') {
+            return;
+        }
+
+        const panel = document.getElementById(anchor.getAttribute('aria-describedby'));
+
+        if (!panel) {
+            return;
+        }
+
+        bindPopover(anchor, panel);
+
+        // The hover that did the binding happened before there was anything listening for it.
+        anchor.dispatchEvent(new MouseEvent('mouseenter'));
+    };
+
+    root.addEventListener('pointerover', bind);
+    root.addEventListener('focusin', bind);
+}
+
+/**
  * Closes an open suggestion list when the next press lands outside it.
  *
  * The list itself is drawn or not drawn by the component, on a flag the component owns. What this
@@ -298,8 +342,12 @@ export function bindPopover(anchor, panel, pinOnClick = true) {
             panel.showPopover();
         }
 
-        // After showing, so the panel has been laid out and has a size to place.
+        // After showing, so the panel has been laid out and has a size to place. And again on the
+        // next frame, because a panel that fills itself the first time it is pointed at has not
+        // finished doing so yet - placed against an empty box it would sit where a box that size
+        // belongs, which is nowhere near where this one ends up.
         place();
+        requestAnimationFrame(place);
     };
 
     const hide = () => {
