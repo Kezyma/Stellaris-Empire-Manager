@@ -34,6 +34,19 @@ internal static class TraitsExtractor
             var body = entry.Body;
             var kind = ClassifyTrait(body);
 
+            // The leader traits an empire cannot start with are not carried.
+            //
+            // Seven hundred and twenty-eight of them, a fifth of everything the app downloads, and
+            // nothing reads one: the ruler's picker asks for the starting traits, the validator asks
+            // the same, and no empire in the game's own or the player's files holds one. Two hundred
+            // and thirty-four have no name in any language, being the second and third tiers a
+            // leader earns while a game is running - which is the clearest statement that they are
+            // not part of designing an empire.
+            if (kind == TraitKind.Leader)
+            {
+                continue;
+            }
+
             traits.Add(new TraitDefinition(entry.Key, kind)
             {
                 Cost = body.GetCost(loader),

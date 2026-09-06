@@ -305,17 +305,16 @@ public sealed class GameDataExtractionTests
             "gfx/interface/icons/traits/trait_adaptive.dds",
             sources["icons/traits/trait_adaptive.png"]);
 
-        // Galactic Paragons stacks layers into an icon block, which the leader traits use. Nothing
-        // here draws layers, so those fall back rather than reaching into the block for a value that
-        // is only one of several stacked pictures.
-        Assert.Equal(
-            "gfx/interface/icons/traits/trait_unknown.dds",
-            sources["icons/traits/leader_trait_unplugged_cybernetic_positives_1.png"]);
-
-        // Its species-trait twin writes the same artwork as a plain path, and that is honoured.
+        // The species trait writes its artwork as a plain path, and that is honoured. Its leader
+        // twin used to be asserted beside it, for the opposite behaviour - Galactic Paragons stacks
+        // layers into an icon block and nothing here draws layers, so it fell back to the unknown
+        // badge. The leader traits are no longer carried at all, so there is nothing left to fall
+        // back: that whole family was a fifth of the download and no picker ever offered one.
         Assert.Equal(
             "gfx/interface/icons/traits/trait_unplugged_positive_1.dds",
             sources["icons/traits/trait_unplugged_cybernetic_positives_1.png"]);
+
+        Assert.DoesNotContain("icons/traits/leader_trait_unplugged_cybernetic_positives_1.png", sources.Keys);
     }
 
     [SkippableFact]
@@ -1181,5 +1180,235 @@ public sealed class GameDataExtractionTests
         Assert.Contains(
             cybernetics.Reasons,
             r => RuleReasons.Split(r).Subject == "ap_the_flesh_is_weak");
+    }
+
+    /// <summary>
+    /// Everything a picker can draw has words for itself, in the language the app is shipping.
+    /// </summary>
+    /// <remarks>
+    /// The failure this catches is silent and looks like a typo: a key with no text is drawn as the
+    /// key with its underscores taken out, so a reader is told a tradition is called "Tr
+    /// Adaptability Adopt Delayed". Seventy-three traditions read that way, because the description
+    /// key was assumed to follow the game's <c>_delayed</c> convention and only a hundred and
+    /// sixty-one of them do.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void EverythingDrawnHasTextShippedForIt()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        var text = ShippedText();
+        Skip.If(text is null, "Extracted text is missing. Run: dotnet run --project src/Sem.Cli -- extract --web");
+
+        var missing = new List<string>();
+
+        void Check(string what, string? key)
+        {
+            if (key is { Length: > 0 } && !text!.ContainsKey(key))
+            {
+                missing.Add($"{what} ({key})");
+            }
+        }
+
+        foreach (var tradition in database.Traditions)
+        {
+            Check(tradition.Key, tradition.NameKey);
+            Check(tradition.Key, tradition.DescriptionKey);
+        }
+
+        foreach (var perk in database.AscensionPerks)
+        {
+            Check(perk.Key, perk.NameKey);
+        }
+
+        foreach (var civic in database.Civics)
+        {
+            Check(civic.Key, civic.NameKey);
+        }
+
+        // And the wordings the swaps put in place of those, which nothing else asks the pruner for.
+        foreach (var (owner, variants) in database.Traditions.Select(t => (t.Key, t.Variants))
+                     .Concat(database.Civics.Select(c => (c.Key, c.Variants)))
+                     .Concat(database.AscensionPerks.Select(p => (p.Key, p.Variants))))
+        {
+            foreach (var variant in variants)
+            {
+                Check($"{owner} swapped", variant.NameKey);
+                Check($"{owner} swapped", variant.DescriptionKey);
+            }
+        }
+
+        Assert.True(
+            missing.Count == 0,
+            $"{missing.Count} thing(s) would be drawn as a tidied-up key: " +
+            string.Join("; ", missing.Take(8)));
+    }
+
+    /// <summary>
+    /// A swap changes what an option is called, and the empire it belongs to is shown that name.
+    /// </summary>
+    /// <remarks>
+    /// The numbers a swap changes were read already; the words were not, and there are more of
+    /// those. A hive mind reading its own tradition trees was shown the wording written for
+    /// somebody else throughout.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void ASwapRenamesTheOptionForTheEmpireItBelongsTo()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+        var rules = new EmpireRules(database);
+
+        // Enough of them that a future reading which quietly dropped the field would fail here.
+        Assert.True(
+            database.Traditions.Count(t => t.Variants.Count > 0) >= 60,
+            $"Only {database.Traditions.Count(t => t.Variants.Count > 0)} traditions carry a swapped wording.");
+
+        // A wilderness empire is one whose founder species is of that class, which is what the
+        // game's own condition asks - not the origin, though the two go together in a real empire.
+        var wilderness = EmpireDesignsFile.CreateEmpty().Add("Wild");
+        wilderness.Authority = "auth_hive_mind";
+        wilderness.SetEthics(["ethic_gestalt_consciousness"]);
+        wilderness.Species.Class = "WILDERNESS";
+
+        var ordinary = EmpireDesignsFile.CreateEmpty().Add("Hive");
+        ordinary.Authority = "auth_hive_mind";
+        ordinary.SetEthics(["ethic_gestalt_consciousness"]);
+        ordinary.Species.Class = "MAM";
+
+        var civic = database.Civics.Single(c => c.Key == "civic_hive_natural_neural_network");
+
+        Assert.Equal(
+            "civic_wilderness_natural_neural_network",
+            rules.VariantOf(civic.Variants, rules.CreateContext(wilderness))?.NameKey);
+
+        // And the same civic keeps the hive's own name for a hive that is not of the wilderness,
+        // which is what says the condition is being read rather than the first swap always winning.
+        Assert.Equal(
+            "civic_hive_natural_neural_network",
+            rules.VariantOf(civic.Variants, rules.CreateContext(ordinary))?.NameKey);
+    }
+
+    /// <summary>
+    /// A government that doubles its own weight against a civic is judged at the doubled weight.
+    /// </summary>
+    /// <remarks>
+    /// Thirteen do, and the government decides the empire's title and every name the generator
+    /// would offer it - so reading only the base number is not a cosmetic loss.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void AGovernmentsWeightCanTurnOnACivic()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        var conditional = database.GovernmentTypes.Where(g => g.Factors.Count > 0).ToList();
+
+        Assert.True(conditional.Count >= 13, $"Only {conditional.Count} governments weigh conditionally.");
+
+        // Star Empire is the plain case: an ethic's weight ordinarily, twice that for an empire with
+        // Distinguished Admiralty.
+        var star = database.GovernmentTypes.Single(g => g.Key == "gov_star_empire");
+
+        Assert.Single(star.Factors);
+        Assert.Equal(2, star.Factors[0].Factor);
+    }
+
+    /// <summary>
+    /// The modifiers a design can show are displayed as the game displays them.
+    /// </summary>
+    /// <remarks>
+    /// Two thirds settle themselves by their ending and most of the rest by the numbers the game
+    /// gives them. These are the ones that mislead: habitability is a proportion and says so in the
+    /// game's own <c>"Habitability: $VALUE|0=-%$"</c>, while loyalty is a flat amount and says so
+    /// just as plainly. A single value of 1 among thirty fractions used to decide the whole family
+    /// was flat, which had Gaia and Machine worlds reading "+1" beside Ocean's "+20%".
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void ModifiersAreShownTheWayTheGameShowsThem()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        (string Key, bool Percentage)[] expected =
+        [
+            ("pc_gaia_habitability", true),
+            ("pc_ocean_habitability", true),
+            ("pc_ai_habitability", true),
+            ("army_health", true),
+            ("species_leader_exp_gain", true),
+            ("monthly_loyalty", false),
+            ("monthly_loyalty_from_subjects", false),
+            ("country_leader_pool_size", false),
+            ("add_attunement_the_cradle_of_souls", false),
+        ];
+
+        foreach (var (key, percentage) in expected)
+        {
+            Assert.True(
+                database.Modifiers.TryGetValue(key, out var info),
+                $"{key} is not among the modifiers a design can show.");
+
+            Assert.True(
+                info!.IsPercentage == percentage,
+                $"{key} is drawn as {(info.IsPercentage ? "a percentage" : "a flat amount")}.");
+        }
+
+        // Every world class the same way as every other, which is the check that would have caught
+        // this: the family disagreeing with itself is what put it on screen two ways.
+        var habitability = database.Modifiers
+            .Where(m => m.Key.EndsWith("_habitability", StringComparison.Ordinal))
+            .ToList();
+
+        Assert.True(habitability.Count >= 20, $"Only {habitability.Count} habitability modifiers.");
+        Assert.All(habitability, m => Assert.True(m.Value.IsPercentage, $"{m.Key} is drawn flat."));
+    }
+
+    /// <summary>
+    /// The leader traits a game hands out are not carried, being a fifth of the download.
+    /// </summary>
+    /// <remarks>
+    /// Nothing reads one. The ruler's picker and the validator both ask for the starting traits, no
+    /// empire in the game's own files or the player's holds one, and two hundred and thirty-four of
+    /// them have no name in any language the game ships.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void OnlyTheTraitsADesignCanHoldAreCarried()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        Assert.DoesNotContain(database.Traits, t => t.Kind == TraitKind.Leader);
+
+        // The ones a design does hold are all still there, which is the half that could go wrong:
+        // the classification decides what is dropped, so a trait misread as a leader's would vanish
+        // from the picker rather than merely from the download.
+        Assert.Equal(34, database.Traits.Count(t => t.Kind == TraitKind.StartingRuler));
+        Assert.True(
+            database.Traits.Count(t => t.Kind == TraitKind.Species) >= 360,
+            $"Only {database.Traits.Count(t => t.Kind == TraitKind.Species)} species traits survived.");
+    }
+
+    /// <summary>The text the app ships, which is the pruned set rather than the game's whole one.</summary>
+    private static Dictionary<string, string>? ShippedText()
+    {
+        for (var directory = new DirectoryInfo(AppContext.BaseDirectory); directory is not null; directory = directory.Parent)
+        {
+            var path = Path.Combine(directory.FullName, "src", "Sem.Web", "wwwroot", "gamedata", "loc", "en.json");
+
+            if (File.Exists(path))
+            {
+                return System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(
+                    File.ReadAllBytes(path));
+            }
+        }
+
+        return null;
     }
 }

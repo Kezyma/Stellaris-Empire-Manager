@@ -142,6 +142,7 @@ internal static partial class LocalisationPruner
         {
             Add(tradition.NameKey);
             Add(tradition.DescriptionKey);
+            AddVariants(tradition.Variants);
             AddEffects(tradition.Effects);
             AddRequirement(tradition.Possible);
         }
@@ -150,6 +151,7 @@ internal static partial class LocalisationPruner
         {
             Add(perk.NameKey);
             Add(perk.DescriptionKey);
+            AddVariants(perk.Variants);
 
             // The sentences behind a blocked perk, which are the game's own words for why.
             AddRequirement(perk.Potential);
@@ -212,6 +214,7 @@ internal static partial class LocalisationPruner
             Add(civic.EffectsKey);
             Add(civic.PenaltiesKey);
             Add($"{civic.Key}_desc");
+            AddVariants(civic.Variants);
             AddRequirement(civic.Potential);
             AddRequirement(civic.Possible);
             AddRequirement(civic.Playable);
@@ -367,6 +370,19 @@ internal static partial class LocalisationPruner
             if (!string.IsNullOrEmpty(key))
             {
                 wanted.Add(key);
+            }
+        }
+
+        // The names and descriptions a swap puts in place of an option's own, which nothing else
+        // asks for - so without this they would be pruned as unreachable and every empire whose
+        // swap fires would be shown its key tidied up instead.
+        void AddVariants(IReadOnlyList<OptionVariant> variants)
+        {
+            foreach (var variant in variants)
+            {
+                Add(variant.NameKey);
+                Add(variant.DescriptionKey);
+                AddRequirement(variant.When);
             }
         }
 

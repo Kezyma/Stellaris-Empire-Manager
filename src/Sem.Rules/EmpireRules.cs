@@ -172,12 +172,18 @@ public sealed class EmpireRules(GameDatabase database)
     /// <remarks>
     /// The government is not chosen. The game takes the highest-weighted type whose conditions the
     /// design meets, and settles ties by which was defined first.
+    ///
+    /// The weight is not always the number written at the top of the block. Thirteen governments
+    /// double their own against a civic - Star Empire for Distinguished Admiralty, Holy Tribunal for
+    /// Exalted Priesthood - and reading only the base had those thirteen arguing their case at half
+    /// strength.
     /// </remarks>
     public GovernmentTypeDefinition? DeriveGovernment(DesignContext context)
     {
         ArgumentNullException.ThrowIfNull(context);
 
         GovernmentTypeDefinition? best = null;
+        var bestWeight = double.NegativeInfinity;
 
         foreach (var government in _database.GovernmentTypes)
         {
@@ -186,16 +192,27 @@ public sealed class EmpireRules(GameDatabase database)
                 continue;
             }
 
+            var weight = WeightOf(government, context);
+
             if (best is null ||
-                government.Weight > best.Weight ||
-                (government.Weight == best.Weight && government.FileOrder < best.FileOrder))
+                weight > bestWeight ||
+                (weight == bestWeight && government.FileOrder < best.FileOrder))
             {
                 best = government;
+                bestWeight = weight;
             }
         }
 
         return best;
     }
+
+    /// <summary>What a government weighs for this design, once its own conditions are applied.</summary>
+    private double WeightOf(GovernmentTypeDefinition government, DesignContext context) =>
+        government.Factors.Count == 0
+            ? government.Weight
+            : government.Factors
+                .Where(f => _evaluator.IsSatisfied(f.When, context))
+                .Aggregate(government.Weight, (running, f) => running * f.Factor);
 
     /// <summary>The world a nomadic empire begins on, which is its ship.</summary>
     private const string Arkship = "pc_ark";
@@ -1732,6 +1749,38 @@ public sealed class EmpireRules(GameDatabase database)
                 Arguments = [key],
             });
         }
+    }
+
+    /// <summary>
+    /// The wording this empire is shown for an option, where a swap puts one in place of its own.
+    /// </summary>
+    /// <remarks>
+    /// The first whose condition holds, which is how the game reads them - they are written as
+    /// alternatives, one per kind of empire, and a tradition with three of them has one for the
+    /// hive, one for the machine and one for everybody else. An empire matching none keeps the
+    /// option's own name and description, which is the ordinary case.
+    ///
+    /// Settled and satisfied, not merely permitted. Everywhere else an unread condition lets the
+    /// option through, because hiding something the player could have had is the worse mistake -
+    /// here the worse mistake is the other way round. Four swaps turn on being in a federation,
+    /// which is a thing no design is and no design can rule out either, and read permissively they
+    /// would have renamed those options for every empire in the game.
+    /// </remarks>
+    public OptionVariant? VariantOf(IReadOnlyList<OptionVariant> variants, DesignContext context)
+    {
+        ArgumentNullException.ThrowIfNull(variants);
+        ArgumentNullException.ThrowIfNull(context);
+
+        foreach (var variant in variants)
+        {
+            if (_evaluator.CanDecide(variant.When, context) &&
+                _evaluator.IsSatisfied(variant.When, context))
+            {
+                return variant;
+            }
+        }
+
+        return null;
     }
 
     private static Requirement Combine(Requirement first, Requirement second) =>

@@ -245,7 +245,16 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
         _design.Civics.Select(key =>
         {
             var civic = Database.Civics.FirstOrDefault(d => d.Key == key);
-            return Chip(key, civic?.Icon, civic?.Effects);
+
+            // Named through the swaps, which is the difference between a wilderness empire being
+            // shown its own Natural Neural Network and being shown the hive's.
+            return civic is null
+                ? Chip(key, null, null)
+                : new EmpireChoice(
+                    key,
+                    Named(civic.Variants, civic.NameKey),
+                    civic.Icon,
+                    civic.Effects);
         });
 
     public IEnumerable<EmpireChoice> Traits => TraitsOf(_design.Species);
@@ -306,7 +315,9 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
     /// <summary>The origin as a chip.</summary>
     public IEnumerable<EmpireChoice> OriginChoice =>
         _design.Origin is { Length: > 0 } key
-            ? [Chip(key, Origin?.Icon, Origin?.Effects)]
+            ? [Origin is { } origin
+                ? new EmpireChoice(key, Named(origin.Variants, origin.NameKey), origin.Icon, origin.Effects)
+                : Chip(key, null, null)]
             : [];
 
     /// <summary>
@@ -325,6 +336,23 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
 
     private EmpireChoice Chip(string key, string? icon, EffectSet? effects) =>
         new(key, _session.Localizer.Text(key), icon, effects);
+
+    /// <summary>
+    /// What an option is called for <em>this</em> empire, which is not always what it is called.
+    /// </summary>
+    /// <remarks>
+    /// Against this view's own context rather than the session's, because a table draws fifty rows
+    /// while the editor holds one of them: asking the session would have shown every row the wording
+    /// chosen for whichever empire happened to be open.
+    /// </remarks>
+    private string Named(IReadOnlyList<OptionVariant> variants, string nameKey) =>
+        _session.Localizer.Text(Variant(variants)?.NameKey ?? nameKey);
+
+    private string? Described(IReadOnlyList<OptionVariant> variants, string? descriptionKey) =>
+        Variant(variants)?.DescriptionKey ?? descriptionKey;
+
+    private OptionVariant? Variant(IReadOnlyList<OptionVariant> variants) =>
+        variants.Count == 0 ? null : _session.Rules.VariantOf(variants, Context);
 
     /// <summary>
     /// The plan this empire carries, which lives in one of its biographies rather than in a field.
@@ -405,8 +433,12 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
             foreach (var key in locked.Concat(Plan.Civics).Distinct(StringComparer.Ordinal))
             {
                 var chip = Database.Civics.FirstOrDefault(c => c.Key == key) is { } civic
-                    ? new EmpireChoice(key, _session.Localizer.Text(civic.NameKey), civic.Icon, civic.Effects)
-                        { Description = $"{civic.Key}_desc" }
+                    ? new EmpireChoice(
+                        key,
+                        Named(civic.Variants, civic.NameKey),
+                        civic.Icon,
+                        civic.Effects)
+                        { Description = Described(civic.Variants, $"{civic.Key}_desc") }
                     : Chip(key, null, null);
 
                 yield return chip with { Unchanged = already.Contains(key) };

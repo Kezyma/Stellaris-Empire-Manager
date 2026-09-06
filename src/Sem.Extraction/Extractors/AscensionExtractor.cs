@@ -28,8 +28,11 @@ internal static class AscensionExtractor
     public static List<AscensionPerkDefinition> Extract(
         ScriptLoader loader,
         RequirementCompiler requirements,
-        AssetCatalog assets)
+        AssetCatalog assets,
+        IReadOnlyDictionary<string, string> text)
     {
+        ArgumentNullException.ThrowIfNull(text);
+
         var grouping = ReadCategories(loader);
         var results = new List<AscensionPerkDefinition>();
 
@@ -50,6 +53,11 @@ internal static class AscensionExtractor
 
                 Effects = EffectsReader.Read(
                     body, loader, requirements, readsScriptedUnlocks: true),
+
+                // Six perks are shown under another name to the empire that triggers the swap, and
+                // a perk's description hangs off its name, so the renamed one carries both.
+                Variants = EffectsReader.ReadVariants(
+                    body, "tradition_swap", requirements, text, name => $"{name}_desc"),
 
                 // Through the sprite rather than by convention. The picture a perk uses is not
                 // always named after the perk - GFX_ap_colossus draws ap_colossus_project.dds - so
@@ -128,9 +136,11 @@ internal static class AscensionExtractor
         ScriptLoader loader,
         RequirementCompiler requirements,
         AssetCatalog assets,
-        IReadOnlyList<TraditionTreeDefinition> trees)
+        IReadOnlyList<TraditionTreeDefinition> trees,
+        IReadOnlyDictionary<string, string> text)
     {
         ArgumentNullException.ThrowIfNull(trees);
+        ArgumentNullException.ThrowIfNull(text);
 
         var owner = new Dictionary<string, string>(StringComparer.Ordinal);
 
@@ -166,6 +176,13 @@ internal static class AscensionExtractor
                 // names, and the technology beside it is something the empire will have by then.
                 Possible = requirements.CompilePlanTrigger(entry.Body.GetBlock("possible")),
 
+                DescriptionKey = Described(entry.Key, text),
+
+                // A swap renames the tradition for the empire it belongs to, and its description
+                // follows the renamed key rather than the original's.
+                Variants = EffectsReader.ReadVariants(
+                    entry.Body, "tradition_swap", requirements, text, name => Described(name, text)),
+
                 Icon = assets.RegisterSprite(
                     $"GFX_{entry.Key}",
                     $"icons/traditions/{entry.Key}.png",
@@ -175,6 +192,20 @@ internal static class AscensionExtractor
 
         return results;
     }
+
+    /// <summary>
+    /// Which of the game's two conventions this tradition's description is written under, if either.
+    /// </summary>
+    /// <remarks>
+    /// <c>_delayed</c> first, because where both exist that is the one the game shows in the tree -
+    /// it is the "you will get" wording, which is what a tradition not yet taken is. Sixty-one
+    /// traditions have both, a hundred have only the delayed form, nineteen have only the plain one,
+    /// and fifty-four have neither and are given nothing rather than their own key tidied up.
+    /// </remarks>
+    private static string? Described(string key, IReadOnlyDictionary<string, string> text) =>
+        text.ContainsKey($"{key}_delayed") ? $"{key}_delayed"
+        : text.ContainsKey($"{key}_desc") ? $"{key}_desc"
+        : null;
 
     /// <summary>
     /// Which category each perk belongs to, read from the game's own grouping.

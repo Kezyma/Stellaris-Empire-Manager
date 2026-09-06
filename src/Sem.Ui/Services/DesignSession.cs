@@ -203,6 +203,29 @@ public sealed class DesignSession
     /// <summary>What the rules make of the current empire.</summary>
     public DesignContext? Context { get; private set; }
 
+    /// <summary>
+    /// What an option is called for the empire in hand, which is not always what it is called.
+    /// </summary>
+    /// <remarks>
+    /// A hundred and eighty-two traditions, thirty-two civics and six perks are shown under another
+    /// name to the kind of empire their swap names - a wilderness empire's Natural Neural Network,
+    /// a nomad's Arc Welders - and the description follows the name. Asked here rather than at each
+    /// of the dozen places that draw one, so they cannot drift apart.
+    /// </remarks>
+    public string OptionName(IReadOnlyList<OptionVariant> variants, string nameKey, string? fallback = null) =>
+        Localizer.Text(OptionNameKey(variants, nameKey), fallback);
+
+    /// <summary>The key that name comes from, for callers that pass keys around rather than text.</summary>
+    public string OptionNameKey(IReadOnlyList<OptionVariant> variants, string nameKey) =>
+        Variant(variants)?.NameKey ?? nameKey;
+
+    /// <summary>The description this empire is shown for an option, swapped where a swap says so.</summary>
+    public string? OptionDescriptionKey(IReadOnlyList<OptionVariant> variants, string? descriptionKey) =>
+        Variant(variants)?.DescriptionKey ?? descriptionKey;
+
+    private OptionVariant? Variant(IReadOnlyList<OptionVariant> variants) =>
+        variants.Count == 0 || Context is not { } context ? null : Rules.VariantOf(variants, context);
+
     /// <summary>What is wrong with the current empire, if anything.</summary>
     public ValidationReport Report { get; private set; } = new([]);
 

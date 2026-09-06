@@ -56,6 +56,15 @@ public sealed class RequirementCompiler
         // ordinary questions once the plan says which are meant to be taken.
         ["has_ascension_perk"] = SelectionCategory.AscensionPerk,
         ["has_tradition"] = SelectionCategory.TraditionTree,
+
+        // The same question with a different name, and the commoner of the two inside effect
+        // conditions: thirty-seven modifier groups turn on it, and unread they were shown as
+        // conditions on a game in progress rather than as something the plan already answers.
+        ["has_active_tradition"] = SelectionCategory.TraditionTree,
+
+        // The founder's class, which a design states outright. It was the one condition in the whole
+        // extraction asking something the design knows and being told nobody knew.
+        ["is_species_class"] = SelectionCategory.SpeciesClass,
     };
 
     /// <summary>

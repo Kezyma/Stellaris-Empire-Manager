@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using System.Text.Json;
 using Sem.Extraction.Extractors;
 using Sem.GameData;
@@ -104,13 +104,13 @@ public sealed class GameDataExtractor(LayeredContent content)
 
         Report("Reading governments");
         var authorities = GovernmentExtractor.ExtractAuthorities(loader, requirements, assets);
-        var civics = GovernmentExtractor.ExtractCivics(loader, requirements, assets);
+        var civics = GovernmentExtractor.ExtractCivics(loader, requirements, assets, Localisation);
         var governmentTypes = GovernmentExtractor.ExtractGovernmentTypes(loader, requirements);
 
         Report("Reading ascension perks and tradition trees");
-        var ascensionPerks = AscensionExtractor.Extract(loader, requirements, assets);
+        var ascensionPerks = AscensionExtractor.Extract(loader, requirements, assets, Localisation);
         var traditionTrees = AscensionExtractor.ExtractTrees(loader, requirements, assets);
-        var traditions = AscensionExtractor.ExtractTraditions(loader, requirements, assets, traditionTrees);
+        var traditions = AscensionExtractor.ExtractTraditions(loader, requirements, assets, traditionTrees, Localisation);
 
         Report("Reading worlds and starting systems");
         var planetClasses = WorldExtractor.ExtractPlanetClasses(loader, requirements, assets);

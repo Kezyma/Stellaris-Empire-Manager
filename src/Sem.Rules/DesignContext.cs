@@ -324,9 +324,33 @@ public sealed class DesignContext
         // makes every "not if you have that one" condition pass - correctly, since nothing has been
         // taken.
         SelectionCategory.AscensionPerk => AscensionPerks.Contains(key),
-        SelectionCategory.TraditionTree => TraditionTrees.Contains(key),
+        SelectionCategory.TraditionTree => HasTradition(key),
         _ => false,
     };
+
+    /// <summary>
+    /// Whether the plan opens a tree, asked either by the tree's name or by one inside it.
+    /// </summary>
+    /// <remarks>
+    /// The game asks both ways and mostly the second: <c>has_tradition = tr_adaptability_recycling</c>
+    /// names one pick inside Adaptability, and <c>has_active_tradition</c> beside it does the same.
+    /// A plan names trees, so a question about a tradition is a question about the tree it belongs
+    /// to - opening one is undertaking to finish it, and every tradition in it comes with that.
+    ///
+    /// Matched against the tree's own list rather than by trimming the name, because the adoption
+    /// and completion bonuses are not written to a pattern and the tree already knows its own.
+    /// </remarks>
+    private bool HasTradition(string key)
+    {
+        if (TraditionTrees.Contains(key))
+        {
+            return true;
+        }
+
+        var tree = Database.Traditions.FirstOrDefault(t => string.Equals(t.Key, key, StringComparison.Ordinal))?.Tree;
+
+        return tree is { Length: > 0 } && TraditionTrees.Contains(tree);
+    }
 
     /// <summary>How many things the design has selected in a given part of itself.</summary>
     /// <remarks>

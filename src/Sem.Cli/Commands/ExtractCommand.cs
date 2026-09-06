@@ -169,14 +169,6 @@ public static class ExtractCommand
                 $"({string.Join(", ", database.UnrecognisedEffectConditions.Keys.Take(4))})");
         }
 
-        if (guessed > 0 && ModifierCatalog.LogPath() is { } log && !File.Exists(log))
-        {
-            Console.WriteLine();
-            Console.WriteLine(
-                "  Running Stellaris once with -debug_mode writes a table of every modifier to");
-            Console.WriteLine($"  {log}");
-            Console.WriteLine("  which would replace those inferences with the game's own settings.");
-        }
     }
 
     /// <summary>

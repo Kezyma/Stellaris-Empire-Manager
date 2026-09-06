@@ -361,13 +361,9 @@ public sealed record EmpireRow
 
             PlanCivics = [.. view.PlanCivics],
 
-            Origin = view.Origin is { } origin
-                ? new EmpireChoice(
-                    origin.Key,
-                    loc.Text(origin.NameKey, Localizer.Prettify(origin.Key)),
-                    origin.Icon,
-                    origin.Effects)
-                : null,
+            // Through the view, which names it against this row's own empire: a nomad's Arc Welders
+            // is called something else by the game, and every row here is a different empire.
+            Origin = view.OriginChoice.FirstOrDefault(),
 
             SpeciesClass = design.Species.Class is { Length: > 0 } kind
                 ? new EmpireChoice(kind, loc.Text(kind), null, null)

@@ -277,8 +277,13 @@
                 .OfType<TraditionDefinition>()
                 .Select(t => new PlanOption(
                     t.Key,
-                    Session.Localizer.Text(t.NameKey),
-                    Session.Localizer.Html(t.DescriptionKey, string.Empty),
+
+                    // Under the name this empire's game would use. A hive mind's Adaptability tree
+                    // is written throughout for the hive, and it was being read out in the wording
+                    // meant for somebody else.
+                    Session.OptionName(t.Variants, t.NameKey),
+                    Session.Localizer.Html(
+                        Session.OptionDescriptionKey(t.Variants, t.DescriptionKey), string.Empty),
                     t.Icon,
                     t.Effects,
                     Enabled: true,
@@ -345,7 +350,10 @@
     {
         public static Func<string, (string, string?, string?, EffectSet?)> Perk(DesignSession session) =>
             key => session.Data.Database.AscensionPerks.FirstOrDefault(p => p.Key == key) is { } perk
-                ? (perk.NameKey, perk.DescriptionKey, perk.Icon, perk.Effects)
+                ? (session.OptionNameKey(perk.Variants, perk.NameKey),
+                   session.OptionDescriptionKey(perk.Variants, perk.DescriptionKey),
+                   perk.Icon,
+                   perk.Effects)
                 : (key, null, null, null);
 
         public static Func<string, (string, string?, string?, EffectSet?)> Tree(DesignSession session) =>
@@ -355,7 +363,10 @@
 
         public static Func<string, (string, string?, string?, EffectSet?)> Civic(DesignSession session) =>
             key => session.Data.Database.Civics.FirstOrDefault(c => c.Key == key) is { } civic
-                ? (civic.NameKey, $"{civic.Key}_desc", civic.Icon, civic.Effects)
+                ? (session.OptionNameKey(civic.Variants, civic.NameKey),
+                   session.OptionDescriptionKey(civic.Variants, $"{civic.Key}_desc"),
+                   civic.Icon,
+                   civic.Effects)
                 : (key, null, null, null);
     }
 

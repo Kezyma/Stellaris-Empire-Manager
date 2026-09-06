@@ -19,7 +19,7 @@ public sealed record GameDatabase
     /// site published with a database one version behind was read anyway, with whatever the shape had
     /// gained since taking its default and no sign that anything was missing.
     /// </remarks>
-    public const int CurrentSchemaVersion = 9;
+    public const int CurrentSchemaVersion = 10;
 
     /// <summary>Version of this file's own shape, so an old cache can be detected and rebuilt.</summary>
     public required int SchemaVersion { get; init; }
@@ -665,7 +665,13 @@ public enum TraitKind
     /// <summary>A trait the empire's starting ruler may take.</summary>
     StartingRuler,
 
-    /// <summary>A leader trait not offered during empire creation.</summary>
+    /// <summary>
+    /// A leader trait not offered during empire creation, which is not carried in the database.
+    /// </summary>
+    /// <remarks>
+    /// Classified so that it can be left out. Nothing an empire is designed with can hold one, and
+    /// they were a fifth of everything the app downloads.
+    /// </remarks>
     Leader,
 }
 
@@ -860,6 +866,9 @@ public sealed record AscensionPerkDefinition(string Key)
     /// <summary>Where its picture was written, if it has one.</summary>
     public string? Icon { get; init; }
 
+    /// <summary>What this is called and said to be for particular kinds of empire.</summary>
+    public IReadOnlyList<OptionVariant> Variants { get; init; } = [];
+
     /// <summary>The key is the name, which is unusual and is the game's doing.</summary>
     public string NameKey => Key;
 
@@ -910,11 +919,26 @@ public sealed record TraditionDefinition(string Key)
     /// <summary>Where its picture was written, if it has one.</summary>
     public string? Icon { get; init; }
 
+    /// <summary>What this is called and said to be for particular kinds of empire.</summary>
+    public IReadOnlyList<OptionVariant> Variants { get; init; } = [];
+
     /// <summary>The key is the name.</summary>
     public string NameKey => Key;
 
-    /// <summary>And the description is the key with the game's own suffix.</summary>
-    public string DescriptionKey => $"{Key}_delayed";
+    /// <summary>
+    /// What the game wrote about it, where it wrote anything.
+    /// </summary>
+    /// <remarks>
+    /// It used to be the key with <c>_delayed</c> after it, which is the game's own convention and
+    /// is stated in the README beside the files - but only a hundred and sixty-one of the two
+    /// hundred and thirty-four traditions have such an entry. Nineteen have a plain <c>_desc</c> and
+    /// fifty-four, the adoption and completion bonuses mostly, have nothing at all. The other
+    /// seventy-three were drawn as the key tidied up, so a reader opening the Adaptability tree was
+    /// told its opening bonus is "Tr Adaptability Adopt Delayed".
+    ///
+    /// Settled during extraction, which is where the text is, rather than guessed at twice.
+    /// </remarks>
+    public string? DescriptionKey { get; init; }
 }
 
 public sealed record TraditionTreeDefinition(string Key)
@@ -1027,6 +1051,9 @@ public sealed record CivicDefinition(string Key, bool IsOrigin)
     /// </remarks>
     public string? Picture { get; init; }
 
+    /// <summary>What this is called and said to be for particular kinds of empire.</summary>
+    public IReadOnlyList<OptionVariant> Variants { get; init; } = [];
+
     /// <summary>Localisation key for the display name.</summary>
     public string NameKey => Key;
 
@@ -1041,10 +1068,49 @@ public sealed record CivicDefinition(string Key, bool IsOrigin)
 /// A government type. The game picks the highest-weighted one whose conditions the design meets,
 /// which is how an empire ends up called a Divine Empire rather than a Despotic Hegemony.
 /// </summary>
+/// <summary>Something that multiplies a weight when its condition holds.</summary>
+/// <param name="When">The condition.</param>
+/// <param name="Factor">What the weight is multiplied by while it does.</param>
+public sealed record WeightFactor(Requirement When, double Factor);
+
+/// <summary>
+/// What an option is called and said to be for one particular kind of empire.
+/// </summary>
+/// <remarks>
+/// <para>
+/// The game's swaps do two things at once. The numbers they change were read already, as conditional
+/// effects; the words they change were not, and there are more of those: a hundred and eighty-two
+/// traditions, thirty-two civics and origins and six ascension perks are shown under a different
+/// name to the empire that triggers them, and forty-one civics under a different description.
+/// </para>
+/// <para>
+/// The conditions are mostly things a design settles outright - hive, machine, wilderness, nomadic,
+/// an origin - so this is not guesswork. A hive mind reading its own tradition trees was being shown
+/// the wording written for somebody else throughout, and Natural Neural Network read as the hive
+/// version to a wilderness empire whose game calls it something else.
+/// </para>
+/// </remarks>
+/// <param name="When">Which empires are shown this wording.</param>
+/// <param name="NameKey">What to call it, or null to keep the option's own name.</param>
+/// <param name="DescriptionKey">What to say about it, or null to keep the option's own.</param>
+public sealed record OptionVariant(Requirement When, string? NameKey, string? DescriptionKey);
+
 public sealed record GovernmentTypeDefinition(string Key, double Weight, int FileOrder)
 {
     /// <summary>What the design must look like for this government to apply.</summary>
     public Requirement Possible { get; init; } = new AlwaysRequirement(true);
+
+    /// <summary>
+    /// What multiplies its weight, and when.
+    /// </summary>
+    /// <remarks>
+    /// Thirteen governments raise their own weight against a civic - a militarist empire with
+    /// Distinguished Admiralty is twice as likely to be called a Star Empire, and a Cybernetic Creed
+    /// one with Exalted Priesthood twice as likely to be a Holy Tribunal. Reading only the base left
+    /// those thirteen competing at half their real weight, and the government decides the empire's
+    /// title and every name the game would generate for it.
+    /// </remarks>
+    public IReadOnlyList<WeightFactor> Factors { get; init; } = [];
 
     /// <summary>Localisation key for the ruler's title.</summary>
     public string? RulerTitleKey { get; init; }

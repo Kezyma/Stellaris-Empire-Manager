@@ -236,6 +236,73 @@ public static class EffectsReader
     }
 
     /// <summary>
+    /// The wordings an option's swaps put in place of its own.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A swap changes what the option is called and what is said about it as well as what it does,
+    /// and only the doing was being read. The game writes this two ways for two kinds of option -
+    /// a tradition's <c>tradition_swap</c> names a key and the description follows the same
+    /// convention as any tradition's, while a civic's <c>swap_type</c> states both outright - so
+    /// the description is taken where it is given and worked out from the new name otherwise.
+    /// </para>
+    /// <para>
+    /// <c>inherit_name = yes</c> keeps the option's own, which eighty-one traditions say and is why
+    /// a swap without a name is not simply one that forgot to give one.
+    /// </para>
+    /// </remarks>
+    public static List<OptionVariant> ReadVariants(
+        CwBlock body,
+        string swapKey,
+        RequirementCompiler requirements,
+        IReadOnlyDictionary<string, string> text,
+        Func<string, string?>? describes = null)
+    {
+        ArgumentNullException.ThrowIfNull(body);
+        ArgumentNullException.ThrowIfNull(requirements);
+        ArgumentNullException.ThrowIfNull(text);
+
+        var found = new List<OptionVariant>();
+
+        foreach (var node in body.Nodes)
+        {
+            if (node.Key != swapKey || node.Block is not { } swap)
+            {
+                continue;
+            }
+
+            var name = swap.GetBool("inherit_name") ? null : swap.GetString("name");
+
+            // A swap can name a key the game never wrote - three of them do, among them the machine
+            // form of the Synthetics completion bonus. The game shows such a swap under the
+            // option's own name, and so does this: keeping the key would put it on screen with its
+            // underscores taken out, which is worse than the name it replaced.
+            if (name is { Length: > 0 } && !text.ContainsKey(name))
+            {
+                name = null;
+            }
+
+            var described = swap.GetString("description")
+                ?? (name is { Length: > 0 } && describes is not null ? describes(name) : null);
+
+            if (name is not { Length: > 0 } && described is not { Length: > 0 })
+            {
+                continue;
+            }
+
+            // Through the effect-condition compiler, because that is what this is: a condition on
+            // what to show rather than on what may be chosen. Four of these ask about a federation,
+            // which is neither a rule a design breaks nor one it meets.
+            found.Add(new OptionVariant(
+                requirements.CompileEffectCondition(swap.GetBlock("trigger")),
+                name,
+                described));
+        }
+
+        return found;
+    }
+
+    /// <summary>
     /// The swaps that bring modifiers of their own, each with the condition that selects it.
     /// </summary>
     /// <remarks>

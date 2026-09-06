@@ -1,4 +1,4 @@
-using Sem.Clausewitz;
+﻿using Sem.Clausewitz;
 using Sem.GameData;
 
 namespace Sem.Extraction.Extractors;
@@ -56,8 +56,11 @@ internal static class GovernmentExtractor
     public static List<CivicDefinition> ExtractCivics(
         ScriptLoader loader,
         RequirementCompiler requirements,
-        AssetCatalog assets)
+        AssetCatalog assets,
+        IReadOnlyDictionary<string, string> text)
     {
+        ArgumentNullException.ThrowIfNull(text);
+
         var results = new List<CivicDefinition>();
 
         foreach (var entry in loader.LoadDefinitions("common/governments/civics"))
@@ -88,6 +91,11 @@ internal static class GovernmentExtractor
                     : ReadTraitList(secondarySpecies.GetBlock("traits")),
                 EffectsKey = body.GetString("description"),
                 PenaltiesKey = body.GetString("negative_description"),
+
+                // A civic states its swapped name and description outright, so neither is worked
+                // out - Natural Neural Network is called the wilderness one to a wilderness empire
+                // because the civic says so, and Arc Welders renames itself for a nomad.
+                Variants = EffectsReader.ReadVariants(body, "swap_type", requirements, text),
                 Icon = ResolveIcon(entry.Key, body, isOrigin, assets),
 
                 // The scene an origin opens on. Only origins have one, so a civic is not asked;
@@ -192,16 +200,74 @@ internal static class GovernmentExtractor
                 continue;
             }
 
-            results.Add(new GovernmentTypeDefinition(entry.Key, body.GetWeight(loader), order++)
+            results.Add(new GovernmentTypeDefinition(entry.Key, Weight(body, loader), order++)
             {
                 // Government conditions use ordinary triggers, not the requirements list.
                 Possible = requirements.CompileTrigger(body.GetBlock("possible")),
+                Factors = Factors(body, loader, requirements),
                 RulerTitleKey = body.GetString("ruler_title"),
                 RulerTitleFemaleKey = body.GetString("ruler_title_female"),
             });
         }
 
         return results;
+    }
+
+    /// <summary>
+    /// What a government weighs before anything conditional is applied.
+    /// </summary>
+    /// <remarks>
+    /// The <c>base</c>, and the <c>add</c> beside it where one is written. Only the Cybernetic Creed
+    /// subversive cult has both, adding the civic-override weight to the authority-swap one.
+    /// </remarks>
+    private static double Weight(CwBlock body, ScriptLoader loader) =>
+        body.GetBlock("weight") is { } weight
+            ? (loader.ResolveNumber(weight.GetString("base")) ?? 0) +
+              (loader.ResolveNumber(weight.GetString("add")) ?? 0)
+            : body.GetWeight(loader);
+
+    /// <summary>
+    /// The conditions that multiply that weight.
+    /// </summary>
+    /// <remarks>
+    /// Always a <c>factor</c> here rather than an <c>add</c>, and always about a civic the empire
+    /// holds - which is a thing the design knows, so the answer is exact rather than assumed.
+    /// </remarks>
+    private static List<WeightFactor> Factors(
+        CwBlock body,
+        ScriptLoader loader,
+        RequirementCompiler requirements)
+    {
+        var found = new List<WeightFactor>();
+
+        if (body.GetBlock("weight") is not { } weight)
+        {
+            return found;
+        }
+
+        foreach (var node in weight.Nodes)
+        {
+            if (node.Key != "modifier" || node.Block is not { } modifier)
+            {
+                continue;
+            }
+
+            var conditions = new CwBlock();
+
+            foreach (var inner in modifier.Nodes)
+            {
+                if (inner.Key is not ("add" or "factor" or "mult"))
+                {
+                    conditions.Add(inner);
+                }
+            }
+
+            found.Add(new WeightFactor(
+                requirements.CompileTrigger(conditions),
+                modifier.GetWeight(loader, "factor")));
+        }
+
+        return found;
     }
 
     /// <summary>
