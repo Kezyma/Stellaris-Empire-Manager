@@ -1472,6 +1472,47 @@ public sealed class GameDataExtractionTests
         Assert.True(replacing >= 50, $"Only {replacing} swaps replace their numbers with a sentence.");
     }
 
+    /// <summary>
+    /// A definition that keeps part of itself in a shared fragment is read with that part in place.
+    /// </summary>
+    /// <remarks>
+    /// <c>inline_script</c> is an include with parameters, and what it carries is not decoration.
+    /// The nine automatic habitability traits keep their <c>hidden = yes</c> in one, so every one of
+    /// them was offered in a picker the game does not show them in; nineteen traditions keep their
+    /// hive and machine renamings in another, so a gestalt empire read the wording written for
+    /// somebody else. Both were invisible from the outside - the definitions parse perfectly well
+    /// without the fragment, they just say less than the game reads.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void ADefinitionIsReadWithItsSharedFragmentsInPlace()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        // hidden = yes and initial = no live only in traits/auto_preference_planet_class.
+        var automatic = database.Traits
+            .Where(t => t.Key.StartsWith("trait_auto_pc_", StringComparison.Ordinal))
+            .ToList();
+
+        Assert.True(automatic.Count >= 9, $"Only {automatic.Count} automatic preference traits.");
+        Assert.All(automatic, t => Assert.True(t.Hidden, $"{t.Key} would be offered in the picker."));
+        Assert.All(automatic, t => Assert.False(t.Initial, $"{t.Key} claims to be an opening choice."));
+
+        // And the renaming a gestalt empire is shown, which lives in paragon/tradition_swap_desc_*.
+        var tradition = database.Traditions.Single(t => t.Key == "tr_aptitude_the_empire_needs_you");
+
+        Assert.Contains(tradition.Variants, v => v.NameKey == "tr_aptitude_the_empire_needs_you_hive");
+        Assert.Contains(tradition.Variants, v => v.NameKey == "tr_aptitude_the_empire_needs_you_machine");
+
+        // The icon scripts stay unexpanded, being layers rather than fields, and the composer that
+        // walks them still finds what it draws. Every ruler trait the designer offers is drawn that
+        // way, so all thirty-four losing their artwork at once is what this would look like.
+        Assert.All(
+            database.Traits.Where(t => t.Kind == TraitKind.StartingRuler),
+            t => Assert.NotNull(t.Icon));
+    }
+
     /// <summary>The text the app ships, which is the pruned set rather than the game's whole one.</summary>
     private static Dictionary<string, string>? ShippedText()
     {

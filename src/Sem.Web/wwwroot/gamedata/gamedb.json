@@ -1,7 +1,7 @@
 {
   "schemaVersion": 11,
   "gameVersion": "v4.4.6",
-  "extractorVersion": "0.1.0\u002Bdf824fd5bb2d69affffde4aee5f8e603f37890a3",
+  "extractorVersion": "0.1.0\u002B57a703e55642efea88d7a60025fa7e6a39f95b45",
   "defines": {
     "ethicsPoints": 3,
     "civicPoints": 2,
@@ -3856,7 +3856,11 @@
       "key": "trait_auto_wet_preference",
       "kind": 0,
       "cost": 0,
-      "allowedArchetypes": [],
+      "allowedArchetypes": [
+        "BIOLOGICAL",
+        "PRESAPIENT",
+        "LITHOID"
+      ],
       "allowedSpeciesClasses": [],
       "portraitOverride": [],
       "opposites": [],
@@ -3867,9 +3871,9 @@
       "forbiddenEthics": [],
       "allowedCivics": [],
       "allowedLeaderClasses": [],
-      "initial": true,
-      "hidden": false,
-      "sortingPriority": 0,
+      "initial": false,
+      "hidden": true,
+      "sortingPriority": 30,
       "tags": [],
       "effects": {
         "modifiers": {
@@ -3887,22 +3891,11 @@
         },
         "conditional": [],
         "tagKeys": [],
-        "tooltipReplacesModifiers": false,
+        "tooltipKey": "trait_auto_wet_preference_tt",
+        "tooltipReplacesModifiers": true,
         "hideModifiers": false,
         "isEmpty": false,
-        "visibleModifiers": {
-          "pc_desert_habitability": -0.2,
-          "pc_arid_habitability": -0.2,
-          "pc_savannah_habitability": -0.2,
-          "pc_tropical_habitability": 0.3,
-          "pc_continental_habitability": 0.3,
-          "pc_ocean_habitability": 0.3,
-          "pc_tundra_habitability": -0.2,
-          "pc_arctic_habitability": -0.2,
-          "pc_alpine_habitability": -0.2,
-          "pc_nuked_habitability": -0.2,
-          "pc_volcanic_habitability": -0.2
-        }
+        "visibleModifiers": {}
       },
       "icon": "icons/traits/trait_auto_wet_preference.png",
       "nameKey": "trait_auto_wet_preference",
@@ -3912,7 +3905,11 @@
       "key": "trait_auto_cold_preference",
       "kind": 0,
       "cost": 0,
-      "allowedArchetypes": [],
+      "allowedArchetypes": [
+        "BIOLOGICAL",
+        "PRESAPIENT",
+        "LITHOID"
+      ],
       "allowedSpeciesClasses": [],
       "portraitOverride": [],
       "opposites": [],
@@ -3923,9 +3920,9 @@
       "forbiddenEthics": [],
       "allowedCivics": [],
       "allowedLeaderClasses": [],
-      "initial": true,
-      "hidden": false,
-      "sortingPriority": 0,
+      "initial": false,
+      "hidden": true,
+      "sortingPriority": 30,
       "tags": [],
       "effects": {
         "modifiers": {
@@ -3943,22 +3940,11 @@
         },
         "conditional": [],
         "tagKeys": [],
-        "tooltipReplacesModifiers": false,
+        "tooltipKey": "trait_auto_cold_preference_tt",
+        "tooltipReplacesModifiers": true,
         "hideModifiers": false,
         "isEmpty": false,
-        "visibleModifiers": {
-          "pc_desert_habitability": -0.2,
-          "pc_arid_habitability": -0.2,
-          "pc_savannah_habitability": -0.2,
-          "pc_tropical_habitability": -0.2,
-          "pc_continental_habitability": -0.2,
-          "pc_ocean_habitability": -0.2,
-          "pc_tundra_habitability": 0.3,
-          "pc_arctic_habitability": 0.3,
-          "pc_alpine_habitability": 0.3,
-          "pc_nuked_habitability": -0.2,
-          "pc_volcanic_habitability": -0.2
-        }
+        "visibleModifiers": {}
       },
       "icon": "icons/traits/trait_auto_cold_preference.png",
       "nameKey": "trait_auto_cold_preference",
@@ -3968,7 +3954,11 @@
       "key": "trait_auto_dry_preference",
       "kind": 0,
       "cost": 0,
-      "allowedArchetypes": [],
+      "allowedArchetypes": [
+        "BIOLOGICAL",
+        "PRESAPIENT",
+        "LITHOID"
+      ],
       "allowedSpeciesClasses": [],
       "portraitOverride": [],
       "opposites": [],
@@ -3979,9 +3969,9 @@
       "forbiddenEthics": [],
       "allowedCivics": [],
       "allowedLeaderClasses": [],
-      "initial": true,
-      "hidden": false,
-      "sortingPriority": 0,
+      "initial": false,
+      "hidden": true,
+      "sortingPriority": 30,
       "tags": [],
       "effects": {
         "modifiers": {
@@ -3999,22 +3989,11 @@
         },
         "conditional": [],
         "tagKeys": [],
-        "tooltipReplacesModifiers": false,
+        "tooltipKey": "trait_auto_dry_preference_tt",
+        "tooltipReplacesModifiers": true,
         "hideModifiers": false,
         "isEmpty": false,
-        "visibleModifiers": {
-          "pc_desert_habitability": 0.3,
-          "pc_arid_habitability": 0.3,
-          "pc_savannah_habitability": 0.3,
-          "pc_tropical_habitability": -0.2,
-          "pc_continental_habitability": -0.2,
-          "pc_ocean_habitability": -0.2,
-          "pc_tundra_habitability": -0.2,
-          "pc_arctic_habitability": -0.2,
-          "pc_alpine_habitability": -0.2,
-          "pc_nuked_habitability": -0.2,
-          "pc_volcanic_habitability": -0.2
-        }
+        "visibleModifiers": {}
       },
       "icon": "icons/traits/trait_auto_dry_preference.png",
       "nameKey": "trait_auto_dry_preference",
@@ -4024,7 +4003,11 @@
       "key": "trait_auto_pc_nuked_preference",
       "kind": 0,
       "cost": 0,
-      "allowedArchetypes": [],
+      "allowedArchetypes": [
+        "BIOLOGICAL",
+        "PRESAPIENT",
+        "LITHOID"
+      ],
       "allowedSpeciesClasses": [],
       "portraitOverride": [],
       "opposites": [],
@@ -4035,9 +4018,9 @@
       "forbiddenEthics": [],
       "allowedCivics": [],
       "allowedLeaderClasses": [],
-      "initial": true,
-      "hidden": false,
-      "sortingPriority": 0,
+      "initial": false,
+      "hidden": true,
+      "sortingPriority": 30,
       "tags": [],
       "effects": {
         "modifiers": {
@@ -4055,22 +4038,11 @@
         },
         "conditional": [],
         "tagKeys": [],
-        "tooltipReplacesModifiers": false,
+        "tooltipKey": "trait_auto_pc_nuked_preference_tt",
+        "tooltipReplacesModifiers": true,
         "hideModifiers": false,
         "isEmpty": false,
-        "visibleModifiers": {
-          "pc_desert_habitability": -0.2,
-          "pc_arid_habitability": -0.2,
-          "pc_savannah_habitability": -0.2,
-          "pc_tropical_habitability": -0.2,
-          "pc_continental_habitability": -0.2,
-          "pc_ocean_habitability": -0.2,
-          "pc_tundra_habitability": -0.2,
-          "pc_arctic_habitability": -0.2,
-          "pc_alpine_habitability": -0.2,
-          "pc_nuked_habitability": 0.3,
-          "pc_volcanic_habitability": -0.2
-        }
+        "visibleModifiers": {}
       },
       "icon": "icons/traits/trait_auto_pc_nuked_preference.png",
       "nameKey": "trait_auto_pc_nuked_preference",
@@ -4080,7 +4052,11 @@
       "key": "trait_auto_pc_gaia_preference",
       "kind": 0,
       "cost": 0,
-      "allowedArchetypes": [],
+      "allowedArchetypes": [
+        "BIOLOGICAL",
+        "PRESAPIENT",
+        "LITHOID"
+      ],
       "allowedSpeciesClasses": [],
       "portraitOverride": [],
       "opposites": [],
@@ -4091,9 +4067,9 @@
       "forbiddenEthics": [],
       "allowedCivics": [],
       "allowedLeaderClasses": [],
-      "initial": true,
-      "hidden": false,
-      "sortingPriority": 0,
+      "initial": false,
+      "hidden": true,
+      "sortingPriority": 30,
       "tags": [],
       "effects": {
         "modifiers": {
@@ -4113,24 +4089,11 @@
         },
         "conditional": [],
         "tagKeys": [],
-        "tooltipReplacesModifiers": false,
+        "tooltipKey": "trait_auto_pc_gaia_preference_tt",
+        "tooltipReplacesModifiers": true,
         "hideModifiers": false,
         "isEmpty": false,
-        "visibleModifiers": {
-          "pc_desert_habitability": -0.2,
-          "pc_arid_habitability": -0.2,
-          "pc_savannah_habitability": -0.2,
-          "pc_tropical_habitability": -0.2,
-          "pc_continental_habitability": -0.2,
-          "pc_ocean_habitability": -0.2,
-          "pc_tundra_habitability": -0.2,
-          "pc_arctic_habitability": -0.2,
-          "pc_alpine_habitability": -0.2,
-          "pc_gaia_habitability": 0.2,
-          "pc_nuked_habitability": -0.2,
-          "pc_habitat_habitability": -0.2,
-          "pc_volcanic_habitability": -0.2
-        }
+        "visibleModifiers": {}
       },
       "icon": "icons/traits/trait_auto_pc_gaia_preference.png",
       "nameKey": "trait_auto_pc_gaia_preference",
@@ -4140,7 +4103,11 @@
       "key": "trait_auto_pc_habitat_preference",
       "kind": 0,
       "cost": 0,
-      "allowedArchetypes": [],
+      "allowedArchetypes": [
+        "BIOLOGICAL",
+        "PRESAPIENT",
+        "LITHOID"
+      ],
       "allowedSpeciesClasses": [],
       "portraitOverride": [],
       "opposites": [],
@@ -4151,9 +4118,9 @@
       "forbiddenEthics": [],
       "allowedCivics": [],
       "allowedLeaderClasses": [],
-      "initial": true,
-      "hidden": false,
-      "sortingPriority": 0,
+      "initial": false,
+      "hidden": true,
+      "sortingPriority": 30,
       "tags": [],
       "effects": {
         "modifiers": {
@@ -4172,23 +4139,11 @@
         },
         "conditional": [],
         "tagKeys": [],
-        "tooltipReplacesModifiers": false,
+        "tooltipKey": "trait_auto_pc_habitat_preference_tt",
+        "tooltipReplacesModifiers": true,
         "hideModifiers": false,
         "isEmpty": false,
-        "visibleModifiers": {
-          "pc_desert_habitability": -0.2,
-          "pc_arid_habitability": -0.2,
-          "pc_savannah_habitability": -0.2,
-          "pc_tropical_habitability": -0.2,
-          "pc_continental_habitability": -0.2,
-          "pc_ocean_habitability": -0.2,
-          "pc_tundra_habitability": -0.2,
-          "pc_arctic_habitability": -0.2,
-          "pc_alpine_habitability": -0.2,
-          "pc_nuked_habitability": -0.2,
-          "pc_habitat_habitability": 0.5,
-          "pc_volcanic_habitability": -0.2
-        }
+        "visibleModifiers": {}
       },
       "icon": "icons/traits/trait_auto_pc_habitat_preference.png",
       "nameKey": "trait_auto_pc_habitat_preference",
@@ -4198,7 +4153,11 @@
       "key": "trait_auto_pc_city_preference",
       "kind": 0,
       "cost": 0,
-      "allowedArchetypes": [],
+      "allowedArchetypes": [
+        "BIOLOGICAL",
+        "PRESAPIENT",
+        "LITHOID"
+      ],
       "allowedSpeciesClasses": [],
       "portraitOverride": [],
       "opposites": [],
@@ -4209,9 +4168,9 @@
       "forbiddenEthics": [],
       "allowedCivics": [],
       "allowedLeaderClasses": [],
-      "initial": true,
-      "hidden": false,
-      "sortingPriority": 0,
+      "initial": false,
+      "hidden": true,
+      "sortingPriority": 30,
       "tags": [],
       "effects": {
         "modifiers": {
@@ -4230,23 +4189,11 @@
         },
         "conditional": [],
         "tagKeys": [],
-        "tooltipReplacesModifiers": false,
+        "tooltipKey": "trait_auto_pc_city_preference_tt",
+        "tooltipReplacesModifiers": true,
         "hideModifiers": false,
         "isEmpty": false,
-        "visibleModifiers": {
-          "pc_desert_habitability": -0.2,
-          "pc_arid_habitability": -0.2,
-          "pc_savannah_habitability": -0.2,
-          "pc_tropical_habitability": -0.2,
-          "pc_continental_habitability": -0.2,
-          "pc_ocean_habitability": -0.2,
-          "pc_tundra_habitability": -0.2,
-          "pc_arctic_habitability": -0.2,
-          "pc_alpine_habitability": -0.2,
-          "pc_city_habitability": 0.2,
-          "pc_nuked_habitability": -0.2,
-          "pc_volcanic_habitability": -0.2
-        }
+        "visibleModifiers": {}
       },
       "icon": "icons/traits/trait_auto_pc_city_preference.png",
       "nameKey": "trait_auto_pc_city_preference",
@@ -4256,7 +4203,11 @@
       "key": "trait_auto_pc_relic_preference",
       "kind": 0,
       "cost": 0,
-      "allowedArchetypes": [],
+      "allowedArchetypes": [
+        "BIOLOGICAL",
+        "PRESAPIENT",
+        "LITHOID"
+      ],
       "allowedSpeciesClasses": [],
       "portraitOverride": [],
       "opposites": [],
@@ -4267,9 +4218,9 @@
       "forbiddenEthics": [],
       "allowedCivics": [],
       "allowedLeaderClasses": [],
-      "initial": true,
-      "hidden": false,
-      "sortingPriority": 0,
+      "initial": false,
+      "hidden": true,
+      "sortingPriority": 30,
       "tags": [],
       "effects": {
         "modifiers": {
@@ -4288,23 +4239,11 @@
         },
         "conditional": [],
         "tagKeys": [],
-        "tooltipReplacesModifiers": false,
+        "tooltipKey": "trait_auto_pc_relic_preference_tt",
+        "tooltipReplacesModifiers": true,
         "hideModifiers": false,
         "isEmpty": false,
-        "visibleModifiers": {
-          "pc_desert_habitability": -0.2,
-          "pc_arid_habitability": -0.2,
-          "pc_savannah_habitability": -0.2,
-          "pc_tropical_habitability": -0.2,
-          "pc_continental_habitability": -0.2,
-          "pc_ocean_habitability": -0.2,
-          "pc_tundra_habitability": -0.2,
-          "pc_arctic_habitability": -0.2,
-          "pc_alpine_habitability": -0.2,
-          "pc_relic_habitability": 0.2,
-          "pc_nuked_habitability": -0.2,
-          "pc_volcanic_habitability": -0.2
-        }
+        "visibleModifiers": {}
       },
       "icon": "icons/traits/trait_auto_pc_relic_preference.png",
       "nameKey": "trait_auto_pc_relic_preference",
@@ -4314,7 +4253,11 @@
       "key": "trait_auto_pc_hive_preference",
       "kind": 0,
       "cost": 0,
-      "allowedArchetypes": [],
+      "allowedArchetypes": [
+        "BIOLOGICAL",
+        "PRESAPIENT",
+        "LITHOID"
+      ],
       "allowedSpeciesClasses": [],
       "portraitOverride": [],
       "opposites": [],
@@ -4325,9 +4268,9 @@
       "forbiddenEthics": [],
       "allowedCivics": [],
       "allowedLeaderClasses": [],
-      "initial": true,
-      "hidden": false,
-      "sortingPriority": 0,
+      "initial": false,
+      "hidden": true,
+      "sortingPriority": 30,
       "tags": [],
       "effects": {
         "modifiers": {
@@ -4346,23 +4289,11 @@
         },
         "conditional": [],
         "tagKeys": [],
-        "tooltipReplacesModifiers": false,
+        "tooltipKey": "trait_auto_pc_hive_preference_tt",
+        "tooltipReplacesModifiers": true,
         "hideModifiers": false,
         "isEmpty": false,
-        "visibleModifiers": {
-          "pc_desert_habitability": -0.2,
-          "pc_arid_habitability": -0.2,
-          "pc_savannah_habitability": -0.2,
-          "pc_tropical_habitability": -0.2,
-          "pc_continental_habitability": -0.2,
-          "pc_ocean_habitability": -0.2,
-          "pc_tundra_habitability": -0.2,
-          "pc_arctic_habitability": -0.2,
-          "pc_alpine_habitability": -0.2,
-          "pc_hive_habitability": 0.2,
-          "pc_nuked_habitability": -0.2,
-          "pc_volcanic_habitability": -0.2
-        }
+        "visibleModifiers": {}
       },
       "icon": "icons/traits/trait_auto_pc_hive_preference.png",
       "nameKey": "trait_auto_pc_hive_preference",
@@ -4423,7 +4354,11 @@
       "key": "trait_auto_pc_cosmogenesis_world_preference",
       "kind": 0,
       "cost": 0,
-      "allowedArchetypes": [],
+      "allowedArchetypes": [
+        "BIOLOGICAL",
+        "PRESAPIENT",
+        "LITHOID"
+      ],
       "allowedSpeciesClasses": [],
       "portraitOverride": [],
       "opposites": [],
@@ -4434,9 +4369,9 @@
       "forbiddenEthics": [],
       "allowedCivics": [],
       "allowedLeaderClasses": [],
-      "initial": true,
-      "hidden": false,
-      "sortingPriority": 0,
+      "initial": false,
+      "hidden": true,
+      "sortingPriority": 30,
       "tags": [],
       "effects": {
         "modifiers": {
@@ -4455,23 +4390,11 @@
         },
         "conditional": [],
         "tagKeys": [],
-        "tooltipReplacesModifiers": false,
+        "tooltipKey": "trait_auto_pc_cosmogenesis_world_preference_tt",
+        "tooltipReplacesModifiers": true,
         "hideModifiers": false,
         "isEmpty": false,
-        "visibleModifiers": {
-          "pc_desert_habitability": -0.2,
-          "pc_arid_habitability": -0.2,
-          "pc_savannah_habitability": -0.2,
-          "pc_tropical_habitability": -0.2,
-          "pc_continental_habitability": -0.2,
-          "pc_ocean_habitability": -0.2,
-          "pc_tundra_habitability": -0.2,
-          "pc_arctic_habitability": -0.2,
-          "pc_alpine_habitability": -0.2,
-          "pc_cosmogenesis_world_habitability": 0.2,
-          "pc_nuked_habitability": -0.2,
-          "pc_volcanic_habitability": -0.2
-        }
+        "visibleModifiers": {}
       },
       "icon": "icons/traits/trait_auto_pc_cosmogenesis_world_preference.png",
       "nameKey": "trait_auto_pc_cosmogenesis_world_preference",
@@ -4481,7 +4404,11 @@
       "key": "trait_auto_pc_volcanic_preference",
       "kind": 0,
       "cost": 0,
-      "allowedArchetypes": [],
+      "allowedArchetypes": [
+        "BIOLOGICAL",
+        "PRESAPIENT",
+        "LITHOID"
+      ],
       "allowedSpeciesClasses": [],
       "portraitOverride": [],
       "opposites": [],
@@ -4492,9 +4419,9 @@
       "forbiddenEthics": [],
       "allowedCivics": [],
       "allowedLeaderClasses": [],
-      "initial": true,
-      "hidden": false,
-      "sortingPriority": 0,
+      "initial": false,
+      "hidden": true,
+      "sortingPriority": 30,
       "tags": [],
       "effects": {
         "modifiers": {
@@ -4512,22 +4439,11 @@
         },
         "conditional": [],
         "tagKeys": [],
-        "tooltipReplacesModifiers": false,
+        "tooltipKey": "trait_auto_pc_volcanic_preference_tt",
+        "tooltipReplacesModifiers": true,
         "hideModifiers": false,
         "isEmpty": false,
-        "visibleModifiers": {
-          "pc_desert_habitability": -0.2,
-          "pc_arid_habitability": -0.2,
-          "pc_savannah_habitability": -0.2,
-          "pc_tropical_habitability": -0.2,
-          "pc_continental_habitability": -0.2,
-          "pc_ocean_habitability": -0.2,
-          "pc_tundra_habitability": -0.2,
-          "pc_arctic_habitability": -0.2,
-          "pc_alpine_habitability": -0.2,
-          "pc_nuked_habitability": -0.2,
-          "pc_volcanic_habitability": 0.3
-        }
+        "visibleModifiers": {}
       },
       "icon": "icons/traits/trait_auto_pc_volcanic_preference.png",
       "nameKey": "trait_auto_pc_volcanic_preference",
@@ -4537,7 +4453,11 @@
       "key": "trait_auto_pc_ark_preference",
       "kind": 0,
       "cost": 0,
-      "allowedArchetypes": [],
+      "allowedArchetypes": [
+        "BIOLOGICAL",
+        "PRESAPIENT",
+        "LITHOID"
+      ],
       "allowedSpeciesClasses": [],
       "portraitOverride": [],
       "opposites": [],
@@ -4548,9 +4468,9 @@
       "forbiddenEthics": [],
       "allowedCivics": [],
       "allowedLeaderClasses": [],
-      "initial": true,
-      "hidden": false,
-      "sortingPriority": 0,
+      "initial": false,
+      "hidden": true,
+      "sortingPriority": 30,
       "tags": [],
       "effects": {
         "modifiers": {
@@ -4569,23 +4489,11 @@
         },
         "conditional": [],
         "tagKeys": [],
-        "tooltipReplacesModifiers": false,
+        "tooltipKey": "trait_auto_pc_ark_preference_tt",
+        "tooltipReplacesModifiers": true,
         "hideModifiers": false,
         "isEmpty": false,
-        "visibleModifiers": {
-          "pc_desert_habitability": -0.2,
-          "pc_arid_habitability": -0.2,
-          "pc_savannah_habitability": -0.2,
-          "pc_tropical_habitability": -0.2,
-          "pc_continental_habitability": -0.2,
-          "pc_ocean_habitability": -0.2,
-          "pc_tundra_habitability": -0.2,
-          "pc_arctic_habitability": -0.2,
-          "pc_alpine_habitability": -0.2,
-          "pc_ark_habitability": 0.5,
-          "pc_nuked_habitability": -0.2,
-          "pc_volcanic_habitability": -0.2
-        }
+        "visibleModifiers": {}
       },
       "icon": "icons/traits/trait_auto_pc_ark_preference.png",
       "nameKey": "trait_auto_pc_ark_preference",
@@ -8308,13 +8216,21 @@
         "special"
       ],
       "effects": {
-        "modifiers": {},
+        "modifiers": {
+          "researcher_jobs_bonus_workforce_mult": 0.05,
+          "bureaucrat_jobs_bonus_workforce_mult": 0.05,
+          "telepath_jobs_bonus_workforce_mult": 0.05
+        },
         "conditional": [],
         "tagKeys": [],
         "tooltipReplacesModifiers": false,
         "hideModifiers": false,
-        "isEmpty": true,
-        "visibleModifiers": {}
+        "isEmpty": false,
+        "visibleModifiers": {
+          "researcher_jobs_bonus_workforce_mult": 0.05,
+          "bureaucrat_jobs_bonus_workforce_mult": 0.05,
+          "telepath_jobs_bonus_workforce_mult": 0.05
+        }
       },
       "icon": "icons/traits/trait_latent_psionic.png",
       "nameKey": "trait_latent_psionic",
@@ -8355,13 +8271,188 @@
         "special"
       ],
       "effects": {
-        "modifiers": {},
-        "conditional": [],
+        "modifiers": {
+          "researcher_jobs_bonus_workforce_mult": 0.1,
+          "bureaucrat_jobs_bonus_workforce_mult": 0.1,
+          "telepath_jobs_bonus_workforce_mult": 0.1
+        },
+        "conditional": [
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "predicate",
+                    "name": "is_gestalt"
+                  }
+                }
+              ]
+            },
+            "modifiers": {
+              "pop_happiness": 0.05
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "predicate",
+                  "name": "is_gestalt"
+                }
+              ]
+            },
+            "modifiers": {
+              "pop_amenities_usage_psionic_mult": -0.1
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "always",
+                  "value": false
+                }
+              ]
+            },
+            "modifiers": {
+              "pop_cat_ruler_bonus_workforce_mult": 0.1,
+              "specialist_and_complex_drone_cat_bonus_workforce_mult": 0.1,
+              "worker_and_simple_drone_cat_bonus_workforce_mult": -0.1
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "selection",
+                  "category": "TraditionTree",
+                  "key": "tr_psionics_shroud_telekinesis"
+                }
+              ]
+            },
+            "modifiers": {
+              "pop_happiness": 0.1
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "selection",
+                  "category": "TraditionTree",
+                  "key": "tr_psionics_shroud_telekinesis_gestalt"
+                }
+              ]
+            },
+            "modifiers": {
+              "pop_amenities_usage_psionic_mult": -0.2
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "all",
+                  "items": [
+                    {
+                      "kind": "predicate",
+                      "name": "is_machine_empire"
+                    },
+                    {
+                      "kind": "always",
+                      "value": false
+                    }
+                  ]
+                }
+              ]
+            },
+            "modifiers": {
+              "planet_pops_robotics_upkeep_mult": 0.15
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "all",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Authority",
+                      "key": "auth_democratic"
+                    },
+                    {
+                      "kind": "always",
+                      "value": false
+                    }
+                  ]
+                }
+              ]
+            },
+            "modifiers": {
+              "pop_happiness": 0.1
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          }
+        ],
         "tagKeys": [],
         "tooltipReplacesModifiers": false,
         "hideModifiers": false,
-        "isEmpty": true,
-        "visibleModifiers": {}
+        "isEmpty": false,
+        "visibleModifiers": {
+          "researcher_jobs_bonus_workforce_mult": 0.1,
+          "bureaucrat_jobs_bonus_workforce_mult": 0.1,
+          "telepath_jobs_bonus_workforce_mult": 0.1
+        }
       },
       "icon": "icons/traits/trait_psionic.png",
       "nameKey": "trait_psionic",
@@ -12720,13 +12811,21 @@
         "psionic"
       ],
       "effects": {
-        "modifiers": {},
+        "modifiers": {
+          "researcher_jobs_bonus_workforce_mult": 0.05,
+          "bureaucrat_jobs_bonus_workforce_mult": 0.05,
+          "telepath_jobs_bonus_workforce_mult": 0.05
+        },
         "conditional": [],
         "tagKeys": [],
         "tooltipReplacesModifiers": false,
         "hideModifiers": false,
-        "isEmpty": true,
-        "visibleModifiers": {}
+        "isEmpty": false,
+        "visibleModifiers": {
+          "researcher_jobs_bonus_workforce_mult": 0.05,
+          "bureaucrat_jobs_bonus_workforce_mult": 0.05,
+          "telepath_jobs_bonus_workforce_mult": 0.05
+        }
       },
       "icon": "icons/traits/trait_robot_latent_psionic.png",
       "nameKey": "trait_robot_latent_psionic",
@@ -12767,13 +12866,188 @@
         "psionic"
       ],
       "effects": {
-        "modifiers": {},
-        "conditional": [],
+        "modifiers": {
+          "researcher_jobs_bonus_workforce_mult": 0.1,
+          "bureaucrat_jobs_bonus_workforce_mult": 0.1,
+          "telepath_jobs_bonus_workforce_mult": 0.1
+        },
+        "conditional": [
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "predicate",
+                    "name": "is_gestalt"
+                  }
+                }
+              ]
+            },
+            "modifiers": {
+              "pop_happiness": 0.05
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "predicate",
+                  "name": "is_gestalt"
+                }
+              ]
+            },
+            "modifiers": {
+              "pop_amenities_usage_psionic_mult": -0.1
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "always",
+                  "value": false
+                }
+              ]
+            },
+            "modifiers": {
+              "pop_cat_ruler_bonus_workforce_mult": 0.1,
+              "specialist_and_complex_drone_cat_bonus_workforce_mult": 0.1,
+              "worker_and_simple_drone_cat_bonus_workforce_mult": -0.1
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "selection",
+                  "category": "TraditionTree",
+                  "key": "tr_psionics_shroud_telekinesis"
+                }
+              ]
+            },
+            "modifiers": {
+              "pop_happiness": 0.1
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "selection",
+                  "category": "TraditionTree",
+                  "key": "tr_psionics_shroud_telekinesis_gestalt"
+                }
+              ]
+            },
+            "modifiers": {
+              "pop_amenities_usage_psionic_mult": -0.2
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "all",
+                  "items": [
+                    {
+                      "kind": "predicate",
+                      "name": "is_machine_empire"
+                    },
+                    {
+                      "kind": "always",
+                      "value": false
+                    }
+                  ]
+                }
+              ]
+            },
+            "modifiers": {
+              "planet_pops_robotics_upkeep_mult": 0.15
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "all",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Authority",
+                      "key": "auth_democratic"
+                    },
+                    {
+                      "kind": "always",
+                      "value": false
+                    }
+                  ]
+                }
+              ]
+            },
+            "modifiers": {
+              "pop_happiness": 0.1
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          }
+        ],
         "tagKeys": [],
         "tooltipReplacesModifiers": false,
         "hideModifiers": false,
-        "isEmpty": true,
-        "visibleModifiers": {}
+        "isEmpty": false,
+        "visibleModifiers": {
+          "researcher_jobs_bonus_workforce_mult": 0.1,
+          "bureaucrat_jobs_bonus_workforce_mult": 0.1,
+          "telepath_jobs_bonus_workforce_mult": 0.1
+        }
       },
       "icon": "icons/traits/trait_robot_psionic.png",
       "nameKey": "trait_robot_psionic",
@@ -24009,6 +24283,22 @@
       "declared": false,
       "settled": true
     },
+    "telepath_jobs_bonus_workforce_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false,
+      "settled": true
+    },
+    "pop_amenities_usage_psionic_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false,
+      "settled": true
+    },
     "pop_amenities_usage_mult": {
       "isPercentage": true,
       "isGood": true,
@@ -27420,6 +27710,38 @@
     "modify_species_cost_mult": {
       "isPercentage": true,
       "isGood": false,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false,
+      "settled": true
+    },
+    "habitability_ceil_uncapped_add": {
+      "isPercentage": false,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false,
+      "settled": true
+    },
+    "leader_starting_age_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false,
+      "settled": true
+    },
+    "subspecies_integration_add": {
+      "isPercentage": false,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false,
+      "settled": true
+    },
+    "pop_purge_speed": {
+      "isPercentage": true,
+      "isGood": true,
       "isNeutral": false,
       "decimals": 2,
       "declared": false,
@@ -85317,7 +85639,24 @@
         "value": true
       },
       "icon": "icons/traditions/tr_aptitude_the_empire_needs_you.png",
-      "variants": [],
+      "variants": [
+        {
+          "when": {
+            "kind": "predicate",
+            "name": "is_hive_empire"
+          },
+          "nameKey": "tr_aptitude_the_empire_needs_you_hive",
+          "descriptionKey": "tr_aptitude_the_empire_needs_you_hive_delayed"
+        },
+        {
+          "when": {
+            "kind": "predicate",
+            "name": "is_machine_empire"
+          },
+          "nameKey": "tr_aptitude_the_empire_needs_you_machine",
+          "descriptionKey": "tr_aptitude_the_empire_needs_you_machine_delayed"
+        }
+      ],
       "nameKey": "tr_aptitude_the_empire_needs_you",
       "descriptionKey": "tr_aptitude_the_empire_needs_you_delayed"
     },
@@ -85405,7 +85744,24 @@
         "key": "tr_aptitude_the_empire_needs_you"
       },
       "icon": "icons/traditions/tr_aptitude_psychological_profiling.png",
-      "variants": [],
+      "variants": [
+        {
+          "when": {
+            "kind": "predicate",
+            "name": "is_hive_empire"
+          },
+          "nameKey": "tr_aptitude_psychological_profiling_hive",
+          "descriptionKey": "tr_aptitude_psychological_profiling_hive_delayed"
+        },
+        {
+          "when": {
+            "kind": "predicate",
+            "name": "is_machine_empire"
+          },
+          "nameKey": "tr_aptitude_psychological_profiling_machine",
+          "descriptionKey": "tr_aptitude_psychological_profiling_machine_delayed"
+        }
+      ],
       "nameKey": "tr_aptitude_psychological_profiling",
       "descriptionKey": "tr_aptitude_psychological_profiling_delayed"
     },
@@ -85433,7 +85789,24 @@
         "key": "tr_aptitude_the_empire_needs_you"
       },
       "icon": "icons/traditions/tr_aptitude_healthcare_program.png",
-      "variants": [],
+      "variants": [
+        {
+          "when": {
+            "kind": "predicate",
+            "name": "is_hive_empire"
+          },
+          "nameKey": "tr_aptitude_healthcare_program_hive",
+          "descriptionKey": "tr_aptitude_healthcare_program_hive_delayed"
+        },
+        {
+          "when": {
+            "kind": "predicate",
+            "name": "is_machine_empire"
+          },
+          "nameKey": "tr_aptitude_healthcare_program_machine",
+          "descriptionKey": "tr_aptitude_healthcare_program_machine_delayed"
+        }
+      ],
       "nameKey": "tr_aptitude_healthcare_program",
       "descriptionKey": "tr_aptitude_healthcare_program_delayed"
     },
@@ -85459,7 +85832,24 @@
         "key": "tr_aptitude_specialist_training"
       },
       "icon": "icons/traditions/tr_aptitude_champions_of_the_empire.png",
-      "variants": [],
+      "variants": [
+        {
+          "when": {
+            "kind": "predicate",
+            "name": "is_hive_empire"
+          },
+          "nameKey": "tr_aptitude_champions_of_the_empire_hive",
+          "descriptionKey": "tr_aptitude_champions_of_the_empire_hive_delayed"
+        },
+        {
+          "when": {
+            "kind": "predicate",
+            "name": "is_machine_empire"
+          },
+          "nameKey": "tr_aptitude_champions_of_the_empire_machine",
+          "descriptionKey": "tr_aptitude_champions_of_the_empire_machine_delayed"
+        }
+      ],
       "nameKey": "tr_aptitude_champions_of_the_empire",
       "descriptionKey": "tr_aptitude_champions_of_the_empire_delayed"
     },
@@ -90617,7 +91007,24 @@
         "value": true
       },
       "icon": "icons/traditions/tr_statecraft_constitutional_focus.png",
-      "variants": [],
+      "variants": [
+        {
+          "when": {
+            "kind": "predicate",
+            "name": "is_hive_empire"
+          },
+          "nameKey": "tr_statecraft_constitutional_focus_hive",
+          "descriptionKey": "tr_statecraft_constitutional_focus_hive_delayed"
+        },
+        {
+          "when": {
+            "kind": "predicate",
+            "name": "is_machine_empire"
+          },
+          "nameKey": "tr_statecraft_constitutional_focus_machine",
+          "descriptionKey": "tr_statecraft_constitutional_focus_machine_delayed"
+        }
+      ],
       "nameKey": "tr_statecraft_constitutional_focus",
       "descriptionKey": "tr_statecraft_constitutional_focus_delayed"
     },
@@ -90640,7 +91047,24 @@
         "key": "tr_statecraft_constitutional_focus"
       },
       "icon": "icons/traditions/tr_statecraft_inspiring_agendas.png",
-      "variants": [],
+      "variants": [
+        {
+          "when": {
+            "kind": "predicate",
+            "name": "is_hive_empire"
+          },
+          "nameKey": "tr_statecraft_inspiring_agendas_hive",
+          "descriptionKey": "tr_statecraft_inspiring_agendas_hive_delayed"
+        },
+        {
+          "when": {
+            "kind": "predicate",
+            "name": "is_machine_empire"
+          },
+          "nameKey": "tr_statecraft_inspiring_agendas_machine",
+          "descriptionKey": "tr_statecraft_inspiring_agendas_machine_delayed"
+        }
+      ],
       "nameKey": "tr_statecraft_inspiring_agendas",
       "descriptionKey": "tr_statecraft_inspiring_agendas_delayed"
     },
@@ -90688,7 +91112,24 @@
         "value": true
       },
       "icon": "icons/traditions/tr_statecraft_amongst_peers.png",
-      "variants": [],
+      "variants": [
+        {
+          "when": {
+            "kind": "predicate",
+            "name": "is_hive_empire"
+          },
+          "nameKey": "tr_statecraft_amongst_peers_hive",
+          "descriptionKey": "tr_statecraft_amongst_peers_hive_delayed"
+        },
+        {
+          "when": {
+            "kind": "predicate",
+            "name": "is_machine_empire"
+          },
+          "nameKey": "tr_statecraft_amongst_peers_machine",
+          "descriptionKey": "tr_statecraft_amongst_peers_machine_delayed"
+        }
+      ],
       "nameKey": "tr_statecraft_amongst_peers",
       "descriptionKey": "tr_statecraft_amongst_peers_delayed"
     },
@@ -90714,7 +91155,24 @@
         "key": "tr_statecraft_amongst_peers"
       },
       "icon": "icons/traditions/tr_statecraft_shared_benefits.png",
-      "variants": [],
+      "variants": [
+        {
+          "when": {
+            "kind": "predicate",
+            "name": "is_hive_empire"
+          },
+          "nameKey": "tr_statecraft_shared_benefits_hive",
+          "descriptionKey": "tr_statecraft_shared_benefits_hive_delayed"
+        },
+        {
+          "when": {
+            "kind": "predicate",
+            "name": "is_machine_empire"
+          },
+          "nameKey": "tr_statecraft_shared_benefits_machine",
+          "descriptionKey": "tr_statecraft_shared_benefits_machine_delayed"
+        }
+      ],
       "nameKey": "tr_statecraft_shared_benefits",
       "descriptionKey": "tr_statecraft_shared_benefits_delayed"
     },
@@ -92658,11 +93116,162 @@
       "tree": "tradition_cloning",
       "effects": {
         "modifiers": {},
-        "conditional": [],
+        "conditional": [
+          {
+            "when": {
+              "kind": "always",
+              "value": false
+            },
+            "modifiers": {},
+            "tooltipKey": "tr_purity_heightened_attributes_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "predicate",
+              "name": "is_wilderness_empire"
+            },
+            "modifiers": {
+              "empire_size_districts_mult": -0.25,
+              "empire_size_colonies_mult": -0.25
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "always",
+                    "value": false
+                  }
+                }
+              ]
+            },
+            "modifiers": {
+              "planet_pops_upkeep_mult": -0.1,
+              "pop_amenities_usage_mult": -0.1
+            },
+            "tooltipKey": "tr_cloning_genomic_growth_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "always",
+              "value": false
+            },
+            "modifiers": {},
+            "tooltipKey": "tr_cloning_genomic_growth_clone_army_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "always",
+                    "value": false
+                  }
+                },
+                {
+                  "kind": "always",
+                  "value": false
+                }
+              ]
+            },
+            "modifiers": {
+              "habitability_ceil_uncapped_add": 0.5
+            },
+            "tooltipKey": "tr_mutation_environmental_integration_tt",
+            "tooltipReplacesModifiers": true,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "always",
+                  "value": false
+                }
+              ]
+            },
+            "modifiers": {
+              "habitability_ceil_uncapped_add": 1.25
+            },
+            "tooltipKey": "tr_mutation_empowered_environmental_integration_tt",
+            "tooltipReplacesModifiers": true,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "always",
+                    "value": false
+                  }
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_evolutionary_predators"
+                }
+              ]
+            },
+            "modifiers": {
+              "habitability_ceil_uncapped_add": 0.5
+            },
+            "tooltipKey": "tr_mutation_environmental_integration_tt",
+            "tooltipReplacesModifiers": true,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_evolutionary_predators"
+                }
+              ]
+            },
+            "modifiers": {
+              "habitability_ceil_uncapped_add": 1.25
+            },
+            "tooltipKey": "tr_mutation_empowered_environmental_integration_tt",
+            "tooltipReplacesModifiers": true,
+            "tagKeys": []
+          }
+        ],
         "tagKeys": [],
-        "tooltipReplacesModifiers": false,
+        "tooltipKey": "tr_genetic_stage_1_swap_tt",
+        "tooltipReplacesModifiers": true,
         "hideModifiers": false,
-        "isEmpty": true,
+        "isEmpty": false,
         "visibleModifiers": {}
       },
       "possible": {
@@ -92671,7 +93280,128 @@
         "key": "tr_cloning_evolutionary_extrapolation"
       },
       "icon": "icons/traditions/tr_cloning_stage_1_swap.png",
-      "variants": [],
+      "variants": [
+        {
+          "when": {
+            "kind": "always",
+            "value": false
+          },
+          "nameKey": "tr_genetic_stage_1_purity_swap",
+          "descriptionKey": "tr_genetic_stage_1_purity_swap_delayed"
+        },
+        {
+          "when": {
+            "kind": "predicate",
+            "name": "is_wilderness_empire"
+          },
+          "nameKey": "tr_genetic_stage_1_purity_swap",
+          "descriptionKey": "tr_genetic_stage_1_purity_swap_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "always",
+                  "value": false
+                }
+              }
+            ]
+          },
+          "nameKey": "tr_genetic_stage_1_cloning_swap",
+          "descriptionKey": "tr_genetic_stage_1_cloning_swap_delayed"
+        },
+        {
+          "when": {
+            "kind": "always",
+            "value": false
+          },
+          "nameKey": "tr_cloning_genomic_growth_clone_army",
+          "descriptionKey": "tr_cloning_genomic_growth_clone_army_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "always",
+                  "value": false
+                }
+              },
+              {
+                "kind": "always",
+                "value": false
+              }
+            ]
+          },
+          "nameKey": "tr_genetic_stage_1_mutation_swap",
+          "descriptionKey": "tr_genetic_stage_1_mutation_swap_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "always",
+                "value": false
+              }
+            ]
+          },
+          "nameKey": "tr_mutation_empowered_environmental_integration",
+          "descriptionKey": "tr_mutation_empowered_environmental_integration_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "always",
+                  "value": false
+                }
+              },
+              {
+                "kind": "selection",
+                "category": "Origin",
+                "key": "origin_evolutionary_predators"
+              }
+            ]
+          },
+          "nameKey": "tr_mutation_environmental_integration_evo_pred",
+          "descriptionKey": "tr_mutation_environmental_integration_evo_pred_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "selection",
+                "category": "Origin",
+                "key": "origin_evolutionary_predators"
+              }
+            ]
+          },
+          "nameKey": "tr_mutation_empowered_environmental_integration_evo_pred",
+          "descriptionKey": "tr_mutation_empowered_environmental_integration_evo_pred_delayed"
+        }
+      ],
       "nameKey": "tr_cloning_stage_1_swap"
     },
     {
@@ -92679,11 +93409,162 @@
       "tree": "tradition_cloning",
       "effects": {
         "modifiers": {},
-        "conditional": [],
+        "conditional": [
+          {
+            "when": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "predicate",
+                  "name": "is_wilderness_empire"
+                }
+              ]
+            },
+            "modifiers": {
+              "leader_starting_age_mult": -0.25,
+              "negative_traits_country": -1
+            },
+            "tooltipKey": "tr_aptitude_adopt_desc",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "always",
+                    "value": false
+                  }
+                },
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "always",
+                    "value": false
+                  }
+                }
+              ]
+            },
+            "modifiers": {},
+            "tooltipKey": "tr_cloning_biochemical_composure_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "always",
+                    "value": false
+                  }
+                }
+              ]
+            },
+            "modifiers": {},
+            "tooltipKey": "tr_cloning_biochemical_composure_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "always",
+                    "value": false
+                  }
+                }
+              ]
+            },
+            "modifiers": {},
+            "tooltipKey": "tr_cloning_biochemical_composure_clones_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "always",
+                  "value": false
+                }
+              ]
+            },
+            "modifiers": {},
+            "tooltipKey": "tr_cloning_biochemical_composure_clones_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "always",
+              "value": false
+            },
+            "modifiers": {
+              "leader_skill_add": 1,
+              "species_leader_exp_gain": 0.1,
+              "leader_lifespan_mult": 0.1
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "selection",
+              "category": "Origin",
+              "key": "origin_evolutionary_predators"
+            },
+            "modifiers": {
+              "leader_skill_add": 1,
+              "species_leader_exp_gain": 0.1,
+              "leader_lifespan_mult": 0.1
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          }
+        ],
         "tagKeys": [],
-        "tooltipReplacesModifiers": false,
+        "tooltipKey": "tr_genetic_stage_2_swap_tt",
+        "tooltipReplacesModifiers": true,
         "hideModifiers": false,
-        "isEmpty": true,
+        "isEmpty": false,
         "visibleModifiers": {}
       },
       "possible": {
@@ -92692,7 +93573,134 @@
         "key": "tr_cloning_somatic_synthesization"
       },
       "icon": "icons/traditions/tr_cloning_stage_2_swap.png",
-      "variants": [],
+      "variants": [
+        {
+          "when": {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "predicate",
+                "name": "is_wilderness_empire"
+              }
+            ]
+          },
+          "nameKey": "tr_genetic_stage_2_purity_swap",
+          "descriptionKey": "tr_genetic_stage_2_purity_swap_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "always",
+                  "value": false
+                }
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "always",
+                  "value": false
+                }
+              }
+            ]
+          },
+          "nameKey": "tr_genetic_stage_2_cloning_swap",
+          "descriptionKey": "tr_genetic_stage_2_cloning_swap_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "always",
+                  "value": false
+                }
+              }
+            ]
+          },
+          "nameKey": "tr_cloning_biochemical_composure_clone_army",
+          "descriptionKey": "tr_cloning_biochemical_composure_clone_army_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "always",
+                  "value": false
+                }
+              }
+            ]
+          },
+          "nameKey": "tr_cloning_biochemical_composure_clones",
+          "descriptionKey": "tr_cloning_biochemical_composure_clones_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "always",
+                "value": false
+              }
+            ]
+          },
+          "nameKey": "tr_cloning_biochemical_composure_clones_clone_army",
+          "descriptionKey": "tr_cloning_biochemical_composure_clones_clone_army_delayed"
+        },
+        {
+          "when": {
+            "kind": "always",
+            "value": false
+          },
+          "nameKey": "tr_genetic_stage_2_mutation_swap",
+          "descriptionKey": "tr_genetic_stage_2_mutation_swap_delayed"
+        },
+        {
+          "when": {
+            "kind": "selection",
+            "category": "Origin",
+            "key": "origin_evolutionary_predators"
+          },
+          "nameKey": "tr_mutation_somatic_subversiveness_evo_pred",
+          "descriptionKey": "tr_mutation_somatic_subversiveness_evo_pred_delayed"
+        }
+      ],
       "nameKey": "tr_cloning_stage_2_swap"
     },
     {
@@ -92700,11 +93708,159 @@
       "tree": "tradition_cloning",
       "effects": {
         "modifiers": {},
-        "conditional": [],
+        "conditional": [
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "any",
+                    "items": [
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_xenophile"
+                      },
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_fanatic_xenophile"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "predicate",
+                    "name": "is_wilderness_empire"
+                  }
+                }
+              ]
+            },
+            "modifiers": {
+              "subspecies_integration_add": 25,
+              "pop_purge_speed": 0.33,
+              "empire_size_pops_mult": -0.1
+            },
+            "tooltipKey": "tr_purity_imperfection_remediation_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_xenophile"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_fanatic_xenophile"
+                    }
+                  ]
+                }
+              ]
+            },
+            "modifiers": {
+              "subspecies_integration_add": 50,
+              "empire_size_pops_mult": -0.1
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "always",
+                    "value": false
+                  }
+                }
+              ]
+            },
+            "modifiers": {
+              "pop_government_ethic_attraction": 0.5
+            },
+            "tooltipKey": "tr_cloning_artificial_population_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "always",
+              "value": false
+            },
+            "modifiers": {
+              "pop_government_ethic_attraction": 0.5
+            },
+            "tooltipKey": "tr_cloning_artificial_population_clone_army_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "selection",
+                    "category": "Origin",
+                    "key": "origin_evolutionary_predators"
+                  }
+                }
+              ]
+            },
+            "modifiers": {},
+            "tooltipKey": "tr_mutation_nucleotide_isolation_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "selection",
+              "category": "Origin",
+              "key": "origin_evolutionary_predators"
+            },
+            "modifiers": {},
+            "tooltipKey": "tr_mutation_nucleotide_isolation_evo_pred_tt",
+            "tooltipReplacesModifiers": true,
+            "tagKeys": []
+          }
+        ],
         "tagKeys": [],
-        "tooltipReplacesModifiers": false,
+        "tooltipKey": "tr_genetic_stage_3_swap_tt",
+        "tooltipReplacesModifiers": true,
         "hideModifiers": false,
-        "isEmpty": true,
+        "isEmpty": false,
         "visibleModifiers": {}
       },
       "possible": {
@@ -92723,19 +93879,159 @@
         ]
       },
       "icon": "icons/traditions/tr_cloning_stage_3_swap.png",
-      "variants": [],
+      "variants": [
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_xenophile"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_fanatic_xenophile"
+                    }
+                  ]
+                }
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "predicate",
+                  "name": "is_wilderness_empire"
+                }
+              }
+            ]
+          },
+          "nameKey": "tr_genetic_stage_3_purity_swap",
+          "descriptionKey": "tr_genetic_stage_3_purity_swap_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "any",
+                "items": [
+                  {
+                    "kind": "selection",
+                    "category": "Ethics",
+                    "key": "ethic_xenophile"
+                  },
+                  {
+                    "kind": "selection",
+                    "category": "Ethics",
+                    "key": "ethic_fanatic_xenophile"
+                  }
+                ]
+              }
+            ]
+          },
+          "nameKey": "tr_purity_imperfection_remediation_xenophile",
+          "descriptionKey": "tr_purity_imperfection_remediation_xenophile_delayed"
+        },
+        {
+          "when": {
+            "kind": "predicate",
+            "name": "is_wilderness_empire"
+          },
+          "nameKey": "tr_purity_imperfection_remediation_wilderness",
+          "descriptionKey": "tr_purity_imperfection_remediation_wilderness_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "always",
+                  "value": false
+                }
+              }
+            ]
+          },
+          "nameKey": "tr_genetic_stage_3_cloning_swap",
+          "descriptionKey": "tr_genetic_stage_3_cloning_swap_delayed"
+        },
+        {
+          "when": {
+            "kind": "always",
+            "value": false
+          },
+          "nameKey": "tr_cloning_artificial_population_clone_army",
+          "descriptionKey": "tr_cloning_artificial_population_clone_army_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_evolutionary_predators"
+                }
+              }
+            ]
+          },
+          "nameKey": "tr_genetic_stage_3_mutation_swap",
+          "descriptionKey": "tr_genetic_stage_3_mutation_swap_delayed"
+        },
+        {
+          "when": {
+            "kind": "selection",
+            "category": "Origin",
+            "key": "origin_evolutionary_predators"
+          },
+          "nameKey": "tr_mutation_nucleotide_isolation_evo_pred",
+          "descriptionKey": "tr_mutation_nucleotide_isolation_evo_pred_delayed"
+        }
+      ],
       "nameKey": "tr_cloning_stage_3_swap"
     },
     {
       "key": "tr_cloning_genomic_growth",
       "effects": {
-        "modifiers": {},
+        "modifiers": {
+          "planet_pops_upkeep_mult": -0.1,
+          "pop_amenities_usage_mult": -0.1
+        },
         "conditional": [],
         "tagKeys": [],
+        "tooltipKey": "tr_cloning_genomic_growth_tt",
         "tooltipReplacesModifiers": false,
         "hideModifiers": false,
-        "isEmpty": true,
-        "visibleModifiers": {}
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_pops_upkeep_mult": -0.1,
+          "pop_amenities_usage_mult": -0.1
+        }
       },
       "possible": {
         "kind": "always",
@@ -92749,13 +94045,18 @@
     {
       "key": "tr_cloning_artificial_population",
       "effects": {
-        "modifiers": {},
+        "modifiers": {
+          "pop_government_ethic_attraction": 0.5
+        },
         "conditional": [],
         "tagKeys": [],
+        "tooltipKey": "tr_cloning_artificial_population_tt",
         "tooltipReplacesModifiers": false,
         "hideModifiers": false,
-        "isEmpty": true,
-        "visibleModifiers": {}
+        "isEmpty": false,
+        "visibleModifiers": {
+          "pop_government_ethic_attraction": 0.5
+        }
       },
       "possible": {
         "kind": "always",
@@ -92772,9 +94073,10 @@
         "modifiers": {},
         "conditional": [],
         "tagKeys": [],
+        "tooltipKey": "tr_cloning_biochemical_composure_tt",
         "tooltipReplacesModifiers": false,
         "hideModifiers": false,
-        "isEmpty": true,
+        "isEmpty": false,
         "visibleModifiers": {}
       },
       "possible": {
@@ -92790,11 +94092,24 @@
       "key": "tr_cloning_biochemical_composure_clones",
       "effects": {
         "modifiers": {},
-        "conditional": [],
+        "conditional": [
+          {
+            "when": {
+              "kind": "predicate",
+              "name": "is_gestalt"
+            },
+            "modifiers": {
+              "councilor_skill_add": 2
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          }
+        ],
         "tagKeys": [],
+        "tooltipKey": "tr_cloning_biochemical_composure_clones_tt",
         "tooltipReplacesModifiers": false,
         "hideModifiers": false,
-        "isEmpty": true,
+        "isEmpty": false,
         "visibleModifiers": {}
       },
       "possible": {
@@ -95258,11 +96573,162 @@
       "tree": "tradition_mutation",
       "effects": {
         "modifiers": {},
-        "conditional": [],
+        "conditional": [
+          {
+            "when": {
+              "kind": "always",
+              "value": false
+            },
+            "modifiers": {},
+            "tooltipKey": "tr_purity_heightened_attributes_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "predicate",
+              "name": "is_wilderness_empire"
+            },
+            "modifiers": {
+              "empire_size_districts_mult": -0.25,
+              "empire_size_colonies_mult": -0.25
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "always",
+                    "value": false
+                  }
+                }
+              ]
+            },
+            "modifiers": {
+              "planet_pops_upkeep_mult": -0.1,
+              "pop_amenities_usage_mult": -0.1
+            },
+            "tooltipKey": "tr_cloning_genomic_growth_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "always",
+              "value": false
+            },
+            "modifiers": {},
+            "tooltipKey": "tr_cloning_genomic_growth_clone_army_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "always",
+                    "value": false
+                  }
+                },
+                {
+                  "kind": "always",
+                  "value": false
+                }
+              ]
+            },
+            "modifiers": {
+              "habitability_ceil_uncapped_add": 0.5
+            },
+            "tooltipKey": "tr_mutation_environmental_integration_tt",
+            "tooltipReplacesModifiers": true,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "always",
+                  "value": false
+                }
+              ]
+            },
+            "modifiers": {
+              "habitability_ceil_uncapped_add": 1.25
+            },
+            "tooltipKey": "tr_mutation_empowered_environmental_integration_tt",
+            "tooltipReplacesModifiers": true,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "always",
+                    "value": false
+                  }
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_evolutionary_predators"
+                }
+              ]
+            },
+            "modifiers": {
+              "habitability_ceil_uncapped_add": 0.5
+            },
+            "tooltipKey": "tr_mutation_environmental_integration_tt",
+            "tooltipReplacesModifiers": true,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_evolutionary_predators"
+                }
+              ]
+            },
+            "modifiers": {
+              "habitability_ceil_uncapped_add": 1.25
+            },
+            "tooltipKey": "tr_mutation_empowered_environmental_integration_tt",
+            "tooltipReplacesModifiers": true,
+            "tagKeys": []
+          }
+        ],
         "tagKeys": [],
-        "tooltipReplacesModifiers": false,
+        "tooltipKey": "tr_genetic_stage_1_swap_tt",
+        "tooltipReplacesModifiers": true,
         "hideModifiers": false,
-        "isEmpty": true,
+        "isEmpty": false,
         "visibleModifiers": {}
       },
       "possible": {
@@ -95270,7 +96736,128 @@
         "value": true
       },
       "icon": "icons/traditions/tr_mutation_stage_1_swap.png",
-      "variants": [],
+      "variants": [
+        {
+          "when": {
+            "kind": "always",
+            "value": false
+          },
+          "nameKey": "tr_genetic_stage_1_purity_swap",
+          "descriptionKey": "tr_genetic_stage_1_purity_swap_delayed"
+        },
+        {
+          "when": {
+            "kind": "predicate",
+            "name": "is_wilderness_empire"
+          },
+          "nameKey": "tr_genetic_stage_1_purity_swap",
+          "descriptionKey": "tr_genetic_stage_1_purity_swap_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "always",
+                  "value": false
+                }
+              }
+            ]
+          },
+          "nameKey": "tr_genetic_stage_1_cloning_swap",
+          "descriptionKey": "tr_genetic_stage_1_cloning_swap_delayed"
+        },
+        {
+          "when": {
+            "kind": "always",
+            "value": false
+          },
+          "nameKey": "tr_cloning_genomic_growth_clone_army",
+          "descriptionKey": "tr_cloning_genomic_growth_clone_army_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "always",
+                  "value": false
+                }
+              },
+              {
+                "kind": "always",
+                "value": false
+              }
+            ]
+          },
+          "nameKey": "tr_genetic_stage_1_mutation_swap",
+          "descriptionKey": "tr_genetic_stage_1_mutation_swap_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "always",
+                "value": false
+              }
+            ]
+          },
+          "nameKey": "tr_mutation_empowered_environmental_integration",
+          "descriptionKey": "tr_mutation_empowered_environmental_integration_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "always",
+                  "value": false
+                }
+              },
+              {
+                "kind": "selection",
+                "category": "Origin",
+                "key": "origin_evolutionary_predators"
+              }
+            ]
+          },
+          "nameKey": "tr_mutation_environmental_integration_evo_pred",
+          "descriptionKey": "tr_mutation_environmental_integration_evo_pred_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "selection",
+                "category": "Origin",
+                "key": "origin_evolutionary_predators"
+              }
+            ]
+          },
+          "nameKey": "tr_mutation_empowered_environmental_integration_evo_pred",
+          "descriptionKey": "tr_mutation_empowered_environmental_integration_evo_pred_delayed"
+        }
+      ],
       "nameKey": "tr_mutation_stage_1_swap"
     },
     {
@@ -95278,11 +96865,162 @@
       "tree": "tradition_mutation",
       "effects": {
         "modifiers": {},
-        "conditional": [],
+        "conditional": [
+          {
+            "when": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "predicate",
+                  "name": "is_wilderness_empire"
+                }
+              ]
+            },
+            "modifiers": {
+              "leader_starting_age_mult": -0.25,
+              "negative_traits_country": -1
+            },
+            "tooltipKey": "tr_aptitude_adopt_desc",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "always",
+                    "value": false
+                  }
+                },
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "always",
+                    "value": false
+                  }
+                }
+              ]
+            },
+            "modifiers": {},
+            "tooltipKey": "tr_cloning_biochemical_composure_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "always",
+                    "value": false
+                  }
+                }
+              ]
+            },
+            "modifiers": {},
+            "tooltipKey": "tr_cloning_biochemical_composure_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "always",
+                    "value": false
+                  }
+                }
+              ]
+            },
+            "modifiers": {},
+            "tooltipKey": "tr_cloning_biochemical_composure_clones_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "always",
+                  "value": false
+                }
+              ]
+            },
+            "modifiers": {},
+            "tooltipKey": "tr_cloning_biochemical_composure_clones_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "always",
+              "value": false
+            },
+            "modifiers": {
+              "leader_skill_add": 1,
+              "species_leader_exp_gain": 0.1,
+              "leader_lifespan_mult": 0.1
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "selection",
+              "category": "Origin",
+              "key": "origin_evolutionary_predators"
+            },
+            "modifiers": {
+              "leader_skill_add": 1,
+              "species_leader_exp_gain": 0.1,
+              "leader_lifespan_mult": 0.1
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          }
+        ],
         "tagKeys": [],
-        "tooltipReplacesModifiers": false,
+        "tooltipKey": "tr_genetic_stage_2_swap_tt",
+        "tooltipReplacesModifiers": true,
         "hideModifiers": false,
-        "isEmpty": true,
+        "isEmpty": false,
         "visibleModifiers": {}
       },
       "possible": {
@@ -95291,7 +97029,134 @@
         "key": "tr_mutation_stage_1_swap"
       },
       "icon": "icons/traditions/tr_mutation_stage_2_swap.png",
-      "variants": [],
+      "variants": [
+        {
+          "when": {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "predicate",
+                "name": "is_wilderness_empire"
+              }
+            ]
+          },
+          "nameKey": "tr_genetic_stage_2_purity_swap",
+          "descriptionKey": "tr_genetic_stage_2_purity_swap_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "always",
+                  "value": false
+                }
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "always",
+                  "value": false
+                }
+              }
+            ]
+          },
+          "nameKey": "tr_genetic_stage_2_cloning_swap",
+          "descriptionKey": "tr_genetic_stage_2_cloning_swap_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "always",
+                  "value": false
+                }
+              }
+            ]
+          },
+          "nameKey": "tr_cloning_biochemical_composure_clone_army",
+          "descriptionKey": "tr_cloning_biochemical_composure_clone_army_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "always",
+                  "value": false
+                }
+              }
+            ]
+          },
+          "nameKey": "tr_cloning_biochemical_composure_clones",
+          "descriptionKey": "tr_cloning_biochemical_composure_clones_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "always",
+                "value": false
+              }
+            ]
+          },
+          "nameKey": "tr_cloning_biochemical_composure_clones_clone_army",
+          "descriptionKey": "tr_cloning_biochemical_composure_clones_clone_army_delayed"
+        },
+        {
+          "when": {
+            "kind": "always",
+            "value": false
+          },
+          "nameKey": "tr_genetic_stage_2_mutation_swap",
+          "descriptionKey": "tr_genetic_stage_2_mutation_swap_delayed"
+        },
+        {
+          "when": {
+            "kind": "selection",
+            "category": "Origin",
+            "key": "origin_evolutionary_predators"
+          },
+          "nameKey": "tr_mutation_somatic_subversiveness_evo_pred",
+          "descriptionKey": "tr_mutation_somatic_subversiveness_evo_pred_delayed"
+        }
+      ],
       "nameKey": "tr_mutation_stage_2_swap"
     },
     {
@@ -95299,11 +97164,159 @@
       "tree": "tradition_mutation",
       "effects": {
         "modifiers": {},
-        "conditional": [],
+        "conditional": [
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "any",
+                    "items": [
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_xenophile"
+                      },
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_fanatic_xenophile"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "predicate",
+                    "name": "is_wilderness_empire"
+                  }
+                }
+              ]
+            },
+            "modifiers": {
+              "subspecies_integration_add": 25,
+              "pop_purge_speed": 0.33,
+              "empire_size_pops_mult": -0.1
+            },
+            "tooltipKey": "tr_purity_imperfection_remediation_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_xenophile"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_fanatic_xenophile"
+                    }
+                  ]
+                }
+              ]
+            },
+            "modifiers": {
+              "subspecies_integration_add": 50,
+              "empire_size_pops_mult": -0.1
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "always",
+                    "value": false
+                  }
+                }
+              ]
+            },
+            "modifiers": {
+              "pop_government_ethic_attraction": 0.5
+            },
+            "tooltipKey": "tr_cloning_artificial_population_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "always",
+              "value": false
+            },
+            "modifiers": {
+              "pop_government_ethic_attraction": 0.5
+            },
+            "tooltipKey": "tr_cloning_artificial_population_clone_army_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "selection",
+                    "category": "Origin",
+                    "key": "origin_evolutionary_predators"
+                  }
+                }
+              ]
+            },
+            "modifiers": {},
+            "tooltipKey": "tr_mutation_nucleotide_isolation_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "selection",
+              "category": "Origin",
+              "key": "origin_evolutionary_predators"
+            },
+            "modifiers": {},
+            "tooltipKey": "tr_mutation_nucleotide_isolation_evo_pred_tt",
+            "tooltipReplacesModifiers": true,
+            "tagKeys": []
+          }
+        ],
         "tagKeys": [],
-        "tooltipReplacesModifiers": false,
+        "tooltipKey": "tr_genetic_stage_3_swap_tt",
+        "tooltipReplacesModifiers": true,
         "hideModifiers": false,
-        "isEmpty": true,
+        "isEmpty": false,
         "visibleModifiers": {}
       },
       "possible": {
@@ -95312,7 +97325,140 @@
         "key": "tr_mutation_stage_1_swap"
       },
       "icon": "icons/traditions/tr_mutation_stage_3_swap.png",
-      "variants": [],
+      "variants": [
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_xenophile"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_fanatic_xenophile"
+                    }
+                  ]
+                }
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "predicate",
+                  "name": "is_wilderness_empire"
+                }
+              }
+            ]
+          },
+          "nameKey": "tr_genetic_stage_3_purity_swap",
+          "descriptionKey": "tr_genetic_stage_3_purity_swap_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "any",
+                "items": [
+                  {
+                    "kind": "selection",
+                    "category": "Ethics",
+                    "key": "ethic_xenophile"
+                  },
+                  {
+                    "kind": "selection",
+                    "category": "Ethics",
+                    "key": "ethic_fanatic_xenophile"
+                  }
+                ]
+              }
+            ]
+          },
+          "nameKey": "tr_purity_imperfection_remediation_xenophile",
+          "descriptionKey": "tr_purity_imperfection_remediation_xenophile_delayed"
+        },
+        {
+          "when": {
+            "kind": "predicate",
+            "name": "is_wilderness_empire"
+          },
+          "nameKey": "tr_purity_imperfection_remediation_wilderness",
+          "descriptionKey": "tr_purity_imperfection_remediation_wilderness_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "always",
+                  "value": false
+                }
+              }
+            ]
+          },
+          "nameKey": "tr_genetic_stage_3_cloning_swap",
+          "descriptionKey": "tr_genetic_stage_3_cloning_swap_delayed"
+        },
+        {
+          "when": {
+            "kind": "always",
+            "value": false
+          },
+          "nameKey": "tr_cloning_artificial_population_clone_army",
+          "descriptionKey": "tr_cloning_artificial_population_clone_army_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_evolutionary_predators"
+                }
+              }
+            ]
+          },
+          "nameKey": "tr_genetic_stage_3_mutation_swap",
+          "descriptionKey": "tr_genetic_stage_3_mutation_swap_delayed"
+        },
+        {
+          "when": {
+            "kind": "selection",
+            "category": "Origin",
+            "key": "origin_evolutionary_predators"
+          },
+          "nameKey": "tr_mutation_nucleotide_isolation_evo_pred",
+          "descriptionKey": "tr_mutation_nucleotide_isolation_evo_pred_delayed"
+        }
+      ],
       "nameKey": "tr_mutation_stage_3_swap"
     },
     {
@@ -95431,12 +97577,15 @@
     {
       "key": "tr_mutation_environmental_integration",
       "effects": {
-        "modifiers": {},
+        "modifiers": {
+          "habitability_ceil_uncapped_add": 0.5
+        },
         "conditional": [],
         "tagKeys": [],
-        "tooltipReplacesModifiers": false,
+        "tooltipKey": "tr_mutation_environmental_integration_tt",
+        "tooltipReplacesModifiers": true,
         "hideModifiers": false,
-        "isEmpty": true,
+        "isEmpty": false,
         "visibleModifiers": {}
       },
       "possible": {
@@ -95451,13 +97600,21 @@
     {
       "key": "tr_mutation_somatic_subversiveness",
       "effects": {
-        "modifiers": {},
+        "modifiers": {
+          "leader_skill_add": 1,
+          "species_leader_exp_gain": 0.1,
+          "leader_lifespan_mult": 0.1
+        },
         "conditional": [],
         "tagKeys": [],
         "tooltipReplacesModifiers": false,
         "hideModifiers": false,
-        "isEmpty": true,
-        "visibleModifiers": {}
+        "isEmpty": false,
+        "visibleModifiers": {
+          "leader_skill_add": 1,
+          "species_leader_exp_gain": 0.1,
+          "leader_lifespan_mult": 0.1
+        }
       },
       "possible": {
         "kind": "always",
@@ -95474,9 +97631,10 @@
         "modifiers": {},
         "conditional": [],
         "tagKeys": [],
+        "tooltipKey": "tr_mutation_nucleotide_isolation_tt",
         "tooltipReplacesModifiers": false,
         "hideModifiers": false,
-        "isEmpty": true,
+        "isEmpty": false,
         "visibleModifiers": {}
       },
       "possible": {
@@ -96652,11 +98810,162 @@
       "tree": "tradition_purity",
       "effects": {
         "modifiers": {},
-        "conditional": [],
+        "conditional": [
+          {
+            "when": {
+              "kind": "always",
+              "value": false
+            },
+            "modifiers": {},
+            "tooltipKey": "tr_purity_heightened_attributes_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "predicate",
+              "name": "is_wilderness_empire"
+            },
+            "modifiers": {
+              "empire_size_districts_mult": -0.25,
+              "empire_size_colonies_mult": -0.25
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "always",
+                    "value": false
+                  }
+                }
+              ]
+            },
+            "modifiers": {
+              "planet_pops_upkeep_mult": -0.1,
+              "pop_amenities_usage_mult": -0.1
+            },
+            "tooltipKey": "tr_cloning_genomic_growth_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "always",
+              "value": false
+            },
+            "modifiers": {},
+            "tooltipKey": "tr_cloning_genomic_growth_clone_army_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "always",
+                    "value": false
+                  }
+                },
+                {
+                  "kind": "always",
+                  "value": false
+                }
+              ]
+            },
+            "modifiers": {
+              "habitability_ceil_uncapped_add": 0.5
+            },
+            "tooltipKey": "tr_mutation_environmental_integration_tt",
+            "tooltipReplacesModifiers": true,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "always",
+                  "value": false
+                }
+              ]
+            },
+            "modifiers": {
+              "habitability_ceil_uncapped_add": 1.25
+            },
+            "tooltipKey": "tr_mutation_empowered_environmental_integration_tt",
+            "tooltipReplacesModifiers": true,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "always",
+                    "value": false
+                  }
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_evolutionary_predators"
+                }
+              ]
+            },
+            "modifiers": {
+              "habitability_ceil_uncapped_add": 0.5
+            },
+            "tooltipKey": "tr_mutation_environmental_integration_tt",
+            "tooltipReplacesModifiers": true,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_evolutionary_predators"
+                }
+              ]
+            },
+            "modifiers": {
+              "habitability_ceil_uncapped_add": 1.25
+            },
+            "tooltipKey": "tr_mutation_empowered_environmental_integration_tt",
+            "tooltipReplacesModifiers": true,
+            "tagKeys": []
+          }
+        ],
         "tagKeys": [],
-        "tooltipReplacesModifiers": false,
+        "tooltipKey": "tr_genetic_stage_1_swap_tt",
+        "tooltipReplacesModifiers": true,
         "hideModifiers": false,
-        "isEmpty": true,
+        "isEmpty": false,
         "visibleModifiers": {}
       },
       "possible": {
@@ -96664,7 +98973,128 @@
         "value": true
       },
       "icon": "icons/traditions/tr_purity_stage_1_swap.png",
-      "variants": [],
+      "variants": [
+        {
+          "when": {
+            "kind": "always",
+            "value": false
+          },
+          "nameKey": "tr_genetic_stage_1_purity_swap",
+          "descriptionKey": "tr_genetic_stage_1_purity_swap_delayed"
+        },
+        {
+          "when": {
+            "kind": "predicate",
+            "name": "is_wilderness_empire"
+          },
+          "nameKey": "tr_genetic_stage_1_purity_swap",
+          "descriptionKey": "tr_genetic_stage_1_purity_swap_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "always",
+                  "value": false
+                }
+              }
+            ]
+          },
+          "nameKey": "tr_genetic_stage_1_cloning_swap",
+          "descriptionKey": "tr_genetic_stage_1_cloning_swap_delayed"
+        },
+        {
+          "when": {
+            "kind": "always",
+            "value": false
+          },
+          "nameKey": "tr_cloning_genomic_growth_clone_army",
+          "descriptionKey": "tr_cloning_genomic_growth_clone_army_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "always",
+                  "value": false
+                }
+              },
+              {
+                "kind": "always",
+                "value": false
+              }
+            ]
+          },
+          "nameKey": "tr_genetic_stage_1_mutation_swap",
+          "descriptionKey": "tr_genetic_stage_1_mutation_swap_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "always",
+                "value": false
+              }
+            ]
+          },
+          "nameKey": "tr_mutation_empowered_environmental_integration",
+          "descriptionKey": "tr_mutation_empowered_environmental_integration_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "always",
+                  "value": false
+                }
+              },
+              {
+                "kind": "selection",
+                "category": "Origin",
+                "key": "origin_evolutionary_predators"
+              }
+            ]
+          },
+          "nameKey": "tr_mutation_environmental_integration_evo_pred",
+          "descriptionKey": "tr_mutation_environmental_integration_evo_pred_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "selection",
+                "category": "Origin",
+                "key": "origin_evolutionary_predators"
+              }
+            ]
+          },
+          "nameKey": "tr_mutation_empowered_environmental_integration_evo_pred",
+          "descriptionKey": "tr_mutation_empowered_environmental_integration_evo_pred_delayed"
+        }
+      ],
       "nameKey": "tr_purity_stage_1_swap"
     },
     {
@@ -96672,11 +99102,162 @@
       "tree": "tradition_purity",
       "effects": {
         "modifiers": {},
-        "conditional": [],
+        "conditional": [
+          {
+            "when": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "predicate",
+                  "name": "is_wilderness_empire"
+                }
+              ]
+            },
+            "modifiers": {
+              "leader_starting_age_mult": -0.25,
+              "negative_traits_country": -1
+            },
+            "tooltipKey": "tr_aptitude_adopt_desc",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "always",
+                    "value": false
+                  }
+                },
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "always",
+                    "value": false
+                  }
+                }
+              ]
+            },
+            "modifiers": {},
+            "tooltipKey": "tr_cloning_biochemical_composure_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "always",
+                    "value": false
+                  }
+                }
+              ]
+            },
+            "modifiers": {},
+            "tooltipKey": "tr_cloning_biochemical_composure_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "always",
+                    "value": false
+                  }
+                }
+              ]
+            },
+            "modifiers": {},
+            "tooltipKey": "tr_cloning_biochemical_composure_clones_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "always",
+                  "value": false
+                }
+              ]
+            },
+            "modifiers": {},
+            "tooltipKey": "tr_cloning_biochemical_composure_clones_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "always",
+              "value": false
+            },
+            "modifiers": {
+              "leader_skill_add": 1,
+              "species_leader_exp_gain": 0.1,
+              "leader_lifespan_mult": 0.1
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "selection",
+              "category": "Origin",
+              "key": "origin_evolutionary_predators"
+            },
+            "modifiers": {
+              "leader_skill_add": 1,
+              "species_leader_exp_gain": 0.1,
+              "leader_lifespan_mult": 0.1
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          }
+        ],
         "tagKeys": [],
-        "tooltipReplacesModifiers": false,
+        "tooltipKey": "tr_genetic_stage_2_swap_tt",
+        "tooltipReplacesModifiers": true,
         "hideModifiers": false,
-        "isEmpty": true,
+        "isEmpty": false,
         "visibleModifiers": {}
       },
       "possible": {
@@ -96685,7 +99266,134 @@
         "key": "tr_purity_stage_1_swap"
       },
       "icon": "icons/traditions/tr_purity_stage_2_swap.png",
-      "variants": [],
+      "variants": [
+        {
+          "when": {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "predicate",
+                "name": "is_wilderness_empire"
+              }
+            ]
+          },
+          "nameKey": "tr_genetic_stage_2_purity_swap",
+          "descriptionKey": "tr_genetic_stage_2_purity_swap_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "always",
+                  "value": false
+                }
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "always",
+                  "value": false
+                }
+              }
+            ]
+          },
+          "nameKey": "tr_genetic_stage_2_cloning_swap",
+          "descriptionKey": "tr_genetic_stage_2_cloning_swap_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "always",
+                  "value": false
+                }
+              }
+            ]
+          },
+          "nameKey": "tr_cloning_biochemical_composure_clone_army",
+          "descriptionKey": "tr_cloning_biochemical_composure_clone_army_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "always",
+                  "value": false
+                }
+              }
+            ]
+          },
+          "nameKey": "tr_cloning_biochemical_composure_clones",
+          "descriptionKey": "tr_cloning_biochemical_composure_clones_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "always",
+                "value": false
+              }
+            ]
+          },
+          "nameKey": "tr_cloning_biochemical_composure_clones_clone_army",
+          "descriptionKey": "tr_cloning_biochemical_composure_clones_clone_army_delayed"
+        },
+        {
+          "when": {
+            "kind": "always",
+            "value": false
+          },
+          "nameKey": "tr_genetic_stage_2_mutation_swap",
+          "descriptionKey": "tr_genetic_stage_2_mutation_swap_delayed"
+        },
+        {
+          "when": {
+            "kind": "selection",
+            "category": "Origin",
+            "key": "origin_evolutionary_predators"
+          },
+          "nameKey": "tr_mutation_somatic_subversiveness_evo_pred",
+          "descriptionKey": "tr_mutation_somatic_subversiveness_evo_pred_delayed"
+        }
+      ],
       "nameKey": "tr_purity_stage_2_swap"
     },
     {
@@ -96693,11 +99401,159 @@
       "tree": "tradition_purity",
       "effects": {
         "modifiers": {},
-        "conditional": [],
+        "conditional": [
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "any",
+                    "items": [
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_xenophile"
+                      },
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_fanatic_xenophile"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "predicate",
+                    "name": "is_wilderness_empire"
+                  }
+                }
+              ]
+            },
+            "modifiers": {
+              "subspecies_integration_add": 25,
+              "pop_purge_speed": 0.33,
+              "empire_size_pops_mult": -0.1
+            },
+            "tooltipKey": "tr_purity_imperfection_remediation_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_xenophile"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_fanatic_xenophile"
+                    }
+                  ]
+                }
+              ]
+            },
+            "modifiers": {
+              "subspecies_integration_add": 50,
+              "empire_size_pops_mult": -0.1
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "always",
+                    "value": false
+                  }
+                }
+              ]
+            },
+            "modifiers": {
+              "pop_government_ethic_attraction": 0.5
+            },
+            "tooltipKey": "tr_cloning_artificial_population_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "always",
+              "value": false
+            },
+            "modifiers": {
+              "pop_government_ethic_attraction": 0.5
+            },
+            "tooltipKey": "tr_cloning_artificial_population_clone_army_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "always",
+                  "value": false
+                },
+                {
+                  "kind": "not",
+                  "item": {
+                    "kind": "selection",
+                    "category": "Origin",
+                    "key": "origin_evolutionary_predators"
+                  }
+                }
+              ]
+            },
+            "modifiers": {},
+            "tooltipKey": "tr_mutation_nucleotide_isolation_tt",
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "selection",
+              "category": "Origin",
+              "key": "origin_evolutionary_predators"
+            },
+            "modifiers": {},
+            "tooltipKey": "tr_mutation_nucleotide_isolation_evo_pred_tt",
+            "tooltipReplacesModifiers": true,
+            "tagKeys": []
+          }
+        ],
         "tagKeys": [],
-        "tooltipReplacesModifiers": false,
+        "tooltipKey": "tr_genetic_stage_3_swap_tt",
+        "tooltipReplacesModifiers": true,
         "hideModifiers": false,
-        "isEmpty": true,
+        "isEmpty": false,
         "visibleModifiers": {}
       },
       "possible": {
@@ -96706,19 +99562,159 @@
         "key": "tr_purity_stage_1_swap"
       },
       "icon": "icons/traditions/tr_purity_stage_3_swap.png",
-      "variants": [],
+      "variants": [
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_xenophile"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_fanatic_xenophile"
+                    }
+                  ]
+                }
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "predicate",
+                  "name": "is_wilderness_empire"
+                }
+              }
+            ]
+          },
+          "nameKey": "tr_genetic_stage_3_purity_swap",
+          "descriptionKey": "tr_genetic_stage_3_purity_swap_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "any",
+                "items": [
+                  {
+                    "kind": "selection",
+                    "category": "Ethics",
+                    "key": "ethic_xenophile"
+                  },
+                  {
+                    "kind": "selection",
+                    "category": "Ethics",
+                    "key": "ethic_fanatic_xenophile"
+                  }
+                ]
+              }
+            ]
+          },
+          "nameKey": "tr_purity_imperfection_remediation_xenophile",
+          "descriptionKey": "tr_purity_imperfection_remediation_xenophile_delayed"
+        },
+        {
+          "when": {
+            "kind": "predicate",
+            "name": "is_wilderness_empire"
+          },
+          "nameKey": "tr_purity_imperfection_remediation_wilderness",
+          "descriptionKey": "tr_purity_imperfection_remediation_wilderness_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "always",
+                  "value": false
+                }
+              }
+            ]
+          },
+          "nameKey": "tr_genetic_stage_3_cloning_swap",
+          "descriptionKey": "tr_genetic_stage_3_cloning_swap_delayed"
+        },
+        {
+          "when": {
+            "kind": "always",
+            "value": false
+          },
+          "nameKey": "tr_cloning_artificial_population_clone_army",
+          "descriptionKey": "tr_cloning_artificial_population_clone_army_delayed"
+        },
+        {
+          "when": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": false
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "selection",
+                  "category": "Origin",
+                  "key": "origin_evolutionary_predators"
+                }
+              }
+            ]
+          },
+          "nameKey": "tr_genetic_stage_3_mutation_swap",
+          "descriptionKey": "tr_genetic_stage_3_mutation_swap_delayed"
+        },
+        {
+          "when": {
+            "kind": "selection",
+            "category": "Origin",
+            "key": "origin_evolutionary_predators"
+          },
+          "nameKey": "tr_mutation_nucleotide_isolation_evo_pred",
+          "descriptionKey": "tr_mutation_nucleotide_isolation_evo_pred_delayed"
+        }
+      ],
       "nameKey": "tr_purity_stage_3_swap"
     },
     {
       "key": "tr_purity_optimized_neurology",
       "effects": {
-        "modifiers": {},
+        "modifiers": {
+          "leader_starting_age_mult": -0.25,
+          "negative_traits_country": -1
+        },
         "conditional": [],
         "tagKeys": [],
+        "tooltipKey": "tr_aptitude_adopt_desc",
         "tooltipReplacesModifiers": false,
         "hideModifiers": false,
-        "isEmpty": true,
-        "visibleModifiers": {}
+        "isEmpty": false,
+        "visibleModifiers": {
+          "leader_starting_age_mult": -0.25,
+          "negative_traits_country": -1
+        }
       },
       "possible": {
         "kind": "always",
@@ -96735,9 +99731,10 @@
         "modifiers": {},
         "conditional": [],
         "tagKeys": [],
+        "tooltipKey": "tr_purity_heightened_attributes_tt",
         "tooltipReplacesModifiers": false,
         "hideModifiers": false,
-        "isEmpty": true,
+        "isEmpty": false,
         "visibleModifiers": {}
       },
       "possible": {
@@ -96753,11 +99750,78 @@
       "key": "tr_purity_imperfection_remediation",
       "effects": {
         "modifiers": {},
-        "conditional": [],
+        "conditional": [
+          {
+            "when": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_xenophile"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_fanatic_xenophile"
+                    }
+                  ]
+                }
+              ]
+            },
+            "modifiers": {
+              "subspecies_integration_add": 50,
+              "empire_size_pops_mult": -0.1
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "not",
+              "item": {
+                "kind": "any",
+                "items": [
+                  {
+                    "kind": "any",
+                    "items": [
+                      {
+                        "kind": "any",
+                        "items": [
+                          {
+                            "kind": "selection",
+                            "category": "Ethics",
+                            "key": "ethic_xenophile"
+                          },
+                          {
+                            "kind": "selection",
+                            "category": "Ethics",
+                            "key": "ethic_fanatic_xenophile"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "modifiers": {
+              "subspecies_integration_add": 25,
+              "pop_purge_speed": 0.33,
+              "empire_size_pops_mult": -0.1
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          }
+        ],
         "tagKeys": [],
+        "tooltipKey": "tr_purity_imperfection_remediation_tt",
         "tooltipReplacesModifiers": false,
         "hideModifiers": false,
-        "isEmpty": true,
+        "isEmpty": false,
         "visibleModifiers": {}
       },
       "possible": {

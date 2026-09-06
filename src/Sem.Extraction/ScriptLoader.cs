@@ -95,11 +95,144 @@ public sealed class ScriptLoader(LayeredContent content)
             {
                 if (node.IsAssignment && node.Key is { Length: > 0 } key && !key.StartsWith('@'))
                 {
+                    if (node.Block is { } body)
+                    {
+                        Inline(body, 0);
+                    }
+
                     yield return new ScriptEntry(key, node, path, order++);
                 }
             }
         }
     }
+
+    /// <summary>
+    /// Writes the game's shared script fragments into the definitions that call for them.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <c>inline_script</c> is an include with parameters: the caller names a file under
+    /// <c>common/inline_scripts</c> and supplies values for the <c>$NAME$</c> blanks in it, and the
+    /// game reads the result as though it had been written in place. Read without expanding, a
+    /// definition is missing whatever the fragment was carrying - and what it carries is not always
+    /// decoration. Nine species traits keep their <c>hidden = yes</c> and <c>initial = no</c> in
+    /// one, so all nine were being offered in a picker the game does not show them in; nineteen
+    /// traditions keep their hive and machine renamings in another, so gestalt empires read the
+    /// wording written for somebody else.
+    /// </para>
+    /// <para>
+    /// The icon scripts are left where they are. Those are the ones carrying an <c>ICON</c>
+    /// argument, and they describe stacked layers rather than fields of the definition -
+    /// <see cref="Extractors.TraitIconComposer"/> walks them itself and needs the call rather than
+    /// its contents. Splicing them in would put loose <c>layer</c> blocks into a trait and take the
+    /// call away from the one thing that reads it.
+    /// </para>
+    /// </remarks>
+    private void Inline(CwBlock body, int depth)
+    {
+        if (depth >= MaxInlineDepth)
+        {
+            return;
+        }
+
+        for (var at = 0; at < body.Nodes.Count; at++)
+        {
+            var node = body.Nodes[at];
+
+            if (node.Key != "inline_script")
+            {
+                if (node.Block is { } nested)
+                {
+                    Inline(nested, depth + 1);
+                }
+
+                continue;
+            }
+
+            // Either a bare path, or a block naming the script and answering its blanks.
+            var arguments = node.Block;
+
+            if (arguments?.GetString("ICON") is { Length: > 0 })
+            {
+                continue;
+            }
+
+            var script = arguments?.GetString("script") ?? node.ScalarValue;
+
+            if (script is not { Length: > 0 } || Fragment(script, arguments) is not { } fragment)
+            {
+                continue;
+            }
+
+            body.RemoveAt(at);
+
+            var written = 0;
+
+            foreach (var inner in fragment.Nodes)
+            {
+                body.Insert(at + written, inner);
+                written++;
+            }
+
+            // Back over what was just written, so a fragment that calls another is read too, and
+            // so the loop does not step past the first node of what it inserted.
+            at--;
+        }
+    }
+
+    /// <summary>Reads one fragment with its blanks filled in, or nothing where there is no such file.</summary>
+    private CwDocument? Fragment(string script, CwBlock? arguments)
+    {
+        var values = new Dictionary<string, string>(StringComparer.Ordinal);
+
+        foreach (var argument in arguments?.Nodes ?? [])
+        {
+            if (argument.Key is { Length: > 0 } name && name != "script" &&
+                argument.ScalarValue is { } value)
+            {
+                values[name] = value;
+            }
+        }
+
+        var path = $"common/inline_scripts/{Fill(script, values)}.txt";
+
+        if (!Content.Contains(path))
+        {
+            RecordFailure(path, "an inline script that is not in the installation");
+            return null;
+        }
+
+        try
+        {
+            var text = Fill(System.Text.Encoding.UTF8.GetString(Content.Read(path)), values);
+
+            return CwDocument.Parse(System.Text.Encoding.UTF8.GetBytes(text), CwParseOptions.Lenient);
+        }
+        catch (Exception ex) when (ex is CwSyntaxException or IOException)
+        {
+            RecordFailure(path, ex.Message);
+            return null;
+        }
+    }
+
+    /// <summary>Fills in every <c>$NAME$</c> an answer was given for.</summary>
+    private static string Fill(string text, IReadOnlyDictionary<string, string> values)
+    {
+        if (values.Count == 0 || !text.Contains('$', StringComparison.Ordinal))
+        {
+            return text;
+        }
+
+        foreach (var (name, value) in values)
+        {
+            text = text.Replace($"${name}$", value, StringComparison.Ordinal);
+        }
+
+        return text;
+    }
+
+    /// <summary>How far one fragment may call another before this stops following.</summary>
+    private const int MaxInlineDepth = 8;
 
     /// <summary>
     /// The definitions in a directory with overrides applied, as the game resolves them: a key
