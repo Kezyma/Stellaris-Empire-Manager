@@ -243,6 +243,38 @@ public sealed class PlanTextTests
         }
     }
 
+    /// <summary>
+    /// The meter reads what the plan actually costs, which is the length of what is written.
+    /// </summary>
+    /// <remarks>
+    /// Two different countings of the same plan, and the editor shows one beside the other - the
+    /// prose in a box and the number under it. They have to agree, and a full plan is the case where
+    /// they might not, since that is the one where <see cref="PlanText.Write"/> starts dropping
+    /// items and <see cref="PlanText.Measure"/> deliberately does not.
+    /// </remarks>
+    [Fact]
+    public void TheMeterCountsWhatIsWritten()
+    {
+        var text = English();
+
+        var plan = new EmpirePlan(
+            ["tradition_harmony"],
+            ["ap_mind_over_matter", "ap_technological_ascendancy"],
+            ["civic_meritocracy"]);
+
+        var written = text.Write(plan);
+
+        // Nothing was dropped at this size, so the two must be the same number.
+        Assert.True(written.Length <= PlanText.Budget);
+        Assert.Equal(written.Length, text.Measure(plan));
+
+        // And each part is actually in it, so a measurement that quietly counted one line would not
+        // pass by accident.
+        Assert.Contains("Traditions: Harmony", written, StringComparison.Ordinal);
+        Assert.Contains("Perks: Mind Over Matter", written, StringComparison.Ordinal);
+        Assert.Contains("Civics: Meritocracy", written, StringComparison.Ordinal);
+    }
+
     /// <summary>A reader who typed a name in their own case still meant the name.</summary>
     [Fact]
     public void CaseDoesNotMatter()
