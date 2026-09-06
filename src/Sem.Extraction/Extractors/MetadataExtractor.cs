@@ -111,7 +111,6 @@ internal static class MetadataExtractor
             CivicPoints = civicPoints,
             PlannedCivicPoints = civicPoints + ResearchableCivicPoints(loader),
             AscensionPerkSlots = FindInt(defines, "ASCENSION_PERKS_SLOTS") ?? 8,
-            AscensionPerkSlotsWithoutTraditions = Researchable(loader, "ascension_perks_add"),
             TraditionSlots = FindInt(defines, "TRADITION_CATEGORIES_MAX") ?? 7,
             DefaultCityPreviewPlanetClass =
                 Find(defines, "CITY_SELECTION_DEFAULT_PLANET_CLASS")?.Trim('"'),

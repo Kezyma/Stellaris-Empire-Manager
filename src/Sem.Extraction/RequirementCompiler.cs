@@ -1,4 +1,4 @@
-using Sem.Clausewitz;
+﻿using Sem.Clausewitz;
 using Sem.GameData;
 
 namespace Sem.Extraction;
@@ -62,14 +62,14 @@ public sealed class RequirementCompiler
     /// Triggers asking how many of something has been taken, and what they are counting.
     /// </summary>
     /// <remarks>
-    /// These are the whole of it in an unmodified game: twenty-five perks gated on how many perks
-    /// come before them, and the seven ascension perks gated on there being a tradition tree left
-    /// to open.
+    /// One of them, in an unmodified game: the twenty-five perks gated on how many perks come
+    /// before them, which is what makes a perk unable to be first. Its obvious sibling,
+    /// <c>num_tradition_categories</c>, is deliberately absent - see
+    /// <see cref="DesignPredicates.UnknowableWhenPlanning"/> for why a plan cannot answer it.
     /// </remarks>
     private static readonly Dictionary<string, SelectionCategory> CountTriggers = new(StringComparer.Ordinal)
     {
         ["num_ascension_perks"] = SelectionCategory.AscensionPerk,
-        ["num_tradition_categories"] = SelectionCategory.TraditionTree,
     };
 
     /// <summary>How the game writes each comparison.</summary>

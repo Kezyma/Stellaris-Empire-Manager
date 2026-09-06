@@ -748,12 +748,11 @@ public sealed class EmpireRules(GameDatabase database)
         ArgumentNullException.ThrowIfNull(chosen);
         ArgumentNullException.ThrowIfNull(trees);
 
-        // Only the trees this empire would have opened by the time it takes this perk, which is
-        // the next one. The game hands out a perk for each tree completed and they are taken in
-        // turn, so a plan naming seven trees has not opened all seven at its first perk - and the
-        // ascension perks, which ask for a tree slot still to be free, would all be refused if it
-        // had.
-        var planned = context.WithPlan(chosen, Opened(trees.Take(chosen.Count + 1)));
+        // Every tree the plan names, because the two lists are chosen independently rather than in
+        // turn: the traditions are settled in one go and the perks in another. What that answers is
+        // "does the plan open this tree", which is what the perks asking after a named tradition
+        // want - and not "how many were open at this moment", which a plan does not sequence.
+        var planned = context.WithPlan(chosen, Opened(trees));
 
         var options = Options(
             _database.AscensionPerks,
@@ -762,26 +761,22 @@ public sealed class EmpireRules(GameDatabase database)
             p => p.Possible,
             planned);
 
-        return chosen.Count < GetAscensionPerkBudget(chosen.Count, trees.Count).Available
+        return chosen.Count < _database.Defines.AscensionPerkSlots
             ? options
             : [.. options.Select(o => chosen.Contains(o.Key) ? o : Blocked(o, RuleReasons.NoPerkSlotsLeft))];
     }
 
     /// <summary>
-    /// How many ascension perks are named against how many this plan would actually unlock.
+    /// How many ascension perks are named against how many a game grants.
     /// </summary>
     /// <remarks>
-    /// Not the eight a game allows, because a game only allows eight to an empire that has earned
-    /// them: every tradition tree completed grants one - the modifier sits on each
-    /// <c>tr_*_finish</c> - and the last comes from a technology. So a plan that opens no trees can
-    /// hold one perk, and one that opens all seven can hold eight, which is the order the game
-    /// hands them out in rather than a rule invented here.
+    /// All eight, rather than however many the planned trees would unlock. A game does earn them
+    /// one tree at a time, but a plan is not made one tree at a time - the traditions are settled
+    /// in one go and the perks in another - and tying the count to the trees meant opening the
+    /// perks tab first offered a single slot with no way to see why.
     /// </remarks>
-    public Budget GetAscensionPerkBudget(int chosen, int trees) => new(
-        chosen,
-        Math.Min(
-            _database.Defines.AscensionPerkSlots,
-            trees + _database.Defines.AscensionPerkSlotsWithoutTraditions));
+    public Budget GetAscensionPerkBudget(int chosen) =>
+        new(chosen, _database.Defines.AscensionPerkSlots);
 
     /// <summary>
     /// The tradition trees a plan may open, with the ones this empire could not disabled.
@@ -835,10 +830,9 @@ public sealed class EmpireRules(GameDatabase database)
     /// step.
     /// </para>
     /// <para>
-    /// The trees all go in at every step rather than being walked alongside. A plan does not say
-    /// whether a tree is opened before or after a perk is taken, and the seven ascension perks ask
-    /// for a tree slot still to be free - so the reading that cannot promise something the game
-    /// would refuse is the one where every planned tree is already open.
+    /// The trees all go in at every step rather than being walked alongside, because a plan does
+    /// not say whether a tree is opened before or after a perk is taken. What the perks ask of them
+    /// is whether a named tradition is taken at all, which every planned tree answers.
     /// </para>
     /// </remarks>
     public bool IsLegalPerkOrder(
@@ -850,6 +844,8 @@ public sealed class EmpireRules(GameDatabase database)
         ArgumentNullException.ThrowIfNull(perks);
         ArgumentNullException.ThrowIfNull(trees);
 
+        var opened = Opened(trees).ToList();
+
         for (var at = 0; at < perks.Count; at++)
         {
             if (_database.AscensionPerks.FirstOrDefault(p => p.Key == perks[at]) is not { } perk)
@@ -857,9 +853,9 @@ public sealed class EmpireRules(GameDatabase database)
                 continue;
             }
 
-            // The trees open one at a time between the perks, so the one in this place has seen
-            // only the trees that come before it.
-            var before = context.WithPlan(perks.Take(at), Opened(trees.Take(at + 1)));
+            // Only the perks are walked. Where a perk sits among the other perks is a rule the game
+            // states - "you must already have three" - and where it sits among the trees is not.
+            var before = context.WithPlan(perks.Take(at), opened);
 
             if (!_evaluator.Evaluate(perk.Possible, before).Passed ||
                 !_evaluator.Evaluate(perk.Potential, before).Passed)

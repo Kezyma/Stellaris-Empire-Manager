@@ -74,39 +74,30 @@ public sealed class AscensionPerkTests
     [Fact]
     public void TheBudgetCountsWhatIsPlannedAgainstWhatAGameGrants()
     {
-        var budget = Rules().GetAscensionPerkBudget(3, 2);
+        var budget = Rules().GetAscensionPerkBudget(3);
 
         Assert.Equal(3, budget.Spent);
         Assert.Equal(2, budget.Available);
     }
 
     /// <summary>
-    /// What a plan may take follows from what it opens, because that is how a game grants it.
+    /// What the plan opens does not decide how many perks it may name.
     /// </summary>
     /// <remarks>
-    /// A perk slot for every tradition tree finished - the modifier is on each
-    /// <c>tr_*_finish</c> - and one more from a technology, which is where the eighth comes from
-    /// when there are only seven trees. So a plan that opens nothing may still take one, and one
-    /// that opens everything may take them all.
+    /// A game does earn them one tree at a time, and tying the two together here read as a bug: the
+    /// perks tab opened offering a single slot to anyone who had not settled their traditions
+    /// first. The two lists are chosen independently, and the order that matters is the order
+    /// within each.
     /// </remarks>
     [Fact]
-    public void TheBudgetFollowsTheTreesThePlanOpens()
+    public void TheTreesDoNotDecideHowManyPerksMayBeNamed()
     {
-        var rules = new EmpireRules(RulesTestData.Database with
-        {
-            Defines = RulesTestData.Database.Defines with
-            {
-                AscensionPerkSlots = 8,
-                AscensionPerkSlotsWithoutTraditions = 1,
-            },
-        });
+        var rules = Ordered.Rules();
 
-        Assert.Equal(1, rules.GetAscensionPerkBudget(0, 0).Available);
-        Assert.Equal(4, rules.GetAscensionPerkBudget(0, 3).Available);
-        Assert.Equal(8, rules.GetAscensionPerkBudget(0, 7).Available);
-
-        // And never past what a game has slots for, however many trees a patch adds.
-        Assert.Equal(8, rules.GetAscensionPerkBudget(0, 20).Available);
+        Assert.Equal(8, rules.GetAscensionPerkBudget(0).Available);
+        Assert.All(
+            rules.GetAscensionPerkOptions(Ordered.Context(), [], []),
+            o => Assert.True(o.Enabled || o.Key == "ap_late", $"{o.Key} was blocked with no trees planned"));
     }
 
     /// <summary>
@@ -145,22 +136,23 @@ public sealed class AscensionPerkTests
     }
 
     /// <summary>
-    /// A perk asking for a tradition tree still to be free is blocked when the plan opens them all.
+    /// Where a perk sits among the trees is not a rule; where it sits among the perks is.
     /// </summary>
     /// <remarks>
-    /// The one condition that crosses between the two halves of a plan: the seven ascension perks
-    /// ask <c>num_tradition_categories &lt; @max_tradition_trees</c>, so a plan that has already
-    /// spoken for every tree has nowhere to put the one the perk would open.
+    /// The two lists are settled separately, so the same perks in any order are legal as far as the
+    /// trees are concerned - and still illegal where a perk is moved above the ones it counts.
     /// </remarks>
     [Fact]
-    public void APerkNeedingATreeSlotIsBlockedWhenThePlanOpensThemAll()
+    public void TheTreesDoNotDecideWhereAPerkMaySit()
     {
         var rules = Ordered.Rules();
 
-        // Judged where it would sit. The trees open one at a time between the perks, so the perk in
-        // the last place has seen them all and the one in the first place has seen one.
-        Assert.True(rules.IsLegalPerkOrder(Ordered.Context(), ["ap_path", "ap_one", "ap_two"], ["a", "b", "c"]));
-        Assert.False(rules.IsLegalPerkOrder(Ordered.Context(), ["ap_one", "ap_two", "ap_path"], ["a", "b", "c"]));
+        // The same perks in the same order, with nothing opened and with everything opened.
+        Assert.True(rules.IsLegalPerkOrder(Ordered.Context(), ["ap_one", "ap_two", "ap_late"], []));
+        Assert.True(rules.IsLegalPerkOrder(Ordered.Context(), ["ap_one", "ap_two", "ap_late"], ["a", "b", "c"]));
+
+        // And the order among the perks still decides, whatever the trees say.
+        Assert.False(rules.IsLegalPerkOrder(Ordered.Context(), ["ap_late", "ap_one", "ap_two"], ["a", "b", "c"]));
     }
 
     /// <summary>
@@ -191,18 +183,9 @@ public sealed class AscensionPerkTests
         new EmpireRules(Database).CreateContext(RulesTestData.ValidEmpire());
 
     /// <summary>Two perks that rule each other out, one that minds nobody, and two slots.</summary>
-    /// <remarks>
-    /// Both slots granted without opening a tradition tree, so these tests are about which perks
-    /// sit together rather than about how many a plan has earned - which is the next fixture's
-    /// subject.
-    /// </remarks>
     private static GameDatabase Database { get; } = RulesTestData.Database with
     {
-        Defines = RulesTestData.Database.Defines with
-        {
-            AscensionPerkSlots = 2,
-            AscensionPerkSlotsWithoutTraditions = 2,
-        },
+        Defines = RulesTestData.Database.Defines with { AscensionPerkSlots = 2 },
         AscensionPerks =
         [
             new AscensionPerkDefinition("ap_flesh"),
@@ -238,10 +221,6 @@ public sealed class AscensionPerkTests
             {
                 AscensionPerkSlots = 8,
                 TraditionSlots = 3,
-
-                // Enough that the tests below are about the conditions rather than about running
-                // out of room: three trees would otherwise allow only four perks.
-                AscensionPerkSlotsWithoutTraditions = 8,
             },
 
             // Each carrying the tradition that opens it and the one that finishes it, because that

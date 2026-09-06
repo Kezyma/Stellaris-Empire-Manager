@@ -2757,12 +2757,46 @@ button.icon .sem-action-icon { display: block; }
     }
 }
 
+/*
+    Narrow, the two columns become one above the other - and the boxes below the first stop being
+    boxes.
+
+    Stacked, the arrangement was three lists that scroll inside a page that also scrolls, and the
+    one holding what had been chosen was three rows tall. Nesting scrolling regions is unpleasant
+    to read on a touch screen and close to unusable to drag in: a row lifted in a hundred and forty
+    pixels is a row dragged against the edge of its own box.
+
+    So only the offered list keeps its own scroll, because it is the one that is genuinely long -
+    thirty perks, three hundred civics. What is chosen is short by nature, at most eight, and the
+    description is a paragraph: both grow to what they hold and the page scrolls once.
+*/
 @media (max-width: 700px) {
     .sem-trait-lists {
-        --trait-column: 300px;
-        --trait-detail: 150px;
+        --trait-column: 50vh;
+        --trait-detail: auto;
 
         grid-template-columns: minmax(0, 1fr);
+    }
+
+    .sem-trait-lists .chosen-column {
+        height: auto;
+    }
+
+    .sem-trait-lists .chosen-column .sem-trait-list,
+    .sem-trait-lists .chosen-column .sem-trait-detail {
+        flex: none;
+        height: auto;
+        overflow-y: visible;
+    }
+
+    /*
+        A handle wide enough to find, and always visible: there is no pointer to hover it with, and
+        a control that only appears on hover is one a finger never sees. The row's own height comes
+        from the touch rules further down, which give every trait row ten pixels above and below.
+    */
+    .sem-plan-grip {
+        width: var(--icon-btn);
+        opacity: 1;
     }
 }
 

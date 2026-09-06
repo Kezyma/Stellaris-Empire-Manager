@@ -954,28 +954,29 @@ public sealed class GameDataExtractionTests
         Assert.Equal(96, database.Civics.Count(c => Never(c.CanAddLater)));
         Assert.Equal(124, database.Civics.Count(c => Never(c.CanRemoveLater)));
 
-        // "num_ascension_perks > 1", which is what makes a perk unable to be first or second, and
-        // "num_tradition_categories < @max_tradition_trees" - the variable resolved to the seven it
-        // stands for rather than left as a name nothing could compare against.
+        // "num_ascension_perks > 1", which is what makes a perk unable to be first or second. By
+        // what it compares rather than as a whole record: it also carries the game's own sentence
+        // for failing it, which is wording rather than rule and which the picker shows.
         var counts = database.AscensionPerks
             .SelectMany(p => p.Possible.AndNested())
             .OfType<CountRequirement>()
             .ToList();
 
-        // By what they compare rather than as whole records: each also carries the game's own
-        // sentence for failing it, requires_ascension_perks_2 and requires_free_tradition_tree,
-        // which is wording rather than rule and which the picker shows.
         Assert.Contains(
             counts,
             c => c.Of == SelectionCategory.AscensionPerk
                 && c.Comparison == CountComparison.Above
                 && c.Value == 1);
 
+        // And its sibling is not counted at all. How many trees were open when a perk was taken is
+        // a fact about the order a game happened in, and a plan settles its traditions in one go
+        // rather than one between each perk - so reading it refused every ascension perk to anyone
+        // who had finished planning their traditions.
+        Assert.DoesNotContain(counts, c => c.Of == SelectionCategory.TraditionTree);
+
         Assert.Contains(
-            counts,
-            c => c.Of == SelectionCategory.TraditionTree
-                && c.Comparison == CountComparison.Below
-                && c.Value == 7);
+            database.AscensionPerks.SelectMany(p => p.Possible.AndNested()).OfType<UnknownRequirement>(),
+            u => u.Name == "num_tradition_categories");
 
         // A technology is something this empire will have by the time it takes the perk, so it is
         // read as an assumption rather than as a refusal. Answering it false is what made World

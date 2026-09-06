@@ -1,13 +1,12 @@
 {
   "schemaVersion": 7,
   "gameVersion": "v4.4.6",
-  "extractorVersion": "0.1.0\u002B0023dba28c525b8859850c39faf5c6b0af4a8649",
+  "extractorVersion": "0.1.0\u002Bfdb1ad8cc6c5134e7d4d92f2bfa6c39a4ba3bcd9",
   "defines": {
     "ethicsPoints": 3,
     "civicPoints": 2,
     "ascensionPerkSlots": 8,
     "traditionSlots": 7,
-    "ascensionPerkSlotsWithoutTraditions": 1,
     "plannedCivicPoints": 3,
     "defaultCityPreviewPlanetClass": "pc_continental",
     "cityPopLevel": 4
@@ -104445,10 +104444,9 @@
             "failureText": "requires_not_ap_synthetic_evolution"
           },
           {
-            "kind": "count",
-            "of": "TraditionTree",
-            "comparison": "Below",
-            "value": 7,
+            "kind": "unknown",
+            "name": "num_tradition_categories",
+            "assume": true,
             "failureText": "requires_free_tradition_tree"
           },
           {
@@ -104820,10 +104818,9 @@
             "failureText": "requires_not_ap_synthetic_evolution"
           },
           {
-            "kind": "count",
-            "of": "TraditionTree",
-            "comparison": "Below",
-            "value": 7,
+            "kind": "unknown",
+            "name": "num_tradition_categories",
+            "assume": true,
             "failureText": "requires_free_tradition_tree"
           }
         ]
@@ -105104,10 +105101,9 @@
             ]
           },
           {
-            "kind": "count",
-            "of": "TraditionTree",
-            "comparison": "Below",
-            "value": 7,
+            "kind": "unknown",
+            "name": "num_tradition_categories",
+            "assume": true,
             "failureText": "requires_free_tradition_tree"
           }
         ]
@@ -105361,10 +105357,9 @@
             ]
           },
           {
-            "kind": "count",
-            "of": "TraditionTree",
-            "comparison": "Below",
-            "value": 7,
+            "kind": "unknown",
+            "name": "num_tradition_categories",
+            "assume": true,
             "failureText": "requires_free_tradition_tree"
           }
         ]
@@ -105720,10 +105715,9 @@
             "failureText": "requires_not_ap_mind_over_matter"
           },
           {
-            "kind": "count",
-            "of": "TraditionTree",
-            "comparison": "Below",
-            "value": 7,
+            "kind": "unknown",
+            "name": "num_tradition_categories",
+            "assume": true,
             "failureText": "requires_free_tradition_tree"
           }
         ]
@@ -106188,10 +106182,9 @@
             "failureText": "requires_not_ap_organo_machine_interfacing"
           },
           {
-            "kind": "count",
-            "of": "TraditionTree",
-            "comparison": "Below",
-            "value": 7,
+            "kind": "unknown",
+            "name": "num_tradition_categories",
+            "assume": true,
             "failureText": "requires_free_tradition_tree"
           },
           {
@@ -106565,10 +106558,9 @@
             ]
           },
           {
-            "kind": "count",
-            "of": "TraditionTree",
-            "comparison": "Below",
-            "value": 7,
+            "kind": "unknown",
+            "name": "num_tradition_categories",
+            "assume": true,
             "failureText": "requires_free_tradition_tree"
           }
         ]

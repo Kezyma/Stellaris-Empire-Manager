@@ -344,17 +344,6 @@ public sealed record GameDefines
     /// <summary>How many tradition trees a game allows to be opened. Seven in an unmodified one.</summary>
     public int TraditionSlots { get; init; } = 7;
 
-    /// <summary>
-    /// How many ascension perks are granted by something other than finishing a tradition tree.
-    /// One in an unmodified game.
-    /// </summary>
-    /// <remarks>
-    /// The game hands out a perk slot for each tradition tree completed - the modifier sits on
-    /// every <c>tr_*_finish</c> - which is seven, against eight slots. The eighth is
-    /// <c>tech_ascension_theory</c>, and this is where it is counted, so that what a plan may hold
-    /// follows from what it opens rather than from a number typed here.
-    /// </remarks>
-    public int AscensionPerkSlotsWithoutTraditions { get; init; } = 1;
 
     /// <summary>
     /// How many civics an empire may end a game with, rather than start one with. Three in an

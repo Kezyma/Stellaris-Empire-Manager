@@ -1,4 +1,4 @@
-namespace Sem.GameData;
+﻿namespace Sem.GameData;
 
 /// <summary>
 /// Named conditions about an empire design as a whole, which the game's script asks about through
@@ -141,6 +141,14 @@ public static class DesignPredicates
     /// </remarks>
     public static IReadOnlySet<string> UnknowableWhenPlanning { get; } = new HashSet<string>(StringComparer.Ordinal)
     {
+        // How many tradition trees are open at the moment a perk is taken, which is a question
+        // about the order a game happened in rather than about the plan. The two lists are chosen
+        // independently - all the traditions in one go, the perks in another - so a plan naming
+        // seven trees is not a plan that had seven open when it took its first perk, and reading it
+        // that way refused every ascension perk to anyone who had finished planning their
+        // traditions.
+        "num_tradition_categories",
+
         // Things a game grants over time.
         "has_technology",
         "has_been_the_crisis",

@@ -176,15 +176,8 @@
 
     private string Written => Session.Plans.Text.Write(Plan);
 
-    /// <summary>
-    /// How many perks this plan may hold, which is what the trees it opens would unlock.
-    /// </summary>
-    /// <remarks>
-    /// A game grants a perk for finishing a tradition tree and one more from a technology, so what
-    /// a plan may take follows from what it opens. The tab says so too, which is what stops the
-    /// count reading as a broken eight.
-    /// </remarks>
-    private Budget PerkBudget => Session.Rules.GetAscensionPerkBudget(Plan.Perks.Count, Plan.Trees.Count);
+    /// <summary>How many perks this plan holds, against how many a game grants.</summary>
+    private Budget PerkBudget => Session.Rules.GetAscensionPerkBudget(Plan.Perks.Count);
 
     /// <summary>How much of a biography the plan is spending.</summary>
     private Budget Length => new(Written.Length, PlanText.Budget);
