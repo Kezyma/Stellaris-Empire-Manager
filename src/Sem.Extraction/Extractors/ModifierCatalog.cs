@@ -171,9 +171,17 @@ public sealed class ModifierCatalog
     /// which is what had one of them showing as a proportion.
     /// </para>
     /// <para>
-    /// The rest are families whose other members are already settled, and which no flat amount could
-    /// be: an army at -0.06 of its health, a leader at -0.13 of their experience, a wreck with -0.5
-    /// of a chance of leaving debris.
+    /// The rest have no statement anywhere and are settled on the game's own evidence rather than on
+    /// how they look. Three things say it together. Neither <c>army_health</c> nor
+    /// <c>species_leader_exp_gain</c> has a <c>_mult</c> twin anywhere in the files, so the plain
+    /// form is the proportional one - where <c>army_damage</c> does have <c>army_damage_mult</c>,
+    /// and it is the suffixed one a trait actually uses. An unsuffixed percentage is ordinary here:
+    /// of the seventy-six modifiers the game declares <c>percentage = yes</c>, many carry no ending
+    /// at all, and not one of the twenty-seven it declares flat ends in <c>_mult</c>, so the suffix
+    /// rule is never contradicted by a statement. And the numbers are fractions of one across every
+    /// use - thirty-six of army health, a hundred and nine of leader experience, none above 1.0,
+    /// most between 0.05 and 0.4. The repeatable armour technologies grant <c>army_health = 0.05</c>,
+    /// which is five per cent of an army; as a flat amount it is a twentieth of one hit point.
     /// </para>
     /// <para>
     /// The counters at the end are here for the opposite reason - not because the numbers mislead
