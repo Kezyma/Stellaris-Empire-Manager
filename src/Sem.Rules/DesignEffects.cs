@@ -35,10 +35,17 @@ public static class DesignEffects
     /// of the conditions in the game — and printed a footnote apologising for it.
     /// </para>
     /// <para>
-    /// The rest genuinely belong to a game already under way: once a tradition is adopted, where a
-    /// planet exists. Those stay out, since counting them would promise an empire bonuses it does
-    /// not start with, and they are listed against their own option where the condition can be
+    /// The rest genuinely belong to a game already under way - where a planet exists, what the
+    /// galaxy has decided. Those stay out, since counting them would promise an empire bonuses it
+    /// does not start with, and they are listed against their own option where the condition can be
     /// shown alongside them.
+    /// </para>
+    /// <para>
+    /// Adopting a tradition used to be in that second group and is now in the first, since a plan
+    /// says which trees are meant to be opened. It makes no difference to these totals - what they
+    /// add up is the species, the ethics, the authority, the civics and the traits, and no option
+    /// among those asks about a tradition - but it is the reason the hundred and eighteen conditions
+    /// a tradition writes about itself now resolve where they are drawn.
     /// </para>
     /// </remarks>
     public static IReadOnlyList<CombinedModifier> Combine(DesignContext context)

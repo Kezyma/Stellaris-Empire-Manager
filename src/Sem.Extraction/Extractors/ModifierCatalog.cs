@@ -1,6 +1,5 @@
 ﻿using Sem.Clausewitz;
 using Sem.GameData;
-using Sem.Io;
 
 namespace Sem.Extraction.Extractors;
 
