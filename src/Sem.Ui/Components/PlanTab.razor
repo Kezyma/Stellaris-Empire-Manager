@@ -67,19 +67,23 @@
     <PickerTabs Tabs="@Parts" Label="Which part of the plan" Selected="@_part"
                 SelectedChanged="p => _part = p" />
 
+    @*
+        In the order a game takes them: a tree is opened, finished, and the perk it earns is spent.
+        The civics come last because they are a reform rather than a step on that path.
+    *@
     @if (_part == 0)
-    {
-        <PlanPicker @key="@("perks")" Heading="Ascension Perks" BudgetKey="ASCENSION_PERKS"
-                    Budget="@PerkBudget"
-                    Available="@PerkOptions(chosen: false)" Chosen="@PerkOptions(chosen: true)"
-                    OnToggle="TogglePerk" OnReorder="MovePerk" />
-    }
-    else if (_part == 1)
     {
         <PlanPicker @key="@("trees")" Heading="Traditions" BudgetKey="TRADITIONS"
                     Budget="@Session.Rules.GetTraditionBudget(Plan.Trees.Count)"
                     Available="@TreeOptions(chosen: false)" Chosen="@TreeOptions(chosen: true)"
                     OnToggle="ToggleTree" OnReorder="MoveTree" />
+    }
+    else if (_part == 1)
+    {
+        <PlanPicker @key="@("perks")" Heading="Ascension Perks" BudgetKey="ASCENSION_PERKS"
+                    Budget="@PerkBudget"
+                    Available="@PerkOptions(chosen: false)" Chosen="@PerkOptions(chosen: true)"
+                    OnToggle="TogglePerk" OnReorder="MovePerk" />
     }
     else
     {
@@ -132,8 +136,8 @@
     /// </remarks>
     private IReadOnlyList<PickerTabs.Tab> Parts =>
     [
-        new("Ascension Perks", $"{Plan.Perks.Count}/{PerkBudget.Available}"),
         new("Traditions", $"{Plan.Trees.Count}/{Session.Data.Database.Defines.TraditionSlots}"),
+        new("Ascension Perks", $"{Plan.Perks.Count}/{PerkBudget.Available}"),
         new("Civics", $"{Locked.Count + Planned.Count}/{Session.Data.Database.Defines.PlannedCivicPoints}"),
     ];
 

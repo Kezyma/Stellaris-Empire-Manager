@@ -1,4 +1,4 @@
-namespace Sem.Rules;
+﻿namespace Sem.Rules;
 
 /// <summary>
 /// Why the rules blocked something, for the cases the game's own script does not explain.
@@ -44,6 +44,17 @@ public static class RuleReasons
 
     /// <summary>Another trait already taken excludes this one. Followed by that trait's key.</summary>
     public const string Opposite = "sem.trait.opposite";
+
+    /// <summary>
+    /// Something the option asks for and the design does not have. Followed by its key.
+    /// </summary>
+    /// <remarks>
+    /// The last thing said rather than the first: almost every condition in the game is wrapped in
+    /// the sentence the game itself wrote for it, and that wording always wins. This is for the
+    /// ones with no sentence at all - two perks, and eight of the fourteen traditions that open a
+    /// tree, including every ascension. Those simply would not be taken and would not say why.
+    /// </remarks>
+    public const string Missing = "sem.needs";
 
     /// <summary>There are not enough trait points left.</summary>
     public const string NotEnoughPoints = "sem.trait.points";

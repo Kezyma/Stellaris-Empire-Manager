@@ -1,4 +1,4 @@
-using Sem.GameData;
+﻿using Sem.GameData;
 
 namespace Sem.Rules;
 
@@ -130,9 +130,12 @@ public sealed class RequirementEvaluator
         // succeeded, and its reasons describe a failure that did not happen.
         NotRequirement not => Negate(Evaluate(not.Item, context)),
 
+        // Naming what is wanted, for the conditions the game left unexplained. Anything above this
+        // carrying its own wording replaces it, which is nearly everything - Evaluate prefers the
+        // nearest explanation, so this only ever surfaces where there was none.
         SelectionRequirement selection => context.Has(selection.Category, selection.Key)
             ? Verdict.Pass
-            : Verdict.Fail,
+            : new Verdict(false, [RuleReasons.For(RuleReasons.Missing, selection.Key)]),
 
         DlcRequirement dlc => context.OwnedDlc.Contains(dlc.Name) ? Verdict.Pass : Verdict.Fail,
 

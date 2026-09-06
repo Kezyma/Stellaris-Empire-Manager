@@ -1144,4 +1144,42 @@ public sealed class GameDataExtractionTests
         Assert.True(rules.GetTraditionTreeOptions(context, [], [])
             .Single(o => o.Key == "tradition_prosperity").Enabled);
     }
+    /// <summary>
+    /// A perk or a tree that will not be taken always says why.
+    /// </summary>
+    /// <remarks>
+    /// Almost every condition in the game is wrapped in a sentence the game wrote for it, and that
+    /// wording is what a blocked row shows. Two perks have none, and eight of the fourteen
+    /// traditions that open a tree have none either - among them every ascension, whose gate is the
+    /// perk that unlocks it. Those rows simply would not be taken and would not say what was
+    /// wanted, which reads as a broken control rather than a rule.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void ABlockedPerkOrTreeAlwaysSaysWhy()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var rules = new EmpireRules(Database.Value);
+        var context = rules.CreateContext(EmpireDesignsFile.CreateEmpty().Add("Test"));
+
+        static IEnumerable<string> Silent(IEnumerable<OptionState> options) =>
+            options.Where(o => o.Visible && !o.Enabled && o.Reasons.Count == 0).Select(o => o.Key);
+
+        var perks = Silent(rules.GetAscensionPerkOptions(context, [], [])).ToList();
+        var trees = Silent(rules.GetTraditionTreeOptions(context, [], [])).ToList();
+
+        Assert.True(perks.Count == 0, "Perks blocked without a reason: " + string.Join(", ", perks));
+        Assert.True(trees.Count == 0, "Trees blocked without a reason: " + string.Join(", ", trees));
+
+        // And the reason for an ascension tree names the perk that opens it, since the game says
+        // nothing there itself.
+        var cybernetics = rules.GetTraditionTreeOptions(context, [], [])
+            .Single(o => o.Key == "tradition_cybernetics");
+
+        Assert.False(cybernetics.Enabled);
+        Assert.Contains(
+            cybernetics.Reasons,
+            r => RuleReasons.Split(r).Subject == "ap_the_flesh_is_weak");
+    }
 }
