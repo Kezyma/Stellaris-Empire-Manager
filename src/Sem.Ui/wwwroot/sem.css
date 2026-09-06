@@ -515,6 +515,47 @@ button.danger:hover:not(:disabled) {
     outline-offset: 1px;
 }
 
+/*
+   Scrollbars, in the app's own colours rather than the browser's.
+
+   Both spellings, because they are read by different browsers and not by the same one: where the
+   standard properties are understood they win outright and the webkit rules below are ignored,
+   which is the right way round - the standard pair is the one that will still be here later.
+
+   Stated on the root so every box inherits it, including the ones inside a modal.
+*/
+:root {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border: 2px solid transparent;
+    border-radius: 999px;
+
+    /* So the border reads as a gap rather than as a paler edge to the thumb. */
+    background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-faint);
+    background-clip: padding-box;
+}
+
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
 input[type="text"], input[type="number"], select, textarea {
     font: inherit;
     color: var(--text);
@@ -4204,12 +4245,36 @@ button.icon .sem-action-icon { display: block; }
     text-decoration: underline;
 }
 
-/* Sized to the digits it holds; everything else about it is the app's own input. */
+/*
+   The box for typing a row's new position.
+
+   Sized to the digits it holds, and drawn without the browser's own arrows. Those were the whole
+   problem: two tiny chevrons in the platform's colours, stacked inside a twenty-three pixel box in
+   a thirty-five pixel row, which no amount of padding made look like part of this page. The way to
+   move a row a step at a time is the grip on the card and the arrow keys on it; here a number is
+   typed and entered, so the arrows were offering a third way to do it badly.
+
+   No height of its own, which is the point: the app's ordinary control height is nine pixels taller
+   than the number it replaces, and setting it made every row grow by three the moment one was
+   pressed. It keeps the padding it had, and the row does not move.
+*/
 .sem-table .index input {
-    width: 4.5rem;
+    width: 3.75rem;
     padding: var(--space-2xs) var(--space-sm);
     font-variant-numeric: tabular-nums;
-    text-align: right;
+    text-align: center;
+}
+
+.sem-table .index input::-webkit-outer-spin-button,
+.sem-table .index input::-webkit-inner-spin-button {
+    appearance: none;
+    margin: 0;
+}
+
+/* Firefox's spelling of the same thing, and the reason the box needs no room for arrows. */
+.sem-table .index input {
+    appearance: textfield;
+    -moz-appearance: textfield;
 }
 
 /*
@@ -4914,6 +4979,21 @@ button.icon .sem-action-icon { display: block; }
     place-items: center;
     padding: var(--space-xl);
     background: rgb(0 0 0 / 0.6);
+
+    /*
+       The page behind holds still. A modal covers the viewport, so every wheel and every finger
+       lands on it or on the sheet inside it - and when whichever of those is scrolling reaches its
+       end, the browser hands the rest of the gesture to the page underneath, which then scrolls
+       away beneath the modal and is somewhere else when it closes. Containing it stops that
+       handing-on. It needs a scroll container to apply to, which is what overflow buys; the modal
+       itself never has anything to scroll, since the sheet is capped at its height.
+    */
+    overflow: auto;
+    overscroll-behavior: contain;
+}
+
+.sem-modal > .sheet {
+    overscroll-behavior: contain;
 }
 
 .sem-modal > .sheet {
@@ -5076,9 +5156,24 @@ button.icon .sem-action-icon { display: block; }
    written first and would otherwise take the top-left cell - and because the panels have to span
    both rows for the totals to be measured against all of them.
 */
+/*
+   Sticky, because the card is taller than the sheet it sits in and these are the things a reader
+   reaches for after looking at something further down - Save most of all. The sheet is what
+   scrolls, so this sticks to the top of it.
+
+   Its own background, or the panels would scroll through it. Above them too: a sticky item is
+   still in flow and would otherwise be painted in source order, which puts it under the scene.
+*/
 .sem-lite-actions {
     grid-column: 2;
     grid-row: 1;
+
+    position: sticky;
+    top: calc(var(--lite-pad) * -1);
+    z-index: 3;
+    padding: var(--lite-pad) 0;
+    margin: calc(var(--lite-pad) * -1) 0 0;
+    background: var(--bg-panel);
 }
 
 .sem-lite-main {

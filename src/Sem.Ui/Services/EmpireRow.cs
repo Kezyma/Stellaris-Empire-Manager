@@ -479,6 +479,16 @@ public sealed record EmpireFacet(
 
     public const string Galaxy = "Galaxy";
 
+    /// <summary>
+    /// What the empire means to become, rather than what it is.
+    /// </summary>
+    /// <remarks>
+    /// Its own tab because it is a different kind of question. Everything else here asks what an
+    /// empire is now; these ask what its player wrote down about later, and mixing the two would
+    /// put "Planned civics" beside "Civics" as though they were alternatives.
+    /// </remarks>
+    public const string Plan = "Plan";
+
     /// <summary>Every heading with a list behind it, which is everything that is picked rather than typed.</summary>
     public static IReadOnlyList<EmpireFacet> All { get; } =
     [
@@ -518,6 +528,13 @@ public sealed record EmpireFacet(
         new("room", "Room", r => Some(r.Room), o => o.Rooms, Galaxy),
         new("shipset", "Shipset", r => Some(r.Shipset), o => o.Shipsets, Galaxy),
         new("bioship", "Bioships", r => YesOrNo(r.Bioship), Group: Galaxy),
+
+        // The civics one reads the whole government a plan ends with, the greyed ones included:
+        // a civic the empire cannot give up is part of what it will be, so a reader asking which
+        // empires end up with it should be told about those too.
+        new("plantraditions", "Planned traditions", r => r.PlanTrees, o => o.TraditionTrees, Plan),
+        new("planperks", "Planned perks", r => r.PlanPerks, o => o.AscensionPerks, Plan),
+        new("plancivics", "Planned civics", r => r.PlanCivics, o => o.Civics, Plan),
     ];
 
     /// <summary>
@@ -627,9 +644,9 @@ public sealed record EmpireColumn(
         Picked("rulerportrait", false),
         Picked("rulergender", false),
         Picked("rulertraits", false),
-        new("plantraditions", "Planned traditions", false, r => r.PlanTrees),
-        new("planperks", "Planned perks", false, r => r.PlanPerks),
-        new("plancivics", "Planned civics", false, r => r.PlanCivics),
+        Picked("plantraditions", false),
+        Picked("planperks", false),
+        Picked("plancivics", false),
         new("prefix", "Ship prefix", false, Line: r => r.ShipPrefix),
         Picked("spawn", false),
         Picked("fallen", false),
@@ -841,6 +858,33 @@ public sealed class EmpireOptions(DesignSession session)
 
     public IReadOnlyList<EmpireChoice> Civics => _civics ??=
         Named(Visible(_session.Rules.GetCivicOptions(Blank)), key => Civic(key));
+
+    /// <summary>
+    /// Every ascension perk and tradition tree a plan could name.
+    /// </summary>
+    /// <remarks>
+    /// The whole list rather than what a blank empire may take, unlike the headings above. Those
+    /// narrow a design's own choices, where an option nobody could pick is noise; these narrow a
+    /// list of empires, and an empire in it may be any shape at all - so a perk only a gestalt can
+    /// take still has to be offered to the reader looking for gestalts that plan it.
+    /// </remarks>
+    public IReadOnlyList<EmpireChoice> AscensionPerks => _ascensionPerks ??=
+    [
+        .. Database.AscensionPerks
+            .Select(p => new EmpireChoice(p.Key, Loc.Text(p.NameKey), p.Icon, p.Effects))
+            .OrderBy(c => c.Name, StringComparer.CurrentCulture),
+    ];
+
+    private IReadOnlyList<EmpireChoice>? _ascensionPerks;
+
+    public IReadOnlyList<EmpireChoice> TraditionTrees => _traditionTrees ??=
+    [
+        .. Database.TraditionTrees
+            .Select(t => new EmpireChoice(t.Key, Loc.Text(t.NameKey), t.Icon, null))
+            .OrderBy(c => c.Name, StringComparer.CurrentCulture),
+    ];
+
+    private IReadOnlyList<EmpireChoice>? _traditionTrees;
 
     public IReadOnlyList<EmpireChoice> Origins => _origins ??=
         Named(Visible(_session.Rules.GetOriginOptions(Blank)), key =>

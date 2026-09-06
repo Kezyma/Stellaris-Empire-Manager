@@ -321,7 +321,14 @@
                 empire, and this is the column that holds the people. Two rows and no picture: a
                 plan has no single image, and a face-button slot with nothing in it is the one shape
                 this card does not have.
+
+                Not while the empire is still one of the game's own. A preset is being read rather
+                than kept, and what belongs in this place then is what the game says about it - the
+                panel below. Saving is what makes the empire the player's and the question "what do
+                you mean to do with it" worth asking, so the two take the same place in turn.
             *@
+            @if (Told is not { Length: > 0 })
+            {
             <section class="sem-lite-panel" style="--panel-order: 8">
                 <div class="body">
                     <div class="about">
@@ -338,6 +345,7 @@
                     </div>
                 </div>
             </section>
+            }
 
             @*
                 What the game says about one of its own, while the copy is still a copy.
@@ -346,9 +354,10 @@
                 the people: it is a paragraph about who these are, and it belongs where the species
                 and the ruler are rather than floating over the whole editor. It goes when the
                 empire is saved, because at that point the empire is the player's and the paragraph
-                describes something they have begun to change.
+                describes something they have begun to change - and the plan panel above takes this
+                place instead.
             *@
-            @if (Session.Localizer.Html(Lore, string.Empty) is { Length: > 0 } lore)
+            @if (Told is { Length: > 0 } lore)
             {
                 <section class="sem-lite-panel sem-lore-panel" style="--panel-order: 9">
                     <div class="body">
@@ -394,6 +403,16 @@
     /// </remarks>
     [Parameter]
     public string? Lore { get; set; }
+
+    /// <summary>
+    /// What the game says about this empire, where it is still saying it.
+    /// </summary>
+    /// <remarks>
+    /// Read once and asked twice, because two panels take the same place in turn and the answer has
+    /// to be the same for both - a preset shows what the game wrote about it, and an empire the
+    /// player has kept shows what they mean to do with it.
+    /// </remarks>
+    private string? Told => Session.Localizer.Html(Lore, string.Empty);
 
     /// <summary>The save, revert, delete and share row, which the card draws in its corner.</summary>
     /// <remarks>
