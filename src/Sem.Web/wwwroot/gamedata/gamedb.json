@@ -1,12 +1,13 @@
 {
   "schemaVersion": 7,
   "gameVersion": "v4.4.6",
-  "extractorVersion": "0.1.0\u002Bbaa8bdafbdda69404f13e0b5de7c42a2a75044b4",
+  "extractorVersion": "0.1.0\u002B0023dba28c525b8859850c39faf5c6b0af4a8649",
   "defines": {
     "ethicsPoints": 3,
     "civicPoints": 2,
     "ascensionPerkSlots": 8,
     "traditionSlots": 7,
+    "ascensionPerkSlotsWithoutTraditions": 1,
     "plannedCivicPoints": 3,
     "defaultCityPreviewPlanetClass": "pc_continental",
     "cityPopLevel": 4
@@ -70076,11 +70077,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -71905,11 +71908,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -72121,11 +72126,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -73308,11 +73315,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -73468,7 +73477,8 @@
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [
         "trait_aquatic"
@@ -73580,11 +73590,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [
         "trait_robot_aquatic"
@@ -75020,11 +75032,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -75280,7 +75294,8 @@
       "canAddLater": {
         "kind": "unknown",
         "name": "has_technology",
-        "assume": true
+        "assume": true,
+        "failureText": "CIVIC_NOT_MODDABLE_ONLY_REMOVE"
       },
       "canRemoveLater": {
         "kind": "not",
@@ -75474,11 +75489,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -75672,7 +75689,8 @@
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -76383,7 +76401,8 @@
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [
         "trait_storm_touched"
@@ -76603,7 +76622,8 @@
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -76702,7 +76722,8 @@
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -76831,7 +76852,8 @@
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -77415,7 +77437,8 @@
             "category": "Civics",
             "key": "civic_entropy_drinkers_corporate"
           }
-        ]
+        ],
+        "failureText": "CIVIC_NOT_MODDABLE_ONLY_REMOVE"
       },
       "canRemoveLater": {
         "kind": "always",
@@ -77563,7 +77586,8 @@
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -77875,7 +77899,8 @@
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -78053,7 +78078,8 @@
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -78251,7 +78277,8 @@
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [
         "trait_tankbound"
@@ -78562,11 +78589,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -78756,7 +78785,8 @@
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -78888,11 +78918,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -79000,7 +79032,8 @@
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -79328,11 +79361,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -87771,11 +87806,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -87831,11 +87868,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -87891,11 +87930,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -87955,11 +87996,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -88019,11 +88062,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -88086,11 +88131,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -88153,11 +88200,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -88213,11 +88262,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -88277,11 +88328,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -88341,11 +88394,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -88405,11 +88460,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -88469,11 +88526,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -88533,11 +88592,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -88592,11 +88653,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -88651,11 +88714,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -88714,11 +88779,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -88775,11 +88842,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -88846,11 +88915,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -88911,11 +88982,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -88978,11 +89051,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -89039,11 +89114,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -89100,11 +89177,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -89161,11 +89240,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -89222,11 +89303,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -89283,11 +89366,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -89326,11 +89411,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -89381,11 +89468,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -89434,11 +89523,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -89487,11 +89578,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -89540,11 +89633,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -89593,11 +89688,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -89646,11 +89743,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -89707,11 +89806,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -89768,11 +89869,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -89829,11 +89932,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -89890,11 +89995,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -89963,11 +90070,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -90024,11 +90133,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -90085,11 +90196,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -90146,11 +90259,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -90207,11 +90322,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -90250,11 +90367,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -90293,11 +90412,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -90356,11 +90477,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -90409,11 +90532,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -90458,11 +90583,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -90505,11 +90632,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -90558,11 +90687,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -90621,11 +90752,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -90690,11 +90823,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -90751,11 +90886,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -90812,11 +90949,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -90873,11 +91012,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -91447,11 +91588,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -91818,11 +91961,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -92099,11 +92244,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [
         "trait_stargazer"
@@ -92412,11 +92559,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -92517,11 +92666,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -92774,11 +92925,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -92953,11 +93106,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -93014,11 +93169,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -93087,11 +93244,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -93156,11 +93315,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -93231,11 +93392,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -93331,11 +93494,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -93475,7 +93640,8 @@
             ],
             "failureText": "has_not_begun_non_psionic_ascension_fail"
           }
-        ]
+        ],
+        "failureText": "CIVIC_NOT_MODDABLE_ONLY_REMOVE"
       },
       "canRemoveLater": {
         "kind": "always",
@@ -93538,11 +93704,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -93695,11 +93863,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -93912,11 +94082,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -94011,11 +94183,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -94107,11 +94281,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -94309,11 +94485,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -94453,11 +94631,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -94561,11 +94741,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -95853,11 +96035,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -95925,11 +96109,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -96055,11 +96241,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -96454,11 +96642,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -96617,11 +96807,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -96678,11 +96870,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -96858,7 +97052,8 @@
             ],
             "failureText": "has_not_begun_non_psionic_ascension_fail"
           }
-        ]
+        ],
+        "failureText": "CIVIC_NOT_MODDABLE_ONLY_REMOVE"
       },
       "canRemoveLater": {
         "kind": "always",
@@ -96921,11 +97116,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -96979,11 +97176,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -97069,11 +97268,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -97155,11 +97356,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -98044,11 +98247,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -98887,7 +99092,8 @@
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [
         "trait_aquatic"
@@ -98988,11 +99194,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [
         "trait_robot_aquatic"
@@ -100736,7 +100944,8 @@
       "canAddLater": {
         "kind": "unknown",
         "name": "has_technology",
-        "assume": true
+        "assume": true,
+        "failureText": "CIVIC_NOT_MODDABLE_ONLY_REMOVE"
       },
       "canRemoveLater": {
         "kind": "all",
@@ -100753,7 +100962,8 @@
               "assume": true
             }
           }
-        ]
+        ],
+        "failureText": "CIVIC_NOT_MODDABLE_ONLY_REMOVE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -100898,11 +101108,13 @@
       },
       "canAddLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -101082,7 +101294,8 @@
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -101464,7 +101677,8 @@
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [
         "trait_storm_touched"
@@ -101658,7 +101872,8 @@
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -101746,7 +101961,8 @@
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -101866,7 +102082,8 @@
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -102363,7 +102580,8 @@
             "category": "Civics",
             "key": "civic_entropy_drinkers"
           }
-        ]
+        ],
+        "failureText": "CIVIC_NOT_MODDABLE_ONLY_REMOVE"
       },
       "canRemoveLater": {
         "kind": "always",
@@ -102500,7 +102718,8 @@
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -102785,7 +103004,8 @@
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -102937,7 +103157,8 @@
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -103127,7 +103348,8 @@
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [
         "trait_tankbound"
@@ -103272,7 +103494,8 @@
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -103390,7 +103613,8 @@
       },
       "canRemoveLater": {
         "kind": "always",
-        "value": false
+        "value": false,
+        "failureText": "CIVIC_NOT_MODDABLE"
       },
       "forcedTraits": [],
       "softTraits": [],

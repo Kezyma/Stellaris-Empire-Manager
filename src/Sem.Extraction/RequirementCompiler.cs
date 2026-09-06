@@ -396,8 +396,10 @@ public sealed class RequirementCompiler
                 return CompileTrigger(node.Block, depth + 1);
 
             // Wording, not conditions. custom_tooltip pulls its own fail_text out by name because
-            // it needs the value; these are the same keys met anywhere else, including the
-            // success_text that sits beside it and used to be compiled as though it were a rule.
+            // it needs the value, and a civic's modification block does the same with its
+            // moddable_conditions_custom_tooltip; these are the same keys met anywhere else,
+            // including the success_text that sits beside a fail_text and used to be compiled as
+            // though it were a rule.
             case "success_text" or "fail_text" or "moddable_conditions_custom_tooltip":
                 return new AlwaysRequirement(true);
 

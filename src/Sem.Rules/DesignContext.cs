@@ -340,7 +340,14 @@ public sealed class DesignContext
         SelectionCategory.Civics => Civics.Count,
         SelectionCategory.Traits => Traits.Count,
         SelectionCategory.AscensionPerk => AscensionPerks.Count,
-        SelectionCategory.TraditionTree => TraditionTrees.Count,
+
+        // Only the trees themselves. The set they sit in also holds the tradition that opens each
+        // one and the tradition that finishes it, because the game's conditions ask after those by
+        // name - so counting the set would say a plan had opened three times as many trees as it
+        // had, and "a tree slot must still be free" would run out after two.
+        SelectionCategory.TraditionTree =>
+            TraditionTrees.Count(k => Database.TraditionTrees.Any(t => t.Key == k)),
+
         _ => 0,
     };
 

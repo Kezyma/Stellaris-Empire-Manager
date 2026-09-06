@@ -1,4 +1,4 @@
-@using Microsoft.AspNetCore.Components.Web
+﻿@using Microsoft.AspNetCore.Components.Web
 @using Microsoft.JSInterop
 @implements IAsyncDisposable
 @inject IJSRuntime Js
@@ -45,15 +45,14 @@
                 cannot be given up, so they are shown rather than hidden - a player deciding what to
                 reform into needs to see what is not up for discussion - but they are not part of
                 the list below and take no grip, because there is nothing to do to them.
-            *@
-            @if (Fixed.Count > 0)
-            {
-                <p class="sem-hint padded">Already in place, and cannot be given up.</p>
 
-                @foreach (var option in Fixed)
-                {
-                    @Row(option, chosen: true, locked: true)
-                }
+                Unlabelled. A greyed row that will not press says it is not a choice, and the row's
+                own description carries the game's sentence for why, which is the answer to the
+                question a label would only have raised.
+            *@
+            @foreach (var option in Fixed)
+            {
+                @Row(option, chosen: true, locked: true)
             }
 
             @if (Chosen.Count == 0 && Fixed.Count == 0)

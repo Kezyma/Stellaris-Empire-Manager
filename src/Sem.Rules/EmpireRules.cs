@@ -1,4 +1,4 @@
-using Sem.Designs;
+﻿using Sem.Designs;
 using Sem.GameData;
 
 namespace Sem.Rules;
@@ -742,15 +742,18 @@ public sealed class EmpireRules(GameDatabase database)
     public IReadOnlyList<OptionState> GetAscensionPerkOptions(
         DesignContext context,
         IReadOnlyCollection<string> chosen,
-        IReadOnlyCollection<string> trees)
+        IReadOnlyList<string> trees)
     {
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(chosen);
         ArgumentNullException.ThrowIfNull(trees);
 
-        // The trees come in because the seven ascension perks ask for a tree slot still to be free,
-        // and a context that does not know which trees the plan opens answers that with nought.
-        var planned = context.WithPlan(chosen, Opened(trees));
+        // Only the trees this empire would have opened by the time it takes this perk, which is
+        // the next one. The game hands out a perk for each tree completed and they are taken in
+        // turn, so a plan naming seven trees has not opened all seven at its first perk - and the
+        // ascension perks, which ask for a tree slot still to be free, would all be refused if it
+        // had.
+        var planned = context.WithPlan(chosen, Opened(trees.Take(chosen.Count + 1)));
 
         var options = Options(
             _database.AscensionPerks,
@@ -759,14 +762,26 @@ public sealed class EmpireRules(GameDatabase database)
             p => p.Possible,
             planned);
 
-        return chosen.Count < _database.Defines.AscensionPerkSlots
+        return chosen.Count < GetAscensionPerkBudget(chosen.Count, trees.Count).Available
             ? options
             : [.. options.Select(o => chosen.Contains(o.Key) ? o : Blocked(o, RuleReasons.NoPerkSlotsLeft))];
     }
 
-    /// <summary>How many ascension perks are named against how many a game grants.</summary>
-    public Budget GetAscensionPerkBudget(int chosen) =>
-        new(chosen, _database.Defines.AscensionPerkSlots);
+    /// <summary>
+    /// How many ascension perks are named against how many this plan would actually unlock.
+    /// </summary>
+    /// <remarks>
+    /// Not the eight a game allows, because a game only allows eight to an empire that has earned
+    /// them: every tradition tree completed grants one - the modifier sits on each
+    /// <c>tr_*_finish</c> - and the last comes from a technology. So a plan that opens no trees can
+    /// hold one perk, and one that opens all seven can hold eight, which is the order the game
+    /// hands them out in rather than a rule invented here.
+    /// </remarks>
+    public Budget GetAscensionPerkBudget(int chosen, int trees) => new(
+        chosen,
+        Math.Min(
+            _database.Defines.AscensionPerkSlots,
+            trees + _database.Defines.AscensionPerkSlotsWithoutTraditions));
 
     /// <summary>
     /// The tradition trees a plan may open, with the ones this empire could not disabled.
@@ -829,13 +844,11 @@ public sealed class EmpireRules(GameDatabase database)
     public bool IsLegalPerkOrder(
         DesignContext context,
         IReadOnlyList<string> perks,
-        IReadOnlyCollection<string> trees)
+        IReadOnlyList<string> trees)
     {
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(perks);
         ArgumentNullException.ThrowIfNull(trees);
-
-        var opened = Opened(trees).ToList();
 
         for (var at = 0; at < perks.Count; at++)
         {
@@ -844,7 +857,9 @@ public sealed class EmpireRules(GameDatabase database)
                 continue;
             }
 
-            var before = context.WithPlan(perks.Take(at), opened);
+            // The trees open one at a time between the perks, so the one in this place has seen
+            // only the trees that come before it.
+            var before = context.WithPlan(perks.Take(at), Opened(trees.Take(at + 1)));
 
             if (!_evaluator.Evaluate(perk.Possible, before).Passed ||
                 !_evaluator.Evaluate(perk.Potential, before).Passed)
@@ -867,18 +882,26 @@ public sealed class EmpireRules(GameDatabase database)
     /// which civics it has - but they are shown, because a player choosing what to reform into
     /// needs to see what is not up for discussion.
     /// </remarks>
-    public IReadOnlyList<string> GetLockedCivics(DesignContext context)
+    public IReadOnlyList<OptionState> GetLockedCivics(DesignContext context)
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        return
-        [
-            .. _database.Civics
-                .Where(c => !c.IsOrigin
-                    && context.Civics.Contains(c.Key)
-                    && !_evaluator.Evaluate(c.CanRemoveLater, context).Passed)
-                .Select(c => c.Key),
-        ];
+        var locked = new List<OptionState>();
+
+        foreach (var civic in _database.Civics.Where(c => !c.IsOrigin && context.Civics.Contains(c.Key)))
+        {
+            var verdict = _evaluator.Evaluate(civic.CanRemoveLater, context);
+
+            if (!verdict.Passed)
+            {
+                // Carrying why, which is the game's own sentence about the civic rather than
+                // anything invented here - a row that cannot be pressed and does not say so is just
+                // a row that appears broken.
+                locked.Add(new OptionState(civic.Key, true, false, verdict.Reasons));
+            }
+        }
+
+        return locked;
     }
 
     /// <summary>
@@ -904,7 +927,7 @@ public sealed class EmpireRules(GameDatabase database)
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(planned);
 
-        var locked = GetLockedCivics(context);
+        var locked = GetLockedCivics(context).Select(o => o.Key).ToList();
 
         // What the empire would end up holding, which is what the game's own exclusions have to be
         // asked about - a planned civic judged against the government it replaces is judged against
@@ -943,10 +966,18 @@ public sealed class EmpireRules(GameDatabase database)
     /// The trees a plan opens, said both ways the game says it.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// The three Machine Age trees rule each other out, and they do it by asking whether the
     /// tradition that opens the other has been taken - <c>has_tradition = tr_nanotech_adopt</c>, not
     /// the tree's own name. So both names go in, or the condition looks at a set that cannot contain
     /// what it is asking about and every one of those exclusions quietly never fires.
+    /// </para>
+    /// <para>
+    /// The tradition that finishes it as well, because the perks ask for those:
+    /// <c>tr_unyielding_finish</c>, <c>tr_supremacy_finish</c> and three more. A plan names trees
+    /// rather than the traditions inside them, and there is no such thing as a half-opened tree at
+    /// that level - meaning to open one is meaning to finish it, so both ends of it answer yes.
+    /// </para>
     /// </remarks>
     private IEnumerable<string> Opened(IEnumerable<string> trees)
     {
@@ -954,9 +985,19 @@ public sealed class EmpireRules(GameDatabase database)
         {
             yield return key;
 
-            if (_database.TraditionTrees.FirstOrDefault(t => t.Key == key)?.AdoptionBonus is { } adopt)
+            if (_database.TraditionTrees.FirstOrDefault(t => t.Key == key) is not { } tree)
+            {
+                continue;
+            }
+
+            if (tree.AdoptionBonus is { } adopt)
             {
                 yield return adopt;
+            }
+
+            if (tree.FinishBonus is { } finish)
+            {
+                yield return finish;
             }
         }
     }

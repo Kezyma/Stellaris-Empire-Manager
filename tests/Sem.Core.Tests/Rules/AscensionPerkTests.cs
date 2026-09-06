@@ -74,10 +74,39 @@ public sealed class AscensionPerkTests
     [Fact]
     public void TheBudgetCountsWhatIsPlannedAgainstWhatAGameGrants()
     {
-        var budget = Rules().GetAscensionPerkBudget(3);
+        var budget = Rules().GetAscensionPerkBudget(3, 2);
 
         Assert.Equal(3, budget.Spent);
         Assert.Equal(2, budget.Available);
+    }
+
+    /// <summary>
+    /// What a plan may take follows from what it opens, because that is how a game grants it.
+    /// </summary>
+    /// <remarks>
+    /// A perk slot for every tradition tree finished - the modifier is on each
+    /// <c>tr_*_finish</c> - and one more from a technology, which is where the eighth comes from
+    /// when there are only seven trees. So a plan that opens nothing may still take one, and one
+    /// that opens everything may take them all.
+    /// </remarks>
+    [Fact]
+    public void TheBudgetFollowsTheTreesThePlanOpens()
+    {
+        var rules = new EmpireRules(RulesTestData.Database with
+        {
+            Defines = RulesTestData.Database.Defines with
+            {
+                AscensionPerkSlots = 8,
+                AscensionPerkSlotsWithoutTraditions = 1,
+            },
+        });
+
+        Assert.Equal(1, rules.GetAscensionPerkBudget(0, 0).Available);
+        Assert.Equal(4, rules.GetAscensionPerkBudget(0, 3).Available);
+        Assert.Equal(8, rules.GetAscensionPerkBudget(0, 7).Available);
+
+        // And never past what a game has slots for, however many trees a patch adds.
+        Assert.Equal(8, rules.GetAscensionPerkBudget(0, 20).Available);
     }
 
     /// <summary>
@@ -128,8 +157,29 @@ public sealed class AscensionPerkTests
     {
         var rules = Ordered.Rules();
 
-        Assert.True(Find(rules.GetAscensionPerkOptions(Ordered.Context(), [], ["a", "b"]), "ap_path").Enabled);
-        Assert.False(Find(rules.GetAscensionPerkOptions(Ordered.Context(), [], ["a", "b", "c"]), "ap_path").Enabled);
+        // Judged where it would sit. The trees open one at a time between the perks, so the perk in
+        // the last place has seen them all and the one in the first place has seen one.
+        Assert.True(rules.IsLegalPerkOrder(Ordered.Context(), ["ap_path", "ap_one", "ap_two"], ["a", "b", "c"]));
+        Assert.False(rules.IsLegalPerkOrder(Ordered.Context(), ["ap_one", "ap_two", "ap_path"], ["a", "b", "c"]));
+    }
+
+    /// <summary>
+    /// The trees are counted, and the traditions carried alongside them are not.
+    /// </summary>
+    /// <remarks>
+    /// The set a plan's trees live in also holds the tradition that opens each and the one that
+    /// finishes it, because the game asks after those by name - <c>has_tradition =
+    /// tr_nanotech_adopt</c> is how three of the trees rule each other out. Counting that set says
+    /// a plan has opened three times the trees it has, and every "a tree slot must still be free"
+    /// runs out two trees early.
+    /// </remarks>
+    [Fact]
+    public void OnlyTheTreesThemselvesAreCounted()
+    {
+        var rules = Ordered.Rules();
+
+        // Two trees, each carrying an adoption and a completion tradition: six names, two trees.
+        Assert.True(Find(rules.GetAscensionPerkOptions(Ordered.Context(), ["ap_one"], ["a", "b"]), "ap_path").Enabled);
     }
 
     private static OptionState Find(IReadOnlyList<OptionState> options, string key) =>
@@ -141,9 +191,18 @@ public sealed class AscensionPerkTests
         new EmpireRules(Database).CreateContext(RulesTestData.ValidEmpire());
 
     /// <summary>Two perks that rule each other out, one that minds nobody, and two slots.</summary>
+    /// <remarks>
+    /// Both slots granted without opening a tradition tree, so these tests are about which perks
+    /// sit together rather than about how many a plan has earned - which is the next fixture's
+    /// subject.
+    /// </remarks>
     private static GameDatabase Database { get; } = RulesTestData.Database with
     {
-        Defines = RulesTestData.Database.Defines with { AscensionPerkSlots = 2 },
+        Defines = RulesTestData.Database.Defines with
+        {
+            AscensionPerkSlots = 2,
+            AscensionPerkSlotsWithoutTraditions = 2,
+        },
         AscensionPerks =
         [
             new AscensionPerkDefinition("ap_flesh"),
@@ -179,7 +238,20 @@ public sealed class AscensionPerkTests
             {
                 AscensionPerkSlots = 8,
                 TraditionSlots = 3,
+
+                // Enough that the tests below are about the conditions rather than about running
+                // out of room: three trees would otherwise allow only four perks.
+                AscensionPerkSlotsWithoutTraditions = 8,
             },
+
+            // Each carrying the tradition that opens it and the one that finishes it, because that
+            // is what the real ones carry and what the counting has to see past.
+            TraditionTrees =
+            [
+                new TraditionTreeDefinition("a") { AdoptionBonus = "a_adopt", FinishBonus = "a_finish" },
+                new TraditionTreeDefinition("b") { AdoptionBonus = "b_adopt", FinishBonus = "b_finish" },
+                new TraditionTreeDefinition("c") { AdoptionBonus = "c_adopt", FinishBonus = "c_finish" },
+            ],
             AscensionPerks =
             [
                 new AscensionPerkDefinition("ap_one"),

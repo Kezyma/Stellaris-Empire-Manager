@@ -70,7 +70,7 @@
     @if (_part == 0)
     {
         <PlanPicker @key="@("perks")" Heading="Ascension Perks" BudgetKey="ASCENSION_PERKS"
-                    Budget="@Session.Rules.GetAscensionPerkBudget(Plan.Perks.Count)"
+                    Budget="@PerkBudget"
                     Available="@PerkOptions(chosen: false)" Chosen="@PerkOptions(chosen: true)"
                     OnToggle="TogglePerk" OnReorder="MovePerk" />
     }
@@ -132,7 +132,7 @@
     /// </remarks>
     private IReadOnlyList<PickerTabs.Tab> Parts =>
     [
-        new("Ascension Perks", $"{Plan.Perks.Count}/{Session.Data.Database.Defines.AscensionPerkSlots}"),
+        new("Ascension Perks", $"{Plan.Perks.Count}/{PerkBudget.Available}"),
         new("Traditions", $"{Plan.Trees.Count}/{Session.Data.Database.Defines.TraditionSlots}"),
         new("Civics", $"{Locked.Count + Plan.Civics.Count}/{Session.Data.Database.Defines.PlannedCivicPoints}"),
     ];
@@ -141,20 +141,56 @@
 
     private PlanVocabulary Vocabulary => Session.PlanVocabulary;
 
-    /// <summary>Which biography carries the plan, defaulting to the species' when none does yet.</summary>
-    private PlanHome Home => Session.Plans.HomeOf(Design, Vocabulary) ?? PlanHome.Species;
+    /// <summary>Which biography is carrying the plan, or is about to.</summary>
+    private PlanHome Home => Stored ?? Session.PlanIntent ?? PlanHome.Species;
 
-    private bool Planning => Session.Plans.HomeOf(Design, Vocabulary) is not null;
+    /// <summary>Which biography actually holds a plan, which is nothing until one is written.</summary>
+    private PlanHome? Stored => Session.Plans.HomeOf(Design, Vocabulary);
 
-    private EmpirePlan Plan => Session.Plans.PlanOf(Design, Vocabulary);
+    /// <summary>
+    /// Whether this empire is being planned.
+    /// </summary>
+    /// <remarks>
+    /// Either because a biography already holds a plan, or because the player has said so and has
+    /// not decided anything yet. The second is what stops the checkbox from taking a biography the
+    /// moment it is ticked.
+    /// </remarks>
+    private bool Planning => Stored is not null || Session.PlanIntent is not null;
+
+    /// <summary>
+    /// The plan being edited, which is the stored one or the one a new plan starts as.
+    /// </summary>
+    /// <remarks>
+    /// A new plan starts holding the civics the empire already has and could give up, so the civic
+    /// picker opens saying what is true now and is edited from there. An empty civics line would
+    /// otherwise read as "reform into none of these", which is not what an untouched field looks
+    /// like it means. None of that is written down until something is actually decided.
+    /// </remarks>
+    private EmpirePlan Plan => Stored is not null
+        ? Session.Plans.PlanOf(Design, Vocabulary)
+        : new EmpirePlan([], [], [.. Keeping]);
+
+    /// <summary>The civics the empire has now and could choose to give up.</summary>
+    private IEnumerable<string> Keeping =>
+        Session.Context!.Civics.Where(c => !Locked.Any(l => l.Key == c));
 
     private string Written => Session.Plans.Text.Write(Plan);
+
+    /// <summary>
+    /// How many perks this plan may hold, which is what the trees it opens would unlock.
+    /// </summary>
+    /// <remarks>
+    /// A game grants a perk for finishing a tradition tree and one more from a technology, so what
+    /// a plan may take follows from what it opens. The tab says so too, which is what stops the
+    /// count reading as a broken eight.
+    /// </remarks>
+    private Budget PerkBudget => Session.Rules.GetAscensionPerkBudget(Plan.Perks.Count, Plan.Trees.Count);
 
     /// <summary>How much of a biography the plan is spending.</summary>
     private Budget Length => new(Written.Length, PlanText.Budget);
 
     /// <summary>The civics this empire is stuck with, which spend slots the plan cannot use.</summary>
-    private IReadOnlyList<string> Locked => Session.Rules.GetLockedCivics(Session.Context!);
+    private IReadOnlyList<OptionState> Locked => Session.Rules.GetLockedCivics(Session.Context!);
 
     // ---------------------------------------------------------------- what each picker is given
 
@@ -171,20 +207,30 @@
         Describe.Tree(Session),
         Inside);
 
+    /// <remarks>
+    /// The locked ones are kept out of what is on offer as well as being drawn above it. They are
+    /// civics the empire holds, so the rules do offer them - and listed in both places the same
+    /// civic appeared twice, once as a choice and once as a thing that is not one, with the
+    /// description reading off whichever came first.
+    /// </remarks>
     private IReadOnlyList<PlanOption> CivicOptions(bool chosen) => Shape(
         Session.Rules.GetPlanCivicOptions(Session.Context!, Plan.Civics),
-        Plan.Civics,
+        chosen ? Plan.Civics : [.. Plan.Civics, .. Locked.Select(o => o.Key)],
         chosen,
         Describe.Civic(Session));
 
-    /// <summary>The civics shown above the choice, greyed, because they cannot be given up.</summary>
+    /// <summary>
+    /// The civics shown above the choice because they cannot be given up.
+    /// </summary>
+    /// <remarks>
+    /// Shaped from what the rules said about them rather than from the picker's own list, so each
+    /// keeps the game's sentence for why it cannot be touched - "This Civic cannot be manually
+    /// added or removed after the game has started" - which is the only useful thing to say about a
+    /// row that will not respond.
+    /// </remarks>
     private IReadOnlyList<PlanOption> LockedOptions =>
     [
-        .. Shape(
-            Session.Rules.GetPlanCivicOptions(Session.Context!, Plan.Civics),
-            Locked,
-            chosen: true,
-            Describe.Civic(Session))
+        .. Shape(Locked, [.. Locked.Select(o => o.Key)], chosen: true, Describe.Civic(Session))
             .Select(o => o with { Locked = true })
     ];
 
@@ -367,27 +413,21 @@
     /// Turns planning on, or off and gives the biography back.
     /// </summary>
     /// <remarks>
-    /// Turning it on starts the civics at the ones the empire already has and could give up. An
-    /// empty civics line would otherwise mean "reform into none of these", which is not what an
-    /// untouched field looks like it means - so the plan opens saying what is true now, and is
-    /// edited from there.
+    /// Turning it on writes nothing. It only says which biography a plan would go into, so the
+    /// pickers have somewhere to aim - and so that changing one's mind about which to use has not
+    /// already taken the other. The first thing actually decided is what writes.
     /// </remarks>
     private void TogglePlanning(ChangeEventArgs e)
     {
         if (e.Value is bool on && on)
         {
             // Nothing at all when neither biography is free, which is what the disabled box says.
-            if (FirstFree is { } free)
-            {
-                var locked = Locked;
-                var keeping = Session.Context!.Civics.Where(c => !locked.Contains(c)).ToList();
-
-                Session.Edit(d => Session.Plans.Write(
-                    d, new EmpirePlan([], [], keeping), free, Vocabulary));
-            }
+            Session.PlanIntent = FirstFree;
 
             return;
         }
+
+        Session.PlanIntent = null;
 
         Session.Edit(d =>
         {
@@ -414,10 +454,23 @@
         : CanCarry(PlanHome.Ruler) ? PlanHome.Ruler
         : null;
 
-    /// <summary>Moves the plan to the other biography, taking it out of the one it was in.</summary>
+    /// <summary>
+    /// Moves the plan to the other biography, taking it out of the one it was in.
+    /// </summary>
+    /// <remarks>
+    /// Or, where nothing has been decided yet, simply changes where it would go. Writing here would
+    /// undo the point of writing nothing when the checkbox was ticked.
+    /// </remarks>
     private void MoveHome(ChangeEventArgs e)
     {
         if (!Enum.TryParse<PlanHome>(e.Value?.ToString(), out var home))
+        {
+            return;
+        }
+
+        Session.PlanIntent = home;
+
+        if (Stored is null)
         {
             return;
         }
@@ -427,11 +480,31 @@
         Session.Edit(d => Session.Plans.Write(d, plan, home, Vocabulary));
     }
 
-    /// <summary>Writes a plan a picker has changed back into the biography carrying it.</summary>
+    /// <summary>
+    /// Writes a plan a picker has changed into the biography carrying it.
+    /// </summary>
+    /// <remarks>
+    /// A plan emptied back out gives the biography up rather than leaving a bare marker in it,
+    /// which is the field the player would have had by never planning at all. Planning stays on -
+    /// that is the checkbox's business - so the pickers are still there to decide something else
+    /// with.
+    /// </remarks>
     private void Save(EmpirePlan plan)
     {
         var home = Home;
 
-        Session.Edit(d => Session.Plans.Write(d, plan, home, Vocabulary));
+        Session.PlanIntent = home;
+
+        Session.Edit(d =>
+        {
+            if (plan.Any)
+            {
+                Session.Plans.Write(d, plan, home, Vocabulary);
+            }
+            else
+            {
+                Session.Plans.Clear(d, home, Vocabulary);
+            }
+        });
     }
 }

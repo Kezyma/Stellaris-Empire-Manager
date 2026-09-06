@@ -1,4 +1,4 @@
-using Sem.Designs;
+﻿using Sem.Designs;
 using Sem.GameData;
 using Sem.Ui.Services;
 
@@ -318,6 +318,9 @@ public sealed class EmpireFilterTests
             Design = EmpireDesignsFile.CreateEmpty().Add(name),
             Preset = preset ? new PrescriptedEmpireSummary(name, "test") : null,
             Nomadic = nomadic,
+            PlanTrees = [],
+            PlanPerks = [],
+            PlanCivics = [],
             Name = name,
             Text = text ?? name,
             AuthorityChips = [],

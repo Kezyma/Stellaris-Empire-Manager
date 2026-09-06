@@ -1,4 +1,4 @@
-@*
+﻿@*
     One of an empire's choices, named, with what it does behind it.
 
     The preview lists an empire's ethics, civics, traits, authority and origin as icons and names,
@@ -33,6 +33,7 @@
         meant to read what a civic does was opening the editor instead.
     *@
     <button type="button" @ref="_anchor" aria-describedby="@_id" title="@Name"
+            class="@(Dim ? "dim" : null)"
             popovertarget="@(Opens ? null : _id)" @onclick="OnSelect"
             @onclick:stopPropagation="true"
             @onmouseover="Reveal" @onfocus="Reveal">
@@ -106,6 +107,18 @@
     /// <summary>What it does, shown in the panel behind it.</summary>
     [Parameter]
     public Sem.GameData.EffectSet? Effects { get; set; }
+
+    /// <summary>
+    /// Whether to draw this one back, as something already true rather than something being asked
+    /// for.
+    /// </summary>
+    /// <remarks>
+    /// A plan's civics are the whole government it means to end up with, and most of that is
+    /// usually the government it already has. Dimming those is what makes the one being added
+    /// legible as the change.
+    /// </remarks>
+    [Parameter]
+    public bool Dim { get; set; }
 
     /// <summary>
     /// What pressing the chip should do, where pressing it should do something.

@@ -1,4 +1,4 @@
-/*
+﻿/*
    Stellaris Empire Manager.
 
    A dark palette in the game's register, without imitating its interface: this is a tool for
@@ -4488,6 +4488,20 @@ button.icon .sem-action-icon { display: block; }
 }
 
 .sem-chip > button:hover { background: var(--bg-hover); }
+
+/*
+   A chip for something the empire already has.
+
+   Only a plan's civics use it. A plan names the whole government it means to end up with, most of
+   which is usually the government it has now, so the ones being added have to be the ones that
+   read as added. Held back rather than hidden: what is not changing is still part of the answer to
+   what this empire will be.
+*/
+.sem-chip > button.dim {
+    opacity: 0.5;
+}
+
+.sem-chip > button.dim:hover { opacity: 1; }
 
 .sem-chip > button img {
     width: var(--icon-sm);

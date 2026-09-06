@@ -1,4 +1,4 @@
-using Sem.Clausewitz;
+﻿using Sem.Clausewitz;
 using Sem.Designs;
 using Sem.GameData;
 
@@ -111,6 +111,7 @@ internal static class MetadataExtractor
             CivicPoints = civicPoints,
             PlannedCivicPoints = civicPoints + ResearchableCivicPoints(loader),
             AscensionPerkSlots = FindInt(defines, "ASCENSION_PERKS_SLOTS") ?? 8,
+            AscensionPerkSlotsWithoutTraditions = Researchable(loader, "ascension_perks_add"),
             TraditionSlots = FindInt(defines, "TRADITION_CATEGORIES_MAX") ?? 7,
             DefaultCityPreviewPlanetClass =
                 Find(defines, "CITY_SELECTION_DEFAULT_PLANET_CLASS")?.Trim('"'),
@@ -130,13 +131,24 @@ internal static class MetadataExtractor
     /// slot - and a number that important should come from the game, so a patch moving it moves the
     /// editor with it.
     /// </remarks>
-    private static int ResearchableCivicPoints(ScriptLoader loader)
+    private static int ResearchableCivicPoints(ScriptLoader loader) =>
+        Researchable(loader, "country_government_civic_points_add");
+
+    /// <summary>
+    /// How much of something the game's technologies hand out between them.
+    /// </summary>
+    /// <remarks>
+    /// One technology each for the two that matter here - tech_galactic_administration for the third
+    /// civic slot, tech_ascension_theory for the eighth ascension perk - but summed rather than
+    /// found by name, so a patch that moves either moves the editor with it.
+    /// </remarks>
+    private static int Researchable(ScriptLoader loader, string modifier)
     {
         var total = 0;
 
         foreach (var entry in loader.LoadDefinitions("common/technology"))
         {
-            if (entry.Body.GetBlock("modifier")?.GetString("country_government_civic_points_add") is { } added &&
+            if (entry.Body.GetBlock("modifier")?.GetString(modifier) is { } added &&
                 loader.ResolveInt(added) is { } points and > 0)
             {
                 total += points;

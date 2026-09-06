@@ -131,15 +131,45 @@ internal static class GovernmentExtractor
 
         if (node.ScalarValue is { } scalar)
         {
-            return new AlwaysRequirement(scalar == "yes");
+            // Carrying the game's own sentence for it, which is the whole of what a reader wants
+            // when the picker will not let them touch a civic: "This Civic cannot be manually added
+            // or removed after the game has started."
+            return scalar == "yes"
+                ? new AlwaysRequirement(true)
+                : new AlwaysRequirement(false) { FailureText = NotModdable };
         }
 
         // A block naming only one direction leaves the other unrestricted, which is what the
-        // moddable_conditions_custom_tooltip beside it exists to explain.
-        return node.Block?.GetBlock(direction) is { } limit
-            ? requirements.CompilePlanTrigger(limit)
-            : new AlwaysRequirement(true);
+        // moddable_conditions_custom_tooltip beside it exists to explain - the game's comment says
+        // it "replaces CIVIC_NOT_MODDABLE", so it is the wording for whichever half is restricted.
+        if (node.Block?.GetBlock(direction) is not { } limit)
+        {
+            return new AlwaysRequirement(true);
+        }
+
+        var said = node.Block.GetString("moddable_conditions_custom_tooltip");
+        var compiled = requirements.CompilePlanTrigger(limit);
+
+        if (compiled.FailureText is { Length: > 0 })
+        {
+            return compiled;
+        }
+
+        if (said is { Length: > 0 })
+        {
+            return compiled with { FailureText = said };
+        }
+
+        // A flat "always = no" with nothing said about it, which two dozen civics use where the
+        // game falls back to its own sentence. Only a flat no: a direction that depends on
+        // something would be explained by that something, and this wording would be a lie about it.
+        return compiled is AlwaysRequirement { Value: false }
+            ? compiled with { FailureText = NotModdable }
+            : compiled;
     }
+
+    /// <summary>The game's own words for a civic a reform cannot touch.</summary>
+    private const string NotModdable = "CIVIC_NOT_MODDABLE";
 
     /// <summary>
     /// Reads the government types, which decide what an empire is called. The game picks the

@@ -1,4 +1,4 @@
-using Sem.Designs;
+﻿using Sem.Designs;
 using Sem.GameData;
 using Sem.Rules;
 
@@ -23,6 +23,16 @@ public sealed record EmpireChoice(string Key, string Name, string? Icon, EffectS
     /// habitability trait it grants, and an arkship keeps its under <c>_selector_desc</c>.
     /// </remarks>
     public string? Description { get; init; }
+
+    /// <summary>
+    /// Whether this is something the empire already has rather than something it is planning.
+    /// </summary>
+    /// <remarks>
+    /// Only a plan's civics use it, and only because a plan's civics are the whole government it
+    /// means to end up with - most of which is usually the government it already has. Drawn dimmed,
+    /// so what is actually being changed is the part that stands out.
+    /// </remarks>
+    public bool Unchanged { get; init; }
 }
 
 /// <summary>
@@ -316,6 +326,9 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
 
     private EmpirePlan? _plan;
 
+    /// <summary>Whether one of this empire's biographies is carrying a plan at all.</summary>
+    public bool HasPlan => _session.Plans.HomeOf(_design, _session.PlanVocabulary) is not null;
+
     /// <summary>The tradition trees the plan means to open, as chips.</summary>
     public IEnumerable<EmpireChoice> PlanTrees =>
         Plan.Trees
@@ -338,19 +351,40 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
                 : Chip(key, null, null));
 
     /// <summary>
-    /// The civics it means to reform its government into, likewise.
+    /// The government the plan means to end up with, in full.
     /// </summary>
     /// <remarks>
-    /// Only the ones the plan names, which are the ones a reform would change. The civics an empire
-    /// cannot give up are already on the card above as its own, and saying them twice would make a
-    /// plan that changes one civic look like a plan that changes three.
+    /// The whole set rather than only what changes: the civics the empire cannot give up, then the
+    /// ones the plan names. A row showing one civic would be answering "what is new" when the
+    /// question a reader has is "what will this empire be" - and the answer to the first is
+    /// readable from the second, because the ones it already has are drawn dimmed.
     /// </remarks>
-    public IEnumerable<EmpireChoice> PlanCivics =>
-        Plan.Civics
-            .Select(key => Database.Civics.FirstOrDefault(c => c.Key == key) is { } civic
-                ? new EmpireChoice(key, _session.Localizer.Text(civic.NameKey), civic.Icon, civic.Effects)
-                    { Description = $"{civic.Key}_desc" }
-                : Chip(key, null, null));
+    public IEnumerable<EmpireChoice> PlanCivics
+    {
+        get
+        {
+            // Nothing at all where no plan is being made. The civics an empire cannot give up are
+            // facts about the empire rather than intentions, and listing them under a heading that
+            // says "planned" would answer a question nobody asked.
+            if (!HasPlan)
+            {
+                yield break;
+            }
+
+            var locked = _session.Rules.GetLockedCivics(Context).Select(o => o.Key);
+            var already = Context.Civics;
+
+            foreach (var key in locked.Concat(Plan.Civics).Distinct(StringComparer.Ordinal))
+            {
+                var chip = Database.Civics.FirstOrDefault(c => c.Key == key) is { } civic
+                    ? new EmpireChoice(key, _session.Localizer.Text(civic.NameKey), civic.Icon, civic.Effects)
+                        { Description = $"{civic.Key}_desc" }
+                    : Chip(key, null, null);
+
+                yield return chip with { Unchanged = already.Contains(key) };
+            }
+        }
+    }
 
     /// <summary>The empire's adjectival name, or nothing where it has none.</summary>
     public string Adjective => _session.Localizer.Name(_design.Adjective, string.Empty);

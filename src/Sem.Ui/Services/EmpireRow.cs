@@ -1,4 +1,4 @@
-using Sem.Designs;
+﻿using Sem.Designs;
 using Sem.GameData;
 using Sem.Rules;
 using Sem.Ui.Components;
@@ -127,6 +127,20 @@ public sealed record EmpireRow
     public EmpireChoice? SecondClass { get; init; }
 
     public required IReadOnlyList<EmpireChoice> SecondTraits { get; init; }
+
+    /// <summary>
+    /// What the plan says the empire means to become, where it carries one.
+    /// </summary>
+    /// <remarks>
+    /// Columns rather than filters. A plan is a thing a reader wants to see beside the empires that
+    /// have one - which is the whole point of a table - and it is not a thing anyone narrows a list
+    /// by, since almost no empire in a file has one at all.
+    /// </remarks>
+    public required IReadOnlyList<EmpireChoice> PlanTrees { get; init; }
+
+    public required IReadOnlyList<EmpireChoice> PlanPerks { get; init; }
+
+    public required IReadOnlyList<EmpireChoice> PlanCivics { get; init; }
 
     public required IReadOnlyList<EmpireChoice> Ethics { get; init; }
 
@@ -342,6 +356,10 @@ public sealed record EmpireRow
 
             Ethics = [.. view.Ethics],
             Civics = [.. view.Civics],
+            PlanTrees = [.. view.PlanTrees],
+            PlanPerks = [.. view.PlanPerks],
+
+            PlanCivics = [.. view.PlanCivics],
 
             Origin = view.Origin is { } origin
                 ? new EmpireChoice(
@@ -609,6 +627,9 @@ public sealed record EmpireColumn(
         Picked("rulerportrait", false),
         Picked("rulergender", false),
         Picked("rulertraits", false),
+        new("plantraditions", "Planned traditions", false, r => r.PlanTrees),
+        new("planperks", "Planned perks", false, r => r.PlanPerks),
+        new("plancivics", "Planned civics", false, r => r.PlanCivics),
         new("prefix", "Ship prefix", false, Line: r => r.ShipPrefix),
         Picked("spawn", false),
         Picked("fallen", false),

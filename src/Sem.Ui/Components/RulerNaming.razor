@@ -1,4 +1,4 @@
-@*
+﻿@*
     Who the ruler is: their name, what they are called, what they are, and their story.
 
     Everything except how they look and what they are good at, which are the other two sections of
@@ -85,7 +85,8 @@
     </div>
 </div>
 
-<BiographyField Value="@RulerBiography" For="@Session.Localizer.Heading("RULER_TITLE", "Ruler")"
+<BiographyField Value="@RulerBiography" Home="Sem.Designs.PlanHome.Ruler"
+                For="@Session.Localizer.Heading("RULER_TITLE", "Ruler")"
                 Placeholder="Who this ruler is, and how they came to rule."
                 OnChange="SetBiography" />
 

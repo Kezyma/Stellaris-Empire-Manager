@@ -1,3 +1,5 @@
+﻿@using Sem.Designs
+
 @*
     A story a player may write, for an empire's species or for its ruler.
 
@@ -69,6 +71,12 @@
     public string? For { get; set; }
 
     /// <summary>
+    /// Which of the two biographies this is, so it knows when a plan is about to want it.
+    /// </summary>
+    [Parameter]
+    public PlanHome? Home { get; set; }
+
+    /// <summary>
     /// What the box is called out loud.
     /// </summary>
     /// <remarks>
@@ -113,8 +121,17 @@
     /// Whether a plan is using this field, in which case it is read here and written elsewhere.
     /// </summary>
     /// <remarks>
-    /// Asked of the text rather than of a setting, which is the same question the plan section asks
-    /// and the reason nothing has to be kept in step: a biography that reads as a plan is one.
+    /// <para>
+    /// Asked of the text where there is text, which is the same question the plan section asks and
+    /// the reason nothing has to be kept in step: a biography that reads as a plan is one.
+    /// </para>
+    /// <para>
+    /// And asked of the session for the moment before that, when planning has been switched on and
+    /// nothing decided yet. The field is empty then and would take typing happily - and the first
+    /// perk chosen would write over it, which is the thing this box exists not to do.
+    /// </para>
     /// </remarks>
-    private bool Spoken => Session.Plans.Text.IsPlan(Value, Session.PlanVocabulary);
+    private bool Spoken =>
+        Session.Plans.Text.IsPlan(Value, Session.PlanVocabulary)
+        || (Home is { } mine && Session.PlanIntent == mine);
 }

@@ -117,6 +117,27 @@ public sealed class DesignSession
 
     private PlanVocabulary? _planVocabulary;
 
+    /// <summary>
+    /// Which biography the player has said a plan should go into, before there is a plan to put
+    /// there.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Planning is otherwise answered by looking: a biography that reads as a plan is carrying one,
+    /// and nothing has to be stored or kept in step. That breaks down for the moment between
+    /// switching planning on and deciding anything, which used to be closed by writing a plan that
+    /// said nothing - so turning the checkbox on took a biography immediately, and changing one's
+    /// mind about which biography to use had already touched the first.
+    /// </para>
+    /// <para>
+    /// So it is held here rather than in the editor, because the biography boxes need it too: one
+    /// that is about to carry a plan must not be typed in either, or the writing would be there to
+    /// be thrown away by the first perk chosen. It lives on the session and is dropped whenever the
+    /// empire being edited changes, which is the only thing it is about.
+    /// </para>
+    /// </remarks>
+    public PlanHome? PlanIntent { get; set; }
+
     /// <summary>Turns modifiers into the lines the game would show for them.</summary>
     public ModifierFormatter Modifiers { get; }
 
@@ -310,6 +331,9 @@ public sealed class DesignSession
         _saved = design?.Snapshot();
         _savedContext = null;
         IsModified = false;
+
+        // Said about the empire that was open, and meaningless about any other.
+        PlanIntent = null;
 
         if (announce)
         {
