@@ -254,7 +254,7 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
                     key,
                     Named(civic.Variants, civic.NameKey),
                     civic.Icon,
-                    civic.Effects);
+                    Drawbacks(civic));
         });
 
     public IEnumerable<EmpireChoice> Traits => TraitsOf(_design.Species);
@@ -316,7 +316,7 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
     public IEnumerable<EmpireChoice> OriginChoice =>
         _design.Origin is { Length: > 0 } key
             ? [Origin is { } origin
-                ? new EmpireChoice(key, Named(origin.Variants, origin.NameKey), origin.Icon, origin.Effects)
+                ? new EmpireChoice(key, Named(origin.Variants, origin.NameKey), origin.Icon, Drawbacks(origin))
                 : Chip(key, null, null)]
             : [];
 
@@ -353,6 +353,20 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
 
     private OptionVariant? Variant(IReadOnlyList<OptionVariant> variants) =>
         variants.Count == 0 ? null : _session.Rules.VariantOf(variants, Context);
+
+    /// <summary>
+    /// What an option does for this empire, with the drawbacks its own swap names.
+    /// </summary>
+    /// <remarks>
+    /// Arc Welders lists one set of drawbacks and another for a nomad, and Life-Seeded another for a
+    /// machine - so an empire of either kind was reading somebody else's. Only the empire's own
+    /// chips are corrected: a picker showing every option is not showing them to anybody in
+    /// particular, and the option's own wording is the right thing there.
+    /// </remarks>
+    private EffectSet Drawbacks(CivicDefinition civic) =>
+        Variant(civic.Variants)?.PenaltyKey is { Length: > 0 } instead
+            ? civic.Effects with { PenaltyKey = instead }
+            : civic.Effects;
 
     /// <summary>
     /// The plan this empire carries, which lives in one of its biographies rather than in a field.

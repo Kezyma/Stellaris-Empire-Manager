@@ -19,7 +19,7 @@ public sealed record GameDatabase
     /// site published with a database one version behind was read anyway, with whatever the shape had
     /// gained since taking its default and no sign that anything was missing.
     /// </remarks>
-    public const int CurrentSchemaVersion = 12;
+    public const int CurrentSchemaVersion = 13;
 
     /// <summary>Version of this file's own shape, so an old cache can be detected and rebuilt.</summary>
     public required int SchemaVersion { get; init; }
@@ -1135,7 +1135,18 @@ public sealed record WeightFactor(Requirement When, double Factor);
 /// <param name="When">Which empires are shown this wording.</param>
 /// <param name="NameKey">What to call it, or null to keep the option's own name.</param>
 /// <param name="DescriptionKey">What to say about it, or null to keep the option's own.</param>
-public sealed record OptionVariant(Requirement When, string? NameKey, string? DescriptionKey);
+public sealed record OptionVariant(Requirement When, string? NameKey, string? DescriptionKey)
+{
+    /// <summary>
+    /// The drawbacks this form of the option carries, where they are not the option's own.
+    /// </summary>
+    /// <remarks>
+    /// Two origins say. Arc Welders names one set of drawbacks and another for a nomad; Life-Seeded
+    /// names another for a machine. A third swap declares the same key its option already has, so
+    /// it changes nothing and reads the same either way.
+    /// </remarks>
+    public string? PenaltyKey { get; init; }
+}
 
 public sealed record GovernmentTypeDefinition(string Key, double Weight, int FileOrder)
 {

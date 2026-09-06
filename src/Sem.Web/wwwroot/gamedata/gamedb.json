@@ -1,7 +1,7 @@
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "gameVersion": "v4.4.6",
-  "extractorVersion": "0.1.0\u002B488ed864b979447edb3149731201c2dd4981c996",
+  "extractorVersion": "0.1.0\u002Bda163f071c0da8e9b10fb5b12034c18742793ccc",
   "defines": {
     "ethicsPoints": 3,
     "civicPoints": 2,
@@ -45678,7 +45678,8 @@
             "kind": "dlc",
             "name": "Astral Planes"
           },
-          "descriptionKey": "civic_eager_explorers_effects"
+          "descriptionKey": "civic_eager_explorers_effects",
+          "penaltyKey": "civic_eager_explorers_negative_effects"
         }
       ],
       "nameKey": "civic_eager_explorers",
@@ -53310,7 +53311,8 @@
             "name": "is_nomadic"
           },
           "nameKey": "origin_arc_welders_nomadic",
-          "descriptionKey": "origin_tooltip_arc_builders_nomadic_effects"
+          "descriptionKey": "origin_tooltip_arc_builders_nomadic_effects",
+          "penaltyKey": "origin_tooltip_arc_builders_nomadic_negative_effects"
         }
       ],
       "nameKey": "origin_arc_welders",
@@ -56809,7 +56811,8 @@
               }
             ]
           },
-          "descriptionKey": "origin_tooltip_life_seeded_effects"
+          "descriptionKey": "origin_tooltip_life_seeded_effects",
+          "penaltyKey": "origin_tooltip_life_seeded_machine_negative_effects"
         }
       ],
       "nameKey": "origin_life_seeded",

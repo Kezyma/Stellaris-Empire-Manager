@@ -285,7 +285,10 @@ public static class EffectsReader
             var described = swap.GetString("description")
                 ?? (name is { Length: > 0 } && describes is not null ? describes(name) : null);
 
-            if (name is not { Length: > 0 } && described is not { Length: > 0 })
+            var drawbacks = swap.GetString("negative_description");
+
+            if (name is not { Length: > 0 } && described is not { Length: > 0 } &&
+                drawbacks is not { Length: > 0 })
             {
                 continue;
             }
@@ -296,7 +299,10 @@ public static class EffectsReader
             found.Add(new OptionVariant(
                 requirements.CompileEffectCondition(swap.GetBlock("trigger")),
                 name,
-                described));
+                described)
+            {
+                PenaltyKey = drawbacks,
+            });
         }
 
         return found;

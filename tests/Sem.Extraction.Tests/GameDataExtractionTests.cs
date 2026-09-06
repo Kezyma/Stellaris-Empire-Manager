@@ -1549,6 +1549,44 @@ public sealed class GameDataExtractionTests
             $"{g.Key} names the heir title {g.HeirTitleKey}, which has no text shipped for it."));
     }
 
+    /// <summary>
+    /// A swap that names its own drawbacks is read, so the empire it applies to reads its own.
+    /// </summary>
+    /// <remarks>
+    /// Arc Welders lists one set of drawbacks and another for a nomad; Life-Seeded another for a
+    /// machine. A third swap names the key its option already has, which is why this asserts on the
+    /// two that differ rather than on a count.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void ASwapCanNameItsOwnDrawbacks()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        var text = ShippedText();
+        Skip.If(text is null, "Extracted text is missing. Run: dotnet run --project src/Sem.Cli -- extract --web");
+
+        (string Civic, string Expected)[] cases =
+        [
+            ("origin_arc_welders", "origin_tooltip_arc_builders_nomadic_negative_effects"),
+            ("origin_life_seeded", "origin_tooltip_life_seeded_machine_negative_effects"),
+        ];
+
+        foreach (var (key, expected) in cases)
+        {
+            var civic = database.Civics.Single(c => c.Key == key);
+
+            Assert.Contains(civic.Variants, v => v.PenaltyKey == expected);
+
+            // Different from the option's own, or reading it would change nothing.
+            Assert.NotEqual(expected, civic.Effects.PenaltyKey);
+
+            // And shipped, or the empire would be shown the key with its underscores taken out.
+            Assert.True(text!.ContainsKey(expected), $"{expected} has no text shipped for it.");
+        }
+    }
+
     /// <summary>The text the app ships, which is the pruned set rather than the game's whole one.</summary>
     private static Dictionary<string, string>? ShippedText()
     {

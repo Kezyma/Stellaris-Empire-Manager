@@ -384,6 +384,7 @@ internal static partial class LocalisationPruner
             {
                 Add(variant.NameKey);
                 Add(variant.DescriptionKey);
+                Add(variant.PenaltyKey);
                 AddRequirement(variant.When);
             }
         }
