@@ -19,7 +19,7 @@ public sealed record GameDatabase
     /// site published with a database one version behind was read anyway, with whatever the shape had
     /// gained since taking its default and no sign that anything was missing.
     /// </remarks>
-    public const int CurrentSchemaVersion = 13;
+    public const int CurrentSchemaVersion = 12;
 
     /// <summary>Version of this file's own shape, so an old cache can be detected and rebuilt.</summary>
     public required int SchemaVersion { get; init; }
@@ -1095,23 +1095,6 @@ public sealed record CivicDefinition(string Key, bool IsOrigin)
 
     /// <summary>What this is called and said to be for particular kinds of empire.</summary>
     public IReadOnlyList<OptionVariant> Variants { get; init; } = [];
-
-    /// <summary>
-    /// The face, the scene and the cities an origin settles for the empire that takes it.
-    /// </summary>
-    /// <remarks>
-    /// Two origins do. Mindwardens names the portrait, and the game's own Mindwarden empire wears
-    /// it; Wilderness names the room and the city set, which is why a wilderness empire's cities are
-    /// plants. A design stores its own three, so what is written in a file is right either way - but
-    /// the designer was showing whatever had been picked, where the game will show these.
-    /// </remarks>
-    public string? ForcedPortrait { get; init; }
-
-    /// <summary>The scene the empire is shown in, where the origin settles it.</summary>
-    public string? ForcedRoom { get; init; }
-
-    /// <summary>The city artwork, where the origin settles it.</summary>
-    public string? ForcedCity { get; init; }
 
     /// <summary>Localisation key for the display name.</summary>
     public string NameKey => Key;
