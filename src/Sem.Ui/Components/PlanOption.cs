@@ -22,6 +22,12 @@ namespace Sem.Ui.Components;
 /// to the bottom of the list: burying what a reader is choosing between is exactly backwards while
 /// they are deciding what to give up.
 /// </param>
+/// <param name="Contents">
+/// What is inside it, where it holds anything. A tradition tree is only worth taking for its seven
+/// traditions - the one that opens it, the five picks and the one that finishes it - and a reader
+/// deciding between trees is really deciding between those. A perk holds nothing and leaves it
+/// empty.
+/// </param>
 public sealed record PlanOption(
     string Key,
     string Name,
@@ -30,4 +36,5 @@ public sealed record PlanOption(
     EffectSet? Effects,
     bool Enabled,
     IReadOnlyList<string> Reasons,
-    bool Unavailable = false);
+    bool Unavailable = false,
+    IReadOnlyList<PlanOption>? Contents = null);

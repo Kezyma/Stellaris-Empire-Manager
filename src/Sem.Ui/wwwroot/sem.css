@@ -576,6 +576,44 @@ label {
 .sem-field.spaced { margin-top: var(--gap); }
 
 /*
+   What a tradition tree holds, under the tree's own description.
+
+   Numbered, because they are taken in this order and the order is part of what a tree is: the one
+   that opens it, the five picks, the one that finishes it. Indented off the number so a tradition's
+   own paragraph and its modifiers read as belonging to it rather than to the list.
+*/
+.sem-plan-contents {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+
+    margin: var(--space-md) 0 0;
+    padding-left: var(--space-xl);
+}
+
+.sem-plan-contents > li {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+}
+
+.sem-plan-contents .head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.sem-plan-contents .head img {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+}
+
+.sem-plan-contents .head .name {
+    color: var(--text);
+    font-weight: 600;
+}
+
+/*
    A value the plan works out rather than one the player sets.
 
    Drawn like a field's value and plainly not a control: the ascension path follows from the perks,

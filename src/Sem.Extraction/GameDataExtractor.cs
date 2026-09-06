@@ -110,6 +110,7 @@ public sealed class GameDataExtractor(LayeredContent content)
         Report("Reading ascension perks and tradition trees");
         var ascensionPerks = AscensionExtractor.Extract(loader, requirements, assets);
         var traditionTrees = AscensionExtractor.ExtractTrees(loader, requirements, assets);
+        var traditions = AscensionExtractor.ExtractTraditions(loader, requirements, assets, traditionTrees);
 
         Report("Reading worlds and starting systems");
         var planetClasses = WorldExtractor.ExtractPlanetClasses(loader, requirements, assets);
@@ -145,7 +146,7 @@ public sealed class GameDataExtractor(LayeredContent content)
         var template = MetadataExtractor.ExtractNewEmpireTemplate(loader);
 
         Report("Reading modifier display settings");
-        var modifiers = DescribeModifiers(ethics, traits, authorities, civics, ascensionPerks);
+        var modifiers = DescribeModifiers(ethics, traits, authorities, civics, ascensionPerks, traditions);
         var textIcons = ExtractTextIcons(sprites, assets);
         var icons = ExtractInterfaceIcons(assets);
 
@@ -170,6 +171,7 @@ public sealed class GameDataExtractor(LayeredContent content)
             Civics = civics,
             AscensionPerks = ascensionPerks,
             TraditionTrees = traditionTrees,
+            Traditions = traditions,
             GovernmentTypes = governmentTypes,
             PlanetClasses = planetClasses,
             PortraitCategories = portraitCategories,
@@ -437,7 +439,8 @@ public sealed class GameDataExtractor(LayeredContent content)
         IEnumerable<TraitDefinition> traits,
         IEnumerable<AuthorityDefinition> authorities,
         IEnumerable<CivicDefinition> civics,
-        IEnumerable<AscensionPerkDefinition> perks)
+        IEnumerable<AscensionPerkDefinition> perks,
+        IEnumerable<TraditionDefinition> traditions)
     {
         var catalog = ModifierCatalog.Read(_content, InstallRoot);
         var observed = new Dictionary<string, List<double>>(StringComparer.Ordinal);
@@ -446,7 +449,8 @@ public sealed class GameDataExtractor(LayeredContent content)
                      .Concat(traits.Select(t => t.Effects))
                      .Concat(authorities.Select(a => a.Effects))
                      .Concat(civics.Select(c => c.Effects))
-                     .Concat(perks.Select(p => p.Effects)))
+                     .Concat(perks.Select(p => p.Effects))
+                     .Concat(traditions.Select(t => t.Effects)))
         {
             Record(effects.Modifiers);
 

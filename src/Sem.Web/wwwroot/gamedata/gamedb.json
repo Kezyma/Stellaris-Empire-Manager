@@ -1,7 +1,7 @@
 {
-  "schemaVersion": 5,
+  "schemaVersion": 6,
   "gameVersion": "v4.4.6",
-  "extractorVersion": "0.1.0\u002Bf2fd0f0f2465cc606b0ad87a7a06b3d394fb9127",
+  "extractorVersion": "0.1.0\u002B0ab3108cd23f384c26def3fbb99c9de39513d985",
   "defines": {
     "ethicsPoints": 3,
     "civicPoints": 2,
@@ -56533,6 +56533,461 @@
       "isNeutral": false,
       "decimals": 2,
       "declared": false
+    },
+    "ascension_perks_add": {
+      "isPercentage": false,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "planet_structures_volatile_motes_upkeep_mult": {
+      "isPercentage": true,
+      "isGood": false,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "planet_structures_exotic_gases_upkeep_mult": {
+      "isPercentage": true,
+      "isGood": false,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "planet_structures_rare_crystals_upkeep_mult": {
+      "isPercentage": true,
+      "isGood": false,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "planet_structures_volatile_motes_cost_mult": {
+      "isPercentage": true,
+      "isGood": false,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "planet_structures_exotic_gases_cost_mult": {
+      "isPercentage": true,
+      "isGood": false,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "planet_structures_rare_crystals_cost_mult": {
+      "isPercentage": true,
+      "isGood": false,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "ship_science_speed_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "ship_science_upkeep_mult": {
+      "isPercentage": true,
+      "isGood": false,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "country_specimen_storage_cooldown_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "diplomacy_influence_cost_mult": {
+      "isPercentage": true,
+      "isGood": false,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "country_border_friction_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "country_trust_growth": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "shipclass_science_ship_disengage_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "starbase_constructions_physics_research_produces_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "starbase_constructions_society_research_produces_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "starbase_constructions_engineering_research_produces_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "scientist_initial_skill": {
+      "isPercentage": false,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "leader_scientists_upkeep_mult": {
+      "isPercentage": true,
+      "isGood": false,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "planet_farmers_produces_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "starbase_shipyard_space_fauna_build_cost_mult": {
+      "isPercentage": true,
+      "isGood": false,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "space_fauna_experience_gain_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "space_fauna_monthly_increased_breeding_chance_add": {
+      "isPercentage": false,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "space_fauna_culling_reward_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "starbase_shipyard_space_fauna_build_speed_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "pop_slave_political_power": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": true
+    },
+    "country_traditions_influence_produces_add": {
+      "isPercentage": false,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "max_rivalries": {
+      "isPercentage": false,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "pop_logistics_drone_bonus_workforce_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "country_trade_produces_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "planet_maintenance_drones_trade_produces_add": {
+      "isPercentage": false,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "country_trade_fee": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "ships_logistics_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "planet_traders_upkeep_mult": {
+      "isPercentage": true,
+      "isGood": false,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "planet_pops_trade_produces_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "resolutions_cost_mult": {
+      "isPercentage": true,
+      "isGood": false,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "diplo_weight_delegate_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "veto_cooldown_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "emergency_measures_cooldown_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "stations_produces_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "council_agenda_finishing_effect_duration_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "espionage_operation_cost_mult": {
+      "isPercentage": true,
+      "isGood": false,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "espionage_hostile_operation_difficulty_add": {
+      "isPercentage": false,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "espionage_hostile_operation_cost_mult": {
+      "isPercentage": true,
+      "isGood": false,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "espionage_operation_skill_add": {
+      "isPercentage": false,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "spy_network_levels_add": {
+      "isPercentage": false,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "starbase_defense_platform_capacity_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "army_defense_health_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "country_hostile_claim_influence_cost_mult": {
+      "isPercentage": true,
+      "isGood": false,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "starbase_defensive_war_ship_build_speed_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "planet_pop_assemblers_upkeep_mult": {
+      "isPercentage": true,
+      "isGood": false,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "planet_pop_assemblers_energy_upkeep_add": {
+      "isPercentage": false,
+      "isGood": false,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "country_synthetic_trust_cap_add": {
+      "isPercentage": false,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "planet_buildings_clone_vats_upkeep_mult": {
+      "isPercentage": true,
+      "isGood": false,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "MACHINE_species_trait_picks_add": {
+      "isPercentage": false,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "auto_mod_monthly_add": {
+      "isPercentage": false,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "planet_metallurgists_sr_living_metal_produces_add": {
+      "isPercentage": false,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "planet_pop_assemblers_sr_living_metal_upkeep_add": {
+      "isPercentage": false,
+      "isGood": false,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "MACHINE_species_trait_points_add": {
+      "isPercentage": false,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "planet_farmers_food_produces_add": {
+      "isPercentage": false,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "planet_farmers_nanites_produces_add": {
+      "isPercentage": false,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "planet_miners_nanites_produces_add": {
+      "isPercentage": false,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
+    },
+    "shroud_delve_cooldown": {
+      "isPercentage": true,
+      "isGood": false,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": true
+    },
+    "psionic_specialist_pop_bonus_workforce_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": true
+    },
+    "pop_amenities_usage_robotic_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false
     }
   },
   "speciesNames": [
@@ -65970,6 +66425,8 @@
     "ascension_path_synergy_weight": 2,
     "ascension_path_anti_synergy_weight": 0.25,
     "ascension_path_mindwardens_present": 0.3,
+    "ap_genetic_opener_POINTS": 2,
+    "ap_genetic_finisher_POINTS": 2,
     "jumps": 3,
     "asteroid_min_size": 2,
     "asteroid_max_size": 4,
@@ -108434,6 +108891,4618 @@
       "icon": "icons/traditions/tradition_virtuality.png",
       "nameKey": "tradition_virtuality",
       "descriptionKey": "tradition_virtuality_desc"
+    }
+  ],
+  "traditions": [
+    {
+      "key": "tr_adaptability_adopt",
+      "tree": "tradition_adaptability",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "nameKey": "tr_adaptability_adopt",
+      "descriptionKey": "tr_adaptability_adopt_delayed"
+    },
+    {
+      "key": "tr_adaptability_finish",
+      "tree": "tradition_adaptability",
+      "effects": {
+        "modifiers": {
+          "ascension_perks_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_adaptability_finish_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "ascension_perks_add": 1
+        }
+      },
+      "nameKey": "tr_adaptability_finish",
+      "descriptionKey": "tr_adaptability_finish_delayed"
+    },
+    {
+      "key": "tr_adaptability_recycling",
+      "tree": "tradition_adaptability",
+      "effects": {
+        "modifiers": {
+          "planet_structures_volatile_motes_upkeep_mult": -0.15,
+          "planet_structures_exotic_gases_upkeep_mult": -0.15,
+          "planet_structures_rare_crystals_upkeep_mult": -0.15,
+          "planet_structures_volatile_motes_cost_mult": -0.15,
+          "planet_structures_exotic_gases_cost_mult": -0.15,
+          "planet_structures_rare_crystals_cost_mult": -0.15
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_adaptability_recycling_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_adaptability_recycling.png",
+      "nameKey": "tr_adaptability_recycling",
+      "descriptionKey": "tr_adaptability_recycling_delayed"
+    },
+    {
+      "key": "tr_adaptability_survival_fittest",
+      "tree": "tradition_adaptability",
+      "effects": {
+        "modifiers": {
+          "planet_orbital_bombardment_damage": -0.25,
+          "army_defense_damage_mult": 0.25
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_orbital_bombardment_damage": -0.25,
+          "army_defense_damage_mult": 0.25
+        }
+      },
+      "icon": "icons/traditions/tr_adaptability_survival_fittest.png",
+      "nameKey": "tr_adaptability_survival_fittest",
+      "descriptionKey": "tr_adaptability_survival_fittest_delayed"
+    },
+    {
+      "key": "tr_adaptability_environmental_diversification",
+      "tree": "tradition_adaptability",
+      "effects": {
+        "modifiers": {
+          "pop_environment_tolerance": 0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "pop_environment_tolerance": 0.1
+        }
+      },
+      "icon": "icons/traditions/tr_adaptability_environmental_diversification.png",
+      "nameKey": "tr_adaptability_environmental_diversification",
+      "descriptionKey": "tr_adaptability_environmental_diversification_delayed"
+    },
+    {
+      "key": "tr_adaptability_adaptive_ecology",
+      "tree": "tradition_adaptability",
+      "effects": {
+        "modifiers": {
+          "planet_non_artificial_max_districts_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_non_artificial_max_districts_add": 1
+        }
+      },
+      "icon": "icons/traditions/tr_adaptability_adaptive_ecology.png",
+      "nameKey": "tr_adaptability_adaptive_ecology",
+      "descriptionKey": "tr_adaptability_adaptive_ecology_delayed"
+    },
+    {
+      "key": "tr_adaptability_appropriation",
+      "tree": "tradition_adaptability",
+      "effects": {
+        "modifiers": {
+          "pop_resettlement_cost_mult": -0.5,
+          "planet_resettlement_unemployed_mult": 0.25
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "pop_resettlement_cost_mult": -0.5,
+          "planet_resettlement_unemployed_mult": 0.25
+        }
+      },
+      "icon": "icons/traditions/tr_adaptability_appropriation.png",
+      "nameKey": "tr_adaptability_appropriation",
+      "descriptionKey": "tr_adaptability_appropriation_delayed"
+    },
+    {
+      "key": "tr_aptitude_adopt",
+      "tree": "tradition_aptitude",
+      "effects": {
+        "modifiers": {
+          "leader_trait_selection_options_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "leader_trait_selection_options_add": 1
+        }
+      },
+      "nameKey": "tr_aptitude_adopt",
+      "descriptionKey": "tr_aptitude_adopt_delayed"
+    },
+    {
+      "key": "tr_aptitude_finish",
+      "tree": "tradition_aptitude",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_aptitude_adopt_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "nameKey": "tr_aptitude_finish",
+      "descriptionKey": "tr_aptitude_finish_delayed"
+    },
+    {
+      "key": "tr_aptitude_the_empire_needs_you",
+      "tree": "tradition_aptitude",
+      "effects": {
+        "modifiers": {
+          "leaders_cost_mult": -0.25,
+          "country_leader_pool_size": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "leaders_cost_mult": -0.25,
+          "country_leader_pool_size": 1
+        }
+      },
+      "icon": "icons/traditions/tr_aptitude_the_empire_needs_you.png",
+      "nameKey": "tr_aptitude_the_empire_needs_you",
+      "descriptionKey": "tr_aptitude_the_empire_needs_you_delayed"
+    },
+    {
+      "key": "tr_aptitude_specialist_training",
+      "tree": "tradition_aptitude",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_aptitude_specialist_training_tt",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_aptitude_specialist_training.png",
+      "nameKey": "tr_aptitude_specialist_training",
+      "descriptionKey": "tr_aptitude_specialist_training_delayed"
+    },
+    {
+      "key": "tr_aptitude_psychological_profiling",
+      "tree": "tradition_aptitude",
+      "effects": {
+        "modifiers": {
+          "negative_traits_country": -1,
+          "country_commander_cap_add": 1,
+          "country_official_cap_add": 1,
+          "country_scientist_cap_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "BLANK_STRING",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_aptitude_psychological_profiling.png",
+      "nameKey": "tr_aptitude_psychological_profiling",
+      "descriptionKey": "tr_aptitude_psychological_profiling_delayed"
+    },
+    {
+      "key": "tr_aptitude_healthcare_program",
+      "tree": "tradition_aptitude",
+      "effects": {
+        "modifiers": {
+          "leader_lifespan_mult": 0.1,
+          "leaders_upkeep_mult": -0.25
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "leader_lifespan_mult": 0.1,
+          "leaders_upkeep_mult": -0.25
+        }
+      },
+      "icon": "icons/traditions/tr_aptitude_healthcare_program.png",
+      "nameKey": "tr_aptitude_healthcare_program",
+      "descriptionKey": "tr_aptitude_healthcare_program_delayed"
+    },
+    {
+      "key": "tr_aptitude_champions_of_the_empire",
+      "tree": "tradition_aptitude",
+      "effects": {
+        "modifiers": {
+          "leader_skill_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "leader_skill_add": 1
+        }
+      },
+      "icon": "icons/traditions/tr_aptitude_champions_of_the_empire.png",
+      "nameKey": "tr_aptitude_champions_of_the_empire",
+      "descriptionKey": "tr_aptitude_champions_of_the_empire_delayed"
+    },
+    {
+      "key": "tr_archivism_adopt",
+      "tree": "tradition_archivism",
+      "effects": {
+        "modifiers": {
+          "country_exhibit_unlocking_cost_mult": -0.5,
+          "ship_anomaly_generation_chance_mult": 0.05
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "country_exhibit_unlocking_cost_mult": -0.5,
+          "ship_anomaly_generation_chance_mult": 0.05
+        }
+      },
+      "nameKey": "tr_archivism_adopt",
+      "descriptionKey": "tr_archivism_adopt_delayed"
+    },
+    {
+      "key": "tr_archivism_finish",
+      "tree": "tradition_archivism",
+      "effects": {
+        "modifiers": {
+          "specimens_produces_mult": 0.15,
+          "ascension_perks_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_archivism_finish_tt",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "specimens_produces_mult": 0.15,
+          "ascension_perks_add": 1
+        }
+      },
+      "nameKey": "tr_archivism_finish",
+      "descriptionKey": "tr_archivism_finish_delayed"
+    },
+    {
+      "key": "tr_archivism_xeno_paleontology",
+      "tree": "tradition_archivism",
+      "effects": {
+        "modifiers": {
+          "ship_archaeological_site_excavation_speed_mult": 0.3,
+          "ship_archaeological_site_clues_add": 1,
+          "scientist_exp_gain": 0.3
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "ship_archaeological_site_excavation_speed_mult": 0.3,
+          "ship_archaeological_site_clues_add": 1,
+          "scientist_exp_gain": 0.3
+        }
+      },
+      "icon": "icons/traditions/tr_archivism_xeno_paleontology.png",
+      "nameKey": "tr_archivism_xeno_paleontology",
+      "descriptionKey": "tr_archivism_xeno_paleontology_delayed"
+    },
+    {
+      "key": "tr_archivism_expert_negociation",
+      "tree": "tradition_archivism",
+      "effects": {
+        "modifiers": {
+          "country_specimen_selling_cost_mult": 2
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_archivism_expert_negociation_tt",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "country_specimen_selling_cost_mult": 2
+        }
+      },
+      "icon": "icons/traditions/tr_archivism_expert_negociation.png",
+      "nameKey": "tr_archivism_expert_negociation",
+      "descriptionKey": "tr_archivism_expert_negociation_delayed"
+    },
+    {
+      "key": "tr_archivism_frontier_archaeology",
+      "tree": "tradition_archivism",
+      "effects": {
+        "modifiers": {
+          "ship_science_speed_mult": 0.35,
+          "ship_science_upkeep_mult": -0.5
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_archivism_frontier_archaeology_tt",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "ship_science_speed_mult": 0.35,
+          "ship_science_upkeep_mult": -0.5
+        }
+      },
+      "icon": "icons/traditions/tr_archivism_frontier_archaeology.png",
+      "nameKey": "tr_archivism_frontier_archaeology",
+      "descriptionKey": "tr_archivism_frontier_archaeology_delayed"
+    },
+    {
+      "key": "tr_archivism_flawless_display",
+      "tree": "tradition_archivism",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_archivism_flawless_display_tt",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_archivism_flawless_display.png",
+      "nameKey": "tr_archivism_flawless_display",
+      "descriptionKey": "tr_archivism_flawless_display_delayed"
+    },
+    {
+      "key": "tr_archivism_exhibition_specialization",
+      "tree": "tradition_archivism",
+      "effects": {
+        "modifiers": {
+          "country_specimen_storage_cooldown_mult": -0.25
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_archivism_exhibition_specialization_tt",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "country_specimen_storage_cooldown_mult": -0.25
+        }
+      },
+      "icon": "icons/traditions/tr_archivism_exhibition_specialization.png",
+      "nameKey": "tr_archivism_exhibition_specialization",
+      "descriptionKey": "tr_archivism_exhibition_specialization_delayed"
+    },
+    {
+      "key": "tr_diplomacy_adopt",
+      "tree": "tradition_diplomacy",
+      "effects": {
+        "modifiers": {
+          "diplomacy_influence_upkeep_mult": -0.5,
+          "diplomacy_influence_cost_mult": -0.25
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_diplomacy_adopt_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "diplomacy_influence_upkeep_mult": -0.5,
+          "diplomacy_influence_cost_mult": -0.25
+        }
+      },
+      "nameKey": "tr_diplomacy_adopt",
+      "descriptionKey": "tr_diplomacy_adopt_delayed"
+    },
+    {
+      "key": "tr_diplomacy_finish",
+      "tree": "tradition_diplomacy",
+      "effects": {
+        "modifiers": {
+          "federation_experience_add": 2,
+          "diplo_weight_mult": 0.1,
+          "country_official_cap_add": 1,
+          "ascension_perks_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "federation_experience_add": 2,
+          "diplo_weight_mult": 0.1,
+          "country_official_cap_add": 1,
+          "ascension_perks_add": 1
+        }
+      },
+      "nameKey": "tr_diplomacy_finish",
+      "descriptionKey": "tr_diplomacy_finish_delayed"
+    },
+    {
+      "key": "tr_diplomacy_the_federation",
+      "tree": "tradition_diplomacy",
+      "effects": {
+        "modifiers": {
+          "cohesion_add": 1,
+          "envoys_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "cohesion_add": 1,
+          "envoys_add": 1
+        }
+      },
+      "icon": "icons/traditions/tr_diplomacy_the_federation.png",
+      "nameKey": "tr_diplomacy_the_federation",
+      "descriptionKey": "tr_diplomacy_the_federation_delayed"
+    },
+    {
+      "key": "tr_diplomacy_entente_coordination",
+      "tree": "tradition_diplomacy",
+      "effects": {
+        "modifiers": {
+          "federation_naval_cap_contribution_mult": 1,
+          "country_border_friction_mult": -0.25
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "federation_naval_cap_contribution_mult": 1,
+          "country_border_friction_mult": -0.25
+        }
+      },
+      "icon": "icons/traditions/tr_diplomacy_entente_coordination.png",
+      "nameKey": "tr_diplomacy_entente_coordination",
+      "descriptionKey": "tr_diplomacy_entente_coordination_delayed"
+    },
+    {
+      "key": "tr_diplomacy_diplomatic_networking",
+      "tree": "tradition_diplomacy",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_diplomacy_diplomatic_networking_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_diplomacy_diplomatic_networking.png",
+      "nameKey": "tr_diplomacy_diplomatic_networking",
+      "descriptionKey": "tr_diplomacy_diplomatic_networking_delayed"
+    },
+    {
+      "key": "tr_diplomacy_direct_diplomacy",
+      "tree": "tradition_diplomacy",
+      "effects": {
+        "modifiers": {
+          "country_trust_cap_add": 50,
+          "country_trust_growth": 0.33
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "country_trust_cap_add": 50,
+          "country_trust_growth": 0.33
+        }
+      },
+      "icon": "icons/traditions/tr_diplomacy_direct_diplomacy.png",
+      "nameKey": "tr_diplomacy_direct_diplomacy",
+      "descriptionKey": "tr_diplomacy_direct_diplomacy_delayed"
+    },
+    {
+      "key": "tr_diplomacy_eminent_diplomats",
+      "tree": "tradition_diplomacy",
+      "effects": {
+        "modifiers": {
+          "diplo_action_acceptance_add": 5
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_diplomacy_eminent_diplomats_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_diplomacy_eminent_diplomats.png",
+      "nameKey": "tr_diplomacy_eminent_diplomats",
+      "descriptionKey": "tr_diplomacy_eminent_diplomats_delayed"
+    },
+    {
+      "key": "tr_discovery_adopt",
+      "tree": "tradition_discovery",
+      "effects": {
+        "modifiers": {
+          "ship_anomaly_research_speed_mult": 0.2
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_discovery_adopt_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "nameKey": "tr_discovery_adopt",
+      "descriptionKey": "tr_discovery_adopt_delayed"
+    },
+    {
+      "key": "tr_discovery_finish",
+      "tree": "tradition_discovery",
+      "effects": {
+        "modifiers": {
+          "all_technology_research_speed": 0.1,
+          "ascension_perks_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "all_technology_research_speed": 0.1,
+          "ascension_perks_add": 1
+        }
+      },
+      "nameKey": "tr_discovery_finish",
+      "descriptionKey": "tr_discovery_finish_delayed"
+    },
+    {
+      "key": "tr_discovery_to_boldly_go",
+      "tree": "tradition_discovery",
+      "effects": {
+        "modifiers": {
+          "science_ship_survey_speed": 0.35,
+          "shipclass_science_ship_disengage_mult": 0.5
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "science_ship_survey_speed": 0.35,
+          "shipclass_science_ship_disengage_mult": 0.5
+        }
+      },
+      "icon": "icons/traditions/tr_discovery_to_boldly_go.png",
+      "nameKey": "tr_discovery_to_boldly_go",
+      "descriptionKey": "tr_discovery_to_boldly_go_delayed"
+    },
+    {
+      "key": "tr_discovery_databank_uplinks",
+      "tree": "tradition_discovery",
+      "effects": {
+        "modifiers": {
+          "station_researchers_produces_mult": 0.2,
+          "starbase_constructions_physics_research_produces_mult": 0.2,
+          "starbase_constructions_society_research_produces_mult": 0.2,
+          "starbase_constructions_engineering_research_produces_mult": 0.2
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_discovery_databank_uplinks_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_discovery_databank_uplinks.png",
+      "nameKey": "tr_discovery_databank_uplinks",
+      "descriptionKey": "tr_discovery_databank_uplinks_delayed"
+    },
+    {
+      "key": "tr_discovery_science_division",
+      "tree": "tradition_discovery",
+      "effects": {
+        "modifiers": {
+          "num_tech_alternatives_add": 1,
+          "country_scientist_cap_add": 1,
+          "scientist_initial_skill": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "num_tech_alternatives_add": 1,
+          "country_scientist_cap_add": 1,
+          "scientist_initial_skill": 1
+        }
+      },
+      "icon": "icons/traditions/tr_discovery_science_division.png",
+      "nameKey": "tr_discovery_science_division",
+      "descriptionKey": "tr_discovery_science_division_delayed"
+    },
+    {
+      "key": "tr_discovery_polytechnic_education",
+      "tree": "tradition_discovery",
+      "effects": {
+        "modifiers": {
+          "scientist_exp_gain": 0.2,
+          "leader_scientists_upkeep_mult": -0.15
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "scientist_exp_gain": 0.2,
+          "leader_scientists_upkeep_mult": -0.15
+        }
+      },
+      "icon": "icons/traditions/tr_discovery_polytechnic_education.png",
+      "nameKey": "tr_discovery_polytechnic_education",
+      "descriptionKey": "tr_discovery_polytechnic_education_delayed"
+    },
+    {
+      "key": "tr_discovery_faith_in_science",
+      "tree": "tradition_discovery",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_discovery_faith_in_science_tt",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_discovery_faith_in_science.png",
+      "nameKey": "tr_discovery_faith_in_science",
+      "descriptionKey": "tr_discovery_faith_in_science_delayed"
+    },
+    {
+      "key": "tr_domestication_adopt",
+      "tree": "tradition_domestication",
+      "effects": {
+        "modifiers": {
+          "planet_farmers_produces_mult": 0.2,
+          "starbase_shipyard_space_fauna_build_cost_mult": -0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_farmers_produces_mult": 0.2,
+          "starbase_shipyard_space_fauna_build_cost_mult": -0.1
+        }
+      },
+      "nameKey": "tr_domestication_adopt",
+      "descriptionKey": "tr_domestication_adopt_delayed"
+    },
+    {
+      "key": "tr_domestication_finish",
+      "tree": "tradition_domestication",
+      "effects": {
+        "modifiers": {
+          "space_fauna_experience_gain_mult": 0.5,
+          "ascension_perks_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_domestication_finish_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "nameKey": "tr_domestication_finish",
+      "descriptionKey": "tr_domestication_finish_delayed"
+    },
+    {
+      "key": "tr_domestication_containment_protocols",
+      "tree": "tradition_domestication",
+      "effects": {
+        "modifiers": {
+          "country_vivarium_max_capacity_mult": 0.25,
+          "country_capture_chance_add": 0.2
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "country_vivarium_max_capacity_mult": 0.25,
+          "country_capture_chance_add": 0.2
+        }
+      },
+      "icon": "icons/traditions/tr_domestication_containment_protocols.png",
+      "nameKey": "tr_domestication_containment_protocols",
+      "descriptionKey": "tr_domestication_containment_protocols_delayed"
+    },
+    {
+      "key": "tr_domestication_bio_repurposing",
+      "tree": "tradition_domestication",
+      "effects": {
+        "modifiers": {
+          "planet_clear_blocker_speed_mult": 0.33
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_domestication_bio_repurposing_tt",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_clear_blocker_speed_mult": 0.33
+        }
+      },
+      "icon": "icons/traditions/tr_domestication_bio_repurposing.png",
+      "nameKey": "tr_domestication_bio_repurposing",
+      "descriptionKey": "tr_domestication_bio_repurposing_delayed"
+    },
+    {
+      "key": "tr_domestication_astrozoology",
+      "tree": "tradition_domestication",
+      "effects": {
+        "modifiers": {
+          "space_fauna_monthly_increased_breeding_chance_add": 1,
+          "space_fauna_culling_reward_mult": 0.25
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_domestication_astrozoology_tt",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "space_fauna_monthly_increased_breeding_chance_add": 1,
+          "space_fauna_culling_reward_mult": 0.25
+        }
+      },
+      "icon": "icons/traditions/tr_domestication_astrozoology.png",
+      "nameKey": "tr_domestication_astrozoology",
+      "descriptionKey": "tr_domestication_astrozoology_delayed"
+    },
+    {
+      "key": "tr_domestication_metabolic_regulation",
+      "tree": "tradition_domestication",
+      "effects": {
+        "modifiers": {
+          "logistic_growth_mult": 0.05,
+          "starbase_shipyard_space_fauna_build_speed_mult": 0.15
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_domestication_metabolic_regulation_tt",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "logistic_growth_mult": 0.05,
+          "starbase_shipyard_space_fauna_build_speed_mult": 0.15
+        }
+      },
+      "icon": "icons/traditions/tr_domestication_metabolic_regulation.png",
+      "nameKey": "tr_domestication_metabolic_regulation",
+      "descriptionKey": "tr_domestication_metabolic_regulation_delayed"
+    },
+    {
+      "key": "tr_domestication_killer_instinct",
+      "tree": "tradition_domestication",
+      "effects": {
+        "modifiers": {
+          "space_fauna_ship_damage_mult": 0.15,
+          "space_fauna_ship_speed_mult": 0.15
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "space_fauna_ship_damage_mult": 0.15,
+          "space_fauna_ship_speed_mult": 0.15
+        }
+      },
+      "icon": "icons/traditions/tr_domestication_killer_instinct.png",
+      "nameKey": "tr_domestication_killer_instinct",
+      "descriptionKey": "tr_domestication_killer_instinct_delayed"
+    },
+    {
+      "key": "tr_domination_adopt",
+      "tree": "tradition_domination",
+      "effects": {
+        "modifiers": {
+          "planet_jobs_worker_produces_mult": 0.05,
+          "pop_slave_bonus_workforce_mult": 0.05,
+          "pop_slave_political_power": -0.25
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_jobs_worker_produces_mult": 0.05,
+          "pop_slave_bonus_workforce_mult": 0.05,
+          "pop_slave_political_power": -0.25
+        }
+      },
+      "nameKey": "tr_domination_adopt",
+      "descriptionKey": "tr_domination_adopt_delayed"
+    },
+    {
+      "key": "tr_domination_finish",
+      "tree": "tradition_domination",
+      "effects": {
+        "modifiers": {
+          "empire_size_pops_mult": -0.05,
+          "ascension_perks_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "empire_size_pops_mult": -0.05,
+          "ascension_perks_add": 1
+        }
+      },
+      "nameKey": "tr_domination_finish",
+      "descriptionKey": "tr_domination_finish_delayed"
+    },
+    {
+      "key": "tr_domination_colonial_viceroys",
+      "tree": "tradition_domination",
+      "effects": {
+        "modifiers": {
+          "country_traditions_influence_produces_add": 0.5,
+          "country_official_cap_add": 1,
+          "official_initial_skill": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "country_traditions_influence_produces_add": 0.5,
+          "country_official_cap_add": 1,
+          "official_initial_skill": 1
+        }
+      },
+      "icon": "icons/traditions/tr_domination_colonial_viceroys.png",
+      "nameKey": "tr_domination_colonial_viceroys",
+      "descriptionKey": "tr_domination_colonial_viceroys_delayed"
+    },
+    {
+      "key": "tr_domination_imperious_architecture",
+      "tree": "tradition_domination",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_domination_imperious_architecture_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_domination_imperious_architecture.png",
+      "nameKey": "tr_domination_imperious_architecture",
+      "descriptionKey": "tr_domination_imperious_architecture_delayed"
+    },
+    {
+      "key": "tr_domination_grand_council",
+      "tree": "tradition_domination",
+      "effects": {
+        "modifiers": {
+          "councilor_exp_gain": 0.2,
+          "country_edict_fund_add": 50
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "councilor_exp_gain": 0.2,
+          "country_edict_fund_add": 50
+        }
+      },
+      "icon": "icons/traditions/tr_domination_grand_council.png",
+      "nameKey": "tr_domination_grand_council",
+      "descriptionKey": "tr_domination_grand_council_delayed"
+    },
+    {
+      "key": "tr_domination_judgment_corps",
+      "tree": "tradition_domination",
+      "effects": {
+        "modifiers": {
+          "planet_enforcers_unity_produces_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_domination_judgment_corps_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_enforcers_unity_produces_add": 1
+        }
+      },
+      "icon": "icons/traditions/tr_domination_judgment_corps.png",
+      "nameKey": "tr_domination_judgment_corps",
+      "descriptionKey": "tr_domination_judgment_corps_delayed"
+    },
+    {
+      "key": "tr_domination_workplace_motivators",
+      "tree": "tradition_domination",
+      "effects": {
+        "modifiers": {
+          "planet_jobs_worker_produces_mult": 0.05,
+          "pop_slave_bonus_workforce_mult": 0.05
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_domination_workplace_motivators_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_jobs_worker_produces_mult": 0.05,
+          "pop_slave_bonus_workforce_mult": 0.05
+        }
+      },
+      "icon": "icons/traditions/tr_domination_workplace_motivators.png",
+      "nameKey": "tr_domination_workplace_motivators",
+      "descriptionKey": "tr_domination_workplace_motivators_delayed"
+    },
+    {
+      "key": "tr_enmity_adopt",
+      "tree": "tradition_enmity",
+      "effects": {
+        "modifiers": {
+          "max_rivalries": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_enmity_adopt_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "max_rivalries": 1
+        }
+      },
+      "nameKey": "tr_enmity_adopt",
+      "descriptionKey": "tr_enmity_adopt_delayed"
+    },
+    {
+      "key": "tr_enmity_finish",
+      "tree": "tradition_enmity",
+      "effects": {
+        "modifiers": {
+          "envoys_add": 1,
+          "ascension_perks_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_enmity_finish_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "nameKey": "tr_enmity_finish",
+      "descriptionKey": "tr_enmity_finish_delayed"
+    },
+    {
+      "key": "tr_enmity_rise_to_the_occasion",
+      "tree": "tradition_enmity",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_enmity_rise_to_the_occasion_effect",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_enmity_rise_to_the_occasion.png",
+      "nameKey": "tr_enmity_rise_to_the_occasion",
+      "descriptionKey": "tr_enmity_rise_to_the_occasion_delayed"
+    },
+    {
+      "key": "tr_enmity_consumate_contrarian",
+      "tree": "tradition_enmity",
+      "effects": {
+        "modifiers": {
+          "diplo_weight_opposing_mult": 0.5
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "diplo_weight_opposing_mult": 0.5
+        }
+      },
+      "icon": "icons/traditions/tr_enmity_consumate_contrarian.png",
+      "nameKey": "tr_enmity_consumate_contrarian",
+      "descriptionKey": "tr_enmity_consumate_contrarian_delayed"
+    },
+    {
+      "key": "tr_enmity_match",
+      "tree": "tradition_enmity",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_enmity_match_effect",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_enmity_match.png",
+      "nameKey": "tr_enmity_match",
+      "descriptionKey": "tr_enmity_match_delayed"
+    },
+    {
+      "key": "tr_enmity_outpace",
+      "tree": "tradition_enmity",
+      "effects": {
+        "modifiers": {
+          "damage_vs_rival_mult": 0.15
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "damage_vs_rival_mult": 0.15
+        }
+      },
+      "icon": "icons/traditions/tr_enmity_outpace.png",
+      "nameKey": "tr_enmity_outpace",
+      "descriptionKey": "tr_enmity_outpace_delayed"
+    },
+    {
+      "key": "tr_enmity_eclipse",
+      "tree": "tradition_enmity",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_enmity_eclipse_effect",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_enmity_eclipse.png",
+      "nameKey": "tr_enmity_eclipse",
+      "descriptionKey": "tr_enmity_eclipse_delayed"
+    },
+    {
+      "key": "tr_expansion_adopt",
+      "tree": "tradition_expansion",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "nameKey": "tr_expansion_adopt",
+      "descriptionKey": "tr_expansion_adopt_delayed"
+    },
+    {
+      "key": "tr_expansion_finish",
+      "tree": "tradition_expansion",
+      "effects": {
+        "modifiers": {
+          "planet_non_artificial_max_districts_add": 1,
+          "ascension_perks_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_non_artificial_max_districts_add": 1,
+          "ascension_perks_add": 1
+        }
+      },
+      "nameKey": "tr_expansion_finish",
+      "descriptionKey": "tr_expansion_finish_delayed"
+    },
+    {
+      "key": "tr_expansion_colonization_fever",
+      "tree": "tradition_expansion",
+      "effects": {
+        "modifiers": {
+          "colony_start_urban_districts_add": 1,
+          "planet_colony_development_speed_mult": 0.25
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "colony_start_urban_districts_add": 1,
+          "planet_colony_development_speed_mult": 0.25
+        }
+      },
+      "icon": "icons/traditions/tr_expansion_colonization_fever.png",
+      "nameKey": "tr_expansion_colonization_fever",
+      "descriptionKey": "tr_expansion_colonization_fever_delayed"
+    },
+    {
+      "key": "tr_expansion_a_new_life",
+      "tree": "tradition_expansion",
+      "effects": {
+        "modifiers": {
+          "founder_species_growth_mult": 0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "founder_species_growth_mult": 0.1
+        }
+      },
+      "icon": "icons/traditions/tr_expansion_a_new_life.png",
+      "nameKey": "tr_expansion_a_new_life",
+      "descriptionKey": "tr_expansion_a_new_life_delayed"
+    },
+    {
+      "key": "tr_expansion_courier_network",
+      "tree": "tradition_expansion",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_expansion_courier_network.png",
+      "nameKey": "tr_expansion_courier_network",
+      "descriptionKey": "tr_expansion_courier_network_delayed"
+    },
+    {
+      "key": "tr_expansion_reach_for_the_stars",
+      "tree": "tradition_expansion",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_expansion_reach_for_the_stars.png",
+      "nameKey": "tr_expansion_reach_for_the_stars",
+      "descriptionKey": "tr_expansion_reach_for_the_stars_delayed"
+    },
+    {
+      "key": "tr_expansion_galactic_ambition",
+      "tree": "tradition_expansion",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_expansion_galactic_ambition.png",
+      "nameKey": "tr_expansion_galactic_ambition",
+      "descriptionKey": "tr_expansion_galactic_ambition_delayed"
+    },
+    {
+      "key": "tr_harmony_adopt",
+      "tree": "tradition_harmony",
+      "effects": {
+        "modifiers": {
+          "planet_pops_upkeep_mult": -0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_pops_upkeep_mult": -0.1
+        }
+      },
+      "nameKey": "tr_harmony_adopt",
+      "descriptionKey": "tr_harmony_adopt_delayed"
+    },
+    {
+      "key": "tr_harmony_finish",
+      "tree": "tradition_harmony",
+      "effects": {
+        "modifiers": {
+          "planetary_ascension_effect_mult": 0.25,
+          "ascension_perks_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planetary_ascension_effect_mult": 0.25,
+          "ascension_perks_add": 1
+        }
+      },
+      "nameKey": "tr_harmony_finish",
+      "descriptionKey": "tr_harmony_finish_delayed"
+    },
+    {
+      "key": "tr_harmony_the_greater_good",
+      "tree": "tradition_harmony",
+      "effects": {
+        "modifiers": {
+          "pop_government_ethic_attraction": 0.25,
+          "planet_crime_add": -10
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "pop_government_ethic_attraction": 0.25,
+          "planet_crime_add": -10
+        }
+      },
+      "icon": "icons/traditions/tr_harmony_the_greater_good.png",
+      "nameKey": "tr_harmony_the_greater_good",
+      "descriptionKey": "tr_harmony_the_greater_good_delayed"
+    },
+    {
+      "key": "tr_harmony_kinship",
+      "tree": "tradition_harmony",
+      "effects": {
+        "modifiers": {
+          "empire_size_pops_mult": -0.05,
+          "refugee_attraction": 0.2
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "empire_size_pops_mult": -0.05,
+          "refugee_attraction": 0.2
+        }
+      },
+      "icon": "icons/traditions/tr_harmony_kinship.png",
+      "nameKey": "tr_harmony_kinship",
+      "descriptionKey": "tr_harmony_kinship_delayed"
+    },
+    {
+      "key": "tr_harmony_utopian_dream",
+      "tree": "tradition_harmony",
+      "effects": {
+        "modifiers": {
+          "planet_stability_add": 3,
+          "planetary_ascension_cost_mult": -0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_stability_add": 3,
+          "planetary_ascension_cost_mult": -0.1
+        }
+      },
+      "icon": "icons/traditions/tr_harmony_utopian_dream.png",
+      "nameKey": "tr_harmony_utopian_dream",
+      "descriptionKey": "tr_harmony_utopian_dream_delayed"
+    },
+    {
+      "key": "tr_harmony_harmonious_directives",
+      "tree": "tradition_harmony",
+      "effects": {
+        "modifiers": {
+          "country_edict_fund_add": 50
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "country_edict_fund_add": 50
+        }
+      },
+      "icon": "icons/traditions/tr_harmony_harmonious_directives.png",
+      "nameKey": "tr_harmony_harmonious_directives",
+      "descriptionKey": "tr_harmony_harmonious_directives_delayed"
+    },
+    {
+      "key": "tr_harmony_mind_and_body",
+      "tree": "tradition_harmony",
+      "effects": {
+        "modifiers": {
+          "leader_lifespan_add": 10,
+          "negative_traits_country": -1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "leader_lifespan_add": 10,
+          "negative_traits_country": -1
+        }
+      },
+      "icon": "icons/traditions/tr_harmony_mind_and_body.png",
+      "nameKey": "tr_harmony_mind_and_body",
+      "descriptionKey": "tr_harmony_mind_and_body_delayed"
+    },
+    {
+      "key": "tr_logistics_adopt",
+      "tree": "tradition_logistics",
+      "effects": {
+        "modifiers": {
+          "pop_logistics_drone_bonus_workforce_mult": 0.05
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "pop_logistics_drone_bonus_workforce_mult": 0.05
+        }
+      },
+      "nameKey": "tr_logistics_adopt",
+      "descriptionKey": "tr_logistics_adopt_delayed"
+    },
+    {
+      "key": "tr_logistics_finish",
+      "tree": "tradition_logistics",
+      "effects": {
+        "modifiers": {
+          "country_trade_produces_mult": 0.1,
+          "ascension_perks_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "country_trade_produces_mult": 0.1,
+          "ascension_perks_add": 1
+        }
+      },
+      "nameKey": "tr_logistics_finish",
+      "descriptionKey": "tr_logistics_finish_delayed"
+    },
+    {
+      "key": "tr_logistics_1",
+      "tree": "tradition_logistics",
+      "effects": {
+        "modifiers": {
+          "planet_traders_trade_produces_add": 2
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_logistics_1_tt",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_logistics_1.png",
+      "nameKey": "tr_logistics_1",
+      "descriptionKey": "tr_logistics_1_delayed"
+    },
+    {
+      "key": "tr_logistics_2",
+      "tree": "tradition_logistics",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_logistics_2_tt",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_logistics_2.png",
+      "nameKey": "tr_logistics_2",
+      "descriptionKey": "tr_logistics_2_delayed"
+    },
+    {
+      "key": "tr_logistics_3",
+      "tree": "tradition_logistics",
+      "effects": {
+        "modifiers": {
+          "planet_maintenance_drones_trade_produces_add": 1,
+          "planet_structures_upkeep_mult": -0.05
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_maintenance_drones_trade_produces_add": 1,
+          "planet_structures_upkeep_mult": -0.05
+        }
+      },
+      "icon": "icons/traditions/tr_logistics_3.png",
+      "nameKey": "tr_logistics_3",
+      "descriptionKey": "tr_logistics_3_delayed"
+    },
+    {
+      "key": "tr_logistics_4",
+      "tree": "tradition_logistics",
+      "effects": {
+        "modifiers": {
+          "country_trade_fee": -0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "country_trade_fee": -0.1
+        }
+      },
+      "icon": "icons/traditions/tr_logistics_4.png",
+      "nameKey": "tr_logistics_4",
+      "descriptionKey": "tr_logistics_4_delayed"
+    },
+    {
+      "key": "tr_logistics_5",
+      "tree": "tradition_logistics",
+      "effects": {
+        "modifiers": {
+          "ships_logistics_mult": -0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "ships_logistics_mult": -0.1
+        }
+      },
+      "icon": "icons/traditions/tr_logistics_5.png",
+      "nameKey": "tr_logistics_5",
+      "descriptionKey": "tr_logistics_5_delayed"
+    },
+    {
+      "key": "tr_mercantile_adopt",
+      "tree": "tradition_mercantile",
+      "effects": {
+        "modifiers": {
+          "planet_traders_upkeep_mult": -0.2
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_traders_upkeep_mult": -0.2
+        }
+      },
+      "nameKey": "tr_mercantile_adopt",
+      "descriptionKey": "tr_mercantile_adopt_delayed"
+    },
+    {
+      "key": "tr_mercantile_finish",
+      "tree": "tradition_mercantile",
+      "effects": {
+        "modifiers": {
+          "country_trade_produces_mult": 0.1,
+          "ascension_perks_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "country_trade_produces_mult": 0.1,
+          "ascension_perks_add": 1
+        }
+      },
+      "nameKey": "tr_mercantile_finish",
+      "descriptionKey": "tr_mercantile_finish_delayed"
+    },
+    {
+      "key": "tr_mercantile_trickle_up_economics",
+      "tree": "tradition_mercantile",
+      "effects": {
+        "modifiers": {
+          "planet_pops_trade_produces_mult": 0.15
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_pops_trade_produces_mult": 0.15
+        }
+      },
+      "icon": "icons/traditions/tr_mercantile_trickle_up_economics.png",
+      "nameKey": "tr_mercantile_trickle_up_economics",
+      "descriptionKey": "tr_mercantile_trickle_up_economics_delayed"
+    },
+    {
+      "key": "tr_mercantile_commercial_enterprise",
+      "tree": "tradition_mercantile",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_mercantile_commercial_enterprise_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_mercantile_commercial_enterprise.png",
+      "nameKey": "tr_mercantile_commercial_enterprise",
+      "descriptionKey": "tr_mercantile_commercial_enterprise_delayed"
+    },
+    {
+      "key": "tr_mercantile_adaptive_economic_policies",
+      "tree": "tradition_mercantile",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_mercantile_adaptive_economic_policies_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_mercantile_adaptive_economic_policies.png",
+      "nameKey": "tr_mercantile_adaptive_economic_policies",
+      "descriptionKey": "tr_mercantile_adaptive_economic_policies_delayed"
+    },
+    {
+      "key": "tr_mercantile_marketplace_of_better_ideas",
+      "tree": "tradition_mercantile",
+      "effects": {
+        "modifiers": {
+          "planet_jobs_trade_produces_mult": 0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_jobs_trade_produces_mult": 0.1
+        }
+      },
+      "icon": "icons/traditions/tr_mercantile_marketplace_of_better_ideas.png",
+      "nameKey": "tr_mercantile_marketplace_of_better_ideas",
+      "descriptionKey": "tr_mercantile_marketplace_of_better_ideas_delayed"
+    },
+    {
+      "key": "tr_mercantile_insider_trading",
+      "tree": "tradition_mercantile",
+      "effects": {
+        "modifiers": {
+          "country_trade_fee": -0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "country_trade_fee": -0.1
+        }
+      },
+      "icon": "icons/traditions/tr_mercantile_insider_trading.png",
+      "nameKey": "tr_mercantile_insider_trading",
+      "descriptionKey": "tr_mercantile_insider_trading_delayed"
+    },
+    {
+      "key": "tr_politics_adopt",
+      "tree": "tradition_politics",
+      "effects": {
+        "modifiers": {
+          "envoys_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_politics_adopt_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "nameKey": "tr_politics_adopt",
+      "descriptionKey": "tr_politics_adopt_delayed"
+    },
+    {
+      "key": "tr_politics_finish",
+      "tree": "tradition_politics",
+      "effects": {
+        "modifiers": {
+          "diplo_weight_mult": 0.1,
+          "ascension_perks_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_politics_finish_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "nameKey": "tr_politics_finish",
+      "descriptionKey": "tr_politics_finish_delayed"
+    },
+    {
+      "key": "tr_politics_quid_pro_quo",
+      "tree": "tradition_politics",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_politics_quid_pro_quo_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_politics_quid_pro_quo.png",
+      "nameKey": "tr_politics_quid_pro_quo",
+      "descriptionKey": "tr_politics_quid_pro_quo_delayed"
+    },
+    {
+      "key": "tr_politics_gravitas",
+      "tree": "tradition_politics",
+      "effects": {
+        "modifiers": {
+          "resolutions_cost_mult": -0.25,
+          "diplo_weight_delegate_mult": 0.025
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_politics_gravitas_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_politics_gravitas.png",
+      "nameKey": "tr_politics_gravitas",
+      "descriptionKey": "tr_politics_gravitas_delayed"
+    },
+    {
+      "key": "tr_politics_national_agenda",
+      "tree": "tradition_politics",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_politics_national_agenda_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_politics_national_agenda.png",
+      "nameKey": "tr_politics_national_agenda",
+      "descriptionKey": "tr_politics_national_agenda_delayed"
+    },
+    {
+      "key": "tr_politics_persistent_petitioners",
+      "tree": "tradition_politics",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_politics_persistent_petitioners_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_politics_persistent_petitioners.png",
+      "nameKey": "tr_politics_persistent_petitioners",
+      "descriptionKey": "tr_politics_persistent_petitioners_delayed"
+    },
+    {
+      "key": "tr_politics_extraordinary_powers",
+      "tree": "tradition_politics",
+      "effects": {
+        "modifiers": {
+          "veto_cooldown_mult": -0.25,
+          "emergency_measures_cooldown_mult": -0.25
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "veto_cooldown_mult": -0.25,
+          "emergency_measures_cooldown_mult": -0.25
+        }
+      },
+      "icon": "icons/traditions/tr_politics_extraordinary_powers.png",
+      "nameKey": "tr_politics_extraordinary_powers",
+      "descriptionKey": "tr_politics_extraordinary_powers_delayed"
+    },
+    {
+      "key": "tr_prosperity_adopt",
+      "tree": "tradition_prosperity",
+      "effects": {
+        "modifiers": {
+          "station_gatherers_produces_mult": 0.2
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "station_gatherers_produces_mult": 0.2
+        }
+      },
+      "nameKey": "tr_prosperity_adopt",
+      "descriptionKey": "tr_prosperity_adopt_delayed"
+    },
+    {
+      "key": "tr_prosperity_finish",
+      "tree": "tradition_prosperity",
+      "effects": {
+        "modifiers": {
+          "stations_produces_mult": 0.25,
+          "ascension_perks_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "stations_produces_mult": 0.25,
+          "ascension_perks_add": 1
+        }
+      },
+      "nameKey": "tr_prosperity_finish",
+      "descriptionKey": "tr_prosperity_finish_delayed"
+    },
+    {
+      "key": "tr_prosperity_sct",
+      "tree": "tradition_prosperity",
+      "effects": {
+        "modifiers": {
+          "planet_structures_cost_mult": -0.1,
+          "planet_building_build_speed_mult": 0.25
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_structures_cost_mult": -0.1,
+          "planet_building_build_speed_mult": 0.25
+        }
+      },
+      "icon": "icons/traditions/tr_prosperity_sct.png",
+      "nameKey": "tr_prosperity_sct",
+      "descriptionKey": "tr_prosperity_sct_delayed"
+    },
+    {
+      "key": "tr_prosperity_administrative_operations",
+      "tree": "tradition_prosperity",
+      "effects": {
+        "modifiers": {
+          "planet_structures_upkeep_mult": -0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_structures_upkeep_mult": -0.1
+        }
+      },
+      "icon": "icons/traditions/tr_prosperity_administrative_operations.png",
+      "nameKey": "tr_prosperity_administrative_operations",
+      "descriptionKey": "tr_prosperity_administrative_operations_delayed"
+    },
+    {
+      "key": "tr_prosperity_public_works",
+      "tree": "tradition_prosperity",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_prosperity_public_works_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_prosperity_public_works.png",
+      "nameKey": "tr_prosperity_public_works",
+      "descriptionKey": "tr_prosperity_public_works_delayed"
+    },
+    {
+      "key": "tr_prosperity_interstellar_franchising",
+      "tree": "tradition_prosperity",
+      "effects": {
+        "modifiers": {
+          "planet_jobs_upkeep_mult": -0.05
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_jobs_upkeep_mult": -0.05
+        }
+      },
+      "icon": "icons/traditions/tr_prosperity_interstellar_franchising.png",
+      "nameKey": "tr_prosperity_interstellar_franchising",
+      "descriptionKey": "tr_prosperity_interstellar_franchising_delayed"
+    },
+    {
+      "key": "tr_prosperity_pursuit_of_profit",
+      "tree": "tradition_prosperity",
+      "effects": {
+        "modifiers": {
+          "planet_jobs_produces_mult": 0.05
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_jobs_produces_mult": 0.05
+        }
+      },
+      "icon": "icons/traditions/tr_prosperity_pursuit_of_profit.png",
+      "nameKey": "tr_prosperity_pursuit_of_profit",
+      "descriptionKey": "tr_prosperity_pursuit_of_profit_delayed"
+    },
+    {
+      "key": "tr_statecraft_adopt",
+      "tree": "tradition_statecraft",
+      "effects": {
+        "modifiers": {
+          "country_edict_fund_add": 50
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "country_edict_fund_add": 50
+        }
+      },
+      "nameKey": "tr_statecraft_adopt",
+      "descriptionKey": "tr_statecraft_adopt_delayed"
+    },
+    {
+      "key": "tr_statecraft_finish",
+      "tree": "tradition_statecraft",
+      "effects": {
+        "modifiers": {
+          "empire_size_mult": -0.05,
+          "ascension_perks_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "empire_size_mult": -0.05,
+          "ascension_perks_add": 1
+        }
+      },
+      "nameKey": "tr_statecraft_finish",
+      "descriptionKey": "tr_statecraft_finish_delayed"
+    },
+    {
+      "key": "tr_statecraft_constitutional_focus",
+      "tree": "tradition_statecraft",
+      "effects": {
+        "modifiers": {
+          "council_agenda_progress_speed": 0.25
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "council_agenda_progress_speed": 0.25
+        }
+      },
+      "icon": "icons/traditions/tr_statecraft_constitutional_focus.png",
+      "nameKey": "tr_statecraft_constitutional_focus",
+      "descriptionKey": "tr_statecraft_constitutional_focus_delayed"
+    },
+    {
+      "key": "tr_statecraft_inspiring_agendas",
+      "tree": "tradition_statecraft",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_statecraft_inspiring_agendas_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_statecraft_inspiring_agendas.png",
+      "nameKey": "tr_statecraft_inspiring_agendas",
+      "descriptionKey": "tr_statecraft_inspiring_agendas_delayed"
+    },
+    {
+      "key": "tr_statecraft_immutable_directives",
+      "tree": "tradition_statecraft",
+      "effects": {
+        "modifiers": {
+          "council_agenda_finishing_effect_duration_mult": 0.25
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "council_agenda_finishing_effect_duration_mult": 0.25
+        }
+      },
+      "icon": "icons/traditions/tr_statecraft_immutable_directives.png",
+      "nameKey": "tr_statecraft_immutable_directives",
+      "descriptionKey": "tr_statecraft_immutable_directives_delayed"
+    },
+    {
+      "key": "tr_statecraft_amongst_peers",
+      "tree": "tradition_statecraft",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_statecraft_shared_benefits_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_statecraft_amongst_peers.png",
+      "nameKey": "tr_statecraft_amongst_peers",
+      "descriptionKey": "tr_statecraft_amongst_peers_delayed"
+    },
+    {
+      "key": "tr_statecraft_shared_benefits",
+      "tree": "tradition_statecraft",
+      "effects": {
+        "modifiers": {
+          "councilor_skill_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "councilor_skill_add": 1
+        }
+      },
+      "icon": "icons/traditions/tr_statecraft_shared_benefits.png",
+      "nameKey": "tr_statecraft_shared_benefits",
+      "descriptionKey": "tr_statecraft_shared_benefits_delayed"
+    },
+    {
+      "key": "tr_subterfuge_adopt",
+      "tree": "tradition_subterfuge",
+      "effects": {
+        "modifiers": {
+          "espionage_operation_cost_mult": -0.25,
+          "intel_decryption_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_subterfuge_adopt_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "espionage_operation_cost_mult": -0.25,
+          "intel_decryption_add": 1
+        }
+      },
+      "nameKey": "tr_subterfuge_adopt",
+      "descriptionKey": "tr_subterfuge_adopt_delayed"
+    },
+    {
+      "key": "tr_subterfuge_finish",
+      "tree": "tradition_subterfuge",
+      "effects": {
+        "modifiers": {
+          "ascension_perks_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_subterfuge_finish_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "nameKey": "tr_subterfuge_finish",
+      "descriptionKey": "tr_subterfuge_finish_delayed"
+    },
+    {
+      "key": "tr_subterfuge_information_security",
+      "tree": "tradition_subterfuge",
+      "effects": {
+        "modifiers": {
+          "intel_encryption_add": 1,
+          "ship_evasion_add": 5
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "intel_encryption_add": 1,
+          "ship_evasion_add": 5
+        }
+      },
+      "icon": "icons/traditions/tr_subterfuge_information_security.png",
+      "nameKey": "tr_subterfuge_information_security",
+      "descriptionKey": "tr_subterfuge_information_security_delayed"
+    },
+    {
+      "key": "tr_subterfuge_nda",
+      "tree": "tradition_subterfuge",
+      "effects": {
+        "modifiers": {
+          "espionage_hostile_operation_difficulty_add": 1,
+          "espionage_hostile_operation_cost_mult": 0.2
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "espionage_hostile_operation_difficulty_add": 1,
+          "espionage_hostile_operation_cost_mult": 0.2
+        }
+      },
+      "icon": "icons/traditions/tr_subterfuge_nda.png",
+      "nameKey": "tr_subterfuge_nda",
+      "descriptionKey": "tr_subterfuge_nda_delayed"
+    },
+    {
+      "key": "tr_subterfuge_operational_security",
+      "tree": "tradition_subterfuge",
+      "effects": {
+        "modifiers": {
+          "intel_decryption_add": 1,
+          "espionage_operation_skill_add": 2,
+          "ship_tracking_add": 10
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "intel_decryption_add": 1,
+          "espionage_operation_skill_add": 2,
+          "ship_tracking_add": 10
+        }
+      },
+      "icon": "icons/traditions/tr_subterfuge_operational_security.png",
+      "nameKey": "tr_subterfuge_operational_security",
+      "descriptionKey": "tr_subterfuge_operational_security_delayed"
+    },
+    {
+      "key": "tr_subterfuge_double_agents",
+      "tree": "tradition_subterfuge",
+      "effects": {
+        "modifiers": {
+          "envoys_add": 1,
+          "spy_network_levels_add": 10
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_subterfuge_double_agents_effect",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "envoys_add": 1,
+          "spy_network_levels_add": 10
+        }
+      },
+      "icon": "icons/traditions/tr_subterfuge_double_agents.png",
+      "nameKey": "tr_subterfuge_double_agents",
+      "descriptionKey": "tr_subterfuge_double_agents_delayed"
+    },
+    {
+      "key": "tr_subterfuge_shadow_recruits",
+      "tree": "tradition_subterfuge",
+      "effects": {
+        "modifiers": {
+          "spy_network_daily_value_mult": 0.5
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "spy_network_daily_value_mult": 0.5
+        }
+      },
+      "icon": "icons/traditions/tr_subterfuge_shadow_recruits.png",
+      "nameKey": "tr_subterfuge_shadow_recruits",
+      "descriptionKey": "tr_subterfuge_shadow_recruits_delayed"
+    },
+    {
+      "key": "tr_supremacy_adopt",
+      "tree": "tradition_supremacy",
+      "effects": {
+        "modifiers": {
+          "country_naval_cap_add": 20,
+          "army_damage_mult": 0.2
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "country_naval_cap_add": 20,
+          "army_damage_mult": 0.2
+        }
+      },
+      "nameKey": "tr_supremacy_adopt",
+      "descriptionKey": "tr_supremacy_adopt_delayed"
+    },
+    {
+      "key": "tr_supremacy_finish",
+      "tree": "tradition_supremacy",
+      "effects": {
+        "modifiers": {
+          "ascension_perks_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_supremacy_finish_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "nameKey": "tr_supremacy_finish",
+      "descriptionKey": "tr_supremacy_finish_delayed"
+    },
+    {
+      "key": "tr_supremacy_fleet_logistical_corps",
+      "tree": "tradition_supremacy",
+      "effects": {
+        "modifiers": {
+          "ships_upkeep_mult": -0.1,
+          "country_naval_cap_mult": 0.2
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "ships_upkeep_mult": -0.1,
+          "country_naval_cap_mult": 0.2
+        }
+      },
+      "icon": "icons/traditions/tr_supremacy_fleet_logistical_corps.png",
+      "nameKey": "tr_supremacy_fleet_logistical_corps",
+      "descriptionKey": "tr_supremacy_fleet_logistical_corps_delayed"
+    },
+    {
+      "key": "tr_supremacy_master_shipwrights",
+      "tree": "tradition_supremacy",
+      "effects": {
+        "modifiers": {
+          "starbase_shipyard_build_speed_mult": 0.25
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "starbase_shipyard_build_speed_mult": 0.25
+        }
+      },
+      "icon": "icons/traditions/tr_supremacy_master_shipwrights.png",
+      "nameKey": "tr_supremacy_master_shipwrights",
+      "descriptionKey": "tr_supremacy_master_shipwrights_delayed"
+    },
+    {
+      "key": "tr_supremacy_war_games",
+      "tree": "tradition_supremacy",
+      "effects": {
+        "modifiers": {
+          "command_limit_mult": 0.1,
+          "country_commander_cap_add": 1,
+          "commander_initial_skill": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "command_limit_mult": 0.1,
+          "country_commander_cap_add": 1,
+          "commander_initial_skill": 1
+        }
+      },
+      "icon": "icons/traditions/tr_supremacy_war_games.png",
+      "nameKey": "tr_supremacy_war_games",
+      "descriptionKey": "tr_supremacy_war_games_delayed"
+    },
+    {
+      "key": "tr_supremacy_overwhelming_force",
+      "tree": "tradition_supremacy",
+      "effects": {
+        "modifiers": {
+          "ship_orbital_bombardment_mult": 0.2,
+          "ship_fire_rate_mult": 0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "ship_orbital_bombardment_mult": 0.2,
+          "ship_fire_rate_mult": 0.1
+        }
+      },
+      "icon": "icons/traditions/tr_supremacy_overwhelming_force.png",
+      "nameKey": "tr_supremacy_overwhelming_force",
+      "descriptionKey": "tr_supremacy_overwhelming_force_delayed"
+    },
+    {
+      "key": "tr_supremacy_great_game",
+      "tree": "tradition_supremacy",
+      "effects": {
+        "modifiers": {
+          "ship_damage_against_starbases_mult": 0.2
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "ship_damage_against_starbases_mult": 0.2
+        }
+      },
+      "icon": "icons/traditions/tr_supremacy_great_game.png",
+      "nameKey": "tr_supremacy_great_game",
+      "descriptionKey": "tr_supremacy_great_game_delayed"
+    },
+    {
+      "key": "tr_synchronicity_adopt",
+      "tree": "tradition_synchronicity",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_synchronicity_adopt_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "nameKey": "tr_synchronicity_adopt",
+      "descriptionKey": "tr_synchronicity_adopt_delayed"
+    },
+    {
+      "key": "tr_synchronicity_finish",
+      "tree": "tradition_synchronicity",
+      "effects": {
+        "modifiers": {
+          "planetary_ascension_effect_mult": 0.25,
+          "ascension_perks_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planetary_ascension_effect_mult": 0.25,
+          "ascension_perks_add": 1
+        }
+      },
+      "nameKey": "tr_synchronicity_finish",
+      "descriptionKey": "tr_synchronicity_finish_delayed"
+    },
+    {
+      "key": "tr_synchronicity_integrated_preservation",
+      "tree": "tradition_synchronicity",
+      "effects": {
+        "modifiers": {
+          "planet_resettlement_unemployed_mult": 0.3
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_synchronicity_instinctive_synchronization_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_resettlement_unemployed_mult": 0.3
+        }
+      },
+      "icon": "icons/traditions/tr_synchronicity_integrated_preservation.png",
+      "nameKey": "tr_synchronicity_integrated_preservation",
+      "descriptionKey": "tr_synchronicity_integrated_preservation_delayed"
+    },
+    {
+      "key": "tr_synchronicity_kinship_gestalt",
+      "tree": "tradition_synchronicity",
+      "effects": {
+        "modifiers": {
+          "leaders_upkeep_mult": -0.2,
+          "empire_size_pops_mult": -0.05,
+          "refugee_attraction": 0.2
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "leaders_upkeep_mult": -0.2,
+          "empire_size_pops_mult": -0.05,
+          "refugee_attraction": 0.2
+        }
+      },
+      "icon": "icons/traditions/tr_synchronicity_kinship_gestalt.png",
+      "nameKey": "tr_synchronicity_kinship_gestalt",
+      "descriptionKey": "tr_synchronicity_kinship_gestalt_delayed"
+    },
+    {
+      "key": "tr_synchronicity_collective_reasoning",
+      "tree": "tradition_synchronicity",
+      "effects": {
+        "modifiers": {
+          "planet_stability_add": 3,
+          "planetary_ascension_cost_mult": -0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_stability_add": 3,
+          "planetary_ascension_cost_mult": -0.1
+        }
+      },
+      "icon": "icons/traditions/tr_synchronicity_collective_reasoning.png",
+      "nameKey": "tr_synchronicity_collective_reasoning",
+      "descriptionKey": "tr_synchronicity_collective_reasoning_delayed"
+    },
+    {
+      "key": "tr_synchronicity_harmonious_directives",
+      "tree": "tradition_synchronicity",
+      "effects": {
+        "modifiers": {
+          "country_edict_fund_add": 50,
+          "restored_node_bonus_skill": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "country_edict_fund_add": 50,
+          "restored_node_bonus_skill": 1
+        }
+      },
+      "icon": "icons/traditions/tr_synchronicity_harmonious_directives.png",
+      "nameKey": "tr_synchronicity_harmonious_directives",
+      "descriptionKey": "tr_synchronicity_harmonious_directives_delayed"
+    },
+    {
+      "key": "tr_synchronicity_cloned_organs",
+      "tree": "tradition_synchronicity",
+      "effects": {
+        "modifiers": {
+          "leader_lifespan_add": 10,
+          "negative_traits_country": -1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "leader_lifespan_add": 10,
+          "negative_traits_country": -1
+        }
+      },
+      "icon": "icons/traditions/tr_synchronicity_cloned_organs.png",
+      "nameKey": "tr_synchronicity_cloned_organs",
+      "descriptionKey": "tr_synchronicity_cloned_organs_delayed"
+    },
+    {
+      "key": "tr_unyielding_adopt",
+      "tree": "tradition_unyielding",
+      "effects": {
+        "modifiers": {
+          "country_starbase_capacity_add": 2,
+          "starbase_upgrade_speed_mult": 0.5
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "country_starbase_capacity_add": 2,
+          "starbase_upgrade_speed_mult": 0.5
+        }
+      },
+      "nameKey": "tr_unyielding_adopt",
+      "descriptionKey": "tr_unyielding_adopt_delayed"
+    },
+    {
+      "key": "tr_unyielding_finish",
+      "tree": "tradition_unyielding",
+      "effects": {
+        "modifiers": {
+          "starbase_defense_platform_capacity_mult": 0.5,
+          "starbases_upkeep_mult": -0.2,
+          "ascension_perks_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "starbase_defense_platform_capacity_mult": 0.5,
+          "starbases_upkeep_mult": -0.2,
+          "ascension_perks_add": 1
+        }
+      },
+      "nameKey": "tr_unyielding_finish",
+      "descriptionKey": "tr_unyielding_finish_delayed"
+    },
+    {
+      "key": "tr_unyielding_resistance_is_frugal",
+      "tree": "tradition_unyielding",
+      "effects": {
+        "modifiers": {
+          "army_defense_health_mult": 0.25
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_unyielding_resistance_is_frugal_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "army_defense_health_mult": 0.25
+        }
+      },
+      "icon": "icons/traditions/tr_unyielding_resistance_is_frugal.png",
+      "nameKey": "tr_unyielding_resistance_is_frugal",
+      "descriptionKey": "tr_unyielding_resistance_is_frugal_delayed"
+    },
+    {
+      "key": "tr_unyielding_never_surrender",
+      "tree": "tradition_unyielding",
+      "effects": {
+        "modifiers": {
+          "planet_orbital_bombardment_damage": -0.25,
+          "country_war_exhaustion_mult": -0.25,
+          "country_hostile_claim_influence_cost_mult": 0.25
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_orbital_bombardment_damage": -0.25,
+          "country_war_exhaustion_mult": -0.25,
+          "country_hostile_claim_influence_cost_mult": 0.25
+        }
+      },
+      "icon": "icons/traditions/tr_unyielding_never_surrender.png",
+      "nameKey": "tr_unyielding_never_surrender",
+      "descriptionKey": "tr_unyielding_never_surrender_delayed"
+    },
+    {
+      "key": "tr_unyielding_bulwark_of_harmony",
+      "tree": "tradition_unyielding",
+      "effects": {
+        "modifiers": {
+          "starbase_defensive_war_ship_build_speed_mult": 0.33,
+          "ship_home_territory_fire_rate_mult": 0.15
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_unyielding_bulwark_of_harmony_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_unyielding_bulwark_of_harmony.png",
+      "nameKey": "tr_unyielding_bulwark_of_harmony",
+      "descriptionKey": "tr_unyielding_bulwark_of_harmony_delayed"
+    },
+    {
+      "key": "tr_unyielding_defensive_zeal",
+      "tree": "tradition_unyielding",
+      "effects": {
+        "modifiers": {
+          "shipclass_starbase_damage_mult": 0.33,
+          "shipclass_starbase_hull_mult": 0.33,
+          "shipclass_military_station_damage_mult": 0.33,
+          "shipclass_military_station_hull_mult": 0.33
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_unyielding_defensive_zeal_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_unyielding_defensive_zeal.png",
+      "nameKey": "tr_unyielding_defensive_zeal",
+      "descriptionKey": "tr_unyielding_defensive_zeal_delayed"
+    },
+    {
+      "key": "tr_unyielding_fortress_doctrine",
+      "tree": "tradition_unyielding",
+      "effects": {
+        "modifiers": {
+          "country_starbase_capacity_add": 2,
+          "starbase_upgrade_cost_mult": -0.5
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "country_starbase_capacity_add": 2,
+          "starbase_upgrade_cost_mult": -0.5
+        }
+      },
+      "icon": "icons/traditions/tr_unyielding_fortress_doctrine.png",
+      "nameKey": "tr_unyielding_fortress_doctrine",
+      "descriptionKey": "tr_unyielding_fortress_doctrine_delayed"
+    },
+    {
+      "key": "tr_versatility_adopt",
+      "tree": "tradition_versatility",
+      "effects": {
+        "modifiers": {
+          "planet_pop_assemblers_upkeep_mult": -0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_pop_assemblers_upkeep_mult": -0.1
+        }
+      },
+      "nameKey": "tr_versatility_adopt",
+      "descriptionKey": "tr_versatility_adopt_delayed"
+    },
+    {
+      "key": "tr_versatility_finish",
+      "tree": "tradition_versatility",
+      "effects": {
+        "modifiers": {
+          "planet_pop_assemblers_energy_upkeep_add": 1,
+          "planet_pop_assembly_mult": 0.1,
+          "ascension_perks_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_versatility_finish_tt",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_pop_assemblers_energy_upkeep_add": 1,
+          "planet_pop_assembly_mult": 0.1,
+          "ascension_perks_add": 1
+        }
+      },
+      "nameKey": "tr_versatility_finish",
+      "descriptionKey": "tr_versatility_finish_delayed"
+    },
+    {
+      "key": "tr_versatility_universal_compatibility",
+      "tree": "tradition_versatility",
+      "effects": {
+        "modifiers": {
+          "country_synthetic_trust_cap_add": 50,
+          "envoys_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "country_synthetic_trust_cap_add": 50,
+          "envoys_add": 1
+        }
+      },
+      "icon": "icons/traditions/tr_versatility_universal_compatibility.png",
+      "nameKey": "tr_versatility_universal_compatibility",
+      "descriptionKey": "tr_versatility_universal_compatibility_delayed"
+    },
+    {
+      "key": "tr_versatility_adaptive_programming",
+      "tree": "tradition_versatility",
+      "effects": {
+        "modifiers": {
+          "country_trade_fee": -0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "country_trade_fee": -0.1
+        }
+      },
+      "icon": "icons/traditions/tr_versatility_adaptive_programming.png",
+      "nameKey": "tr_versatility_adaptive_programming",
+      "descriptionKey": "tr_versatility_adaptive_programming_delayed"
+    },
+    {
+      "key": "tr_versatility_spatial_optimization",
+      "tree": "tradition_versatility",
+      "effects": {
+        "modifiers": {
+          "pop_amenities_usage_no_happiness_mult": -0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "pop_amenities_usage_no_happiness_mult": -0.1
+        }
+      },
+      "icon": "icons/traditions/tr_versatility_spatial_optimization.png",
+      "nameKey": "tr_versatility_spatial_optimization",
+      "descriptionKey": "tr_versatility_spatial_optimization_delayed"
+    },
+    {
+      "key": "tr_versatility_material_analysis",
+      "tree": "tradition_versatility",
+      "effects": {
+        "modifiers": {
+          "planet_jobs_upkeep_mult": -0.05
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_jobs_upkeep_mult": -0.05
+        }
+      },
+      "icon": "icons/traditions/tr_versatility_material_analysis.png",
+      "nameKey": "tr_versatility_material_analysis",
+      "descriptionKey": "tr_versatility_material_analysis_delayed"
+    },
+    {
+      "key": "tr_versatility_operational_proxies",
+      "tree": "tradition_versatility",
+      "effects": {
+        "modifiers": {
+          "planet_maintenance_drones_unity_produces_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_maintenance_drones_unity_produces_add": 1
+        }
+      },
+      "icon": "icons/traditions/tr_versatility_operational_proxies.png",
+      "nameKey": "tr_versatility_operational_proxies",
+      "descriptionKey": "tr_versatility_operational_proxies_delayed"
+    },
+    {
+      "key": "tr_cloning_adopt",
+      "tree": "tradition_cloning",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_cloning_adopt_tt",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "nameKey": "tr_cloning_adopt",
+      "descriptionKey": "tr_cloning_adopt_delayed"
+    },
+    {
+      "key": "tr_cloning_finish",
+      "tree": "tradition_cloning",
+      "effects": {
+        "modifiers": {
+          "ascension_perks_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_cloning_finish_tt",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "ascension_perks_add": 1
+        }
+      },
+      "nameKey": "tr_cloning_finish",
+      "descriptionKey": "tr_cloning_finish_delayed"
+    },
+    {
+      "key": "tr_cloning_evolutionary_extrapolation",
+      "tree": "tradition_cloning",
+      "effects": {
+        "modifiers": {
+          "category_biology_research_speed_mult": 0.15,
+          "planet_buildings_clone_vats_upkeep_mult": -0.5
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_cloning_evolutionary_extrapolation_tt",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "category_biology_research_speed_mult": 0.15,
+          "planet_buildings_clone_vats_upkeep_mult": -0.5
+        }
+      },
+      "icon": "icons/traditions/tr_cloning_evolutionary_extrapolation.png",
+      "nameKey": "tr_cloning_evolutionary_extrapolation",
+      "descriptionKey": "tr_cloning_evolutionary_extrapolation_delayed"
+    },
+    {
+      "key": "tr_cloning_somatic_synthesization",
+      "tree": "tradition_cloning",
+      "effects": {
+        "modifiers": {
+          "BIOLOGICAL_species_trait_points_add": 4,
+          "BIOLOGICAL_species_trait_picks_add": 2,
+          "modify_species_cost_mult": -0.5
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_cloning_somatic_synthesization_tt",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "BIOLOGICAL_species_trait_points_add": 4,
+          "BIOLOGICAL_species_trait_picks_add": 2,
+          "modify_species_cost_mult": -0.5
+        }
+      },
+      "icon": "icons/traditions/tr_cloning_somatic_synthesization.png",
+      "nameKey": "tr_cloning_somatic_synthesization",
+      "descriptionKey": "tr_cloning_somatic_synthesization_delayed"
+    },
+    {
+      "key": "tr_cloning_stage_1_swap",
+      "tree": "tradition_cloning",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_cloning_stage_1_swap.png",
+      "nameKey": "tr_cloning_stage_1_swap",
+      "descriptionKey": "tr_cloning_stage_1_swap_delayed"
+    },
+    {
+      "key": "tr_cloning_stage_2_swap",
+      "tree": "tradition_cloning",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_cloning_stage_2_swap.png",
+      "nameKey": "tr_cloning_stage_2_swap",
+      "descriptionKey": "tr_cloning_stage_2_swap_delayed"
+    },
+    {
+      "key": "tr_cloning_stage_3_swap",
+      "tree": "tradition_cloning",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_cloning_stage_3_swap.png",
+      "nameKey": "tr_cloning_stage_3_swap",
+      "descriptionKey": "tr_cloning_stage_3_swap_delayed"
+    },
+    {
+      "key": "tr_cloning_genomic_growth",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_cloning_genomic_growth.png",
+      "nameKey": "tr_cloning_genomic_growth",
+      "descriptionKey": "tr_cloning_genomic_growth_delayed"
+    },
+    {
+      "key": "tr_cloning_artificial_population",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_cloning_artificial_population.png",
+      "nameKey": "tr_cloning_artificial_population",
+      "descriptionKey": "tr_cloning_artificial_population_delayed"
+    },
+    {
+      "key": "tr_cloning_biochemical_composure",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_cloning_biochemical_composure.png",
+      "nameKey": "tr_cloning_biochemical_composure",
+      "descriptionKey": "tr_cloning_biochemical_composure_delayed"
+    },
+    {
+      "key": "tr_cloning_biochemical_composure_clones",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_cloning_biochemical_composure_clones.png",
+      "nameKey": "tr_cloning_biochemical_composure_clones",
+      "descriptionKey": "tr_cloning_biochemical_composure_clones_delayed"
+    },
+    {
+      "key": "tr_cybernetics_adopt",
+      "tree": "tradition_cybernetics",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_cybernetics_adopt_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "nameKey": "tr_cybernetics_adopt",
+      "descriptionKey": "tr_cybernetics_adopt_delayed"
+    },
+    {
+      "key": "tr_cybernetics_finish",
+      "tree": "tradition_cybernetics",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_cybernetics_finish_effects",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "nameKey": "tr_cybernetics_finish",
+      "descriptionKey": "tr_cybernetics_finish_delayed"
+    },
+    {
+      "key": "tr_cybernetics_transubstantiation_synthesis",
+      "tree": "tradition_cybernetics",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_cybernetics_transubstantiation_synthesis_tt",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_cybernetics_transubstantiation_synthesis.png",
+      "nameKey": "tr_cybernetics_transubstantiation_synthesis",
+      "descriptionKey": "tr_cybernetics_transubstantiation_synthesis_delayed"
+    },
+    {
+      "key": "tr_cybernetics_metabolic_reprocessing",
+      "tree": "tradition_cybernetics",
+      "effects": {
+        "modifiers": {
+          "planet_pops_cyborgs_upkeep_mult": -0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_cybernetics_metabolic_reprocessing_tt",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_cybernetics_metabolic_reprocessing.png",
+      "nameKey": "tr_cybernetics_metabolic_reprocessing",
+      "descriptionKey": "tr_cybernetics_metabolic_reprocessing_delayed"
+    },
+    {
+      "key": "tr_cybernetics_integrated_anatomy",
+      "tree": "tradition_cybernetics",
+      "effects": {
+        "modifiers": {
+          "ROBOT_species_trait_picks_add": 1,
+          "ROBOT_species_trait_points_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_cybernetics_integrated_anatomy_tt",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "ROBOT_species_trait_picks_add": 1,
+          "ROBOT_species_trait_points_add": 1
+        }
+      },
+      "icon": "icons/traditions/tr_cybernetics_integrated_anatomy.png",
+      "nameKey": "tr_cybernetics_integrated_anatomy",
+      "descriptionKey": "tr_cybernetics_integrated_anatomy_delayed"
+    },
+    {
+      "key": "tr_cybernetics_augmentation_overload",
+      "tree": "tradition_cybernetics",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_cybernetics_augmentation_overload_tt",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_cybernetics_augmentation_overload.png",
+      "nameKey": "tr_cybernetics_augmentation_overload",
+      "descriptionKey": "tr_cybernetics_augmentation_overload_delayed"
+    },
+    {
+      "key": "tr_cybernetics_modular_cybernetics",
+      "tree": "tradition_cybernetics",
+      "effects": {
+        "modifiers": {
+          "modify_species_cost_mult": -0.5
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_cybernetics_modular_cybernetics_tt",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_cybernetics_modular_cybernetics.png",
+      "nameKey": "tr_cybernetics_modular_cybernetics",
+      "descriptionKey": "tr_cybernetics_modular_cybernetics_delayed"
+    },
+    {
+      "key": "tr_cybernetics_assimilator_adopt",
+      "tree": "tradition_cybernetics_assimilator",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_cybernetics_assimilator_adopt_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "nameKey": "tr_cybernetics_assimilator_adopt",
+      "descriptionKey": "tr_cybernetics_assimilator_adopt_delayed"
+    },
+    {
+      "key": "tr_cybernetics_assimilator_finish",
+      "tree": "tradition_cybernetics_assimilator",
+      "effects": {
+        "modifiers": {
+          "cyborg_pop_bonus_workforce_mult": 0.1,
+          "MACHINE_species_trait_picks_add": 2,
+          "ascension_perks_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "cyborg_pop_bonus_workforce_mult": 0.1,
+          "MACHINE_species_trait_picks_add": 2,
+          "ascension_perks_add": 1
+        }
+      },
+      "nameKey": "tr_cybernetics_assimilator_finish",
+      "descriptionKey": "tr_cybernetics_assimilator_finish_delayed"
+    },
+    {
+      "key": "tr_cybernetics_assimilator_inevitable_assimilation",
+      "tree": "tradition_cybernetics_assimilator",
+      "effects": {
+        "modifiers": {
+          "auto_mod_monthly_add": 100
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_cybernetics_assimilator_inevitable_assimilation_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "auto_mod_monthly_add": 100
+        }
+      },
+      "icon": "icons/traditions/tr_cybernetics_assimilator_inevitable_assimilation.png",
+      "nameKey": "tr_cybernetics_assimilator_inevitable_assimilation",
+      "descriptionKey": "tr_cybernetics_assimilator_inevitable_assimilation_delayed"
+    },
+    {
+      "key": "tr_cybernetics_assimilator_metabolic_reprocessing",
+      "tree": "tradition_cybernetics_assimilator",
+      "effects": {
+        "modifiers": {
+          "planet_pops_cyborgs_upkeep_mult": -0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_pops_cyborgs_upkeep_mult": -0.1
+        }
+      },
+      "icon": "icons/traditions/tr_cybernetics_assimilator_metabolic_reprocessing.png",
+      "nameKey": "tr_cybernetics_assimilator_metabolic_reprocessing",
+      "descriptionKey": "tr_cybernetics_assimilator_metabolic_reprocessing_delayed"
+    },
+    {
+      "key": "tr_cybernetics_assimilator_integrated_anatomy",
+      "tree": "tradition_cybernetics_assimilator",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_cybernetics_assimilator_integrated_anatomy_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_cybernetics_assimilator_integrated_anatomy.png",
+      "nameKey": "tr_cybernetics_assimilator_integrated_anatomy",
+      "descriptionKey": "tr_cybernetics_assimilator_integrated_anatomy_delayed"
+    },
+    {
+      "key": "tr_cybernetics_assimilator_augmentation_centers",
+      "tree": "tradition_cybernetics_assimilator",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_cybernetics_assimilator_augmentation_centers_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_cybernetics_assimilator_augmentation_centers.png",
+      "nameKey": "tr_cybernetics_assimilator_augmentation_centers",
+      "descriptionKey": "tr_cybernetics_assimilator_augmentation_centers_delayed"
+    },
+    {
+      "key": "tr_cybernetics_assimilator_modular_cybernetics",
+      "tree": "tradition_cybernetics_assimilator",
+      "effects": {
+        "modifiers": {
+          "modify_species_cost_mult": -0.5
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_cybernetics_assimilator_modular_cybernetics_tt",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_cybernetics_assimilator_modular_cybernetics.png",
+      "nameKey": "tr_cybernetics_assimilator_modular_cybernetics",
+      "descriptionKey": "tr_cybernetics_assimilator_modular_cybernetics_delayed"
+    },
+    {
+      "key": "tr_genetics_adopt",
+      "tree": "tradition_genetics",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_genetics_adopt_modifier_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "nameKey": "tr_genetics_adopt",
+      "descriptionKey": "tr_genetics_adopt_delayed"
+    },
+    {
+      "key": "tr_genetics_finish",
+      "tree": "tradition_genetics",
+      "effects": {
+        "modifiers": {
+          "planet_buildings_clone_vats_upkeep_mult": -0.33,
+          "ascension_perks_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_buildings_clone_vats_upkeep_mult": -0.33,
+          "ascension_perks_add": 1
+        }
+      },
+      "nameKey": "tr_genetics_finish",
+      "descriptionKey": "tr_genetics_finish_delayed"
+    },
+    {
+      "key": "tr_genetics_resequencing",
+      "tree": "tradition_genetics",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_genetics_resequencing_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_genetics_resequencing.png",
+      "nameKey": "tr_genetics_resequencing",
+      "descriptionKey": "tr_genetics_resequencing_delayed"
+    },
+    {
+      "key": "tr_genetics_creation",
+      "tree": "tradition_genetics",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_genetics_creation_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_genetics_creation.png",
+      "nameKey": "tr_genetics_creation",
+      "descriptionKey": "tr_genetics_creation_delayed"
+    },
+    {
+      "key": "tr_genetics_enhanced_expression",
+      "tree": "tradition_genetics",
+      "effects": {
+        "modifiers": {
+          "BIOLOGICAL_species_trait_points_add": 6,
+          "BIOLOGICAL_species_trait_picks_add": 2,
+          "modify_species_cost_mult": -0.5
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_genetics_enhanced_expression_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "BIOLOGICAL_species_trait_points_add": 6,
+          "BIOLOGICAL_species_trait_picks_add": 2,
+          "modify_species_cost_mult": -0.5
+        }
+      },
+      "icon": "icons/traditions/tr_genetics_enhanced_expression.png",
+      "nameKey": "tr_genetics_enhanced_expression",
+      "descriptionKey": "tr_genetics_enhanced_expression_delayed"
+    },
+    {
+      "key": "tr_genetics_retrovirus",
+      "tree": "tradition_genetics",
+      "effects": {
+        "modifiers": {
+          "pop_environment_tolerance": 0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "pop_environment_tolerance": 0.1
+        }
+      },
+      "icon": "icons/traditions/tr_genetics_retrovirus.png",
+      "nameKey": "tr_genetics_retrovirus",
+      "descriptionKey": "tr_genetics_retrovirus_delayed"
+    },
+    {
+      "key": "tr_genetics_efficient_cloning",
+      "tree": "tradition_genetics",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_genetics_efficient_cloning_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_genetics_efficient_cloning.png",
+      "nameKey": "tr_genetics_efficient_cloning",
+      "descriptionKey": "tr_genetics_efficient_cloning_delayed"
+    },
+    {
+      "key": "tr_modularity_adopt",
+      "tree": "tradition_modularity",
+      "effects": {
+        "modifiers": {
+          "planet_metallurgists_sr_living_metal_produces_add": 0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_metallurgists_sr_living_metal_produces_add": 0.1
+        }
+      },
+      "nameKey": "tr_modularity_adopt",
+      "descriptionKey": "tr_modularity_adopt_delayed"
+    },
+    {
+      "key": "tr_modularity_finish",
+      "tree": "tradition_modularity",
+      "effects": {
+        "modifiers": {
+          "planet_jobs_upkeep_mult": -0.15,
+          "ascension_perks_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_modularity_finish_modifier_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_jobs_upkeep_mult": -0.15,
+          "ascension_perks_add": 1
+        }
+      },
+      "nameKey": "tr_modularity_finish",
+      "descriptionKey": "tr_modularity_finish_delayed"
+    },
+    {
+      "key": "tr_modularity_1",
+      "tree": "tradition_modularity",
+      "effects": {
+        "modifiers": {
+          "planet_jobs_worker_produces_mult": 0.1,
+          "auto_mod_monthly_add": 400
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_jobs_worker_produces_mult": 0.1,
+          "auto_mod_monthly_add": 400
+        }
+      },
+      "icon": "icons/traditions/tr_modularity_1.png",
+      "nameKey": "tr_modularity_1",
+      "descriptionKey": "tr_modularity_1_delayed"
+    },
+    {
+      "key": "tr_modularity_2",
+      "tree": "tradition_modularity",
+      "effects": {
+        "modifiers": {
+          "planet_pop_assemblers_sr_living_metal_upkeep_add": 0.15
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_modularity_2_modifier_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_pop_assemblers_sr_living_metal_upkeep_add": 0.15
+        }
+      },
+      "icon": "icons/traditions/tr_modularity_2.png",
+      "nameKey": "tr_modularity_2",
+      "descriptionKey": "tr_modularity_2_delayed"
+    },
+    {
+      "key": "tr_modularity_3",
+      "tree": "tradition_modularity",
+      "effects": {
+        "modifiers": {
+          "planet_stability_add": 5,
+          "army_damage_mult": 0.5
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_modularity_3_modifier_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_stability_add": 5,
+          "army_damage_mult": 0.5
+        }
+      },
+      "icon": "icons/traditions/tr_modularity_3.png",
+      "nameKey": "tr_modularity_3",
+      "descriptionKey": "tr_modularity_3_delayed"
+    },
+    {
+      "key": "tr_modularity_4",
+      "tree": "tradition_modularity",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_modularity_4_modifier_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_modularity_4.png",
+      "nameKey": "tr_modularity_4",
+      "descriptionKey": "tr_modularity_4_delayed"
+    },
+    {
+      "key": "tr_modularity_5",
+      "tree": "tradition_modularity",
+      "effects": {
+        "modifiers": {
+          "MACHINE_species_trait_points_add": 4,
+          "MACHINE_species_trait_picks_add": 4,
+          "modify_species_cost_mult": -0.5
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_modularity_5_modifier_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "MACHINE_species_trait_points_add": 4,
+          "MACHINE_species_trait_picks_add": 4,
+          "modify_species_cost_mult": -0.5
+        }
+      },
+      "icon": "icons/traditions/tr_modularity_5.png",
+      "nameKey": "tr_modularity_5",
+      "descriptionKey": "tr_modularity_5_delayed"
+    },
+    {
+      "key": "tr_mutation_adopt",
+      "tree": "tradition_mutation",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_mutation_adopt_tt",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "nameKey": "tr_mutation_adopt",
+      "descriptionKey": "tr_mutation_adopt_delayed"
+    },
+    {
+      "key": "tr_mutation_finish",
+      "tree": "tradition_mutation",
+      "effects": {
+        "modifiers": {
+          "ascension_perks_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_mutation_finish_tt",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "ascension_perks_add": 1
+        }
+      },
+      "nameKey": "tr_mutation_finish",
+      "descriptionKey": "tr_mutation_finish_delayed"
+    },
+    {
+      "key": "tr_mutation_stage_1_swap",
+      "tree": "tradition_mutation",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_mutation_stage_1_swap.png",
+      "nameKey": "tr_mutation_stage_1_swap",
+      "descriptionKey": "tr_mutation_stage_1_swap_delayed"
+    },
+    {
+      "key": "tr_mutation_stage_2_swap",
+      "tree": "tradition_mutation",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_mutation_stage_2_swap.png",
+      "nameKey": "tr_mutation_stage_2_swap",
+      "descriptionKey": "tr_mutation_stage_2_swap_delayed"
+    },
+    {
+      "key": "tr_mutation_stage_3_swap",
+      "tree": "tradition_mutation",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_mutation_stage_3_swap.png",
+      "nameKey": "tr_mutation_stage_3_swap",
+      "descriptionKey": "tr_mutation_stage_3_swap_delayed"
+    },
+    {
+      "key": "tr_mutation_planned_polymorphism",
+      "tree": "tradition_mutation",
+      "effects": {
+        "modifiers": {
+          "auto_mod_monthly_add": 200
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_mutation_planned_polymorphism_tt",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "auto_mod_monthly_add": 200
+        }
+      },
+      "icon": "icons/traditions/tr_mutation_planned_polymorphism.png",
+      "nameKey": "tr_mutation_planned_polymorphism",
+      "descriptionKey": "tr_mutation_planned_polymorphism_delayed"
+    },
+    {
+      "key": "tr_mutation_unnatural_selection",
+      "tree": "tradition_mutation",
+      "effects": {
+        "modifiers": {
+          "BIOLOGICAL_species_trait_points_add": 4,
+          "BIOLOGICAL_species_trait_picks_add": 4,
+          "modify_species_cost_mult": -0.5
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_mutation_unnatural_selection_tt",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "BIOLOGICAL_species_trait_points_add": 4,
+          "BIOLOGICAL_species_trait_picks_add": 4,
+          "modify_species_cost_mult": -0.5
+        }
+      },
+      "icon": "icons/traditions/tr_mutation_unnatural_selection.png",
+      "nameKey": "tr_mutation_unnatural_selection",
+      "descriptionKey": "tr_mutation_unnatural_selection_delayed"
+    },
+    {
+      "key": "tr_mutation_environmental_integration",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_mutation_environmental_integration.png",
+      "nameKey": "tr_mutation_environmental_integration",
+      "descriptionKey": "tr_mutation_environmental_integration_delayed"
+    },
+    {
+      "key": "tr_mutation_somatic_subversiveness",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_mutation_somatic_subversiveness.png",
+      "nameKey": "tr_mutation_somatic_subversiveness",
+      "descriptionKey": "tr_mutation_somatic_subversiveness_delayed"
+    },
+    {
+      "key": "tr_mutation_nucleotide_isolation",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_mutation_nucleotide_isolation.png",
+      "nameKey": "tr_mutation_nucleotide_isolation",
+      "descriptionKey": "tr_mutation_nucleotide_isolation_delayed"
+    },
+    {
+      "key": "tr_nanotech_adopt",
+      "tree": "tradition_nanotech",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_nanotech_adopt_modifier_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "nameKey": "tr_nanotech_adopt",
+      "descriptionKey": "tr_nanotech_adopt_delayed"
+    },
+    {
+      "key": "tr_nanotech_finish",
+      "tree": "tradition_nanotech",
+      "effects": {
+        "modifiers": {
+          "empire_size_colonies_mult": -0.5,
+          "ascension_perks_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_nanotech_finish_modifier_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "empire_size_colonies_mult": -0.5,
+          "ascension_perks_add": 1
+        }
+      },
+      "nameKey": "tr_nanotech_finish",
+      "descriptionKey": "tr_nanotech_finish_delayed"
+    },
+    {
+      "key": "tr_nanotech_1",
+      "tree": "tradition_nanotech",
+      "effects": {
+        "modifiers": {
+          "planet_farmers_food_produces_add": -1,
+          "planet_farmers_nanites_produces_add": 0.2,
+          "planet_miners_minerals_produces_add": -1,
+          "planet_miners_nanites_produces_add": 0.2
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_nanotech_1_modifier_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_farmers_food_produces_add": -1,
+          "planet_farmers_nanites_produces_add": 0.2,
+          "planet_miners_minerals_produces_add": -1,
+          "planet_miners_nanites_produces_add": 0.2
+        }
+      },
+      "icon": "icons/traditions/tr_nanotech_1.png",
+      "nameKey": "tr_nanotech_1",
+      "descriptionKey": "tr_nanotech_1_delayed"
+    },
+    {
+      "key": "tr_nanotech_2",
+      "tree": "tradition_nanotech",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_nanotech_2_modifier_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_nanotech_2.png",
+      "nameKey": "tr_nanotech_2",
+      "descriptionKey": "tr_nanotech_2_delayed"
+    },
+    {
+      "key": "tr_nanotech_3",
+      "tree": "tradition_nanotech",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_nanotech_3_modifier_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_nanotech_3.png",
+      "nameKey": "tr_nanotech_3",
+      "descriptionKey": "tr_nanotech_3_delayed"
+    },
+    {
+      "key": "tr_nanotech_4",
+      "tree": "tradition_nanotech",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_nanotech_4_modifier_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_nanotech_4.png",
+      "nameKey": "tr_nanotech_4",
+      "descriptionKey": "tr_nanotech_4_delayed"
+    },
+    {
+      "key": "tr_nanotech_5",
+      "tree": "tradition_nanotech",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_nanotech_5_modifier_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_nanotech_5.png",
+      "nameKey": "tr_nanotech_5",
+      "descriptionKey": "tr_nanotech_5_delayed"
+    },
+    {
+      "key": "tr_psionics_adopt",
+      "tree": "tradition_psionics",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_psionics_adopt_tooltip",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "nameKey": "tr_psionics_adopt",
+      "descriptionKey": "tr_psionics_adopt_delayed"
+    },
+    {
+      "key": "tr_psionics_finish",
+      "tree": "tradition_psionics",
+      "effects": {
+        "modifiers": {
+          "edicts_upkeep_mult": -0.1,
+          "shroud_delve_cooldown": -0.2,
+          "ascension_perks_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "edicts_upkeep_mult": -0.1,
+          "shroud_delve_cooldown": -0.2,
+          "ascension_perks_add": 1
+        }
+      },
+      "nameKey": "tr_psionics_finish",
+      "descriptionKey": "tr_psionics_finish_delayed"
+    },
+    {
+      "key": "tr_psionics_psi_corps",
+      "tree": "tradition_psionics",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_psionics_psi_corps_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_psionics_psi_corps.png",
+      "nameKey": "tr_psionics_psi_corps",
+      "descriptionKey": "tr_psionics_psi_corps_delayed"
+    },
+    {
+      "key": "tr_psionics_mind_readers",
+      "tree": "tradition_psionics",
+      "effects": {
+        "modifiers": {
+          "add_base_country_intel": 10
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_psionics_mind_readers_tooltip",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_psionics_mind_readers.png",
+      "nameKey": "tr_psionics_mind_readers",
+      "descriptionKey": "tr_psionics_mind_readers_delayed"
+    },
+    {
+      "key": "tr_psionics_psionic_assimilation",
+      "tree": "tradition_psionics",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_psionics_psionic_assimilation_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_psionics_psionic_assimilation.png",
+      "nameKey": "tr_psionics_psionic_assimilation",
+      "descriptionKey": "tr_psionics_psionic_assimilation_delayed"
+    },
+    {
+      "key": "tr_psionics_breach_shroud",
+      "tree": "tradition_psionics",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_psionics_breach_shroud_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_psionics_breach_shroud.png",
+      "nameKey": "tr_psionics_breach_shroud",
+      "descriptionKey": "tr_psionics_breach_shroud_delayed"
+    },
+    {
+      "key": "tr_psionics_shrouded_encryption",
+      "tree": "tradition_psionics",
+      "effects": {
+        "modifiers": {
+          "intel_decryption_add": 2,
+          "intel_encryption_add": 2
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "intel_decryption_add": 2,
+          "intel_encryption_add": 2
+        }
+      },
+      "icon": "icons/traditions/tr_psionics_shrouded_encryption.png",
+      "nameKey": "tr_psionics_shrouded_encryption",
+      "descriptionKey": "tr_psionics_shrouded_encryption_delayed"
+    },
+    {
+      "key": "tr_psionics_shroud_adopt",
+      "tree": "tradition_psionics_shroud",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_psionics_shroud_adopt_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "nameKey": "tr_psionics_shroud_adopt",
+      "descriptionKey": "tr_psionics_shroud_adopt_delayed"
+    },
+    {
+      "key": "tr_psionics_shroud_finish",
+      "tree": "tradition_psionics_shroud",
+      "effects": {
+        "modifiers": {
+          "empire_size_penalty_mult": -0.1,
+          "ascension_perks_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_psionics_shroud_finish_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "empire_size_penalty_mult": -0.1,
+          "ascension_perks_add": 1
+        }
+      },
+      "nameKey": "tr_psionics_shroud_finish",
+      "descriptionKey": "tr_psionics_shroud_finish_delayed"
+    },
+    {
+      "key": "tr_psionics_shroud_psi_corps",
+      "tree": "tradition_psionics_shroud",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_psionics_psi_corps_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_psionics_shroud_psi_corps.png",
+      "nameKey": "tr_psionics_shroud_psi_corps",
+      "descriptionKey": "tr_psionics_shroud_psi_corps_delayed"
+    },
+    {
+      "key": "tr_psionics_shroud_great_awakening",
+      "tree": "tradition_psionics_shroud",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_psionics_psionic_assimilation_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_psionics_shroud_great_awakening.png",
+      "nameKey": "tr_psionics_shroud_great_awakening",
+      "descriptionKey": "tr_psionics_shroud_great_awakening_delayed"
+    },
+    {
+      "key": "tr_psionics_shroud_telekinesis",
+      "tree": "tradition_psionics_shroud",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_psionics_shroud_telekinesis_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_psionics_shroud_telekinesis.png",
+      "nameKey": "tr_psionics_shroud_telekinesis",
+      "descriptionKey": "tr_psionics_shroud_telekinesis_delayed"
+    },
+    {
+      "key": "tr_psionics_shroud_clairvoyance",
+      "tree": "tradition_psionics_shroud",
+      "effects": {
+        "modifiers": {
+          "add_base_country_intel": 10,
+          "intel_decryption_add": 2,
+          "intel_encryption_add": 2
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_psionics_shroud_clairvoyance_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "add_base_country_intel": 10,
+          "intel_decryption_add": 2,
+          "intel_encryption_add": 2
+        }
+      },
+      "icon": "icons/traditions/tr_psionics_shroud_clairvoyance.png",
+      "nameKey": "tr_psionics_shroud_clairvoyance",
+      "descriptionKey": "tr_psionics_shroud_clairvoyance_delayed"
+    },
+    {
+      "key": "tr_psionics_shroud_psychometry",
+      "tree": "tradition_psionics_shroud",
+      "effects": {
+        "modifiers": {
+          "psionic_specialist_pop_bonus_workforce_mult": 0.05
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_psionics_shroud_psychometry_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "psionic_specialist_pop_bonus_workforce_mult": 0.05
+        }
+      },
+      "icon": "icons/traditions/tr_psionics_shroud_psychometry.png",
+      "nameKey": "tr_psionics_shroud_psychometry",
+      "descriptionKey": "tr_psionics_shroud_psychometry_delayed"
+    },
+    {
+      "key": "tr_purity_adopt",
+      "tree": "tradition_purity",
+      "effects": {
+        "modifiers": {
+          "leader_lifespan_mult": 0.2
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "leader_lifespan_mult": 0.2
+        }
+      },
+      "nameKey": "tr_purity_adopt",
+      "descriptionKey": "tr_purity_adopt_delayed"
+    },
+    {
+      "key": "tr_purity_finish",
+      "tree": "tradition_purity",
+      "effects": {
+        "modifiers": {
+          "ascension_perks_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_purity_finish_tt",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "ascension_perks_add": 1
+        }
+      },
+      "nameKey": "tr_purity_finish",
+      "descriptionKey": "tr_purity_finish_delayed"
+    },
+    {
+      "key": "tr_purity_genotype_regeneration",
+      "tree": "tradition_purity",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_purity_genotype_regeneration_tt",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_purity_genotype_regeneration.png",
+      "nameKey": "tr_purity_genotype_regeneration",
+      "descriptionKey": "tr_purity_genotype_regeneration_delayed"
+    },
+    {
+      "key": "tr_purity_exemplary_genetics",
+      "tree": "tradition_purity",
+      "effects": {
+        "modifiers": {
+          "BIOLOGICAL_species_trait_points_add": 6,
+          "BIOLOGICAL_species_trait_picks_add": 2,
+          "modify_species_cost_mult": -0.5
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_purity_exemplary_genetics_tt",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "BIOLOGICAL_species_trait_points_add": 6,
+          "BIOLOGICAL_species_trait_picks_add": 2,
+          "modify_species_cost_mult": -0.5
+        }
+      },
+      "icon": "icons/traditions/tr_purity_exemplary_genetics.png",
+      "nameKey": "tr_purity_exemplary_genetics",
+      "descriptionKey": "tr_purity_exemplary_genetics_delayed"
+    },
+    {
+      "key": "tr_purity_stage_1_swap",
+      "tree": "tradition_purity",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_purity_stage_1_swap.png",
+      "nameKey": "tr_purity_stage_1_swap",
+      "descriptionKey": "tr_purity_stage_1_swap_delayed"
+    },
+    {
+      "key": "tr_purity_stage_2_swap",
+      "tree": "tradition_purity",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_purity_stage_2_swap.png",
+      "nameKey": "tr_purity_stage_2_swap",
+      "descriptionKey": "tr_purity_stage_2_swap_delayed"
+    },
+    {
+      "key": "tr_purity_stage_3_swap",
+      "tree": "tradition_purity",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_purity_stage_3_swap.png",
+      "nameKey": "tr_purity_stage_3_swap",
+      "descriptionKey": "tr_purity_stage_3_swap_delayed"
+    },
+    {
+      "key": "tr_purity_optimized_neurology",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_purity_optimized_neurology.png",
+      "nameKey": "tr_purity_optimized_neurology",
+      "descriptionKey": "tr_purity_optimized_neurology_delayed"
+    },
+    {
+      "key": "tr_purity_heightened_attributes",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_purity_heightened_attributes.png",
+      "nameKey": "tr_purity_heightened_attributes",
+      "descriptionKey": "tr_purity_heightened_attributes_delayed"
+    },
+    {
+      "key": "tr_purity_imperfection_remediation",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_purity_imperfection_remediation.png",
+      "nameKey": "tr_purity_imperfection_remediation",
+      "descriptionKey": "tr_purity_imperfection_remediation_delayed"
+    },
+    {
+      "key": "tr_synthetics_adopt",
+      "tree": "tradition_synthetics",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_synthetics_adopt_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "nameKey": "tr_synthetics_adopt",
+      "descriptionKey": "tr_synthetics_adopt_delayed"
+    },
+    {
+      "key": "tr_synthetics_finish",
+      "tree": "tradition_synthetics",
+      "effects": {
+        "modifiers": {
+          "ROBOT_species_trait_picks_add": 2,
+          "ROBOT_species_trait_points_add": 2,
+          "modify_species_cost_mult": -0.5,
+          "ascension_perks_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "ROBOT_species_trait_picks_add": 2,
+          "ROBOT_species_trait_points_add": 2,
+          "modify_species_cost_mult": -0.5,
+          "ascension_perks_add": 1
+        }
+      },
+      "nameKey": "tr_synthetics_finish",
+      "descriptionKey": "tr_synthetics_finish_delayed"
+    },
+    {
+      "key": "tr_synthetics_maintenance_protocols",
+      "tree": "tradition_synthetics",
+      "effects": {
+        "modifiers": {
+          "pop_amenities_usage_robotic_mult": -0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "pop_amenities_usage_robotic_mult": -0.1
+        }
+      },
+      "icon": "icons/traditions/tr_synthetics_maintenance_protocols.png",
+      "nameKey": "tr_synthetics_maintenance_protocols",
+      "descriptionKey": "tr_synthetics_maintenance_protocols_delayed"
+    },
+    {
+      "key": "tr_synthetics_optimization_algorithms",
+      "tree": "tradition_synthetics",
+      "effects": {
+        "modifiers": {
+          "robotic_pop_bonus_workforce_mult": 0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "BLANK_STRING",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "robotic_pop_bonus_workforce_mult": 0.1
+        }
+      },
+      "icon": "icons/traditions/tr_synthetics_optimization_algorithms.png",
+      "nameKey": "tr_synthetics_optimization_algorithms",
+      "descriptionKey": "tr_synthetics_optimization_algorithms_delayed"
+    },
+    {
+      "key": "tr_synthetics_transubstatiation_synthesis",
+      "tree": "tradition_synthetics",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_synthetics_transubstatiation_synthesis_desc",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_synthetics_transubstatiation_synthesis.png",
+      "nameKey": "tr_synthetics_transubstatiation_synthesis",
+      "descriptionKey": "tr_synthetics_transubstatiation_synthesis_delayed"
+    },
+    {
+      "key": "tr_synthetics_power_systems",
+      "tree": "tradition_synthetics",
+      "effects": {
+        "modifiers": {
+          "planet_pops_robotics_upkeep_mult": -0.25,
+          "planet_pop_assemblers_upkeep_mult": -0.25
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_pops_robotics_upkeep_mult": -0.25,
+          "planet_pop_assemblers_upkeep_mult": -0.25
+        }
+      },
+      "icon": "icons/traditions/tr_synthetics_power_systems.png",
+      "nameKey": "tr_synthetics_power_systems",
+      "descriptionKey": "tr_synthetics_power_systems_delayed"
+    },
+    {
+      "key": "tr_synthetics_prefabricated_components",
+      "tree": "tradition_synthetics",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_synthetics_prefabricated_components_effects",
+        "tooltipReplacesModifiers": true,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_synthetics_prefabricated_components.png",
+      "nameKey": "tr_synthetics_prefabricated_components",
+      "descriptionKey": "tr_synthetics_prefabricated_components_delayed"
+    },
+    {
+      "key": "tr_virtuality_adopt",
+      "tree": "tradition_virtuality",
+      "effects": {
+        "modifiers": {
+          "intel_decryption_add": 2,
+          "intel_encryption_add": 2,
+          "planet_metallurgists_alloys_produces_mult": -0.15
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_virtuality_adopt_modifier_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "intel_decryption_add": 2,
+          "intel_encryption_add": 2,
+          "planet_metallurgists_alloys_produces_mult": -0.15
+        }
+      },
+      "nameKey": "tr_virtuality_adopt",
+      "descriptionKey": "tr_virtuality_adopt_delayed"
+    },
+    {
+      "key": "tr_virtuality_finish",
+      "tree": "tradition_virtuality",
+      "effects": {
+        "modifiers": {
+          "ascension_perks_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_virtuality_finisher_modifier_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "ascension_perks_add": 1
+        }
+      },
+      "nameKey": "tr_virtuality_finish",
+      "descriptionKey": "tr_virtuality_finish_delayed"
+    },
+    {
+      "key": "tr_virtuality_1",
+      "tree": "tradition_virtuality",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_virtuality_1_modifier_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_virtuality_1.png",
+      "nameKey": "tr_virtuality_1",
+      "descriptionKey": "tr_virtuality_1_delayed"
+    },
+    {
+      "key": "tr_virtuality_2",
+      "tree": "tradition_virtuality",
+      "effects": {
+        "modifiers": {
+          "planet_researchers_upkeep_mult": -0.1,
+          "planet_bureaucrats_upkeep_mult": -0.1,
+          "leaders_upkeep_mult": -0.15,
+          "empire_size_pops_mult": -0.1,
+          "empire_size_colonies_mult": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_researchers_upkeep_mult": -0.1,
+          "planet_bureaucrats_upkeep_mult": -0.1,
+          "leaders_upkeep_mult": -0.15,
+          "empire_size_pops_mult": -0.1,
+          "empire_size_colonies_mult": 1
+        }
+      },
+      "icon": "icons/traditions/tr_virtuality_2.png",
+      "nameKey": "tr_virtuality_2",
+      "descriptionKey": "tr_virtuality_2_delayed"
+    },
+    {
+      "key": "tr_virtuality_3",
+      "tree": "tradition_virtuality",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_virtuality_3_modifier_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_virtuality_3.png",
+      "nameKey": "tr_virtuality_3",
+      "descriptionKey": "tr_virtuality_3_delayed"
+    },
+    {
+      "key": "tr_virtuality_4",
+      "tree": "tradition_virtuality",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_virtuality_4_modifier_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_virtuality_4.png",
+      "nameKey": "tr_virtuality_4",
+      "descriptionKey": "tr_virtuality_4_delayed"
+    },
+    {
+      "key": "tr_virtuality_5",
+      "tree": "tradition_virtuality",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "tr_virtuality_5_modifier_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traditions/tr_virtuality_5.png",
+      "nameKey": "tr_virtuality_5",
+      "descriptionKey": "tr_virtuality_5_delayed"
     }
   ],
   "governmentTypes": [

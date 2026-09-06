@@ -261,22 +261,6 @@
                 </div>
             </section>
 
-            @*
-                What the player means to do with the empire, rather than what it is.
-
-                In this column because it is about the empire; the second column is who is in it,
-                which is why the game's own description of a preset sits over there. Last in it,
-                because a plan is the one thing on this card the game will keep and never read.
-            *@
-            <section class="sem-lite-panel" style="--panel-order: 9">
-                <div class="body">
-                    <div class="about">
-                        <div class="sem-lite-choices">
-                            @Row("Plan", PlanReading, LitePart.Plan)
-                        </div>
-                    </div>
-                </div>
-            </section>
             </div>
 
             <div class="column">
@@ -331,6 +315,28 @@
             </section>
 
             @*
+                What the player means to do with the empire, rather than what it is.
+
+                After the ruler, because a plan is a person's intention rather than a fact about the
+                empire, and this is the column that holds the people. Two rows and no picture: a
+                plan has no single image, and a face-button slot with nothing in it is the one shape
+                this card does not have.
+            *@
+            <section class="sem-lite-panel" style="--panel-order: 8">
+                <div class="body">
+                    <div class="about">
+                        <div class="sem-lite-choices">
+                            @Chips(Session.Localizer.Heading("TRADITIONS", "Traditions"),
+                                   View.PlanTrees, LitePart.Plan, empty: "none planned")
+
+                            @Chips(Session.Localizer.Heading("ASCENSION_PERKS", "Ascension Perks"),
+                                   View.PlanPerks, LitePart.Plan, empty: "none planned")
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            @*
                 What the game says about one of its own, while the copy is still a copy.
 
                 A panel of the card rather than a note above it, and last in the column that holds
@@ -341,7 +347,7 @@
             *@
             @if (Session.Localizer.Html(Lore, string.Empty) is { Length: > 0 } lore)
             {
-                <section class="sem-lite-panel sem-lore-panel" style="--panel-order: 8">
+                <section class="sem-lite-panel sem-lore-panel" style="--panel-order: 9">
                     <div class="body">
                         <div class="about">@((MarkupString)lore)</div>
                     </div>
@@ -618,23 +624,6 @@
     }
 
     /// <summary>One fact the game has no picture for, as a labelled line.</summary>
-    /// <summary>
-    /// What the plan says, in one line, or nothing at all when the empire is not being planned.
-    /// </summary>
-    /// <remarks>
-    /// Null rather than "no plan", so the row reads "not set" like every other unanswered one on
-    /// this card rather than inventing a phrase of its own for the same idea.
-    /// </remarks>
-    private string? PlanReading
-    {
-        get
-        {
-            var plan = Session.Plans.PlanOf(Design, Session.PlanVocabulary);
-
-            return plan.Any ? Session.Plans.Text.PathName(plan.Path) : null;
-        }
-    }
-
     private RenderFragment Row(string label, string? value, LitePart part) =>
         @<div class="sem-lite-chips">
             <span class="heading">@label</span>

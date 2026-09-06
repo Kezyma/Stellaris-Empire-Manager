@@ -158,7 +158,44 @@
         chosen,
         key => Session.Data.Database.TraditionTrees.FirstOrDefault(t => t.Key == key) is { } tree
             ? (tree.NameKey, tree.DescriptionKey, tree.Icon, null)
-            : (key, null, null, null));
+            : (key, null, null, null),
+        Inside);
+
+    /// <summary>
+    /// The traditions a tree holds, in the order the game grants them.
+    /// </summary>
+    /// <remarks>
+    /// The one that opens it first, then the five picks in the order the file lists them, then the
+    /// one that finishes it. That is the order they are taken in, and reading them in any other
+    /// order would say something about the tree that is not true of it.
+    /// </remarks>
+    private IReadOnlyList<PlanOption> Inside(string treeKey)
+    {
+        if (Session.Data.Database.TraditionTrees.FirstOrDefault(t => t.Key == treeKey) is not { } tree)
+        {
+            return [];
+        }
+
+        IEnumerable<string> order =
+            [.. new[] { tree.AdoptionBonus }.OfType<string>(),
+             .. tree.Traditions,
+             .. new[] { tree.FinishBonus }.OfType<string>()];
+
+        return
+        [
+            .. order
+                .Select(key => Session.Data.Database.Traditions.FirstOrDefault(t => t.Key == key))
+                .OfType<TraditionDefinition>()
+                .Select(t => new PlanOption(
+                    t.Key,
+                    Session.Localizer.Text(t.NameKey),
+                    Session.Localizer.Html(t.DescriptionKey, string.Empty),
+                    t.Icon,
+                    t.Effects,
+                    Enabled: true,
+                    Reasons: []))
+        ];
+    }
 
     /// <summary>
     /// Turns what the rules said into what a picker draws, for either half of the plan.
@@ -172,7 +209,8 @@
         IReadOnlyList<OptionState> states,
         IReadOnlyList<string> planned,
         bool chosen,
-        Func<string, (string Name, string? Desc, string? Icon, EffectSet? Effects)> describe)
+        Func<string, (string Name, string? Desc, string? Icon, EffectSet? Effects)> describe,
+        Func<string, IReadOnlyList<PlanOption>>? contents = null)
     {
         IReadOnlyList<string> keys = chosen
             ? planned
@@ -204,7 +242,8 @@
                 effects,
                 state.Enabled,
                 reasons,
-                Unavailable: !state.Enabled && !full);
+                Unavailable: !state.Enabled && !full,
+                Contents: contents?.Invoke(key));
         });
 
         return chosen

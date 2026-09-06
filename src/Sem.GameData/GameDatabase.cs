@@ -19,7 +19,7 @@ public sealed record GameDatabase
     /// site published with a database one version behind was read anyway, with whatever the shape had
     /// gained since taking its default and no sign that anything was missing.
     /// </remarks>
-    public const int CurrentSchemaVersion = 5;
+    public const int CurrentSchemaVersion = 6;
 
     /// <summary>Version of this file's own shape, so an old cache can be detected and rebuilt.</summary>
     public required int SchemaVersion { get; init; }
@@ -116,6 +116,9 @@ public sealed record GameDatabase
 
     /// <summary>The tradition trees, which is the level a plan for one is made at.</summary>
     public IReadOnlyList<TraditionTreeDefinition> TraditionTrees { get; init; } = [];
+
+    /// <summary>The traditions inside those trees, which is what a tree is worth taking for.</summary>
+    public IReadOnlyList<TraditionDefinition> Traditions { get; init; } = [];
 
     /// <summary>
     /// Government types, in the order the game would consider them. The designer derives the
@@ -248,6 +251,11 @@ public sealed record GameDatabase
         foreach (var tree in TraditionTrees)
         {
             yield return tree.Potential;
+        }
+
+        foreach (var conditional in Traditions.SelectMany(t => t.Effects.Conditional))
+        {
+            yield return conditional.When;
         }
 
         foreach (var perk in AscensionPerks)
@@ -847,6 +855,37 @@ public sealed record AscensionPerkDefinition(string Key)
 /// adoption bonus - rather than against the tree, so anything asking whether a tree is open has to
 /// know both names.
 /// </remarks>
+/// <summary>
+/// One tradition inside a tree: a pick, or the bonus for opening or finishing it.
+/// </summary>
+/// <remarks>
+/// Read because a tree is only worth taking for what is inside it, and a plan naming a tree should
+/// be able to say what that is. The description is keyed on the tradition plus <c>_delayed</c>,
+/// which is the game's own convention and is stated in its README beside the files.
+/// </remarks>
+public sealed record TraditionDefinition(string Key)
+{
+    /// <summary>The tree it belongs to.</summary>
+    public string? Tree { get; init; }
+
+    /// <summary>What it does, where the game states it as a modifier.</summary>
+    /// <remarks>
+    /// The base block only. Almost every tradition also carries a <c>tradition_swap</c> - a variant
+    /// for an empire of another shape - and those restate the same numbers rather than adding to
+    /// them, so reading both would double every one of them.
+    /// </remarks>
+    public EffectSet Effects { get; init; } = EffectSet.None;
+
+    /// <summary>Where its picture was written, if it has one.</summary>
+    public string? Icon { get; init; }
+
+    /// <summary>The key is the name.</summary>
+    public string NameKey => Key;
+
+    /// <summary>And the description is the key with the game's own suffix.</summary>
+    public string DescriptionKey => $"{Key}_delayed";
+}
+
 public sealed record TraditionTreeDefinition(string Key)
 {
     /// <summary>Whether an empire of this shape is offered the tree at all.</summary>

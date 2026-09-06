@@ -144,6 +144,13 @@ internal static partial class LocalisationPruner
             AddRequirement(tree.Potential);
         }
 
+        foreach (var tradition in database.Traditions)
+        {
+            Add(tradition.NameKey);
+            Add(tradition.DescriptionKey);
+            AddEffects(tradition.Effects);
+        }
+
         foreach (var perk in database.AscensionPerks)
         {
             Add(perk.NameKey);

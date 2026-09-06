@@ -19,6 +19,9 @@ internal static class AscensionExtractor
     /// <summary>Where the tradition trees are, which is not where the traditions are.</summary>
     private const string Trees = "common/tradition_categories";
 
+    /// <summary>And where the traditions themselves are.</summary>
+    private const string Traditions = "common/traditions";
+
     /// <summary>The category holding the seven that put an empire on a path.</summary>
     private const string PathCategory = "ap_category_ascensions";
 
@@ -99,6 +102,68 @@ internal static class AscensionExtractor
                     $"GFX_tradition_category_icon_{entry.Key}",
                     $"icons/traditions/{entry.Key}.png",
                     maxDimension: 64),
+            });
+        }
+
+        return results;
+    }
+
+    /// <summary>
+    /// Reads the traditions inside the trees, which is what a tree is worth taking for.
+    /// </summary>
+    /// <remarks>
+    /// Only the modifiers the game states plainly. A tradition also carries a tradition_swap - the
+    /// same tradition for an empire of another shape - and those restate the numbers rather than
+    /// adding to them, so both would double every one. The reader ignores a key it does not know,
+    /// which here is the right thing rather than a gap: the swap says the same as the base block for
+    /// a differently-shaped empire, and this app has no such empire to show it to.
+    ///
+    /// What a tradition unlocks beyond a modifier - an agenda, a building, an edict - is written as
+    /// script that runs when it is taken, and is described in the game's own words in the entry
+    /// keyed on the tradition plus _delayed. That prose is kept and shown; guessing at the script
+    /// would be inventing a second, worse description of something already written.
+    /// </remarks>
+    public static List<TraditionDefinition> ExtractTraditions(
+        ScriptLoader loader,
+        RequirementCompiler requirements,
+        AssetCatalog assets,
+        IReadOnlyList<TraditionTreeDefinition> trees)
+    {
+        ArgumentNullException.ThrowIfNull(trees);
+
+        var owner = new Dictionary<string, string>(StringComparer.Ordinal);
+
+        foreach (var tree in trees)
+        {
+            foreach (var key in tree.Traditions)
+            {
+                owner[key] = tree.Key;
+            }
+
+            if (tree.AdoptionBonus is { } adopt)
+            {
+                owner[adopt] = tree.Key;
+            }
+
+            if (tree.FinishBonus is { } finish)
+            {
+                owner[finish] = tree.Key;
+            }
+        }
+
+        var results = new List<TraditionDefinition>();
+
+        foreach (var entry in loader.LoadDefinitions(Traditions))
+        {
+            results.Add(new TraditionDefinition(entry.Key)
+            {
+                Tree = owner.GetValueOrDefault(entry.Key),
+                Effects = EffectsReader.Read(entry.Body, loader, requirements),
+
+                Icon = assets.RegisterSprite(
+                    $"GFX_{entry.Key}",
+                    $"icons/traditions/{entry.Key}.png",
+                    maxDimension: 48),
             });
         }
 

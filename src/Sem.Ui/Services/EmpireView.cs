@@ -309,6 +309,34 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
     private EmpireChoice Chip(string key, string? icon, EffectSet? effects) =>
         new(key, _session.Localizer.Text(key), icon, effects);
 
+    /// <summary>
+    /// The plan this empire carries, which lives in one of its biographies rather than in a field.
+    /// </summary>
+    private EmpirePlan Plan => _plan ??= _session.Plans.PlanOf(_design, _session.PlanVocabulary);
+
+    private EmpirePlan? _plan;
+
+    /// <summary>The tradition trees the plan means to open, as chips.</summary>
+    public IEnumerable<EmpireChoice> PlanTrees =>
+        Plan.Trees
+            .Select(key => Database.TraditionTrees.FirstOrDefault(t => t.Key == key) is { } tree
+                ? new EmpireChoice(key, _session.Localizer.Text(tree.NameKey), tree.Icon, null)
+                    { Description = tree.DescriptionKey }
+                : Chip(key, null, null));
+
+    /// <summary>The ascension perks it means to take, likewise.</summary>
+    /// <remarks>
+    /// Read here rather than in the card, so that anything showing a plan shows the same one. A perk
+    /// carries its effects; a tree does not, because what a tree does is spread over the five
+    /// traditions inside it and this app does not read those.
+    /// </remarks>
+    public IEnumerable<EmpireChoice> PlanPerks =>
+        Plan.Perks
+            .Select(key => Database.AscensionPerks.FirstOrDefault(p => p.Key == key) is { } perk
+                ? new EmpireChoice(key, _session.Localizer.Text(perk.NameKey), perk.Icon, perk.Effects)
+                    { Description = perk.DescriptionKey }
+                : Chip(key, null, null));
+
     /// <summary>The empire's adjectival name, or nothing where it has none.</summary>
     public string Adjective => _session.Localizer.Name(_design.Adjective, string.Empty);
 

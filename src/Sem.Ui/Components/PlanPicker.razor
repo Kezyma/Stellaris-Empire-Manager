@@ -52,7 +52,39 @@
                     <div class="sem-detail-lore">@((MarkupString)lore)</div>
                 }
 
-                <EffectsList Effects="@described.Effects" ShowNothing="true" />
+                <EffectsList Effects="@described.Effects" ShowNothing="@(described.Contents is not { Count: > 0 })" />
+
+                @*
+                    What is inside a tree, which is the whole reason to open one. The game's own
+                    description of a tree says what it is about and not what it gives, so a reader
+                    choosing between them needs the traditions themselves - each with the words the
+                    game wrote for it, and whatever it does stated underneath.
+                *@
+                @if (described.Contents is { Count: > 0 } contents)
+                {
+                    <ol class="sem-plan-contents">
+                        @foreach (var inside in contents)
+                        {
+                            <li>
+                                <div class="head">
+                                    @if (inside.Icon is { Length: > 0 } within)
+                                    {
+                                        <img src="@Session.Data.AssetUrl(within)" alt="" loading="lazy">
+                                    }
+
+                                    <span class="name">@inside.Name</span>
+                                </div>
+
+                                @if (inside.Lore is { Length: > 0 } said)
+                                {
+                                    <div class="sem-detail-lore">@((MarkupString)said)</div>
+                                }
+
+                                <EffectsList Effects="@inside.Effects" />
+                            </li>
+                        }
+                    </ol>
+                }
 
                 @if (described.Reasons.Count > 0)
                 {
