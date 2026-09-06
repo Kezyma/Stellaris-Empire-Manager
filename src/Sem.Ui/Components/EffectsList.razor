@@ -52,15 +52,35 @@ else
 
             <div class="sem-effects-when">
                 <div class="when">@(when is null ? "In some empires" : $"When {when}")</div>
-                <ul class="sem-modifiers">
-                    @foreach (var modifier in Session.Modifiers.Format(conditional.Modifiers))
-                    {
-                        <li>
-                            <span class="label">@((MarkupString)Session.Modifiers.LabelHtml(modifier.Key))</span>
-                            <span class="value @ToneClass(modifier.Tone)">@modifier.Value</span>
-                        </li>
-                    }
-                </ul>
+
+                @*
+                    The numbers, unless the game wrote a sentence to stand in for them. A swap that
+                    says custom_tooltip is saying "describe it this way instead", and fifty-two of
+                    them bring no numbers at all - for those empires the option does something else
+                    entirely, and printing the ones it replaced said the opposite of the truth.
+                *@
+                @if (!conditional.TooltipReplacesModifiers)
+                {
+                    <ul class="sem-modifiers">
+                        @foreach (var modifier in Session.Modifiers.Format(conditional.Modifiers))
+                        {
+                            <li>
+                                <span class="label">@((MarkupString)Session.Modifiers.LabelHtml(modifier.Key))</span>
+                                <span class="value @ToneClass(modifier.Tone)">@modifier.Value</span>
+                            </li>
+                        }
+                    </ul>
+                }
+
+                @if (conditional.TooltipKey is { Length: > 0 } said)
+                {
+                    <div class="sem-effects-text">@((MarkupString)Session.Localizer.Html(said))</div>
+                }
+
+                @foreach (var tag in conditional.TagKeys)
+                {
+                    <div class="sem-effects-text">@((MarkupString)Session.Localizer.Html(tag))</div>
+                }
             </div>
         }
 

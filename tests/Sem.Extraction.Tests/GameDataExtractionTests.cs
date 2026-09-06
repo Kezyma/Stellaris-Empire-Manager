@@ -1395,6 +1395,83 @@ public sealed class GameDataExtractionTests
             $"Only {database.Traits.Count(t => t.Kind == TraitKind.Species)} species traits survived.");
     }
 
+    /// <summary>
+    /// No modifier a design can show reaches the screen on a coin toss.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The four ways of settling one are the game's own script, the <c>_mult</c> or <c>_add</c>
+    /// ending, the extractor's hand-written table, and the numbers the game writes it with agreeing
+    /// among themselves. A modifier settled by none of those is displayed on a default, and the
+    /// default is a coin toss between "+20%" and "+0.2".
+    /// </para>
+    /// <para>
+    /// The six this caught are all counters written only as 1, 2 or -1 - the values that say nothing,
+    /// because a proportion doubles with a 1 and a count increments with one. A content pack adding
+    /// another such modifier fails here rather than quietly drawing it wrong, which is the whole
+    /// point: the guarantee is exhaustiveness, not cleverness.
+    /// </para>
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void NothingIsLeftToAGuess()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        var unsettled = database.Modifiers
+            .Where(m => !m.Value.Settled)
+            .Select(m => m.Key)
+            .OrderBy(k => k, StringComparer.Ordinal)
+            .ToList();
+
+        Assert.True(
+            unsettled.Count == 0,
+            $"{unsettled.Count} modifier(s) would be drawn on a default, with nothing saying whether " +
+            $"they are proportions: {string.Join(", ", unsettled.Take(10))}. Settle each in " +
+            "ModifierCatalog.Settled with the evidence for it.");
+    }
+
+    /// <summary>
+    /// A swap that replaces an option's numbers with a sentence is shown as the sentence.
+    /// </summary>
+    /// <remarks>
+    /// Not a missing sentence but wrong numbers. Expert Negotiation sells specimens more dearly;
+    /// for a homicidal empire the swap brings no modifier at all and one line of prose describing
+    /// something else entirely. Reading only the numbers meant such an empire was shown the modifier
+    /// it does not get and nothing of what it does.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void ASwapThatReplacesTheNumbersWithWordsSaysTheWords()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        var tradition = database.Traditions.Single(t => t.Key == "tr_archivism_expert_negociation");
+
+        var swapped = tradition.Effects.Conditional
+            .Single(c => c.TooltipKey == "tr_archivism_expert_negociation_homicidal_tt");
+
+        Assert.True(swapped.TooltipReplacesModifiers, "The sentence should stand in for the numbers.");
+        Assert.Empty(swapped.Modifiers);
+
+        // And the base's own modifier is now conditional on no swap having claimed it, so the
+        // homicidal empire is not shown it.
+        Assert.Empty(tradition.Effects.Modifiers);
+
+        Assert.Contains(
+            tradition.Effects.Conditional,
+            c => c.Modifiers.ContainsKey("country_specimen_selling_cost_mult"));
+
+        // Enough of them that a reading which dropped the field would fail here rather than quietly.
+        var replacing = database.Traditions
+            .SelectMany(t => t.Effects.Conditional)
+            .Count(c => c.TooltipReplacesModifiers);
+
+        Assert.True(replacing >= 50, $"Only {replacing} swaps replace their numbers with a sentence.");
+    }
+
     /// <summary>The text the app ships, which is the pruned set rather than the game's whole one.</summary>
     private static Dictionary<string, string>? ShippedText()
     {

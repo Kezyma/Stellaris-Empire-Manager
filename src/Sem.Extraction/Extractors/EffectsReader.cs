@@ -306,9 +306,16 @@ public static class EffectsReader
     /// The swaps that bring modifiers of their own, each with the condition that selects it.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// <c>inherit_effects = yes</c> means the option's own modifiers are used instead of the swap's,
     /// so such a swap contributes nothing here and does not narrow the base either. The game's
     /// README gives the default as no, which is why the field's absence counts as a replacement.
+    /// </para>
+    /// <para>
+    /// A swap says its piece in numbers, in a sentence, or in both, and only the numbers were being
+    /// read. Eight swaps carry nothing but the sentence and so produced nothing at all - the empire
+    /// they were written for was shown the ordinary wording and none of its own.
+    /// </para>
     /// </remarks>
     private static List<(Requirement When, ConditionalEffects Effects)> Replacements(
         CwBlock body,
@@ -336,14 +343,30 @@ public static class EffectsReader
                 }
             }
 
-            if (values.Count == 0)
+            // What this form of the option says for itself, beside or instead of its numbers.
+            var appended = swap.GetString("custom_tooltip_with_modifiers");
+            var instead = appended is { Length: > 0 } ? null : swap.GetString("custom_tooltip");
+            var unlocks = new List<string>();
+
+            if (swap.GetBlock("on_enabled") is { } enabled)
+            {
+                CollectUnlocks(enabled, unlocks);
+            }
+
+            if (values.Count == 0 && appended is not { Length: > 0 } &&
+                instead is not { Length: > 0 } && unlocks.Count == 0)
             {
                 continue;
             }
 
             var when = requirements.CompileEffectCondition(swap.GetBlock("trigger"));
 
-            found.Add((when, new ConditionalEffects(when, values)));
+            found.Add((when, new ConditionalEffects(when, values)
+            {
+                TooltipKey = appended ?? instead,
+                TooltipReplacesModifiers = instead is { Length: > 0 },
+                TagKeys = unlocks,
+            }));
         }
 
         return found;

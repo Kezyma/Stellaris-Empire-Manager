@@ -410,6 +410,15 @@ internal static partial class LocalisationPruner
             {
                 AddModifiers(conditional.Modifiers);
                 AddRequirement(conditional.When);
+
+                // What a swap says in place of its numbers, and what it unlocks. Nothing else asks
+                // for these, so without them the sentence would be pruned and drawn as its key.
+                Add(conditional.TooltipKey);
+
+                foreach (var tag in conditional.TagKeys)
+                {
+                    Add(tag);
+                }
             }
 
             foreach (var tag in effects.TagKeys)

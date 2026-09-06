@@ -73,7 +73,7 @@ public sealed class ModifierCatalog
                         IsGood: body.GetBool("good"),
                         IsNeutral: body.GetBool("neutral"),
                         Decimals: int.TryParse(body.GetString("max_decimals"), System.Globalization.CultureInfo.InvariantCulture, out var d) ? d : 2,
-                        Declared: true);
+                        Declared: true) { Settled = true };
                 }
             }
         }
@@ -106,7 +106,7 @@ public sealed class ModifierCatalog
                 IsGood: !LooksLikeACost(key),
                 IsNeutral: false,
                 Decimals: 2,
-                Declared: true);
+                Declared: true) { Settled = true };
         }
 
         return new ModifierInfo(
@@ -114,7 +114,36 @@ public sealed class ModifierCatalog
             IsGood: !LooksLikeACost(key),
             IsNeutral: false,
             Decimals: 2,
-            Declared: false);
+            Declared: false)
+        {
+            Settled = HasEvidence(key, observedValues),
+        };
+    }
+
+    /// <summary>
+    /// Whether the numbers a modifier is written with say anything, one way or the other.
+    /// </summary>
+    /// <remarks>
+    /// An ending is evidence in itself. Otherwise the values have to agree: all fractions, or all
+    /// whole numbers once the uninformative ones are set aside. Nothing left after that is not
+    /// agreement but silence, and silence is what this exists to catch - six modifiers reach here
+    /// written only as 1, 2 and -1, which says nothing about whether they count things or divide
+    /// them.
+    /// </remarks>
+    private static bool HasEvidence(string key, IEnumerable<double>? observedValues)
+    {
+        if (key.EndsWith("_mult", StringComparison.OrdinalIgnoreCase) ||
+            key.EndsWith("_add", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        var values = observedValues?
+            .Where(v => v != 0 && Math.Abs(v) != 1 && Math.Abs(v) != 2)
+            .ToList();
+
+        return values is { Count: > 0 } &&
+            (values.All(v => v != Math.Truncate(v)) || values.All(v => v == Math.Truncate(v)));
     }
 
     /// <summary>
@@ -146,12 +175,22 @@ public sealed class ModifierCatalog
     /// be: an army at -0.06 of its health, a leader at -0.13 of their experience, a wreck with -0.5
     /// of a chance of leaving debris.
     /// </para>
+    /// <para>
+    /// The counters at the end are here for the opposite reason - not because the numbers mislead
+    /// but because they say nothing at all. Every value any of them takes is 1, 2 or -1, which is
+    /// exactly what <see cref="InferPercentage"/> sets aside, so they reach it with no evidence and
+    /// it has to fall back on a default. Naming them is what lets that fallback be an error instead:
+    /// <c>NothingIsLeftToAGuess</c> fails the build if a modifier a design can show arrives with
+    /// nothing to settle it and no entry here.
+    /// </para>
     /// </remarks>
     private static bool? Settled(string key) =>
         key.EndsWith("_habitability", StringComparison.OrdinalIgnoreCase) ? true
         : key.StartsWith("monthly_loyalty", StringComparison.OrdinalIgnoreCase) ? false
         : key is "army_health" or "army_morale" or "species_leader_exp_gain"
             or "intel_gain_speed" or "create_debris_chance" ? true
+        : key is "leader_initial_skill" or "official_initial_skill" or "scientist_initial_skill"
+            or "commander_initial_skill" or "country_leader_pool_size" or "max_rivalries" ? false
         : null;
 
     /// <summary>

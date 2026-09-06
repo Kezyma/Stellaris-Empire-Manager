@@ -19,7 +19,7 @@ public sealed record GameDatabase
     /// site published with a database one version behind was read anyway, with whatever the shape had
     /// gained since taking its default and no sign that anything was missing.
     /// </remarks>
-    public const int CurrentSchemaVersion = 10;
+    public const int CurrentSchemaVersion = 11;
 
     /// <summary>Version of this file's own shape, so an old cache can be detected and rebuilt.</summary>
     public required int SchemaVersion { get; init; }
@@ -587,12 +587,54 @@ public sealed record ModifierInfo(
 {
     /// <summary>What to assume about a modifier nothing is known about.</summary>
     public static ModifierInfo Unknown { get; } = new(false, true, false, 2, false);
+
+    /// <summary>
+    /// Whether anything actually settled how this is displayed.
+    /// </summary>
+    /// <remarks>
+    /// True when the game's own script said, or the ending said, or the extractor's table said, or
+    /// every number the game writes it with agrees. False means it reached the default with nothing
+    /// to go on, and the default is a coin toss between "+20%" and "+0.2" - which is how every army
+    /// bonus in the app once came to read as a fraction of an army.
+    ///
+    /// Carried in the data so a test can insist on it rather than repeating the rule that produced
+    /// it. Evidence, not proof: <c>monthly_loyalty</c> is written only in fractions and is a flat
+    /// amount all the same, which is why the table above exists at all.
+    /// </remarks>
+    public bool Settled { get; init; }
 }
 
 /// <summary>Modifiers that apply only when a condition holds.</summary>
 /// <param name="When">The condition, compiled from the block's <c>potential</c>.</param>
 /// <param name="Modifiers">What applies while it holds.</param>
-public sealed record ConditionalEffects(Requirement When, IReadOnlyDictionary<string, double> Modifiers);
+public sealed record ConditionalEffects(Requirement When, IReadOnlyDictionary<string, double> Modifiers)
+{
+    /// <summary>
+    /// The sentence the game writes in place of these numbers, where it writes one.
+    /// </summary>
+    /// <remarks>
+    /// Ninety-one tradition swaps carry a <c>custom_tooltip</c>, which is the game saying "for this
+    /// kind of empire, describe it this way instead". Reading the modifiers and not the sentence
+    /// left the wordier half of a swap unsaid - and eight swaps carry nothing but the sentence, so
+    /// for those the empire was shown the ordinary wording and nothing of its own.
+    /// </remarks>
+    public string? TooltipKey { get; init; }
+
+    /// <summary>Whether that sentence stands in for the numbers rather than joining them.</summary>
+    /// <remarks>
+    /// The same distinction the option itself draws between <c>custom_tooltip</c> and
+    /// <c>custom_tooltip_with_modifiers</c>, and for the same reason: one of them restates what the
+    /// numbers already say, and printing both is printing it twice.
+    /// </remarks>
+    public bool TooltipReplacesModifiers { get; init; }
+
+    /// <summary>What this form of the option unlocks, described by the game's own sentences.</summary>
+    /// <remarks>
+    /// A swap can bring its own <c>on_enabled</c>, which is where the game states what a tradition
+    /// lets you build or do. Sixteen do.
+    /// </remarks>
+    public IReadOnlyList<string> TagKeys { get; init; } = [];
+}
 
 /// <summary>
 /// Everything an option does, as the game would describe it.
