@@ -327,7 +327,7 @@
                 panel below. Saving is what makes the empire the player's and the question "what do
                 you mean to do with it" worth asking, so the two take the same place in turn.
             *@
-            @if (Told is not { Length: > 0 })
+            @if (!IsPreset)
             {
             <section class="sem-lite-panel" style="--panel-order: 8">
                 <div class="body">
@@ -403,6 +403,18 @@
     /// </remarks>
     [Parameter]
     public string? Lore { get; set; }
+
+    /// <summary>
+    /// Whether this is still one of the game's own rather than the player's.
+    /// </summary>
+    /// <remarks>
+    /// Asked for rather than inferred from there being lore to show. The two travel together for
+    /// all fifty-two shipped empires - a preset with no paragraph of its own falls back to its
+    /// origin's - but they are different questions, and a preset that answered neither would have
+    /// shown a plan panel on an empire that cannot carry a plan.
+    /// </remarks>
+    [Parameter]
+    public bool IsPreset { get; set; }
 
     /// <summary>
     /// What the game says about this empire, where it is still saying it.

@@ -64,7 +64,13 @@
                 role="group" aria-label="@($"{Heading} planned")">
                 @foreach (var (option, at) in Chosen.Select((o, i) => (o, i)))
                 {
-                    <li class="sem-plan-slot" data-index="@at">
+                    @*
+                        Keyed by what the row is, not where it sits. Without it Blazor patches the
+                        button at slot n in place and the focus stays on the slot while the row
+                        moves out from under it - so a second press of the arrow key moved a
+                        different perk, and holding the key swapped two rows back and forth.
+                    *@
+                    <li class="sem-plan-slot" @key="option.Key" data-index="@at">
                         @if (Ordered)
                         {
                             <button type="button" class="sem-plan-grip" data-grip

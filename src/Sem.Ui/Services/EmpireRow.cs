@@ -534,7 +534,7 @@ public sealed record EmpireFacet(
         // empires end up with it should be told about those too.
         new("plantraditions", "Planned traditions", r => r.PlanTrees, o => o.TraditionTrees, Plan),
         new("planperks", "Planned perks", r => r.PlanPerks, o => o.AscensionPerks, Plan),
-        new("plancivics", "Planned civics", r => r.PlanCivics, o => o.Civics, Plan),
+        new("plancivics", "Planned civics", r => r.PlanCivics, o => o.PlannableCivics, Plan),
     ];
 
     /// <summary>
@@ -562,8 +562,14 @@ public sealed record EmpireFacet(
     /// <remarks>
     /// An empire has one authority and any number of civics. Asking for all of two authorities is a
     /// question with no answer, so the headings that can only hold one are not offered the choice.
+    ///
+    /// Written out, which means it has to be revisited whenever a heading is added - and twice it
+    /// was not. Second species traits went without the choice for as long as it existed, and so did
+    /// all three of the plan's headings when they arrived.
     /// </remarks>
-    public bool Several => Key is "ethics" or "civics" or "traits" or "rulertraits";
+    public bool Several => Key is
+        "ethics" or "civics" or "traits" or "rulertraits" or "secondtraits"
+        or "plantraditions" or "planperks" or "plancivics";
 
     internal static IReadOnlyList<EmpireChoice> Some(EmpireChoice? choice) =>
         choice is null ? [] : [choice];
@@ -876,6 +882,24 @@ public sealed class EmpireOptions(DesignSession session)
     ];
 
     private IReadOnlyList<EmpireChoice>? _ascensionPerks;
+
+    /// <summary>Every civic a government reform could ever arrive at.</summary>
+    /// <remarks>
+    /// Not <see cref="Civics"/>, which is what a blank empire may take and so leaves out every
+    /// gestalt one. That list narrows what an empire <em>is</em>, and a blank empire is a fair
+    /// stand-in for one being designed; this narrows a list of empires that may be any shape at
+    /// all, so a civic only a hive mind can hold still has to be offered to the reader looking for
+    /// hive minds that plan it.
+    /// </remarks>
+    public IReadOnlyList<EmpireChoice> PlannableCivics => _plannableCivics ??=
+    [
+        .. Database.Civics
+            .Where(c => !c.IsOrigin)
+            .Select(c => Civic(c.Key))
+            .OrderBy(c => c.Name, StringComparer.CurrentCulture),
+    ];
+
+    private IReadOnlyList<EmpireChoice>? _plannableCivics;
 
     public IReadOnlyList<EmpireChoice> TraditionTrees => _traditionTrees ??=
     [

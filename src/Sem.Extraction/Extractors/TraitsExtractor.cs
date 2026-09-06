@@ -1,4 +1,4 @@
-using Sem.Clausewitz;
+﻿using Sem.Clausewitz;
 using Sem.GameData;
 
 namespace Sem.Extraction.Extractors;
@@ -59,7 +59,13 @@ internal static class TraitsExtractor
 
                 // A trait's own tags group it for filtering and have no text; the categories it
                 // displays are the separate localized_tags field.
-                Effects = EffectsReader.Read(body, loader, requirements, tagsKey: "localized_tags"),
+                Effects = EffectsReader.Read(
+                    body, loader, requirements,
+                    tagsKey: "localized_tags",
+
+                    // The one option family whose own documentation says which triggered blocks
+                    // are displayed, and expects the rest to speak through a tooltip.
+                    hidesTriggeredBlocks: true),
 
                 // A leader trait describes its icon rather than naming one, and is built from that
                 // description. The species traits name theirs outright — fifty-three borrow

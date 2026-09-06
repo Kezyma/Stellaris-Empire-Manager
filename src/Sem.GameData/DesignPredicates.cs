@@ -160,7 +160,10 @@ public static class DesignPredicates
         "has_global_flag",
         "has_planet_flag",
 
-        // Situations and standings, which need a galaxy to be in.
+        // Situations and standings, which need a galaxy to be in. The galactic community forms part
+        // way through a game and is what the Politics tree waits for, so a plan naming that tree is
+        // saying it means to open it once there is one.
+        "is_galactic_community_formed",
         "country_has_situation",
         "any_situation",
         "any_relation",

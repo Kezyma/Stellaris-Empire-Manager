@@ -23,7 +23,7 @@
 
     @if (Planning)
     {
-        <div class="sem-field">
+        <div class="sem-field inline">
             <label for="plan-home">Write To</label>
 
             @*
@@ -88,7 +88,7 @@
             say something about a government that is not true of one.
         *@
         <PlanPicker @key="@("civics")" Heading="Civics" BudgetKey="GOVERNMENT_CIVICS"
-                    Budget="@Session.Rules.GetPlanCivicBudget(Locked.Count + Plan.Civics.Count)"
+                    Budget="@Session.Rules.GetPlanCivicBudget(Locked.Count + Planned.Count)"
                     Available="@CivicOptions(chosen: false)" Chosen="@CivicOptions(chosen: true)"
                     Fixed="@LockedOptions" OnToggle="ToggleCivic" />
     }
@@ -134,7 +134,7 @@
     [
         new("Ascension Perks", $"{Plan.Perks.Count}/{PerkBudget.Available}"),
         new("Traditions", $"{Plan.Trees.Count}/{Session.Data.Database.Defines.TraditionSlots}"),
-        new("Civics", $"{Locked.Count + Plan.Civics.Count}/{Session.Data.Database.Defines.PlannedCivicPoints}"),
+        new("Civics", $"{Locked.Count + Planned.Count}/{Session.Data.Database.Defines.PlannedCivicPoints}"),
     ];
 
     private EmpireDesign Design => Session.Current!;
@@ -174,13 +174,32 @@
     private IEnumerable<string> Keeping =>
         Session.Context!.Civics.Where(c => !Locked.Any(l => l.Key == c));
 
+    /// <summary>
+    /// The civics the plan names that are not already forced on the empire.
+    /// </summary>
+    /// <remarks>
+    /// A civic can be planned and then acquired, and a few dozen may be added by a reform but never
+    /// removed - so the same civic can end up named by the plan and locked at once. Counted twice it
+    /// filled a slot that was not spent, and drawn twice it appeared in the fixed rows and the
+    /// chosen ones together, greyed in one and pressable in the other.
+    /// </remarks>
+    private IReadOnlyList<string> Planned =>
+        [.. Plan.Civics.Where(c => !Locked.Any(l => l.Key == c))];
+
     private string Written => Session.Plans.Text.Write(Plan);
 
     /// <summary>How many perks this plan holds, against how many a game grants.</summary>
     private Budget PerkBudget => Session.Rules.GetAscensionPerkBudget(Plan.Perks.Count);
 
-    /// <summary>How much of a biography the plan is spending.</summary>
-    private Budget Length => new(Written.Length, PlanText.Budget);
+    /// <summary>
+    /// How much of a biography the plan is asking for.
+    /// </summary>
+    /// <remarks>
+    /// Measured before it is shortened, not after. Read off the written text it could never exceed
+    /// the budget, because the writing is what enforces it - so the one number that exists to warn
+    /// that something is about to be dropped was incapable of saying so.
+    /// </remarks>
+    private Budget Length => new(Session.Plans.Text.Measure(Plan), PlanText.Budget);
 
     /// <summary>The civics this empire is stuck with, which spend slots the plan cannot use.</summary>
     private IReadOnlyList<OptionState> Locked => Session.Rules.GetLockedCivics(Session.Context!);
@@ -207,8 +226,8 @@
     /// description reading off whichever came first.
     /// </remarks>
     private IReadOnlyList<PlanOption> CivicOptions(bool chosen) => Shape(
-        Session.Rules.GetPlanCivicOptions(Session.Context!, Plan.Civics),
-        chosen ? Plan.Civics : [.. Plan.Civics, .. Locked.Select(o => o.Key)],
+        Session.Rules.GetPlanCivicOptions(Session.Context!, Planned),
+        chosen ? Planned : [.. Planned, .. Locked.Select(o => o.Key)],
         chosen,
         Describe.Civic(Session));
 
@@ -375,7 +394,13 @@
     {
         var perks = Moved(Plan.Perks, move);
 
-        if (Session.Rules.IsLegalPerkOrder(Session.Context!, perks, Plan.Trees))
+        // Refused only while the plan is legal to begin with. Releasing a perk shifts everything
+        // after it one place earlier, which can leave a later one below the count it needs - and
+        // then every arrangement of what is left was refused too, so the grips went dead with
+        // nothing said and the only way out was emptying the plan. A list already wrong is one the
+        // player is trying to put right.
+        if (Session.Rules.IsLegalPerkOrder(Session.Context!, perks, Plan.Trees) ||
+            !Session.Rules.IsLegalPerkOrder(Session.Context!, Plan.Perks, Plan.Trees))
         {
             Save(Plan with { Perks = perks });
         }
@@ -477,10 +502,12 @@
     /// Writes a plan a picker has changed into the biography carrying it.
     /// </summary>
     /// <remarks>
-    /// A plan emptied back out gives the biography up rather than leaving a bare marker in it,
-    /// which is the field the player would have had by never planning at all. Planning stays on -
-    /// that is the checkbox's business - so the pickers are still there to decide something else
-    /// with.
+    /// Always writes, even a plan that now names nothing - which is a marker and one line, and is
+    /// the honest record of a player who has decided to reform into no civics at all. It used to
+    /// give the biography back instead, and that made the last civic un-droppable: the plan went,
+    /// the fallback below rebuilt it from the civics the empire already had, and both the civic
+    /// just released and the one released before it came back. Giving the field up is the
+    /// checkbox's business, and it is still there.
     /// </remarks>
     private void Save(EmpirePlan plan)
     {
@@ -488,16 +515,6 @@
 
         Session.PlanIntent = home;
 
-        Session.Edit(d =>
-        {
-            if (plan.Any)
-            {
-                Session.Plans.Write(d, plan, home, Vocabulary);
-            }
-            else
-            {
-                Session.Plans.Clear(d, home, Vocabulary);
-            }
-        });
+        Session.Edit(d => Session.Plans.Write(d, plan, home, Vocabulary));
     }
 }

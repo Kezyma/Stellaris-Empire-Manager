@@ -1,4 +1,4 @@
-using Sem.Designs;
+﻿using Sem.Designs;
 using Sem.Ui.Services;
 
 namespace Sem.Ui.Tests;
@@ -72,6 +72,33 @@ public sealed class PlanTextTests
         // this is not a plan at all, and the difference decides whether somebody's writing is
         // about to be replaced.
         Assert.Null(English().Read(biography, Vocabulary()));
+    }
+
+    /// <summary>
+    /// The marker has to be the first thing, not merely somewhere.
+    /// </summary>
+    /// <remarks>
+    /// It was accepted anywhere, which made a biography with a line reading "Plan" in the middle of
+    /// it into a plan: the checkbox came up ticked, the box went read-only, and the first perk
+    /// chosen replaced what the player had written. Turning planning off then cleared both
+    /// biographies, so prose in the other one went the same way.
+    /// </remarks>
+    [Fact]
+    public void AMarkerPartWayThroughIsSomebodysWriting()
+    {
+        var buried = string.Join(
+            PlanText.Separator,
+            "The Blorg are a friendly people.",
+            PlanText.Marker,
+            "Perks: Mind Over Matter");
+
+        Assert.False(English().IsPlan(buried, Vocabulary()));
+
+        // And the same words with the marker at the front are a plan, so it is the position that
+        // decides rather than anything about the rest.
+        var opened = string.Join(PlanText.Separator, PlanText.Marker, "Perks: Mind Over Matter");
+
+        Assert.True(English().IsPlan(opened, Vocabulary()));
     }
 
     /// <summary>A plan that has decided nothing is still a plan, and is still recognised.</summary>
@@ -207,7 +234,7 @@ public sealed class PlanTextTests
 
         // And every name that survived is a whole one. This is the property that matters more than
         // the length: a name cut in half can read back as a different name.
-        foreach (var line in written.Split('\n').Skip(1))
+        foreach (var line in written.Split(PlanText.Separator).Skip(1))
         {
             var items = line[(line.IndexOf(':', StringComparison.Ordinal) + 1)..]
                 .Split(", ", StringSplitOptions.TrimEntries);

@@ -93,6 +93,13 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
     {
         _context = null;
         _report = null;
+
+        // The plan and its vocabulary too. Both are read off the design and the vocabulary is built
+        // from the context, so leaving them behind would answer questions about the empire as it
+        // was with the words of the empire as it is.
+        _plan = null;
+        _hasPlan = null;
+        _vocabulary = null;
     }
 
     public RoomDefinition? Room =>
@@ -322,7 +329,20 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
     /// <summary>
     /// The plan this empire carries, which lives in one of its biographies rather than in a field.
     /// </summary>
-    private EmpirePlan Plan => _plan ??= _session.Plans.PlanOf(_design, _session.PlanVocabulary);
+    private EmpirePlan Plan => _plan ??= _session.Plans.PlanOf(_design, Vocabulary);
+
+    /// <summary>
+    /// What a plan on <em>this</em> empire may name, which is not the session's own.
+    /// </summary>
+    /// <remarks>
+    /// A table draws fifty of these and the session is editing one of them. Reading every row's
+    /// plan against the editor's vocabulary would ask the wrong empire which of two things sharing
+    /// a name was meant. It costs nothing to have one each: the vocabulary indexes itself on the
+    /// first name looked up, and a biography with nothing in it never looks one up.
+    /// </remarks>
+    private PlanVocabulary Vocabulary => _vocabulary ??= _session.VocabularyFor(Context);
+
+    private PlanVocabulary? _vocabulary;
 
     private EmpirePlan? _plan;
 
@@ -333,7 +353,7 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
     /// costs.
     /// </remarks>
     public bool HasPlan =>
-        _hasPlan ??= _session.Plans.HomeOf(_design, _session.PlanVocabulary) is not null;
+        _hasPlan ??= _session.Plans.HomeOf(_design, Vocabulary) is not null;
 
     private bool? _hasPlan;
 

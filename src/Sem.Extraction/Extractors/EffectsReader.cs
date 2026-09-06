@@ -29,6 +29,19 @@ public static class EffectsReader
         "triggered_species_modifier",
     ];
 
+    /// <summary>
+    /// The triggered block the game shows for everything except a trait.
+    /// </summary>
+    /// <remarks>
+    /// Only traits and the ascension content write one - forty-five occurrences among the traits,
+    /// twenty among the perks and traditions, and none at all in civics, ethics or governments - so
+    /// which of the two rules applies to it decides everything and nothing else is touched.
+    /// </remarks>
+    private const string PlainTriggeredBlock = "triggered_modifier";
+
+    /// <summary>The swap a tradition or an ascension perk writes, which is not the civics' one.</summary>
+    private const string TraditionSwap = "tradition_swap";
+
     /// <summary>Fields inside a modifier block that are instructions rather than modifiers.</summary>
     private static readonly HashSet<string> NotModifiers =
         new(StringComparer.Ordinal) { "potential", "custom_tooltip", "show_only_custom_tooltip", "desc" };
@@ -56,19 +69,38 @@ public static class EffectsReader
     /// <c>tags</c>, traits <c>localized_tags</c>. A trait's own <c>tags</c> field is a grouping
     /// mechanism with no display text, so it must not be read here.
     /// </param>
+    /// <param name="hidesTriggeredBlocks">
+    /// Whether the plain <c>triggered_modifier</c> is a block the game keeps to itself.
+    /// </param>
+    /// <remarks>
+    /// True only for traits, whose own documentation says which triggered blocks are displayed and
+    /// expects the rest to describe themselves in a tooltip. That rule used to be applied to
+    /// everything, and it is a rule about traits: an ascension perk's plain triggered_modifier is
+    /// shown in game, and reading it as hidden left fifteen perks with an empty effects list -
+    /// Interstellar Dominion among them, whose whole effect is three of these blocks and no
+    /// always-on one at all. Traits are the only other thing in the game that writes one.
+    /// </remarks>
     public static EffectSet Read(
         CwBlock body,
         ScriptLoader loader,
         RequirementCompiler requirements,
-        string? tagsKey = null)
+        string? tagsKey = null,
+        bool hidesTriggeredBlocks = false,
+        bool readsScriptedUnlocks = false)
     {
         ArgumentNullException.ThrowIfNull(body);
 
         var modifiers = new Dictionary<string, double>(StringComparer.Ordinal);
         var conditional = new List<ConditionalEffects>();
+        var unlocks = new List<string>();
 
         string? tooltip = null;
         var tooltipReplaces = false;
+
+        // Gathered before the walk, because the base modifiers depend on them: a tradition replaced
+        // by a swap does not give what it says at the top, so what it says at the top holds only
+        // while no swap has taken over.
+        var replacements = Replacements(body, loader, requirements);
 
         foreach (var node in body.Nodes)
         {
@@ -90,7 +122,8 @@ public static class EffectsReader
                     tooltipReplaces = block.GetBool("show_only_custom_tooltip", defaultValue: true);
                 }
             }
-            else if (ShownTriggeredBlocks.Contains(key, StringComparer.Ordinal))
+            else if (ShownTriggeredBlocks.Contains(key, StringComparer.Ordinal) ||
+                     (key == PlainTriggeredBlock && !hidesTriggeredBlocks))
             {
                 var values = new Dictionary<string, double>(StringComparer.Ordinal);
                 Accumulate(values, block, loader);
@@ -101,6 +134,14 @@ public static class EffectsReader
                         requirements.CompileEffectCondition(block.GetBlock("potential")),
                         values));
                 }
+            }
+
+            // What the option does that is script rather than a number, named by the sentence the
+            // game wrote for it. Nihilistic Acquisition's whole effect is one of these, and without
+            // it the perk showed a name and nothing else.
+            else if (key == "on_enabled" && readsScriptedUnlocks)
+            {
+                CollectUnlocks(block, unlocks);
             }
             else if (key == "swap_type")
             {
@@ -154,17 +195,118 @@ public static class EffectsReader
             tooltipReplaces = true;
         }
 
+        // The swaps, and what they do to the base.
+        //
+        // A swap replaces the option when its trigger holds - the game's own README says so - so the
+        // numbers at the top are the numbers for an empire no swap has claimed. Prosperity is the
+        // plain case: station output normally, and to a nomadic empire three entirely different
+        // modifiers instead. Read as always-on, a nomad was shown the one it does not get and none
+        // of the three it does.
+        //
+        // Only the swaps that bring their own effects narrow it. One with inherit_effects = yes uses
+        // the base's modifiers, so it changes nothing about when they apply.
+        if (replacements.Count > 0)
+        {
+            conditional.AddRange(replacements.Select(r => r.Effects));
+
+            if (modifiers.Count > 0)
+            {
+                conditional.Add(new ConditionalEffects(
+                    new NotRequirement(new AnyRequirement([.. replacements.Select(r => r.When)])),
+                    modifiers));
+
+                modifiers = new Dictionary<string, double>(StringComparer.Ordinal);
+            }
+        }
+
         return new EffectSet
         {
             Modifiers = modifiers,
             Conditional = conditional,
-            TagKeys = tagsKey is { Length: > 0 } ? body.GetList(tagsKey) : [],
+
+            // The scripted unlocks join whatever the option already names, both being sentences
+            // rather than numbers, which is what this field is for.
+            TagKeys = [.. (tagsKey is { Length: > 0 } ? body.GetList(tagsKey) : []).Concat(unlocks)],
             DescriptionKey = body.GetString("description"),
             PenaltyKey = body.GetString("negative_description"),
             TooltipKey = tooltip,
             TooltipReplacesModifiers = tooltipReplaces,
             HideModifiers = body.GetBool("hide_modifiers"),
         };
+    }
+
+    /// <summary>
+    /// The swaps that bring modifiers of their own, each with the condition that selects it.
+    /// </summary>
+    /// <remarks>
+    /// <c>inherit_effects = yes</c> means the option's own modifiers are used instead of the swap's,
+    /// so such a swap contributes nothing here and does not narrow the base either. The game's
+    /// README gives the default as no, which is why the field's absence counts as a replacement.
+    /// </remarks>
+    private static List<(Requirement When, ConditionalEffects Effects)> Replacements(
+        CwBlock body,
+        ScriptLoader loader,
+        RequirementCompiler requirements)
+    {
+        var found = new List<(Requirement, ConditionalEffects)>();
+
+        foreach (var node in body.Nodes)
+        {
+            if (node.Key != TraditionSwap || node.Block is not { } swap ||
+                swap.GetBool("inherit_effects"))
+            {
+                continue;
+            }
+
+            var values = new Dictionary<string, double>(StringComparer.Ordinal);
+
+            foreach (var inner in swap.Nodes)
+            {
+                if (inner.Key is { } innerKey && inner.Block is { } innerBlock &&
+                    IsAlwaysOnModifierBlock(innerKey))
+                {
+                    Accumulate(values, innerBlock, loader);
+                }
+            }
+
+            if (values.Count == 0)
+            {
+                continue;
+            }
+
+            var when = requirements.CompileEffectCondition(swap.GetBlock("trigger"));
+
+            found.Add((when, new ConditionalEffects(when, values)));
+        }
+
+        return found;
+    }
+
+    /// <summary>
+    /// Gathers the sentences an option's script describes itself with.
+    /// </summary>
+    /// <remarks>
+    /// Down through whatever the block holds, because the game wraps these in ifs as often as not -
+    /// Galactic Wonders names one tooltip for a megacorp and another for everybody else. Both are
+    /// taken: they describe the same unlock in two voices, and inventing a condition for a sentence
+    /// would be claiming to know which applies.
+    /// </remarks>
+    private static void CollectUnlocks(CwBlock block, List<string> into)
+    {
+        foreach (var node in block.Nodes)
+        {
+            if (node.Key == "custom_tooltip" && node.ScalarValue is { Length: > 0 } key)
+            {
+                if (!into.Contains(key, StringComparer.Ordinal))
+                {
+                    into.Add(key);
+                }
+            }
+            else if (node.Block is { } nested)
+            {
+                CollectUnlocks(nested, into);
+            }
+        }
     }
 
     /// <summary>

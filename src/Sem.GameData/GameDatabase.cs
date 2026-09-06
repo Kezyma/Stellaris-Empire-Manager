@@ -19,7 +19,7 @@ public sealed record GameDatabase
     /// site published with a database one version behind was read anyway, with whatever the shape had
     /// gained since taking its default and no sign that anything was missing.
     /// </remarks>
-    public const int CurrentSchemaVersion = 7;
+    public const int CurrentSchemaVersion = 8;
 
     /// <summary>Version of this file's own shape, so an old cache can be detected and rebuilt.</summary>
     public required int SchemaVersion { get; init; }
@@ -253,9 +253,14 @@ public sealed record GameDatabase
             yield return tree.Potential;
         }
 
-        foreach (var conditional in Traditions.SelectMany(t => t.Effects.Conditional))
+        foreach (var tradition in Traditions)
         {
-            yield return conditional.When;
+            yield return tradition.Possible;
+
+            foreach (var conditional in tradition.Effects.Conditional)
+            {
+                yield return conditional.When;
+            }
         }
 
         foreach (var perk in AscensionPerks)
@@ -883,13 +888,24 @@ public sealed record TraditionDefinition(string Key)
     /// <summary>The tree it belongs to.</summary>
     public string? Tree { get; init; }
 
-    /// <summary>What it does, where the game states it as a modifier.</summary>
+    /// <summary>What it does, and when.</summary>
     /// <remarks>
-    /// The base block only. Almost every tradition also carries a <c>tradition_swap</c> - a variant
-    /// for an empire of another shape - and those restate the same numbers rather than adding to
-    /// them, so reading both would double every one of them.
+    /// The base block and the swaps both. A swap replaces the tradition for an empire of another
+    /// shape rather than restating it - Prosperity gives station output normally and three quite
+    /// different things to a nomad - so each is read as the alternative it is.
     /// </remarks>
     public EffectSet Effects { get; init; } = EffectSet.None;
+
+    /// <summary>
+    /// Whether this one may be taken.
+    /// </summary>
+    /// <remarks>
+    /// Read for the sake of the adoption bonuses, which is where the game says what unlocks a tree:
+    /// nothing on the tree itself asks for the ascension perk, and <c>tr_cybernetics_adopt</c> does
+    /// - "the flesh is weak, and the technology, unless your origin already put you there". A tree
+    /// whose adoption cannot be taken is a tree that cannot be opened.
+    /// </remarks>
+    public Requirement Possible { get; init; } = new AlwaysRequirement(true);
 
     /// <summary>Where its picture was written, if it has one.</summary>
     public string? Icon { get; init; }

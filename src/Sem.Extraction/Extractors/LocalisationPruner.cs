@@ -143,6 +143,7 @@ internal static partial class LocalisationPruner
             Add(tradition.NameKey);
             Add(tradition.DescriptionKey);
             AddEffects(tradition.Effects);
+            AddRequirement(tradition.Possible);
         }
 
         foreach (var perk in database.AscensionPerks)

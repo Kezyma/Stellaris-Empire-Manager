@@ -1,4 +1,4 @@
-@implements IDisposable
+﻿@implements IDisposable
 
 @*
     What the reader is looking for, in a card above the lists.
@@ -87,7 +87,7 @@
         </div>
 
     <div class="controls">
-        @foreach (var facet in EmpireFacet.All.Where(f => f.Group == _group))
+        @foreach (var facet in EmpireFacet.All.Where(f => f.Group == _group && Shown(f)))
         {
             var options = Offered(facet);
 
@@ -188,8 +188,24 @@
     private string _group = EmpireFacet.Groups[0];
 
     /// <summary>Whether anything under one tab is narrowing the lists, so the tab can say so.</summary>
+    /// <remarks>
+    /// Through the same test that decides what is drawn, so the mark cannot appear over a tab
+    /// holding nothing the reader can see. The preset heading is answered by the button beside the
+    /// search now, and it was still counted here - so choosing "Custom" out there marked the Empire
+    /// tab as narrowed and left no way to find what had done it.
+    /// </remarks>
     private bool Narrowing(string group) =>
-        EmpireFacet.All.Any(f => f.Group == group && Filter.Keys(f.Key).Count > 0);
+        EmpireFacet.All.Any(f => f.Group == group && Shown(f) && Filter.Keys(f.Key).Count > 0);
+
+    /// <summary>
+    /// Whether a heading is one this card draws.
+    /// </summary>
+    /// <remarks>
+    /// The preset one is not. It is the question a reader asks first and most often, so it is a
+    /// button beside the search rather than a dropdown behind a fold - but it stays a heading, so
+    /// the narrowing itself is unchanged and every row still answers it.
+    /// </remarks>
+    private static bool Shown(EmpireFacet facet) => facet.Key != "preset";
 
     /// <summary>What the editor would offer under each heading, worked out once and held.</summary>
     private EmpireOptions? _options;

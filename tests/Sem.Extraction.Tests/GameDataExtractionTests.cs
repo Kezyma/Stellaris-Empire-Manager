@@ -113,10 +113,10 @@ public sealed class GameDataExtractionTests
         // The conditions on a conditional modifier are a separate matter from the ones that gate an
         // option: a modifier may well depend on something only a running game can answer, and
         // RequirementEvaluator.CanDecide exists so those are left out of the totals rather than
-        // guessed at. These five are all of that kind — whether a tradition has been adopted,
-        // whether a scope exists.
+        // guessed at. Every one of these is of that kind — whether a tradition has been adopted,
+        // whether a scope exists, whether anybody has been made a rival.
         //
-        // Pinned by name because a sixth would not be. A patch introducing one this app could
+        // Pinned by name because the next one would not be. A patch introducing one this app could
         // answer, but does not, would quietly go on leaving a bonus out of every total.
         string[] known =
         [
@@ -125,6 +125,15 @@ public sealed class GameDataExtractionTests
             "has_tradition",
             "is_species_class",
             "is_scope_valid",
+
+            // The five that arrived with the triggered blocks and the tradition swaps, neither of
+            // which was compiled before. Rivals, federations and an economy are all things a design
+            // does not have yet, and calc_true_if counts over them.
+            "any_rival_country",
+            "resource_expenses_compare",
+            "calc_true_if",
+            "has_federation",
+            "federation",
         ];
 
         var unexpected = database.UnrecognisedEffectConditions.Keys.Except(known, StringComparer.Ordinal);
@@ -1035,4 +1044,104 @@ public sealed class GameDataExtractionTests
     /// <summary>Whether a condition compiled to a flat no.</summary>
     private static bool Never(Requirement requirement) =>
         requirement is AlwaysRequirement { Value: false };
+    /// <summary>
+    /// Nothing a plan can name is left with nothing to say.
+    /// </summary>
+    /// <remarks>
+    /// Fifteen perks and seventy-eight traditions used to show a name and an empty list, for three
+    /// separate reasons: the plain triggered_modifier was read as a block the game hides, which is
+    /// a rule about traits; the tradition_swap was not read at all; and the scripted unlocks were
+    /// dropped rather than described. Interstellar Dominion was the plainest case - no always-on
+    /// modifier anywhere in it, its whole effect in three triggered blocks.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void EverythingAPlanCanNameSaysSomething()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        static bool Silent(EffectSet e) =>
+            e.Modifiers.Count == 0 && e.Conditional.Count == 0 && e.TagKeys.Count == 0
+            && e.TooltipKey is not { Length: > 0 } && e.DescriptionKey is not { Length: > 0 };
+
+        var perks = database.AscensionPerks.Where(p => Silent(p.Effects)).Select(p => p.Key).ToList();
+
+        Assert.True(perks.Count <= 1, "Perks with nothing to say: " + string.Join(", ", perks));
+
+        // Interstellar Dominion: three mutually exclusive triggered blocks and no always-on one.
+        var dominion = database.AscensionPerks.Single(p => p.Key == "ap_interstellar_dominion");
+
+        Assert.Empty(dominion.Effects.Modifiers);
+        Assert.Equal(3, dominion.Effects.Conditional.Count);
+
+        // Nihilistic Acquisition, whose whole effect is a line of script the game names.
+        var raiding = database.AscensionPerks.Single(p => p.Key == "ap_nihilistic_acquisition");
+
+        Assert.Contains("allow_raiding", raiding.Effects.TagKeys);
+    }
+
+    /// <summary>
+    /// A tradition replaced by a swap gives what the swap gives, and only then.
+    /// </summary>
+    /// <remarks>
+    /// Prosperity is the case that showed the old reading was wrong: station output normally, and to
+    /// a nomadic empire three entirely different modifiers instead. Read as always-on, a nomad was
+    /// shown the one it does not get and none of the three it does.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void ASwappedTraditionGivesWhatTheSwapGives()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var adopt = Database.Value.Traditions.Single(t => t.Key == "tr_prosperity_adopt").Effects;
+
+        // Nothing unconditional: the base is now one of the alternatives rather than a floor.
+        Assert.Empty(adopt.Modifiers);
+
+        var baseline = adopt.Conditional
+            .Single(c => c.Modifiers.ContainsKey("station_gatherers_produces_mult"));
+
+        // And it applies only where no swap has claimed the tradition.
+        Assert.IsType<NotRequirement>(baseline.When);
+
+        // The nomadic alternatives bring their own, and never the base's.
+        var nomadic = adopt.Conditional.Where(c => !ReferenceEquals(c, baseline)).ToList();
+
+        Assert.NotEmpty(nomadic);
+        Assert.All(
+            nomadic,
+            c => Assert.DoesNotContain("station_gatherers_produces_mult", c.Modifiers.Keys));
+    }
+    /// <summary>
+    /// An ascension tree cannot be opened until the plan names the perk that opens it.
+    /// </summary>
+    /// <remarks>
+    /// Where the game says so is the surprise: nothing on the tree asks for the perk, and the
+    /// tradition that adopts it does - "the flesh is weak, and the technology, unless your origin
+    /// already put you there". Read only the tree and every ascension is offered from the start,
+    /// which is not what the game does.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void AnAscensionTreeWaitsForItsPerk()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        var rules = new EmpireRules(database);
+        var context = rules.CreateContext(EmpireDesignsFile.CreateEmpty().Add("Test"));
+
+        bool Open(params string[] perks) =>
+            rules.GetTraditionTreeOptions(context, [], perks)
+                .Single(o => o.Key == "tradition_cybernetics").Enabled;
+
+        Assert.False(Open());
+        Assert.True(Open("ap_the_flesh_is_weak"));
+
+        // The ordinary trees ask nothing of a plan and are open from the first moment.
+        Assert.True(rules.GetTraditionTreeOptions(context, [], [])
+            .Single(o => o.Key == "tradition_prosperity").Enabled);
+    }
 }

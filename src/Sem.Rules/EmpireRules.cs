@@ -805,7 +805,12 @@ public sealed class EmpireRules(GameDatabase database)
             _database.TraditionTrees,
             t => t.Key,
             t => t.Potential,
-            _ => AlwaysAllowed,
+
+            // What it takes to open it, which the game states on the tradition that opens it rather
+            // than on the tree. Nothing on an ascension tree asks for its ascension perk;
+            // tr_cybernetics_adopt does, and so a plan that has not named The Flesh is Weak cannot
+            // open Cybernetics - which is the rule in the game and was missing here.
+            t => Adopting(t),
             planned);
 
         return trees.Count < _database.Defines.TraditionSlots
@@ -814,6 +819,19 @@ public sealed class EmpireRules(GameDatabase database)
                 ? o
                 : Blocked(o, RuleReasons.NoTraditionSlotsLeft))];
     }
+
+    /// <summary>
+    /// What the game asks before a tree may be opened, read off the tradition that opens it.
+    /// </summary>
+    /// <remarks>
+    /// Every tree has one and it is where the ascension trees state their perk. The ordinary trees
+    /// ask nothing, so this is an always-true for all but a dozen of them.
+    /// </remarks>
+    private Requirement Adopting(TraditionTreeDefinition tree) =>
+        tree.AdoptionBonus is { } adopt &&
+        _database.Traditions.FirstOrDefault(t => t.Key == adopt) is { } opening
+            ? opening.Possible
+            : AlwaysAllowed;
 
     /// <summary>How many tradition trees are named against how many a game allows.</summary>
     public Budget GetTraditionBudget(int chosen) => new(chosen, _database.Defines.TraditionSlots);

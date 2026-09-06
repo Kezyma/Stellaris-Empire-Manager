@@ -169,7 +169,23 @@ public sealed class EmpireFilterTests
         // is the filter card's business - regrouping them into tabs moved every one of them.
         var several = EmpireFacet.All.Where(f => f.Several).Select(f => f.Key).Order();
 
-        Assert.Equal(["civics", "ethics", "rulertraits", "traits"], several);
+        Assert.Equal(
+            [
+                "civics", "ethics", "plancivics", "planperks", "plantraditions", "rulertraits",
+                "secondtraits", "traits",
+            ],
+            several);
+
+        // The other half of the same question, and the one that was actually wrong: a heading an
+        // empire can hold several of and which is not offered the choice. Second species traits went
+        // without it for as long as it existed, and so did all three of the plan's headings.
+        var many = EmpireFacet.All
+            .Where(f => !f.YesNo && !f.Several)
+            .Select(f => f.Key)
+            .Order();
+
+        Assert.DoesNotContain("secondtraits", many);
+        Assert.DoesNotContain("plancivics", many);
     }
 
     [Fact]

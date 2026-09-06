@@ -1,4 +1,4 @@
-@implements IDisposable
+﻿@implements IDisposable
 
 @*
     The lite editor: the card, and whichever editor the card asked for.
@@ -28,6 +28,7 @@
     else
     {
         <LiteCard Design="Session.Current" Baseline="@Session.SavedContext" OnEdit="Open"
+                  IsPreset="@(Lore is { Length: > 0 })"
                   Actions="@Actions" Lore="@Lore" />
 
         @if (_editing is { } part)
@@ -257,7 +258,7 @@
                 break;
 
             case LitePart.Plan:
-                builder.OpenComponent<PlanTab>(200);
+                builder.OpenComponent<PlanTab>(220);
                 builder.CloseComponent();
                 break;
 

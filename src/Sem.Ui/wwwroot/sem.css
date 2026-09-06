@@ -556,6 +556,26 @@ button.danger:hover:not(:disabled) {
     background: transparent;
 }
 
+/*
+   A field whose label sits beside its control rather than over it, for the short ones where a
+   stacked label costs more height than the answer is worth.
+*/
+.sem-field.inline {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.sem-field.inline > label {
+    flex: 0 0 auto;
+}
+
+.sem-field.inline > select,
+.sem-field.inline > input {
+    flex: 1;
+    min-width: 0;
+}
+
 input[type="text"], input[type="number"], select, textarea {
     font: inherit;
     color: var(--text);
@@ -706,7 +726,11 @@ label {
     align-items: center;
     justify-content: center;
     flex: 0 0 auto;
+
+    /* Both, or it is as tall as one line of text - thirteen pixels - because the row centres it
+       rather than stretching it. The empire cards' grip has always set the pair. */
     width: var(--icon-sm);
+    height: var(--icon-sm);
     padding: 0;
     background: none;
     border: none;
@@ -2814,7 +2838,6 @@ button.icon .sem-action-icon { display: block; }
 @media (max-width: 700px) {
     .sem-trait-lists {
         --trait-column: 50vh;
-        --trait-detail: auto;
 
         grid-template-columns: minmax(0, 1fr);
     }
@@ -2830,15 +2853,6 @@ button.icon .sem-action-icon { display: block; }
         overflow-y: visible;
     }
 
-    /*
-        A handle wide enough to find, and always visible: there is no pointer to hover it with, and
-        a control that only appears on hover is one a finger never sees. The row's own height comes
-        from the touch rules further down, which give every trait row ten pixels above and below.
-    */
-    .sem-plan-grip {
-        width: var(--icon-btn);
-        opacity: 1;
-    }
 }
 
 .sem-trait-list {
@@ -2867,7 +2881,7 @@ button.icon .sem-action-icon { display: block; }
     text-align: left;
 }
 
-.sem-trait-row:hover:not(.blocked) {
+.sem-trait-row:hover:not(.blocked):not(.locked) {
     background: var(--bg-hover);
     border-color: transparent;
 }
@@ -3631,13 +3645,48 @@ button.icon .sem-action-icon { display: block; }
    box and a row of column chips is not.
 */
 .sem-table-block > .head > .title {
-    flex: 0 1 20rem;
+    flex: 0 1 26rem;
     align-self: center;
     min-width: 0;
+
+    /* The box and the toggle beside it, which is one question about the list and then another. */
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
 }
 
 .sem-search {
     width: 100%;
+}
+
+/*
+   Whose empires are being listed: one button that cycles rather than three to choose between, the
+   way the game draws the spawn control and this app already draws it back.
+
+   Written on rather than pictured. There is no artwork in the game for "mine" and "the shelf", and
+   two invented glyphs beside a search box would be a puzzle where a word is an answer. It holds its
+   own width across the three so the row beside it does not shift as it is pressed.
+*/
+.sem-preset-toggle {
+    flex: 0 0 auto;
+    min-width: 5.5rem;
+    height: var(--control-h);
+    padding: 0 var(--space-lg);
+    background: var(--bg);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    color: var(--text);
+    font: inherit;
+}
+
+.sem-preset-toggle:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+/* Showing everything is the resting answer, so it is drawn as one rather than as a choice made. */
+.sem-preset-toggle.all {
+    color: var(--text-dim);
 }
 
 .sem-columns > label {
@@ -4942,6 +4991,30 @@ button.icon .sem-action-icon { display: block; }
 
     /* 8 above and below an 18px icon, which is what makes 36 rather than the 32 six gave. */
     .sem-chip > button { padding: 8px 10px 8px 4px; }
+
+    /*
+        And the same chip inside a table squeezed narrow, which is the case that only ever happens
+        on a phone - the compact rule below is more specific than the line above and was quietly
+        holding the target at about twenty-two pixels in exactly the place it mattered.
+    */
+    .sem-table-wrap.compact .sem-chip > button:has(img) { padding: 8px 10px 8px 4px; }
+
+    /*
+        A row's own buttons. The table asks for 1.7rem, which is twenty-two pixels at this root and
+        outranks the general rule below by two classes, so edit and delete stayed small on every
+        touch device the floor was written for.
+    */
+    .sem-table .actions button.icon { width: 40px; height: 40px; }
+
+    /*
+        The plan's drag handle: wide enough to find, and always visible, since there is no pointer to
+        hover it with and a control that appears on hover is one a finger never sees.
+    */
+    .sem-plan-grip {
+        width: var(--icon-btn);
+        height: var(--icon-btn);
+        opacity: 1;
+    }
 
     /* A picture chosen from a scrolling list: a portrait, a room, a flag pattern. */
     .sem-thumb-option { padding: 8px; }

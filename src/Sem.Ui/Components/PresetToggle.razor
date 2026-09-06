@@ -1,0 +1,88 @@
+@*
+    Whose empires the list is showing: everybody's, the player's own, or the game's.
+
+    Beside the search rather than inside the filter card, because it is the question a reader asks
+    first and most often - "mine or the shelf" - and the card is shut when the page opens. The same
+    shape as the spawn control, which the game itself draws as one button that cycles rather than
+    three things to choose between: three answers, one at a time, and the one it is on written on it.
+
+    No label. It stands next to the box it narrows with, it says what it is showing, and a word in
+    front of it would only repeat the button.
+*@
+
+<button type="button" class="sem-preset-toggle @(Showing is null ? "all" : null)"
+        title="@Told" aria-label="@Told" @onclick="Cycle">
+    @Name
+</button>
+
+@code {
+    /// <summary>
+    /// What the page is narrowing by, written to in place.
+    /// </summary>
+    /// <remarks>
+    /// The filter itself and not a copy, for the reason the search box gives: the table and the card
+    /// of headings read the same one, and handing each a copy is how they stop agreeing.
+    /// </remarks>
+    [Parameter, EditorRequired]
+    public required EmpireFilter Filter { get; set; }
+
+    /// <summary>Raised when the answer changes, so whoever owns the list can draw it again.</summary>
+    [Parameter]
+    public EventCallback OnChanged { get; set; }
+
+    /// <summary>
+    /// The heading this writes to, which is the one the filter card used to draw as a dropdown.
+    /// </summary>
+    /// <remarks>
+    /// Moving the control did not move the filtering. The heading still answers for a row, so the
+    /// table narrows exactly as it did; only where the question is asked has changed.
+    /// </remarks>
+    private const string Key = "preset";
+
+    /// <summary>Which of the three it is on: true for the game's, false for the player's, null for both.</summary>
+    private bool? Showing =>
+        Filter.Keys(Key).Contains("yes") ? true
+        : Filter.Keys(Key).Contains("no") ? false
+        : null;
+
+    private string Name => Showing switch
+    {
+        true => "Preset",
+        false => "Custom",
+        _ => "All",
+    };
+
+    private string Told => Showing switch
+    {
+        true => "Showing the game's own empires. Press to show all.",
+        false => "Showing your own empires. Press to show the game's.",
+        _ => "Showing every empire. Press to show only your own.",
+    };
+
+    /// <summary>
+    /// All, then the player's own, then the game's, then round again.
+    /// </summary>
+    /// <remarks>
+    /// Starting on all, because a reader who has not asked the question wants the whole list - and
+    /// ending back there, so the way out is always one more press rather than a control to hunt for.
+    /// </remarks>
+    private async Task Cycle()
+    {
+        var keys = Filter.Keys(Key);
+        var next = Showing switch
+        {
+            null => "no",
+            false => "yes",
+            _ => null,
+        };
+
+        keys.Clear();
+
+        if (next is { Length: > 0 })
+        {
+            keys.Add(next);
+        }
+
+        await OnChanged.InvokeAsync();
+    }
+}

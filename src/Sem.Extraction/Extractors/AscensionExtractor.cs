@@ -48,7 +48,8 @@ internal static class AscensionExtractor
                 Potential = requirements.CompilePlanTrigger(body.GetBlock("potential")),
                 Possible = requirements.CompilePlanTrigger(body.GetBlock("possible")),
 
-                Effects = EffectsReader.Read(body, loader, requirements),
+                Effects = EffectsReader.Read(
+                    body, loader, requirements, readsScriptedUnlocks: true),
 
                 // Through the sprite rather than by convention. The picture a perk uses is not
                 // always named after the perk - GFX_ap_colossus draws ap_colossus_project.dds - so
@@ -158,7 +159,12 @@ internal static class AscensionExtractor
             results.Add(new TraditionDefinition(entry.Key)
             {
                 Tree = owner.GetValueOrDefault(entry.Key),
-                Effects = EffectsReader.Read(entry.Body, loader, requirements),
+                Effects = EffectsReader.Read(
+                    entry.Body, loader, requirements, readsScriptedUnlocks: true),
+
+                // Compiled as a plan's, because that is what asks: the perk it wants is one the plan
+                // names, and the technology beside it is something the empire will have by then.
+                Possible = requirements.CompilePlanTrigger(entry.Body.GetBlock("possible")),
 
                 Icon = assets.RegisterSprite(
                     $"GFX_{entry.Key}",

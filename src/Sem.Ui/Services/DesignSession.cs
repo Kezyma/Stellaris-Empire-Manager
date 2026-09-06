@@ -103,19 +103,57 @@ public sealed class DesignSession
     private EmpirePlans? _plans;
 
     /// <summary>
-    /// What a plan may name, in the words the player would have written it in.
+    /// What a plan on the empire being edited may name, in the words it would have been written in.
     /// </summary>
     /// <remarks>
-    /// Held, because building it walks every perk through the localisation and a plan is read
-    /// whenever a card is drawn. It does not depend on the design or the content packs - a name is a
-    /// name whether or not this empire may take the thing - so one for the session is enough.
+    /// Scoped to one empire, which is the whole reason a plan can be read back by name at all. The
+    /// game gives several things the same display name in every language it ships - two tradition
+    /// trees called Cybernetics, two perks called Defender of the Galaxy, four called Galactic
+    /// Wonders - and every such family is mutually exclusive, so among what one empire may take the
+    /// name is unambiguous. Built from the whole database instead, the first of each pair simply
+    /// won, and an assimilator planning Cybernetics got the tree it cannot open.
     /// </remarks>
-    public PlanVocabulary PlanVocabulary => _planVocabulary ??= new PlanVocabulary(
-        Data.Database.TraditionTrees.Select(t => (t.Key, Localizer.Text(t.NameKey))),
-        Data.Database.AscensionPerks.Select(p => (p.Key, Localizer.Text(p.NameKey))),
-        Data.Database.Civics.Where(c => !c.IsOrigin).Select(c => (c.Key, Localizer.Text(c.NameKey))));
+    public PlanVocabulary PlanVocabulary
+    {
+        get
+        {
+            if (Context is not { } context)
+            {
+                return PlanVocabulary.Empty;
+            }
+
+            if (!ReferenceEquals(_vocabularyFor, context) || _planVocabulary is null)
+            {
+                _vocabularyFor = context;
+                _planVocabulary = VocabularyFor(context);
+            }
+
+            return _planVocabulary;
+        }
+    }
 
     private PlanVocabulary? _planVocabulary;
+
+    private DesignContext? _vocabularyFor;
+
+    /// <summary>
+    /// The names one empire could have written into a plan.
+    /// </summary>
+    /// <remarks>
+    /// Judged with nothing planned, which is what keeps this from chasing its own tail: the plan is
+    /// what is being read, so it cannot be what decides which names are readable. Nothing is lost by
+    /// it - what disambiguates the colliding families is the shape of the empire, not what it has
+    /// chosen, and an option only some shapes are offered is hidden by its own potential either way.
+    /// </remarks>
+    internal PlanVocabulary VocabularyFor(DesignContext context) => new(
+        () => Named(Rules.GetTraditionTreeOptions(context, [], []), k => Localizer.Text(k)),
+        () => Named(Rules.GetAscensionPerkOptions(context, [], []), k => Localizer.Text(k)),
+        () => Named(Rules.GetPlanCivicOptions(context, []), k => Localizer.Text(k)));
+
+    private static IEnumerable<(string Key, string Name)> Named(
+        IEnumerable<OptionState> options,
+        Func<string, string> name) =>
+        options.Where(o => o.Visible).Select(o => (o.Key, name(o.Key)));
 
     /// <summary>
     /// Which biography the player has said a plan should go into, before there is a plan to put
@@ -648,6 +686,14 @@ public sealed class DesignSession
 
         design.Restore(stored);
         IsModified = false;
+
+        // Where a plan was going to go is about the empire as it was being edited, and this undoes
+        // the editing. Left behind, it kept the checkbox ticked over an empire with no plan, held a
+        // restored biography read-only and captioned as one, and made every click in the picker a
+        // silent refusal - the write is turned down for a field with writing in it, and nothing
+        // said so.
+        PlanIntent = null;
+
         Recompute();
     }
 

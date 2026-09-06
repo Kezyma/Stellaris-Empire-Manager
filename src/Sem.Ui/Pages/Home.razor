@@ -1,4 +1,4 @@
-@page "/"
+﻿@page "/"
 @page "/e/{Shared}"
 @implements IDisposable
 @inject SessionHost Host
@@ -123,6 +123,7 @@ else
                          Empty="No empires match.">
                 <Title>
                     <EmpireSearch Filter="@_filter" OnChanged="FilterChanged" />
+                    <PresetToggle Filter="@_filter" OnChanged="FilterChanged" />
                 </Title>
 
                 <Controls>

@@ -144,6 +144,33 @@ public sealed class EmpirePlansTests
     [Fact]
     public void TheSessionCanNameEverythingAPlanMayHold()
     {
+        var session = Session();
+
+        Assert.Equal("ap_flesh", session.PlanVocabulary.Perk("The Flesh is Weak"));
+        Assert.Equal("civic_meritocracy", session.PlanVocabulary.Civic("Meritocracy"));
+    }
+
+    /// <summary>
+    /// A name two things share means the one this empire is offered.
+    /// </summary>
+    /// <remarks>
+    /// The invariant the whole business of reading a plan by name rests on, and for a while it held
+    /// nowhere: the vocabulary was built from the entire database, so of the two trees the game
+    /// calls Cybernetics the first listed simply won, and an assimilator planning its own got the
+    /// one it cannot open. The hidden tree is declared first here for exactly that reason - a flat
+    /// list would answer with it.
+    /// </remarks>
+    [Fact]
+    public void ANameTwoTreesShareMeansTheOneThisEmpireIsOffered()
+    {
+        var session = Session();
+
+        Assert.Equal("tradition_cybernetics", session.PlanVocabulary.Tree("Cybernetics"));
+    }
+
+    /// <summary>A session holding one empire, and two trees that share a name.</summary>
+    private static DesignSession Session()
+    {
         var session = new DesignSession(new Sem.Ui.Services.GameData(
             new GameDatabase
             {
@@ -152,20 +179,31 @@ public sealed class EmpirePlansTests
                 ExtractorVersion = "test",
                 Defines = new GameDefines { EthicsPoints = 3, CivicPoints = 2, CityPopLevel = 4 },
                 AscensionPerks = [new AscensionPerkDefinition("ap_flesh")],
-                TraditionTrees = [new TraditionTreeDefinition("tradition_cybernetics")],
+                TraditionTrees =
+                [
+                    // Offered to nobody, and first in the list.
+                    new TraditionTreeDefinition("tradition_cybernetics_assimilator")
+                    {
+                        Potential = new AlwaysRequirement(false),
+                    },
+
+                    new TraditionTreeDefinition("tradition_cybernetics"),
+                ],
                 Civics = [new CivicDefinition("civic_meritocracy", IsOrigin: false)],
             },
             new Dictionary<string, string>(StringComparer.Ordinal)
             {
                 ["ap_flesh"] = "The Flesh is Weak",
                 ["tradition_cybernetics"] = "Cybernetics",
+                ["tradition_cybernetics_assimilator"] = "Cybernetics",
                 ["civic_meritocracy"] = "Meritocracy",
             },
             "assets"));
 
-        Assert.Equal("ap_flesh", session.PlanVocabulary.Perk("The Flesh is Weak"));
-        Assert.Equal("tradition_cybernetics", session.PlanVocabulary.Tree("Cybernetics"));
-        Assert.Equal("civic_meritocracy", session.PlanVocabulary.Civic("Meritocracy"));
+        session.StartEmptyFile();
+        session.Select(session.File!.Add("Test"));
+
+        return session;
     }
 
     private static EmpirePlan Cybernetic => new(["tradition_cybernetics"], [], []);

@@ -57,24 +57,16 @@ public sealed class PlanText(Localizer localizer)
     private const string CivicsLabel = "Civics";
 
     /// <summary>
-    /// What stands between the parts, in place of a line break.
+    /// What stands between the parts.
     /// </summary>
     /// <remarks>
-    /// <para>
-    /// It was a line break, and that could not be shared. A design travels through a link by being
-    /// written out as the game's own format and read back, and a quoted value in that format ends
-    /// at the first line break - deliberately, so that an unterminated string cannot swallow the
-    /// rest of a file. So a plan written on four lines came back as no design at all, and silently,
-    /// which is what a link that will not parse looks like.
-    /// </para>
-    /// <para>
-    /// One line, rather than teaching the parser otherwise, because that caution is there to protect
-    /// the player's own designs file - and because no biography in that file has ever held more than
-    /// one line, so whether the game itself would keep one is untested. A bar between the parts
-    /// costs two characters more than a newline and asks nothing of anybody.
-    /// </para>
+    /// A line each, which is how it reads best in the box the game shows. It spent a while as a bar
+    /// on one line, because a quoted value in the game's format used to end at the first line break
+    /// and a plan on four lines came back from its own share link as no design at all - silently,
+    /// which is what a link that will not parse looks like. The parser was taught to keep a line
+    /// break in the same pass, so that reason is gone.
     /// </remarks>
-    private const string Separator = " | ";
+    public const string Separator = "\n";
 
     /// <summary>
     /// Writes a plan as the biography that carries it.
@@ -86,14 +78,30 @@ public sealed class PlanText(Localizer localizer)
     {
         ArgumentNullException.ThrowIfNull(plan);
 
-        List<Line> lines =
-        [
-            new(TreesLabel, [.. plan.Trees.Select(k => localizer.Text(k))]),
-            new(PerksLabel, [.. plan.Perks.Select(k => localizer.Text(k))]),
-            new(CivicsLabel, [.. plan.Civics.Select(k => localizer.Text(k))]),
-        ];
+        return Fit(Lines(plan));
+    }
 
-        return Fit(lines);
+    /// <summary>The three parts, named in the player's own language, before anything is dropped.</summary>
+    private List<Line> Lines(EmpirePlan plan) =>
+    [
+        new(TreesLabel, [.. plan.Trees.Select(k => localizer.Text(k))]),
+        new(PerksLabel, [.. plan.Perks.Select(k => localizer.Text(k))]),
+        new(CivicsLabel, [.. plan.Civics.Select(k => localizer.Text(k))]),
+    ];
+
+    /// <summary>
+    /// How long the plan would be if nothing were dropped to make it fit.
+    /// </summary>
+    /// <remarks>
+    /// What the meter in the editor reads. Asking <see cref="Write"/> instead gives the length after
+    /// shortening, which by construction is never over the budget - so the warning could not fire on
+    /// the one occasion it exists for.
+    /// </remarks>
+    public int Measure(EmpirePlan plan)
+    {
+        ArgumentNullException.ThrowIfNull(plan);
+
+        return Render(Lines(plan)).Length;
     }
 
     /// <summary>
@@ -178,20 +186,23 @@ public sealed class PlanText(Localizer localizer)
         List<string> trees = [];
         List<string> perks = [];
         List<string> civics = [];
-        var marked = false;
 
-        // Split on both, because a plan written before this is sitting on separate lines in
-        // somebody's designs file already. Reading one costs nothing; writing one again is what had
-        // to stop.
-        foreach (var line in biography.ReplaceLineEndings("\n").Split('\n', '|'))
+        // Split on both, because a plan written while this was one line is sitting in somebody's
+        // designs file already. Reading one costs nothing.
+        var segments = biography.ReplaceLineEndings("\n").Split('\n', '|');
+
+        // The marker has to come first, and used to be accepted anywhere. That was a licence to
+        // take somebody's biography: prose with a line reading "Plan" in the middle of it was read
+        // as a plan, which ticked a checkbox nobody ticked, turned the box read-only, and replaced
+        // what they had written with generated text at the first perk chosen.
+        var marked = Same(segments[0].Trim(), Marker);
+
+        foreach (var line in segments)
         {
             var at = line.IndexOf(':', StringComparison.Ordinal);
 
             if (at < 0)
             {
-                // The marker has no colon, which is also what keeps it from being read as a
-                // heading. Anything else without one is a sentence somebody wrote.
-                marked |= Same(line.Trim(), Marker);
                 continue;
             }
 
