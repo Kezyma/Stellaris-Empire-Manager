@@ -230,6 +230,8 @@ internal static partial class LocalisationPruner
         {
             Add(government.NameKey);
             Add(government.RulerTitleKey);
+            Add(government.HeirTitleKey);
+            Add(government.HeirTitleFemaleKey);
             Add(government.RulerTitleFemaleKey);
             AddRequirement(government.Possible);
         }

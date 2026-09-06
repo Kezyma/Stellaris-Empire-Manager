@@ -1513,6 +1513,42 @@ public sealed class GameDataExtractionTests
             t => Assert.NotNull(t.Icon));
     }
 
+    /// <summary>
+    /// A government says what it calls the ruler's heir, not only the ruler.
+    /// </summary>
+    /// <remarks>
+    /// Both were sitting in the same block and only the ruler's was read, so the designer offered
+    /// Emperor and Chief Executive in the heir's box where the game means Crown Prince and Secundus,
+    /// and showed no default behind it while the game had one.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void AGovernmentNamesTheHeirAsWellAsTheRuler()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        var named = database.GovernmentTypes.Where(g => g.HeirTitleKey is { Length: > 0 }).ToList();
+
+        Assert.True(named.Count >= 31, $"Only {named.Count} governments name an heir title.");
+
+        // And they are their own vocabulary rather than the rulers' - which is the half that made
+        // the dropdown wrong rather than merely empty.
+        var rulers = database.GovernmentTypes
+            .Select(g => g.RulerTitleKey)
+            .OfType<string>()
+            .ToHashSet(StringComparer.Ordinal);
+
+        Assert.DoesNotContain(named, g => rulers.Contains(g.HeirTitleKey!));
+
+        var text = ShippedText();
+        Skip.If(text is null, "Extracted text is missing. Run: dotnet run --project src/Sem.Cli -- extract --web");
+
+        Assert.All(named, g => Assert.True(
+            text!.ContainsKey(g.HeirTitleKey!),
+            $"{g.Key} names the heir title {g.HeirTitleKey}, which has no text shipped for it."));
+    }
+
     /// <summary>The text the app ships, which is the pruned set rather than the game's whole one.</summary>
     private static Dictionary<string, string>? ShippedText()
     {

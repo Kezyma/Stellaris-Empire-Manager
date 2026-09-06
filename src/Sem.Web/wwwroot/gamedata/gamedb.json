@@ -1,7 +1,7 @@
 {
-  "schemaVersion": 11,
+  "schemaVersion": 12,
   "gameVersion": "v4.4.6",
-  "extractorVersion": "0.1.0\u002B57a703e55642efea88d7a60025fa7e6a39f95b45",
+  "extractorVersion": "0.1.0\u002B488ed864b979447edb3149731201c2dd4981c996",
   "defines": {
     "ethicsPoints": 3,
     "civicPoints": 2,
@@ -101921,6 +101921,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EMPEROR",
       "rulerTitleFemaleKey": "RT_EMPRESS",
+      "heirTitleKey": "HT_CROWN_PRINCE",
+      "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
       "nameKey": "gov_despotic_empire"
     },
     {
@@ -102165,6 +102167,8 @@
       "factors": [],
       "rulerTitleKey": "RT_ARCHPROPHET",
       "rulerTitleFemaleKey": "RT_ARCHPROPHETESS",
+      "heirTitleKey": "HT_PRIEST",
+      "heirTitleFemaleKey": "HT_PRIESTESS",
       "nameKey": "gov_theocratic_monarchy"
     },
     {
@@ -102301,6 +102305,8 @@
       "factors": [],
       "rulerTitleKey": "RT_OVERLORD",
       "rulerTitleFemaleKey": "RT_OVERLORD_FEMALE",
+      "heirTitleKey": "HT_DEPUTY_OVERLORD",
+      "heirTitleFemaleKey": "HT_DEPUTY_OVERLORD_FEMALE",
       "nameKey": "gov_despotic_hegemony"
     },
     {
@@ -102354,6 +102360,8 @@
       ],
       "rulerTitleKey": "RT_EMPEROR",
       "rulerTitleFemaleKey": "RT_EMPRESS",
+      "heirTitleKey": "HT_CROWN_PRINCE",
+      "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
       "nameKey": "gov_star_empire"
     },
     {
@@ -102649,6 +102657,8 @@
       "factors": [],
       "rulerTitleKey": "RT_KING",
       "rulerTitleFemaleKey": "RT_QUEEN",
+      "heirTitleKey": "HT_CROWN_PRINCE",
+      "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
       "nameKey": "gov_irenic_monarchy"
     },
     {
@@ -102673,6 +102683,8 @@
       "factors": [],
       "rulerTitleKey": "RT_GOD_EMPEROR",
       "rulerTitleFemaleKey": "RT_GOD_EMPRESS",
+      "heirTitleKey": "HT_SAINT",
+      "heirTitleFemaleKey": "HT_SAINT_FEMALE",
       "nameKey": "gov_divine_empire"
     },
     {
@@ -102783,6 +102795,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EMPEROR",
       "rulerTitleFemaleKey": "RT_EMPRESS",
+      "heirTitleKey": "HT_CROWN_PRINCE",
+      "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
       "nameKey": "gov_martial_empire"
     },
     {
@@ -102942,6 +102956,8 @@
       "factors": [],
       "rulerTitleKey": "RT_CELESTIAL_EMPEROR",
       "rulerTitleFemaleKey": "RT_CELESTIAL_EMPRESS",
+      "heirTitleKey": "HT_CROWN_PRINCE",
+      "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
       "nameKey": "gov_celestial_empire"
     },
     {
@@ -103038,6 +103054,8 @@
       "factors": [],
       "rulerTitleKey": "RT_PRIMUS",
       "rulerTitleFemaleKey": "RT_PRIMUS_FEMALE",
+      "heirTitleKey": "HT_SECUNDUS",
+      "heirTitleFemaleKey": "HT_SECUNDUS_FEMALE",
       "nameKey": "gov_illuminated_autocracy"
     },
     {
@@ -103062,6 +103080,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EMPEROR",
       "rulerTitleFemaleKey": "RT_EMPRESS",
+      "heirTitleKey": "HT_CROWN_PRINCE",
+      "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
       "nameKey": "gov_feudal_empire"
     },
     {
@@ -103086,6 +103106,8 @@
       "factors": [],
       "rulerTitleKey": "RT_HIGH_KING",
       "rulerTitleFemaleKey": "RT_HIGH_QUEEN",
+      "heirTitleKey": "HT_CROWN_PRINCE",
+      "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
       "nameKey": "gov_enlightened_monarchy"
     },
     {
@@ -103319,6 +103341,7 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_WARLORD",
+      "heirTitleKey": "HT_RAIDER",
       "nameKey": "gov_bandit_kingdom"
     },
     {
@@ -103399,6 +103422,8 @@
       "factors": [],
       "rulerTitleKey": "RT_DEATH_MONARCH",
       "rulerTitleFemaleKey": "RT_DEATH_MONARCH_FEMALE",
+      "heirTitleKey": "HT_DEATH_PRINCE",
+      "heirTitleFemaleKey": "HT_DEATH_PRINCESS",
       "nameKey": "gov_mortal_empire"
     },
     {
@@ -103442,6 +103467,8 @@
       ],
       "rulerTitleKey": "RT_BLOODLORD",
       "rulerTitleFemaleKey": "RT_BLOODLADY",
+      "heirTitleKey": "HT_BLOODPRINCE",
+      "heirTitleFemaleKey": "HT_BLOODPRINCESS",
       "nameKey": "gov_band_blood"
     },
     {
@@ -103497,6 +103524,7 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_DEFENSIVE_UNION",
+      "heirTitleKey": "HT_DEFENSIVE_UNION",
       "nameKey": "gov_defensive_union"
     },
     {
@@ -103510,6 +103538,7 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_DIMENSIONAL_COVENANT",
+      "heirTitleKey": "HT_DIMENSIONAL_COVENANT",
       "nameKey": "gov_dimensional_covenant"
     },
     {
@@ -103768,6 +103797,8 @@
       "factors": [],
       "rulerTitleKey": "RT_HIGH_EXECUTIONER",
       "rulerTitleFemaleKey": "RT_HIGH_EXECUTIONER_FEMALE",
+      "heirTitleKey": "HT_SENIOR_EXECUTIONER",
+      "heirTitleFemaleKey": "HT_SENIOR_EXECUTIONER_FEMALE",
       "nameKey": "gov_blood_court"
     },
     {
@@ -103983,6 +104014,8 @@
       "factors": [],
       "rulerTitleKey": "RT_GAL_EMPEROR",
       "rulerTitleFemaleKey": "RT_GAL_EMPRESS",
+      "heirTitleKey": "HT_CROWN_PRINCE",
+      "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
       "nameKey": "gov_imperial_domain"
     },
     {
@@ -104059,6 +104092,7 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_IMP_EXECUTIVE",
+      "heirTitleKey": "HT_IMP_VICE_EXECUTIVE",
       "nameKey": "gov_imperial_domain_megacorp"
     },
     {
@@ -104220,6 +104254,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EMPEROR",
       "rulerTitleFemaleKey": "RT_EMPRESS",
+      "heirTitleKey": "HT_CROWN_PRINCE",
+      "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
       "nameKey": "gov_cyber_imperial_individualist"
     },
     {
@@ -104243,6 +104279,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EMPEROR",
       "rulerTitleFemaleKey": "RT_EMPRESS",
+      "heirTitleKey": "HT_CROWN_PRINCE",
+      "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
       "nameKey": "gov_cyber_imperial_collectivist"
     },
     {
@@ -104379,6 +104417,8 @@
       "factors": [],
       "rulerTitleKey": "RT_ARCHPROPHET",
       "rulerTitleFemaleKey": "RT_ARCHPROPHETESS",
+      "heirTitleKey": "HT_PRIEST",
+      "heirTitleFemaleKey": "HT_PRIESTESS",
       "nameKey": "gov_cyber_creed_monarchy"
     },
     {
@@ -104570,6 +104610,8 @@
       ],
       "rulerTitleKey": "RT_GOD_EMPEROR",
       "rulerTitleFemaleKey": "RT_GOD_EMPRESS",
+      "heirTitleKey": "HT_SAINT",
+      "heirTitleFemaleKey": "HT_SAINT_FEMALE",
       "nameKey": "gov_cyber_creed_divine_empire"
     },
     {
@@ -104943,6 +104985,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EMPEROR",
       "rulerTitleFemaleKey": "RT_EMPRESS",
+      "heirTitleKey": "HT_CROWN_PRINCE",
+      "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
       "nameKey": "gov_synth_imperial_physical"
     },
     {
@@ -104966,6 +105010,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EMPEROR",
       "rulerTitleFemaleKey": "RT_EMPRESS",
+      "heirTitleKey": "HT_CROWN_PRINCE",
+      "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
       "nameKey": "gov_synth_imperial_virtual"
     },
     {
@@ -105121,6 +105167,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EMPEROR",
       "rulerTitleFemaleKey": "RT_EMPRESS",
+      "heirTitleKey": "HT_CROWN_PRINCE",
+      "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
       "nameKey": "gov_bio_oligarchic_eugenic_hierarchy"
     },
     {
@@ -105257,6 +105305,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EMPEROR",
       "rulerTitleFemaleKey": "RT_EMPRESS",
+      "heirTitleKey": "HT_CROWN_PRINCE",
+      "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
       "nameKey": "gov_bio_imperial_hereditary_continuity"
     },
     {
@@ -105473,6 +105523,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EMPEROR",
       "rulerTitleFemaleKey": "RT_EMPRESS",
+      "heirTitleKey": "HT_CROWN_PRINCE",
+      "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
       "nameKey": "gov_bio_imperial_genomic_expansionist"
     },
     {
@@ -105501,6 +105553,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EMPEROR",
       "rulerTitleFemaleKey": "RT_EMPRESS",
+      "heirTitleKey": "HT_CROWN_PRINCE",
+      "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
       "nameKey": "gov_bio_imperial_evopred_mutation"
     },
     {
@@ -105808,6 +105862,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EMPEROR",
       "rulerTitleFemaleKey": "RT_EMPRESS",
+      "heirTitleKey": "HT_CROWN_PRINCE",
+      "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
       "nameKey": "gov_shroud_transcendent_imperial"
     },
     {
@@ -105965,6 +106021,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EMPEROR",
       "rulerTitleFemaleKey": "RT_EMPRESS",
+      "heirTitleKey": "HT_CROWN_PRINCE",
+      "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
       "nameKey": "gov_shroud_corporeal_imperial"
     },
     {

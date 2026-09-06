@@ -19,7 +19,7 @@ public sealed record GameDatabase
     /// site published with a database one version behind was read anyway, with whatever the shape had
     /// gained since taking its default and no sign that anything was missing.
     /// </remarks>
-    public const int CurrentSchemaVersion = 11;
+    public const int CurrentSchemaVersion = 12;
 
     /// <summary>Version of this file's own shape, so an old cache can be detected and rebuilt.</summary>
     public required int SchemaVersion { get; init; }
@@ -1159,6 +1159,19 @@ public sealed record GovernmentTypeDefinition(string Key, double Weight, int Fil
 
     /// <summary>Localisation key for the female form of the ruler's title.</summary>
     public string? RulerTitleFemaleKey { get; init; }
+
+    /// <summary>
+    /// What this government calls the ruler's heir, where power passes to one.
+    /// </summary>
+    /// <remarks>
+    /// Thirty-one governments name one and twenty-seven name a female form, and none of them was
+    /// being read - so the designer offered ruler titles in the heir's box and showed no default
+    /// behind it, while the game had an answer for both.
+    /// </remarks>
+    public string? HeirTitleKey { get; init; }
+
+    /// <summary>Localisation key for the female form of the heir's title.</summary>
+    public string? HeirTitleFemaleKey { get; init; }
 
     /// <summary>Localisation key for the display name.</summary>
     public string NameKey => Key;

@@ -207,6 +207,8 @@ internal static class GovernmentExtractor
                 Factors = Factors(body, loader, requirements),
                 RulerTitleKey = body.GetString("ruler_title"),
                 RulerTitleFemaleKey = body.GetString("ruler_title_female"),
+                HeirTitleKey = body.GetString("heir_title"),
+                HeirTitleFemaleKey = body.GetString("heir_title_female"),
             });
         }
 

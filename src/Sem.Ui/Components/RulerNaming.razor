@@ -57,7 +57,7 @@
             @Session.Localizer.Heading("HEIR_TITLE", "Heir Title")
             (@Session.Localizer.Heading("HEIR_TITLE_MALE", "Male"))
         </label>
-        <ComboBox Id="heir-title" Value="@Read(Design.Ruler.HeirTitle)" Options="@Titles"
+        <ComboBox Id="heir-title" Value="@Read(Design.Ruler.HeirTitle)" Options="@HeirTitles"
                   Disabled="@(!HasHeir)" Placeholder="@HeirPlaceholder"
                   OnChange="SetHeirTitle" />
     </div>
@@ -67,8 +67,8 @@
             @Session.Localizer.Heading("HEIR_TITLE", "Heir Title")
             (@Session.Localizer.Heading("HEIR_TITLE_FEMALE", "Female"))
         </label>
-        <ComboBox Id="heir-title-female" Value="@Read(Design.Ruler.HeirTitleFemale)" Options="@Titles"
-                  Disabled="@(!HasHeir)" Placeholder="@HeirPlaceholder"
+        <ComboBox Id="heir-title-female" Value="@Read(Design.Ruler.HeirTitleFemale)" Options="@HeirTitles"
+                  Disabled="@(!HasHeir)" Placeholder="@HeirPlaceholderFemale"
                   OnChange="SetHeirTitleFemale" />
     </div>
 </div>
@@ -116,7 +116,40 @@
     private bool HasHeir => Session.Data.Database.Authorities
         .FirstOrDefault(a => a.Key == Design.Authority)?.HasHeir ?? false;
 
-    private string? HeirPlaceholder => HasHeir ? null : "This government elects its rulers";
+    /// <summary>
+    /// What the heir's boxes say when the design leaves them blank.
+    /// </summary>
+    /// <remarks>
+    /// The government's own answer, the way the ruler's box already shows one. Thirty-one
+    /// governments name an heir title and twenty-seven name a female form; none of them was read, so
+    /// a hereditary empire's heir box sat empty with the game holding the word for it.
+    /// </remarks>
+    private string? HeirPlaceholder => HasHeir ? HeirTitleOf(g => g.HeirTitleKey) : NoHeir;
+
+    private string? HeirPlaceholderFemale => HasHeir ? HeirTitleOf(g => g.HeirTitleFemaleKey) : NoHeir;
+
+    private const string NoHeir = "This government elects its rulers";
+
+    private string? HeirTitleOf(Func<GovernmentTypeDefinition, string?> which) =>
+        Session.Rules.DeriveGovernment(Context) is { } government && which(government) is { } key
+            ? Session.Localizer.Text(key)
+            : "chosen by the government";
+
+    /// <summary>
+    /// The heirs' titles the game has words for, which are not the rulers'.
+    /// </summary>
+    /// <remarks>
+    /// Both boxes offered the ruler titles, so somebody naming an heir was given a list of the
+    /// wrong thing - Emperor and Chief Executive where the game means Heir Apparent and Scion.
+    /// </remarks>
+    private IReadOnlyList<string> HeirTitles =>
+        [.. Session.Data.Database.GovernmentTypes
+            .SelectMany(g => new[] { g.HeirTitleKey, g.HeirTitleFemaleKey })
+            .OfType<string>()
+            .Select(key => Session.Localizer.Text(key))
+            .Where(title => title.Length > 0)
+            .Distinct(StringComparer.CurrentCulture)
+            .Order(StringComparer.CurrentCulture)];
 
     /// <summary>
     /// The names the empire's own list offers.
