@@ -43,7 +43,15 @@ public sealed record EmpireNamePartsList(string Key, IReadOnlyList<EmpireNamePar
 /// </remarks>
 public sealed record EmpireNameFormat(string Format)
 {
-    /// <summary>The same name arranged the other way round, as in "Sol Empire".</summary>
+    /// <summary>
+    /// The same name arranged the other way round, as in "Sol Empire".
+    /// </summary>
+    /// <remarks>
+    /// Not a name. The game's own note beside the localisation format it uses says what it is for:
+    /// <c>AofBpfx:0 "$1$ $2$" # Same as above, except used only to generate a ship prefix acronym:
+    /// 'Empire Sol' -> 'ESL'</c>. Kept because that is a thing worth building, and because reading
+    /// the file whole is cheaper than reading part of it.
+    /// </remarks>
     public string? PrefixFormat { get; init; }
 
     /// <summary>What to call the empire in the middle of a sentence.</summary>
@@ -54,4 +62,16 @@ public sealed record EmpireNameFormat(string Format)
 
     /// <summary>Which empires this shape belongs to.</summary>
     public Requirement When { get; init; } = new AlwaysRequirement(true);
+
+    /// <summary>
+    /// How much of the game's own draw this shape gets, against the others open to the same empire.
+    /// </summary>
+    /// <remarks>
+    /// The number beside the condition, and the difference between a plausible list and a faithful
+    /// one. The weights are not close together: among the seven shapes a despotic empire can have,
+    /// "Human Empire" carries five and each of the two sprawling generic shapes carries one - so the
+    /// game says that name two fifths of the time, and a list that ignored this offered it as one
+    /// candidate in sixty-five.
+    /// </remarks>
+    public double Weight { get; init; }
 }

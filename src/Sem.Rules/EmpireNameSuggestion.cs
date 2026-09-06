@@ -12,7 +12,17 @@ namespace Sem.Rules;
 /// <param name="Text">The finished name.</param>
 /// <param name="FormatKey">The localisation format it is built from, where it has one.</param>
 /// <param name="Parts">What fills that format's blanks, in order.</param>
-public sealed record EmpireNameSuggestion(string Text, string? FormatKey, IReadOnlyList<string> Parts);
+/// <param name="Weight">
+/// How likely the game is to arrive at this exact name, against the others open to the same empire.
+/// The shape's own weight multiplied by each chosen word's share of the list it came from, which is
+/// the game's draw written out: it picks a shape by weight, then one word from each list by weight.
+/// Two shapes that spell the same name add theirs together, as two ways of reaching it should.
+/// </param>
+public sealed record EmpireNameSuggestion(
+    string Text,
+    string? FormatKey,
+    IReadOnlyList<string> Parts,
+    double Weight = 0);
 
 /// <summary>
 /// The things an empire's name can be built out of that are not words from a list.

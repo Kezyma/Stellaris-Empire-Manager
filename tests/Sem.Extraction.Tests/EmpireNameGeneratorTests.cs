@@ -50,6 +50,95 @@ public sealed class EmpireNameGeneratorTests
             .ToHashSet(StringComparer.Ordinal);
 
         Assert.Empty(referenced.Except(known));
+
+        // And every shape carries the weight the game gives it. A shape with none belongs to nobody,
+        // so a zero here would be a rule that had failed to read rather than a shape nobody gets.
+        Assert.All(database.EmpireNameFormats, f => Assert.True(f.Weight > 0, $"'{f.Format}' has no weight."));
+    }
+
+    /// <summary>
+    /// The names an empire is offered come in the order the game would say them.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The measurement that prompted this. A despotic empire has seven shapes: the plain
+    /// <c>[adj] &lt;imperial_gen&gt;</c> at weight five, two wordier generic ones at weight one
+    /// each, and four more. The game therefore says "Rethellian Empire" about two fifths of the
+    /// time - while the two generic shapes, being a descriptor crossed with twenty nouns, are four
+    /// hundred of the four hundred and sixty-two rows and took eighty per cent of an even draw.
+    /// </para>
+    /// <para>
+    /// So the order is the difference between a list whose head is the names this empire would
+    /// usually be given and one whose head is an accident of how many words a shape happens to
+    /// have.
+    /// </para>
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void TheLikeliestNamesComeFirst()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var database = Database.Value;
+        var rules = new EmpireRules(database);
+
+        var file = EmpireDesignsFile.CreateEmpty();
+        var design = file.Add("A");
+        design.Authority = "auth_imperial";
+        design.SetEthics(["ethic_fanatic_authoritarian", "ethic_militarist"]);
+
+        var sources = new EmpireNameSources
+        {
+            SpeciesAdjective = "Rethellian",
+            PlanetName = "Tendrakkia",
+            SystemName = "Rethel",
+        };
+
+        var names = new NameGenerator(database)
+            .EmpireNames(rules.CreateContext(design, AllPacks(database)), sources);
+
+        Assert.NotEmpty(names);
+
+        // Descending throughout, which is what makes the first row the likeliest name and not merely
+        // the first shape declared.
+        Assert.Equal([.. names.Select(n => n.Weight).OrderDescending()], names.Select(n => n.Weight));
+
+        // The plainest name is at the top, and holds far more of the draw than an even split would
+        // give it. One in sixty-five was what the list offered before the weights were read.
+        var total = names.Sum(n => n.Weight);
+
+        Assert.True(
+            names[0].Weight / total > 4d / names.Count,
+            $"The likeliest of {names.Count} names holds only {names[0].Weight / total:P1} of the draw.");
+    }
+
+    /// <summary>
+    /// The prefix form is not offered, and no empire loses its own name by that.
+    /// </summary>
+    /// <remarks>
+    /// <c>AnEmpireTheGameNamedIsOfferedItsOwnName</c> is the other half of this and the one that
+    /// could fail: it reads every generated name in the player's file and insists the generator
+    /// still offers it. What is asserted here is the claim itself - that the game does not name
+    /// empires with the prefix form, which its own note beside <c>AofBpfx</c> says outright.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void NoEmpireInTheCorpusCarriesAPrefixName()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var designs = DesignFiles();
+        Skip.If(designs.Count == 0, "Sandbox copies are missing. Run: dotnet run --project src/Sem.Cli -- devsync");
+
+        var prefixed = designs
+            .SelectMany(p => EmpireDesignsFile.Load(File.ReadAllBytes(p)).Designs)
+            .Where(d => d.Name.Key.EndsWith("pfx", StringComparison.Ordinal))
+            .Select(d => d.Key)
+            .ToList();
+
+        Assert.True(
+            prefixed.Count == 0,
+            "These empires are named with a prefix format after all: " + string.Join(", ", prefixed));
     }
 
     [SkippableFact]

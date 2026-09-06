@@ -124,8 +124,36 @@ public sealed partial class NameGenerator(GameDatabase database, Random? random 
     /// <summary>
     /// Suggests an empire name, out of the game's own generator.
     /// </summary>
-    public EmpireNameSuggestion? Empire(DesignContext context, EmpireNameSources sources) =>
-        Pick(EmpireNames(context, sources));
+    /// <remarks>
+    /// Drawn by weight, which is the whole of the difference between this and a shuffle. Picking
+    /// evenly from the list gave the shapes with the most words in them almost all of the outcomes:
+    /// a despotic empire got one of the two sprawling generic shapes four times in five, where the
+    /// game gives those one time in thirteen and says "Human Empire" two fifths of the time.
+    /// </remarks>
+    public EmpireNameSuggestion? Empire(DesignContext context, EmpireNameSources sources)
+    {
+        var names = EmpireNames(context, sources);
+        var total = names.Sum(n => n.Weight);
+
+        if (total <= 0)
+        {
+            return Pick(names);
+        }
+
+        var roll = _random.NextDouble() * total;
+
+        foreach (var name in names)
+        {
+            roll -= name.Weight;
+
+            if (roll < 0)
+            {
+                return name;
+            }
+        }
+
+        return names[^1];
+    }
 
     /// <summary>
     /// Every name the game could give this empire.
@@ -139,12 +167,19 @@ public sealed partial class NameGenerator(GameDatabase database, Random? random 
     /// ninety-three weighted word lists.
     /// </para>
     /// <para>
-    /// Every shape whose condition holds is offered, in full, most typical words first. The shapes
-    /// multiply — a moral democracy has one of thirteen descriptors against twenty nouns, and the
-    /// corpus confirms three-word names are built exactly that way — so the list runs long. It is
-    /// not capped: the randomiser picks one of these at a time and its weights bunch, which is why
-    /// it repeats long before it has exhausted them, but every one of them is a name the game could
-    /// give this empire and the box filters as you type.
+    /// Every shape whose condition holds is offered, in full. The shapes multiply — a moral
+    /// democracy has one of thirteen descriptors against twenty nouns, and the corpus confirms
+    /// three-word names are built exactly that way — so the list runs long. It is not capped, but it
+    /// is ordered by how likely the game is to say each one, so the head of it is the handful an
+    /// empire of this shape would usually be called and the tail is everything else.
+    /// </para>
+    /// <para>
+    /// The prefix form is not among them. It reads like a name — "Sol Empire" beside "Empire of
+    /// Sol" — and the game's note beside the localisation format it uses says it is not one:
+    /// <c>used only to generate a ship prefix acronym: 'Empire Sol' -&gt; 'ESL'</c>. Offering it put
+    /// a hundred and forty strings into a democracy's list of nine hundred and sixty that the game
+    /// would never have named an empire, and the player's own file agrees - three of its empires
+    /// carry the <c>AofB</c> format and not one carries <c>AofBpfx</c>.
     /// </para>
     /// </remarks>
     public IReadOnlyList<EmpireNameSuggestion> EmpireNames(DesignContext context, EmpireNameSources sources)
@@ -153,36 +188,32 @@ public sealed partial class NameGenerator(GameDatabase database, Random? random 
         ArgumentNullException.ThrowIfNull(sources);
 
         var lists = Lists;
-        var suggestions = new List<EmpireNameSuggestion>();
-        var seen = new HashSet<string>(StringComparer.Ordinal);
+        var found = new Dictionary<string, EmpireNameSuggestion>(StringComparer.Ordinal);
 
         foreach (var format in _database.EmpireNameFormats)
         {
-            if (!_evaluator.IsSatisfied(format.When, context))
+            if (format.Format is not { Length: > 0 } template ||
+                !_evaluator.IsSatisfied(format.When, context))
             {
                 continue;
             }
 
-            // The prefix form as well as the main one: "Empire of Sol" and "Sol Empire" are both
-            // names the game would give, and a player looking for theirs may have either.
-            foreach (var template in new[] { format.Format, format.PrefixFormat })
+            foreach (var built in Build(template, format.Weight, sources, lists))
             {
-                if (template is not { Length: > 0 })
-                {
-                    continue;
-                }
-
-                foreach (var built in Build(template, sources, lists))
-                {
-                    if (seen.Add(built.Text))
-                    {
-                        suggestions.Add(built);
-                    }
-                }
+                // Two shapes can spell the same name, and when they do the empire has two ways of
+                // being called it. Keeping the first and dropping the second would understate it.
+                found[built.Text] = found.TryGetValue(built.Text, out var already)
+                    ? already with { Weight = already.Weight + built.Weight }
+                    : built;
             }
         }
 
-        return suggestions;
+        return
+        [
+            .. found.Values
+                .OrderByDescending(s => s.Weight)
+                .ThenBy(s => s.Text, StringComparer.CurrentCulture)
+        ];
     }
 
     /// <summary>
@@ -190,7 +221,8 @@ public sealed partial class NameGenerator(GameDatabase database, Random? random 
     /// </summary>
     /// <remarks>
     /// The formats carry their own, which is nearly always the species adjective and occasionally
-    /// something else. Offered in place of the three guesses the designer used to make.
+    /// something else. Offered in place of the three guesses the designer used to make, and in the
+    /// same order as the names: likeliest first.
     /// </remarks>
     public IReadOnlyList<string> EmpireAdjectives(DesignContext context, EmpireNameSources sources)
     {
@@ -198,14 +230,28 @@ public sealed partial class NameGenerator(GameDatabase database, Random? random 
         ArgumentNullException.ThrowIfNull(sources);
 
         var lists = Lists;
+        var found = new Dictionary<string, double>(StringComparer.Ordinal);
+
+        foreach (var format in _database.EmpireNameFormats)
+        {
+            if (format.Adjective is not { Length: > 0 } adjective ||
+                !_evaluator.IsSatisfied(format.When, context))
+            {
+                continue;
+            }
+
+            foreach (var built in Build(adjective, format.Weight, sources, lists))
+            {
+                found[built.Text] = found.GetValueOrDefault(built.Text) + built.Weight;
+            }
+        }
 
         return
         [
-            .. _database.EmpireNameFormats
-                .Where(f => f.Adjective is { Length: > 0 } && _evaluator.IsSatisfied(f.When, context))
-                .SelectMany(f => Build(f.Adjective!, sources, lists))
-                .Select(s => s.Text)
-                .Distinct(StringComparer.Ordinal)
+            .. found
+                .OrderByDescending(a => a.Value)
+                .ThenBy(a => a.Key, StringComparer.CurrentCulture)
+                .Select(a => a.Key)
         ];
     }
 
@@ -226,6 +272,7 @@ public sealed partial class NameGenerator(GameDatabase database, Random? random 
     /// </remarks>
     private static IEnumerable<EmpireNameSuggestion> Build(
         string template,
+        double weight,
         EmpireNameSources sources,
         IReadOnlyDictionary<string, EmpireNamePartsList> lists)
     {
@@ -245,7 +292,7 @@ public sealed partial class NameGenerator(GameDatabase database, Random? random 
 
         // Each token stands for one or more words; a token that stands for none — an empty list, or
         // a name the empire has not been given — takes the whole shape with it.
-        var choices = new List<IReadOnlyList<string>>();
+        var choices = new List<IReadOnlyList<Choice>>();
 
         foreach (var token in tokens)
         {
@@ -259,29 +306,57 @@ public sealed partial class NameGenerator(GameDatabase database, Random? random 
             choices.Add(words);
         }
 
-        foreach (var parts in Combinations(choices))
+        foreach (var chosen in Combinations(choices))
         {
+            var parts = chosen.Select(c => c.Word).ToList();
+
             // The readable form is only for telling two suggestions apart here; what a player is
             // shown is built by the interface, which has the localiser these words need.
             var text = string.Join(
                 ' ',
                 parts.Select(p => p == Sem.Designs.LocRef.AdjectiveTemplate ? sources.SpeciesAdjective : p));
 
-            yield return new EmpireNameSuggestion(text, key, parts);
+            // The shape's weight, narrowed by the share each word holds of its own list. A name made
+            // of typical words is the likeliest thing this shape says; one made of unusual words is
+            // the same shape's rarest answer, and both are its answers.
+            yield return new EmpireNameSuggestion(
+                text,
+                key,
+                parts,
+                chosen.Aggregate(weight, (running, c) => running * c.Share));
         }
     }
 
+    /// <summary>
+    /// One word a token can stand for, and how much of its list's draw that word takes.
+    /// </summary>
+    /// <param name="Word">The word, or the placeholder a scripted call stands behind.</param>
+    /// <param name="Share">
+    /// Its weight over the list's total, so the shares of one token always come to one. A token that
+    /// is not a list has the single answer and takes all of it.
+    /// </param>
+    private readonly record struct Choice(string Word, double Share);
+
     /// <summary>What one token of a template can stand for.</summary>
-    private static IReadOnlyList<string> Words(
+    private static IReadOnlyList<Choice> Words(
         string token,
         EmpireNameSources sources,
         IReadOnlyDictionary<string, EmpireNamePartsList> lists)
     {
         if (token.StartsWith('<') && token.EndsWith('>'))
         {
-            return lists.TryGetValue(token[1..^1], out var list)
-                ? [.. list.Parts.OrderByDescending(p => p.Weight).Select(p => p.Word)]
-                : [];
+            if (!lists.TryGetValue(token[1..^1], out var list) || list.Parts.Count == 0)
+            {
+                return [];
+            }
+
+            // A list whose weights are all zero is one the game would never draw from; treating it
+            // as even keeps its words offered rather than silently losing the shape they are in.
+            var total = (double)list.Parts.Sum(p => p.Weight);
+
+            return total > 0
+                ? [.. list.Parts.Select(p => new Choice(p.Word, p.Weight / total))]
+                : [.. list.Parts.Select(p => new Choice(p.Word, 1d / list.Parts.Count))];
         }
 
         if (token.StartsWith('[') && token.EndsWith(']'))
@@ -294,23 +369,25 @@ public sealed partial class NameGenerator(GameDatabase database, Random? random 
             // reads correctly if the species is later renamed.
             if (call == "This.GetSpeciesAdj")
             {
-                return sources.SpeciesAdjective is { Length: > 0 } ? [Sem.Designs.LocRef.AdjectiveTemplate] : [];
+                return sources.SpeciesAdjective is { Length: > 0 }
+                    ? [new Choice(Sem.Designs.LocRef.AdjectiveTemplate, 1)]
+                    : [];
             }
 
-            return sources.Resolve(call) is { Length: > 0 } value ? [value] : [];
+            return sources.Resolve(call) is { Length: > 0 } value ? [new Choice(value, 1)] : [];
         }
 
-        return [token];
+        return [new Choice(token, 1)];
     }
 
     /// <summary>
     /// Every way of taking one word from each position.
     /// </summary>
     /// <remarks>
-    /// Depth first, so the most typical word of every list comes first and the caps above keep the
-    /// names the game would most often have chosen.
+    /// In whatever order the lists are declared; what a reader sees is sorted by weight afterwards,
+    /// against every other shape rather than only within this one.
     /// </remarks>
-    private static IEnumerable<IReadOnlyList<string>> Combinations(IReadOnlyList<IReadOnlyList<string>> choices)
+    private static IEnumerable<IReadOnlyList<Choice>> Combinations(IReadOnlyList<IReadOnlyList<Choice>> choices)
     {
         if (choices.Count == 0)
         {

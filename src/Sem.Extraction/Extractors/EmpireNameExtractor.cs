@@ -66,12 +66,15 @@ internal static class EmpireNameExtractor
                 continue;
             }
 
+            var (when, weight) = Chance(entry.Body, loader, requirements);
+
             results.Add(new EmpireNameFormat(format)
             {
                 PrefixFormat = entry.Body.GetString("prefix_format"),
                 Noun = entry.Body.GetString("noun"),
                 Adjective = entry.Body.GetString("adjective"),
-                When = Condition(entry.Body, requirements),
+                When = when,
+                Weight = weight,
             });
         }
 
@@ -98,30 +101,61 @@ internal static class EmpireNameExtractor
     }
 
     /// <summary>
-    /// When a shape applies.
+    /// When a shape applies, and how often the game reaches for it when it does.
     /// </summary>
     /// <remarks>
-    /// Every one of them is written the same way: a weight of zero, raised by a single modifier
-    /// whose conditions are the real question. So the condition is that modifier with its own
-    /// <c>add</c> taken out, and a shape whose weight is never raised belongs to nobody.
+    /// <para>
+    /// All of them are written the same way: a weight of zero, raised by a modifier whose conditions
+    /// are the real question. So the condition is that modifier with its own <c>add</c> taken out,
+    /// the weight is the <c>add</c>, and a shape whose weight is never raised belongs to nobody.
+    /// </para>
+    /// <para>
+    /// All but one, which states two - the same shape at four for a mercenary enclave and at ten for
+    /// a xenophobic one. Reading the first alone silently lost the second half of that rule, so both
+    /// are read: a shape applies when any of its modifiers do, and carries what they add. Summing
+    /// where two could hold at once is the game's own arithmetic, and in the only case that exists
+    /// they are exclusive and both name a country type a design never is.
+    /// </para>
     /// </remarks>
-    private static Requirement Condition(CwBlock body, RequirementCompiler requirements)
+    private static (Requirement When, double Weight) Chance(
+        CwBlock body,
+        ScriptLoader loader,
+        RequirementCompiler requirements)
     {
-        if (body.GetBlock("random_weight")?.GetBlock("modifier") is not { } modifier)
+        if (body.GetBlock("random_weight") is not { } weights)
         {
-            return new AlwaysRequirement(false);
+            return (new AlwaysRequirement(false), 0);
         }
 
-        var conditions = new CwBlock();
+        var arms = new List<Requirement>();
+        var total = 0d;
 
-        foreach (var node in modifier.Nodes)
+        foreach (var node in weights.Nodes)
         {
-            if (node.Key is not ("add" or "factor" or "mult"))
+            if (node.Key != "modifier" || node.Block is not { } modifier)
             {
-                conditions.Add(node);
+                continue;
             }
+
+            var conditions = new CwBlock();
+
+            foreach (var inner in modifier.Nodes)
+            {
+                if (inner.Key is not ("add" or "factor" or "mult"))
+                {
+                    conditions.Add(inner);
+                }
+            }
+
+            arms.Add(requirements.CompileTrigger(conditions));
+            total += modifier.GetWeight(loader, "add");
         }
 
-        return requirements.CompileTrigger(conditions);
+        return arms.Count switch
+        {
+            0 => (new AlwaysRequirement(false), 0),
+            1 => (arms[0], total),
+            _ => (new AnyRequirement(arms), total),
+        };
     }
 }

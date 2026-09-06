@@ -89,9 +89,10 @@
     /// </summary>
     /// <remarks>
     /// Held rather than recomputed. Two hundred and seventy-one shapes are read against the empire
-    /// and can produce a hundred and forty names, each of which is then rendered the long way — and
-    /// this is a property of a component that redraws on every keystroke in the section. Only the
-    /// four things the shapes actually depend on are watched.
+    /// and can produce several hundred names — eight hundred and twenty for a democracy — each of
+    /// which is then rendered the long way, and this is a property of a component that redraws on
+    /// every keystroke in the section. Only the four things the shapes actually depend on are
+    /// watched.
     /// </remarks>
     private void Refresh()
     {
@@ -111,7 +112,19 @@
 
         _signature = signature;
         _generated = Session.Context is { } context ? Session.Names.EmpireNames(context, sources) : [];
-        _names = [.. _generated.Select(Display).Distinct(StringComparer.CurrentCulture)];
+
+        // Sorted again here, on the words a reader actually sees rather than on the rough form the
+        // rules tell two suggestions apart by - "Empire of Sol" against "Empire Sol", which sort to
+        // different places among their neighbours. Likeliest first, then alphabetically, and two
+        // suggestions that read the same are one entry holding both their chances.
+        _names =
+        [
+            .. _generated
+                .GroupBy(Display, StringComparer.CurrentCulture)
+                .OrderByDescending(g => g.Sum(s => s.Weight))
+                .ThenBy(g => g.Key, StringComparer.CurrentCulture)
+                .Select(g => g.Key)
+        ];
     }
 
     /// <summary>
