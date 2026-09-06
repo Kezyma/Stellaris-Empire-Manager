@@ -101,12 +101,15 @@ internal static class MetadataExtractor
             defines.AddRange(document.Nodes.Select(n => n.Block).OfType<CwBlock>());
         }
 
+        var civicPoints = FindInt(defines, "GOVERNMENT_CIVIC_POINTS_BASE") ?? 2;
+
         return new GameDefines
         {
             // Falling back to the values an unmodified game uses keeps the designer usable even if
             // a patch moves these, rather than leaving every budget at zero.
             EthicsPoints = FindInt(defines, "ETHOS_MAX_POINTS") ?? 3,
-            CivicPoints = FindInt(defines, "GOVERNMENT_CIVIC_POINTS_BASE") ?? 2,
+            CivicPoints = civicPoints,
+            PlannedCivicPoints = civicPoints + ResearchableCivicPoints(loader),
             AscensionPerkSlots = FindInt(defines, "ASCENSION_PERKS_SLOTS") ?? 8,
             TraditionSlots = FindInt(defines, "TRADITION_CATEGORIES_MAX") ?? 7,
             DefaultCityPreviewPlanetClass =
@@ -116,6 +119,31 @@ internal static class MetadataExtractor
             // the line "Shown in empire designer". Four: everything but the ecumenopolis.
             CityPopLevel = FindInt(defines, "DEFAULT_CITY_POP_LEVEL") ?? 4,
         };
+    }
+
+    /// <summary>
+    /// How many more civics an empire can win by researching, over the ones it starts with.
+    /// </summary>
+    /// <remarks>
+    /// One, from <c>tech_galactic_administration</c>. It is looked up rather than typed because it
+    /// is the whole reason a plan has civics in it - players reform their government to fill that
+    /// slot - and a number that important should come from the game, so a patch moving it moves the
+    /// editor with it.
+    /// </remarks>
+    private static int ResearchableCivicPoints(ScriptLoader loader)
+    {
+        var total = 0;
+
+        foreach (var entry in loader.LoadDefinitions("common/technology"))
+        {
+            if (entry.Body.GetBlock("modifier")?.GetString("country_government_civic_points_add") is { } added &&
+                loader.ResolveInt(added) is { } points and > 0)
+            {
+                total += points;
+            }
+        }
+
+        return total;
     }
 
     /// <summary>

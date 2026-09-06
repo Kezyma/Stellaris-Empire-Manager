@@ -106,19 +106,66 @@ public static class DesignPredicates
     };
 
     /// <summary>
-    /// Counts of things taken so far, which a plan cannot answer the way a game can.
+    /// Conditions a plan may assume it will have satisfied by the time it gets there.
     /// </summary>
     /// <remarks>
-    /// Every one of these in the ascension perks is a lower bound - "you must already have two" -
-    /// which is about the order a game grants things in, not about whether two choices can sit
-    /// together. A plan names what an empire is aiming at, so refusing the first perk for not
-    /// following two others would refuse every plan at its first step. They are read as satisfied,
-    /// and what the plan may hold in total is the budget's business instead.
+    /// <para>
+    /// These are all in <see cref="NeverTrueInDesigner"/> as well, and both answers are right in
+    /// their own place. A civic asking <c>has_technology</c> is asking about the empire being
+    /// created, which has researched nothing - so false. An ascension perk asking it is asking
+    /// about an empire thirty years in, and answering false there means World Shaper, Colossus and
+    /// the Archaeo-Engineers can never be planned at all, which is not a rule but a refusal to
+    /// answer the question.
+    /// </para>
+    /// <para>
+    /// So this set is consulted only while compiling the things a plan names, and what it produces
+    /// is an <see cref="UnknownRequirement"/> assumed true rather than a plain true. The difference
+    /// shows through negation: <c>NOT = { has_technology = x }</c> has to stay permissive too, and
+    /// an unknown does that where a constant would invert into a block.
+    /// </para>
+    /// <para>
+    /// The line is what an empire could come to be, against what it definitionally is not. A player
+    /// empire may research a technology, build a megastructure, be made a subject or become the
+    /// crisis; it is never a fallen empire, a pre-FTL civilisation, a pirate or an AI, and those
+    /// stay flatly false because they are facts about this design rather than about its future.
+    /// </para>
+    /// <para>
+    /// Country flags belong here and it took a wrong turn to be sure of it. The Purity and Mutation
+    /// trees are gated on a NOR listing the other ascensions and
+    /// <c>clone_army_full_potential</c> among them, and reading that flag as satisfied made both
+    /// trees vanish for every empire in the game - which looked like a reason to keep flags false,
+    /// and was really a defect in how the answer combined. An unsettled term must not decide the
+    /// group it sits in, in either direction; once it does not, the exclusion still fires on the
+    /// ascensions it can read and the flag stops mattering.
+    /// </para>
     /// </remarks>
-    public static IReadOnlySet<string> CountedInAGameNotAPlan { get; } = new HashSet<string>(StringComparer.Ordinal)
+    public static IReadOnlySet<string> UnknowableWhenPlanning { get; } = new HashSet<string>(StringComparer.Ordinal)
     {
-        "num_ascension_perks",
-        "num_tradition_categories",
+        // Things a game grants over time.
+        "has_technology",
+        "has_been_the_crisis",
+        "has_menace_perk",
+
+        // Things events set, including the megastructure flag that Galactic Wonders asks for and
+        // that no design could ever answer yes to.
+        "has_country_flag",
+        "has_global_flag",
+        "has_planet_flag",
+
+        // Situations and standings, which need a galaxy to be in.
+        "country_has_situation",
+        "any_situation",
+        "any_relation",
+        "is_subject",
+        "is_galactic_custodian",
+        "is_galactic_emperor",
+
+        // Scopes over what a running empire has and a design does not: pops, fleets, other
+        // countries. Compiled to a flat no, these threw away the condition inside them as well.
+        "exists",
+        "species",
+        "any_owned_pop_group",
+        "uses_ship_category",
     };
 
     /// <summary>

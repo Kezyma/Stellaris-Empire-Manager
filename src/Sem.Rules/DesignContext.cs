@@ -37,7 +37,9 @@ public sealed class DesignContext
     public string? Government { get; internal set; }
 
     /// <summary>The empire's civics.</summary>
-    public IReadOnlySet<string> Civics { get; private init; } = new HashSet<string>();
+    // Settable, unlike the ethics and traits beside it, because a plan asks what this empire would
+    // look like after a government reform - which is the same design holding different civics.
+    public IReadOnlySet<string> Civics { get; private set; } = new HashSet<string>();
 
     /// <summary>The empire's origin.</summary>
     public string? Origin { get; private init; }
@@ -153,12 +155,27 @@ public sealed class DesignContext
     /// these were taken", which is a different question about the same empire, and the answer must
     /// not leak back into the one everybody else is holding.
     /// </remarks>
-    internal DesignContext WithPlan(IEnumerable<string> perks, IEnumerable<string> trees)
+    /// <param name="perks">The ascension perks the plan names.</param>
+    /// <param name="trees">The tradition trees the plan opens.</param>
+    /// <param name="civics">
+    /// The civics the plan means the empire to end up with, or nothing to keep the ones it starts
+    /// with. Civics exclude each other, so the plan's own set is what the game's conditions have to
+    /// be asked about - otherwise a planned civic is judged against a government it is replacing.
+    /// </param>
+    internal DesignContext WithPlan(
+        IEnumerable<string> perks,
+        IEnumerable<string> trees,
+        IEnumerable<string>? civics = null)
     {
         var copy = (DesignContext)MemberwiseClone();
 
         copy.AscensionPerks = new HashSet<string>(perks, StringComparer.Ordinal);
         copy.TraditionTrees = new HashSet<string>(trees, StringComparer.Ordinal);
+
+        if (civics is not null)
+        {
+            copy.Civics = new HashSet<string>(civics, StringComparer.Ordinal);
+        }
 
         return copy;
     }
@@ -309,6 +326,22 @@ public sealed class DesignContext
         SelectionCategory.AscensionPerk => AscensionPerks.Contains(key),
         SelectionCategory.TraditionTree => TraditionTrees.Contains(key),
         _ => false,
+    };
+
+    /// <summary>How many things the design has selected in a given part of itself.</summary>
+    /// <remarks>
+    /// What a <see cref="CountRequirement"/> is compared against. Only the perks and the trees are
+    /// ever asked in an unmodified game, but counting is a question every set-valued part of a
+    /// design can answer, so they all do rather than the two being special-cased.
+    /// </remarks>
+    public int Count(SelectionCategory category) => category switch
+    {
+        SelectionCategory.Ethics => Ethics.Count,
+        SelectionCategory.Civics => Civics.Count,
+        SelectionCategory.Traits => Traits.Count,
+        SelectionCategory.AscensionPerk => AscensionPerks.Count,
+        SelectionCategory.TraditionTree => TraditionTrees.Count,
+        _ => 0,
     };
 
     /// <summary>Answers a named condition about the design as a whole.</summary>

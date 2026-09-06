@@ -261,9 +261,26 @@
         {
             var plan = Session.Plans.PlanOf(Session.Current, Session.PlanVocabulary);
 
-            return plan.Any ? Session.Plans.Text.PathName(plan.Path) : null;
+            if (!plan.Any)
+            {
+                return null;
+            }
+
+            // What is in it rather than where it leads. The heading used to name the ascension path,
+            // which was worked out from the perks and so said less than they do - and a plan is now
+            // three lists rather than one summary, none of which stands for the others.
+            return string.Join(", ", new[]
+            {
+                Count(plan.Trees.Count, "tradition tree"),
+                Count(plan.Perks.Count, "perk"),
+                Count(plan.Civics.Count, "civic"),
+            }.OfType<string>());
         }
     }
+
+    /// <summary>"3 perks", or nothing at all where there are none to mention.</summary>
+    private static string? Count(int many, string thing) =>
+        many == 0 ? null : $"{many} {thing}{(many == 1 ? string.Empty : "s")}";
 
     /// <summary>
     /// What the game calls a set of artwork. It names them by their key shouted and names only the

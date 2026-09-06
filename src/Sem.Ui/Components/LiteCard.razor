@@ -1,4 +1,4 @@
-@*
+﻿@*
     The empire as a set of panels you can press.
 
     The picture at the top, then one panel per thing an empire is: what it is called, how it is
@@ -331,6 +331,17 @@
 
                             @Chips(Session.Localizer.Heading("ASCENSION_PERKS", "Ascension Perks"),
                                    View.PlanPerks, LitePart.Plan, empty: "none planned")
+
+                            @*
+                                Only where the plan names any. Unlike the two above, an empty civics
+                                row would be saying something false - most plans reform nothing, and
+                                the empire's own civics are already on this card.
+                            *@
+                            @if (View.PlanCivics.Any())
+                            {
+                                @Chips(Session.Localizer.Heading("GOVERNMENT_CIVICS", "Civics"),
+                                       View.PlanCivics, LitePart.Plan, empty: "none planned")
+                            }
                         </div>
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-using Sem.GameData;
+﻿using Sem.GameData;
 using Sem.Rules;
 
 namespace Sem.Core.Tests.Rules;
@@ -64,5 +64,68 @@ public sealed class RequirementEvaluatorTests
         Assert.False(Evaluator.IsSatisfied(gestalt, context));
         Assert.True(Evaluator.IsSatisfied(new NotRequirement(gestalt), context));
         Assert.True(Evaluator.CanDecide(new NotRequirement(gestalt), context));
+    }
+    /// <summary>
+    /// An unread term inside a group does not get to decide the group, in either direction.
+    /// </summary>
+    /// <remarks>
+    /// The case that made this necessary, and the reason the permissive reading is a third answer
+    /// rather than a yes. A NOR compiles to Not(Any(...)), and the ascension trees rule each other
+    /// out with one that lists every other ascension and a country flag - something no design can
+    /// answer. Read as a yes, the Any passed, the Not failed, and the Purity and Mutation trees
+    /// disappeared for every empire in the game.
+    /// </remarks>
+    [Fact]
+    public void AnUnreadTermDoesNotDecideTheGroupAroundIt()
+    {
+        var context = Context();
+        var unread = new UnknownRequirement("has_country_flag");
+        var absent = new SelectionRequirement(SelectionCategory.AscensionPerk, "ap_not_planned");
+
+        // NOR over things that are not so plus one nobody knows: nothing has ruled this out.
+        var exclusion = new NotRequirement(new AnyRequirement([absent, unread]));
+
+        Assert.True(Evaluator.IsSatisfied(exclusion, context));
+    }
+
+    /// <summary>
+    /// And the exclusion still fires the moment something in it is definitely so.
+    /// </summary>
+    /// <remarks>
+    /// The half that a blanket "treat unknowns as true" would break, and the half that makes the
+    /// rule worth having: planning one ascension has to take the others off the list. A definite
+    /// yes settles the group whatever else in it is unread.
+    /// </remarks>
+    [Fact]
+    public void ButADefiniteTermStillDoes()
+    {
+        var context = Context();
+        var unread = new UnknownRequirement("has_country_flag");
+
+        // Something this empire definitely is, standing in for the ascension a plan has named.
+        var held = new SelectionRequirement(SelectionCategory.Ethics, "ethic_xenophile");
+
+        var exclusion = new NotRequirement(new AnyRequirement([held, unread]));
+
+        Assert.True(Evaluator.IsSatisfied(held, context));
+        Assert.False(Evaluator.IsSatisfied(exclusion, context));
+    }
+
+    /// <summary>A group that must hold entirely is refused by a term that definitely fails.</summary>
+    /// <remarks>
+    /// The other direction of the same rule. Not knowing is not permission for everything around it:
+    /// a condition with one readable failure in it is still a failure, and still says why.
+    /// </remarks>
+    [Fact]
+    public void ATermThatDefinitelyFailsStillRefuses()
+    {
+        var context = Context();
+        var unread = new UnknownRequirement("has_technology");
+        var impossible = new AlwaysRequirement(false) { FailureText = "requires_something" };
+
+        var verdict = Evaluator.Evaluate(new AllRequirement([unread, impossible]), context);
+
+        Assert.False(verdict.Passed);
+        Assert.Contains("requires_something", verdict.Reasons);
     }
 }

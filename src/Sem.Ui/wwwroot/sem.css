@@ -616,18 +616,112 @@ label {
 /*
    A value the plan works out rather than one the player sets.
 
-   Drawn like a field's value and plainly not a control: the ascension path follows from the perks,
-   the way it does in the game, so offering a box to set it would be offering a contradiction.
+   What the plan names, in the order it means to take them.
+
+   A list rather than a stack of buttons, because the order carries meaning: twenty-five ascension
+   perks are gated on how many come before them, so where one sits is part of the plan. The numbers
+   are only drawn where that is true - the civics have no order, and numbering them would say
+   something about a government that is not so.
 */
-.sem-plan-derived {
+.sem-plan-order {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: plan;
+}
+
+.sem-plan-slot {
     display: flex;
     align-items: center;
-    height: var(--control-h);
-    padding: 0 var(--space-lg);
-    background: var(--bg);
-    border: 1px dashed var(--border);
-    border-radius: var(--radius);
-    color: var(--text-dim);
+}
+
+.sem-plan-order.numbered > .sem-plan-slot {
+    counter-increment: plan;
+}
+
+.sem-plan-order.numbered > .sem-plan-slot::before {
+    content: counter(plan);
+
+    /* Wide enough for two digits so the names line up, and right-aligned within it so they still
+       line up once the count passes nine. */
+    flex: 0 0 auto;
+    width: 1.5em;
+    padding-left: var(--space-sm);
+    color: var(--text-faint);
+    font-size: var(--text-sm);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+/*
+   The handle, on the row rather than in a corner of it.
+
+   Faint rather than hidden until hovered, the way the empire cards' is. Those are large and few and
+   a grip appearing on hover is a nice surprise; these are dense rows in a scrolling box, and a
+   control that cannot be seen until the pointer is already on it is one a reader has to hunt for.
+*/
+.sem-plan-grip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: var(--icon-sm);
+    padding: 0;
+    background: none;
+    border: none;
+    color: var(--text-faint);
+    font: inherit;
+    line-height: 1;
+    cursor: grab;
+    touch-action: none;
+    opacity: 0.5;
+}
+
+.sem-plan-slot:hover .sem-plan-grip,
+.sem-plan-grip:focus-visible {
+    color: var(--text);
+    opacity: 1;
+}
+
+.sem-plan-grip:active { cursor: grabbing; }
+
+/*
+   The rows while one of them is being carried. Every row is placed by a transform the script sets,
+   so the held one follows the pointer and the rest slide into the places they would take if it were
+   dropped now - the answer is visible before the drop rather than after it. The transition is on
+   the others and not on the held one, which has to keep up with the pointer exactly.
+*/
+.sem-plan-order.sorting > .sem-plan-slot {
+    transition: transform 160ms ease;
+}
+
+.sem-plan-order.sorting > .sem-plan-slot.lifted {
+    transition: none;
+    position: relative;
+    z-index: 2;
+}
+
+.sem-plan-slot.lifted .sem-trait-row {
+    background: var(--bg-hover);
+    box-shadow: 0 6px 18px rgb(0 0 0 / 45%);
+    cursor: grabbing;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sem-plan-order.sorting > .sem-plan-slot { transition: none; }
+}
+
+/*
+   A civic the empire cannot give up.
+
+   Dimmed like a blocked row, but it is not blocked - it is simply not a choice. The game's own
+   `modification = no` says so, and the plan spends a slot on it either way, so hiding it would
+   leave the budget unexplained.
+*/
+.sem-trait-row.locked {
+    opacity: 0.55;
+    cursor: default;
+    font-style: italic;
 }
 
 /*

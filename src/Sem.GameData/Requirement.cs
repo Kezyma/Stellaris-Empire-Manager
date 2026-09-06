@@ -29,6 +29,7 @@ namespace Sem.GameData;
 [JsonDerivedType(typeof(FieldRequirement), "field")]
 [JsonDerivedType(typeof(PredicateRequirement), "predicate")]
 [JsonDerivedType(typeof(UnknownRequirement), "unknown")]
+[JsonDerivedType(typeof(CountRequirement), "count")]
 public abstract record Requirement
 {
     /// <summary>
@@ -105,6 +106,51 @@ public sealed record PredicateRequirement(string Name) : Requirement;
 /// option the player should be able to pick.
 /// </param>
 public sealed record UnknownRequirement(string Name, bool Assume = true) : Requirement;
+
+/// <summary>
+/// How many of something have been taken already, compared against a number.
+/// </summary>
+/// <remarks>
+/// <para>
+/// The game writes these as <c>num_ascension_perks > 1</c> and
+/// <c>num_tradition_categories &lt; @max_tradition_trees</c>, and means them as questions about a
+/// game in progress. A plan answers them because a plan is an order: the perk in the fourth place
+/// has three before it, so "you must already have three" is really "this cannot be earlier than
+/// fourth".
+/// </para>
+/// <para>
+/// Which is why nothing here says what position is being asked about. The count is read from the
+/// context's own set, so evaluating an entry against a context holding only what comes before it
+/// gives the answer for that position with nothing extra to keep in step.
+/// </para>
+/// </remarks>
+/// <param name="Of">Which of the plan's lists is being counted.</param>
+/// <param name="Comparison">How the count is being compared.</param>
+/// <param name="Value">What it is compared against.</param>
+public sealed record CountRequirement(
+    SelectionCategory Of,
+    CountComparison Comparison,
+    int Value) : Requirement;
+
+/// <summary>How a <see cref="CountRequirement"/> compares, named as the game's script writes it.</summary>
+[JsonConverter(typeof(JsonStringEnumConverter<CountComparison>))]
+public enum CountComparison
+{
+    /// <summary>Strictly more than, which the game writes <c>&gt;</c>.</summary>
+    Above,
+
+    /// <summary>Strictly fewer than, which the game writes <c>&lt;</c>.</summary>
+    Below,
+
+    /// <summary>That many or more, which the game writes <c>&gt;=</c>.</summary>
+    AtLeast,
+
+    /// <summary>That many or fewer, which the game writes <c>&lt;=</c>.</summary>
+    AtMost,
+
+    /// <summary>Exactly that many, which the game writes <c>=</c>.</summary>
+    Exactly,
+}
 
 /// <summary>What part of an empire design a <see cref="SelectionRequirement"/> refers to.</summary>
 [JsonConverter(typeof(JsonStringEnumConverter<SelectionCategory>))]

@@ -13,8 +13,8 @@ namespace Sem.Ui.Tests;
 /// does show the player. Everything therefore rests on the prose meaning the same thing when it is
 /// read again, possibly by an app set to another language, possibly after the game has cut it short.
 ///
-/// Read back by name, with no hidden marker, which is only safe because names resolve uniquely among
-/// the choices one empire could make. The colliding cases are real and are covered below.
+/// Read back by name, against a vocabulary of what one empire could have meant, which is only safe
+/// because names resolve uniquely there. The colliding cases are real and are covered below.
 /// </remarks>
 public sealed class PlanTextTests
 {
@@ -22,24 +22,30 @@ public sealed class PlanTextTests
     public void APlanComesBackAsItWentIn()
     {
         var text = English();
-        var plan = new EmpirePlan(PlanPath.Cybernetic, ["tradition_harmony"], ["ap_mind_over_matter"]);
+        var plan = new EmpirePlan(["tradition_harmony"], ["ap_mind_over_matter"], ["civic_meritocracy"]);
 
         var written = text.Write(plan);
 
         Assert.Equal(plan, text.Read(written, Vocabulary()));
     }
 
+    /// <summary>
+    /// The order is the plan, so it has to survive the round trip.
+    /// </summary>
+    /// <remarks>
+    /// Not decoration. Twenty-five ascension perks are gated on how many come before them, which
+    /// read against an ordered plan is a rule about where each one may sit - so a plan that came
+    /// back in another order would be a different plan, and one the game might refuse.
+    /// </remarks>
     [Fact]
-    public void EveryPathComesBack()
+    public void TheOrderComesBackToo()
     {
         var text = English();
+        var plan = new EmpirePlan([], ["ap_mind_over_matter", "ap_technological_ascendancy"], []);
 
-        foreach (var path in PlanPaths.All.Where(p => p is not PlanPath.Unset))
-        {
-            var written = text.Write(new EmpirePlan(path, [], []));
+        var back = text.Read(text.Write(plan), Vocabulary())!;
 
-            Assert.Equal(path, text.Read(written, PlanVocabulary.Empty)!.Path);
-        }
+        Assert.Equal(["ap_mind_over_matter", "ap_technological_ascendancy"], back.Perks);
     }
 
     /// <summary>
@@ -47,15 +53,17 @@ public sealed class PlanTextTests
     /// </summary>
     /// <remarks>
     /// The failure this guards against is silent and destructive: a biography mistaken for a plan
-    /// would be replaced by generated prose the next time the empire was saved.
+    /// would be replaced by generated prose the next time the empire was saved. The last two cases
+    /// are the ones the marker exists for - prose that happens to carry a heading this would
+    /// otherwise recognise.
     /// </remarks>
     [Theory]
     [InlineData(null)]
     [InlineData("")]
     [InlineData("The Blorg are a friendly people who wish only to be loved.")]
     [InlineData("Notes: they are not, in fact, friendly.")]
-    [InlineData("Ascension path:")]
-    [InlineData("Ascension path: something the game has never heard of")]
+    [InlineData("Perks: being extremely friendly, and quite round.")]
+    [InlineData("Civics: we have none, and are proud of it.")]
     public void OrdinaryWritingIsNotAPlan(string? biography)
     {
         Assert.False(English().IsPlan(biography, Vocabulary()));
@@ -64,6 +72,21 @@ public sealed class PlanTextTests
         // this is not a plan at all, and the difference decides whether somebody's writing is
         // about to be replaced.
         Assert.Null(English().Read(biography, Vocabulary()));
+    }
+
+    /// <summary>A plan that has decided nothing is still a plan, and is still recognised.</summary>
+    /// <remarks>
+    /// What the marker is for. Releasing the last perk leaves a biography with one word in it, and
+    /// if that did not read back as a plan the checkbox would switch itself off underneath the
+    /// player in the middle of editing.
+    /// </remarks>
+    [Fact]
+    public void AMarkerOnItsOwnIsAPlanThatHasDecidedNothing()
+    {
+        var written = English().Write(EmpirePlan.Empty);
+
+        Assert.Equal(PlanText.Marker, written);
+        Assert.Equal(EmpirePlan.Empty, English().Read(written, PlanVocabulary.Empty));
     }
 
     /// <summary>
@@ -80,14 +103,14 @@ public sealed class PlanTextTests
     public void ANameTwoThingsShareMeansTheOneOnOffer()
     {
         var text = English();
-        var written = "Traditions: Cybernetics";
+        var written = $"{PlanText.Marker}\nTraditions: Cybernetics";
 
         var assimilator = new PlanVocabulary(
-            [("tradition_cybernetics_assimilator", "Cybernetics")], []);
+            [("tradition_cybernetics_assimilator", "Cybernetics")], [], []);
 
         Assert.Equal(["tradition_cybernetics_assimilator"], text.Read(written, assimilator)!.Trees);
 
-        var ordinary = new PlanVocabulary([("tradition_cybernetics", "Cybernetics")], []);
+        var ordinary = new PlanVocabulary([("tradition_cybernetics", "Cybernetics")], [], []);
 
         Assert.Equal(["tradition_cybernetics"], text.Read(written, ordinary)!.Trees);
     }
@@ -97,8 +120,8 @@ public sealed class PlanTextTests
     public void ANameThisEmpireCannotTakeIsLeftOut()
     {
         var plan = English().Read(
-            "Traditions: Harmony, Prosperity\nAscension Perks: Mind Over Matter",
-            new PlanVocabulary([("tradition_harmony", "Harmony")], []))!;
+            $"{PlanText.Marker}\nTraditions: Harmony, Prosperity\nPerks: Mind Over Matter",
+            new PlanVocabulary([("tradition_harmony", "Harmony")], [], []))!;
 
         Assert.Equal(["tradition_harmony"], plan.Trees);
         Assert.Empty(plan.Perks);
@@ -116,48 +139,92 @@ public sealed class PlanTextTests
     public void ABiographyCutShortKeepsWhatSurvivedTheCut()
     {
         var text = English();
-        var whole = text.Write(new EmpirePlan(
-            PlanPath.Cybernetic, ["tradition_harmony"], ["ap_mind_over_matter"]));
+        var whole = text.Write(new EmpirePlan(["tradition_harmony"], ["ap_mind_over_matter"], []));
 
         var cut = whole[..whole.IndexOf("Over", StringComparison.Ordinal)];
         var plan = text.Read(cut, Vocabulary())!;
 
-        Assert.Equal(PlanPath.Cybernetic, plan.Path);
         Assert.Equal(["tradition_harmony"], plan.Trees);
         Assert.Empty(plan.Perks);
     }
 
     /// <summary>
-    /// A plan too long for a biography loses whole items rather than half a name.
+    /// A plan too long for a biography loses items from the end, not lines and never half a name.
     /// </summary>
     /// <remarks>
-    /// Dropping the perks line is deliberate: what is left still says which path and which trees,
-    /// which is the shape of the decision. Letting it run over instead would hand the game something
-    /// to cut wherever it liked.
+    /// It used to drop whole lines, and in a language with long names one character over budget cost
+    /// every perk in the plan. Dropping the last item of the longest line instead keeps all three
+    /// parts represented and gives up the things furthest in the future, which are the least certain
+    /// anyway.
     /// </remarks>
     [Fact]
-    public void APlanTooLongLosesTheLastLineRatherThanRunningOver()
+    public void APlanTooLongLosesItemsFromTheEnd()
     {
-        var long_ = string.Join(", ", Enumerable.Range(0, 40).Select(i => $"a_very_long_perk_name_{i}"));
         var text = English();
 
         var written = text.Write(new EmpirePlan(
-            PlanPath.Cybernetic,
             ["tradition_harmony"],
-            [.. long_.Split(", ")]));
+            [.. Enumerable.Range(0, 40).Select(i => $"a_very_long_perk_name_{i}")],
+            ["civic_meritocracy"]));
 
         Assert.True(written.Length <= PlanText.Budget, $"wrote {written.Length} characters");
-        Assert.Contains("Cybernetics", written, StringComparison.Ordinal);
-        Assert.DoesNotContain("a_very_long_perk_name", written, StringComparison.Ordinal);
+
+        // The shorter lines survive: what went is the length, taken from where the length was.
+        Assert.Contains("Traditions: Harmony", written, StringComparison.Ordinal);
+        Assert.Contains("Civics: Meritocracy", written, StringComparison.Ordinal);
+
+        // And whatever perks are left are whole ones, in order, from the front. The names read
+        // prettified because nothing in this little dictionary names them, which is the localizer
+        // doing what it does to a key it has never seen.
+        Assert.Contains("Perks: A Very Long Perk Name 0,", written, StringComparison.Ordinal);
+        Assert.DoesNotContain("Name 39", written, StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// The longest plan the game can produce fits in a biography, in every language it ships.
+    /// </summary>
+    /// <remarks>
+    /// The one that a future content pack breaks. Names in French and Polish run half as long again
+    /// as the English ones, and the worst case measured against the real data - the longest seven
+    /// trees, eight perks and three civics at once - overruns the budget in six of the ten languages
+    /// before anything shortens it. What is asserted is that something does, and that what survives
+    /// is made of whole names.
+    /// </remarks>
+    [Fact]
+    public void TheLongestPossiblePlanStillFits()
+    {
+        var names = Enumerable.Range(0, 20)
+            .ToDictionary(i => $"k{i}", i => new string('W', 40) + i, StringComparer.Ordinal);
+
+        var text = new PlanText(new Localizer(names));
+
+        var written = text.Write(new EmpirePlan(
+            [.. names.Keys.Take(7)],
+            [.. names.Keys.Skip(7).Take(8)],
+            [.. names.Keys.Skip(15).Take(3)]));
+
+        Assert.True(written.Length <= PlanText.Budget, $"wrote {written.Length} characters");
+
+        // And every name that survived is a whole one. This is the property that matters more than
+        // the length: a name cut in half can read back as a different name.
+        foreach (var line in written.Split('\n').Skip(1))
+        {
+            var items = line[(line.IndexOf(':', StringComparison.Ordinal) + 1)..]
+                .Split(", ", StringSplitOptions.TrimEntries);
+
+            Assert.All(items, item => Assert.Contains(item, names.Values));
+        }
     }
 
     /// <summary>A reader who typed a name in their own case still meant the name.</summary>
     [Fact]
     public void CaseDoesNotMatter()
     {
-        var plan = English().Read("ascension path: cybernetics", PlanVocabulary.Empty)!;
+        var plan = English().Read(
+            "plan\ntraditions: harmony",
+            new PlanVocabulary([("tradition_harmony", "Harmony")], [], []))!;
 
-        Assert.Equal(PlanPath.Cybernetic, plan.Path);
+        Assert.Equal(["tradition_harmony"], plan.Trees);
     }
 
     /// <summary>
@@ -165,47 +232,43 @@ public sealed class PlanTextTests
     /// </summary>
     /// <remarks>
     /// The names in a plan are the game's own words, so they are whatever the writer's game was set
-    /// to. This holds the round trip still for a second language; reading a plan written in a
-    /// language the reader does not have is a separate problem and a separate answer.
+    /// to. The headings are not - they are fixed English, which is what lets a German plan at least
+    /// be recognised as a plan by an English app even when none of its names resolve.
     /// </remarks>
     [Fact]
     public void APlanRoundTripsInAnotherLanguage()
     {
         var german = new PlanText(new Localizer(new Dictionary<string, string>(StringComparer.Ordinal)
         {
-            ["tradition_cybernetics"] = "Kybernetik",
             ["tradition_harmony"] = "Harmonie",
-            ["TRADITIONS"] = "Traditionen",
-            ["ASCENSION_PERKS"] = "Erweckungsprivilegien",
         }));
 
-        var plan = new EmpirePlan(PlanPath.Cybernetic, ["tradition_harmony"], []);
+        var plan = new EmpirePlan(["tradition_harmony"], [], []);
         var written = german.Write(plan);
 
-        Assert.Contains("Kybernetik", written, StringComparison.Ordinal);
-        Assert.Contains("Traditionen: Harmonie", written, StringComparison.Ordinal);
+        Assert.Contains("Traditions: Harmonie", written, StringComparison.Ordinal);
 
         // Read with the vocabulary that same game would offer, which is the German one.
-        Assert.Equal(plan, german.Read(written, new PlanVocabulary([("tradition_harmony", "Harmonie")], [])));
+        Assert.Equal(
+            plan,
+            german.Read(written, new PlanVocabulary([("tradition_harmony", "Harmonie")], [], [])));
+
+        // And an app set to English still knows it is looking at a plan, even though the one name
+        // in it means nothing here.
+        Assert.True(English().IsPlan(written, Vocabulary()));
     }
 
     private static PlanText English() => new(new Localizer(
         new Dictionary<string, string>(StringComparer.Ordinal)
         {
-            ["tradition_cybernetics"] = "Cybernetics",
-            ["tradition_genetics"] = "Genetics",
-            ["tradition_purity"] = "Purity",
-            ["tradition_cloning"] = "Cloning",
-            ["tradition_mutation"] = "Mutation",
-            ["tradition_psionics"] = "Psionics",
-            ["tradition_synthetics"] = "Synthetics",
             ["tradition_harmony"] = "Harmony",
             ["ap_mind_over_matter"] = "Mind Over Matter",
-            ["TRADITIONS"] = "Traditions",
-            ["ASCENSION_PERKS"] = "Ascension Perks",
+            ["ap_technological_ascendancy"] = "Technological Ascendancy",
+            ["civic_meritocracy"] = "Meritocracy",
         }));
 
     private static PlanVocabulary Vocabulary() => new(
         [("tradition_harmony", "Harmony")],
-        [("ap_mind_over_matter", "Mind Over Matter")]);
+        [("ap_mind_over_matter", "Mind Over Matter"), ("ap_technological_ascendancy", "Technological Ascendancy")],
+        [("civic_meritocracy", "Meritocracy")]);
 }

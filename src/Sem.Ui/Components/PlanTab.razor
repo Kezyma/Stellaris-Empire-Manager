@@ -1,4 +1,4 @@
-@using Sem.Designs
+﻿@using Sem.Designs
 
 @*
     How a player means to play this empire, rather than what the empire is.
@@ -12,39 +12,19 @@
     own, and a feature that helped itself to one would be taking something.
 *@
 
-<div class="sem-field flush">
-    <label>
-        <input type="checkbox" checked="@Planning" disabled="@(!Planning && !AnyFree)"
-               @onchange="TogglePlanning" />
-        Plan this empire
-    </label>
+<div class="sem-row wide">
+    <div class="sem-field flush">
+        <label>
+            <input type="checkbox" checked="@Planning" disabled="@(!Planning && !AnyFree)"
+                   @onchange="TogglePlanning" />
+            Enable Plan
+        </label>
+    </div>
 
-    @if (!Planning && !AnyFree)
+    @if (Planning)
     {
-        @*
-            Both biographies have writing in them, and a plan will not take one. There is no way to
-            tell a biography somebody meant from one they would not miss, so the app does not guess -
-            it says what is in the way and leaves the decision where it belongs.
-        *@
-        <p class="sem-hint">
-            Both biographies have something written in them. Clear the species' or the ruler's to
-            plan this empire.
-        </p>
-    }
-    else
-    {
-        <p class="sem-hint">
-            The plan is written into a biography, so the game keeps it and shows it to you in game.
-            While it is on, that biography is written here rather than typed.
-        </p>
-    }
-</div>
-
-@if (Planning)
-{
-    <div class="sem-row wide">
         <div class="sem-field">
-            <label for="plan-home">Written into</label>
+            <label for="plan-home">Write To</label>
 
             @*
                 Only the ones a plan may have. A biography with writing in it is not offered, so the
@@ -53,47 +33,64 @@
             <select id="plan-home" value="@Home.ToString()" @onchange="MoveHome">
                 @if (Home is PlanHome.Species || CanCarry(PlanHome.Species))
                 {
-                    <option value="@nameof(PlanHome.Species)">The species' biography</option>
+                    <option value="@nameof(PlanHome.Species)">Species Bio</option>
                 }
 
                 @if (Home is PlanHome.Ruler || CanCarry(PlanHome.Ruler))
                 {
-                    <option value="@nameof(PlanHome.Ruler)">The ruler's biography</option>
+                    <option value="@nameof(PlanHome.Ruler)">Ruler Bio</option>
                 }
             </select>
         </div>
+    }
+</div>
 
-        @*
-            Read rather than chosen. In the game an empire is on a path by having taken something
-            that puts it there, so a plan that let you name a path and then name perks disagreeing
-            with it would be offering a contradiction. Pick the perks; the path follows.
-        *@
-        <div class="sem-field">
-            <label>@Session.Localizer.Heading("SEM_ASCENSION_PATH", "Ascension path")</label>
-            <div class="sem-plan-derived">@Session.Plans.Text.PathName(Plan.Path)</div>
-        </div>
-    </div>
-
+@if (!Planning && !AnyFree)
+{
     @*
-        One at a time. Forty-nine perks and thirty-two trees on one panel is two long lists competing
-        for the same eye, and they are decided separately.
+        Both biographies have writing in them, and a plan will not take one. There is no way to tell
+        a biography somebody meant from one they would not miss, so the app does not guess - it says
+        what is in the way and leaves the decision where it belongs.
+    *@
+    <p class="sem-hint">
+        Both biographies have something written in them. Clear the species' or the ruler's to plan
+        this empire.
+    </p>
+}
+
+@if (Planning)
+{
+    @*
+        One at a time. Forty-nine perks, thirty-two trees and three hundred civics on one panel is
+        three long lists competing for the same eye, and they are decided separately.
     *@
     <PickerTabs Tabs="@Parts" Label="Which part of the plan" Selected="@_part"
                 SelectedChanged="p => _part = p" />
 
     @if (_part == 0)
     {
-        <PlanPicker Heading="Ascension Perks" BudgetKey="ASCENSION_PERKS"
+        <PlanPicker @key="@("perks")" Heading="Ascension Perks" BudgetKey="ASCENSION_PERKS"
                     Budget="@Session.Rules.GetAscensionPerkBudget(Plan.Perks.Count)"
                     Available="@PerkOptions(chosen: false)" Chosen="@PerkOptions(chosen: true)"
-                    OnToggle="TogglePerk" />
+                    OnToggle="TogglePerk" OnReorder="MovePerk" />
+    }
+    else if (_part == 1)
+    {
+        <PlanPicker @key="@("trees")" Heading="Traditions" BudgetKey="TRADITIONS"
+                    Budget="@Session.Rules.GetTraditionBudget(Plan.Trees.Count)"
+                    Available="@TreeOptions(chosen: false)" Chosen="@TreeOptions(chosen: true)"
+                    OnToggle="ToggleTree" OnReorder="MoveTree" />
     }
     else
     {
-        <PlanPicker Heading="Traditions" BudgetKey="TRADITIONS"
-                    Budget="@Session.Rules.GetTraditionBudget(Plan.Trees.Count)"
-                    Available="@TreeOptions(chosen: false)" Chosen="@TreeOptions(chosen: true)"
-                    OnToggle="ToggleTree" />
+        @*
+            No order and no grips. An empire holds its civics all at once, so numbering them would
+            say something about a government that is not true of one.
+        *@
+        <PlanPicker @key="@("civics")" Heading="Civics" BudgetKey="GOVERNMENT_CIVICS"
+                    Budget="@Session.Rules.GetPlanCivicBudget(Locked.Count + Plan.Civics.Count)"
+                    Available="@CivicOptions(chosen: false)" Chosen="@CivicOptions(chosen: true)"
+                    Fixed="@LockedOptions" OnToggle="ToggleCivic" />
     }
 
     @if (Written is { Length: > 0 } written)
@@ -101,10 +98,20 @@
         @*
             What the game will show, shown here. The point of writing a plan in words is that it is
             readable where it ends up, and the only way to know that is to see it.
+
+            With how much room is left, because there is not much. A biography holds about four
+            hundred and forty characters and the game cuts what will not fit without saying so - in
+            a long language a full plan is within a few dozen of that, and something has to go. The
+            meter is so it is the player who decides what, before the writing does it for them.
         *@
         <div class="sem-field flush">
             <label>As it will read in game</label>
             <div class="sem-plan-preview">@written</div>
+
+            <div class="sem-budgets">
+                <BudgetBar Key="SEM_PLAN_LENGTH" Fallback="Biography" Label="SEM_PLAN_LENGTH"
+                           LabelFallback="Biography" Value="@Length" />
+            </div>
         </div>
     }
 }
@@ -113,20 +120,21 @@
     [CascadingParameter]
     public required DesignSession Session { get; set; }
 
-    /// <summary>Which half of the plan is showing, since both are long lists.</summary>
+    /// <summary>Which part of the plan is showing, since all three are long lists.</summary>
     private int _part;
 
     /// <summary>
-    /// The two halves, each saying how much of its allowance the plan has spent.
+    /// The three parts, each saying how much of its allowance the plan has spent.
     /// </summary>
     /// <remarks>
-    /// The count rides on the tab so the half that is not showing still says what is in it - the
+    /// The count rides on the tab so the parts that are not showing still say what is in them - the
     /// same reason the flag picker's tabs carry the emblem's name.
     /// </remarks>
     private IReadOnlyList<PickerTabs.Tab> Parts =>
     [
         new("Ascension Perks", $"{Plan.Perks.Count}/{Session.Data.Database.Defines.AscensionPerkSlots}"),
         new("Traditions", $"{Plan.Trees.Count}/{Session.Data.Database.Defines.TraditionSlots}"),
+        new("Civics", $"{Locked.Count + Plan.Civics.Count}/{Session.Data.Database.Defines.PlannedCivicPoints}"),
     ];
 
     private EmpireDesign Design => Session.Current!;
@@ -142,24 +150,43 @@
 
     private string Written => Session.Plans.Text.Write(Plan);
 
+    /// <summary>How much of a biography the plan is spending.</summary>
+    private Budget Length => new(Written.Length, PlanText.Budget);
+
+    /// <summary>The civics this empire is stuck with, which spend slots the plan cannot use.</summary>
+    private IReadOnlyList<string> Locked => Session.Rules.GetLockedCivics(Session.Context!);
+
     // ---------------------------------------------------------------- what each picker is given
 
     private IReadOnlyList<PlanOption> PerkOptions(bool chosen) => Shape(
-        Session.Rules.GetAscensionPerkOptions(Session.Context!, Plan.Perks),
+        Session.Rules.GetAscensionPerkOptions(Session.Context!, Plan.Perks, Plan.Trees),
         Plan.Perks,
         chosen,
-        key => Session.Data.Database.AscensionPerks.FirstOrDefault(p => p.Key == key) is { } perk
-            ? (perk.NameKey, perk.DescriptionKey, perk.Icon, perk.Effects)
-            : (key, null, null, null));
+        Describe.Perk(Session));
 
     private IReadOnlyList<PlanOption> TreeOptions(bool chosen) => Shape(
         Session.Rules.GetTraditionTreeOptions(Session.Context!, Plan.Trees, Plan.Perks),
         Plan.Trees,
         chosen,
-        key => Session.Data.Database.TraditionTrees.FirstOrDefault(t => t.Key == key) is { } tree
-            ? (tree.NameKey, tree.DescriptionKey, tree.Icon, null)
-            : (key, null, null, null),
+        Describe.Tree(Session),
         Inside);
+
+    private IReadOnlyList<PlanOption> CivicOptions(bool chosen) => Shape(
+        Session.Rules.GetPlanCivicOptions(Session.Context!, Plan.Civics),
+        Plan.Civics,
+        chosen,
+        Describe.Civic(Session));
+
+    /// <summary>The civics shown above the choice, greyed, because they cannot be given up.</summary>
+    private IReadOnlyList<PlanOption> LockedOptions =>
+    [
+        .. Shape(
+            Session.Rules.GetPlanCivicOptions(Session.Context!, Plan.Civics),
+            Locked,
+            chosen: true,
+            Describe.Civic(Session))
+            .Select(o => o with { Locked = true })
+    ];
 
     /// <summary>
     /// The traditions a tree holds, in the order the game grants them.
@@ -198,7 +225,7 @@
     }
 
     /// <summary>
-    /// Turns what the rules said into what a picker draws, for either half of the plan.
+    /// Turns what the rules said into what a picker draws, for any part of the plan.
     /// </summary>
     /// <remarks>
     /// The chosen list is built from the plan rather than from the options, so something the empire
@@ -251,33 +278,99 @@
             : [.. options.OrderBy(o => o.Unavailable).ThenBy(o => o.Name, StringComparer.CurrentCulture)];
     }
 
+    /// <summary>Where each part of a plan gets its words and its picture from.</summary>
+    private static class Describe
+    {
+        public static Func<string, (string, string?, string?, EffectSet?)> Perk(DesignSession session) =>
+            key => session.Data.Database.AscensionPerks.FirstOrDefault(p => p.Key == key) is { } perk
+                ? (perk.NameKey, perk.DescriptionKey, perk.Icon, perk.Effects)
+                : (key, null, null, null);
+
+        public static Func<string, (string, string?, string?, EffectSet?)> Tree(DesignSession session) =>
+            key => session.Data.Database.TraditionTrees.FirstOrDefault(t => t.Key == key) is { } tree
+                ? (tree.NameKey, tree.DescriptionKey, tree.Icon, null)
+                : (key, null, null, null);
+
+        public static Func<string, (string, string?, string?, EffectSet?)> Civic(DesignSession session) =>
+            key => session.Data.Database.Civics.FirstOrDefault(c => c.Key == key) is { } civic
+                ? (civic.NameKey, $"{civic.Key}_desc", civic.Icon, civic.Effects)
+                : (key, null, null, null);
+    }
+
     // ---------------------------------------------------------------- and what pressing one does
 
-    private void TogglePerk((string Key, bool Chosen) pressed)
-    {
-        var perks = pressed.Chosen
-            ? Plan.Perks.Where(p => p != pressed.Key).ToList()
-            : [.. Plan.Perks, pressed.Key];
-
-        // The path is worked out again, because it is worked out from these.
-        Save(Plan with { Perks = perks, Path = PlanPaths.From(perks) });
-    }
+    private void TogglePerk((string Key, bool Chosen) pressed) =>
+        Save(Plan with
+        {
+            Perks = pressed.Chosen
+                ? [.. Plan.Perks.Where(p => p != pressed.Key)]
+                : [.. Plan.Perks, pressed.Key],
+        });
 
     private void ToggleTree((string Key, bool Chosen) pressed) =>
         Save(Plan with
         {
             Trees = pressed.Chosen
-                ? Plan.Trees.Where(t => t != pressed.Key).ToList()
+                ? [.. Plan.Trees.Where(t => t != pressed.Key)]
                 : [.. Plan.Trees, pressed.Key],
         });
+
+    private void ToggleCivic((string Key, bool Chosen) pressed) =>
+        Save(Plan with
+        {
+            Civics = pressed.Chosen
+                ? [.. Plan.Civics.Where(c => c != pressed.Key)]
+                : [.. Plan.Civics, pressed.Key],
+        });
+
+    /// <summary>
+    /// Moves a perk, unless the game would not grant it where it is being put.
+    /// </summary>
+    /// <remarks>
+    /// Twenty-five perks are gated on how many come before them, so where one sits is as much a
+    /// rule as whether it is in the plan at all. A move that would break one simply does not happen,
+    /// which is how the pickers already treat a choice the game would refuse - a blocked row does
+    /// nothing rather than being taken and then complained about.
+    /// </remarks>
+    private void MovePerk((int From, int To) move)
+    {
+        var perks = Moved(Plan.Perks, move);
+
+        if (Session.Rules.IsLegalPerkOrder(Session.Context!, perks, Plan.Trees))
+        {
+            Save(Plan with { Perks = perks });
+        }
+    }
+
+    /// <summary>
+    /// Moves a tree, which nothing can refuse.
+    /// </summary>
+    /// <remarks>
+    /// Unlike the perks: no tree in the game asks how many were opened before it, so any order of
+    /// them is one the game would allow. It is still worth arranging, because the order is the one
+    /// the player means to take them in.
+    /// </remarks>
+    private void MoveTree((int From, int To) move) => Save(Plan with { Trees = Moved(Plan.Trees, move) });
+
+    private static List<string> Moved(IReadOnlyList<string> keys, (int From, int To) move)
+    {
+        var moved = keys.ToList();
+        var one = moved[move.From];
+
+        moved.RemoveAt(move.From);
+        moved.Insert(Math.Clamp(move.To, 0, moved.Count), one);
+
+        return moved;
+    }
 
     /// <summary>
     /// Turns planning on, or off and gives the biography back.
     /// </summary>
     /// <remarks>
-    /// Turning it on writes a plan that has decided nothing, because a plan has to exist somewhere
-    /// for the rest of this to have anything to edit - and "not decided" is the honest thing for a
-    /// new one to say, rather than claiming a choice nobody has made.
+    /// Turning it on starts the civics at the ones the empire already has and could give up. An
+    /// empty civics line would otherwise mean "reform into none of these", which is not what an
+    /// untouched field looks like it means - so the plan opens saying what is true now, and is
+    /// edited from there.
     /// </remarks>
     private void TogglePlanning(ChangeEventArgs e)
     {
@@ -286,7 +379,11 @@
             // Nothing at all when neither biography is free, which is what the disabled box says.
             if (FirstFree is { } free)
             {
-                Session.Edit(d => Session.Plans.Write(d, EmpirePlan.Empty, free, Vocabulary));
+                var locked = Locked;
+                var keeping = Session.Context!.Civics.Where(c => !locked.Contains(c)).ToList();
+
+                Session.Edit(d => Session.Plans.Write(
+                    d, new EmpirePlan([], [], keeping), free, Vocabulary));
             }
 
             return;

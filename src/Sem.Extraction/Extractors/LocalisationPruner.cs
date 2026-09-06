@@ -1,4 +1,4 @@
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using Sem.GameData;
 
 namespace Sem.Extraction.Extractors;
@@ -125,17 +125,11 @@ internal static partial class LocalisationPruner
 
     private static void CollectSeeds(GameDatabase database, HashSet<string> wanted)
     {
-        // What a plan is written with. The ascension paths borrow the names of the tradition trees
-        // that lead to them, because a path is a shape a country is in and the game never prints a
-        // word for it - the tree is the word a player knows it by. The two headings are the game's
-        // own, so a plan written in one language still reads as sentences in another.
-        foreach (var key in Sem.Designs.PlanPaths.NameKeys)
-        {
-            Add(key);
-        }
-
+        // What a plan is written with. Not the headings of its prose, which are fixed words rather
+        // than the game's - these are the two the pickers put on their budget bars.
         Add("TRADITIONS");
         Add("ASCENSION_PERKS");
+        Add("GOVERNMENT_CIVICS");
 
         foreach (var tree in database.TraditionTrees)
         {
@@ -220,6 +214,11 @@ internal static partial class LocalisationPruner
             AddRequirement(civic.Potential);
             AddRequirement(civic.Possible);
             AddRequirement(civic.Playable);
+
+            // Why a reform could not take this on or give it up, which the plan's civic picker
+            // shows in the game's own words.
+            AddRequirement(civic.CanAddLater);
+            AddRequirement(civic.CanRemoveLater);
             AddEffects(civic.Effects);
         }
 

@@ -1,4 +1,4 @@
-namespace Sem.Ui.Services;
+﻿namespace Sem.Ui.Services;
 
 /// <summary>
 /// What a name written in a plan is allowed to mean, for one empire.
@@ -21,31 +21,39 @@ public sealed class PlanVocabulary
 {
     private readonly Dictionary<string, string> _trees;
     private readonly Dictionary<string, string> _perks;
+    private readonly Dictionary<string, string> _civics;
 
     /// <summary>
     /// Builds the vocabulary from what the pickers would offer this empire.
     /// </summary>
     /// <param name="trees">The tradition trees on offer, as key and display name.</param>
     /// <param name="perks">The ascension perks on offer, as key and display name.</param>
+    /// <param name="civics">The civics a government reform could reach, on the same terms.</param>
     public PlanVocabulary(
         IEnumerable<(string Key, string Name)> trees,
-        IEnumerable<(string Key, string Name)> perks)
+        IEnumerable<(string Key, string Name)> perks,
+        IEnumerable<(string Key, string Name)> civics)
     {
         ArgumentNullException.ThrowIfNull(trees);
         ArgumentNullException.ThrowIfNull(perks);
+        ArgumentNullException.ThrowIfNull(civics);
 
         _trees = Index(trees);
         _perks = Index(perks);
+        _civics = Index(civics);
     }
 
-    /// <summary>Nothing on offer, which is what an empire has before either is extracted.</summary>
-    public static PlanVocabulary Empty { get; } = new([], []);
+    /// <summary>Nothing on offer, which is what an empire has before any of it is extracted.</summary>
+    public static PlanVocabulary Empty { get; } = new([], [], []);
 
     /// <summary>The tradition tree that name means, or nothing if it means none of them.</summary>
     public string? Tree(string name) => Look(_trees, name);
 
     /// <summary>The ascension perk that name means, or nothing if it means none of them.</summary>
     public string? Perk(string name) => Look(_perks, name);
+
+    /// <summary>The civic that name means, or nothing if it means none of them.</summary>
+    public string? Civic(string name) => Look(_civics, name);
 
     /// <summary>
     /// Names to keys, keeping the first where two things somehow still share a name.

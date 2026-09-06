@@ -1,4 +1,4 @@
-using Sem.Designs;
+﻿using Sem.Designs;
 
 namespace Sem.Ui.Services;
 
@@ -19,9 +19,11 @@ namespace Sem.Ui.Services;
 /// through a flat list of everything.
 /// </para>
 /// <para>
-/// The labels carry the meaning of each line, so a name that could be read two ways is settled by
-/// which line it is on. Two of the three are the game's own words, which means they are already
-/// translated; the third has no key in the game and keeps ours.
+/// The labels are fixed words rather than the game's own, which costs a French player a line of
+/// English and buys two things. Room: the headings were most of what a third line of civics needed,
+/// and the budget below is tight enough in a long language to lose items over it. And recognition:
+/// a plan written in a German game is still read as a plan by an English one, where before the
+/// heading and the names both had to match and neither did.
 /// </para>
 /// </remarks>
 public sealed class PlanText(Localizer localizer)
@@ -33,76 +35,101 @@ public sealed class PlanText(Localizer localizer)
     /// The game cuts a biography short and does it without saying so. The only measurement we have
     /// is a real one: a species biography written from a 626-character description came back at 476,
     /// cut mid-phrase. So the budget is set below that with room to spare, and a plan too long for it
-    /// drops whole items from the end rather than handing the game something to cut in the middle of
-    /// a name - a half-written name is the one input that could be read as the wrong thing.
+    /// drops whole items rather than handing the game something to cut in the middle of a name - a
+    /// half-written name is the one input that could be read as the wrong thing.
     /// </remarks>
     public const int Budget = 440;
 
-    /// <summary>The game has no word for this one, so it keeps ours.</summary>
-    private const string PathFallback = "Ascension path";
+    /// <summary>
+    /// The word a biography starts with when it is a plan.
+    /// </summary>
+    /// <remarks>
+    /// What tells a plan from somebody's writing, and what a plan that has decided nothing consists
+    /// of. Both jobs used to be done by a line naming the ascension path, which cost four times as
+    /// much and said something the perks below it already said.
+    /// </remarks>
+    public const string Marker = "Plan";
 
-    private string PathLabel => localizer.Heading("SEM_ASCENSION_PATH", PathFallback);
+    private const string TreesLabel = "Traditions";
 
-    private string TreesLabel => localizer.Heading("TRADITIONS", "Traditions");
+    private const string PerksLabel = "Perks";
 
-    private string PerksLabel => localizer.Heading("ASCENSION_PERKS", "Ascension Perks");
-
-    /// <summary>What one of the game's ascension paths is called, in the player's own language.</summary>
-    public string PathName(PlanPath path) => path switch
-    {
-        PlanPath.Unset => localizer.Heading("SEM_PLAN_UNSET", "Not decided"),
-        PlanPath.None => localizer.Heading("SEM_PLAN_NO_PATH", "No ascension"),
-        _ => PlanPaths.NameKey(path) is { } key ? localizer.Text(key) : path.ToString(),
-    };
+    private const string CivicsLabel = "Civics";
 
     /// <summary>
     /// Writes a plan as the biography that carries it.
     /// </summary>
     /// <remarks>
-    /// A line per part that has anything in it, and the path line always - which is what a plan
-    /// still being made has instead of nothing, and what lets it be read back before its first perk
-    /// is chosen.
+    /// The marker always, then a line per part that has anything in it.
     /// </remarks>
     public string Write(EmpirePlan plan)
     {
         ArgumentNullException.ThrowIfNull(plan);
 
-        // Always, even when nothing is decided. The path is worked out from the perks, so a plan
-        // being built has no path until the first one is chosen - and without this line there would
-        // be nothing in the biography to read the plan back from, so it would look like an empire
-        // nobody was planning at all.
-        var lines = new List<string> { $"{PathLabel}: {PathName(plan.Path)}" };
-
-        if (plan.Trees.Count > 0)
-        {
-            lines.Add($"{TreesLabel}: {string.Join(", ", plan.Trees.Select(t => localizer.Text(t)))}");
-        }
-
-        if (plan.Perks.Count > 0)
-        {
-            lines.Add($"{PerksLabel}: {string.Join(", ", plan.Perks.Select(p => localizer.Text(p)))}");
-        }
+        List<Line> lines =
+        [
+            new(TreesLabel, [.. plan.Trees.Select(k => localizer.Text(k))]),
+            new(PerksLabel, [.. plan.Perks.Select(k => localizer.Text(k))]),
+            new(CivicsLabel, [.. plan.Civics.Select(k => localizer.Text(k))]),
+        ];
 
         return Fit(lines);
     }
 
     /// <summary>
-    /// Brings the whole thing inside what a biography will hold, by dropping from the end.
+    /// Brings the whole thing inside what a biography will hold, by dropping the last item of
+    /// whichever line is longest until it fits.
     /// </summary>
     /// <remarks>
-    /// The perks line goes first, being both the longest and the most granular: a plan that has lost
-    /// its perks still says which path and which trees, which is the shape of the decision. Dropping
-    /// a whole line is deliberate - the alternative is letting the game cut wherever it likes, which
-    /// would leave a name half-written and readable as a different one.
+    /// <para>
+    /// Dropping items and not lines, which is the difference between a plan that loses its last
+    /// perk and one that loses all eight. It used to remove whole lines from the end, and in a long
+    /// language that is what a single character over budget cost.
+    /// </para>
+    /// <para>
+    /// From the end of each line because that is the far future: the eighth perk is the least
+    /// certain thing in a plan and the first worth giving up. From the longest line because that is
+    /// where the characters are, and it keeps all three parts represented instead of emptying one
+    /// to spare another.
+    /// </para>
+    /// <para>
+    /// A name is never cut in half. That is the whole reason this exists rather than letting the
+    /// game truncate: a half-written name can read as a different one, and a plan that says the
+    /// wrong thing is worse than a plan that says less.
+    /// </para>
     /// </remarks>
-    private static string Fit(List<string> lines)
+    private static string Fit(List<Line> lines)
     {
-        while (lines.Count > 0 && string.Join('\n', lines).Length > Budget)
+        while (Render(lines).Length > Budget)
         {
-            lines.RemoveAt(lines.Count - 1);
+            var longest = lines
+                .Where(l => l.Names.Count > 0)
+                .OrderByDescending(l => l.Length)
+                .FirstOrDefault();
+
+            if (longest is null)
+            {
+                break;
+            }
+
+            longest.Names.RemoveAt(longest.Names.Count - 1);
         }
 
-        return string.Join('\n', lines);
+        return Render(lines);
+    }
+
+    private static string Render(List<Line> lines) => string.Join(
+        '\n',
+        new[] { Marker }.Concat(lines.Where(l => l.Names.Count > 0).Select(l => l.ToString())));
+
+    /// <summary>One line of the prose while it is still being shortened to fit.</summary>
+    private sealed class Line(string label, List<string> names)
+    {
+        public List<string> Names { get; } = names;
+
+        public int Length => ToString().Length;
+
+        public override string ToString() => $"{label}: {string.Join(", ", Names)}";
     }
 
     /// <summary>
@@ -110,8 +137,8 @@ public sealed class PlanText(Localizer localizer)
     /// </summary>
     /// <remarks>
     /// Null and an empty plan are different answers, which is why this returns one that can be null.
-    /// A biography holding "Ascension path: Not decided" is a plan that has decided nothing yet, and
-    /// a biography holding somebody's prose is not a plan at all - and the difference decides whether
+    /// A biography holding nothing but the marker is a plan that has decided nothing yet, and a
+    /// biography holding somebody's prose is not a plan at all - and the difference decides whether
     /// their writing is about to be overwritten.
     ///
     /// Everything it cannot make sense of is left out rather than guessed at. A name the empire could
@@ -128,10 +155,10 @@ public sealed class PlanText(Localizer localizer)
             return null;
         }
 
-        var path = PlanPath.Unset;
         List<string> trees = [];
         List<string> perks = [];
-        var understood = false;
+        List<string> civics = [];
+        var marked = false;
 
         foreach (var line in biography.ReplaceLineEndings("\n").Split('\n'))
         {
@@ -139,61 +166,38 @@ public sealed class PlanText(Localizer localizer)
 
             if (at < 0)
             {
+                // The marker has no colon, which is also what keeps it from being read as a
+                // heading. Anything else without one is a sentence somebody wrote.
+                marked |= Same(line.Trim(), Marker);
                 continue;
             }
 
             var heading = line[..at].Trim();
             var written = line[(at + 1)..].Trim();
 
-            if (Same(heading, PathLabel) || Same(heading, PathFallback))
-            {
-                // Only a path this recognises counts. A line reading "Ascension path: something
-                // nobody has heard of" is somebody's own writing that happens to start with those
-                // words, and reading it as a plan would replace what they wrote.
-                if (ReadPath(written) is { } found)
-                {
-                    path = found;
-                    understood = true;
-                }
-            }
-            else if (Same(heading, TreesLabel))
+            if (Same(heading, TreesLabel))
             {
                 trees = [.. Names(written).Select(vocabulary.Tree).OfType<string>()];
-                understood |= trees.Count > 0;
             }
             else if (Same(heading, PerksLabel))
             {
                 perks = [.. Names(written).Select(vocabulary.Perk).OfType<string>()];
-                understood |= perks.Count > 0;
+            }
+            else if (Same(heading, CivicsLabel))
+            {
+                civics = [.. Names(written).Select(vocabulary.Civic).OfType<string>()];
             }
         }
 
-        return understood ? new EmpirePlan(path, trees, perks) : null;
+        // The marker alone decides. A biography that happens to have a line starting "Perks:" but
+        // does not open with the word is somebody's own writing about their empire, and reading it
+        // as a plan would be a licence to replace it.
+        return marked ? new EmpirePlan(trees, perks, civics) : null;
     }
 
     /// <summary>Whether this biography is a plan rather than something the player wrote.</summary>
     public bool IsPlan(string? biography, PlanVocabulary vocabulary) =>
         Read(biography, vocabulary) is not null;
-
-    /// <summary>
-    /// The path a line names, or nothing when it names none of them.
-    /// </summary>
-    /// <remarks>
-    /// "Not decided" is one of the answers rather than the absence of one: it is what a plan says
-    /// while its perks are still being chosen, and recognising it is what keeps such a plan readable.
-    /// </remarks>
-    private PlanPath? ReadPath(string written)
-    {
-        foreach (var candidate in PlanPaths.All)
-        {
-            if (Same(written, PathName(candidate)))
-            {
-                return candidate;
-            }
-        }
-
-        return null;
-    }
 
     private static IEnumerable<string> Names(string written) =>
         written.Split(',').Select(n => n.Trim()).Where(n => n.Length > 0);

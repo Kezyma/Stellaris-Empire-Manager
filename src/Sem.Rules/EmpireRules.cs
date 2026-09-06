@@ -741,12 +741,16 @@ public sealed class EmpireRules(GameDatabase database)
     /// </remarks>
     public IReadOnlyList<OptionState> GetAscensionPerkOptions(
         DesignContext context,
-        IReadOnlyCollection<string> chosen)
+        IReadOnlyCollection<string> chosen,
+        IReadOnlyCollection<string> trees)
     {
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(chosen);
+        ArgumentNullException.ThrowIfNull(trees);
 
-        var planned = context.WithPlan(chosen, context.TraditionTrees);
+        // The trees come in because the seven ascension perks ask for a tree slot still to be free,
+        // and a context that does not know which trees the plan opens answers that with nought.
+        var planned = context.WithPlan(chosen, Opened(trees));
 
         var options = Options(
             _database.AscensionPerks,
@@ -803,6 +807,137 @@ public sealed class EmpireRules(GameDatabase database)
 
     /// <summary>How many tradition trees are named against how many a game allows.</summary>
     public Budget GetTraditionBudget(int chosen) => new(chosen, _database.Defines.TraditionSlots);
+
+    /// <summary>
+    /// Whether every perk in a plan would be allowed in the place it sits.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The question reordering asks. Twenty-five perks are gated on how many come before them -
+    /// "you must already have three" - which read against an ordered plan is a rule about position:
+    /// such a perk cannot be fourth or earlier. So each is judged against a context holding only
+    /// what precedes it, and the count falls out of that set's size with nothing extra to keep in
+    /// step.
+    /// </para>
+    /// <para>
+    /// The trees all go in at every step rather than being walked alongside. A plan does not say
+    /// whether a tree is opened before or after a perk is taken, and the seven ascension perks ask
+    /// for a tree slot still to be free - so the reading that cannot promise something the game
+    /// would refuse is the one where every planned tree is already open.
+    /// </para>
+    /// </remarks>
+    public bool IsLegalPerkOrder(
+        DesignContext context,
+        IReadOnlyList<string> perks,
+        IReadOnlyCollection<string> trees)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(perks);
+        ArgumentNullException.ThrowIfNull(trees);
+
+        var opened = Opened(trees).ToList();
+
+        for (var at = 0; at < perks.Count; at++)
+        {
+            if (_database.AscensionPerks.FirstOrDefault(p => p.Key == perks[at]) is not { } perk)
+            {
+                continue;
+            }
+
+            var before = context.WithPlan(perks.Take(at), opened);
+
+            if (!_evaluator.Evaluate(perk.Possible, before).Passed ||
+                !_evaluator.Evaluate(perk.Potential, before).Passed)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// The civics an empire cannot give up, which a plan has to spend slots on whether it names
+    /// them or not.
+    /// </summary>
+    /// <remarks>
+    /// The game's own <c>modification</c> field, whose comment says it is there "to prevent adding
+    /// or removing this after creation of the empire". Ninety-six civics say so outright and a few
+    /// dozen more only for removal. These are not written into a plan - the design already says
+    /// which civics it has - but they are shown, because a player choosing what to reform into
+    /// needs to see what is not up for discussion.
+    /// </remarks>
+    public IReadOnlyList<string> GetLockedCivics(DesignContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        return
+        [
+            .. _database.Civics
+                .Where(c => !c.IsOrigin
+                    && context.Civics.Contains(c.Key)
+                    && !_evaluator.Evaluate(c.CanRemoveLater, context).Passed)
+                .Select(c => c.Key),
+        ];
+    }
+
+    /// <summary>
+    /// The civics a plan may name, for the empire a government reform would leave behind.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Not <see cref="GetCivicOptions"/> with a different budget. That one blocks everything the
+    /// design does not already hold the moment its slots are full, which is exactly the empire a
+    /// player opens this editor to change - it would answer every question with "you have no room",
+    /// which is true now and is the thing being planned away.
+    /// </para>
+    /// <para>
+    /// A civic the game will not let a reform add is left out rather than shown struck through,
+    /// because it is not a choice this editor can offer at all. One already held is kept regardless,
+    /// so a locked civic still has an option to be drawn as.
+    /// </para>
+    /// </remarks>
+    public IReadOnlyList<OptionState> GetPlanCivicOptions(
+        DesignContext context,
+        IReadOnlyCollection<string> planned)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(planned);
+
+        var locked = GetLockedCivics(context);
+
+        // What the empire would end up holding, which is what the game's own exclusions have to be
+        // asked about - a planned civic judged against the government it replaces is judged against
+        // the wrong empire.
+        var after = context.WithPlan(
+            context.AscensionPerks,
+            context.TraditionTrees,
+            locked.Concat(planned));
+
+        var reachable = _database.Civics.Where(c => !c.IsOrigin
+            && (context.Civics.Contains(c.Key) || _evaluator.Evaluate(c.CanAddLater, context).Passed));
+
+        var options = Options(
+            reachable,
+            c => c.Key,
+            c => Combine(c.Playable, c.Potential),
+            c => c.Possible,
+            after);
+
+        return locked.Count + planned.Count < _database.Defines.PlannedCivicPoints
+            ? options
+            : [.. options.Select(o => planned.Contains(o.Key) || locked.Contains(o.Key)
+                ? o
+                : Blocked(o, RuleReasons.NoCivicSlotsLeft))];
+    }
+
+    /// <summary>How many civics a plan has spoken for against how many a game ends with.</summary>
+    /// <remarks>
+    /// Against the three an empire can reach rather than the two it starts with, since the third
+    /// slot - the one <c>tech_galactic_administration</c> unlocks - is the reason players plan a
+    /// reform at all.
+    /// </remarks>
+    public Budget GetPlanCivicBudget(int taken) => new(taken, _database.Defines.PlannedCivicPoints);
 
     /// <summary>
     /// The trees a plan opens, said both ways the game says it.

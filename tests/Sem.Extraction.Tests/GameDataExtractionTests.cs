@@ -1,5 +1,7 @@
-using Sem.Extraction;
+﻿using Sem.Extraction;
+using Sem.Designs;
 using Sem.GameData;
+using Sem.Rules;
 using Sem.Io;
 
 namespace Sem.Extraction.Tests;
@@ -922,4 +924,114 @@ public sealed class GameDataExtractionTests
             }
         }
     }
+    /// <summary>
+    /// What a plan is made of, read off the real game.
+    /// </summary>
+    /// <remarks>
+    /// A plan asks the game's own files questions a design never had to: how many perks come before
+    /// this one, whether a government reform could take that civic on, whether an empire will have
+    /// researched something by the time it gets there. Each number below was counted in the
+    /// installation rather than read off the extractor.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void APlanCanBeMadeOfWhatTheGameActuallyHolds()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        Assert.Equal(49, database.AscensionPerks.Count);
+        Assert.Equal(32, database.TraditionTrees.Count);
+        Assert.Equal(234, database.Traditions.Count);
+
+        // Two civics to start with and a third from tech_galactic_administration, which is the slot
+        // players reform their government to fill and the reason a plan has civics at all.
+        Assert.Equal(2, database.Defines.CivicPoints);
+        Assert.Equal(3, database.Defines.PlannedCivicPoints);
+
+        // The game's own modification field. Ninety-six say no outright, and a few dozen more refuse
+        // only removal - civic_anglers and its kin, whose remove block is "always = no".
+        Assert.Equal(96, database.Civics.Count(c => Never(c.CanAddLater)));
+        Assert.Equal(124, database.Civics.Count(c => Never(c.CanRemoveLater)));
+
+        // "num_ascension_perks > 1", which is what makes a perk unable to be first or second, and
+        // "num_tradition_categories < @max_tradition_trees" - the variable resolved to the seven it
+        // stands for rather than left as a name nothing could compare against.
+        var counts = database.AscensionPerks
+            .SelectMany(p => p.Possible.AndNested())
+            .OfType<CountRequirement>()
+            .ToList();
+
+        // By what they compare rather than as whole records: each also carries the game's own
+        // sentence for failing it, requires_ascension_perks_2 and requires_free_tradition_tree,
+        // which is wording rather than rule and which the picker shows.
+        Assert.Contains(
+            counts,
+            c => c.Of == SelectionCategory.AscensionPerk
+                && c.Comparison == CountComparison.Above
+                && c.Value == 1);
+
+        Assert.Contains(
+            counts,
+            c => c.Of == SelectionCategory.TraditionTree
+                && c.Comparison == CountComparison.Below
+                && c.Value == 7);
+
+        // A technology is something this empire will have by the time it takes the perk, so it is
+        // read as an assumption rather than as a refusal. Answering it false is what made World
+        // Shaper, the Colossus and the Archaeo-Engineers impossible to plan at all.
+        Assert.Contains(
+            database.AscensionPerks.SelectMany(p => p.Possible.AndNested()).OfType<UnknownRequirement>(),
+            u => u.Name == "has_technology");
+
+        // A country flag is the same kind of thing and gets the same answer - Galactic Wonders asks
+        // whether a megastructure has been built, which no design could ever say yes to.
+        Assert.Contains(
+            database.AscensionPerks.SelectMany(p => p.Possible.AndNested()).OfType<UnknownRequirement>(),
+            u => u.Name == "has_country_flag");
+
+        // What an empire definitionally is not stays flatly false, which is the line: a design may
+        // come to have a technology, and never comes to be a fallen empire or a pirate.
+        var everything = database.Requirements().SelectMany(r => r.AndNested()).OfType<UnknownRequirement>().ToList();
+
+        Assert.DoesNotContain(everything, u => u.Name == "is_fallen_empire");
+        Assert.DoesNotContain(everything, u => u.Name == "is_pirate");
+        Assert.DoesNotContain(everything, u => u.Name == "is_pre_ftl_empire");
+    }
+
+    /// <summary>
+    /// Planning one ascension still takes the others off the list, with the flags unread.
+    /// </summary>
+    /// <remarks>
+    /// The half that a blanket "assume anything unreadable" would quietly destroy, checked against
+    /// the game's own script rather than a fixture. The Purity and Mutation trees are gated on a NOR
+    /// listing every other ascension and a country flag among them, so the exclusion has to survive
+    /// one of its terms being unanswerable - and has to keep firing on the terms that are not.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void AnUnreadableFlagDoesNotCostTheAscensionExclusions()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        var rules = new EmpireRules(database);
+        var context = rules.CreateContext(EmpireDesignsFile.CreateEmpty().Add("Test"));
+
+        bool Offered(string tree, params string[] perks) =>
+            rules.GetTraditionTreeOptions(context, [], perks).Single(o => o.Key == tree).Visible;
+
+        // Nothing planned: the flag in the NOR is unreadable, and the trees are still on offer.
+        Assert.True(Offered("tradition_purity"));
+        Assert.True(Offered("tradition_mutation"));
+
+        // A cybernetic ascension planned: the NOR now has a term that definitely holds, and both
+        // go, exactly as taking that perk in the game would take them.
+        Assert.False(Offered("tradition_purity", "ap_the_flesh_is_weak"));
+        Assert.False(Offered("tradition_mutation", "ap_the_flesh_is_weak"));
+    }
+
+    /// <summary>Whether a condition compiled to a flat no.</summary>
+    private static bool Never(Requirement requirement) =>
+        requirement is AlwaysRequirement { Value: false };
 }

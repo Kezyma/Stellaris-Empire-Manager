@@ -337,6 +337,21 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
                     { Description = perk.DescriptionKey }
                 : Chip(key, null, null));
 
+    /// <summary>
+    /// The civics it means to reform its government into, likewise.
+    /// </summary>
+    /// <remarks>
+    /// Only the ones the plan names, which are the ones a reform would change. The civics an empire
+    /// cannot give up are already on the card above as its own, and saying them twice would make a
+    /// plan that changes one civic look like a plan that changes three.
+    /// </remarks>
+    public IEnumerable<EmpireChoice> PlanCivics =>
+        Plan.Civics
+            .Select(key => Database.Civics.FirstOrDefault(c => c.Key == key) is { } civic
+                ? new EmpireChoice(key, _session.Localizer.Text(civic.NameKey), civic.Icon, civic.Effects)
+                    { Description = $"{civic.Key}_desc" }
+                : Chip(key, null, null));
+
     /// <summary>The empire's adjectival name, or nothing where it has none.</summary>
     public string Adjective => _session.Localizer.Name(_design.Adjective, string.Empty);
 

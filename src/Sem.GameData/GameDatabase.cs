@@ -19,7 +19,7 @@ public sealed record GameDatabase
     /// site published with a database one version behind was read anyway, with whatever the shape had
     /// gained since taking its default and no sign that anything was missing.
     /// </remarks>
-    public const int CurrentSchemaVersion = 6;
+    public const int CurrentSchemaVersion = 7;
 
     /// <summary>Version of this file's own shape, so an old cache can be detected and rebuilt.</summary>
     public required int SchemaVersion { get; init; }
@@ -274,6 +274,8 @@ public sealed record GameDatabase
             yield return civic.Playable;
             yield return civic.Potential;
             yield return civic.Possible;
+            yield return civic.CanAddLater;
+            yield return civic.CanRemoveLater;
         }
 
         foreach (var government in GovernmentTypes)
@@ -341,6 +343,18 @@ public sealed record GameDefines
 
     /// <summary>How many tradition trees a game allows to be opened. Seven in an unmodified one.</summary>
     public int TraditionSlots { get; init; } = 7;
+
+    /// <summary>
+    /// How many civics an empire may end a game with, rather than start one with. Three in an
+    /// unmodified game.
+    /// </summary>
+    /// <remarks>
+    /// Two from <c>GOVERNMENT_CIVIC_POINTS_BASE</c> plus the one
+    /// <c>tech_galactic_administration</c> grants, which is the slot players reform their
+    /// government to fill and the reason a plan has civics in it at all. Read from the technology
+    /// rather than typed here, so a patch that moves the slot moves this too.
+    /// </remarks>
+    public int PlannedCivicPoints { get; init; } = 3;
 
     /// <summary>The planet class the city appearance preview defaults to.</summary>
     public string? DefaultCityPreviewPlanetClass { get; init; }
@@ -926,6 +940,26 @@ public sealed record CivicDefinition(string Key, bool IsOrigin)
     /// blocked, with the game's own explanation.
     /// </summary>
     public Requirement Possible { get; init; } = new AlwaysRequirement(true);
+
+    /// <summary>
+    /// Whether a government reform could add this to an empire that did not start with it.
+    /// </summary>
+    /// <remarks>
+    /// The game's own field, which its comment describes as "set to no to prevent adding or
+    /// removing this after creation of the empire". Ninety-six civics say no outright and
+    /// thirty-three make it conditional; the rest, which is most of them, say nothing and mean yes.
+    /// A civic that cannot be added is not offered in a plan, because a plan is about what an
+    /// empire becomes.
+    /// </remarks>
+    public Requirement CanAddLater { get; init; } = new AlwaysRequirement(true);
+
+    /// <summary>Whether a government reform could take this away again.</summary>
+    /// <remarks>
+    /// The other half of the same field. One that cannot be removed is shown in a plan but cannot
+    /// be chosen or given up - it is already spending a slot, and saying so is the difference
+    /// between a plan the game would accept and one it would not.
+    /// </remarks>
+    public Requirement CanRemoveLater { get; init; } = new AlwaysRequirement(true);
 
     /// <summary>Traits this forces onto the founder species.</summary>
     public IReadOnlyList<string> ForcedTraits { get; init; } = [];

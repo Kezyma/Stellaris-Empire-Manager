@@ -28,6 +28,11 @@ namespace Sem.Ui.Components;
 /// deciding between trees is really deciding between those. A perk holds nothing and leaves it
 /// empty.
 /// </param>
+/// <param name="Locked">
+/// Whether this is the empire's already and cannot be given up, which only a civic ever is. It
+/// spends a slot the plan then cannot use, so it is shown rather than left out - but it is not a
+/// choice, and pressing it does nothing.
+/// </param>
 public sealed record PlanOption(
     string Key,
     string Name,
@@ -37,4 +42,5 @@ public sealed record PlanOption(
     bool Enabled,
     IReadOnlyList<string> Reasons,
     bool Unavailable = false,
-    IReadOnlyList<PlanOption>? Contents = null);
+    IReadOnlyList<PlanOption>? Contents = null,
+    bool Locked = false);

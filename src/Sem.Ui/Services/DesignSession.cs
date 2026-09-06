@@ -1,4 +1,4 @@
-using Sem.Clausewitz;
+﻿using Sem.Clausewitz;
 using Sem.Designs;
 using Sem.GameData;
 using Sem.Rules;
@@ -112,7 +112,8 @@ public sealed class DesignSession
     /// </remarks>
     public PlanVocabulary PlanVocabulary => _planVocabulary ??= new PlanVocabulary(
         Data.Database.TraditionTrees.Select(t => (t.Key, Localizer.Text(t.NameKey))),
-        Data.Database.AscensionPerks.Select(p => (p.Key, Localizer.Text(p.NameKey))));
+        Data.Database.AscensionPerks.Select(p => (p.Key, Localizer.Text(p.NameKey))),
+        Data.Database.Civics.Where(c => !c.IsOrigin).Select(c => (c.Key, Localizer.Text(c.NameKey))));
 
     private PlanVocabulary? _planVocabulary;
 

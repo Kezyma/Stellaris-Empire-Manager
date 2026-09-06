@@ -58,6 +58,31 @@ public sealed class RequirementCompiler
         ["has_tradition"] = SelectionCategory.TraditionTree,
     };
 
+    /// <summary>
+    /// Triggers asking how many of something has been taken, and what they are counting.
+    /// </summary>
+    /// <remarks>
+    /// These are the whole of it in an unmodified game: twenty-five perks gated on how many perks
+    /// come before them, and the seven ascension perks gated on there being a tradition tree left
+    /// to open.
+    /// </remarks>
+    private static readonly Dictionary<string, SelectionCategory> CountTriggers = new(StringComparer.Ordinal)
+    {
+        ["num_ascension_perks"] = SelectionCategory.AscensionPerk,
+        ["num_tradition_categories"] = SelectionCategory.TraditionTree,
+    };
+
+    /// <summary>How the game writes each comparison.</summary>
+    private static readonly Dictionary<string, CountComparison> Comparisons = new(StringComparer.Ordinal)
+    {
+        [">"] = CountComparison.Above,
+        ["<"] = CountComparison.Below,
+        [">="] = CountComparison.AtLeast,
+        ["<="] = CountComparison.AtMost,
+        ["="] = CountComparison.Exactly,
+        ["=="] = CountComparison.Exactly,
+    };
+
     private readonly Dictionary<string, CwBlock> _scriptedTriggers = new(StringComparer.Ordinal);
     private readonly Dictionary<string, int> _unrecognised = new(StringComparer.Ordinal);
     private readonly Dictionary<string, int> _unrecognisedInEffects = new(StringComparer.Ordinal);
@@ -84,6 +109,22 @@ public sealed class RequirementCompiler
     private bool _compilingEffects;
 
     /// <summary>
+    /// Whether what is being compiled belongs to a plan rather than to a design.
+    /// </summary>
+    /// <remarks>
+    /// The same condition means different things in the two places, which is why this exists rather
+    /// than one answer being chosen for both. See
+    /// <see cref="DesignPredicates.UnknowableWhenPlanning"/>.
+    /// </remarks>
+    private bool _compilingPlan;
+
+    /// <summary>
+    /// Where the game's <c>@</c> variables are read from, so a threshold written as
+    /// <c>@max_tradition_trees</c> compiles to the seven it stands for.
+    /// </summary>
+    private ScriptLoader? _loader;
+
+    /// <summary>
     /// Compiles a condition that decides when a modifier applies, rather than one that decides
     /// whether an option may be chosen.
     /// </summary>
@@ -102,6 +143,39 @@ public sealed class RequirementCompiler
         }
     }
 
+    /// <summary>
+    /// Compiles a condition on something a plan names - an ascension perk, a tradition tree, or
+    /// whether a civic could be taken on later - rather than on something a design holds now.
+    /// </summary>
+    /// <remarks>
+    /// The difference is what happens to conditions about a game already under way. A design has
+    /// researched nothing and joined nothing, so those are false for it. A plan describes an empire
+    /// decades in, and answering false there does not restrict the plan, it forbids it: half the
+    /// perks worth planning are gated on a technology. See
+    /// <see cref="DesignPredicates.UnknowableWhenPlanning"/> for which ones, and for the one that
+    /// is deliberately left out.
+    /// </remarks>
+    public Requirement CompilePlanRequirementsList(CwBlock? block) =>
+        AsPlan(() => CompileRequirementsList(block));
+
+    /// <summary>Compiles a trigger belonging to a plan, on the terms above.</summary>
+    public Requirement CompilePlanTrigger(CwBlock? block) => AsPlan(() => CompileTrigger(block));
+
+    private Requirement AsPlan(Func<Requirement> compile)
+    {
+        var was = _compilingPlan;
+        _compilingPlan = true;
+
+        try
+        {
+            return compile();
+        }
+        finally
+        {
+            _compilingPlan = was;
+        }
+    }
+
     /// <summary>Scripted triggers available for inlining.</summary>
     public IReadOnlyDictionary<string, CwBlock> ScriptedTriggers => _scriptedTriggers;
 
@@ -109,6 +183,10 @@ public sealed class RequirementCompiler
     public void LoadScriptedTriggers(ScriptLoader loader)
     {
         ArgumentNullException.ThrowIfNull(loader);
+
+        // Kept for its variables as well as its triggers. Both are the same thing from here: script
+        // written somewhere else that a condition refers to by name.
+        _loader = loader;
 
         foreach (var entry in loader.LoadEntries("common/scripted_triggers"))
         {
@@ -311,6 +389,18 @@ public sealed class RequirementCompiler
             case "NAND" when node.Block is not null:
                 return new NotRequirement(CompileTrigger(node.Block, depth + 1));
 
+            // The opposite of custom_tooltip: a rule the game checks but does not explain, used
+            // where the reason would give away something the player is not meant to see yet. It
+            // still decides, so it compiles like an AND and only its wording is missing.
+            case "hidden_trigger" when node.Block is not null:
+                return CompileTrigger(node.Block, depth + 1);
+
+            // Wording, not conditions. custom_tooltip pulls its own fail_text out by name because
+            // it needs the value; these are the same keys met anywhere else, including the
+            // success_text that sits beside it and used to be compiled as though it were a rule.
+            case "success_text" or "fail_text" or "moddable_conditions_custom_tooltip":
+                return new AlwaysRequirement(true);
+
             // Triggers that name a scope rather than a condition; the design is always the country.
             // owner_species among them: the species a design's questions are about is its founder,
             // which is the species this context already answers for.
@@ -361,6 +451,21 @@ public sealed class RequirementCompiler
             return CompileNamedTrigger(key, expected: scalar == "yes", depth);
         }
 
+        // A count of what has been taken so far. In a game this asks about the past; in a plan it
+        // asks about position, because the thing in the fourth place has three before it.
+        if (CountTriggers.TryGetValue(key, out var counted) && CompileCount(counted, node) is { } count)
+        {
+            return count;
+        }
+
+        // Something a running game would know and this empire will find out. Only while compiling a
+        // plan, and only as an assumption rather than a constant, so that a negation stays as
+        // permissive as the condition it wraps.
+        if (_compilingPlan && DesignPredicates.UnknowableWhenPlanning.Contains(key))
+        {
+            return new UnknownRequirement(key);
+        }
+
         // Conditions naming a value rather than answering yes or no, such as
         // "has_country_flag = some_flag", which the designer can still decide.
         if (DesignPredicates.NeverTrueInDesigner.Contains(key))
@@ -373,16 +478,30 @@ public sealed class RequirementCompiler
             return new AlwaysRequirement(true);
         }
 
-        // A count of what has been taken so far, which is a question about the order a game hands
-        // things out in rather than about whether two choices can sit together. Every one of these
-        // in the ascension perks is a lower bound, so reading them as unmet would refuse a plan its
-        // own first step.
-        if (DesignPredicates.CountedInAGameNotAPlan.Contains(key))
+        return RecordUnrecognised(key);
+    }
+
+    /// <summary>
+    /// Compiles "how many of these do I have" against a number, or nothing when either half of it
+    /// cannot be read.
+    /// </summary>
+    /// <remarks>
+    /// The threshold is often a variable rather than a literal - <c>@max_tradition_trees</c>, which
+    /// the game's own comment says is there "in case modders increase the limit" - so it is resolved
+    /// through the loader rather than parsed. Returning nothing when it will not resolve sends the
+    /// condition on to be recorded as unrecognised, which is the visible failure this file prefers
+    /// to a silently wrong number.
+    /// </remarks>
+    private CountRequirement? CompileCount(SelectionCategory of, CwNode node)
+    {
+        if (node.Operator is not { } written || !Comparisons.TryGetValue(written, out var comparison))
         {
-            return new AlwaysRequirement(true);
+            return null;
         }
 
-        return RecordUnrecognised(key);
+        return _loader?.ResolveInt(node.ScalarValue) is { } value
+            ? new CountRequirement(of, comparison, value)
+            : null;
     }
 
     /// <summary>Compiles every entry of a block except one, used for the body of an if.</summary>
@@ -424,7 +543,14 @@ public sealed class RequirementCompiler
     {
         Requirement result;
 
-        if (DesignPredicates.NeverTrueInDesigner.Contains(name))
+        // Asked as "is_subject = no" rather than by naming a value, and answered the same way: a
+        // plan does not know, and an unknown survives the negation applied at the end of this method
+        // where a constant would flip into a block.
+        if (_compilingPlan && DesignPredicates.UnknowableWhenPlanning.Contains(name))
+        {
+            result = new UnknownRequirement(name);
+        }
+        else if (DesignPredicates.NeverTrueInDesigner.Contains(name))
         {
             result = new AlwaysRequirement(false);
         }

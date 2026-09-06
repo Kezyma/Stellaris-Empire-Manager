@@ -1,4 +1,4 @@
-using Sem.GameData;
+﻿using Sem.GameData;
 using Sem.Rules;
 
 namespace Sem.Core.Tests.Rules;
@@ -17,7 +17,7 @@ public sealed class AscensionPerkTests
     [Fact]
     public void WithNothingPlannedEverythingIsOffered()
     {
-        var options = Rules().GetAscensionPerkOptions(Context(), []);
+        var options = Rules().GetAscensionPerkOptions(Context(), [], []);
 
         Assert.All(options, o => Assert.True(o.Enabled, $"{o.Key} was blocked with nothing planned"));
     }
@@ -33,7 +33,7 @@ public sealed class AscensionPerkTests
     [Fact]
     public void APerkThatRulesOutAnotherBlocksIt()
     {
-        var options = Rules().GetAscensionPerkOptions(Context(), ["ap_flesh"]);
+        var options = Rules().GetAscensionPerkOptions(Context(), ["ap_flesh"], []);
 
         Assert.False(Find(options, "ap_gene").Enabled);
         Assert.True(Find(options, "ap_flesh").Enabled);
@@ -44,7 +44,7 @@ public sealed class AscensionPerkTests
     [Fact]
     public void ReleasingThePerkOpensTheOtherAgain()
     {
-        var options = Rules().GetAscensionPerkOptions(Context(), []);
+        var options = Rules().GetAscensionPerkOptions(Context(), [], []);
 
         Assert.True(Find(options, "ap_gene").Enabled);
     }
@@ -60,7 +60,7 @@ public sealed class AscensionPerkTests
     public void AFullPlanBlocksWhatItDoesNotHold()
     {
         var rules = Rules();
-        var options = rules.GetAscensionPerkOptions(Context(), ["ap_flesh", "ap_plain"]);
+        var options = rules.GetAscensionPerkOptions(Context(), ["ap_flesh", "ap_plain"], []);
 
         var blocked = Find(options, "ap_third");
 
@@ -78,6 +78,58 @@ public sealed class AscensionPerkTests
 
         Assert.Equal(3, budget.Spent);
         Assert.Equal(2, budget.Available);
+    }
+
+    /// <summary>
+    /// A perk needing two others before it is not offered until two others are there.
+    /// </summary>
+    /// <remarks>
+    /// The game writes this as <c>num_ascension_perks > 1</c> and means "you must already have
+    /// two", which against an ordered plan is a rule about position: this one cannot be first or
+    /// second. Twenty-five perks carry a condition of that shape, and none of them was read at all
+    /// until there was something to count.
+    /// </remarks>
+    [Fact]
+    public void APerkThatNeedsTwoBeforeItWaitsForTwo()
+    {
+        var rules = Ordered.Rules();
+
+        Assert.False(Find(rules.GetAscensionPerkOptions(Ordered.Context(), [], []), "ap_late").Enabled);
+        Assert.False(Find(rules.GetAscensionPerkOptions(Ordered.Context(), ["ap_one"], []), "ap_late").Enabled);
+        Assert.True(Find(rules.GetAscensionPerkOptions(Ordered.Context(), ["ap_one", "ap_two"], []), "ap_late").Enabled);
+    }
+
+    /// <summary>An order the game would grant is legal; the same perks in another order are not.</summary>
+    /// <remarks>
+    /// The two halves together are the point. Reordering must not be able to produce a plan the game
+    /// would refuse, and it must not refuse one the game would allow - a check that answered no to
+    /// everything would pass the first half on its own.
+    /// </remarks>
+    [Fact]
+    public void APerkCannotBeMovedAboveWhatItNeeds()
+    {
+        var rules = Ordered.Rules();
+
+        Assert.True(rules.IsLegalPerkOrder(Ordered.Context(), ["ap_one", "ap_two", "ap_late"], []));
+        Assert.False(rules.IsLegalPerkOrder(Ordered.Context(), ["ap_late", "ap_one", "ap_two"], []));
+        Assert.False(rules.IsLegalPerkOrder(Ordered.Context(), ["ap_one", "ap_late", "ap_two"], []));
+    }
+
+    /// <summary>
+    /// A perk asking for a tradition tree still to be free is blocked when the plan opens them all.
+    /// </summary>
+    /// <remarks>
+    /// The one condition that crosses between the two halves of a plan: the seven ascension perks
+    /// ask <c>num_tradition_categories &lt; @max_tradition_trees</c>, so a plan that has already
+    /// spoken for every tree has nowhere to put the one the perk would open.
+    /// </remarks>
+    [Fact]
+    public void APerkNeedingATreeSlotIsBlockedWhenThePlanOpensThemAll()
+    {
+        var rules = Ordered.Rules();
+
+        Assert.True(Find(rules.GetAscensionPerkOptions(Ordered.Context(), [], ["a", "b"]), "ap_path").Enabled);
+        Assert.False(Find(rules.GetAscensionPerkOptions(Ordered.Context(), [], ["a", "b", "c"]), "ap_path").Enabled);
     }
 
     private static OptionState Find(IReadOnlyList<OptionState> options, string key) =>
@@ -104,4 +156,50 @@ public sealed class AscensionPerkTests
             new AscensionPerkDefinition("ap_third"),
         ],
     };
+
+    /// <summary>
+    /// A second little game, for the rules that are about where a perk sits rather than which ones
+    /// sit together.
+    /// </summary>
+    /// <remarks>
+    /// Its own because the fixture above deliberately has two slots, and a perk that needs two
+    /// others before it could never be reached in a game that only grants two. Three tradition trees
+    /// here, so "a tree slot must still be free" is a condition that can be met and then not met.
+    /// </remarks>
+    private static class Ordered
+    {
+        public static EmpireRules Rules() => new(Database);
+
+        public static DesignContext Context() =>
+            new EmpireRules(Database).CreateContext(RulesTestData.ValidEmpire());
+
+        public static GameDatabase Database { get; } = RulesTestData.Database with
+        {
+            Defines = RulesTestData.Database.Defines with
+            {
+                AscensionPerkSlots = 8,
+                TraditionSlots = 3,
+            },
+            AscensionPerks =
+            [
+                new AscensionPerkDefinition("ap_one"),
+                new AscensionPerkDefinition("ap_two"),
+
+                // "num_ascension_perks > 1", which twelve of the game's own perks carry.
+                new AscensionPerkDefinition("ap_late")
+                {
+                    Possible = new CountRequirement(
+                        SelectionCategory.AscensionPerk, CountComparison.Above, 1),
+                },
+
+                // "num_tradition_categories < @max_tradition_trees", which the seven ascension
+                // perks carry and which is the only condition crossing between a plan's two halves.
+                new AscensionPerkDefinition("ap_path")
+                {
+                    Possible = new CountRequirement(
+                        SelectionCategory.TraditionTree, CountComparison.Below, 3),
+                },
+            ],
+        };
+    }
 }

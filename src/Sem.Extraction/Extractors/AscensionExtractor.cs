@@ -1,4 +1,4 @@
-using Sem.GameData;
+﻿using Sem.GameData;
 
 namespace Sem.Extraction.Extractors;
 
@@ -45,8 +45,8 @@ internal static class AscensionExtractor
 
                 // Potential decides whether it is listed at all; possible whether it may be taken
                 // now, and its failures are sentences the game wrote to be read.
-                Potential = requirements.CompileTrigger(body.GetBlock("potential")),
-                Possible = requirements.CompileTrigger(body.GetBlock("possible")),
+                Potential = requirements.CompilePlanTrigger(body.GetBlock("potential")),
+                Possible = requirements.CompilePlanTrigger(body.GetBlock("possible")),
 
                 Effects = EffectsReader.Read(body, loader, requirements),
 
@@ -81,7 +81,7 @@ internal static class AscensionExtractor
         foreach (var entry in loader.LoadDefinitions(Trees))
         {
             var body = entry.Body;
-            var potential = requirements.CompileTrigger(body.GetBlock("potential"));
+            var potential = requirements.CompilePlanTrigger(body.GetBlock("potential"));
 
             // One of them exists only so the game has something to hang a tooltip on, and says so
             // with "always = no". Read the mark rather than matching its name, so a second one would

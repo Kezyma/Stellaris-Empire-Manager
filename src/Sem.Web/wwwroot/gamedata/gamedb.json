@@ -1,12 +1,13 @@
 {
-  "schemaVersion": 6,
+  "schemaVersion": 7,
   "gameVersion": "v4.4.6",
-  "extractorVersion": "0.1.0\u002B0ab3108cd23f384c26def3fbb99c9de39513d985",
+  "extractorVersion": "0.1.0\u002Bbaa8bdafbdda69404f13e0b5de7c42a2a75044b4",
   "defines": {
     "ethicsPoints": 3,
     "civicPoints": 2,
     "ascensionPerkSlots": 8,
     "traditionSlots": 7,
+    "plannedCivicPoints": 3,
     "defaultCityPreviewPlanetClass": "pc_continental",
     "cityPopLevel": 4
   },
@@ -66396,6 +66397,9 @@
     "tributeallowraided4": 3000,
     "tributeallowraided5": 4000,
     "tributeallowraided6": 5000,
+    "EnigmaticEngineeringDraw": 0.025,
+    "tech_gene_tailoring_POINTS": 2,
+    "tech_gene_expressions_POINTS": 1,
     "robot_trait_points": 0,
     "robot_max_traits": 4,
     "machine_trait_points": 1,
@@ -68531,6 +68535,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -68646,6 +68658,14 @@
             ]
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -68773,6 +68793,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -68886,6 +68914,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -68965,6 +69001,14 @@
         ],
         "failureText": "civic_tooltip_dic_imp"
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -69041,6 +69085,14 @@
           }
         ],
         "failureText": "civic_tooltip_dem_oli"
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -69188,6 +69240,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -69289,6 +69349,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -69360,6 +69428,14 @@
         "kind": "selection",
         "category": "Authority",
         "key": "auth_imperial"
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -69461,6 +69537,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -69543,6 +69627,14 @@
           }
         ],
         "failureText": "civic_tooltip_egalitarian"
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -69656,6 +69748,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -69759,6 +69859,14 @@
             }
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -69966,6 +70074,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -70084,6 +70200,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -70176,6 +70300,14 @@
           }
         ],
         "failureText": "civic_tooltip_militarist"
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -70285,6 +70417,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -70376,6 +70516,14 @@
         ]
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -70475,6 +70623,14 @@
             "failureText": "civic_tooltip_not_xenophobe"
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -70656,6 +70812,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -70737,6 +70901,14 @@
           }
         ],
         "failureText": "civic_tooltip_dem_oli_dic"
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -70831,6 +71003,14 @@
             }
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -70965,6 +71145,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -71033,6 +71221,14 @@
         ]
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -71127,6 +71323,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -71195,6 +71399,14 @@
         ]
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -71318,6 +71530,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -71436,6 +71656,14 @@
             }
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -71675,6 +71903,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -71883,6 +72119,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -71958,6 +72202,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -72022,6 +72274,14 @@
         ]
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -72201,6 +72461,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -72288,6 +72556,14 @@
             }
           ]
         }
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -72439,6 +72715,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -72544,6 +72828,14 @@
             "failureText": "civic_tooltip_not_relentless_industrialists"
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -72651,6 +72943,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -72713,6 +73013,14 @@
         ]
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -72827,6 +73135,14 @@
             }
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -72990,6 +73306,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -73137,6 +73461,15 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "selection",
+        "category": "Civics",
+        "key": "civic_corporate_anglers"
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [
         "trait_aquatic"
       ],
@@ -73244,6 +73577,14 @@
             }
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [
         "trait_robot_aquatic"
@@ -73367,6 +73708,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -73488,6 +73837,14 @@
             }
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -73656,6 +74013,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -73729,6 +74094,14 @@
             }
           ]
         }
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -73831,6 +74204,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -73912,6 +74293,14 @@
             }
           ]
         }
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -74068,6 +74457,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -74147,6 +74544,16 @@
             }
           ]
         }
+      },
+      "canAddLater": {
+        "kind": "unknown",
+        "name": "has_technology",
+        "assume": true
+      },
+      "canRemoveLater": {
+        "kind": "unknown",
+        "name": "has_technology",
+        "assume": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -74289,6 +74696,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -74387,6 +74802,14 @@
         ],
         "failureText": "civic_tooltip_spiritualist"
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -74465,6 +74888,14 @@
             }
           ]
         }
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -74586,6 +75017,14 @@
             }
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -74748,6 +75187,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -74829,6 +75276,20 @@
       "possible": {
         "kind": "always",
         "value": true
+      },
+      "canAddLater": {
+        "kind": "unknown",
+        "name": "has_technology",
+        "assume": true
+      },
+      "canRemoveLater": {
+        "kind": "not",
+        "item": {
+          "kind": "unknown",
+          "name": "has_country_flag",
+          "assume": true
+        },
+        "failureText": "CIVIC_LOCKED"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -75010,6 +75471,14 @@
             ]
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -75196,6 +75665,15 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "selection",
+        "category": "Civics",
+        "key": "civic_corporate_sovereign_guardianship"
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -75377,6 +75855,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -75482,6 +75968,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -75552,6 +76046,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -75619,6 +76121,14 @@
         ]
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -75705,6 +76215,14 @@
           ]
         }
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -75775,6 +76293,14 @@
         ]
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -75849,6 +76375,15 @@
             }
           ]
         }
+      },
+      "canAddLater": {
+        "kind": "selection",
+        "category": "Civics",
+        "key": "civic_storm_callers_megacorp"
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [
         "trait_storm_touched"
@@ -76061,6 +76596,15 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "selection",
+        "category": "Civics",
+        "key": "civic_environmental_architects_megacorp"
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -76150,6 +76694,15 @@
       "possible": {
         "kind": "always",
         "value": true
+      },
+      "canAddLater": {
+        "kind": "selection",
+        "category": "Civics",
+        "key": "civic_corporate_galactic_curators"
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -76271,6 +76824,15 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "selection",
+        "category": "Civics",
+        "key": "civic_corporate_beastmasters"
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -76380,6 +76942,14 @@
             }
           ]
         }
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -76535,6 +77105,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -76613,6 +77191,14 @@
             }
           ]
         }
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -76768,6 +77354,74 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "any",
+        "items": [
+          {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true
+          },
+          {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": true
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_engineered_evolution"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_the_flesh_is_weak"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_organo_machine_interfacing"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_organo_machine_interfacing_assimilator"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_synthetic_evolution"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_synthetic_age"
+                    }
+                  ]
+                }
+              }
+            ],
+            "failureText": "has_not_begun_non_psionic_ascension_fail"
+          },
+          {
+            "kind": "selection",
+            "category": "Civics",
+            "key": "civic_entropy_drinkers_corporate"
+          }
+        ]
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false,
+        "failureText": "CIVIC_LOCKED"
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -76902,6 +77556,15 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "selection",
+        "category": "Civics",
+        "key": "civic_corporate_superstitious_beliefs"
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -77030,6 +77693,14 @@
             }
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -77196,6 +77867,15 @@
             }
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "selection",
+        "category": "Civics",
+        "key": "civic_secret_societies_corporate"
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -77365,6 +78045,15 @@
             }
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "selection",
+        "category": "Civics",
+        "key": "civic_corporate_chosen"
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -77554,6 +78243,15 @@
             "failureText": "tankbound_species_class_requirement"
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "selection",
+        "category": "Civics",
+        "key": "civic_tankbound_corporate"
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [
         "trait_tankbound"
@@ -77862,6 +78560,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -78043,6 +78749,15 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "selection",
+        "category": "Civics",
+        "key": "civic_corporate_world_forgers"
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -78171,6 +78886,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -78270,6 +78993,15 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "selection",
+        "category": "Civics",
+        "key": "civic_corporate_galvanic_symbiosis"
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -78337,6 +79069,14 @@
         "kind": "field",
         "field": "is_nomadic",
         "value": "yes"
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -78431,6 +79171,14 @@
             }
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -78578,6 +79326,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -78669,6 +79425,14 @@
         ]
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -78776,6 +79540,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -78840,6 +79612,14 @@
         "field": "is_nomadic",
         "value": "yes"
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -78880,6 +79660,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -78917,6 +79705,14 @@
         "kind": "field",
         "field": "is_nomadic",
         "value": "yes"
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -78992,6 +79788,14 @@
             "failureText": "civic_tooltip_spiritualist"
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -79071,6 +79875,14 @@
             "failureText": "civic_tooltip_militarist"
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -79206,6 +80018,14 @@
             ]
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -79376,6 +80196,14 @@
             "value": "no"
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -79595,6 +80423,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -79682,6 +80518,14 @@
             "value": "no"
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -79836,6 +80680,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -79982,6 +80834,14 @@
             "value": "no"
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -80149,6 +81009,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [
         "trait_malleable_genes"
       ],
@@ -80216,6 +81084,14 @@
             "value": "no"
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -80382,6 +81258,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [
         "trait_wilderness"
       ],
@@ -80454,6 +81338,14 @@
           ]
         },
         "failureText": "civic_tooltip_not_genocidal"
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -80538,6 +81430,14 @@
             "failureText": "civic_tooltip_not_tankbound"
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -80629,6 +81529,14 @@
             "value": "no"
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -80801,6 +81709,14 @@
             }
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [
@@ -81079,6 +81995,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [
         "trait_pathogenic_genes"
       ],
@@ -81124,6 +82048,14 @@
         "kind": "selection",
         "category": "SpeciesArchetype",
         "key": "MACHINE"
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -81177,6 +82109,14 @@
         "value": true
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -81251,6 +82191,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [
         "trait_perfected_genes"
       ],
@@ -81303,6 +82251,14 @@
         ]
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -81361,6 +82317,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [
         "trait_perfected_genes"
       ],
@@ -81413,6 +82377,14 @@
         ]
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -81577,6 +82549,14 @@
             "value": "no"
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -81815,6 +82795,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -81993,6 +82981,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -82122,6 +83118,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -82244,6 +83248,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -82304,6 +83316,14 @@
             }
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -82377,6 +83397,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [
         "trait_cave_dweller"
       ],
@@ -82444,6 +83472,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [
         "trait_robot_cave_dweller"
       ],
@@ -82499,6 +83535,14 @@
         "kind": "field",
         "field": "is_nomadic",
         "value": "no"
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -82597,6 +83641,14 @@
             }
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [
@@ -82700,6 +83752,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -82776,6 +83836,14 @@
             "value": "no"
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -82908,6 +83976,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [
         "trait_aquatic"
       ],
@@ -82980,6 +84056,14 @@
             "value": "no"
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [
         "trait_robot_aquatic"
@@ -83156,6 +84240,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [
         "trait_necrophage"
       ],
@@ -83228,6 +84320,14 @@
             "value": "no"
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -83319,6 +84419,14 @@
             "value": "no"
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -83455,6 +84563,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [
         "trait_void_dweller_1"
       ],
@@ -83570,6 +84686,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [
         "trait_void_dweller_2"
       ],
@@ -83678,6 +84802,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -83746,6 +84878,14 @@
             "value": "no"
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -83862,6 +85002,14 @@
             ]
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -83996,6 +85144,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -84033,6 +85189,14 @@
         "kind": "field",
         "field": "is_nomadic",
         "value": "no"
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -84163,6 +85327,14 @@
             "value": "no"
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -84342,6 +85514,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -84458,6 +85638,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [
         "trait_survivor"
       ],
@@ -84556,6 +85744,14 @@
             "value": "no"
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [
         "trait_robot_survivor"
@@ -84666,6 +85862,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [
         "trait_clone_soldier_infertile"
       ],
@@ -84743,6 +85947,14 @@
             "value": "no"
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -85105,6 +86317,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [
         "trait_unplugged_cybernetic_positives_3",
         "trait_unplugged_cybernetic_negatives_3"
@@ -85208,6 +86428,14 @@
             }
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -85340,6 +86568,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -85416,6 +86652,14 @@
             "value": "no"
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -85540,6 +86784,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -85577,6 +86829,14 @@
         "kind": "field",
         "field": "is_nomadic",
         "value": "no"
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -85621,6 +86881,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -85657,6 +86925,14 @@
         "value": true
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -85700,6 +86976,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -85737,6 +87021,14 @@
         "value": true
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -85780,6 +87072,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -85813,6 +87113,14 @@
         "value": true
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -85858,6 +87166,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -85897,6 +87213,14 @@
         "value": false
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -85940,6 +87264,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -85977,6 +87309,14 @@
         "value": true
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -86059,6 +87399,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -86134,6 +87482,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -86171,6 +87527,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -86205,6 +87569,14 @@
         "value": true
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -86249,6 +87621,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -86285,6 +87665,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -86318,6 +87706,14 @@
         "value": true
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -86373,6 +87769,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -86425,6 +87829,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -86476,6 +87888,14 @@
       "possible": {
         "kind": "always",
         "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -86533,6 +87953,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -86588,6 +88016,14 @@
       "possible": {
         "kind": "always",
         "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -86648,6 +88084,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -86707,6 +88151,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -86758,6 +88210,14 @@
       "possible": {
         "kind": "always",
         "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -86815,6 +88275,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -86870,6 +88338,14 @@
       "possible": {
         "kind": "always",
         "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -86927,6 +88403,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -86982,6 +88466,14 @@
       "possible": {
         "kind": "always",
         "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -87039,6 +88531,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -87090,6 +88590,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -87140,6 +88648,14 @@
       "possible": {
         "kind": "always",
         "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -87196,6 +88712,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -87248,6 +88772,14 @@
       "possible": {
         "kind": "always",
         "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -87312,6 +88844,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -87368,6 +88908,14 @@
       "possible": {
         "kind": "always",
         "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -87428,6 +88976,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -87480,6 +89036,14 @@
       "possible": {
         "kind": "always",
         "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -87534,6 +89098,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -87586,6 +89158,14 @@
       "possible": {
         "kind": "always",
         "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -87640,6 +89220,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -87693,6 +89281,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -87727,6 +89323,14 @@
       "possible": {
         "kind": "always",
         "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -87775,6 +89379,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -87819,6 +89431,14 @@
       "possible": {
         "kind": "always",
         "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -87865,6 +89485,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -87909,6 +89537,14 @@
       "possible": {
         "kind": "always",
         "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -87955,6 +89591,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -87999,6 +89643,14 @@
       "possible": {
         "kind": "always",
         "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -88053,6 +89705,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -88105,6 +89765,14 @@
       "possible": {
         "kind": "always",
         "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -88159,6 +89827,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -88211,6 +89887,14 @@
       "possible": {
         "kind": "always",
         "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -88277,6 +89961,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -88329,6 +90021,14 @@
       "possible": {
         "kind": "always",
         "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -88383,6 +90083,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -88435,6 +90143,14 @@
       "possible": {
         "kind": "always",
         "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -88489,6 +90205,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -88524,6 +90248,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -88558,6 +90290,14 @@
       "possible": {
         "kind": "always",
         "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -88614,6 +90354,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -88659,6 +90407,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -88700,6 +90456,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -88738,6 +90502,14 @@
       "possible": {
         "kind": "always",
         "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -88783,6 +90555,14 @@
       "possible": {
         "kind": "always",
         "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -88838,6 +90618,14 @@
       "possible": {
         "kind": "always",
         "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -88900,6 +90688,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -88952,6 +90748,14 @@
       "possible": {
         "kind": "always",
         "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -89006,6 +90810,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -89059,6 +90871,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -89091,6 +90911,14 @@
         "key": "auth_hive_mind"
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -89134,6 +90962,14 @@
         "key": "auth_hive_mind"
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -89206,6 +91042,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -89248,6 +91092,14 @@
         "key": "auth_hive_mind"
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -89294,6 +91146,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -89334,6 +91194,14 @@
         "key": "auth_hive_mind"
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -89389,6 +91257,14 @@
         "field": "is_nomadic",
         "value": "no"
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -89437,6 +91313,14 @@
         "key": "auth_hive_mind"
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -89561,6 +91445,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -89654,6 +91546,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -89742,6 +91642,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -89817,6 +91725,14 @@
             "failureText": "does_not_have_volcanic_homeworld"
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -89900,6 +91816,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -89957,6 +91881,14 @@
           ]
         }
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -89997,6 +91929,14 @@
         "key": "auth_hive_mind"
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -90046,6 +91986,14 @@
         "key": "auth_hive_mind"
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -90149,6 +92097,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [
         "trait_stargazer"
       ],
@@ -90197,6 +92153,14 @@
         "key": "auth_hive_mind"
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -90249,6 +92213,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -90292,6 +92264,14 @@
         "kind": "field",
         "field": "is_nomadic",
         "value": "no"
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -90348,6 +92328,14 @@
             }
           ]
         }
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -90421,6 +92409,14 @@
             }
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -90518,6 +92514,14 @@
             }
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -90674,6 +92678,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -90760,6 +92772,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -90819,6 +92839,14 @@
             }
           ]
         }
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -90923,6 +92951,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -90975,6 +93011,14 @@
       "possible": {
         "kind": "always",
         "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -91041,6 +93085,14 @@
           ]
         }
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -91101,6 +93153,14 @@
           }
         ],
         "failureText": "graphical_culture_tooltip_biological"
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -91168,6 +93228,14 @@
             "failureText": "graphical_culture_tooltip_biological"
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -91261,6 +93329,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -91343,6 +93419,69 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true
+          },
+          {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": true
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_engineered_evolution"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_the_flesh_is_weak"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_organo_machine_interfacing"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_organo_machine_interfacing_assimilator"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_synthetic_evolution"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_synthetic_age"
+                    }
+                  ]
+                }
+              }
+            ],
+            "failureText": "has_not_begun_non_psionic_ascension_fail"
+          }
+        ]
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false,
+        "failureText": "CIVIC_LOCKED"
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -91396,6 +93535,14 @@
       "possible": {
         "kind": "always",
         "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -91464,6 +93611,14 @@
             }
           ]
         }
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -91537,6 +93692,14 @@
             }
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -91747,6 +93910,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -91838,6 +94009,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -91926,6 +94105,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -91969,6 +94156,14 @@
         "kind": "field",
         "field": "is_nomadic",
         "value": "yes"
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -92021,6 +94216,14 @@
         ]
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -92103,6 +94306,14 @@
             }
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -92240,6 +94451,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -92340,6 +94559,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -92382,6 +94609,14 @@
         "key": "auth_machine_intelligence"
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -92432,6 +94667,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -92477,6 +94720,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -92519,6 +94770,14 @@
         "field": "is_nomadic",
         "value": "no"
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -92559,6 +94818,14 @@
         "key": "auth_machine_intelligence"
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -92609,6 +94876,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -92652,6 +94927,14 @@
         "kind": "field",
         "field": "is_nomadic",
         "value": "no"
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -92711,6 +94994,14 @@
           ]
         }
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -92760,6 +95051,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -92803,6 +95102,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -92843,6 +95150,14 @@
         "key": "auth_machine_intelligence"
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -92891,6 +95206,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -92929,6 +95252,14 @@
         "key": "auth_machine_intelligence"
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -92994,6 +95325,14 @@
           ]
         }
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -93045,6 +95384,14 @@
             }
           ]
         }
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -93098,6 +95445,14 @@
           ]
         }
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -93138,6 +95493,14 @@
         "key": "auth_machine_intelligence"
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -93238,6 +95601,16 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "unknown",
+        "name": "has_technology",
+        "assume": true
+      },
+      "canRemoveLater": {
+        "kind": "unknown",
+        "name": "has_technology",
+        "assume": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -93294,6 +95667,14 @@
           ]
         }
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -93343,6 +95724,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -93389,6 +95778,14 @@
         "key": "auth_machine_intelligence"
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -93454,6 +95851,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -93518,6 +95923,14 @@
           ]
         }
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -93573,6 +95986,14 @@
             }
           ]
         }
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -93631,6 +96052,14 @@
             }
           ]
         }
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -93775,6 +96204,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -93821,6 +96258,14 @@
         "key": "auth_machine_intelligence"
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -93891,6 +96336,14 @@
             }
           ]
         }
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -93999,6 +96452,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -94045,6 +96506,14 @@
         "key": "auth_machine_intelligence"
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -94146,6 +96615,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -94199,6 +96676,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -94250,6 +96735,14 @@
         "kind": "field",
         "field": "is_nomadic",
         "value": "no"
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -94309,6 +96802,69 @@
           ]
         }
       },
+      "canAddLater": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true
+          },
+          {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": true
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_engineered_evolution"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_the_flesh_is_weak"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_organo_machine_interfacing"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_organo_machine_interfacing_assimilator"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_synthetic_evolution"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_synthetic_age"
+                    }
+                  ]
+                }
+              }
+            ],
+            "failureText": "has_not_begun_non_psionic_ascension_fail"
+          }
+        ]
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false,
+        "failureText": "CIVIC_LOCKED"
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -94363,6 +96919,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -94412,6 +96976,14 @@
             }
           ]
         }
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -94495,6 +97067,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -94573,6 +97153,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -94616,6 +97204,14 @@
         "kind": "field",
         "field": "is_nomadic",
         "value": "yes"
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -94671,6 +97267,14 @@
         "kind": "always",
         "value": true
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -94721,6 +97325,14 @@
         ]
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -94796,6 +97408,14 @@
             }
           ]
         }
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -94926,6 +97546,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -95013,6 +97641,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -95073,6 +97709,14 @@
         ]
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -95162,6 +97806,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -95228,6 +97880,14 @@
           }
         ],
         "failureText": "civic_tooltip_spiritualist"
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -95297,6 +97957,14 @@
             }
           ]
         }
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -95373,6 +98041,14 @@
             }
           ]
         }
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -95473,6 +98149,14 @@
             }
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -95588,6 +98272,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -95652,6 +98344,14 @@
           ]
         }
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -95715,6 +98415,14 @@
             }
           ]
         }
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -95828,6 +98536,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -95916,6 +98632,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -96001,6 +98725,14 @@
             }
           ]
         }
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -96148,6 +98880,15 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "selection",
+        "category": "Civics",
+        "key": "civic_anglers"
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [
         "trait_aquatic"
       ],
@@ -96245,6 +98986,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [
         "trait_robot_aquatic"
       ],
@@ -96306,6 +99055,14 @@
             }
           ]
         }
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -96426,6 +99183,14 @@
             }
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -96578,6 +99343,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -96672,6 +99445,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -96729,6 +99510,14 @@
             }
           ]
         }
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -96814,6 +99603,14 @@
             }
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -97053,6 +99850,16 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "unknown",
+        "name": "has_technology",
+        "assume": true
+      },
+      "canRemoveLater": {
+        "kind": "unknown",
+        "name": "has_technology",
+        "assume": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -97175,6 +99982,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -97274,6 +100089,14 @@
           }
         ],
         "failureText": "civic_tooltip_spiritualist"
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -97393,6 +100216,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -97469,6 +100300,14 @@
         ]
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -97572,6 +100411,14 @@
           ]
         }
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -97653,6 +100500,14 @@
             }
           ]
         }
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -97788,6 +100643,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -97869,6 +100732,28 @@
             }
           ]
         }
+      },
+      "canAddLater": {
+        "kind": "unknown",
+        "name": "has_technology",
+        "assume": true
+      },
+      "canRemoveLater": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "unknown",
+              "name": "has_country_flag",
+              "assume": true
+            }
+          }
+        ]
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -98010,6 +100895,14 @@
             }
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": false
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -98182,6 +101075,15 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "selection",
+        "category": "Civics",
+        "key": "civic_sovereign_guardianship"
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -98332,6 +101234,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -98426,6 +101336,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -98472,6 +101390,14 @@
         ]
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -98530,6 +101456,15 @@
             }
           ]
         }
+      },
+      "canAddLater": {
+        "kind": "selection",
+        "category": "Civics",
+        "key": "civic_storm_callers"
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [
         "trait_storm_touched"
@@ -98716,6 +101651,15 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "selection",
+        "category": "Civics",
+        "key": "civic_environmental_architects"
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -98794,6 +101738,15 @@
       "possible": {
         "kind": "always",
         "value": true
+      },
+      "canAddLater": {
+        "kind": "selection",
+        "category": "Civics",
+        "key": "civic_galactic_curators"
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -98906,6 +101859,15 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "selection",
+        "category": "Civics",
+        "key": "civic_beastmasters"
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -99017,6 +101979,14 @@
             }
           ]
         }
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -99176,6 +102146,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -99324,6 +102302,74 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "any",
+        "items": [
+          {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true
+          },
+          {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "always",
+                "value": true
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_engineered_evolution"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_the_flesh_is_weak"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_organo_machine_interfacing"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_organo_machine_interfacing_assimilator"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_synthetic_evolution"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "AscensionPerk",
+                      "key": "ap_synthetic_age"
+                    }
+                  ]
+                }
+              }
+            ],
+            "failureText": "has_not_begun_non_psionic_ascension_fail"
+          },
+          {
+            "kind": "selection",
+            "category": "Civics",
+            "key": "civic_entropy_drinkers"
+          }
+        ]
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false,
+        "failureText": "CIVIC_LOCKED"
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -99447,6 +102493,15 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "selection",
+        "category": "Civics",
+        "key": "civic_superstitious_beliefs"
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -99564,6 +102619,14 @@
             }
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -99715,6 +102778,15 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "selection",
+        "category": "Civics",
+        "key": "civic_secret_societies"
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -99857,6 +102929,15 @@
             }
           }
         ]
+      },
+      "canAddLater": {
+        "kind": "selection",
+        "category": "Civics",
+        "key": "civic_chosen"
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -100039,6 +103120,15 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "selection",
+        "category": "Civics",
+        "key": "civic_tankbound"
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [
         "trait_tankbound"
       ],
@@ -100175,6 +103265,15 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "selection",
+        "category": "Civics",
+        "key": "civic_world_forgers"
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -100284,6 +103383,15 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "selection",
+        "category": "Civics",
+        "key": "civic_galvanic_symbiosis"
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": false
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -100353,6 +103461,14 @@
         "kind": "field",
         "field": "is_nomadic",
         "value": "yes"
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -100450,6 +103566,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -100513,6 +103637,14 @@
         ]
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -100630,6 +103762,14 @@
           }
         ]
       },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
+        "kind": "always",
+        "value": true
+      },
       "forcedTraits": [],
       "softTraits": [],
       "effects": {
@@ -100694,6 +103834,14 @@
         ]
       },
       "possible": {
+        "kind": "always",
+        "value": true
+      },
+      "canAddLater": {
+        "kind": "always",
+        "value": true
+      },
+      "canRemoveLater": {
         "kind": "always",
         "value": true
       },
@@ -100807,8 +103955,9 @@
                   "key": "trait_mechanical"
                 },
                 {
-                  "kind": "always",
-                  "value": false
+                  "kind": "unknown",
+                  "name": "has_country_flag",
+                  "assume": true
                 }
               ]
             }
@@ -100970,8 +104119,10 @@
                     }
                   },
                   {
-                    "kind": "always",
-                    "value": true,
+                    "kind": "count",
+                    "of": "AscensionPerk",
+                    "comparison": "Above",
+                    "value": 1,
                     "failureText": "requires_ascension_perks_2"
                   }
                 ]
@@ -101050,8 +104201,9 @@
                       "key": "origin_shroud_forged"
                     },
                     {
-                      "kind": "always",
-                      "value": false
+                      "kind": "unknown",
+                      "name": "has_country_flag",
+                      "assume": true
                     }
                   ]
                 }
@@ -101069,8 +104221,10 @@
             "failureText": "requires_not_ap_synthetic_evolution"
           },
           {
-            "kind": "always",
-            "value": true,
+            "kind": "count",
+            "of": "TraditionTree",
+            "comparison": "Below",
+            "value": 7,
             "failureText": "requires_free_tradition_tree"
           },
           {
@@ -101096,12 +104250,14 @@
                     "kind": "any",
                     "items": [
                       {
-                        "kind": "always",
-                        "value": false
+                        "kind": "unknown",
+                        "name": "has_country_flag",
+                        "assume": true
                       },
                       {
-                        "kind": "always",
-                        "value": false
+                        "kind": "unknown",
+                        "name": "has_country_flag",
+                        "assume": true
                       }
                     ],
                     "failureText": "clone_soldier_locked_genes"
@@ -101209,12 +104365,14 @@
                       "kind": "any",
                       "items": [
                         {
-                          "kind": "always",
-                          "value": false
+                          "kind": "unknown",
+                          "name": "has_country_flag",
+                          "assume": true
                         },
                         {
-                          "kind": "always",
-                          "value": false
+                          "kind": "unknown",
+                          "name": "has_country_flag",
+                          "assume": true
                         }
                       ]
                     }
@@ -101337,8 +104495,10 @@
             "kind": "any",
             "items": [
               {
-                "kind": "always",
-                "value": true
+                "kind": "count",
+                "of": "AscensionPerk",
+                "comparison": "Above",
+                "value": 1
               },
               {
                 "kind": "selection",
@@ -101416,8 +104576,9 @@
                       "key": "origin_shroud_forged"
                     },
                     {
-                      "kind": "always",
-                      "value": false
+                      "kind": "unknown",
+                      "name": "has_country_flag",
+                      "assume": true
                     }
                   ]
                 }
@@ -101435,8 +104596,10 @@
             "failureText": "requires_not_ap_synthetic_evolution"
           },
           {
-            "kind": "always",
-            "value": true,
+            "kind": "count",
+            "of": "TraditionTree",
+            "comparison": "Below",
+            "value": 7,
             "failureText": "requires_free_tradition_tree"
           }
         ]
@@ -101603,8 +104766,10 @@
         "kind": "all",
         "items": [
           {
-            "kind": "always",
-            "value": true,
+            "kind": "count",
+            "of": "AscensionPerk",
+            "comparison": "Above",
+            "value": 1,
             "failureText": "requires_ascension_perks_2"
           },
           {
@@ -101690,8 +104855,9 @@
                                   "key": "origin_shroud_forged"
                                 },
                                 {
-                                  "kind": "always",
-                                  "value": false
+                                  "kind": "unknown",
+                                  "name": "has_country_flag",
+                                  "assume": true
                                 }
                               ]
                             }
@@ -101702,8 +104868,9 @@
                       {
                         "kind": "not",
                         "item": {
-                          "kind": "always",
-                          "value": false
+                          "kind": "unknown",
+                          "name": "country_has_situation",
+                          "assume": true
                         }
                       }
                     ]
@@ -101713,8 +104880,10 @@
             ]
           },
           {
-            "kind": "always",
-            "value": true,
+            "kind": "count",
+            "of": "TraditionTree",
+            "comparison": "Below",
+            "value": 7,
             "failureText": "requires_free_tradition_tree"
           }
         ]
@@ -101854,8 +105023,10 @@
         "kind": "all",
         "items": [
           {
-            "kind": "always",
-            "value": true,
+            "kind": "count",
+            "of": "AscensionPerk",
+            "comparison": "Above",
+            "value": 1,
             "failureText": "requires_ascension_perks_2"
           },
           {
@@ -101941,8 +105112,9 @@
                                   "key": "origin_shroud_forged"
                                 },
                                 {
-                                  "kind": "always",
-                                  "value": false
+                                  "kind": "unknown",
+                                  "name": "has_country_flag",
+                                  "assume": true
                                 }
                               ]
                             }
@@ -101953,8 +105125,9 @@
                       {
                         "kind": "not",
                         "item": {
-                          "kind": "always",
-                          "value": false
+                          "kind": "unknown",
+                          "name": "country_has_situation",
+                          "assume": true
                         }
                       }
                     ]
@@ -101964,8 +105137,10 @@
             ]
           },
           {
-            "kind": "always",
-            "value": true,
+            "kind": "count",
+            "of": "TraditionTree",
+            "comparison": "Below",
+            "value": 7,
             "failureText": "requires_free_tradition_tree"
           }
         ]
@@ -102085,8 +105260,9 @@
                   "key": "trait_mechanical"
                 },
                 {
-                  "kind": "always",
-                  "value": false
+                  "kind": "unknown",
+                  "name": "has_country_flag",
+                  "assume": true
                 }
               ]
             }
@@ -102231,8 +105407,10 @@
             "failureText": "synthetic_empire_synthetic_ascension"
           },
           {
-            "kind": "always",
-            "value": true,
+            "kind": "count",
+            "of": "AscensionPerk",
+            "comparison": "Above",
+            "value": 1,
             "failureText": "requires_ascension_perks_2"
           },
           {
@@ -102307,8 +105485,9 @@
                       "key": "origin_shroud_forged"
                     },
                     {
-                      "kind": "always",
-                      "value": false
+                      "kind": "unknown",
+                      "name": "has_country_flag",
+                      "assume": true
                     }
                   ]
                 }
@@ -102317,8 +105496,10 @@
             "failureText": "requires_not_ap_mind_over_matter"
           },
           {
-            "kind": "always",
-            "value": true,
+            "kind": "count",
+            "of": "TraditionTree",
+            "comparison": "Below",
+            "value": 7,
             "failureText": "requires_free_tradition_tree"
           }
         ]
@@ -102349,8 +105530,9 @@
               "kind": "any",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false
+                  "kind": "unknown",
+                  "name": "has_country_flag",
+                  "assume": true
                 },
                 {
                   "kind": "selection",
@@ -102458,8 +105640,9 @@
                           "key": "trait_mechanical"
                         },
                         {
-                          "kind": "always",
-                          "value": false
+                          "kind": "unknown",
+                          "name": "has_country_flag",
+                          "assume": true
                         }
                       ]
                     }
@@ -102506,8 +105689,9 @@
                           {
                             "kind": "not",
                             "item": {
-                              "kind": "always",
-                              "value": false
+                              "kind": "unknown",
+                              "name": "has_country_flag",
+                              "assume": true
                             }
                           }
                         ]
@@ -102565,8 +105749,9 @@
                   {
                     "kind": "not",
                     "item": {
-                      "kind": "always",
-                      "value": false
+                      "kind": "unknown",
+                      "name": "has_country_flag",
+                      "assume": true
                     }
                   }
                 ]
@@ -102601,8 +105786,9 @@
                         "kind": "any",
                         "items": [
                           {
-                            "kind": "always",
-                            "value": false
+                            "kind": "unknown",
+                            "name": "has_country_flag",
+                            "assume": true
                           },
                           {
                             "kind": "predicate",
@@ -102660,8 +105846,9 @@
                           "kind": "any",
                           "items": [
                             {
-                              "kind": "always",
-                              "value": false
+                              "kind": "unknown",
+                              "name": "has_country_flag",
+                              "assume": true
                             },
                             {
                               "kind": "predicate",
@@ -102707,8 +105894,10 @@
                     ]
                   },
                   {
-                    "kind": "always",
-                    "value": true,
+                    "kind": "count",
+                    "of": "AscensionPerk",
+                    "comparison": "Above",
+                    "value": 1,
                     "failureText": "requires_ascension_perks_2"
                   }
                 ]
@@ -102775,8 +105964,10 @@
             "failureText": "requires_not_ap_organo_machine_interfacing"
           },
           {
-            "kind": "always",
-            "value": true,
+            "kind": "count",
+            "of": "TraditionTree",
+            "comparison": "Below",
+            "value": 7,
             "failureText": "requires_free_tradition_tree"
           },
           {
@@ -102799,8 +105990,9 @@
                     "key": "origin_unplugged"
                   },
                   {
-                    "kind": "always",
-                    "value": false,
+                    "kind": "unknown",
+                    "name": "has_country_flag",
+                    "assume": true,
                     "failureText": "requires_unplugged_decyberized"
                   }
                 ]
@@ -102835,16 +106027,18 @@
                           {
                             "kind": "not",
                             "item": {
-                              "kind": "always",
-                              "value": false
+                              "kind": "unknown",
+                              "name": "any_situation",
+                              "assume": true
                             }
                           },
                           {
                             "kind": "all",
                             "items": [
                               {
-                                "kind": "always",
-                                "value": false
+                                "kind": "unknown",
+                                "name": "any_situation",
+                                "assume": true
                               },
                               {
                                 "kind": "always",
@@ -103033,8 +106227,10 @@
         "kind": "all",
         "items": [
           {
-            "kind": "always",
-            "value": true,
+            "kind": "count",
+            "of": "AscensionPerk",
+            "comparison": "Above",
+            "value": 1,
             "failureText": "requires_ascension_perks_2"
           },
           {
@@ -103120,8 +106316,9 @@
                                   "key": "origin_shroud_forged"
                                 },
                                 {
-                                  "kind": "always",
-                                  "value": false
+                                  "kind": "unknown",
+                                  "name": "has_country_flag",
+                                  "assume": true
                                 }
                               ]
                             }
@@ -103132,8 +106329,9 @@
                       {
                         "kind": "not",
                         "item": {
-                          "kind": "always",
-                          "value": false
+                          "kind": "unknown",
+                          "name": "country_has_situation",
+                          "assume": true
                         }
                       }
                     ]
@@ -103143,8 +106341,10 @@
             ]
           },
           {
-            "kind": "always",
-            "value": true,
+            "kind": "count",
+            "of": "TraditionTree",
+            "comparison": "Below",
+            "value": 7,
             "failureText": "requires_free_tradition_tree"
           }
         ]
@@ -103213,8 +106413,9 @@
                       "key": "ap_galactic_hyperthermia"
                     },
                     {
-                      "kind": "always",
-                      "value": false
+                      "kind": "unknown",
+                      "name": "has_country_flag",
+                      "assume": true
                     }
                   ]
                 },
@@ -103267,8 +106468,10 @@
         "kind": "all",
         "items": [
           {
-            "kind": "always",
-            "value": true,
+            "kind": "count",
+            "of": "AscensionPerk",
+            "comparison": "Above",
+            "value": 2,
             "failureText": "requires_ascension_perks_3"
           },
           {
@@ -103292,8 +106495,9 @@
           {
             "kind": "not",
             "item": {
-              "kind": "always",
-              "value": false
+              "kind": "unknown",
+              "name": "has_country_flag",
+              "assume": true
             },
             "failureText": "requires_actor_not_khan"
           }
@@ -103369,8 +106573,9 @@
                       "key": "ap_galactic_hyperthermia"
                     },
                     {
-                      "kind": "always",
-                      "value": false
+                      "kind": "unknown",
+                      "name": "has_country_flag",
+                      "assume": true
                     }
                   ]
                 },
@@ -103423,8 +106628,10 @@
         "kind": "all",
         "items": [
           {
-            "kind": "always",
-            "value": true,
+            "kind": "count",
+            "of": "AscensionPerk",
+            "comparison": "Above",
+            "value": 2,
             "failureText": "requires_ascension_perks_3"
           },
           {
@@ -103448,8 +106655,9 @@
           {
             "kind": "not",
             "item": {
-              "kind": "always",
-              "value": false
+              "kind": "unknown",
+              "name": "has_country_flag",
+              "assume": true
             },
             "failureText": "requires_actor_not_khan"
           }
@@ -103525,8 +106733,9 @@
                       "key": "ap_galactic_hyperthermia"
                     },
                     {
-                      "kind": "always",
-                      "value": false
+                      "kind": "unknown",
+                      "name": "has_country_flag",
+                      "assume": true
                     }
                   ]
                 },
@@ -103568,24 +106777,27 @@
           {
             "kind": "not",
             "item": {
-              "kind": "always",
-              "value": false
+              "kind": "unknown",
+              "name": "is_subject",
+              "assume": true
             },
             "failureText": "requires_independence"
           },
           {
             "kind": "not",
             "item": {
-              "kind": "always",
-              "value": false
+              "kind": "unknown",
+              "name": "is_galactic_custodian",
+              "assume": true
             },
             "failureText": "must_not_be_custodian"
           },
           {
             "kind": "not",
             "item": {
-              "kind": "always",
-              "value": false
+              "kind": "unknown",
+              "name": "is_galactic_emperor",
+              "assume": true
             },
             "failureText": "must_not_be_emperor"
           },
@@ -103603,8 +106815,9 @@
               {
                 "kind": "not",
                 "item": {
-                  "kind": "always",
-                  "value": false
+                  "kind": "unknown",
+                  "name": "any_situation",
+                  "assume": true
                 }
               }
             ],
@@ -103624,8 +106837,9 @@
               {
                 "kind": "not",
                 "item": {
-                  "kind": "always",
-                  "value": false
+                  "kind": "unknown",
+                  "name": "has_country_flag",
+                  "assume": true
                 }
               }
             ],
@@ -103650,8 +106864,9 @@
                     {
                       "kind": "not",
                       "item": {
-                        "kind": "always",
-                        "value": false
+                        "kind": "unknown",
+                        "name": "has_country_flag",
+                        "assume": true
                       }
                     }
                   ]
@@ -103674,8 +106889,9 @@
                       {
                         "kind": "not",
                         "item": {
-                          "kind": "always",
-                          "value": false
+                          "kind": "unknown",
+                          "name": "has_country_flag",
+                          "assume": true
                         }
                       }
                     ]
@@ -103684,8 +106900,10 @@
                     "kind": "all",
                     "items": [
                       {
-                        "kind": "always",
-                        "value": true,
+                        "kind": "count",
+                        "of": "AscensionPerk",
+                        "comparison": "Above",
+                        "value": 2,
                         "failureText": "requires_ascension_perks_3"
                       },
                       {
@@ -103801,8 +107019,9 @@
                       "key": "ap_galactic_hyperthermia"
                     },
                     {
-                      "kind": "always",
-                      "value": false
+                      "kind": "unknown",
+                      "name": "has_country_flag",
+                      "assume": true
                     }
                   ]
                 },
@@ -103842,31 +107061,36 @@
         "kind": "all",
         "items": [
           {
-            "kind": "always",
-            "value": true,
+            "kind": "count",
+            "of": "AscensionPerk",
+            "comparison": "Above",
+            "value": 2,
             "failureText": "requires_ascension_perks_3"
           },
           {
             "kind": "not",
             "item": {
-              "kind": "always",
-              "value": false
+              "kind": "unknown",
+              "name": "is_subject",
+              "assume": true
             },
             "failureText": "requires_independence"
           },
           {
             "kind": "not",
             "item": {
-              "kind": "always",
-              "value": false
+              "kind": "unknown",
+              "name": "is_galactic_custodian",
+              "assume": true
             },
             "failureText": "must_not_be_custodian"
           },
           {
             "kind": "not",
             "item": {
-              "kind": "always",
-              "value": false
+              "kind": "unknown",
+              "name": "is_galactic_emperor",
+              "assume": true
             },
             "failureText": "must_not_be_emperor"
           },
@@ -103936,8 +107160,9 @@
                       "key": "ap_galactic_hyperthermia"
                     },
                     {
-                      "kind": "always",
-                      "value": false
+                      "kind": "unknown",
+                      "name": "has_country_flag",
+                      "assume": true
                     }
                   ]
                 },
@@ -103970,31 +107195,36 @@
         "kind": "all",
         "items": [
           {
-            "kind": "always",
-            "value": true,
+            "kind": "count",
+            "of": "AscensionPerk",
+            "comparison": "Above",
+            "value": 2,
             "failureText": "requires_ascension_perks_3"
           },
           {
             "kind": "not",
             "item": {
-              "kind": "always",
-              "value": false
+              "kind": "unknown",
+              "name": "is_subject",
+              "assume": true
             },
             "failureText": "requires_independence"
           },
           {
             "kind": "not",
             "item": {
-              "kind": "always",
-              "value": false
+              "kind": "unknown",
+              "name": "is_galactic_custodian",
+              "assume": true
             },
             "failureText": "must_not_be_custodian"
           },
           {
             "kind": "not",
             "item": {
-              "kind": "always",
-              "value": false
+              "kind": "unknown",
+              "name": "is_galactic_emperor",
+              "assume": true
             },
             "failureText": "must_not_be_emperor"
           },
@@ -104002,12 +107232,14 @@
             "kind": "all",
             "items": [
               {
-                "kind": "always",
-                "value": false
+                "kind": "unknown",
+                "name": "exists",
+                "assume": true
               },
               {
-                "kind": "always",
-                "value": false
+                "kind": "unknown",
+                "name": "uses_ship_category",
+                "assume": true
               }
             ],
             "failureText": "must_use_bioships"
@@ -104107,8 +107339,9 @@
                       "key": "ap_galactic_hyperthermia"
                     },
                     {
-                      "kind": "always",
-                      "value": false
+                      "kind": "unknown",
+                      "name": "has_country_flag",
+                      "assume": true
                     }
                   ]
                 },
@@ -104148,12 +107381,15 @@
             "kind": "any",
             "items": [
               {
-                "kind": "always",
-                "value": true
+                "kind": "count",
+                "of": "AscensionPerk",
+                "comparison": "Above",
+                "value": 2
               },
               {
-                "kind": "always",
-                "value": false
+                "kind": "unknown",
+                "name": "has_country_flag",
+                "assume": true
               }
             ],
             "failureText": "requires_ascension_perks_3"
@@ -104161,24 +107397,27 @@
           {
             "kind": "not",
             "item": {
-              "kind": "always",
-              "value": false
+              "kind": "unknown",
+              "name": "is_subject",
+              "assume": true
             },
             "failureText": "requires_independence"
           },
           {
             "kind": "not",
             "item": {
-              "kind": "always",
-              "value": false
+              "kind": "unknown",
+              "name": "is_galactic_custodian",
+              "assume": true
             },
             "failureText": "must_not_be_custodian"
           },
           {
             "kind": "not",
             "item": {
-              "kind": "always",
-              "value": false
+              "kind": "unknown",
+              "name": "is_galactic_emperor",
+              "assume": true
             },
             "failureText": "must_not_be_emperor"
           },
@@ -104307,8 +107546,9 @@
         ]
       },
       "possible": {
-        "kind": "always",
-        "value": false,
+        "kind": "unknown",
+        "name": "has_technology",
+        "assume": true,
         "failureText": "requires_technology_tech_archaeostudies"
       },
       "isPath": false,
@@ -104455,8 +107695,9 @@
         "kind": "all",
         "items": [
           {
-            "kind": "always",
-            "value": false
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true
           },
           {
             "kind": "any",
@@ -104520,8 +107761,10 @@
         ]
       },
       "possible": {
-        "kind": "always",
-        "value": true,
+        "kind": "count",
+        "of": "AscensionPerk",
+        "comparison": "Above",
+        "value": 0,
         "failureText": "requires_ascension_perks_1"
       },
       "isPath": false,
@@ -104668,12 +107911,15 @@
         "kind": "all",
         "items": [
           {
-            "kind": "always",
-            "value": false
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true
           },
           {
-            "kind": "always",
-            "value": true,
+            "kind": "count",
+            "of": "AscensionPerk",
+            "comparison": "Above",
+            "value": 2,
             "failureText": "requires_ascension_perks_3"
           }
         ]
@@ -104764,13 +108010,16 @@
         "kind": "all",
         "items": [
           {
-            "kind": "always",
-            "value": false,
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
             "failureText": "requires_technology_tech_climate_restoration"
           },
           {
-            "kind": "always",
-            "value": true,
+            "kind": "count",
+            "of": "AscensionPerk",
+            "comparison": "Above",
+            "value": 0,
             "failureText": "requires_ascension_perks_1"
           }
         ]
@@ -104806,8 +108055,10 @@
         }
       },
       "possible": {
-        "kind": "always",
-        "value": true,
+        "kind": "count",
+        "of": "AscensionPerk",
+        "comparison": "Above",
+        "value": 1,
         "failureText": "requires_ascension_perks_2"
       },
       "isPath": false,
@@ -104875,8 +108126,10 @@
         }
       },
       "possible": {
-        "kind": "always",
-        "value": true,
+        "kind": "count",
+        "of": "AscensionPerk",
+        "comparison": "Above",
+        "value": 0,
         "failureText": "requires_ascension_perks_1"
       },
       "isPath": false,
@@ -104925,8 +108178,9 @@
         "kind": "any",
         "items": [
           {
-            "kind": "always",
-            "value": false
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true
           },
           {
             "kind": "selection",
@@ -104991,8 +108245,9 @@
         "kind": "any",
         "items": [
           {
-            "kind": "always",
-            "value": false
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true
           },
           {
             "kind": "selection",
@@ -105048,14 +108303,17 @@
             }
           },
           {
-            "kind": "always",
-            "value": false
+            "kind": "unknown",
+            "name": "any_relation",
+            "assume": true
           }
         ]
       },
       "possible": {
-        "kind": "always",
-        "value": true,
+        "kind": "count",
+        "of": "AscensionPerk",
+        "comparison": "Above",
+        "value": 2,
         "failureText": "requires_ascension_perks_3"
       },
       "isPath": false,
@@ -105432,8 +108690,9 @@
                       "key": "civic_hive_scorched_earth"
                     },
                     {
-                      "kind": "always",
-                      "value": false
+                      "kind": "unknown",
+                      "name": "has_menace_perk",
+                      "assume": true
                     }
                   ]
                 },
@@ -105529,13 +108788,15 @@
         "kind": "any",
         "items": [
           {
-            "kind": "always",
-            "value": false,
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
             "failureText": "requires_technology_habitat_1"
           },
           {
-            "kind": "always",
-            "value": false,
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
             "failureText": "requires_tech_arkship_tier_2"
           }
         ]
@@ -105592,13 +108853,16 @@
         "kind": "all",
         "items": [
           {
-            "kind": "always",
-            "value": true,
+            "kind": "count",
+            "of": "AscensionPerk",
+            "comparison": "Above",
+            "value": 1,
             "failureText": "requires_ascension_perks_2"
           },
           {
-            "kind": "always",
-            "value": false,
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
             "failureText": "requires_mega_engineering"
           }
         ]
@@ -105649,13 +108913,15 @@
         "kind": "all",
         "items": [
           {
-            "kind": "always",
-            "value": false,
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
             "failureText": "requires_mega_engineering"
           },
           {
-            "kind": "always",
-            "value": false,
+            "kind": "unknown",
+            "name": "has_country_flag",
+            "assume": true,
             "failureText": "requires_built_or_repaired_megastructure"
           }
         ]
@@ -105779,8 +109045,9 @@
             "kind": "any",
             "items": [
               {
-                "kind": "always",
-                "value": false
+                "kind": "unknown",
+                "name": "has_technology",
+                "assume": true
               },
               {
                 "kind": "selection",
@@ -105791,8 +109058,10 @@
             "failureText": "requires_technology_tech_climate_restoration"
           },
           {
-            "kind": "always",
-            "value": true,
+            "kind": "count",
+            "of": "AscensionPerk",
+            "comparison": "Above",
+            "value": 1,
             "failureText": "requires_ascension_perks_2"
           }
         ]
@@ -105845,8 +109114,9 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false
+                  "kind": "unknown",
+                  "name": "species",
+                  "assume": true
                 },
                 {
                   "kind": "selection",
@@ -105877,16 +109147,19 @@
         "kind": "all",
         "items": [
           {
-            "kind": "always",
-            "value": false,
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
             "failureText": "requires_technology_tech_climate_restoration"
           },
           {
             "kind": "any",
             "items": [
               {
-                "kind": "always",
-                "value": true
+                "kind": "count",
+                "of": "AscensionPerk",
+                "comparison": "Above",
+                "value": 1
               },
               {
                 "kind": "selection",
@@ -105968,13 +109241,16 @@
         "kind": "all",
         "items": [
           {
-            "kind": "always",
-            "value": false,
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
             "failureText": "requires_technology_housing_2"
           },
           {
-            "kind": "always",
-            "value": true,
+            "kind": "count",
+            "of": "AscensionPerk",
+            "comparison": "Above",
+            "value": 1,
             "failureText": "requires_ascension_perks_2"
           }
         ]
@@ -106047,13 +109323,15 @@
             "failureText": "requires_xenophile"
           },
           {
-            "kind": "always",
-            "value": false,
+            "kind": "unknown",
+            "name": "any_owned_pop_group",
+            "assume": true,
             "failureText": "requires_xeno_species"
           },
           {
-            "kind": "always",
-            "value": false,
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
             "failureText": "requires_technology_gene_tailoring"
           }
         ]
@@ -106156,8 +109434,9 @@
                   "key": "ap_detox"
                 },
                 {
-                  "kind": "always",
-                  "value": false
+                  "kind": "unknown",
+                  "name": "has_country_flag",
+                  "assume": true
                 }
               ]
             }
@@ -106172,8 +109451,9 @@
         ]
       },
       "possible": {
-        "kind": "always",
-        "value": false,
+        "kind": "unknown",
+        "name": "has_technology",
+        "assume": true,
         "failureText": "requires_technology_tech_climate_restoration"
       },
       "isPath": false,
@@ -106268,13 +109548,16 @@
         "kind": "all",
         "items": [
           {
-            "kind": "always",
-            "value": false,
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
             "failureText": "requires_technology_tech_advanced_storm_manipulation"
           },
           {
-            "kind": "always",
-            "value": true,
+            "kind": "count",
+            "of": "AscensionPerk",
+            "comparison": "Above",
+            "value": 0,
             "failureText": "requires_ascension_perks_1"
           }
         ]
@@ -106509,8 +109792,9 @@
                   "key": "civic_hive_scorched_earth"
                 },
                 {
-                  "kind": "always",
-                  "value": false
+                  "kind": "unknown",
+                  "name": "has_menace_perk",
+                  "assume": true
                 }
               ]
             },
@@ -106680,8 +109964,9 @@
                   "key": "civic_hive_scorched_earth"
                 },
                 {
-                  "kind": "always",
-                  "value": false
+                  "kind": "unknown",
+                  "name": "has_menace_perk",
+                  "assume": true
                 }
               ]
             }
@@ -106946,8 +110231,9 @@
                           "key": "origin_shroud_forged"
                         },
                         {
-                          "kind": "always",
-                          "value": false
+                          "kind": "unknown",
+                          "name": "has_country_flag",
+                          "assume": true
                         }
                       ]
                     }
@@ -106996,8 +110282,9 @@
                   "kind": "any",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false
+                      "kind": "unknown",
+                      "name": "has_country_flag",
+                      "assume": true
                     },
                     {
                       "kind": "selection",
@@ -107010,8 +110297,9 @@
                   "kind": "any",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false
+                      "kind": "unknown",
+                      "name": "has_country_flag",
+                      "assume": true
                     },
                     {
                       "kind": "selection",
@@ -107147,8 +110435,9 @@
                           "key": "origin_shroud_forged"
                         },
                         {
-                          "kind": "always",
-                          "value": false
+                          "kind": "unknown",
+                          "name": "has_country_flag",
+                          "assume": true
                         }
                       ]
                     }
@@ -107197,8 +110486,9 @@
                   "kind": "any",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false
+                      "kind": "unknown",
+                      "name": "has_country_flag",
+                      "assume": true
                     },
                     {
                       "kind": "selection",
@@ -107211,8 +110501,9 @@
                   "kind": "any",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false
+                      "kind": "unknown",
+                      "name": "has_country_flag",
+                      "assume": true
                     }
                   ]
                 },
@@ -107220,8 +110511,9 @@
                   "kind": "any",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false
+                      "kind": "unknown",
+                      "name": "has_country_flag",
+                      "assume": true
                     },
                     {
                       "kind": "selection",
@@ -107430,8 +110722,9 @@
                           "key": "origin_shroud_forged"
                         },
                         {
-                          "kind": "always",
-                          "value": false
+                          "kind": "unknown",
+                          "name": "has_country_flag",
+                          "assume": true
                         }
                       ]
                     }
@@ -107588,8 +110881,9 @@
                           "key": "origin_shroud_forged"
                         },
                         {
-                          "kind": "always",
-                          "value": false
+                          "kind": "unknown",
+                          "name": "has_country_flag",
+                          "assume": true
                         }
                       ]
                     }
@@ -107744,8 +111038,9 @@
                           "key": "origin_shroud_forged"
                         },
                         {
-                          "kind": "always",
-                          "value": false
+                          "kind": "unknown",
+                          "name": "has_country_flag",
+                          "assume": true
                         }
                       ]
                     }
@@ -107794,8 +111089,9 @@
                   "kind": "any",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false
+                      "kind": "unknown",
+                      "name": "has_country_flag",
+                      "assume": true
                     },
                     {
                       "kind": "selection",
@@ -107808,14 +111104,16 @@
                   "kind": "any",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false
+                      "kind": "unknown",
+                      "name": "has_country_flag",
+                      "assume": true
                     }
                   ]
                 },
                 {
-                  "kind": "always",
-                  "value": false
+                  "kind": "unknown",
+                  "name": "has_country_flag",
+                  "assume": true
                 }
               ]
             }
@@ -107957,8 +111255,9 @@
                           "key": "origin_shroud_forged"
                         },
                         {
-                          "kind": "always",
-                          "value": false
+                          "kind": "unknown",
+                          "name": "has_country_flag",
+                          "assume": true
                         }
                       ]
                     }
@@ -108084,8 +111383,9 @@
                   "kind": "any",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false
+                      "kind": "unknown",
+                      "name": "has_country_flag",
+                      "assume": true
                     },
                     {
                       "kind": "selection",
@@ -108098,8 +111398,9 @@
                   "kind": "any",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false
+                      "kind": "unknown",
+                      "name": "has_country_flag",
+                      "assume": true
                     }
                   ]
                 },
@@ -108107,8 +111408,9 @@
                   "kind": "any",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false
+                      "kind": "unknown",
+                      "name": "has_country_flag",
+                      "assume": true
                     },
                     {
                       "kind": "selection",
@@ -108228,8 +111530,9 @@
                   "kind": "any",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false
+                      "kind": "unknown",
+                      "name": "has_country_flag",
+                      "assume": true
                     },
                     {
                       "kind": "selection",
@@ -108242,8 +111545,9 @@
                   "kind": "any",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false
+                      "kind": "unknown",
+                      "name": "has_country_flag",
+                      "assume": true
                     }
                   ]
                 },
@@ -108251,8 +111555,9 @@
                   "kind": "any",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false
+                      "kind": "unknown",
+                      "name": "has_country_flag",
+                      "assume": true
                     },
                     {
                       "kind": "selection",
@@ -108415,8 +111720,9 @@
                           "key": "origin_shroud_forged"
                         },
                         {
-                          "kind": "always",
-                          "value": false
+                          "kind": "unknown",
+                          "name": "has_country_flag",
+                          "assume": true
                         }
                       ]
                     }
@@ -108465,21 +111771,24 @@
                   "kind": "any",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false
+                      "kind": "unknown",
+                      "name": "has_country_flag",
+                      "assume": true
                     }
                   ]
                 },
                 {
-                  "kind": "always",
-                  "value": false
+                  "kind": "unknown",
+                  "name": "has_country_flag",
+                  "assume": true
                 },
                 {
                   "kind": "any",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false
+                      "kind": "unknown",
+                      "name": "has_country_flag",
+                      "assume": true
                     },
                     {
                       "kind": "selection",
@@ -108668,8 +111977,9 @@
                           "key": "origin_shroud_forged"
                         },
                         {
-                          "kind": "always",
-                          "value": false
+                          "kind": "unknown",
+                          "name": "has_country_flag",
+                          "assume": true
                         }
                       ]
                     }
@@ -108694,8 +112004,9 @@
                   "kind": "any",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false
+                      "kind": "unknown",
+                      "name": "has_country_flag",
+                      "assume": true
                     },
                     {
                       "kind": "selection",
@@ -108708,8 +112019,9 @@
                   "kind": "any",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false
+                      "kind": "unknown",
+                      "name": "has_country_flag",
+                      "assume": true
                     }
                   ]
                 },
@@ -108717,8 +112029,9 @@
                   "kind": "any",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false
+                      "kind": "unknown",
+                      "name": "has_country_flag",
+                      "assume": true
                     },
                     {
                       "kind": "selection",
@@ -108867,8 +112180,9 @@
                           "key": "origin_shroud_forged"
                         },
                         {
-                          "kind": "always",
-                          "value": false
+                          "kind": "unknown",
+                          "name": "has_country_flag",
+                          "assume": true
                         }
                       ]
                     }

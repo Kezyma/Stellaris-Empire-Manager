@@ -72,6 +72,8 @@ internal static class GovernmentExtractor
                 Playable = ReadPlayable(body, requirements),
                 Potential = requirements.CompileRequirementsList(body.GetBlock("potential")),
                 Possible = requirements.CompileRequirementsList(body.GetBlock("possible")),
+                CanAddLater = ReadModification(body, "add", requirements),
+                CanRemoveLater = ReadModification(body, "remove", requirements),
                 ForcedTraits = ReadForcedTraits(body),
                 SoftTraits = ReadTraitList(body.GetBlock("soft_traits")),
                 Effects = effects,
@@ -99,6 +101,44 @@ internal static class GovernmentExtractor
         }
 
         return results;
+    }
+
+    /// <summary>
+    /// Reads one half of a civic's <c>modification</c>, which says whether a government reform
+    /// could take it on or give it up.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The game writes it three ways, and its own comment gives the default: "set to no to prevent
+    /// adding or removing this after creation of the empire". So a missing field means yes, a
+    /// scalar means itself both ways, and a block gives each direction its own trigger.
+    /// </para>
+    /// <para>
+    /// Compiled as a plan rather than as a design, because that is what it is for. Dark Consortium
+    /// can be taken on once you have dark matter mining, which is a sentence about the future - read
+    /// as a design condition it says never, and the civic disappears from the one editor that
+    /// exists to plan for it.
+    /// </para>
+    /// </remarks>
+    private static Requirement ReadModification(CwBlock body, string direction, RequirementCompiler requirements)
+    {
+        var node = body.Nodes.FirstOrDefault(n => n.Key == "modification");
+
+        if (node is null)
+        {
+            return new AlwaysRequirement(true);
+        }
+
+        if (node.ScalarValue is { } scalar)
+        {
+            return new AlwaysRequirement(scalar == "yes");
+        }
+
+        // A block naming only one direction leaves the other unrestricted, which is what the
+        // moddable_conditions_custom_tooltip beside it exists to explain.
+        return node.Block?.GetBlock(direction) is { } limit
+            ? requirements.CompilePlanTrigger(limit)
+            : new AlwaysRequirement(true);
     }
 
     /// <summary>

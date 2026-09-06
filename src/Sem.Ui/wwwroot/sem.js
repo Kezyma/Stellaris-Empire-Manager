@@ -558,6 +558,33 @@ export function enableCardReorder(list, owner) {
     let from = -1;
     let onto = -1;
     let grabbed = { x: 0, y: 0 };
+    let pointer = { x: 0, y: 0 };
+
+    // Where the list was scrolled to when the drag began, and what is doing the scrolling. The
+    // places below are measured once, in viewport coordinates, and a list that scrolls underneath
+    // the drag moves every card out from under them - so the distance the box has travelled since
+    // is subtracted back out rather than everything being measured again. Measuring again would
+    // read the cards where they have been shifted to, which is not where they belong.
+    let scroller = null;
+    let scrolledFrom = { left: 0, top: 0 };
+
+    /** How far the list has scrolled since the drag started. */
+    const drift = () => scroller
+        ? { x: scroller.scrollLeft - scrolledFrom.left, y: scroller.scrollTop - scrolledFrom.top }
+        : { x: 0, y: 0 };
+
+    /** The nearest thing around an element that scrolls, which may be the element itself. */
+    const scrollerOf = start => {
+        for (let el = start; el && el !== document.body; el = el.parentElement) {
+            const overflow = getComputedStyle(el).overflowY;
+
+            if (overflow === 'auto' || overflow === 'scroll') {
+                return el;
+            }
+        }
+
+        return null;
+    };
 
     const settle = () => {
         for (const card of cards) {
@@ -571,6 +598,7 @@ export function enableCardReorder(list, owner) {
         held = null;
         from = -1;
         onto = -1;
+        scroller = null;
     };
 
     /** Where each card should be drawn, given that the held one is heading for `target`. */
@@ -639,6 +667,11 @@ export function enableCardReorder(list, owner) {
         from = cards.indexOf(card);
         onto = from;
         grabbed = { x: event.clientX, y: event.clientY };
+        pointer = { x: event.clientX, y: event.clientY };
+        scroller = scrollerOf(list);
+        scrolledFrom = scroller
+            ? { left: scroller.scrollLeft, top: scroller.scrollTop }
+            : { left: 0, top: 0 };
 
         card.classList.add('lifted');
         list.classList.add('sorting');
@@ -654,21 +687,50 @@ export function enableCardReorder(list, owner) {
         }
     });
 
-    list.addEventListener('pointermove', event => {
+    /**
+     * Draws the held card under the pointer and works out which place it is over, both corrected
+     * for however far the list has scrolled since the drag began.
+     */
+    const track = () => {
         if (!held) {
             return;
         }
 
-        held.style.transform =
-            `translate(${event.clientX - grabbed.x}px, ${event.clientY - grabbed.y}px)`;
+        const { x: dx, y: dy } = drift();
 
-        const target = nearest(event.clientX, event.clientY);
+        // The held card is inside the box that scrolled, so it has already been carried along with
+        // it; adding the drift back puts it under the pointer, which did not move.
+        held.style.transform =
+            `translate(${pointer.x - grabbed.x + dx}px, ${pointer.y - grabbed.y + dy}px)`;
+
+        // The places went the other way, so the pointer is compared against where they were rather
+        // than where they now are. layOut needs no such correction: it works in differences between
+        // places, and a shift they all share cancels.
+        const target = nearest(pointer.x + dx, pointer.y + dy);
 
         if (target !== onto) {
             onto = target;
             layOut(onto);
         }
+    };
+
+    list.addEventListener('pointermove', event => {
+        if (!held) {
+            return;
+        }
+
+        pointer = { x: event.clientX, y: event.clientY };
+        track();
     });
+
+    // A list scrolled by the wheel, or by a finger dragging near its edge, moves the cards without
+    // the pointer moving at all. Without this the drag went on pointing at the places the cards
+    // used to be in, and dropped one several rows from where it looked.
+    //
+    // On the document and in the capture phase because a scroll event does not bubble: the box that
+    // scrolls may be this list or may be something around it, and only capture hears both. track
+    // does nothing unless a drag is in progress, so the cost of the wider net is a returned call.
+    document.addEventListener('scroll', track, { capture: true, passive: true });
 
     list.addEventListener('pointerup', () => {
         if (!held) {

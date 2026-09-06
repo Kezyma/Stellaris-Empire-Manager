@@ -1,4 +1,4 @@
-using Sem.Designs;
+﻿using Sem.Designs;
 using Sem.GameData;
 using Sem.Ui.Services;
 
@@ -77,7 +77,7 @@ public sealed class EmpirePlansTests
 
         Assert.Null(design.Species.Biography);
         Assert.Equal(PlanHome.Ruler, plans.HomeOf(design, Vocabulary));
-        Assert.Equal(PlanPath.Cybernetic, plans.PlanOf(design, Vocabulary).Path);
+        Assert.Equal(["tradition_cybernetics"], plans.PlanOf(design, Vocabulary).Trees);
     }
 
     /// <summary>Turning planning off gives the field back rather than leaving a husk in it.</summary>
@@ -128,7 +128,7 @@ public sealed class EmpirePlansTests
 
         Assert.NotNull(design.Species.Biography);
         Assert.Equal(PlanHome.Species, plans.HomeOf(design, Vocabulary));
-        Assert.Equal(PlanPath.Unset, plans.PlanOf(design, Vocabulary).Path);
+        Assert.False(plans.PlanOf(design, Vocabulary).Any);
     }
 
     /// <summary>
@@ -153,21 +153,33 @@ public sealed class EmpirePlansTests
                 Defines = new GameDefines { EthicsPoints = 3, CivicPoints = 2, CityPopLevel = 4 },
                 AscensionPerks = [new AscensionPerkDefinition("ap_flesh")],
                 TraditionTrees = [new TraditionTreeDefinition("tradition_cybernetics")],
+                Civics = [new CivicDefinition("civic_meritocracy", IsOrigin: false)],
             },
             new Dictionary<string, string>(StringComparer.Ordinal)
             {
                 ["ap_flesh"] = "The Flesh is Weak",
                 ["tradition_cybernetics"] = "Cybernetics",
+                ["civic_meritocracy"] = "Meritocracy",
             },
             "assets"));
 
         Assert.Equal("ap_flesh", session.PlanVocabulary.Perk("The Flesh is Weak"));
         Assert.Equal("tradition_cybernetics", session.PlanVocabulary.Tree("Cybernetics"));
+        Assert.Equal("civic_meritocracy", session.PlanVocabulary.Civic("Meritocracy"));
     }
 
-    private static EmpirePlan Cybernetic => new(PlanPath.Cybernetic, [], []);
+    private static EmpirePlan Cybernetic => new(["tradition_cybernetics"], [], []);
 
-    private static PlanVocabulary Vocabulary => PlanVocabulary.Empty;
+    /// <summary>
+    /// What a plan may name here, which has to include the tree the plan above uses.
+    /// </summary>
+    /// <remarks>
+    /// Empty would do for writing and not for reading: a plan is recognised by its marker but its
+    /// contents are resolved through this, so a vocabulary that cannot name the tree would write it
+    /// and then hand back a plan without it.
+    /// </remarks>
+    private static PlanVocabulary Vocabulary =>
+        new([("tradition_cybernetics", "Cybernetics")], [], []);
 
     private static EmpireDesign Design() => EmpireDesignsFile.CreateEmpty().Add("Test");
 
@@ -175,7 +187,5 @@ public sealed class EmpirePlansTests
         new Dictionary<string, string>(StringComparer.Ordinal)
         {
             ["tradition_cybernetics"] = "Cybernetics",
-            ["TRADITIONS"] = "Traditions",
-            ["ASCENSION_PERKS"] = "Ascension Perks",
         })));
 }
