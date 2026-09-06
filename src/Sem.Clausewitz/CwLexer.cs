@@ -114,12 +114,14 @@ public sealed class CwLexer(string text)
                 return new CwToken(CwTokenKind.QuotedString, _text[start.._position], leadingTrivia);
             }
 
-            // An unterminated string would otherwise consume the rest of the file; stopping at the
-            // line break keeps the damage local and the error message useful.
-            if (c is '\n')
-            {
-                break;
-            }
+            // A line break does not end one. It used to, on the reasoning that an unterminated
+            // string would otherwise consume the rest of the file and that stopping at the line
+            // kept the damage local - which was true, and cost more than it saved: a biography is a
+            // box the player may press Enter in, and every value in a design is written between
+            // quotation marks. An empire with two lines of story in it could not be shared at all,
+            // because a link is the design written out in this format and read back, and reading it
+            // back stopped here. It still throws on a string that is never closed; it now does so at
+            // the end of the file rather than at the end of the line.
         }
 
         throw new CwSyntaxException(

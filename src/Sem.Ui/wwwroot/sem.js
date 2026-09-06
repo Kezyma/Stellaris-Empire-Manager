@@ -1,4 +1,4 @@
-// Browser side of the file exchange.
+﻿// Browser side of the file exchange.
 //
 // Everything else in this app is C#. This exists because a page cannot hand the user a file
 // without the browser's help: there is no way to write to disk from managed code in a tab.
@@ -599,6 +599,8 @@ export function enableCardReorder(list, owner) {
         from = -1;
         onto = -1;
         scroller = null;
+
+        document.removeEventListener('scroll', track, { capture: true });
     };
 
     /** Where each card should be drawn, given that the held one is heading for `target`. */
@@ -676,6 +678,13 @@ export function enableCardReorder(list, owner) {
         card.classList.add('lifted');
         list.classList.add('sorting');
 
+        // Only for the length of the gesture. On the document and in the capture phase because a
+        // scroll event does not bubble - the box that scrolls may be this list or something around
+        // it, and only capture hears both - and taken off again in settle, because a listener left
+        // on the document outlives the list it was closed over. The plan's tabs build a new list
+        // each time one is chosen, so a permanent one here was a new listener per tab press.
+        document.addEventListener('scroll', track, { capture: true, passive: true });
+
         // So the rest of the gesture keeps arriving here even once the finger has left the grip,
         // which it does immediately. Not fatal if it is refused - the listeners are on the list and
         // a drag inside it still arrives, so a browser that will not capture costs precision at the
@@ -690,6 +699,11 @@ export function enableCardReorder(list, owner) {
     /**
      * Draws the held card under the pointer and works out which place it is over, both corrected
      * for however far the list has scrolled since the drag began.
+     *
+     * Called on pointer movement and on scrolling, because a list scrolled by the wheel - or by a
+     * finger dragging near its edge - moves the cards without the pointer moving at all. Without
+     * that the drag went on pointing at the places the cards used to be in, and dropped one several
+     * rows from where it looked.
      */
     const track = () => {
         if (!held) {
@@ -722,15 +736,6 @@ export function enableCardReorder(list, owner) {
         pointer = { x: event.clientX, y: event.clientY };
         track();
     });
-
-    // A list scrolled by the wheel, or by a finger dragging near its edge, moves the cards without
-    // the pointer moving at all. Without this the drag went on pointing at the places the cards
-    // used to be in, and dropped one several rows from where it looked.
-    //
-    // On the document and in the capture phase because a scroll event does not bubble: the box that
-    // scrolls may be this list or may be something around it, and only capture hears both. track
-    // does nothing unless a drag is in progress, so the cost of the wider net is a returned call.
-    document.addEventListener('scroll', track, { capture: true, passive: true });
 
     list.addEventListener('pointerup', () => {
         if (!held) {

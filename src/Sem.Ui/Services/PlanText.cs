@@ -57,6 +57,26 @@ public sealed class PlanText(Localizer localizer)
     private const string CivicsLabel = "Civics";
 
     /// <summary>
+    /// What stands between the parts, in place of a line break.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// It was a line break, and that could not be shared. A design travels through a link by being
+    /// written out as the game's own format and read back, and a quoted value in that format ends
+    /// at the first line break - deliberately, so that an unterminated string cannot swallow the
+    /// rest of a file. So a plan written on four lines came back as no design at all, and silently,
+    /// which is what a link that will not parse looks like.
+    /// </para>
+    /// <para>
+    /// One line, rather than teaching the parser otherwise, because that caution is there to protect
+    /// the player's own designs file - and because no biography in that file has ever held more than
+    /// one line, so whether the game itself would keep one is untested. A bar between the parts
+    /// costs two characters more than a newline and asks nothing of anybody.
+    /// </para>
+    /// </remarks>
+    private const string Separator = " | ";
+
+    /// <summary>
     /// Writes a plan as the biography that carries it.
     /// </summary>
     /// <remarks>
@@ -119,7 +139,7 @@ public sealed class PlanText(Localizer localizer)
     }
 
     private static string Render(List<Line> lines) => string.Join(
-        '\n',
+        Separator,
         new[] { Marker }.Concat(lines.Where(l => l.Names.Count > 0).Select(l => l.ToString())));
 
     /// <summary>One line of the prose while it is still being shortened to fit.</summary>
@@ -160,7 +180,10 @@ public sealed class PlanText(Localizer localizer)
         List<string> civics = [];
         var marked = false;
 
-        foreach (var line in biography.ReplaceLineEndings("\n").Split('\n'))
+        // Split on both, because a plan written before this is sitting on separate lines in
+        // somebody's designs file already. Reading one costs nothing; writing one again is what had
+        // to stop.
+        foreach (var line in biography.ReplaceLineEndings("\n").Split('\n', '|'))
         {
             var at = line.IndexOf(':', StringComparison.Ordinal);
 

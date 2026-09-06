@@ -1,4 +1,4 @@
-using Sem.Designs;
+﻿using Sem.Designs;
 using Sem.Ui.Services;
 
 namespace Sem.Ui.Tests;
@@ -102,6 +102,29 @@ public sealed class DesignLinkTests
 
         Assert.NotNull(restored);
         Assert.Equal(design.Authority, restored.Authority);
+    }
+
+    /// <summary>
+    /// A plan travels, which means a biography with line breaks in it travels.
+    /// </summary>
+    /// <remarks>
+    /// The same shape of defect as the quotation mark above, and found the same way - by sharing an
+    /// empire and watching the link open nothing. A plan is written into a biography as several
+    /// lines, and a design's fields are written between quotation marks, so whether a newline
+    /// survives that is the whole question of whether a plan can be shared at all.
+    /// </remarks>
+    [Fact]
+    public void APlanInABiographyTravels()
+    {
+        var plan = string.Join('\n', "Plan", "Perks: Archaeo-Engineers, Detox", "Civics: Free Haven");
+
+        var design = Load();
+        design.Species.Biography = plan;
+
+        var restored = DesignLink.Decode(DesignLink.Encode(design));
+
+        Assert.NotNull(restored);
+        Assert.Equal(plan, restored.Species.Biography);
     }
 
     [Theory]

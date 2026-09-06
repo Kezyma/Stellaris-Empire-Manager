@@ -327,7 +327,15 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
     private EmpirePlan? _plan;
 
     /// <summary>Whether one of this empire's biographies is carrying a plan at all.</summary>
-    public bool HasPlan => _session.Plans.HomeOf(_design, _session.PlanVocabulary) is not null;
+    /// <remarks>
+    /// Held, like the plan beside it. Answering it means parsing both biographies, and the table
+    /// asks it once per row per plan column - on top of the parse that reading the plan already
+    /// costs.
+    /// </remarks>
+    public bool HasPlan =>
+        _hasPlan ??= _session.Plans.HomeOf(_design, _session.PlanVocabulary) is not null;
+
+    private bool? _hasPlan;
 
     /// <summary>The tradition trees the plan means to open, as chips.</summary>
     public IEnumerable<EmpireChoice> PlanTrees =>

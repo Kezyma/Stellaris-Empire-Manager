@@ -12,7 +12,11 @@
     <link rel="icon" type="image/png" href="favicon.png" />
     <link rel="manifest" href="manifest.webmanifest" />
     <meta name="theme-color" content="#0d1117" />
-    <link href="Sem.Web.styles.css" rel="stylesheet" />
+
+    <!-- Sem.Web.styles.css is deliberately absent. It is the template's link to the scoped-styles
+         bundle, which the build only produces where a .razor.css exists - and none does, every rule
+         living in sem.css so the web and the desktop shell wear the same one. Left in, it was a 404
+         on every load of the deployed site. Adding a scoped stylesheet means adding the line back. -->
     <script type="importmap"></script>
 </head>
 

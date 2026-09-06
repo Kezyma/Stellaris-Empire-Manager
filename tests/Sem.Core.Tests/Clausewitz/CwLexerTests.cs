@@ -105,8 +105,29 @@ public sealed class CwLexerTests
         Assert.Equal(CwTokenKind.RightBrace, tokens[5].Kind);
     }
 
+    /// <summary>
+    /// A quoted string holds line breaks, because the things it holds have them.
+    /// </summary>
+    /// <remarks>
+    /// This used to end a string, on the reasoning that an unterminated one would otherwise consume
+    /// the rest of the file. The cost was found by sharing an empire: a biography is a box the
+    /// player may press Enter in, every value in a design is written between quotation marks, and a
+    /// link is the design written out in this format and read back - so an empire with two lines of
+    /// story in it came back from its own link as nothing at all, without saying so.
+    /// </remarks>
     [Fact]
-    public void UnterminatedStringFailsAtItsOwnLineRatherThanSwallowingTheFile()
+    public void AQuotedStringMayRunOverSeveralLines()
+    {
+        var tokens = new CwLexer("bio=\"Plan\r\nPerks: Detox\"\r\n").Tokenize();
+
+        var quoted = tokens.Single(t => t.Kind == CwTokenKind.QuotedString);
+
+        Assert.Equal("Plan\r\nPerks: Detox", quoted.Value);
+    }
+
+    /// <summary>And one that is never closed is still an error, now found at the end.</summary>
+    [Fact]
+    public void UnterminatedStringIsStillAnError()
     {
         var error = Assert.Throws<CwSyntaxException>(
             () => new CwLexer("name=\"unterminated\r\nkey=1\r\n").Tokenize());

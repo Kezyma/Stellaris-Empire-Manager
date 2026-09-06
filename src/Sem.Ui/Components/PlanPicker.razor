@@ -270,10 +270,16 @@
     }
 
     private RenderFragment Row(PlanOption option, bool chosen, bool locked = false) =>
+        @*
+            aria-disabled rather than disabled, for the locked ones. A disabled button is out of the
+            tab order and fires nothing, so a reader using the keyboard could neither reach a civic
+            the empire cannot give up nor hear the sentence saying why - which is the only useful
+            thing about it. Pressing it still does nothing: Press turns a locked row away.
+        *@
         @<button type="button"
                  class="sem-trait-row @(option.Enabled || chosen ? null : "blocked") @(locked ? "locked" : null)"
                  aria-pressed="@(chosen ? "true" : "false")"
-                 disabled="@locked"
+                 aria-disabled="@(locked ? "true" : null)"
                  title="@option.Name"
                  @onmouseenter="() => _described = option.Key"
                  @onfocus="() => _described = option.Key"
