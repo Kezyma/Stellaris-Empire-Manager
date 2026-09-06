@@ -46,6 +46,7 @@
            value="@Value"
            disabled="@Disabled"
            placeholder="@Placeholder"
+           maxlength="@MaxLength"
            @onchange="e => Commit(e.Value?.ToString())"
            @onfocus="() => _open = false" />
 
@@ -151,6 +152,22 @@
     /// <summary>Text shown while the box is empty.</summary>
     [Parameter]
     public string? Placeholder { get; set; }
+
+    /// <summary>
+    /// How much a player may type, which is what the game's own editor allows.
+    /// </summary>
+    /// <remarks>
+    /// Every name, title, adjective and prefix box in
+    /// <c>interface/customize_species_editors.gui</c> sets <c>max_characters = 100</c>, and this is
+    /// that number. Defaulted rather than passed at each of the dozen call sites, since a hundred is
+    /// the answer for all of them and a box that wanted another would be the exception.
+    ///
+    /// It limits typing and not what is already there: a design that arrived holding something
+    /// longer keeps it and is written back unchanged, which is the same courtesy the disabled heir
+    /// titles are shown.
+    /// </remarks>
+    [Parameter]
+    public int MaxLength { get; set; } = 100;
 
     /// <summary>
     /// Whether the field is offered at all.

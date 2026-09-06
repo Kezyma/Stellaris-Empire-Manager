@@ -7,8 +7,13 @@
     naming dialog is three fields shorter.
 *@
 
+@*
+    A hundred characters, which is what the game's own prefix box allows. It had been sixteen, on no
+    stated grounds - and a prefix is an acronym, so sixteen is plenty for any prefix anyone means to
+    write, but it is not the game's number and it refused input the game would take.
+*@
 <input id="@Id" type="text" value="@Session.Localizer.Name(Design.ShipPrefix, string.Empty)"
-       maxlength="16" placeholder="@Placeholder"
+       maxlength="100" placeholder="@Placeholder"
        @onchange="Commit" @onblur="Leave" />
 
 @code {
