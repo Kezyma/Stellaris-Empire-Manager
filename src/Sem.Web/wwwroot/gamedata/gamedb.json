@@ -1,7 +1,7 @@
 {
-  "schemaVersion": 12,
+  "schemaVersion": 13,
   "gameVersion": "v4.4.6",
-  "extractorVersion": "0.1.0\u002B488ed864b979447edb3149731201c2dd4981c996",
+  "extractorVersion": "0.1.0\u002Bf8a7c86cf0a949c3dd18e47922ec696539b1336f",
   "defines": {
     "ethicsPoints": 3,
     "civicPoints": 2,
@@ -51919,6 +51919,7 @@
       "icon": "icons/origins/origin_mindwardens.png",
       "picture": "pictures/origins/origin_mindwardens.png",
       "variants": [],
+      "forcedPortrait": "mindwarden_01",
       "nameKey": "origin_mindwardens",
       "effectsKey": "origin_tooltip_mindwardens_effects"
     },
@@ -52496,6 +52497,8 @@
       "icon": "icons/origins/origin_wilderness.png",
       "picture": "pictures/origins/origin_wilderness.png",
       "variants": [],
+      "forcedRoom": "wilderness_room",
+      "forcedCity": "wilderness_01",
       "nameKey": "origin_wilderness",
       "effectsKey": "origin_tooltip_wilderness_effects"
     },

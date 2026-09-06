@@ -1549,6 +1549,51 @@ public sealed class GameDataExtractionTests
             $"{g.Key} names the heir title {g.HeirTitleKey}, which has no text shipped for it."));
     }
 
+    /// <summary>
+    /// An origin that settles how the empire looks is read, so the card can be a preview.
+    /// </summary>
+    /// <remarks>
+    /// Two do. Wilderness names the room and the city artwork, which is why a wilderness empire's
+    /// cities are plants; Mindwardens names the portrait, and the game's own Mindwarden empire wears
+    /// it. A design stores its own three, so a file is right either way - but the card was drawing
+    /// whatever had been picked where the game will draw these.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void AnOriginCanSettleHowTheEmpireLooks()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        var wilderness = database.Civics.Single(c => c.Key == "origin_wilderness");
+
+        Assert.Equal("wilderness_room", wilderness.ForcedRoom);
+        Assert.Equal("wilderness_01", wilderness.ForcedCity);
+
+        Assert.Equal(
+            "mindwarden_01",
+            database.Civics.Single(c => c.Key == "origin_mindwardens").ForcedPortrait);
+
+        // And every one of them names artwork the installation actually has, or the card would draw
+        // a blank where it means to draw the game's own.
+        foreach (var civic in database.Civics.Where(c => c.ForcedRoom is { Length: > 0 }))
+        {
+            Assert.Contains(database.Rooms, r => r.Key == civic.ForcedRoom);
+        }
+
+        foreach (var civic in database.Civics.Where(c => c.ForcedCity is { Length: > 0 }))
+        {
+            Assert.Contains(database.GraphicalCultures, g => g.Key == civic.ForcedCity);
+        }
+
+        foreach (var civic in database.Civics.Where(c => c.ForcedPortrait is { Length: > 0 }))
+        {
+            Assert.Contains(
+                database.Portraits,
+                p => p.Key == civic.ForcedPortrait);
+        }
+    }
+
     /// <summary>The text the app ships, which is the pruned set rather than the game's whole one.</summary>
     private static Dictionary<string, string>? ShippedText()
     {

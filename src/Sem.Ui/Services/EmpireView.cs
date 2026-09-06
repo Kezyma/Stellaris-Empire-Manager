@@ -102,8 +102,16 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
         _vocabulary = null;
     }
 
+    /// <summary>
+    /// The scene the empire is shown in, which its origin may settle for it.
+    /// </summary>
+    /// <remarks>
+    /// Wilderness names its own room and its own cities, and the game applies both over whatever the
+    /// design holds - a wilderness empire's cities are plants. Shown here as the game would show it
+    /// rather than as the file happens to read, which is the only way the card can be a preview.
+    /// </remarks>
     public RoomDefinition? Room =>
-        Database.Rooms.FirstOrDefault(r => r.Key == _design.Room);
+        Database.Rooms.FirstOrDefault(r => r.Key == (Origin?.ForcedRoom ?? _design.Room));
 
     /// <summary>
     /// The world through the window: the homeworld the empire actually starts on.
@@ -116,7 +124,8 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
         Database.PlanetClasses.FirstOrDefault(p => p.Key == Context.EffectivePlanetClass);
 
     public GraphicalCultureDefinition? City =>
-        Database.GraphicalCultures.FirstOrDefault(c => c.Key == _design.CityGraphicalCulture);
+        Database.GraphicalCultures.FirstOrDefault(
+            c => c.Key == (Origin?.ForcedCity ?? _design.CityGraphicalCulture));
 
     public GraphicalCultureDefinition? Shipset =>
         Database.GraphicalCultures.FirstOrDefault(c => c.Key == _design.GraphicalCulture);
@@ -143,7 +152,8 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
         Database, PortraitArtwork.RulerPortrait(_design), PortraitArtwork.RulerGender(_design));
 
     public string? SpeciesPortrait =>
-        PortraitArtwork.For(Database, _design.Species.Portrait, _design.Species.Gender);
+        PortraitArtwork.For(
+            Database, Origin?.ForcedPortrait ?? _design.Species.Portrait, _design.Species.Gender);
 
     public AuthorityDefinition? Authority =>
         Database.Authorities.FirstOrDefault(a => a.Key == _design.Authority);

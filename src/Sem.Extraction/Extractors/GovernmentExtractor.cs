@@ -92,6 +92,12 @@ internal static class GovernmentExtractor
                 EffectsKey = body.GetString("description"),
                 PenaltiesKey = body.GetString("negative_description"),
 
+                // What the origin settles about how the empire looks, which the game applies over
+                // whatever was picked.
+                ForcedPortrait = body.GetString("portrait"),
+                ForcedRoom = body.GetString("room"),
+                ForcedCity = body.GetString("city_graphical_culture"),
+
                 // A civic states its swapped name and description outright, so neither is worked
                 // out - Natural Neural Network is called the wilderness one to a wilderness empire
                 // because the civic says so, and Arc Welders renames itself for a nomad.
