@@ -816,7 +816,19 @@ public sealed class EmpireRules(GameDatabase database)
         ArgumentNullException.ThrowIfNull(trees);
         ArgumentNullException.ThrowIfNull(perks);
 
+        // Two moments, because the two questions are different. Whether a tree is one this
+        // empire could ever open is asked of the whole plan - its potential rules out the other
+        // ascension paths, and a perk named later still rules them out. Whether it can be opened
+        // now is asked of the plan so far.
+        //
+        // So far means: as many perks as there are trees already planned. Finishing a tree is what
+        // grants an ascension perk slot - all thirty-two of them do, sixteen outright and sixteen
+        // through whichever variant fits the empire - so a plan opening its fourth tree has had
+        // three slots and can have spent at most three perks. Read against the whole list instead,
+        // Purity was open from the first slot to an empire whose plan named Biomorphosis third,
+        // which is an order the game could not play.
         var planned = context.WithPlan(perks, Opened(trees));
+        var sofar = context.WithPlan(perks.Take(trees.Count), Opened(trees));
 
         var options = Options(
             _database.TraditionTrees,
@@ -828,7 +840,8 @@ public sealed class EmpireRules(GameDatabase database)
             // tr_cybernetics_adopt does, and so a plan that has not named The Flesh is Weak cannot
             // open Cybernetics - which is the rule in the game and was missing here.
             t => Adopting(t),
-            planned);
+            planned,
+            whenTaken: sofar);
 
         return trees.Count < _database.Defines.TraditionSlots
             ? options
@@ -865,9 +878,10 @@ public sealed class EmpireRules(GameDatabase database)
     /// step.
     /// </para>
     /// <para>
-    /// The trees all go in at every step rather than being walked alongside, because a plan does
-    /// not say whether a tree is opened before or after a perk is taken. What the perks ask of them
-    /// is whether a named tradition is taken at all, which every planned tree answers.
+    /// Walked alongside the trees, one for one. Finishing a tradition tree is what grants an
+    /// ascension perk slot, and every tree in the game grants one, so the perk in the nth place is
+    /// the one taken once the nth tree is done - which is what lets a plan of two lists be read as
+    /// a single order at all.
     /// </para>
     /// </remarks>
     public bool IsLegalPerkOrder(
@@ -888,12 +902,55 @@ public sealed class EmpireRules(GameDatabase database)
                 continue;
             }
 
-            // Only the perks are walked. Where a perk sits among the other perks is a rule the game
-            // states - "you must already have three" - and where it sits among the trees is not.
-            var before = context.WithPlan(perks.Take(at), opened);
+            // The trees finished by then, and no more. A perk slot comes from finishing a tree,
+            // so the perk in the third place is the one taken after the third tree - and a perk
+            // asking for a tradition out of the fourth tree cannot be third.
+            var before = context.WithPlan(perks.Take(at), Opened(trees.Take(at + 1)));
 
             if (!_evaluator.Evaluate(perk.Possible, before).Passed ||
                 !_evaluator.Evaluate(perk.Potential, before).Passed)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Whether every tree in a plan could be opened in the place it sits.
+    /// </summary>
+    /// <remarks>
+    /// The mirror of <see cref="IsLegalPerkOrder"/>, and it only started to matter when six trees
+    /// turned out to be gated on an ascension perk. Purity asks for Biomorphosis; Biomorphosis is a
+    /// perk, and a perk costs a slot that only a finished tree grants - so a plan naming
+    /// Biomorphosis third cannot open Purity until its fourth tree, whatever order the two lists
+    /// are written in.
+    ///
+    /// Only the adoption gate is asked. A tree's potential is about the empire rather than about
+    /// when it is opened, and judging it here would refuse a tree for holding a perk the plan takes
+    /// later - which is the whole point of planning one.
+    /// </remarks>
+    public bool IsLegalTreeOrder(
+        DesignContext context,
+        IReadOnlyList<string> trees,
+        IReadOnlyList<string> perks)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(trees);
+        ArgumentNullException.ThrowIfNull(perks);
+
+        for (var at = 0; at < trees.Count; at++)
+        {
+            if (_database.TraditionTrees.FirstOrDefault(t => t.Key == trees[at]) is not { } tree)
+            {
+                continue;
+            }
+
+            // As many perks as there are trees before this one, for the reason above.
+            var before = context.WithPlan(perks.Take(at), Opened(trees.Take(at)));
+
+            if (!_evaluator.Evaluate(Adopting(tree), before).Passed)
             {
                 return false;
             }
@@ -1706,12 +1763,18 @@ public sealed class EmpireRules(GameDatabase database)
         context.SpeciesArchetype is null ||
         trait.AllowedArchetypes.Contains(context.SpeciesArchetype);
 
+    /// <param name="whenTaken">
+    /// The empire as it would be at the moment this option is taken, where that is not the empire
+    /// the plan ends with. Whether an option is ever possible and whether it is possible yet are
+    /// different questions, and a plan is the one place they come apart.
+    /// </param>
     private IReadOnlyList<OptionState> Options<T>(
         IEnumerable<T> items,
         Func<T, string> key,
         Func<T, Requirement> visibility,
         Func<T, Requirement> availability,
-        DesignContext context)
+        DesignContext context,
+        DesignContext? whenTaken = null)
     {
         ArgumentNullException.ThrowIfNull(context);
 
@@ -1720,7 +1783,7 @@ public sealed class EmpireRules(GameDatabase database)
         foreach (var item in items)
         {
             var visible = _evaluator.Evaluate(visibility(item), context);
-            var enabled = _evaluator.Evaluate(availability(item), context);
+            var enabled = _evaluator.Evaluate(availability(item), whenTaken ?? context);
 
             options.Add(new OptionState(
                 key(item),

@@ -25,6 +25,13 @@
          @onclick:stopPropagation="true">
 
         <div class="head">
+            @*
+                Before the name rather than beside the Done: a switch that turns the whole editor on
+                belongs where the thing it names is, and the head is the one part of a scrolling
+                sheet that is always in view.
+            *@
+            @Lead
+
             <h2 id="@_titleId">@Title</h2>
 
             @*
@@ -64,6 +71,14 @@
     /// <summary>What is being edited, named as the section that holds it is named.</summary>
     [Parameter, EditorRequired]
     public required string Title { get; set; }
+
+    /// <summary>Drawn in the head, in front of the title.</summary>
+    /// <remarks>
+    /// For a control that belongs to the whole editor rather than to anything inside it - the plan's
+    /// switch, which decides whether there is a plan at all.
+    /// </remarks>
+    [Parameter]
+    public RenderFragment? Lead { get; set; }
 
     /// <summary>The editor itself.</summary>
     [Parameter, EditorRequired]

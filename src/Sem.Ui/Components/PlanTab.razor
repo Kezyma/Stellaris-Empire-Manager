@@ -12,18 +12,15 @@
     own, and a feature that helped itself to one would be taking something.
 *@
 
+@*
+    The switch that turns all this on is in the heading, in front of the word Plan - see
+    PlanSwitch. It read as one more field of the plan down here, rather than as the thing the
+    whole panel hangs from.
+*@
 <div class="sem-row wide">
-    <div class="sem-field flush">
-        <label>
-            <input type="checkbox" checked="@Planning" disabled="@(!Planning && !AnyFree)"
-                   @onchange="TogglePlanning" />
-            Enable Plan
-        </label>
-    </div>
-
     @if (Planning)
     {
-        <div class="sem-field inline">
+        <div class="sem-field inline flush">
             <label for="plan-home">Write To</label>
 
             @*
@@ -61,24 +58,28 @@
 @if (Planning)
 {
     @*
-        One at a time. Forty-nine perks, thirty-two trees and three hundred civics on one panel is
-        three long lists competing for the same eye, and they are decided separately.
-    *@
-    <PickerTabs Tabs="@Parts" Label="Which part of the plan" Selected="@_part"
-                SelectedChanged="p => _part = p" />
+        One at a time. Forty-nine perks and thirty-two trees on one panel is two long lists
+        competing for the same eye, and they are decided separately.
 
-    @*
-        In the order a game takes them: a tree is opened, finished, and the perk it earns is spent.
-        The civics come last because they are a reform rather than a step on that path.
+        The civics are not here at all. They are a reform of the government rather than a step along
+        the ascension path - a tree is opened, finished, and the perk it earns is spent, and the
+        civics belong to none of that - so they have an editor of their own and this one has two
+        tabs rather than three.
     *@
-    @if (_part == 0)
+    @if (Part is not PlanPart.Civics)
+    {
+        <PickerTabs Tabs="@Parts" Label="Which part of the plan" Selected="@Showing"
+                    SelectedChanged="p => _showing = p" />
+    }
+
+    @if (Showing == 0 && Part is not PlanPart.Civics)
     {
         <PlanPicker @key="@("trees")" Heading="Traditions" BudgetKey="TRADITIONS"
                     Budget="@Session.Rules.GetTraditionBudget(Plan.Trees.Count)"
                     Available="@TreeOptions(chosen: false)" Chosen="@TreeOptions(chosen: true)"
                     OnToggle="ToggleTree" OnReorder="MoveTree" />
     }
-    else if (_part == 1)
+    else if (Part is not PlanPart.Civics)
     {
         <PlanPicker @key="@("perks")" Heading="Ascension Perks" BudgetKey="ASCENSION_PERKS"
                     Budget="@PerkBudget"
@@ -124,21 +125,34 @@
     [CascadingParameter]
     public required DesignSession Session { get; set; }
 
-    /// <summary>Which part of the plan is showing, since all three are long lists.</summary>
-    private int _part;
-
     /// <summary>
-    /// The three parts, each saying how much of its allowance the plan has spent.
+    /// Which part of the plan this editor is for.
     /// </summary>
     /// <remarks>
-    /// The count rides on the tab so the parts that are not showing still say what is in them - the
+    /// The traditions and the perks share an editor, because they share an order: a tree is opened,
+    /// finished, and the perk it earns is spent. Which of the two it opens on is which of them was
+    /// pressed to get here - somebody who clicked the perks wants the perks.
+    /// </remarks>
+    [Parameter]
+    public PlanPart Part { get; set; } = PlanPart.Traditions;
+
+    /// <summary>Which tab the reader has since chosen, and nothing until they choose one.</summary>
+    private int? _showing;
+
+    /// <summary>The tab showing: whichever was pressed to open this, until it is changed.</summary>
+    private int Showing => _showing ?? (Part is PlanPart.Perks ? 1 : 0);
+
+    /// <summary>
+    /// The two halves of the path, each saying how much of its allowance the plan has spent.
+    /// </summary>
+    /// <remarks>
+    /// The count rides on the tab so the half that is not showing still says what is in it - the
     /// same reason the flag picker's tabs carry the emblem's name.
     /// </remarks>
     private IReadOnlyList<PickerTabs.Tab> Parts =>
     [
         new("Traditions", $"{Plan.Trees.Count}/{Session.Data.Database.Defines.TraditionSlots}"),
         new("Ascension Perks", $"{Plan.Perks.Count}/{PerkBudget.Available}"),
-        new("Civics", $"{Locked.Count + Planned.Count}/{Session.Data.Database.Defines.PlannedCivicPoints}"),
     ];
 
     private EmpireDesign Design => Session.Current!;
@@ -422,14 +436,28 @@
     }
 
     /// <summary>
-    /// Moves a tree, which nothing can refuse.
+    /// Moves a tree, unless the game could not open it where it is being put.
     /// </summary>
     /// <remarks>
-    /// Unlike the perks: no tree in the game asks how many were opened before it, so any order of
-    /// them is one the game would allow. It is still worth arranging, because the order is the one
-    /// the player means to take them in.
+    /// It used to be that nothing could refuse this, and the reason given was that no tree asks how
+    /// many were opened before it. Six of them do, by asking for an ascension perk: Purity wants
+    /// Biomorphosis, and a perk costs a slot that only a finished tree grants, so a plan naming
+    /// Biomorphosis third cannot open Purity before its fourth tree.
+    ///
+    /// Refused the same way a perk's move is, and let through on the same terms: a plan already
+    /// wrong is one the player is trying to put right, and refusing every arrangement of it would
+    /// leave the grips dead with nothing said.
     /// </remarks>
-    private void MoveTree((int From, int To) move) => Save(Plan with { Trees = Moved(Plan.Trees, move) });
+    private void MoveTree((int From, int To) move)
+    {
+        var trees = Moved(Plan.Trees, move);
+
+        if (Session.Rules.IsLegalTreeOrder(Session.Context!, trees, Plan.Perks) ||
+            !Session.Rules.IsLegalTreeOrder(Session.Context!, Plan.Trees, Plan.Perks))
+        {
+            Save(Plan with { Trees = trees });
+        }
+    }
 
     private static List<string> Moved(IReadOnlyList<string> keys, (int From, int To) move)
     {

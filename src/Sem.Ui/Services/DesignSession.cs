@@ -174,7 +174,29 @@ public sealed class DesignSession
     /// empire being edited changes, which is the only thing it is about.
     /// </para>
     /// </remarks>
-    public PlanHome? PlanIntent { get; set; }
+    /// <remarks>
+    /// <para>
+    /// Setting it says so, because the switch that sets it is no longer in the panel it changes.
+    /// It moved to the heading - of the dialog, and of the designer's section - and a plain property
+    /// set from a component beside the editor left the editor showing nothing at all: the box was
+    /// ticked, planning was on, and the panel underneath had never been asked to draw again.
+    /// </para>
+    /// </remarks>
+    public PlanHome? PlanIntent
+    {
+        get;
+
+        set
+        {
+            if (field == value)
+            {
+                return;
+            }
+
+            field = value;
+            Changed?.Invoke();
+        }
+    }
 
     /// <summary>Turns modifiers into the lines the game would show for them.</summary>
     public ModifierFormatter Modifiers { get; }

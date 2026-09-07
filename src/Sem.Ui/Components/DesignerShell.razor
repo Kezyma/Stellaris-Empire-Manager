@@ -107,7 +107,8 @@
                     No problem count. A plan cannot make a design invalid, because the game never
                     reads it, so it contributes nothing to the panel that lists what is wrong.
                 *@
-                <DesignerSection OpenSection="@_open" OnToggle="Open" Title="Plan" Summary="@PlanSummary">
+                <DesignerSection OpenSection="@_open" OnToggle="Open" Title="Plan" Summary="@PlanSummary"
+                                 Lead="@PlanLead">
                     <PlanTab />
                 </DesignerSection>
             </div>
@@ -121,6 +122,13 @@
 </CascadingValue>
 
 @code {
+    /// <summary>The plan's switch, built here because a template cannot sit in an attribute.</summary>
+    private static readonly RenderFragment PlanLead = builder =>
+    {
+        builder.OpenComponent<PlanSwitch>(0);
+        builder.CloseComponent();
+    };
+
     [Parameter, EditorRequired]
     public required DesignSession Session { get; set; }
 

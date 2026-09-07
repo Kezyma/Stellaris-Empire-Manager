@@ -561,6 +561,7 @@ button.danger:hover:not(:disabled) {
    stacked label costs more height than the answer is worth.
 */
 .sem-field.inline {
+    display: flex;
     flex-direction: row;
     align-items: center;
     gap: var(--space-md);
@@ -568,6 +569,9 @@ button.danger:hover:not(:disabled) {
 
 .sem-field.inline > label {
     flex: 0 0 auto;
+
+    /* The gap is doing the spacing now, and the label's own would push it off centre. */
+    margin-bottom: 0;
 }
 
 .sem-field.inline > select,
@@ -6193,4 +6197,52 @@ button.icon .sem-action-icon { display: block; }
     .sem-modal .choices > button {
         flex: 1 1 100%;
     }
+}
+
+/*
+    A section whose header carries a control of its own.
+
+    The header is a button, and a control nested inside one never gets its own press - so the switch
+    sits beside it and the two are laid out as a single row, with the body spanning both beneath.
+*/
+.sem-section.led {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+}
+
+.sem-section.led > .lead {
+    display: flex;
+    align-items: center;
+    padding-left: var(--space-lg);
+}
+
+.sem-section.led > .head {
+    padding-left: var(--space-sm);
+    border-radius: 0 calc(var(--radius) - 1px) 0 0;
+}
+
+.sem-section.led:not(:has(> .body)) > .head {
+    border-radius: 0 calc(var(--radius) - 1px) calc(var(--radius) - 1px) 0;
+}
+
+.sem-section.led > .body {
+    grid-column: 1 / -1;
+}
+
+/*
+    The plan's switch, in the heading of whichever thing is showing the plan.
+
+    No label of its own: the word beside it is the heading, which already says Plan. A bare box
+    still has to say what it is to anything not reading the heading, so it carries an aria-label
+    and a title instead.
+*/
+.sem-plan-switch {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+}
+
+.sem-editor-modal .head > .sem-plan-switch {
+    margin-right: calc(var(--space-xs) * -1);
 }

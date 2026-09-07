@@ -1121,6 +1121,10 @@ public sealed class GameDataExtractionTests
     /// tradition that adopts it does - "the flesh is weak, and the technology, unless your origin
     /// already put you there". Read only the tree and every ascension is offered from the start,
     /// which is not what the game does.
+    ///
+    /// A tree is opened for it to be second at soonest. An ascension perk costs a slot and a slot
+    /// comes from finishing a tradition tree, so a plan that has opened nothing has taken no perk
+    /// and no ascension tree is ever the first one.
     /// </remarks>
     [SkippableFact]
     [Trait("Category", "RealData")]
@@ -1132,12 +1136,17 @@ public sealed class GameDataExtractionTests
         var rules = new EmpireRules(database);
         var context = rules.CreateContext(EmpireDesignsFile.CreateEmpty().Add("Test"));
 
-        bool Open(params string[] perks) =>
-            rules.GetTraditionTreeOptions(context, [], perks)
+        bool Open(string[] trees, params string[] perks) =>
+            rules.GetTraditionTreeOptions(context, trees, perks)
                 .Single(o => o.Key == "tradition_cybernetics").Enabled;
 
-        Assert.False(Open());
-        Assert.True(Open("ap_the_flesh_is_weak"));
+        string[] first = ["tradition_prosperity"];
+
+        Assert.False(Open(first));
+        Assert.True(Open(first, "ap_the_flesh_is_weak"));
+
+        // And not before the plan could have taken the perk at all.
+        Assert.False(Open([], "ap_the_flesh_is_weak"));
 
         // The ordinary trees ask nothing of a plan and are open from the first moment.
         Assert.True(rules.GetTraditionTreeOptions(context, [], [])
@@ -1184,10 +1193,14 @@ public sealed class GameDataExtractionTests
             ("tradition_virtuality", "ap_synthetic_age", "REQUIRES_FINISHED_TRANSFORMATION", machine),
         };
 
+        // One tree already opened, so the plan has earned the slot the perk is spent from. No
+        // ascension tree is ever the first one, for that reason.
+        string[] first = ["tradition_prosperity"];
+
         foreach (var (tree, perk, said, context) in gated)
         {
             OptionState Offered(params string[] perks) =>
-                rules.GetTraditionTreeOptions(context, [], perks).Single(o => o.Key == tree);
+                rules.GetTraditionTreeOptions(context, first, perks).Single(o => o.Key == tree);
 
             var closed = Offered();
 
@@ -1266,6 +1279,58 @@ public sealed class GameDataExtractionTests
                 Category: SelectionCategory.AscensionPerk,
                 Key: "ap_engineered_evolution",
             });
+    }
+
+    /// <summary>
+    /// A tree gated on a perk cannot be opened before the plan could have taken that perk.
+    /// </summary>
+    /// <remarks>
+    /// Reported from the running app: a plan whose perks read One Vision, Hydrocentric,
+    /// Biomorphosis offered Purity for the very first tradition slot. Purity asks for Biomorphosis,
+    /// Biomorphosis is the third perk, and an ascension perk slot is what finishing a tradition
+    /// tree grants - so the earliest the plan could hold three perks is after three trees, and
+    /// Purity is the fourth tree at soonest.
+    ///
+    /// Both halves are checked, because they fail differently: what the picker offers decides
+    /// whether it can be put there in the first place, and the order check decides whether it can
+    /// be dragged there afterwards.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void ATreeCannotBeOpenedBeforeThePerkThatUnlocksIt()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var database = Database.Value;
+        var rules = new EmpireRules(database);
+        var context = rules.CreateContext(EmpireDesignsFile.CreateEmpty().Add("Test"));
+
+        string[] perks = ["ap_one_vision", "ap_hydrocentric", "ap_engineered_evolution"];
+
+        bool Offered(params string[] trees) =>
+            rules.GetTraditionTreeOptions(context, trees, perks)
+                .Single(o => o.Key == "tradition_purity").Enabled;
+
+        // Nothing planned yet: no tree finished, so no perk taken, so no Biomorphosis.
+        Assert.False(Offered(), "Purity is offered for the first tradition slot.");
+
+        Assert.False(Offered("tradition_prosperity"), "Purity is offered for the second slot.");
+
+        Assert.False(
+            Offered("tradition_prosperity", "tradition_discovery"),
+            "Purity is offered for the third slot.");
+
+        // Three trees in, three perk slots earned, and the third of them is Biomorphosis.
+        Assert.True(
+            Offered("tradition_prosperity", "tradition_discovery", "tradition_expansion"),
+            "Purity is refused for the fourth slot, where the plan has earned Biomorphosis.");
+
+        // And it cannot be dragged back in front of them afterwards.
+        string[] legal = ["tradition_prosperity", "tradition_discovery", "tradition_expansion", "tradition_purity"];
+        string[] tooSoon = ["tradition_purity", "tradition_prosperity", "tradition_discovery", "tradition_expansion"];
+
+        Assert.True(rules.IsLegalTreeOrder(context, legal, perks));
+        Assert.False(rules.IsLegalTreeOrder(context, tooSoon, perks));
     }
 
     /// <summary>
