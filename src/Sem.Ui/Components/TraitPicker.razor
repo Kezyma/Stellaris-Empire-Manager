@@ -227,7 +227,7 @@
         // Under a finger the first press reads and the second takes. A blocked trait is described
         // and nothing else, which is the only thing left to do with one - and that is why this sits
         // above the check below rather than after it.
-        if (_press.ReadsOnly(trait.Key, _described))
+        if (_press.ReadsOnly(trait.Key))
         {
             _described = trait.Key;
             return;
@@ -261,12 +261,13 @@
 
     private RenderFragment Row(TraitEntry trait, bool chosen) =>
         @<button type="button"
-                 class="sem-trait-row @(trait.Enabled ? null : "blocked") @(trait.Overspends ? "overspends" : null) @(_press.IsReading(trait.Key, _described) ? "reading" : null)"
+                 class="sem-trait-row @(trait.Enabled ? null : "blocked") @(trait.Overspends ? "overspends" : null) @(_press.IsReading(trait.Key) ? "reading" : null)"
                  aria-pressed="@(chosen ? "true" : "false")"
                  title="@trait.Name"
                  @onmouseenter="() => _described = trait.Key"
                  @onfocus="() => _described = trait.Key"
                  @onpointerdown="_press.Noted"
+                 @ontouchstart="_press.NotedTouch"
                  @onclick="() => Toggle(trait, chosen)">
 
             @if (trait.Icon is { Length: > 0 } icon)

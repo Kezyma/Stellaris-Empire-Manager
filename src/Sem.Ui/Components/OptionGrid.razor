@@ -61,6 +61,7 @@
                                 @onmouseleave="() => Unhover(option.Key)"
                                 @onblur="() => Unhover(option.Key)"
                                 @onpointerdown="_press.Noted"
+                                @ontouchstart="_press.NotedTouch"
                                 @onclick="() => Choose(option)">
                             @if (option.Icon is { Length: > 0 } icon)
                             {
@@ -255,7 +256,7 @@
     {
         // A finger has no hover, so a tap is also how the panel is asked about something. Set for
         // a blocked option too — being told why is the only thing left to do with one.
-        var reading = _press.ReadsOnly(option.Key, _hovered);
+        var reading = _press.ReadsOnly(option.Key);
 
         _hovered = option.Key;
 
@@ -278,7 +279,7 @@
 
         // Under a finger, the row the panel is about is the row a second press would take, and it
         // says so. A mouse has its own hover mark and does not need a second one.
-        if (_press.IsReading(option.Key, _hovered))
+        if (_press.IsReading(option.Key))
         {
             classes.Add("reading");
         }
@@ -312,6 +313,7 @@
                  @onmouseenter="() => _hovered = option.Key"
                  @onfocus="() => _hovered = option.Key"
                  @onpointerdown="_press.Noted"
+                 @ontouchstart="_press.NotedTouch"
                  @onclick="() => Choose(option)">
             @if (option.Icon is { Length: > 0 } icon)
             {

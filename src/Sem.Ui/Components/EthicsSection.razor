@@ -31,13 +31,14 @@
                         was deciding what to give up.
                     *@
                     <button type="button"
-                            class="sem-icon-option @(ethic.Selected ? "selected" : null) @(Blocked(ethic) ? (ethic.AtLimit ? "at-limit" : "blocked") : null) @(_press.IsReading(ethic.Key, _hovered) ? "reading" : null)"
+                            class="sem-icon-option @(ethic.Selected ? "selected" : null) @(Blocked(ethic) ? (ethic.AtLimit ? "at-limit" : "blocked") : null) @(_press.IsReading(ethic.Key) ? "reading" : null)"
                             aria-pressed="@(ethic.Selected ? "true" : "false")"
                             aria-disabled="@(Blocked(ethic) ? "true" : null)"
                             title="@ethic.Name"
                             @onmouseenter="() => _hovered = ethic.Key"
                             @onfocus="() => _hovered = ethic.Key"
                             @onpointerdown="_press.Noted"
+                            @ontouchstart="_press.NotedTouch"
                             @onclick="() => Choose(ethic)">
 
                         @if (ethic.Icon is { Length: > 0 } icon)
@@ -140,7 +141,7 @@
     {
         // A finger has no hover, so a tap is also how the panel is asked about something - and under
         // a finger the first press is only that, leaving the choice to the second.
-        var reading = _press.ReadsOnly(ethic.Key, _hovered);
+        var reading = _press.ReadsOnly(ethic.Key);
 
         _hovered = ethic.Key;
 
