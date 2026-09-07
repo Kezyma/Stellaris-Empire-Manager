@@ -527,9 +527,13 @@
                 case SaveOutcome.Cancelled:
                     break;
 
+                // Nothing to say. A browser with no save dialog downloads instead, and on a phone
+                // that is every save - so the sentence explaining it was not news after the first
+                // time, it was a notice to dismiss on the way out of every save. The browser
+                // already says a file arrived, and where it went is the browser's business rather
+                // than this app's.
                 case SaveOutcome.Downloaded:
-                    _message = ($"This browser has no save dialog, so {name} was downloaded instead. "
-                        + "Move it into your Stellaris folder for the game to find it.", false);
+                    _message = null;
                     break;
 
                 case SaveOutcome.Refused:

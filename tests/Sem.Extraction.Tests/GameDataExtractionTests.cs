@@ -1587,6 +1587,65 @@ public sealed class GameDataExtractionTests
         }
     }
 
+    /// <summary>
+    /// A condition about a trait is answered by the traits the species has, not the ones written down.
+    /// </summary>
+    /// <remarks>
+    /// A habitability preference is forced by the homeworld and deliberately never written into a
+    /// design - <c>GetWrittenForcedTraits</c> excludes exactly that source - so asking the written
+    /// list whether an ocean species has <c>trait_pc_ocean_preference</c> answered no for every
+    /// empire in the game. Hydrocentric's whole condition is that question, so the perk was hidden
+    /// from every empire that qualifies for it, and hidden rather than blocked, which is the kind
+    /// that leaves nothing on screen to wonder about.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void ATraitTheHomeworldForcedStillAnswersForItself()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+        var rules = new EmpireRules(database);
+
+        var design = EmpireDesignsFile.CreateEmpty().Add("Ocean");
+        design.Species.Class = "MAM";
+        design.Authority = "auth_democratic";
+        design.SetEthics(["ethic_xenophile", "ethic_pacifist"]);
+        design.PlanetClass = "pc_ocean";
+
+        var context = rules.CreateContext(design, database.Dlc.Select(d => d.Name).ToHashSet(StringComparer.Ordinal));
+
+        // The design says nothing about a preference, and the empire has one all the same.
+        Assert.DoesNotContain("trait_pc_ocean_preference", context.Traits);
+        Assert.Contains("trait_pc_ocean_preference", context.EffectiveTraits);
+
+        // So a condition asking about it is answered yes, and the perk built on that question is
+        // offered rather than hidden.
+        Assert.True(
+            context.Has(SelectionCategory.Traits, "trait_pc_ocean_preference"),
+            "A forced habitability preference does not answer has_trait.");
+
+        var hydrocentric = rules.GetAscensionPerkOptions(context, [], [])
+            .SingleOrDefault(o => o.Key == "ap_hydrocentric");
+
+        Assert.True(hydrocentric is not null, "Hydrocentric is not among the perks at all.");
+        Assert.True(hydrocentric!.Visible, "Hydrocentric is hidden from an ocean empire that qualifies.");
+
+        // And an empire with no such preference still does not see it, or the gate would mean nothing.
+        var inland = EmpireDesignsFile.CreateEmpty().Add("Inland");
+        inland.Species.Class = "MAM";
+        inland.Authority = "auth_democratic";
+        inland.SetEthics(["ethic_xenophile", "ethic_pacifist"]);
+        inland.PlanetClass = "pc_desert";
+
+        Assert.False(
+            rules.GetAscensionPerkOptions(
+                    rules.CreateContext(inland, database.Dlc.Select(d => d.Name).ToHashSet(StringComparer.Ordinal)),
+                    [],
+                    [])
+                .Single(o => o.Key == "ap_hydrocentric").Visible,
+            "Hydrocentric is offered to an empire with no ocean preference.");
+    }
+
     /// <summary>The text the app ships, which is the pruned set rather than the game's whole one.</summary>
     private static Dictionary<string, string>? ShippedText()
     {

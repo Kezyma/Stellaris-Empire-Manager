@@ -312,7 +312,12 @@ public sealed class DesignContext
         SelectionCategory.Origin => Origin == key,
         SelectionCategory.SpeciesArchetype => SpeciesArchetype == key,
         SelectionCategory.SpeciesClass => SpeciesClass == key,
-        SelectionCategory.Traits => Traits.Contains(key),
+        // What the species has, not what the file lists. A habitability preference is forced by the
+        // homeworld and deliberately never written down, so asking the written list whether an ocean
+        // species has trait_pc_ocean_preference always answered no - and Hydrocentric, whose whole
+        // condition is that question, was hidden from every empire that qualifies for it.
+        SelectionCategory.Traits => EffectiveTraits.Contains(key),
+
         // Judged against what actually applies, since an origin can replace the stored value.
         SelectionCategory.PreferredPlanetClass => EffectivePlanetClass == key,
         SelectionCategory.GraphicalCulture => GraphicalCulture == key,
