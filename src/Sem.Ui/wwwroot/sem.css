@@ -1705,7 +1705,15 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     transition: border-color 0.12s, background 0.12s;
 }
 
-.sem-icon-option:hover:not(.blocked) {
+/*
+    Not over a tile already taken.
+
+    Hover is a class and two pseudo-classes and selection is two classes, so without the third
+    the hover border outranked the accent one and a selected tile went dull under the pointer -
+    the same way round as the reading mark did, and just as wrong. Nothing is lost by standing
+    aside: a selected tile is already drawn on the hover background.
+*/
+.sem-icon-option:hover:not(.blocked):not(.selected) {
     background: var(--bg-hover);
     border-color: var(--border-strong);
 }
@@ -2936,8 +2944,20 @@ button.icon .sem-action-icon { display: block; }
     box-shadow: inset 2px 0 0 0 var(--accent);
 }
 
-.sem-icon-option.reading {
+.sem-icon-option.reading:not(.selected) {
     border-color: var(--accent-dim);
+}
+
+/*
+    Drawn over the selection rather than instead of it.
+
+    Both marks are the same two properties, and at equal weight the later rule simply won: a
+    selected tile being read lost its ring and took the dimmer border, so the tile you had just
+    chosen looked less chosen than the ones around it. Two shadows in one list say both things,
+    which is what a tile that is selected and being read is.
+*/
+.sem-icon-option.selected.reading {
+    box-shadow: inset 0 0 0 1px var(--accent-dim), inset 2px 0 0 0 var(--accent);
 }
 
 .sem-trait-row.blocked {

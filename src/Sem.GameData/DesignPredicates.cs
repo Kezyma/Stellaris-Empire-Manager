@@ -190,4 +190,53 @@ public static class DesignPredicates
         // cannot check and most players are.
         "logged_in_to_pdx_account",
     };
+
+    /// <summary>
+    /// Country flags nothing but an ascension perk leads to, and the perk that leads to each.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Six tradition trees state what it takes to open them as a flag rather than as the perk -
+    /// <c>tr_purity_adopt</c> asks for <c>purity_tradition_unlocked</c> - and a flag is the one
+    /// thing a design can never answer, so all six were offered to an empire that had taken
+    /// nothing at all. The game reaches them the way it reaches the other six: an ascension perk,
+    /// and then a situation the perk starts.
+    /// </para>
+    /// <para>
+    /// Traced rather than assumed, and each chain is closed at both ends.
+    /// <c>ap_engineered_evolution</c> - Biomorphosis - fires <c>bio.1</c> and is the only thing
+    /// that does; <c>bio.1</c> is the only thing that starts either genetic ascension situation;
+    /// and those situations' completion events, <c>bio.20</c> and <c>bio.40</c>, are the only
+    /// places the three genetic flags are set. <c>ap_synthetic_age</c> fires
+    /// <c>machine_age.4000</c> and is likewise its only caller, and <c>machine_age.4005</c> is
+    /// where the three machine flags are set.
+    /// </para>
+    /// <para>
+    /// Written out here because it cannot be derived: every step of that lives in an event chain
+    /// the extractor does not read. The perk is necessary rather than sufficient - the situation
+    /// has to finish, and its last event offers the three trees as one choice of three - but a
+    /// design cannot state the rest, and each tree's own potential already rules out its siblings.
+    /// </para>
+    /// <para>
+    /// Read only where a tradition states its own gate, and never anywhere else, because outside
+    /// it the same flags mean the branch rather than the perk. The trees' exclusions reach them
+    /// through <c>has_cloning_ascension</c> and its like, and substituting there turned Purity's
+    /// own <c>NOR</c> into "must not have Biomorphosis" - hiding the tree the moment the perk was
+    /// planned, which is worse than the hole being closed. See
+    /// <c>RequirementCompiler.CompileAdoptionGate</c>.
+    /// </para>
+    /// </remarks>
+    public static IReadOnlyDictionary<string, string> PerkBehindCountryFlag { get; } =
+        new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            // Biogenesis: the genetic ascension situation, started by Biomorphosis.
+            ["purity_tradition_unlocked"] = "ap_engineered_evolution",
+            ["cloning_tradition_unlocked"] = "ap_engineered_evolution",
+            ["mutation_tradition_unlocked"] = "ap_engineered_evolution",
+
+            // The Machine Age: the transformation situation, started by the Synthetic Age.
+            ["nanotech_traditions_unlocked"] = "ap_synthetic_age",
+            ["modularity_traditions_unlocked"] = "ap_synthetic_age",
+            ["virtuality_traditions_unlocked"] = "ap_synthetic_age",
+        };
 }

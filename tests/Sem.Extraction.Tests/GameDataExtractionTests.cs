@@ -1143,6 +1143,131 @@ public sealed class GameDataExtractionTests
         Assert.True(rules.GetTraditionTreeOptions(context, [], [])
             .Single(o => o.Key == "tradition_prosperity").Enabled);
     }
+
+    /// <summary>
+    /// The six trees whose gate is a country flag wait for the perk that flag stands for.
+    /// </summary>
+    /// <remarks>
+    /// Purity never mentions Biomorphosis. It asks for a country flag, which the perk reaches three
+    /// events later by starting a situation whose completion awards the tree - and a flag is the one
+    /// thing a design can never answer, so all six were open to an empire that had taken nothing at
+    /// all. The machine three are asked of a machine intelligence, because being visible to one is
+    /// their own potential doing its job rather than this rule.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void AnAscensionTreeGatedOnAFlagWaitsForThePerkBehindIt()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var database = Database.Value;
+
+        Skip.IfNot(
+            database.Dlc.Any(d => d.Name == "BioGenesis" && d.Installed) &&
+            database.Dlc.Any(d => d.Name == "The Machine Age" && d.Installed),
+            "The trees this is about ship with BioGenesis and The Machine Age.");
+
+        var rules = new EmpireRules(database);
+        var plain = rules.CreateContext(EmpireDesignsFile.CreateEmpty().Add("Test"));
+
+        var thinking = EmpireDesignsFile.CreateEmpty().Add("Machines");
+        thinking.Authority = "auth_machine_intelligence";
+        var machine = rules.CreateContext(thinking);
+
+        var gated = new[]
+        {
+            ("tradition_purity", "ap_engineered_evolution", "REQUIRES_FINISHED_EVOLUTION", plain),
+            ("tradition_cloning", "ap_engineered_evolution", "REQUIRES_FINISHED_EVOLUTION", plain),
+            ("tradition_mutation", "ap_engineered_evolution", "REQUIRES_FINISHED_EVOLUTION", plain),
+            ("tradition_nanotech", "ap_synthetic_age", "REQUIRES_FINISHED_TRANSFORMATION", machine),
+            ("tradition_modularity", "ap_synthetic_age", "REQUIRES_FINISHED_TRANSFORMATION", machine),
+            ("tradition_virtuality", "ap_synthetic_age", "REQUIRES_FINISHED_TRANSFORMATION", machine),
+        };
+
+        foreach (var (tree, perk, said, context) in gated)
+        {
+            OptionState Offered(params string[] perks) =>
+                rules.GetTraditionTreeOptions(context, [], perks).Single(o => o.Key == tree);
+
+            var closed = Offered();
+
+            Assert.True(closed.Visible, $"{tree} is not offered at all.");
+            Assert.False(closed.Enabled, $"{tree} opens before {perk} is planned.");
+
+            // The game wrote the sentence for this, and it names the situation the perk starts -
+            // "has finished the Biomorphosis situation" - so the reason is its key on its own.
+            Assert.Contains(said, closed.Reasons);
+
+            var opened = Offered(perk);
+
+            // Visible as well as enabled. The trees rule each other out through these same flags,
+            // so a substitution that reached the exclusions would hide this one here instead.
+            Assert.True(opened.Visible, $"{tree} disappears once {perk} is planned.");
+            Assert.True(opened.Enabled, $"{tree} stays shut with {perk} planned.");
+        }
+    }
+
+    /// <summary>
+    /// A flag standing for a perk is read that way only where a tradition asks to be adopted.
+    /// </summary>
+    /// <remarks>
+    /// The tempting fix was to read those flags as their perk everywhere they appear, and it is
+    /// wrong: each of these trees rules out its siblings through the very same flags, reached as
+    /// <c>has_cloning_ascension</c> and its like, where the flag means the branch that was taken
+    /// rather than the perk that led to it. Substituted there, Purity's own exclusion became "must
+    /// not have Biomorphosis" and the tree vanished the moment the perk was planned - the same hole
+    /// as before, dug the other way. So outside the gate the flag has to stay unanswerable.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void AFlagStandsForItsPerkOnlyInTheGateThatAsksForIt()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var database = Database.Value;
+
+        // Every gate names its perk, which is the whole of the substitution.
+        var gates = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["tr_purity_adopt"] = "ap_engineered_evolution",
+            ["tr_cloning_adopt"] = "ap_engineered_evolution",
+            ["tr_mutation_adopt"] = "ap_engineered_evolution",
+            ["tr_nanotech_adopt"] = "ap_synthetic_age",
+            ["tr_modularity_adopt"] = "ap_synthetic_age",
+            ["tr_virtuality_adopt"] = "ap_synthetic_age",
+        };
+
+        foreach (var (tradition, perk) in gates)
+        {
+            var gate = database.Traditions.Single(t => t.Key == tradition).Possible;
+
+            Assert.Contains(
+                gate.AndNested(),
+                r => r is SelectionRequirement
+                {
+                    Category: SelectionCategory.AscensionPerk,
+                } selection && selection.Key == perk);
+
+            Assert.DoesNotContain(gate.AndNested(), r => r is UnknownRequirement);
+        }
+
+        // And the exclusions are untouched, which is the other half of the rule: Purity still
+        // rules out its siblings by a flag it cannot answer, and still names no perk of its own.
+        var purity = database.TraditionTrees.Single(t => t.Key == "tradition_purity").Potential;
+
+        Assert.Contains(
+            purity.AndNested(),
+            r => r is UnknownRequirement { Name: "has_country_flag" });
+
+        Assert.DoesNotContain(
+            purity.AndNested(),
+            r => r is SelectionRequirement
+            {
+                Category: SelectionCategory.AscensionPerk,
+                Key: "ap_engineered_evolution",
+            });
+    }
+
     /// <summary>
     /// A perk or a tree that will not be taken always says why.
     /// </summary>

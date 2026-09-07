@@ -1,7 +1,7 @@
 {
-  "schemaVersion": 13,
+  "schemaVersion": 14,
   "gameVersion": "v4.4.6",
-  "extractorVersion": "0.1.0\u002Bda163f071c0da8e9b10fb5b12034c18742793ccc",
+  "extractorVersion": "0.1.0\u002Bea81b66c9a9927595942d6294720f7e714d616b7",
   "defines": {
     "ethicsPoints": 3,
     "civicPoints": 2,
@@ -92960,9 +92960,9 @@
         "visibleModifiers": {}
       },
       "possible": {
-        "kind": "unknown",
-        "name": "has_country_flag",
-        "assume": true,
+        "kind": "selection",
+        "category": "AscensionPerk",
+        "key": "ap_engineered_evolution",
         "failureText": "REQUIRES_FINISHED_EVOLUTION"
       },
       "variants": [],
@@ -96256,9 +96256,9 @@
         }
       },
       "possible": {
-        "kind": "unknown",
-        "name": "has_country_flag",
-        "assume": true,
+        "kind": "selection",
+        "category": "AscensionPerk",
+        "key": "ap_synthetic_age",
         "failureText": "REQUIRES_FINISHED_TRANSFORMATION"
       },
       "variants": [],
@@ -96539,9 +96539,9 @@
         "visibleModifiers": {}
       },
       "possible": {
-        "kind": "unknown",
-        "name": "has_country_flag",
-        "assume": true,
+        "kind": "selection",
+        "category": "AscensionPerk",
+        "key": "ap_engineered_evolution",
         "failureText": "REQUIRES_FINISHED_EVOLUTION"
       },
       "variants": [],
@@ -97663,9 +97663,9 @@
         "visibleModifiers": {}
       },
       "possible": {
-        "kind": "unknown",
-        "name": "has_country_flag",
-        "assume": true,
+        "kind": "selection",
+        "category": "AscensionPerk",
+        "key": "ap_synthetic_age",
         "failureText": "REQUIRES_FINISHED_TRANSFORMATION"
       },
       "variants": [],
@@ -98675,9 +98675,9 @@
         }
       },
       "possible": {
-        "kind": "unknown",
-        "name": "has_country_flag",
-        "assume": true,
+        "kind": "selection",
+        "category": "AscensionPerk",
+        "key": "ap_engineered_evolution",
         "failureText": "REQUIRES_FINISHED_EVOLUTION"
       },
       "variants": [],
@@ -101038,9 +101038,9 @@
         }
       },
       "possible": {
-        "kind": "unknown",
-        "name": "has_country_flag",
-        "assume": true,
+        "kind": "selection",
+        "category": "AscensionPerk",
+        "key": "ap_synthetic_age",
         "failureText": "REQUIRES_FINISHED_TRANSFORMATION"
       },
       "variants": [],

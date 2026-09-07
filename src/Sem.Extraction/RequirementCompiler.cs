@@ -128,6 +128,16 @@ public sealed class RequirementCompiler
     private bool _compilingPlan;
 
     /// <summary>
+    /// Whether what is being compiled is a tradition's own gate on being adopted.
+    /// </summary>
+    /// <remarks>
+    /// The one place a flag naming an ascension may stand for the perk that leads to it. See
+    /// <see cref="DesignPredicates.PerkBehindCountryFlag"/> for why the substitution is sound there
+    /// and wrong everywhere else.
+    /// </remarks>
+    private bool _compilingAdoptionGate;
+
+    /// <summary>
     /// Where the game's <c>@</c> variables are read from, so a threshold written as
     /// <c>@max_tradition_trees</c> compiles to the seven it stands for.
     /// </summary>
@@ -169,6 +179,31 @@ public sealed class RequirementCompiler
 
     /// <summary>Compiles a trigger belonging to a plan, on the terms above.</summary>
     public Requirement CompilePlanTrigger(CwBlock? block) => AsPlan(() => CompileTrigger(block));
+
+    /// <summary>
+    /// Compiles what a tradition asks before it may be adopted.
+    /// </summary>
+    /// <remarks>
+    /// A plan's condition, and the only one where a flag naming an ascension is read as the perk
+    /// behind it. Six trees state their entry that way and were open to everyone until it was.
+    /// </remarks>
+    public Requirement CompileAdoptionGate(CwBlock? block) =>
+        AsPlan(() => AsAdoptionGate(() => CompileTrigger(block)));
+
+    private Requirement AsAdoptionGate(Func<Requirement> compile)
+    {
+        var was = _compilingAdoptionGate;
+        _compilingAdoptionGate = true;
+
+        try
+        {
+            return compile();
+        }
+        finally
+        {
+            _compilingAdoptionGate = was;
+        }
+    }
 
     private Requirement AsPlan(Func<Requirement> compile)
     {
@@ -455,6 +490,17 @@ public sealed class RequirementCompiler
         if (SelectionTriggers.TryGetValue(key, out var category) && node.ScalarValue is { } selection)
         {
             return new SelectionRequirement(category, selection);
+        }
+
+        // A flag that only one ascension perk leads to, asked by the gate that wants it. Read here
+        // because the condition still has its value: the two branches below see the key alone, and
+        // so give up on every flag equally.
+        if (_compilingAdoptionGate &&
+            string.Equals(key, "has_country_flag", StringComparison.Ordinal) &&
+            node.ScalarValue is { } flag &&
+            DesignPredicates.PerkBehindCountryFlag.TryGetValue(flag, out var behind))
+        {
+            return new SelectionRequirement(SelectionCategory.AscensionPerk, behind);
         }
 
         if (node.ScalarValue is { } scalar && scalar is "yes" or "no")

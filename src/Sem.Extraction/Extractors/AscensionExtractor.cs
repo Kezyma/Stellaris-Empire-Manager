@@ -173,8 +173,10 @@ internal static class AscensionExtractor
                     entry.Body, loader, requirements, readsScriptedUnlocks: true),
 
                 // Compiled as a plan's, because that is what asks: the perk it wants is one the plan
-                // names, and the technology beside it is something the empire will have by then.
-                Possible = requirements.CompilePlanTrigger(entry.Body.GetBlock("possible")),
+                // names, and the technology beside it is something the empire will have by then. As
+                // an adoption gate too, which is what lets the six trees that name a flag instead of
+                // a perk be read as the perk.
+                Possible = requirements.CompileAdoptionGate(entry.Body.GetBlock("possible")),
 
                 DescriptionKey = Described(entry.Key, text),
 
