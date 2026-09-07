@@ -386,13 +386,69 @@
 
     // ---------------------------------------------------------------- and what pressing one does
 
-    private void TogglePerk((string Key, bool Chosen) pressed) =>
-        Save(Plan with
+    /// <summary>
+    /// Takes or releases a perk, and the tree it hands over with it.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Six trees are given rather than chosen: Biomorphosis starts a situation that ends by running
+    /// <c>add_tradition</c> for one of Purity, Cloning and Mutation, and the Synthetic Age does the
+    /// same for its three. So taking the perk is taking the tree, and where the empire could only
+    /// ever have one of them there is no choice left to make - it goes in with the perk rather than
+    /// waiting to be found on another tab.
+    /// </para>
+    /// <para>
+    /// And it comes out again with the perk. Those trees are reachable no other way, so a plan left
+    /// holding one after its perk was released is a plan the game could not play - the same
+    /// stranding that reordering already guards against, arrived at from the other side.
+    /// </para>
+    /// </remarks>
+    private void TogglePerk((string Key, bool Chosen) pressed)
+    {
+        var granted = Session.Rules.TreesGrantedBy(pressed.Key);
+
+        if (pressed.Chosen)
         {
-            Perks = pressed.Chosen
-                ? [.. Plan.Perks.Where(p => p != pressed.Key)]
-                : [.. Plan.Perks, pressed.Key],
-        });
+            Save(Plan with
+            {
+                Perks = [.. Plan.Perks.Where(p => p != pressed.Key)],
+                Trees = [.. Plan.Trees.Where(t => !granted.Contains(t, StringComparer.Ordinal))],
+            });
+
+            return;
+        }
+
+        var perks = Plan.Perks.Append(pressed.Key).ToList();
+        var trees = Plan.Trees.ToList();
+
+        // Only where the empire has one to be given. Where it could take several the player says
+        // which, in the situation and here, and choosing for them would be inventing a decision.
+        if (!granted.Any(trees.Contains) && Possible(granted, perks, trees) is [var only])
+        {
+            trees.Add(only);
+        }
+
+        Save(Plan with { Perks = perks, Trees = trees });
+    }
+
+    /// <summary>Which of the granted trees this empire could actually be handed.</summary>
+    private IReadOnlyList<string> Possible(
+        IReadOnlyList<string> granted,
+        IReadOnlyList<string> perks,
+        IReadOnlyList<string> trees)
+    {
+        if (granted.Count == 0)
+        {
+            return [];
+        }
+
+        var offered = Session.Rules.GetTraditionTreeOptions(Session.Context!, trees, perks);
+
+        return
+        [
+            .. granted.Where(g => offered.FirstOrDefault(o => o.Key == g) is { Visible: true })
+        ];
+    }
 
     private void ToggleTree((string Key, bool Chosen) pressed) =>
         Save(Plan with

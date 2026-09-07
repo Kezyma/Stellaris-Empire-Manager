@@ -239,4 +239,30 @@ public static class DesignPredicates
             ["modularity_traditions_unlocked"] = "ap_synthetic_age",
             ["virtuality_traditions_unlocked"] = "ap_synthetic_age",
         };
+
+    /// <summary>
+    /// The tradition trees a perk hands over, as against the ones it merely opens the way to.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The same six, and the distinction matters. Biomorphosis is asked for by four trees, and it
+    /// gives three of them: its situation ends by running <c>add_tradition</c> for whichever of
+    /// Purity, Cloning and Mutation the player picks. Genetics asks for the same perk and is not
+    /// given - it is the ordinary genetic tree, chosen like any other once the perk is held.
+    /// </para>
+    /// <para>
+    /// Which is why this is written out rather than read off the gates. After a flag is compiled
+    /// into the perk behind it the two look identical, and a plan that could not tell them apart
+    /// would offer to hand the player a tree the game expects them to choose.
+    /// </para>
+    /// </remarks>
+    public static IReadOnlyDictionary<string, IReadOnlyList<string>> TreesGrantedByPerk { get; } =
+        new Dictionary<string, IReadOnlyList<string>>(StringComparer.Ordinal)
+        {
+            ["ap_engineered_evolution"] =
+                ["tradition_purity", "tradition_cloning", "tradition_mutation"],
+
+            ["ap_synthetic_age"] =
+                ["tradition_nanotech", "tradition_modularity", "tradition_virtuality"],
+        };
 }

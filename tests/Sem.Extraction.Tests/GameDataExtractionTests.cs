@@ -1334,6 +1334,112 @@ public sealed class GameDataExtractionTests
     }
 
     /// <summary>
+    /// A perk that hands over a tradition tree needs the plan to have room for it.
+    /// </summary>
+    /// <remarks>
+    /// Biomorphosis does not unlock Purity for selection - it gives it. Its situation ends by
+    /// running <c>add_tradition</c> for whichever of Purity, Cloning and Mutation the player picks
+    /// there, and the whole branch is guarded on <c>num_tradition_categories</c> being under seven.
+    /// With every slot full the game skips the grant and the perk keeps only its other half.
+    ///
+    /// A plan is a whole statement of intent, so one taking the perk with nowhere to put the tree
+    /// is throwing it away - which is stricter than the game and is the point of planning. A
+    /// granted tree the plan already names needs no room of its own: it is the tree.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void APerkThatGrantsATreeNeedsRoomForIt()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var database = Database.Value;
+        var rules = new EmpireRules(database);
+        var context = rules.CreateContext(EmpireDesignsFile.CreateEmpty().Add("Test"));
+
+        // The three it hands over, and not Genetics - which asks for the same perk and is chosen
+        // like any other tree once it is held.
+        Assert.DoesNotContain("tradition_genetics", rules.TreesGrantedBy("ap_engineered_evolution"));
+
+        Assert.Equal(
+            ["tradition_cloning", "tradition_mutation", "tradition_purity"],
+            rules.TreesGrantedBy("ap_engineered_evolution").Order(StringComparer.Ordinal));
+
+        Assert.Equal(
+            ["tradition_modularity", "tradition_nanotech", "tradition_virtuality"],
+            rules.TreesGrantedBy("ap_synthetic_age").Order(StringComparer.Ordinal));
+
+        // A perk that hands over nothing asks for nothing.
+        Assert.Empty(rules.TreesGrantedBy("ap_one_vision"));
+
+        var slots = database.Defines.TraditionSlots;
+
+        string[] ordinary =
+        [
+            "tradition_prosperity", "tradition_discovery", "tradition_expansion",
+            "tradition_harmony", "tradition_supremacy", "tradition_diplomacy",
+            "tradition_statecraft",
+        ];
+
+        var full = ordinary.Take(slots).ToList();
+
+        Assert.False(
+            rules.HasRoomForGrantedTree(rules.TreesGrantedBy("ap_engineered_evolution"), full),
+            "Biomorphosis is allowed with every tradition slot spent on something else.");
+
+        // One of the three already planned is the tree, and it has its slot.
+        var withPurity = full.Take(slots - 1).Append("tradition_purity").ToList();
+
+        Assert.True(
+            rules.HasRoomForGrantedTree(rules.TreesGrantedBy("ap_engineered_evolution"), withPurity),
+            "Biomorphosis is refused although the plan already names the tree it grants.");
+
+        // And the perk itself says so where there is no room.
+        var blocked = rules.GetAscensionPerkOptions(context, [], full)
+            .Single(o => o.Key == "ap_engineered_evolution");
+
+        Assert.False(blocked.Enabled);
+        Assert.NotEmpty(blocked.Reasons);
+    }
+
+    /// <summary>
+    /// The last tradition slot belongs to the tree a planned perk still owes the plan.
+    /// </summary>
+    /// <remarks>
+    /// With one slot left, a perk waiting to hand over a tree, and none of its trees planned, that
+    /// slot is the only place the grant can land. Spending it on anything else loses the tree.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void TheLastSlotIsKeptForATreeAPerkStillOwes()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var database = Database.Value;
+        var rules = new EmpireRules(database);
+        var context = rules.CreateContext(EmpireDesignsFile.CreateEmpty().Add("Test"));
+
+        string[] ordinary =
+        [
+            "tradition_prosperity", "tradition_discovery", "tradition_expansion",
+            "tradition_harmony", "tradition_supremacy", "tradition_diplomacy",
+        ];
+
+        // One short of full, with Biomorphosis planned and none of its trees taken.
+        var nearlyFull = ordinary.Take(database.Defines.TraditionSlots - 1).ToArray();
+        string[] perks = ["ap_one_vision", "ap_hydrocentric", "ap_engineered_evolution"];
+
+        var offered = rules.GetTraditionTreeOptions(context, nearlyFull, perks);
+
+        Assert.True(
+            offered.Single(o => o.Key == "tradition_purity").Enabled,
+            "The tree the perk owes is refused for the last slot.");
+
+        Assert.False(
+            offered.Single(o => o.Key == "tradition_statecraft").Enabled,
+            "The last slot is offered to a tree that would lose the plan its grant.");
+    }
+
+    /// <summary>
     /// A perk or a tree that will not be taken always says why.
     /// </summary>
     /// <remarks>

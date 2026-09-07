@@ -778,6 +778,14 @@ public sealed class EmpireRules(GameDatabase database)
             p => p.Possible,
             planned);
 
+        // A perk that hands over a tradition tree needs the plan to have somewhere to put it.
+        options =
+        [
+            .. options.Select(o => chosen.Contains(o.Key) || HasRoomForGrantedTree(TreesGrantedBy(o.Key), trees)
+                ? o
+                : Blocked(o, RuleReasons.NoTraditionSlotsLeft))
+        ];
+
         return chosen.Count < _database.Defines.AscensionPerkSlots
             ? options
             : [.. options.Select(o => chosen.Contains(o.Key) ? o : Blocked(o, RuleReasons.NoPerkSlotsLeft))];
@@ -843,11 +851,79 @@ public sealed class EmpireRules(GameDatabase database)
             planned,
             whenTaken: sofar);
 
+        // The last slot is spoken for where a planned perk still owes the plan a tree. Anything
+        // else taken there leaves the grant with nowhere to land, and the perk loses it.
+        var owed = perks
+            .SelectMany(TreesGrantedBy)
+            .Where(t => !trees.Contains(t))
+            .ToHashSet(StringComparer.Ordinal);
+
+        if (owed.Count > 0 &&
+            trees.Count == _database.Defines.TraditionSlots - 1 &&
+            !perks.SelectMany(TreesGrantedBy).Any(trees.Contains))
+        {
+            options =
+            [
+                .. options.Select(o => owed.Contains(o.Key) || trees.Contains(o.Key)
+                    ? o
+                    : Blocked(o, RuleReasons.NoTraditionSlotsLeft))
+            ];
+        }
+
         return trees.Count < _database.Defines.TraditionSlots
             ? options
             : [.. options.Select(o => trees.Contains(o.Key)
                 ? o
                 : Blocked(o, RuleReasons.NoTraditionSlotsLeft))];
+    }
+
+    /// <summary>
+    /// The tradition trees an ascension perk hands over, where it hands over any.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Six trees arrive this way rather than being chosen. Biomorphosis starts a situation whose
+    /// last event runs <c>add_tradition</c> for whichever of Purity, Cloning and Mutation the
+    /// player picks there; the Synthetic Age does the same for Nanotech, Modularity and Virtuality.
+    /// So the perk does not unlock the tree for selection - it gives it.
+    /// </para>
+    /// <para>
+    /// Not every tree that asks for a perk is one the perk gives. Biomorphosis is asked for by four
+    /// and gives three: Genetics asks for it too and is chosen like any other tree once it is held.
+    /// The two look the same once a flag has been compiled into the perk behind it, so which is
+    /// which is written down - see <see cref="DesignPredicates.TreesGrantedByPerk"/>.
+    /// </para>
+    /// </remarks>
+    public IReadOnlyList<string> TreesGrantedBy(string perk)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(perk);
+
+        return DesignPredicates.TreesGrantedByPerk.TryGetValue(perk, out var granted)
+            ? [.. granted.Where(t => _database.TraditionTrees.Any(x => x.Key == t))]
+            : [];
+    }
+
+    /// <summary>
+    /// Whether a plan has somewhere to put the tree a perk would hand it.
+    /// </summary>
+    /// <remarks>
+    /// The game checks this when the situation finishes, not when the perk is taken: with every
+    /// tradition slot already full it simply skips the grant, and the perk keeps whatever else it
+    /// does. A plan is a whole statement of intent though, so one that takes the perk and leaves
+    /// the tree nowhere to go is a plan that throws it away - which is stricter than the game and
+    /// is the point of planning.
+    ///
+    /// A granted tree the plan already names needs no room of its own: it is the tree, and it has
+    /// its slot already.
+    /// </remarks>
+    public bool HasRoomForGrantedTree(IReadOnlyList<string> granted, IReadOnlyCollection<string> trees)
+    {
+        ArgumentNullException.ThrowIfNull(granted);
+        ArgumentNullException.ThrowIfNull(trees);
+
+        return granted.Count == 0
+            || granted.Any(trees.Contains)
+            || trees.Count < _database.Defines.TraditionSlots;
     }
 
     /// <summary>
