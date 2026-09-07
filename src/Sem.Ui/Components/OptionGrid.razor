@@ -1,4 +1,4 @@
-@*
+﻿@*
     A grid of icons with one panel of detail beside it, which is how the game fits a whole screen of
     choices into a corner of one.
 
@@ -60,6 +60,7 @@
                                 @onfocus="() => _hovered = option.Key"
                                 @onmouseleave="() => Unhover(option.Key)"
                                 @onblur="() => Unhover(option.Key)"
+                                @onpointerdown="_press.Noted"
                                 @onclick="() => Choose(option)">
                             @if (option.Icon is { Length: > 0 } icon)
                             {
@@ -137,6 +138,9 @@
 
 @code {
     private string? _hovered;
+
+    /// <summary>Whether a press is a finger reading or a hand choosing.</summary>
+    private readonly PressReading _press = new();
 
     [CascadingParameter]
     public required DesignSession Session { get; set; }
@@ -251,7 +255,16 @@
     {
         // A finger has no hover, so a tap is also how the panel is asked about something. Set for
         // a blocked option too — being told why is the only thing left to do with one.
+        var reading = _press.ReadsOnly(option.Key, _hovered);
+
         _hovered = option.Key;
+
+        // And under a finger that first press is all it does: the choice waits for the second, so
+        // an option can be read about without being taken and given back.
+        if (reading)
+        {
+            return Task.CompletedTask;
+        }
 
         // Returned rather than discarded. Dropped into a variable, anything a picker's own handler
         // threw went into a Task nobody awaited and was lost - the click simply did nothing, with
@@ -259,9 +272,16 @@
         return Blocked(option) ? Task.CompletedTask : OnSelect.InvokeAsync(option.Key);
     }
 
-    private static string ClassFor(GridOption option, string baseClass)
+    private string ClassFor(GridOption option, string baseClass)
     {
         var classes = new List<string> { baseClass };
+
+        // Under a finger, the row the panel is about is the row a second press would take, and it
+        // says so. A mouse has its own hover mark and does not need a second one.
+        if (_press.IsReading(option.Key, _hovered))
+        {
+            classes.Add("reading");
+        }
 
         if (option.Selected)
         {
@@ -291,6 +311,7 @@
                  title="@option.Name"
                  @onmouseenter="() => _hovered = option.Key"
                  @onfocus="() => _hovered = option.Key"
+                 @onpointerdown="_press.Noted"
                  @onclick="() => Choose(option)">
             @if (option.Icon is { Length: > 0 } icon)
             {

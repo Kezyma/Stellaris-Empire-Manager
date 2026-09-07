@@ -1,4 +1,4 @@
-@*
+﻿@*
     Three points buy an empire's ethos: one fanatic conviction and one ordinary one, or three
     ordinary ones, or gestalt consciousness on its own.
 
@@ -31,12 +31,13 @@
                         was deciding what to give up.
                     *@
                     <button type="button"
-                            class="sem-icon-option @(ethic.Selected ? "selected" : null) @(Blocked(ethic) ? (ethic.AtLimit ? "at-limit" : "blocked") : null)"
+                            class="sem-icon-option @(ethic.Selected ? "selected" : null) @(Blocked(ethic) ? (ethic.AtLimit ? "at-limit" : "blocked") : null) @(_press.IsReading(ethic.Key, _hovered) ? "reading" : null)"
                             aria-pressed="@(ethic.Selected ? "true" : "false")"
                             aria-disabled="@(Blocked(ethic) ? "true" : null)"
                             title="@ethic.Name"
                             @onmouseenter="() => _hovered = ethic.Key"
                             @onfocus="() => _hovered = ethic.Key"
+                            @onpointerdown="_press.Noted"
                             @onclick="() => Choose(ethic)">
 
                         @if (ethic.Icon is { Length: > 0 } icon)
@@ -88,6 +89,9 @@
     /// </remarks>
     private string? _hovered;
 
+    /// <summary>Whether a press is a finger reading or a hand choosing.</summary>
+    private readonly PressReading _press = new();
+
     [CascadingParameter]
     public required DesignSession Session { get; set; }
 
@@ -134,10 +138,13 @@
     /// <summary>Refuses the press rather than the button, so a blocked ethic can still be asked about.</summary>
     private void Choose(OptionGrid.GridOption ethic)
     {
-        // A finger has no hover, so a tap is also how the panel is asked about something.
+        // A finger has no hover, so a tap is also how the panel is asked about something - and under
+        // a finger the first press is only that, leaving the choice to the second.
+        var reading = _press.ReadsOnly(ethic.Key, _hovered);
+
         _hovered = ethic.Key;
 
-        if (!Blocked(ethic))
+        if (!reading && !Blocked(ethic))
         {
             Toggle(ethic.Key);
         }

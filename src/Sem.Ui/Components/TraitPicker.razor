@@ -1,4 +1,4 @@
-@*
+﻿@*
     Traits, arranged as the game arranges them: what may be taken on the left, what has been taken
     on the right, and what the pointer is over described below. Clicking on the right removes.
 
@@ -76,6 +76,9 @@
     /// a box that empties between rows flickers as the pointer crosses the list.
     /// </summary>
     private string? _described;
+
+    /// <summary>Whether a press is a finger reading or a hand choosing.</summary>
+    private readonly PressReading _press = new();
 
     [CascadingParameter]
     public required DesignSession Session { get; set; }
@@ -221,6 +224,17 @@
 
     private void Toggle(TraitEntry trait, bool chosen)
     {
+        // Under a finger the first press reads and the second takes. A blocked trait is described
+        // and nothing else, which is the only thing left to do with one - and that is why this sits
+        // above the check below rather than after it.
+        if (_press.ReadsOnly(trait.Key, _described))
+        {
+            _described = trait.Key;
+            return;
+        }
+
+        _described = trait.Key;
+
         // A forced trait is shown among the chosen so the player can see what they have, but it is
         // not theirs to remove: something else in the design is holding it there.
         if (!trait.Enabled)
@@ -247,11 +261,12 @@
 
     private RenderFragment Row(TraitEntry trait, bool chosen) =>
         @<button type="button"
-                 class="sem-trait-row @(trait.Enabled ? null : "blocked") @(trait.Overspends ? "overspends" : null)"
+                 class="sem-trait-row @(trait.Enabled ? null : "blocked") @(trait.Overspends ? "overspends" : null) @(_press.IsReading(trait.Key, _described) ? "reading" : null)"
                  aria-pressed="@(chosen ? "true" : "false")"
                  title="@trait.Name"
                  @onmouseenter="() => _described = trait.Key"
                  @onfocus="() => _described = trait.Key"
+                 @onpointerdown="_press.Noted"
                  @onclick="() => Toggle(trait, chosen)">
 
             @if (trait.Icon is { Length: > 0 } icon)

@@ -203,6 +203,9 @@
     /// </remarks>
     private string? _described;
 
+    /// <summary>Whether a press is a finger reading or a hand choosing.</summary>
+    private readonly PressReading _press = new();
+
     private PlanOption? Described =>
         _described is { } key
             ? Available.Concat(Chosen).Concat(Fixed).FirstOrDefault(o => o.Key == key)
@@ -267,6 +270,17 @@
     /// </remarks>
     private async Task Press(PlanOption option, bool chosen)
     {
+        // Under a finger the first press reads and the second takes. Before the refusals below, so
+        // that a locked or blocked row can still be asked about - being told why is the only thing
+        // left to do with one.
+        if (_press.ReadsOnly(option.Key, _described))
+        {
+            _described = option.Key;
+            return;
+        }
+
+        _described = option.Key;
+
         if (option.Locked || (!chosen && !option.Enabled))
         {
             return;
@@ -283,12 +297,13 @@
             thing about it. Pressing it still does nothing: Press turns a locked row away.
         *@
         @<button type="button"
-                 class="sem-trait-row @(option.Enabled || chosen ? null : "blocked") @(locked ? "locked" : null)"
+                 class="sem-trait-row @(option.Enabled || chosen ? null : "blocked") @(locked ? "locked" : null) @(_press.IsReading(option.Key, _described) ? "reading" : null)"
                  aria-pressed="@(chosen ? "true" : "false")"
                  aria-disabled="@(locked ? "true" : null)"
                  title="@option.Name"
                  @onmouseenter="() => _described = option.Key"
                  @onfocus="() => _described = option.Key"
+                 @onpointerdown="_press.Noted"
                  @onclick="() => Press(option, chosen)">
 
             @if (option.Icon is { Length: > 0 } icon)

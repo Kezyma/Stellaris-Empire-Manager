@@ -1671,6 +1671,15 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 
 @media (max-width: 900px) {
     .sem-grid-and-detail { grid-template-columns: minmax(0, 1fr); }
+
+    /*
+        And the description above the options rather than after them, for the reason the trait
+        lists put it there: a press on a touch screen is how an option is read, and the answer
+        below a scrolling list is an answer off the screen. The panel already has a height of its
+        own here, so nothing moves under the finger between the press that reads and the one that
+        chooses.
+    */
+    .sem-grid-and-detail > .sem-detail { order: -1; }
 }
 
 /* Icons are a fixed size and the row length follows the space available. Letting them stretch to
@@ -2853,6 +2862,33 @@ button.icon .sem-action-icon { display: block; }
         overflow-y: visible;
     }
 
+    /*
+        The description goes above the lists on a phone, not below them.
+
+        Stacked, it had been under a list half the screen tall and a chosen list that grows, so the
+        one thing a press was asking for was the one thing off the bottom of the screen. Reading is
+        the reason to press at all here - a finger has no hover - so it goes where the answer can be
+        seen without going to look for it.
+
+        `display: contents` to get it out of the column it shares with the chosen list, the same way
+        the three-column layout does at the other end of the range.
+    */
+    .sem-trait-lists .chosen-column {
+        display: contents;
+    }
+
+    .sem-trait-lists .chosen-column .sem-trait-detail {
+        order: -1;
+
+        /*
+            A height rather than none. Above a list, a panel that grows with what it says moves the
+            row under the finger between one press and the next - and the second press is the one
+            that chooses.
+        */
+        height: 160px;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
 }
 
 .sem-trait-list {
@@ -2884,6 +2920,24 @@ button.icon .sem-action-icon { display: block; }
 .sem-trait-row:hover:not(.blocked):not(.locked) {
     background: var(--bg-hover);
     border-color: transparent;
+}
+
+/*
+    The row a finger is reading, which is the row a second press would take.
+
+    Only ever set under a finger - a mouse reads by hovering and already has a mark for it. The
+    first press on a touch screen shows the description instead of choosing, and without something
+    on the row to say so that press looks like one the app ignored. A bar down the leading edge
+    rather than a fill: the fill is what hover uses and what selection deepens, and a third shade of
+    the same thing would say less the more of them there were.
+*/
+.sem-trait-row.reading,
+.sem-icon-option.reading {
+    box-shadow: inset 2px 0 0 0 var(--accent);
+}
+
+.sem-icon-option.reading {
+    border-color: var(--accent-dim);
 }
 
 .sem-trait-row.blocked {
