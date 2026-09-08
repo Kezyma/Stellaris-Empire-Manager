@@ -50,7 +50,8 @@
         *@
         <button type="button" class="sem-lite-scene" title="Room and city"
                 aria-label="Edit the room and city" @onclick="() => Open(LitePart.Room)">
-            <RoomScene Room="View.Room" World="View.World" City="View.City" Portrait="@View.RulerPortrait"
+            <RoomScene Room="View.Room" World="View.World" City="View.City"
+                       Arkship="@(View.IsNomadic ? View.Arkship : null)" Portrait="@View.RulerPortrait"
                        Flag="@Design.Flag" Alt="@Session.Localizer.Name(Design.Species.Name, string.Empty)" />
             <span class="sem-lite-hint" aria-hidden="true"><ActionIcon Name="edit-pencil" /></span>
         </button>

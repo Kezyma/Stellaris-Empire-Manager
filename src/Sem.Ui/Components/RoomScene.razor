@@ -197,6 +197,16 @@
 
     private int Level => Development ?? Session.Data.Database.Defines.CityPopLevel;
 
+    /// <summary>
+    /// The ship the empire lives aboard, where it lives aboard one.
+    /// </summary>
+    /// <remarks>
+    /// Given only for a nomad. Every design names a ship size, the game's own blank template
+    /// included, so this being set is what says the window should show one rather than a world.
+    /// </remarks>
+    [Parameter]
+    public ArkshipDefinition? Arkship { get; set; }
+
     /// <summary>What to call the figure for a reader who cannot see it.</summary>
     [Parameter]
     public string Alt { get; set; } = string.Empty;
@@ -212,7 +222,7 @@
     /// Worked out by <see cref="WorldBackdrop"/>, which the city picker's tiles use as well, so that
     /// choosing a city is choosing from small pictures of what this will draw.
     /// </remarks>
-    private IEnumerable<string> Backdrop => WorldBackdrop.Layers(World, City, Level);
+    private IEnumerable<string> Backdrop => WorldBackdrop.Layers(World, City, Level, Arkship);
 
     /// <summary>Where the world hangs, as fractions of the room, so it scales with it.</summary>
     private string WorldStyle =>

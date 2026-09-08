@@ -1,7 +1,7 @@
 {
-  "schemaVersion": 15,
+  "schemaVersion": 16,
   "gameVersion": "v4.4.6",
-  "extractorVersion": "0.1.0\u002B593ab1ace55ab83d77e019c8ff825b376121da6d",
+  "extractorVersion": "0.1.0\u002Bf10a6bed8ebcc1afabf6c73bf9b2bb8dcf6b4a63",
   "defines": {
     "ethicsPoints": 3,
     "civicPoints": 2,
@@ -169833,7 +169833,9 @@
       "descriptionKey": "civilian_arkship_tier_1_selector_desc",
       "icon": "icons/arkships/civilian_arkship_tier_1.png",
       "entity": "civilian_arkship_01_stage_1_entity",
-      "preview": "ships/arkships/civilian_arkship_tier_1.png"
+      "preview": "ships/arkships/civilian_arkship_tier_1.png",
+      "picture": "arkships/arkship_civilian.png",
+      "sky": "arkships/arkship_sky.png"
     },
     {
       "key": "science_arkship_tier_1",
@@ -169841,7 +169843,9 @@
       "descriptionKey": "science_arkship_tier_1_selector_desc",
       "icon": "icons/arkships/science_arkship_tier_1.png",
       "entity": "science_arkship_01_stage_1_entity",
-      "preview": "ships/arkships/science_arkship_tier_1.png"
+      "preview": "ships/arkships/science_arkship_tier_1.png",
+      "picture": "arkships/arkship_science.png",
+      "sky": "arkships/arkship_sky.png"
     },
     {
       "key": "military_arkship_tier_1",
@@ -169849,7 +169853,9 @@
       "descriptionKey": "military_arkship_tier_1_selector_desc",
       "icon": "icons/arkships/military_arkship_tier_1.png",
       "entity": "military_arkship_01_stage_1_entity",
-      "preview": "ships/arkships/military_arkship_tier_1.png"
+      "preview": "ships/arkships/military_arkship_tier_1.png",
+      "picture": "arkships/arkship_military.png",
+      "sky": "arkships/arkship_sky.png"
     }
   ],
   "empireNameParts": [

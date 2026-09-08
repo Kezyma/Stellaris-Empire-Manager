@@ -305,6 +305,24 @@ internal static class CosmeticsExtractor
                 // Read so the ship can be drawn: the sheet frame above is the same picture for all
                 // three, and a panel of three identical icons tells a player nothing.
                 Entity = entry.Body.GetString("entity"),
+
+                // What goes in the window behind the ruler. The game's own comment beside the field
+                // says so - "used in portrait background for arkships" - and names one of three
+                // pictures shared by the nine ship sizes, one per family.
+                Picture = entry.Body.GetString("arkship_picture") is { Length: > 0 } picture
+                    ? assets.Register(
+                        $"gfx/portraits/arkships/ships/{picture}.dds",
+                        $"arkships/{picture}.png",
+                        maxDimension: 800)
+                    : null,
+
+                // And the sky it hangs in, which is one picture for all of them. Filed with the
+                // ships rather than with the worlds, which is why nothing found it while the ark
+                // class was being asked for a sky of its own: it has none, and this is not one.
+                Sky = assets.Register(
+                    "gfx/portraits/arkships/arkship_sky.dds",
+                    "arkships/arkship_sky.png",
+                    maxDimension: 800),
             });
         }
 

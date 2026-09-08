@@ -19,7 +19,7 @@ public sealed record GameDatabase
     /// site published with a database one version behind was read anyway, with whatever the shape had
     /// gained since taking its default and no sign that anything was missing.
     /// </remarks>
-    public const int CurrentSchemaVersion = 15;
+    public const int CurrentSchemaVersion = 16;
 
     /// <summary>Version of this file's own shape, so an old cache can be detected and rebuilt.</summary>
     public required int SchemaVersion { get; init; }
@@ -1942,6 +1942,29 @@ public sealed record ArkshipDefinition(string Key)
 
     /// <summary>A drawing of the ship, rendered from its model the way a shipset's is.</summary>
     public string? Preview { get; init; }
+
+    /// <summary>
+    /// The ship as it appears through the window, behind the ruler.
+    /// </summary>
+    /// <remarks>
+    /// A nomad's scene is composed the way a settled empire's is - something in the distance, then
+    /// something nearer, then the room over both - and this is the nearer thing, standing where a
+    /// city stands for an empire that has one. Not the same picture as <see cref="Preview"/>: that
+    /// is the ship on a card in the picker, drawn small and whole, and this is the ship filling a
+    /// window. The game keeps three, one per family, named by each ship size's
+    /// <c>arkship_picture</c>.
+    /// </remarks>
+    public string? Picture { get; init; }
+
+    /// <summary>
+    /// The stars behind it, which are the same for all three.
+    /// </summary>
+    /// <remarks>
+    /// A world's sky is filed under the world's name in <c>gfx/portraits/environments</c>, and the
+    /// ark class has nothing there - it is not a world and has no sky of its own. This one is filed
+    /// with the ships instead.
+    /// </remarks>
+    public string? Sky { get; init; }
 }
 
 /// <summary>

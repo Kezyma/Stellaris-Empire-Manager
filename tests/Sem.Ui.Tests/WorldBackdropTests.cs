@@ -24,6 +24,33 @@ public sealed class WorldBackdropTests
         CityLayers = [.. bands.Select(b => new CityLayer(b, $"towers{b}.png", 0, null))],
     };
 
+    /// <summary>
+    /// A nomad's window shows its own hull against the stars, and nothing else.
+    /// </summary>
+    /// <remarks>
+    /// The ship stands where a city stands, so the city goes: there is no world under it to build on,
+    /// and painted over the hull it was a skyline hanging in space. The world goes with it - the ark
+    /// class has no sky and no landscape of its own, being a ship rather than a place.
+    /// </remarks>
+    [Fact]
+    public void ANomadSeesItsOwnShipAndNotACity()
+    {
+        var arkship = new ArkshipDefinition("civilian_arkship_tier_1")
+        {
+            Sky = "arkship_sky.png",
+            Picture = "arkship_civilian.png",
+        };
+
+        var layers = WorldBackdrop.Layers(World(1, 2), City(1, 2), 4, arkship).ToList();
+
+        Assert.Equal(["arkship_sky.png", "arkship_civilian.png"], layers);
+
+        // And without one, nothing about the old answer has moved.
+        Assert.Equal(
+            ["sky.png", "hills1.png", "towers1.png", "hills2.png", "towers2.png"],
+            WorldBackdrop.Layers(World(1, 2), City(1, 2), 4).ToList());
+    }
+
     [Fact]
     public void TheSkyGoesFirstAndTheBandsAlternate()
     {
