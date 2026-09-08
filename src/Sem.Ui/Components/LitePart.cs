@@ -82,6 +82,19 @@ public enum LitePart
     /// <summary>The voice that narrates its game.</summary>
     Advisor,
 
-    /// <summary>How the player means to play it, which the game keeps but does not read.</summary>
+    /// <summary>
+    /// How the player means to play it, which the game keeps but does not read.
+    /// </summary>
+    /// <remarks>
+    /// Three ways in and two editors. The traditions and the perks share one because they share an
+    /// order, and it opens on whichever was pressed; the civics are a reform of the government
+    /// rather than a step along that path, and have one to themselves.
+    /// </remarks>
     Plan,
+
+    /// <summary>The same editor as <see cref="Plan"/>, opened on the ascension perks.</summary>
+    PlanPerks,
+
+    /// <summary>The civics a government reform would leave behind.</summary>
+    PlanCivics,
 }

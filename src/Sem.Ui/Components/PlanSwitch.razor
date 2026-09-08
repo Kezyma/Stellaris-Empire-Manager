@@ -1,0 +1,91 @@
+@using Sem.Designs
+
+@*
+    Whether this empire is being planned at all.
+
+    In the heading of whatever is showing the plan, in front of the word "Plan", because that is
+    what it turns on and off. Inside the editor it read as one more field of the plan rather than as
+    the switch the whole thing hangs from - and a switch that empties the panel underneath it wants
+    to be somewhere the panel is not.
+
+    Off unless it is asked for. A plan is written into one of the two biographies, which is somewhere
+    a player may have written something of their own, and a feature that helped itself to one would
+    be taking something.
+*@
+
+<label class="sem-plan-switch" title="@Explained" @onclick:stopPropagation="true">
+    <input type="checkbox" checked="@Planning" disabled="@(!Planning && !AnyFree)"
+           aria-label="Plan this empire"
+           @onchange="Toggle" @onclick:stopPropagation="true" />
+</label>
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    private EmpireDesign Design => Session.Current!;
+
+    private PlanVocabulary Vocabulary => Session.PlanVocabulary;
+
+    /// <summary>Which biography actually holds a plan, which is nothing until one is written.</summary>
+    private PlanHome? Stored => Session.Plans.HomeOf(Design, Vocabulary);
+
+    /// <summary>
+    /// Whether this empire is being planned.
+    /// </summary>
+    /// <remarks>
+    /// Either because a biography already holds a plan, or because the player has said so and has
+    /// not decided anything yet. The second is what stops the box from taking a biography the
+    /// moment it is ticked.
+    /// </remarks>
+    private bool Planning => Stored is not null || Session.PlanIntent is not null;
+
+    private bool CanCarry(PlanHome home) => Session.Plans.CanCarry(Design, home, Vocabulary);
+
+    /// <summary>Whether either biography is free, which is what makes planning possible at all.</summary>
+    private bool AnyFree => CanCarry(PlanHome.Species) || CanCarry(PlanHome.Ruler);
+
+    /// <summary>
+    /// The biography a new plan goes into, which is the species' where there is a choice.
+    /// </summary>
+    /// <remarks>
+    /// The species' first because it is the longer of the two in the game's own presets and reads
+    /// as the empire's story rather than one person's, which is nearer to what a plan is.
+    /// </remarks>
+    private PlanHome? FirstFree =>
+        CanCarry(PlanHome.Species) ? PlanHome.Species
+        : CanCarry(PlanHome.Ruler) ? PlanHome.Ruler
+        : null;
+
+    /// <summary>What the box says it will do, and why it will not where it cannot.</summary>
+    private string Explained =>
+        !Planning && !AnyFree
+            ? "Both biographies have something written in them. Clear one to plan this empire."
+            : Planning ? "Stop planning this empire" : "Plan this empire";
+
+    /// <summary>
+    /// Turns planning on or off.
+    /// </summary>
+    /// <remarks>
+    /// Turning it off clears both biographies of a plan rather than the one holding it, because a
+    /// plan that moved home has left one behind and the player asked for neither.
+    /// </remarks>
+    private void Toggle(ChangeEventArgs e)
+    {
+        if (e.Value is bool on && on)
+        {
+            // Nothing at all when neither biography is free, which is what the disabled box says.
+            Session.PlanIntent = FirstFree;
+
+            return;
+        }
+
+        Session.PlanIntent = null;
+
+        Session.Edit(d =>
+        {
+            Session.Plans.Clear(d, PlanHome.Species, Vocabulary);
+            Session.Plans.Clear(d, PlanHome.Ruler, Vocabulary);
+        });
+    }
+}

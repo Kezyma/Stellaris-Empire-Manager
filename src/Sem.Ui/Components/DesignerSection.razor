@@ -6,7 +6,17 @@
     empire — which is the thing worth seeing first.
 *@
 
-<section class="sem-section @(IsOpen ? "open" : "closed")">
+<section class="sem-section @(IsOpen ? "open" : "closed") @(Lead is null ? null : "led")">
+    @*
+        Beside the head rather than inside it. The head is a button, and a control nested in one is
+        a control the browser will not give its own press to - so the switch sits alongside and the
+        two are laid out as one row.
+    *@
+    @if (Lead is not null)
+    {
+        <div class="lead">@Lead</div>
+    }
+
     <button type="button" class="head" aria-expanded="@(IsOpen ? "true" : "false")" @onclick="Toggle">
         <span class="chevron">@(IsOpen ? "▾" : "▸")</span>
         <span class="title">@Title</span>
@@ -37,6 +47,14 @@
     /// <summary>The section's name.</summary>
     [Parameter, EditorRequired]
     public required string Title { get; set; }
+
+    /// <summary>Drawn in the header, in front of the name.</summary>
+    /// <remarks>
+    /// For a control that belongs to the section rather than to its contents - the plan's switch,
+    /// which decides whether the section has anything in it at all.
+    /// </remarks>
+    [Parameter]
+    public RenderFragment? Lead { get; set; }
 
     /// <summary>What is currently chosen, shown in the header so a closed section still says so.</summary>
     [Parameter]

@@ -33,7 +33,8 @@
 
         @if (_editing is { } part)
         {
-            <EditorDialog Title="@TitleOf(part)" Compact="@IsCompact(part)" OnClose="Close">
+            <EditorDialog Title="@TitleOf(part)" Compact="@IsCompact(part)" OnClose="Close"
+                          Lead="@(IsPlan(part) ? PlanLead : null)">
                 @Editor(part)
             </EditorDialog>
         }
@@ -117,9 +118,22 @@
         LitePart.Flag => "Flag",
         LitePart.Room => "Room",
         LitePart.Shipset => "Shipset",
-        LitePart.Plan => "Plan",
+        LitePart.Plan or LitePart.PlanPerks => "Plan",
+        LitePart.PlanCivics => "Planned Civics",
         _ => "Advisor Voice",
     };
+
+
+    /// <summary>The plan's switch, built here because a template cannot sit in an attribute.</summary>
+    private static readonly RenderFragment PlanLead = builder =>
+    {
+        builder.OpenComponent<PlanSwitch>(0);
+        builder.CloseComponent();
+    };
+
+    /// <summary>Whether this editor is one of the plan's, which is what carries the switch.</summary>
+    private static bool IsPlan(LitePart part) =>
+        part is LitePart.Plan or LitePart.PlanPerks or LitePart.PlanCivics;
 
     /// <summary>
     /// Whether the editor is a form rather than a picker, and wants a sheet sized to it.
@@ -258,7 +272,15 @@
                 break;
 
             case LitePart.Plan:
+            case LitePart.PlanPerks:
+            case LitePart.PlanCivics:
                 builder.OpenComponent<PlanTab>(220);
+                builder.AddComponentParameter(221, nameof(PlanTab.Part), part switch
+                {
+                    LitePart.PlanPerks => PlanPart.Perks,
+                    LitePart.PlanCivics => PlanPart.Civics,
+                    _ => PlanPart.Traditions,
+                });
                 builder.CloseComponent();
                 break;
 
