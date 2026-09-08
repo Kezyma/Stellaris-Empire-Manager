@@ -547,6 +547,52 @@ public sealed class EmpireRulesTests
         Assert.DoesNotContain(options, o => o.Key == "trait_not_initial");
     }
 
+    /// <summary>
+    /// One the game never offers is still shown once the species has it, so it can be given up.
+    /// </summary>
+    /// <remarks>
+    /// Which is the only way an origin's own trait is ever seen: the game does not offer Latent
+    /// Psionic to anybody, and hands it to Teachers of the Shroud saying in as many words that it
+    /// can be removed again. Hidden from the picker it was a trait nothing could take off.
+    /// </remarks>
+    [Fact]
+    public void ATraitTheGameNeverOffersIsStillShownWhenTheSpeciesHasIt()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.Species.SetTraits([.. design.Species.Traits, "trait_not_initial"]);
+
+        var options = Rules.GetSpeciesTraitOptions(Context(design));
+
+        Assert.Contains(options, o => o.Key == "trait_not_initial");
+
+        // Hidden is hidden whether it is held or not - that is what hidden means.
+        design.Species.SetTraits([.. design.Species.Traits, "trait_hidden"]);
+
+        Assert.DoesNotContain(
+            Rules.GetSpeciesTraitOptions(Context(design)),
+            o => o.Key == "trait_hidden");
+    }
+
+    /// <summary>
+    /// An origin hands its trait over when it is chosen, and not otherwise.
+    /// </summary>
+    /// <remarks>
+    /// Asked about what was newly chosen rather than about the whole design, because the player may
+    /// take the trait straight off again - the game says so - and one handed over on every edit
+    /// would be a trait that could not be removed at all.
+    /// </remarks>
+    [Fact]
+    public void AnOriginGivesItsSoftTraitToWhoeverJustChoseIt()
+    {
+        Assert.Equal(
+            ["trait_not_initial"],
+            Rules.GetGrantedTraits(["origin_shroudwalker_apprentice"]));
+
+        // Nothing from an origin that gives nothing, and nothing from one already held.
+        Assert.Empty(Rules.GetGrantedTraits(["origin_default"]));
+        Assert.Empty(Rules.GetGrantedTraits([]));
+    }
+
     [Fact]
     public void TraitOptionsReportTheContentPackAPlayerIsMissing()
     {

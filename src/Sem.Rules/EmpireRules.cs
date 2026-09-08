@@ -378,6 +378,38 @@ public sealed class EmpireRules(GameDatabase database)
         [.. GetForcedTraitSources(context).Select(f => f.Trait).Distinct(StringComparer.Ordinal)];
 
     /// <summary>
+    /// The traits these civics and origins hand the founder species, which it may then take off.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The game's <c>soft_traits</c>, and the game's own comment says exactly what makes them soft:
+    /// "same as above, except these can be removed without making the government invalid". Two
+    /// origins use it - Teachers of the Shroud gives Latent Psionic and Cybernetic Creed gives
+    /// Ritualistic Implants - and both are free, so taking one costs the species nothing it would
+    /// otherwise have spent.
+    /// </para>
+    /// <para>
+    /// Asked about keys rather than about a context, because the question is only ever about a
+    /// change: these are given when the thing giving them is chosen, and a trait the player has
+    /// since removed must not come back the next time anything else moves.
+    /// </para>
+    /// </remarks>
+    public IReadOnlyList<string> GetGrantedTraits(IEnumerable<string> chosen)
+    {
+        ArgumentNullException.ThrowIfNull(chosen);
+
+        return
+        [
+            .. chosen
+                .Select(key => _database.Civics
+                    .FirstOrDefault(c => string.Equals(c.Key, key, StringComparison.Ordinal)))
+                .OfType<CivicDefinition>()
+                .SelectMany(c => c.SoftTraits)
+                .Distinct(StringComparer.Ordinal)
+        ];
+    }
+
+    /// <summary>
     /// The forced traits a design has to carry in the file, which is not all of them.
     /// </summary>
     /// <remarks>
@@ -1349,8 +1381,11 @@ public sealed class EmpireRules(GameDatabase database)
 
         foreach (var trait in _database.Traits.Where(t => t.Kind == TraitKind.Species))
         {
-            // Hidden traits and ones the game never offers at creation are not choices at all.
-            if (trait.Hidden || !trait.Initial)
+            // Hidden traits are not choices at all, nor are the ones the game never offers at
+            // creation - unless the species already holds one. That is how an origin's own trait
+            // arrives, and the game is explicit that it can be taken off again; a trait the picker
+            // does not draw is one nobody can take off.
+            if (trait.Hidden || (!trait.Initial && !context.Traits.Contains(trait.Key)))
             {
                 continue;
             }

@@ -142,6 +142,13 @@ internal static class RulesTestData
                 RequiresSecondarySpecies = true,
                 SecondarySpeciesTraits = ["trait_syncretic_proles"],
             },
+            // Gives a trait rather than forcing one, as Teachers of the Shroud gives Latent Psionic.
+            // The trait it gives is one the game never offers at creation, which is what both of the
+            // real ones are.
+            new CivicDefinition("origin_shroudwalker_apprentice", IsOrigin: true)
+            {
+                SoftTraits = ["trait_not_initial"],
+            },
             // States its extra trait allowance in a plain modifier block, as most of them do.
             new CivicDefinition("civic_natural_design", IsOrigin: false)
             {
