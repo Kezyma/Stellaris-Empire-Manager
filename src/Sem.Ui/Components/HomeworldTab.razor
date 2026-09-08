@@ -116,9 +116,7 @@
                 says nothing about itself beyond the habitability it gives, so the panel describing
                 one is kept to the height of the rows it describes.
             *@
-            <OptionGrid Options="@WorldOptions"
-                        IconSize="48"
-                        OnSelect="key => Session.Edit(d => d.PlanetClass = key)" />
+            <OptionGrid Options="@WorldOptions" IconSize="48" OnSelect="ChooseWorld" />
         </section>
     }
 </div>
@@ -200,10 +198,30 @@
                         Description = preference is null
                             ? string.Empty
                             : Session.Localizer.Html($"{preference}_desc", string.Empty),
-                        Selected = key == Design.PlanetClass,
+                        // The world the empire begins on rather than the one written down. They
+                        // are the same until an origin supplies its own, and where that one cannot
+                        // be written down the design holds an ordinary world instead - so comparing
+                        // against the design left the one tile on offer looking unchosen.
+                        Selected = key == Session.Context!.EffectivePlanetClass,
                     };
                 })
             ];
+        }
+    }
+
+    /// <summary>
+    /// Records a homeworld, where the empire is free to record one.
+    /// </summary>
+    /// <remarks>
+    /// An origin that supplies its own world leaves a single tile here, which says so underneath and
+    /// is the world the empire starts on. It is usually not a class any design may record, so
+    /// pressing it writes nothing - the design goes on holding the ordinary world it needs to hold.
+    /// </remarks>
+    private void ChooseWorld(string key)
+    {
+        if (Session.Rules.GetSelectableHomeworlds(Session.Context!).Contains(key, StringComparer.Ordinal))
+        {
+            Session.Edit(d => d.PlanetClass = key);
         }
     }
 

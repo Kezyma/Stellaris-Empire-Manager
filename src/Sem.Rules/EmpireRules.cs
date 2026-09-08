@@ -327,6 +327,29 @@ public sealed class EmpireRules(GameDatabase database)
             return [forced];
         }
 
+        return GetSelectableHomeworlds(context);
+    }
+
+    /// <summary>
+    /// The worlds this empire could pick for itself, before any origin overrides the choice.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Nine classes are starting worlds in the game's own files, and civics, origins and species
+    /// classes add to and take from that - Hearth of the Forge is what makes a volcanic world
+    /// something an empire may be built on.
+    /// </para>
+    /// <para>
+    /// Asked apart from the origin's own world because eleven of the thirteen origins that supply
+    /// one supply a class no design may record: a tomb world, a habitat, a relic world, a ring
+    /// segment, a machine world. The design carries an ordinary world for those and the game changes
+    /// it as the game begins, which is what the empire in front of the player is shown.
+    /// </para>
+    /// </remarks>
+    public IReadOnlyList<string> GetSelectableHomeworlds(DesignContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
         var candidates = new List<string>();
 
         foreach (var planet in _database.PlanetClasses)
@@ -1820,7 +1843,12 @@ public sealed class EmpireRules(GameDatabase database)
         if (OriginOf(context) is { } origin &&
             (origin.HabitabilityPreference ?? origin.StartingColony) is { Length: > 0 } imposed)
         {
-            if (!string.Equals(key, imposed, StringComparison.Ordinal))
+            // Only where the design could have carried the origin's world itself. Where it could
+            // not - a tomb world, a habitat, a relic world, none of them a class the designer
+            // offers - the design is meant to hold an ordinary world and the game changes it on the
+            // way in, so the two disagreeing is the arrangement working rather than a mistake.
+            if (!string.Equals(key, imposed, StringComparison.Ordinal) &&
+                GetSelectableHomeworlds(context).Contains(imposed, StringComparer.Ordinal))
             {
                 problems.Add(new ValidationProblem(
                     ValidationArea.Homeworld,

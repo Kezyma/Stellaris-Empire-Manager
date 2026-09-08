@@ -73,7 +73,11 @@
 
         // Both asked before the edit. The option list collapses to the arkship the moment the
         // design says nomadic, so afterwards there is nothing left to come back to.
-        var settled = Session.Rules.GetSettledHomeworldOptions(Context).FirstOrDefault();
+        //
+        // What the empire may pick rather than what its origin gives it: an origin's own world is
+        // usually a class no design may record, and putting one back here would write exactly what
+        // choosing the origin is careful not to.
+        var settled = Session.Rules.GetSelectableHomeworlds(Context).FirstOrDefault();
         var arkship = Session.Data.Database.Arkships.FirstOrDefault()?.Key;
 
         Session.Edit(d =>
