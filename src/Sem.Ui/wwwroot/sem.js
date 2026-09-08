@@ -419,20 +419,15 @@ export function bindPopover(anchor, panel, pinOnClick = true) {
         requestAnimationFrame(place);
     };
 
-    const hide = () => {
-        if (!pinned && panel.matches(':popover-open')) {
-            panel.hidePopover();
-        }
-    };
+    const { hide, stay } = lingerWhilePointedAt(anchor, panel, show, () => pinned);
 
-    anchor.addEventListener('mouseenter', show);
-    anchor.addEventListener('mouseleave', hide);
-    anchor.addEventListener('focus', show);
+    anchor.addEventListener('focus', () => { stay(); show(); });
     anchor.addEventListener('blur', () => { pinned = false; hide(); });
 
     if (pinOnClick) {
         anchor.addEventListener('click', event => {
             event.preventDefault();
+            stay();
             pinned = !pinned;
 
             if (pinned) {
@@ -445,6 +440,7 @@ export function bindPopover(anchor, panel, pinOnClick = true) {
 
     anchor.addEventListener('keydown', event => {
         if (event.key === 'Escape') {
+            stay();
             pinned = false;
             panel.hidePopover();
         }
@@ -457,6 +453,54 @@ export function bindPopover(anchor, panel, pinOnClick = true) {
             pinned = false;
         }
     });
+}
+
+/**
+ * Keeps a panel open while the pointer is on its anchor or inside the panel itself.
+ *
+ * A panel that goes the moment the pointer leaves the chip is a panel nobody can reach into. Most
+ * of them only want reading and it never came up - and then one was longer than its own height,
+ * grew a scrollbar, and there was no way to get at it: the bar is inside the panel, and the pointer
+ * cannot arrive there without leaving the chip.
+ *
+ * So closing waits a moment and either of the two being entered calls the wait off. The delay is
+ * also what makes the few pixels between them crossable; without it the panel went in the frame
+ * before the pointer landed anywhere.
+ *
+ * @param {HTMLElement} anchor what the panel hangs off
+ * @param {HTMLElement} panel the popover itself
+ * @param {() => void} show what opening it means, which differs between the two kinds
+ * @param {() => boolean} held whether something is holding it open regardless of the pointer
+ * @returns {{hide: () => void, stay: () => void}}
+ */
+function lingerWhilePointedAt(anchor, panel, show, held) {
+    let closing = 0;
+
+    const stay = () => clearTimeout(closing);
+
+    const hide = () => {
+        stay();
+
+        closing = setTimeout(() => {
+            if (!held() && panel.matches(':popover-open')) {
+                panel.hidePopover();
+            }
+        }, 220);
+    };
+
+    anchor.addEventListener('mouseenter', () => {
+        stay();
+        show();
+    });
+
+    anchor.addEventListener('mouseleave', hide);
+
+    // Entering the panel only cancels the closing. Showing again would place it again, and it is
+    // under the pointer by then - it would move out from under the hand reaching for it.
+    panel.addEventListener('mouseenter', stay);
+    panel.addEventListener('mouseleave', hide);
+
+    return { hide, stay };
 }
 
 /**
@@ -493,13 +537,7 @@ function placeUnder(anchor, panel) {
 /**
  * Hangs a list off a chip, the way a dropdown hangs off its control.
  *
- * Same top layer and same placing as a description panel, and one difference that decides the
- * shape of this: a description is only read, and a list is reached into. The pointer has to be
- * able to leave the chip and arrive in the panel without the panel going away underneath it - so
- * closing waits a moment, and either the chip or the panel being entered calls the wait off.
- *
- * The delay is what makes the four-pixel gap between them crossable. Without it the list vanished
- * the instant the pointer left the chip, which is the frame before it arrived anywhere.
+ * Same top layer, same placing and the same lingering as a description panel.
  *
  * A hover and a press mean different things and are kept apart. A hover lasts exactly as long as
  * the hover: look away and the list goes. A press holds it open until something puts it away -
@@ -521,12 +559,9 @@ export function bindDropdown(anchor, panel) {
 
     anchor.dataset.semDropdown = 'yes';
 
-    let closing = 0;
     let pinned = false;
 
     const show = () => {
-        clearTimeout(closing);
-
         if (!panel.matches(':popover-open')) {
             panel.showPopover();
         }
@@ -535,26 +570,13 @@ export function bindDropdown(anchor, panel) {
         requestAnimationFrame(() => placeUnder(anchor, panel));
     };
 
-    const hide = () => {
-        clearTimeout(closing);
-
-        closing = setTimeout(() => {
-            if (!pinned && panel.matches(':popover-open')) {
-                panel.hidePopover();
-            }
-        }, 220);
-    };
+    const { stay } = lingerWhilePointedAt(anchor, panel, show, () => pinned);
 
     const put = () => {
-        clearTimeout(closing);
+        stay();
         pinned = false;
         panel.hidePopover();
     };
-
-    for (const part of [anchor, panel]) {
-        part.addEventListener('mouseenter', show);
-        part.addEventListener('mouseleave', hide);
-    }
 
     anchor.addEventListener('click', event => {
         event.preventDefault();
@@ -565,23 +587,19 @@ export function bindDropdown(anchor, panel) {
             return;
         }
 
+        stay();
         pinned = true;
         show();
     });
 
-    anchor.addEventListener('focus', show);
+    anchor.addEventListener('focus', () => { stay(); show(); });
 
-    // Not on blur: the focus is very often moving into the list, which is where it should be able
-    // to go. Leaving the whole of it is what closes it.
+    // Nothing on blur, unlike a description panel: the focus leaving this chip is usually the focus
+    // moving into the list, which is where it should be able to go. Escape and a press elsewhere are
+    // the ways out.
     anchor.addEventListener('keydown', event => {
         if (event.key === 'Escape') {
             put();
-        }
-    });
-
-    panel.addEventListener('focusout', event => {
-        if (!panel.contains(event.relatedTarget)) {
-            hide();
         }
     });
 

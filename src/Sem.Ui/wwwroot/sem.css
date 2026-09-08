@@ -4851,6 +4851,16 @@ button.icon .sem-action-icon { display: block; }
     margin: 0;
     inset: auto;
     width: min(22rem, calc(100vw - 2rem));
+
+    /*
+        Said here because the panel inherits from wherever its chip is written, and the top layer
+        does not change that: it is drawn out of the flow, but its styles still come down the DOM.
+        A table's cells are nowrap - one line per row, whatever is in it, which is what makes a
+        column of empires comparable - and a paragraph of the game's prose inheriting that came out
+        as one line the width of the sentence, with a horizontal scrollbar under it. The same panel
+        on the lite card, whose ancestors say nothing about wrapping, always read properly.
+    */
+    white-space: normal;
     max-height: min(24rem, calc(100vh - 2rem));
     overflow-y: auto;
     overscroll-behavior: contain;
