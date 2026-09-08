@@ -30,7 +30,7 @@ internal static class GovernmentExtractor
                 AiOnly = IsAiOnly(body),
                 ForcedTraits = ReadForcedTraits(body),
                 HasHeir = body.GetBool("has_heir"),
-                ElectionType = body.GetString("election_type"),
+                ElectionType = body.GetString("election_type") ?? "none",
                 // The tags are the authority's own description of itself: succession, whether there
                 // is an heir, and whatever a particular authority does to its capital. The file's
                 // own header calls them "the translation tags to add to the description", and

@@ -124,6 +124,7 @@
     }
 
     @* From here down is ours: everything the game's preview has no space for. *@
+    @Chips("AI Personality", Personalities)
     @Chips(Session.Localizer.Heading("ETHICS", "Ethics"), Ethics)
     @Chips(Session.Localizer.Heading("CIVICS_LABEL", "Civics"), Civics)
     @Chips(Session.Localizer.Heading("TRAITS", "Traits"), Traits)
@@ -293,6 +294,9 @@
 
     private string Government => View.Government;
 
+    /// <summary>What the game would play this empire as, and how likely each is.</summary>
+    private IReadOnlyList<EmpireChoice> Personalities => View.Personalities;
+
     private string Ruler => View.Ruler;
 
     private string Homeworld => View.Homeworld;
@@ -343,6 +347,8 @@
             builder.AddComponentParameter(7, nameof(OptionChip.Name), choice.Name);
             builder.AddComponentParameter(8, nameof(OptionChip.Icon), choice.Icon);
             builder.AddComponentParameter(9, nameof(OptionChip.Effects), choice.Effects);
+            builder.AddComponentParameter(10, nameof(OptionChip.DescriptionKey), choice.Description);
+            builder.AddComponentParameter(11, nameof(OptionChip.Badge), choice.Badge);
             builder.CloseComponent();
         }
 

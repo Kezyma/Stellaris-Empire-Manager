@@ -146,6 +146,20 @@
                                 them; beside a planet it read as a property of the planet.
                             *@
                             @Chips(Session.Localizer.Heading("ORIGIN", "Origin"), View.OriginChoice, LitePart.Origin)
+
+                            @*
+                                What the game would play this empire as, if it turned up in somebody
+                                else's galaxy. Derived from the ethics and civics beside it, exactly
+                                as the government name above is - so it belongs here rather than in a
+                                panel of its own, and pressing one opens the same editor.
+
+                                Several, because the game draws rather than decides. Each says how
+                                likely it is to be the one.
+                            *@
+                            @if (View.Personalities.Count > 0)
+                            {
+                                @Chips("AI Personality", View.Personalities, LitePart.Government)
+                            }
                         </div>
                     </div>
                 </div>
@@ -649,8 +663,15 @@
 
                 @foreach (var choice in listed)
                 {
+                    @*
+                        The description key travels too. A choice carries one when its words are not
+                        under the usual "{key}_desc" - a personality's are under a prefix, and a
+                        wilderness empire renames half its civics - and dropping it here had the
+                        chip look up a key that does not exist. The table has always passed it.
+                    *@
                     <OptionChip @key="choice.Key" Key="@choice.Key" Name="@choice.Name"
                                 Icon="@choice.Icon" Effects="@choice.Effects" Dim="@choice.Unchanged"
+                                DescriptionKey="@choice.Description" Badge="@choice.Badge"
                                 OnSelect="() => Open(part)" />
                 }
             </div>

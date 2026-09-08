@@ -6246,3 +6246,24 @@ button.icon .sem-action-icon { display: block; }
 .sem-editor-modal .head > .sem-plan-switch {
     margin-right: calc(var(--space-xs) * -1);
 }
+
+/*
+    A number carried on a chip.
+
+    For the AI personalities, which are not one answer but a draw: the empire allows several and the
+    game picks one, so each says how likely it is to be the one. Dimmer than the name and set on its
+    own ground, because it is a fact about the chip rather than part of what the chip is called.
+*/
+.sem-chip > button > .badge {
+    margin-left: var(--space-2xs);
+    padding: 0 var(--space-2xs);
+    border-radius: var(--radius-sm, 4px);
+    background: var(--bg);
+    color: var(--text-dim);
+    font-size: 0.85em;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+/* Squeezed, the name goes before the number does - the number is the shorter answer. */
+.sem-table-wrap.compact .sem-chip > button > .badge { margin-left: 0; }

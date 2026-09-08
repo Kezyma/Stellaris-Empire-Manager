@@ -43,6 +43,12 @@
         }
 
         <span>@Name</span>
+
+        @if (Badge is { Length: > 0 })
+        {
+            @* After the name, so the eye reads what it is before how much of it there is. *@
+            <span class="badge">@Badge</span>
+        }
     </button>
 
     @*
@@ -119,6 +125,10 @@
     /// </remarks>
     [Parameter]
     public bool Dim { get; set; }
+
+    /// <summary>A few characters drawn after the name, for a chip that has a number to it.</summary>
+    [Parameter]
+    public string? Badge { get; set; }
 
     /// <summary>
     /// What pressing the chip should do, where pressing it should do something.

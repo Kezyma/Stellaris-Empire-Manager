@@ -1,7 +1,7 @@
 {
-  "schemaVersion": 14,
+  "schemaVersion": 15,
   "gameVersion": "v4.4.6",
-  "extractorVersion": "0.1.0\u002Bea81b66c9a9927595942d6294720f7e714d616b7",
+  "extractorVersion": "0.1.0\u002Bacb9aad7f5e186ee4646aa0ce05fcdc713e83480",
   "defines": {
     "ethicsPoints": 3,
     "civicPoints": 2,
@@ -39004,6 +39004,7 @@
       "aiOnly": false,
       "forcedTraits": [],
       "hasHeir": true,
+      "electionType": "none",
       "effects": {
         "modifiers": {
           "country_leader_pool_size": -1,
@@ -106092,6 +106093,2745 @@
       "factors": [],
       "rulerTitleKey": "RT_CENTRAL_AGGREGATOR",
       "nameKey": "gov_shroud_corporeal_machine"
+    }
+  ],
+  "personalities": [
+    {
+      "key": "honorbound_warriors",
+      "weight": 50,
+      "fileOrder": 0,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "selection",
+                    "category": "Ethics",
+                    "key": "ethic_fanatic_militarist"
+                  },
+                  {
+                    "kind": "any",
+                    "items": [
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_spiritualist"
+                      },
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_egalitarian"
+                      },
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_xenophile"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "selection",
+                    "category": "Ethics",
+                    "key": "ethic_fanatic_xenophile"
+                  },
+                  {
+                    "kind": "selection",
+                    "category": "Ethics",
+                    "key": "ethic_militarist"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_honorbound_warriors",
+      "descriptionKey": "personality_honorbound_warriors_desc"
+    },
+    {
+      "key": "evangelising_zealots",
+      "weight": 10,
+      "fileOrder": 1,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "always",
+                "value": true
+              },
+              {
+                "kind": "always",
+                "value": false
+              }
+            ]
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Ethics",
+                  "key": "ethic_pacifist"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Ethics",
+                  "key": "ethic_fanatic_pacifist"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_authoritarian"
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_authoritarian"
+              },
+              {
+                "kind": "any",
+                "items": [
+                  {
+                    "kind": "selection",
+                    "category": "Ethics",
+                    "key": "ethic_xenophobe"
+                  },
+                  {
+                    "kind": "selection",
+                    "category": "Ethics",
+                    "key": "ethic_fanatic_xenophobe"
+                  }
+                ]
+              },
+              {
+                "kind": "any",
+                "items": [
+                  {
+                    "kind": "selection",
+                    "category": "Ethics",
+                    "key": "ethic_militarist"
+                  },
+                  {
+                    "kind": "selection",
+                    "category": "Ethics",
+                    "key": "ethic_fanatic_militarist"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_spiritualist"
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_spiritualist"
+              }
+            ]
+          }
+        ]
+      },
+      "additions": [
+        {
+          "when": {
+            "kind": "selection",
+            "category": "Ethics",
+            "key": "ethic_fanatic_spiritualist"
+          },
+          "factor": 2
+        },
+        {
+          "when": {
+            "kind": "selection",
+            "category": "Ethics",
+            "key": "ethic_fanatic_authoritarian"
+          },
+          "factor": 2
+        },
+        {
+          "when": {
+            "kind": "selection",
+            "category": "Traits",
+            "key": "trait_conformists"
+          },
+          "factor": 1
+        },
+        {
+          "when": {
+            "kind": "selection",
+            "category": "Traits",
+            "key": "trait_charismatic"
+          },
+          "factor": 1
+        },
+        {
+          "when": {
+            "kind": "selection",
+            "category": "Traits",
+            "key": "trait_repugnant"
+          },
+          "factor": -1
+        }
+      ],
+      "nameKey": "personality_evangelising_zealots",
+      "descriptionKey": "personality_evangelising_zealots_desc"
+    },
+    {
+      "key": "erudite_explorers",
+      "weight": 10,
+      "fileOrder": 2,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_xenophobe"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_fanatic_xenophobe"
+                    }
+                  ]
+                },
+                {
+                  "kind": "selection",
+                  "category": "Ethics",
+                  "key": "ethic_pacifist"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Ethics",
+                  "key": "ethic_fanatic_pacifist"
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_militarist"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_fanatic_militarist"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_materialist"
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_materialist"
+              }
+            ]
+          }
+        ]
+      },
+      "additions": [
+        {
+          "when": {
+            "kind": "selection",
+            "category": "Ethics",
+            "key": "ethic_fanatic_materialist"
+          },
+          "factor": 2
+        },
+        {
+          "when": {
+            "kind": "selection",
+            "category": "Traits",
+            "key": "trait_intelligent"
+          },
+          "factor": 2
+        },
+        {
+          "when": {
+            "kind": "selection",
+            "category": "Traits",
+            "key": "trait_natural_engineers"
+          },
+          "factor": 1
+        },
+        {
+          "when": {
+            "kind": "selection",
+            "category": "Traits",
+            "key": "trait_natural_physicists"
+          },
+          "factor": 1
+        },
+        {
+          "when": {
+            "kind": "selection",
+            "category": "Traits",
+            "key": "trait_industrious"
+          },
+          "factor": 1
+        },
+        {
+          "when": {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "field",
+                "field": "government",
+                "value": "gov_science_directorate"
+              },
+              {
+                "kind": "field",
+                "field": "government",
+                "value": "gov_illuminated_autocracy"
+              }
+            ]
+          },
+          "factor": 2
+        },
+        {
+          "when": {
+            "kind": "field",
+            "field": "election_type",
+            "value": "none"
+          },
+          "factor": -2
+        }
+      ],
+      "nameKey": "personality_erudite_explorers",
+      "descriptionKey": "personality_erudite_explorers_desc"
+    },
+    {
+      "key": "spiritual_seekers",
+      "weight": 10,
+      "fileOrder": 3,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_xenophobe"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_fanatic_xenophobe"
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_militarist"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_fanatic_militarist"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_egalitarian"
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_egalitarian"
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_pacifist"
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_pacifist"
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_xenophile"
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_xenophile"
+              }
+            ]
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_spiritualist"
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_spiritualist"
+              }
+            ]
+          }
+        ]
+      },
+      "additions": [
+        {
+          "when": {
+            "kind": "selection",
+            "category": "Ethics",
+            "key": "ethic_fanatic_pacifist"
+          },
+          "factor": 2
+        },
+        {
+          "when": {
+            "kind": "selection",
+            "category": "Ethics",
+            "key": "ethic_fanatic_xenophile"
+          },
+          "factor": 2
+        },
+        {
+          "when": {
+            "kind": "selection",
+            "category": "Traits",
+            "key": "trait_adaptive"
+          },
+          "factor": 1
+        },
+        {
+          "when": {
+            "kind": "selection",
+            "category": "Traits",
+            "key": "trait_nonadaptive"
+          },
+          "factor": -1
+        },
+        {
+          "when": {
+            "kind": "selection",
+            "category": "Traits",
+            "key": "trait_extremely_adaptive"
+          },
+          "factor": 2
+        },
+        {
+          "when": {
+            "kind": "field",
+            "field": "election_type",
+            "value": "democratic"
+          },
+          "factor": 1
+        }
+      ],
+      "nameKey": "personality_spiritual_seekers",
+      "descriptionKey": "personality_spiritual_seekers_desc"
+    },
+    {
+      "key": "ruthless_capitalists",
+      "weight": 100,
+      "fileOrder": 4,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Ethics",
+                  "key": "ethic_pacifist"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Ethics",
+                  "key": "ethic_fanatic_pacifist"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "any",
+                "items": [
+                  {
+                    "kind": "selection",
+                    "category": "Ethics",
+                    "key": "ethic_militarist"
+                  },
+                  {
+                    "kind": "selection",
+                    "category": "Ethics",
+                    "key": "ethic_fanatic_militarist"
+                  }
+                ]
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_xenophile"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_fanatic_xenophile"
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "predicate",
+                "name": "is_megacorp"
+              },
+              {
+                "kind": "selection",
+                "category": "Civics",
+                "key": "civic_corporate_dominion"
+              },
+              {
+                "kind": "selection",
+                "category": "Traits",
+                "key": "trait_thrifty"
+              }
+            ]
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_ruthless_capitalists",
+      "descriptionKey": "personality_ruthless_capitalists_desc"
+    },
+    {
+      "key": "peaceful_traders",
+      "weight": 100,
+      "fileOrder": 5,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_pacifist"
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_pacifist"
+              },
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "not",
+                    "item": {
+                      "kind": "any",
+                      "items": [
+                        {
+                          "kind": "selection",
+                          "category": "Ethics",
+                          "key": "ethic_militarist"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Ethics",
+                          "key": "ethic_fanatic_militarist"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "kind": "any",
+                    "items": [
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_xenophile"
+                      },
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_fanatic_xenophile"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "predicate",
+                "name": "is_megacorp"
+              },
+              {
+                "kind": "selection",
+                "category": "Civics",
+                "key": "civic_corporate_dominion"
+              },
+              {
+                "kind": "selection",
+                "category": "Traits",
+                "key": "trait_thrifty"
+              }
+            ]
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_peaceful_traders",
+      "descriptionKey": "personality_peaceful_traders_desc"
+    },
+    {
+      "key": "hegemonic_imperialists",
+      "weight": 5,
+      "fileOrder": 6,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Ethics",
+                  "key": "ethic_pacifist"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Ethics",
+                  "key": "ethic_fanatic_pacifist"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "any",
+                "items": [
+                  {
+                    "kind": "selection",
+                    "category": "Ethics",
+                    "key": "ethic_militarist"
+                  },
+                  {
+                    "kind": "selection",
+                    "category": "Ethics",
+                    "key": "ethic_fanatic_militarist"
+                  }
+                ]
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_authoritarian"
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_authoritarian"
+              },
+              {
+                "kind": "any",
+                "items": [
+                  {
+                    "kind": "selection",
+                    "category": "Ethics",
+                    "key": "ethic_xenophobe"
+                  },
+                  {
+                    "kind": "selection",
+                    "category": "Ethics",
+                    "key": "ethic_fanatic_xenophobe"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "additions": [
+        {
+          "when": {
+            "kind": "selection",
+            "category": "Civics",
+            "key": "civic_barbaric_despoilers"
+          },
+          "factor": 0
+        }
+      ],
+      "nameKey": "personality_hegemonic_imperialists",
+      "descriptionKey": "personality_hegemonic_imperialists_desc"
+    },
+    {
+      "key": "slaving_despots",
+      "weight": 200,
+      "fileOrder": 7,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true
+          },
+          {
+            "kind": "selection",
+            "category": "Civics",
+            "key": "civic_slaver_guilds"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Ethics",
+                  "key": "ethic_pacifist"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Ethics",
+                  "key": "ethic_fanatic_pacifist"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Ethics",
+                  "key": "ethic_xenophile"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Ethics",
+                  "key": "ethic_fanatic_xenophile"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_slaving_despots",
+      "descriptionKey": "personality_slaving_despots_desc"
+    },
+    {
+      "key": "decadent_hierarchy",
+      "weight": 200,
+      "fileOrder": 8,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true
+          },
+          {
+            "kind": "selection",
+            "category": "Civics",
+            "key": "civic_slaver_guilds"
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_pacifist"
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_pacifist"
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_xenophile"
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_xenophile"
+              }
+            ]
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_decadent_hierarchy",
+      "descriptionKey": "personality_decadent_hierarchy_desc"
+    },
+    {
+      "key": "democratic_crusaders",
+      "weight": 100,
+      "fileOrder": 9,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_egalitarian"
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_egalitarian"
+              }
+            ]
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_militarist"
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_militarist"
+              }
+            ]
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Ethics",
+                  "key": "ethic_xenophobe"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Ethics",
+                  "key": "ethic_fanatic_xenophobe"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "field",
+            "field": "election_type",
+            "value": "democratic"
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_democratic_crusaders",
+      "descriptionKey": "personality_democratic_crusaders_desc"
+    },
+    {
+      "key": "harmonious_hierarchy",
+      "weight": 10,
+      "fileOrder": 10,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_xenophobe"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_fanatic_xenophobe"
+                    }
+                  ]
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_militarist"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_fanatic_militarist"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_pacifist"
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_pacifist"
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_xenophile"
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_xenophile"
+              }
+            ]
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_authoritarian"
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_authoritarian"
+              }
+            ]
+          }
+        ]
+      },
+      "additions": [
+        {
+          "when": {
+            "kind": "selection",
+            "category": "Traits",
+            "key": "trait_conformists"
+          },
+          "factor": 1
+        },
+        {
+          "when": {
+            "kind": "field",
+            "field": "election_type",
+            "value": "none"
+          },
+          "factor": 1
+        }
+      ],
+      "nameKey": "personality_harmonious_hierarchy",
+      "descriptionKey": "personality_harmonious_hierarchy_desc"
+    },
+    {
+      "key": "federation_builders",
+      "weight": 5,
+      "fileOrder": 11,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_xenophobe"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_fanatic_xenophobe"
+                    }
+                  ]
+                },
+                {
+                  "kind": "selection",
+                  "category": "Ethics",
+                  "key": "ethic_authoritarian"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Ethics",
+                  "key": "ethic_fanatic_authoritarian"
+                },
+                {
+                  "kind": "any",
+                  "items": [
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_militarist"
+                    },
+                    {
+                      "kind": "selection",
+                      "category": "Ethics",
+                      "key": "ethic_fanatic_militarist"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_xenophile"
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_egalitarian"
+              },
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "any",
+                    "items": [
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_pacifist"
+                      },
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_fanatic_pacifist"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "any",
+                    "items": [
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_egalitarian"
+                      },
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_fanatic_egalitarian"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "any",
+                    "items": [
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_pacifist"
+                      },
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_fanatic_pacifist"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "any",
+                    "items": [
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_materialist"
+                      },
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_fanatic_materialist"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "any",
+                    "items": [
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_pacifist"
+                      },
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_fanatic_pacifist"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "any",
+                    "items": [
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_xenophile"
+                      },
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_fanatic_xenophile"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "any",
+                    "items": [
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_xenophile"
+                      },
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_fanatic_xenophile"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "any",
+                    "items": [
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_egalitarian"
+                      },
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_fanatic_egalitarian"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_federation_builders",
+      "descriptionKey": "personality_federation_builders_desc"
+    },
+    {
+      "key": "xenophobic_isolationists",
+      "weight": 10,
+      "fileOrder": 12,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_pacifist"
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_pacifist"
+              }
+            ]
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_xenophobe"
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_xenophobe"
+              }
+            ]
+          }
+        ]
+      },
+      "additions": [
+        {
+          "when": {
+            "kind": "not",
+            "item": {
+              "kind": "all",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Ethics",
+                  "key": "ethic_pacifist"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Ethics",
+                  "key": "ethic_fanatic_pacifist"
+                }
+              ]
+            }
+          },
+          "factor": -2
+        },
+        {
+          "when": {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_pacifist"
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_pacifist"
+              }
+            ]
+          },
+          "factor": 2
+        },
+        {
+          "when": {
+            "kind": "selection",
+            "category": "Traits",
+            "key": "trait_repugnant"
+          },
+          "factor": 1
+        },
+        {
+          "when": {
+            "kind": "selection",
+            "category": "Traits",
+            "key": "trait_sedentary"
+          },
+          "factor": 1
+        },
+        {
+          "when": {
+            "kind": "selection",
+            "category": "Traits",
+            "key": "trait_nomadic"
+          },
+          "factor": -1
+        },
+        {
+          "when": {
+            "kind": "selection",
+            "category": "Traits",
+            "key": "trait_charismatic"
+          },
+          "factor": -1
+        },
+        {
+          "when": {
+            "kind": "selection",
+            "category": "Civics",
+            "key": "civic_inwards_perfection"
+          },
+          "factor": 1000
+        }
+      ],
+      "nameKey": "personality_xenophobic_isolationists",
+      "descriptionKey": "personality_xenophobic_isolationists_desc"
+    },
+    {
+      "key": "fanatic_purifiers",
+      "weight": 1000,
+      "fileOrder": 13,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true
+          },
+          {
+            "kind": "selection",
+            "category": "Civics",
+            "key": "civic_fanatic_purifiers"
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_fanatic_purifiers",
+      "descriptionKey": "personality_fanatic_purifiers_desc"
+    },
+    {
+      "key": "hive_mind",
+      "weight": 1000,
+      "fileOrder": 14,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true
+          },
+          {
+            "kind": "predicate",
+            "name": "is_hive_empire"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_hive_devouring_swarm"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_hive_familiar_face"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_hive_mind",
+      "descriptionKey": "personality_hive_mind_desc"
+    },
+    {
+      "key": "devouring_swarm",
+      "weight": 1000,
+      "fileOrder": 15,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true
+          },
+          {
+            "kind": "predicate",
+            "name": "is_hive_empire"
+          },
+          {
+            "kind": "selection",
+            "category": "Civics",
+            "key": "civic_hive_devouring_swarm"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "predicate",
+              "name": "is_wilderness_empire"
+            }
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_devouring_swarm",
+      "descriptionKey": "personality_devouring_swarm_desc"
+    },
+    {
+      "key": "migrating_flock",
+      "weight": 50,
+      "fileOrder": 16,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_xenophile"
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_xenophile"
+              }
+            ]
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_pacifist"
+              },
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_pacifist"
+              }
+            ]
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Traits",
+                "key": "trait_rapid_breeders"
+              },
+              {
+                "kind": "selection",
+                "category": "Traits",
+                "key": "trait_nomadic"
+              },
+              {
+                "kind": "selection",
+                "category": "Traits",
+                "key": "trait_fertile"
+              }
+            ]
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_migrating_flock",
+      "descriptionKey": "personality_migrating_flock_desc"
+    },
+    {
+      "key": "metalhead",
+      "weight": 1000,
+      "fileOrder": 17,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true
+          },
+          {
+            "kind": "selection",
+            "category": "Ethics",
+            "key": "ethic_militarist"
+          },
+          {
+            "kind": "selection",
+            "category": "Ethics",
+            "key": "ethic_materialist"
+          },
+          {
+            "kind": "selection",
+            "category": "Ethics",
+            "key": "ethic_xenophobe"
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "selection",
+                    "category": "Traits",
+                    "key": "trait_industrious"
+                  },
+                  {
+                    "kind": "selection",
+                    "category": "Traits",
+                    "key": "trait_strong"
+                  }
+                ]
+              },
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "selection",
+                    "category": "Traits",
+                    "key": "trait_industrious"
+                  },
+                  {
+                    "kind": "selection",
+                    "category": "Traits",
+                    "key": "trait_very_strong"
+                  }
+                ]
+              },
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "selection",
+                    "category": "Traits",
+                    "key": "trait_robot_history_warbot"
+                  },
+                  {
+                    "kind": "selection",
+                    "category": "Traits",
+                    "key": "trait_robot_power_drills"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_metalhead",
+      "descriptionKey": "personality_metalhead_desc"
+    },
+    {
+      "key": "machine_intelligence",
+      "weight": 1000,
+      "fileOrder": 18,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true
+          },
+          {
+            "kind": "predicate",
+            "name": "is_machine_empire"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_machine_servitor"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_machine_assimilator"
+                },
+                {
+                  "kind": "selection",
+                  "category": "Civics",
+                  "key": "civic_machine_terminator"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_machine_intelligence",
+      "descriptionKey": "personality_machine_intelligence_desc"
+    },
+    {
+      "key": "assimilators",
+      "weight": 1000,
+      "fileOrder": 19,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true
+          },
+          {
+            "kind": "selection",
+            "category": "Civics",
+            "key": "civic_machine_assimilator"
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_assimilators",
+      "descriptionKey": "personality_assimilators_desc"
+    },
+    {
+      "key": "exterminators",
+      "weight": 1000,
+      "fileOrder": 20,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true
+          },
+          {
+            "kind": "selection",
+            "category": "Civics",
+            "key": "civic_machine_terminator"
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_exterminators",
+      "descriptionKey": "personality_exterminators_desc"
+    },
+    {
+      "key": "servitors",
+      "weight": 100,
+      "fileOrder": 21,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true
+          },
+          {
+            "kind": "selection",
+            "category": "Civics",
+            "key": "civic_machine_servitor"
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_servitors",
+      "descriptionKey": "personality_servitors_desc"
+    },
+    {
+      "key": "fanatic_befrienders",
+      "weight": 100,
+      "fileOrder": 22,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true
+          },
+          {
+            "kind": "selection",
+            "category": "Ethics",
+            "key": "ethic_militarist"
+          },
+          {
+            "kind": "selection",
+            "category": "Ethics",
+            "key": "ethic_fanatic_xenophile"
+          },
+          {
+            "kind": "selection",
+            "category": "Traits",
+            "key": "trait_repugnant"
+          },
+          {
+            "kind": "selection",
+            "category": "Traits",
+            "key": "trait_solitary"
+          },
+          {
+            "kind": "selection",
+            "category": "Traits",
+            "key": "trait_venerable"
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_fanatic_befrienders",
+      "descriptionKey": "personality_fanatic_befrienders_desc"
+    },
+    {
+      "key": "became_the_crisis",
+      "weight": 10000,
+      "fileOrder": 23,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "dlc",
+            "name": "Nemesis"
+          },
+          {
+            "kind": "always",
+            "value": true
+          },
+          {
+            "kind": "selection",
+            "category": "AscensionPerk",
+            "key": "ap_become_the_crisis"
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_became_the_crisis",
+      "descriptionKey": "personality_became_the_crisis_desc"
+    },
+    {
+      "key": "galactic_defense_force",
+      "weight": 10000,
+      "fileOrder": 24,
+      "allow": {
+        "kind": "always",
+        "value": false
+      },
+      "additions": [],
+      "nameKey": "personality_galactic_defense_force",
+      "descriptionKey": "personality_galactic_defense_force_desc"
+    },
+    {
+      "key": "imperial_origin_overlord_ai",
+      "weight": 10000,
+      "fileOrder": 25,
+      "allow": {
+        "kind": "selection",
+        "category": "Origin",
+        "key": "origin_imperial_vassal_overlord"
+      },
+      "additions": [],
+      "nameKey": "personality_imperial_origin_overlord_ai",
+      "descriptionKey": "personality_imperial_origin_overlord_ai_desc"
+    },
+    {
+      "key": "hive_mind_friend",
+      "weight": 1000,
+      "fileOrder": 26,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true
+          },
+          {
+            "kind": "predicate",
+            "name": "is_hive_empire"
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Civics",
+                "key": "civic_hive_familiar_face"
+              },
+              {
+                "kind": "selection",
+                "category": "Civics",
+                "key": "civic_hive_empath"
+              }
+            ]
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_hive_mind_friend",
+      "descriptionKey": "personality_hive_mind_friend_desc"
+    },
+    {
+      "key": "decadent_capitalists",
+      "weight": 10000,
+      "fileOrder": 27,
+      "allow": {
+        "kind": "selection",
+        "category": "Origin",
+        "key": "origin_slavers"
+      },
+      "additions": [],
+      "nameKey": "personality_decadent_capitalists",
+      "descriptionKey": "personality_decadent_capitalists_desc"
+    },
+    {
+      "key": "scorching_infernals",
+      "weight": 1000,
+      "fileOrder": 28,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "dlc",
+            "name": "Infernals Species Pack"
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Civics",
+                "key": "civic_scorched_earth"
+              },
+              {
+                "kind": "selection",
+                "category": "Civics",
+                "key": "civic_hive_scorched_earth"
+              }
+            ]
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_scorching_infernals",
+      "descriptionKey": "personality_scorching_infernals_desc"
+    },
+    {
+      "key": "hyperthermia_empire",
+      "weight": 10000,
+      "fileOrder": 29,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "dlc",
+            "name": "Infernals Species Pack"
+          },
+          {
+            "kind": "always",
+            "value": true
+          },
+          {
+            "kind": "selection",
+            "category": "AscensionPerk",
+            "key": "ap_galactic_hyperthermia"
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_hyperthermia_empire",
+      "descriptionKey": "personality_hyperthermia_empire_desc"
+    },
+    {
+      "key": "fallen_empire_spiritualist",
+      "weight": 100,
+      "fileOrder": 30,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": false
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_spiritualist"
+              },
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "always",
+                    "value": false
+                  },
+                  {
+                    "kind": "any",
+                    "items": [
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_spiritualist"
+                      },
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_fanatic_spiritualist"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_fallen_empire_spiritualist",
+      "descriptionKey": "personality_fallen_empire_spiritualist_desc"
+    },
+    {
+      "key": "fallen_empire_materialist",
+      "weight": 100,
+      "fileOrder": 31,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": false
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_materialist"
+              },
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "always",
+                    "value": false
+                  },
+                  {
+                    "kind": "any",
+                    "items": [
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_materialist"
+                      },
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_fanatic_materialist"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "always",
+                    "value": false
+                  },
+                  {
+                    "kind": "predicate",
+                    "name": "is_hive_empire"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_fallen_empire_materialist",
+      "descriptionKey": "personality_fallen_empire_materialist_desc"
+    },
+    {
+      "key": "fallen_empire_xenophobe",
+      "weight": 100,
+      "fileOrder": 32,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": false
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_xenophobe"
+              },
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "always",
+                    "value": false
+                  },
+                  {
+                    "kind": "any",
+                    "items": [
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_xenophobe"
+                      },
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_fanatic_xenophobe"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "always",
+                    "value": false
+                  },
+                  {
+                    "kind": "not",
+                    "item": {
+                      "kind": "any",
+                      "items": [
+                        {
+                          "kind": "selection",
+                          "category": "Ethics",
+                          "key": "ethic_xenophile"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Ethics",
+                          "key": "ethic_fanatic_xenophile"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "kind": "not",
+                    "item": {
+                      "kind": "any",
+                      "items": [
+                        {
+                          "kind": "selection",
+                          "category": "Ethics",
+                          "key": "ethic_spiritualist"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Ethics",
+                          "key": "ethic_fanatic_spiritualist"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "kind": "not",
+                    "item": {
+                      "kind": "any",
+                      "items": [
+                        {
+                          "kind": "selection",
+                          "category": "Ethics",
+                          "key": "ethic_materialist"
+                        },
+                        {
+                          "kind": "selection",
+                          "category": "Ethics",
+                          "key": "ethic_fanatic_materialist"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_fallen_empire_xenophobe",
+      "descriptionKey": "personality_fallen_empire_xenophobe_desc"
+    },
+    {
+      "key": "fallen_empire_xenophile",
+      "weight": 100,
+      "fileOrder": 33,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": false
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_xenophile"
+              },
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "always",
+                    "value": false
+                  },
+                  {
+                    "kind": "any",
+                    "items": [
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_xenophile"
+                      },
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_fanatic_xenophile"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_fallen_empire_xenophile",
+      "descriptionKey": "personality_fallen_empire_xenophile_desc"
+    },
+    {
+      "key": "awakened_fallen_empire_spiritualist",
+      "weight": 100,
+      "fileOrder": 34,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": false
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_spiritualist"
+              },
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "always",
+                    "value": false
+                  },
+                  {
+                    "kind": "any",
+                    "items": [
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_spiritualist"
+                      },
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_fanatic_spiritualist"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_awakened_fallen_empire_spiritualist",
+      "descriptionKey": "personality_awakened_fallen_empire_spiritualist_desc"
+    },
+    {
+      "key": "awakened_fallen_empire_materialist",
+      "weight": 100,
+      "fileOrder": 35,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": false
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_materialist"
+              },
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "always",
+                    "value": false
+                  },
+                  {
+                    "kind": "any",
+                    "items": [
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_materialist"
+                      },
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_fanatic_materialist"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_awakened_fallen_empire_materialist",
+      "descriptionKey": "personality_awakened_fallen_empire_materialist_desc"
+    },
+    {
+      "key": "awakened_fallen_empire_xenophobe",
+      "weight": 100,
+      "fileOrder": 36,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": false
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_xenophobe"
+              },
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "always",
+                    "value": false
+                  },
+                  {
+                    "kind": "any",
+                    "items": [
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_xenophobe"
+                      },
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_fanatic_xenophobe"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_awakened_fallen_empire_xenophobe",
+      "descriptionKey": "personality_awakened_fallen_empire_xenophobe_desc"
+    },
+    {
+      "key": "awakened_fallen_empire_xenophile",
+      "weight": 100,
+      "fileOrder": 37,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": false
+          },
+          {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "Ethics",
+                "key": "ethic_fanatic_xenophile"
+              },
+              {
+                "kind": "all",
+                "items": [
+                  {
+                    "kind": "always",
+                    "value": false
+                  },
+                  {
+                    "kind": "any",
+                    "items": [
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_xenophile"
+                      },
+                      {
+                        "kind": "selection",
+                        "category": "Ethics",
+                        "key": "ethic_fanatic_xenophile"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_awakened_fallen_empire_xenophile",
+      "descriptionKey": "personality_awakened_fallen_empire_xenophile_desc"
+    },
+    {
+      "key": "fallen_empire_machine",
+      "weight": 100,
+      "fileOrder": 38,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": false
+          },
+          {
+            "kind": "predicate",
+            "name": "is_machine_empire"
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_fallen_empire_machine",
+      "descriptionKey": "personality_fallen_empire_machine_desc"
+    },
+    {
+      "key": "awakened_fallen_empire_machine",
+      "weight": 100,
+      "fileOrder": 39,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": false
+          },
+          {
+            "kind": "predicate",
+            "name": "is_machine_empire"
+          },
+          {
+            "kind": "selection",
+            "category": "Civics",
+            "key": "civic_final_defense_protocols"
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_awakened_fallen_empire_machine",
+      "descriptionKey": "personality_awakened_fallen_empire_machine_desc"
+    },
+    {
+      "key": "berserk_fallen_empire_machine",
+      "weight": 100,
+      "fileOrder": 40,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": false
+          },
+          {
+            "kind": "predicate",
+            "name": "is_machine_empire"
+          },
+          {
+            "kind": "selection",
+            "category": "Civics",
+            "key": "civic_malfunctioning_custodian"
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_berserk_fallen_empire_machine",
+      "descriptionKey": "personality_berserk_fallen_empire_machine_desc"
+    },
+    {
+      "key": "fallen_empire_hive_mind",
+      "weight": 100,
+      "fileOrder": 41,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": false
+          },
+          {
+            "kind": "predicate",
+            "name": "is_hive_empire"
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_fallen_empire_hive_mind",
+      "descriptionKey": "personality_fallen_empire_hive_mind_desc"
+    },
+    {
+      "key": "awakened_fallen_empire_hive_mind_war",
+      "weight": 100,
+      "fileOrder": 42,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": false
+          },
+          {
+            "kind": "predicate",
+            "name": "is_hive_empire"
+          },
+          {
+            "kind": "selection",
+            "category": "Civics",
+            "key": "civic_ancient_memories_of_war"
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_awakened_fallen_empire_hive_mind_war",
+      "descriptionKey": "personality_awakened_fallen_empire_hive_mind_war_desc"
+    },
+    {
+      "key": "awakened_fallen_empire_hive_mind_growth",
+      "weight": 100,
+      "fileOrder": 43,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": false
+          },
+          {
+            "kind": "predicate",
+            "name": "is_hive_empire"
+          },
+          {
+            "kind": "selection",
+            "category": "Civics",
+            "key": "civic_ancient_memories_of_growth"
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_awakened_fallen_empire_hive_mind_growth",
+      "descriptionKey": "personality_awakened_fallen_empire_hive_mind_growth_desc"
+    },
+    {
+      "key": "awakened_fallen_empire_hive_mind_control",
+      "weight": 100,
+      "fileOrder": 44,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": false
+          },
+          {
+            "kind": "predicate",
+            "name": "is_hive_empire"
+          },
+          {
+            "kind": "selection",
+            "category": "Civics",
+            "key": "civic_ancient_memories_of_control"
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_awakened_fallen_empire_hive_mind_control",
+      "descriptionKey": "personality_awakened_fallen_empire_hive_mind_control_desc"
+    },
+    {
+      "key": "pre_ftl_splintered",
+      "weight": 100,
+      "fileOrder": 45,
+      "allow": {
+        "kind": "always",
+        "value": false
+      },
+      "additions": [],
+      "nameKey": "personality_pre_ftl_splintered",
+      "descriptionKey": "personality_pre_ftl_splintered_desc"
+    },
+    {
+      "key": "mirrored_empire_spiritualist",
+      "weight": 101,
+      "fileOrder": 46,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": false
+          },
+          {
+            "kind": "selection",
+            "category": "Ethics",
+            "key": "ethic_fanatic_spiritualist"
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_mirrored_empire_spiritualist",
+      "descriptionKey": "personality_mirrored_empire_spiritualist_desc"
+    },
+    {
+      "key": "mirrored_empire_xenophobe",
+      "weight": 101,
+      "fileOrder": 47,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": false
+          },
+          {
+            "kind": "selection",
+            "category": "Ethics",
+            "key": "ethic_fanatic_xenophobe"
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_mirrored_empire_xenophobe",
+      "descriptionKey": "personality_mirrored_empire_xenophobe_desc"
+    },
+    {
+      "key": "mirrored_empire_default",
+      "weight": 100,
+      "fileOrder": 48,
+      "allow": {
+        "kind": "always",
+        "value": false
+      },
+      "additions": [],
+      "nameKey": "personality_mirrored_empire_default",
+      "descriptionKey": "personality_mirrored_empire_default_desc"
+    },
+    {
+      "key": "benevolent_wilderness",
+      "weight": 1000,
+      "fileOrder": 49,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "predicate",
+            "name": "is_wilderness_empire"
+          },
+          {
+            "kind": "not",
+            "item": {
+              "kind": "selection",
+              "category": "Civics",
+              "key": "civic_hive_devouring_swarm"
+            }
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_benevolent_wilderness",
+      "descriptionKey": "personality_benevolent_wilderness_desc"
+    },
+    {
+      "key": "rampant_wilderness",
+      "weight": 1000,
+      "fileOrder": 50,
+      "allow": {
+        "kind": "all",
+        "items": [
+          {
+            "kind": "always",
+            "value": true
+          },
+          {
+            "kind": "predicate",
+            "name": "is_wilderness_empire"
+          },
+          {
+            "kind": "selection",
+            "category": "Civics",
+            "key": "civic_hive_devouring_swarm"
+          }
+        ]
+      },
+      "additions": [],
+      "nameKey": "personality_rampant_wilderness",
+      "descriptionKey": "personality_rampant_wilderness_desc"
     }
   ],
   "planetClasses": [

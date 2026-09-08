@@ -1440,6 +1440,127 @@ public sealed class GameDataExtractionTests
     }
 
     /// <summary>
+    /// The personalities read, and the ones a design could actually be given.
+    /// </summary>
+    /// <remarks>
+    /// Twenty of the fifty-one belong to fallen empires, pre-FTL societies and the like. They cost
+    /// nothing to rule out - they ask <c>is_country_type</c> for something a design never is - but
+    /// it is worth pinning that they are ruled out, because the two heaviest personalities in the
+    /// game are among the ones that could go wrong.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void ThePersonalitiesAreReadWithTheirWeights()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var database = Database.Value;
+
+        Assert.Equal(51, database.Personalities.Count);
+
+        // Every one says what it takes and what it weighs.
+        Assert.All(database.Personalities, p => Assert.True(p.Weight > 0, $"{p.Key} weighs nothing."));
+
+        var honorbound = database.Personalities.Single(p => p.Key == "honorbound_warriors");
+
+        Assert.Equal(50, honorbound.Weight);
+        Assert.Empty(honorbound.Additions);
+
+        // The additions are read, and there are seven of them here.
+        Assert.Equal(7, database.Personalities.Single(p => p.Key == "erudite_explorers").Additions.Count);
+        Assert.Equal(10, database.Personalities.Single(p => p.Key == "erudite_explorers").Weight);
+    }
+
+    /// <summary>
+    /// Every personality a design could be given has words shipped for it.
+    /// </summary>
+    /// <remarks>
+    /// Named under a prefix rather than under their own key, which is the one thing about these
+    /// that is not the usual convention - and a name nothing seeded is a name the pruner cuts.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void EveryPersonalityADesignCanGetIsNamed()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var database = Database.Value;
+
+        var text = new GameDataExtractor(LayeredContent.ForInstall(InstallRoot!))
+            .ExtractLocalisation(reachableFrom: database);
+
+        // All but one, and the one is a fallen empire's: the galactic defence force, which the
+        // game itself never names because nothing ever shows it to a player.
+        var nameless = database.Personalities
+            .Where(p => !text.ContainsKey(p.NameKey))
+            .Select(p => p.Key)
+            .ToList();
+
+        Assert.Equal(["galactic_defense_force"], nameless);
+
+        // And a real empire is offered only named ones. A blank design is offered none at all,
+        // which is right - nearly every personality asks after an ethic, and a design with no
+        // ethics answers none of them.
+        var file = EmpireDesignsFile.CreateEmpty();
+        var design = file.Add("Test");
+
+        design.Authority = "auth_democratic";
+        design.SetEthics(["ethic_fanatic_egalitarian", "ethic_xenophile"]);
+
+        var offered = new EmpireRules(database).DerivePersonalities(
+            new EmpireRules(database).CreateContext(design));
+
+        Assert.NotEmpty(offered);
+        Assert.All(offered, o => Assert.True(
+            text.ContainsKey(o.Personality.NameKey),
+            $"{o.Personality.Key} has no name in the shipped text."));
+    }
+
+    /// <summary>
+    /// A design is offered the personalities it allows, with shares that add to one.
+    /// </summary>
+    /// <remarks>
+    /// And never a fallen empire's, nor the two that ask for an ascension perk. Those two -
+    /// Became the Crisis and the hyperthermia empire - weigh ten thousand each, so if a plan's
+    /// perks ever reached this the empire would show one personality at ninety-nine per cent and
+    /// the truth nowhere.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void ADesignIsOfferedOnlyThePersonalitiesItCouldBeGiven()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var database = Database.Value;
+        var rules = new EmpireRules(database);
+
+        var file = EmpireDesignsFile.CreateEmpty();
+        var design = file.Add("Test");
+
+        design.Authority = "auth_democratic";
+        design.SetEthics(["ethic_fanatic_militarist", "ethic_spiritualist"]);
+
+        var offered = rules.DerivePersonalities(rules.CreateContext(design));
+
+        Assert.NotEmpty(offered);
+        Assert.Equal(1.0, offered.Sum(o => o.Share), 6);
+
+        // Ordered likeliest first.
+        Assert.Equal(offered.Select(o => o.Share).OrderByDescending(s => s), offered.Select(o => o.Share));
+
+        // Fanatic militarist and spiritualist is exactly what this one asks for.
+        Assert.Contains(offered, o => o.Personality.Key == "honorbound_warriors");
+
+        var keys = offered.Select(o => o.Personality.Key).ToList();
+
+        Assert.DoesNotContain("became_the_crisis", keys);
+        Assert.DoesNotContain("hyperthermia_empire", keys);
+
+        // Nothing belonging to an empire the player is not.
+        Assert.DoesNotContain("fallen_empire_materialist", keys);
+    }
+
+    /// <summary>
     /// A perk or a tree that will not be taken always says why.
     /// </summary>
     /// <remarks>

@@ -226,6 +226,13 @@ internal static partial class LocalisationPruner
             AddEffects(civic.Effects);
         }
 
+        foreach (var personality in database.Personalities)
+        {
+            Add(personality.NameKey);
+            Add(personality.DescriptionKey);
+            AddRequirement(personality.Allow);
+        }
+
         foreach (var government in database.GovernmentTypes)
         {
             Add(government.NameKey);

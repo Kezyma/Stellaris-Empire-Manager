@@ -167,6 +167,69 @@ public sealed class EmpireRules(GameDatabase database)
     // ---------------------------------------------------------------------------------------
 
     /// <summary>
+    /// The personalities the game could give this empire, likeliest first.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A list rather than one answer, which is where this parts company with the government. The
+    /// government is the single highest-weighted type that fits; a personality is drawn at random
+    /// from every one that fits, weighted - and the conditions overlap heavily on ethics, so an
+    /// empire usually fits several. Saying which one it "will" get would be the app settling
+    /// something the game rolls.
+    /// </para>
+    /// <para>
+    /// The weights are added rather than multiplied, which the game states at the top of its own
+    /// file. A share is that total against the total of everything else allowed, so the shares of
+    /// what comes back always add to one.
+    /// </para>
+    /// <para>
+    /// Read against the design as it stands, plan and all left out - which is the caller's business
+    /// and is what a plain context already is. A personality is given when the empire first appears,
+    /// long before any of the plan has happened. Two of them ask for an ascension perk and weigh ten
+    /// thousand apiece, so a context carrying a plan would have had them bury everything else.
+    /// </para>
+    /// </remarks>
+    public IReadOnlyList<PersonalityChance> DerivePersonalities(DesignContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        var allowed = new List<(PersonalityDefinition Personality, double Weight)>();
+
+        foreach (var personality in _database.Personalities)
+        {
+            if (!_evaluator.IsSatisfied(personality.Allow, context))
+            {
+                continue;
+            }
+
+            var weight = personality.Additions
+                .Where(a => _evaluator.IsSatisfied(a.When, context))
+                .Aggregate(personality.Weight, (running, a) => running + a.Factor);
+
+            // A personality the game would never draw is not one this empire might be given.
+            if (weight > 0)
+            {
+                allowed.Add((personality, weight));
+            }
+        }
+
+        var total = allowed.Sum(a => a.Weight);
+
+        if (total <= 0)
+        {
+            return [];
+        }
+
+        return
+        [
+            .. allowed
+                .OrderByDescending(a => a.Weight)
+                .ThenBy(a => a.Personality.FileOrder)
+                .Select(a => new PersonalityChance(a.Personality, a.Weight, a.Weight / total))
+        ];
+    }
+
+    /// <summary>
     /// Works out what the empire's government is called.
     /// </summary>
     /// <remarks>

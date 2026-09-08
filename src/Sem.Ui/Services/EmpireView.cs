@@ -33,6 +33,16 @@ public sealed record EmpireChoice(string Key, string Name, string? Icon, EffectS
     /// so what is actually being changed is the part that stands out.
     /// </remarks>
     public bool Unchanged { get; init; }
+
+    /// <summary>
+    /// A few characters drawn on the chip itself, where the thing has a number worth seeing.
+    /// </summary>
+    /// <remarks>
+    /// For the personalities, which are not one answer but a draw: the empire allows several and
+    /// the game picks one, so each says how likely it is to be the one. Nothing else sets it, and a
+    /// chip without one is drawn exactly as it always was.
+    /// </remarks>
+    public string? Badge { get; init; }
 }
 
 /// <summary>
@@ -100,6 +110,9 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
         _plan = null;
         _hasPlan = null;
         _vocabulary = null;
+
+        // Read off the context, so they go when it does.
+        _personalities = null;
     }
 
     public RoomDefinition? Room =>
@@ -157,6 +170,50 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
         _session.Rules.DeriveGovernment(Context) is { } government
             ? _session.Localizer.Text(government.Key)
             : _session.Localizer.Text(_design.Authority);
+
+    /// <summary>
+    /// The personalities the game could give this empire, likeliest first, each saying how likely.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Not one answer, which is what parts this from the government beside it. The game keeps every
+    /// personality the empire allows and draws one, weighted, and the conditions overlap heavily on
+    /// ethics - so an empire usually allows several and none of them is the answer.
+    /// </para>
+    /// <para>
+    /// Nothing at all until the empire has ethics: almost every personality asks after one, so a
+    /// design that has chosen none answers none of them. That is the truth rather than a gap, and
+    /// the row simply does not draw.
+    /// </para>
+    /// </remarks>
+    public IReadOnlyList<EmpireChoice> Personalities =>
+        _personalities ??=
+        [
+            .. _session.Rules.DerivePersonalities(Context)
+                .Select(chance => new EmpireChoice(
+                    chance.Personality.Key,
+                    _session.Localizer.Text(chance.Personality.NameKey, Localizer.Prettify(chance.Personality.Key)),
+                    null,
+                    null)
+                {
+                    Description = chance.Personality.DescriptionKey,
+                    Badge = Share(chance.Share),
+                })
+        ];
+
+    private IReadOnlyList<EmpireChoice>? _personalities;
+
+    /// <summary>
+    /// A share as a percentage, never rounded away to nothing.
+    /// </summary>
+    /// <remarks>
+    /// A personality the empire genuinely might be given showing "0%" would be the app saying it
+    /// cannot happen, so anything under one per cent says so as "&lt;1%" instead.
+    /// </remarks>
+    private static string Share(double share) =>
+        share >= 0.995 ? "100%"
+        : share < 0.005 ? "&lt;1%"
+        : $"{share * 100:0}%";
 
     /// <summary>The ruler, as a line: their name and the title they hold, where they hold one.</summary>
     public string Ruler

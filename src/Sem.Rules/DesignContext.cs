@@ -27,6 +27,19 @@ public sealed class DesignContext
     public string? Authority { get; private init; }
 
     /// <summary>
+    /// How this empire chooses a ruler, which is a fact about its authority.
+    /// </summary>
+    /// <remarks>
+    /// The game's own default is "none", so an empire with no authority yet has no election either -
+    /// which is the right answer rather than an absent one, since that is what such an empire would
+    /// be if the game read it now.
+    /// </remarks>
+    public string ElectionType =>
+        Database.Authorities
+            .FirstOrDefault(a => string.Equals(a.Key, Authority, StringComparison.Ordinal))
+            ?.ElectionType ?? "none";
+
+    /// <summary>
     /// The government the empire's choices add up to, such as <c>gov_star_empire</c>.
     /// </summary>
     /// <remarks>
@@ -425,6 +438,7 @@ public sealed class DesignContext
     {
         "is_nomadic" => IsNomadic ? "yes" : "no",
         "authority" => Authority,
+        "election_type" => ElectionType,
         "government" => Government,
         "origin" => Origin,
         "species_class" => SpeciesClass,

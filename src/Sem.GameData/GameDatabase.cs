@@ -19,7 +19,7 @@ public sealed record GameDatabase
     /// site published with a database one version behind was read anyway, with whatever the shape had
     /// gained since taking its default and no sign that anything was missing.
     /// </remarks>
-    public const int CurrentSchemaVersion = 14;
+    public const int CurrentSchemaVersion = 15;
 
     /// <summary>Version of this file's own shape, so an old cache can be detected and rebuilt.</summary>
     public required int SchemaVersion { get; init; }
@@ -125,6 +125,12 @@ public sealed record GameDatabase
     /// government from the authority, ethics and civics rather than offering it as a choice.
     /// </summary>
     public IReadOnlyList<GovernmentTypeDefinition> GovernmentTypes { get; init; } = [];
+
+    /// <summary>
+    /// The personalities the game gives an AI empire, which is what one of these designs becomes
+    /// when it turns up in somebody's galaxy.
+    /// </summary>
+    public IReadOnlyList<PersonalityDefinition> Personalities { get; init; } = [];
 
     /// <summary>Planet classes, including which may be a homeworld.</summary>
     public IReadOnlyList<PlanetClassDefinition> PlanetClasses { get; init; } = [];
@@ -286,6 +292,16 @@ public sealed record GameDatabase
         foreach (var government in GovernmentTypes)
         {
             yield return government.Possible;
+        }
+
+        foreach (var personality in Personalities)
+        {
+            yield return personality.Allow;
+
+            foreach (var addition in personality.Additions)
+            {
+                yield return addition.When;
+            }
         }
 
         foreach (var planet in PlanetClasses)
@@ -852,8 +868,15 @@ public sealed record AuthorityDefinition(string Key)
     /// <summary>Whether the ruler has an heir.</summary>
     public bool HasHeir { get; init; }
 
-    /// <summary>How rulers are chosen, or <c>none</c>.</summary>
-    public string? ElectionType { get; init; }
+    /// <summary>
+    /// How rulers are chosen - <c>democratic</c>, <c>oligarchic</c> or <c>none</c>.
+    /// </summary>
+    /// <remarks>
+    /// None where the authority says nothing, which is the game's own default and is written in the
+    /// comment its file opens with. Left as nothing, an authority that simply has no election
+    /// answered neither yes nor no to being asked - and four personalities ask.
+    /// </remarks>
+    public string ElectionType { get; init; } = "none";
 
     /// <summary>What this authority does, and how the game describes it.</summary>
     public EffectSet Effects { get; init; } = EffectSet.None;
@@ -1146,6 +1169,53 @@ public sealed record OptionVariant(Requirement When, string? NameKey, string? De
     /// it changes nothing and reads the same either way.
     /// </remarks>
     public string? PenaltyKey { get; init; }
+}
+
+/// <summary>
+/// One of the personalities the game hands to an AI empire.
+/// </summary>
+/// <remarks>
+/// <para>
+/// Not a thing anybody picks, and not a thing an empire is - it is what an empire will be played as
+/// when it turns up in a galaxy as somebody else's neighbour. Which makes it the same kind of fact
+/// as the government: read off the ethics, the civics and the rest rather than stored anywhere.
+/// </para>
+/// <para>
+/// And unlike the government it is not settled. The game keeps every personality the empire allows
+/// and draws one, weighted - so an empire has a set of them with odds, not a name.
+/// </para>
+/// </remarks>
+/// <param name="Key">What the game calls it.</param>
+/// <param name="Weight">Its base weight in that draw.</param>
+/// <param name="FileOrder">Where it was defined, which is the only stable order these have.</param>
+public sealed record PersonalityDefinition(string Key, double Weight, int FileOrder)
+{
+    /// <summary>What the empire has to be for this to be one of the ones drawn from.</summary>
+    public Requirement Allow { get; init; } = new AlwaysRequirement(true);
+
+    /// <summary>
+    /// What is added to the weight, and when.
+    /// </summary>
+    /// <remarks>
+    /// Added, not multiplied. The game says so itself, at the top of its own file - "NOTE: Weight
+    /// is additive!" - and it is the one place these differ from the governments, whose factors
+    /// multiply. <see cref="WeightFactor"/> is shared with them, so read its number as an addition
+    /// here.
+    /// </remarks>
+    public IReadOnlyList<WeightFactor> Additions { get; init; } = [];
+
+    /// <summary>
+    /// What it is called.
+    /// </summary>
+    /// <remarks>
+    /// Under a prefix rather than under its own key, which is the one thing about these that is not
+    /// the usual convention. Fifty of the fifty-one are named this way, with a description beside
+    /// them; the odd one out belongs to a fallen empire and no design reaches it.
+    /// </remarks>
+    public string NameKey => $"personality_{Key}";
+
+    /// <summary>And where its description is written.</summary>
+    public string DescriptionKey => $"{NameKey}_desc";
 }
 
 public sealed record GovernmentTypeDefinition(string Key, double Weight, int FileOrder)
