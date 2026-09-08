@@ -4809,10 +4809,6 @@ button.icon .sem-action-icon { display: block; }
     position: fixed;
     margin: 0;
     inset: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-2xs);
     max-height: min(20rem, calc(100vh - 2rem));
     overflow-y: auto;
     overscroll-behavior: contain;
@@ -4820,6 +4816,26 @@ button.icon .sem-action-icon { display: block; }
     background: var(--bg-panel);
     border: 1px solid var(--border-strong);
     border-radius: var(--radius);
+}
+
+/*
+    The layout waits until it is open, and it has to.
+
+    A closed popover is hidden by one rule in the browser's own stylesheet - display: none while it
+    is not :popover-open - and any display an author writes beats it, whatever the specificity, for
+    the plain reason that author styles win over the browser's. Written on the panel itself, the
+    flex here held every list on the page permanently open: they were never popovers at all, only
+    fixed boxes sitting at whatever coordinates were last written into them, which is why nothing
+    would close them and why asking which popovers were open answered none.
+
+    The description panel beside this one never had the problem because it never set display. This
+    one needs to, so it sets it where the browser is no longer saying otherwise.
+*/
+.sem-chip-stack-list:popover-open {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2xs);
 }
 
 /*
