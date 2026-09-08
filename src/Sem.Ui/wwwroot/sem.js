@@ -501,6 +501,16 @@ function placeUnder(anchor, panel) {
  * The delay is what makes the four-pixel gap between them crossable. Without it the list vanished
  * the instant the pointer left the chip, which is the frame before it arrived anywhere.
  *
+ * A hover and a press mean different things and are kept apart. A hover lasts exactly as long as
+ * the hover: look away and the list goes. A press holds it open until something puts it away -
+ * pressing the chip again, pressing anywhere else on the page, or Escape - which is what a tap
+ * needs, having no hover to end, and what anyone wanting to read down the list without keeping the
+ * pointer inside it wants too.
+ *
+ * The press away is the browser's own doing: an auto popover light-dismisses on an outside press.
+ * All that is needed here is to let go of the pin when it does, or the next hover would find the
+ * list still held open by a press nobody remembers making.
+ *
  * @param {HTMLElement} anchor the chip the list belongs to
  * @param {HTMLElement} panel the list itself
  */
@@ -512,6 +522,7 @@ export function bindDropdown(anchor, panel) {
     anchor.dataset.semDropdown = 'yes';
 
     let closing = 0;
+    let pinned = false;
 
     const show = () => {
         clearTimeout(closing);
@@ -528,10 +539,16 @@ export function bindDropdown(anchor, panel) {
         clearTimeout(closing);
 
         closing = setTimeout(() => {
-            if (panel.matches(':popover-open')) {
+            if (!pinned && panel.matches(':popover-open')) {
                 panel.hidePopover();
             }
         }, 220);
+    };
+
+    const put = () => {
+        clearTimeout(closing);
+        pinned = false;
+        panel.hidePopover();
     };
 
     for (const part of [anchor, panel]) {
@@ -539,18 +556,17 @@ export function bindDropdown(anchor, panel) {
         part.addEventListener('mouseleave', hide);
     }
 
-    // A tap has no hover at all, so the press is the whole interaction: it opens the list, and
-    // pressing the chip again is the way back out of one opened by mistake.
     anchor.addEventListener('click', event => {
         event.preventDefault();
         event.stopPropagation();
 
-        if (panel.matches(':popover-open')) {
-            clearTimeout(closing);
-            panel.hidePopover();
-        } else {
-            show();
+        if (pinned) {
+            put();
+            return;
         }
+
+        pinned = true;
+        show();
     });
 
     anchor.addEventListener('focus', show);
@@ -559,14 +575,21 @@ export function bindDropdown(anchor, panel) {
     // to go. Leaving the whole of it is what closes it.
     anchor.addEventListener('keydown', event => {
         if (event.key === 'Escape') {
-            clearTimeout(closing);
-            panel.hidePopover();
+            put();
         }
     });
 
     panel.addEventListener('focusout', event => {
         if (!panel.contains(event.relatedTarget)) {
             hide();
+        }
+    });
+
+    // Closed for the browser's own reasons - a press outside, or another popover opening - and the
+    // pin has to let go with it.
+    panel.addEventListener('toggle', event => {
+        if (event.newState === 'closed') {
+            pinned = false;
         }
     });
 }

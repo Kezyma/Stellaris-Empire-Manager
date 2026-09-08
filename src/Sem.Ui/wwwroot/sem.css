@@ -6375,7 +6375,8 @@ button.icon .sem-action-icon { display: block; }
     A pill rather than a strict circle so that "100" fits. It is a circle at one and two characters,
     which is every share but the one an empire that allows a single personality gets.
 */
-.sem-chip > button > .badge {
+.sem-chip > button > .badge,
+.sem-chip-stack > .lead > .badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -6399,11 +6400,13 @@ button.icon .sem-action-icon { display: block; }
     a colour against a dark panel is nearly white against a pale one.
 */
 @media (prefers-color-scheme: light) {
-    :root:not([data-theme="dark"]) .sem-chip > button > .badge {
+    :root:not([data-theme="dark"]) .sem-chip > button > .badge,
+    :root:not([data-theme="dark"]) .sem-chip-stack > .lead > .badge {
         color: hsl(var(--badge-hue, 0) 55% 32%);
     }
 }
 
-:root[data-theme="light"] .sem-chip > button > .badge {
+:root[data-theme="light"] .sem-chip > button > .badge,
+:root[data-theme="light"] .sem-chip-stack > .lead > .badge {
     color: hsl(var(--badge-hue, 0) 55% 32%);
 }

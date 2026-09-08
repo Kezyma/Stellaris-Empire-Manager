@@ -14,11 +14,22 @@
     on the same hover is two auto popovers fighting - the browser closes one when the other opens, and
     which one survives is a matter of event order - so the lead describes nothing and the list below
     holds every one of them, the leader included, each with its own description where it always was.
+
+    Which is also why a set of one is not a stack at all but an ordinary chip. There is nothing to
+    open, so nothing has to be given up to open it: an empire that allows a single personality reads
+    about it the way it reads about a civic.
 *@
 
 @inject IJSRuntime Js
 @implements IAsyncDisposable
 
+@if (Rest == 0)
+{
+    <OptionChip Key="@Lead.Key" Name="@Lead.Name" Icon="@Lead.Icon" Effects="@Lead.Effects"
+                DescriptionKey="@Lead.Description" Badge="@Lead.Badge" BadgeLevel="@Lead.BadgeLevel" />
+}
+else
+{
 <span class="sem-chip-stack">
     <button type="button" @ref="_anchor" class="lead" aria-controls="@_id" aria-haspopup="true"
             title="@Title">
@@ -34,14 +45,8 @@
 
         <span class="name">@Lead.Name</span>
 
-        @*
-            Only where there is more to see. One personality is one chip, and an arrow promising a
-            list of one is an arrow that teaches the reader to stop pressing it.
-        *@
-        @if (Rest > 0)
-        {
-            <span class="more" aria-hidden="true">@Rest</span>
-        }
+        @* How many more there are behind it, which is the whole reason to press. *@
+        <span class="more" aria-hidden="true">@Rest</span>
     </button>
 
     @*
@@ -58,6 +63,7 @@
         }
     </div>
 </span>
+}
 
 @code {
     [CascadingParameter]
@@ -73,9 +79,8 @@
     /// <summary>How many are behind it.</summary>
     private int Rest => Items.Count - 1;
 
-    private string Title => Rest > 0
-        ? $"{Lead.Name}, and {Rest} more this empire could be given"
-        : Lead.Name;
+    /// <summary>Said on the lead, since the lead is the only part a pointer can rest on unopened.</summary>
+    private string Title => $"{Lead.Name}, and {Rest} more this empire could be given";
 
     /// <summary>The lead's own colour, drawn the way the chip inside the list draws it.</summary>
     private string? BadgeStyle => Lead.BadgeLevel is { } level
@@ -100,8 +105,8 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // Nothing to hang off a set of one: the chip is the whole answer and the list would repeat
-        // it back.
+        // A set of one was drawn as an ordinary chip and has no list to hang anything off. It ties
+        // its own panel up, exactly as a chip anywhere else does.
         if (!firstRender || Rest == 0)
         {
             return;
