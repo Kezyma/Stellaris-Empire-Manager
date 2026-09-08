@@ -862,6 +862,36 @@ public sealed class EmpireRulesTests
         Assert.Equal(["pc_ark"], Rules.GetHomeworldOptions(Context(design)));
     }
 
+    /// <summary>
+    /// A nomadic empire keeping a planet is told so, and not refused for it.
+    /// </summary>
+    /// <remarks>
+    /// Turning the toggle on is what invalidates the world, so a design arrives here through no
+    /// fault of the player - and the game itself does not mind: it loads such an empire and starts
+    /// it on the arkship anyway, the same way an origin's own world overrides what was recorded.
+    /// Told as a refusal it read as something the player had done wrong.
+    /// </remarks>
+    [Fact]
+    public void ANomadicEmpireKeepingAPlanetIsWarnedRatherThanRefused()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.IsNomadic = true;
+        design.PlanetClass = "pc_continental";
+
+        var problem = Rules.Validate(Context(design), design).Problems
+            .Single(p => p.Area == ValidationArea.Homeworld);
+
+        Assert.Equal(ValidationSeverity.Warning, problem.Severity);
+        Assert.Contains("arkship", problem.Message, StringComparison.OrdinalIgnoreCase);
+
+        // And the arkship itself is no problem at all.
+        design.PlanetClass = "pc_ark";
+
+        Assert.DoesNotContain(
+            Rules.Validate(Context(design), design).Problems,
+            p => p.Area == ValidationArea.Homeworld);
+    }
+
     [Fact]
     public void AnOriginThatNamesItsStartingSystemsReplacesTheUsualChoice()
     {

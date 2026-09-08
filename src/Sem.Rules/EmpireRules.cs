@@ -1767,6 +1767,32 @@ public sealed class EmpireRules(GameDatabase database)
             return;
         }
 
+        // A nomadic empire lives aboard an arkship whatever its design records, exactly as an
+        // origin's own world overrides one - so the same warning rather than a refusal. The game's
+        // own nomadic empire writes pc_ark and starts there; one written with a planet still loads
+        // and still starts there.
+        //
+        // It matters because of how a design gets here: turning the toggle on is what invalidates
+        // the world, and being told the world "is not one this empire can start on" reads as
+        // something the player did wrong rather than something the toggle did.
+        if (context.IsNomadic && HasPlanetClass(Arkship))
+        {
+            if (!string.Equals(key, Arkship, StringComparison.Ordinal))
+            {
+                problems.Add(new ValidationProblem(
+                    ValidationArea.Homeworld,
+                    key,
+                    "A nomadic empire starts aboard an arkship, so the {0} homeworld is ignored.",
+                    [],
+                    ValidationSeverity.Warning)
+                {
+                    Arguments = [key],
+                });
+            }
+
+            return;
+        }
+
         // An origin that supplies its own homeworld simply overrides whatever the design recorded.
         // The game loads such a design and uses the origin's world, so this is worth mentioning
         // but is not a reason to reject the empire.
