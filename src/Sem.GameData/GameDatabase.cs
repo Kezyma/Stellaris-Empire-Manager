@@ -1289,6 +1289,24 @@ public sealed record PlanetClassDefinition(string Key)
     /// </remarks>
     public IReadOnlyList<SceneryBand> Scenery { get; init; } = [];
 
+    /// <summary>
+    /// Whether the empire's city is built on this world at all.
+    /// </summary>
+    /// <remarks>
+    /// Twenty worlds say no, and they are the ones that are already a built thing: a machine world,
+    /// a hive world, a habitat, an ecumenopolis's cousins. The game draws the world and stops, and
+    /// painting an empire's towers over one showed a city on a planet that is a city.
+    /// </remarks>
+    public bool ShowsCity { get; init; } = true;
+
+    /// <summary>
+    /// The level the city is always drawn at, where the world fixes it.
+    /// </summary>
+    /// <remarks>
+    /// Only the ecumenopolis, which is built to the horizon whatever its population.
+    /// </remarks>
+    public int? FixedCityLevel { get; init; }
+
     /// <summary>Localisation key for the display name.</summary>
     public string NameKey => Key;
 }

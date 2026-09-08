@@ -1,3 +1,4 @@
+using Sem.Clausewitz;
 using Sem.GameData;
 
 namespace Sem.Extraction.Extractors;
@@ -58,19 +59,38 @@ internal static class WorldExtractor
                        ?? assets.RegisterSprite(
                            body.GetString("icon"), $"icons/planets/{entry.Key}.png"),
 
-                Sky = loader.Content.Contains($"gfx/portraits/environments/{entry.Key}_sky.dds")
+                // Drawn as whatever the class says its picture is, which is not always itself.
+                // Twenty-one borrow another's: a machine world is painted as pc_ai and a hive world
+                // as pc_infested, and asking for a picture named after the class found nothing at
+                // all - so a machine world had no sky and no landscape, only whatever city the
+                // empire happened to bring.
+                Sky = loader.Content.Contains($"gfx/portraits/environments/{Painted(body, entry.Key)}_sky.dds")
                     ? assets.Register(
-                        $"gfx/portraits/environments/{entry.Key}_sky.dds",
-                        $"worlds/{entry.Key}_sky.png",
+                        $"gfx/portraits/environments/{Painted(body, entry.Key)}_sky.dds",
+                        $"worlds/{Painted(body, entry.Key)}_sky.png",
                         maxDimension: 800)
                     : null,
 
-                Scenery = Scenery(entry.Key, loader, assets),
+                Scenery = Scenery(Painted(body, entry.Key), loader, assets),
+
+                // A world that is already a built thing has no room for an empire's towers.
+                ShowsCity = body.GetBool("show_city", defaultValue: true),
+                FixedCityLevel = loader.ResolveInt(body.GetString("fixed_city_level")),
             });
         }
 
         return results;
     }
+
+    /// <summary>
+    /// Which world's picture this one is drawn as, which is usually but not always its own.
+    /// </summary>
+    /// <remarks>
+    /// The game's <c>picture</c> field. Twenty-one classes name another's - the ringworlds share
+    /// three pictures between six of them - and the art is filed under the name given rather than
+    /// under the class, so a class that borrows one and is asked for its own finds nothing.
+    /// </remarks>
+    private static string Painted(CwBlock body, string key) => body.GetString("picture") ?? key;
 
     /// <summary>
     /// How many bands of landscape a world can have in front of its sky.

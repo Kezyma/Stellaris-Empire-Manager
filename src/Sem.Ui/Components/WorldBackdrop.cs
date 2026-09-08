@@ -52,7 +52,14 @@ public static class WorldBackdrop
         }
 
         var scenery = world?.Scenery ?? [];
-        var towers = city?.CityLayers ?? [];
+
+        // A world that is already built has no city painted on it. The game says so itself, on
+        // twenty of them - a machine world, a hive world, a habitat - and an empire's towers over
+        // one of those is a city drawn on a planet that is a city.
+        var towers = world is { ShowsCity: false } ? [] : city?.CityLayers ?? [];
+
+        // And one is built to the horizon whatever its population.
+        level = world?.FixedCityLevel ?? level;
 
         var bands = Math.Max(
             scenery.Count > 0 ? scenery.Max(s => s.Band) : 0,

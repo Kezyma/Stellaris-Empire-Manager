@@ -1,7 +1,7 @@
 {
   "schemaVersion": 15,
   "gameVersion": "v4.4.6",
-  "extractorVersion": "0.1.0\u002Bacb9aad7f5e186ee4646aa0ce05fcdc713e83480",
+  "extractorVersion": "0.1.0\u002B581766f7a6d9267db558420b4ce64c1e255acaf5",
   "defines": {
     "ethicsPoints": 3,
     "civicPoints": 2,
@@ -108860,6 +108860,7 @@
           "image": "worlds/pc_desert_l04.png"
         }
       ],
+      "showsCity": true,
       "nameKey": "pc_desert"
     },
     {
@@ -108887,6 +108888,7 @@
           "image": "worlds/pc_arid_l04.png"
         }
       ],
+      "showsCity": true,
       "nameKey": "pc_arid"
     },
     {
@@ -108914,6 +108916,7 @@
           "image": "worlds/pc_savannah_l04.png"
         }
       ],
+      "showsCity": true,
       "nameKey": "pc_savannah"
     },
     {
@@ -108945,6 +108948,7 @@
           "image": "worlds/pc_tropical_l04.png"
         }
       ],
+      "showsCity": true,
       "nameKey": "pc_tropical"
     },
     {
@@ -108976,6 +108980,7 @@
           "image": "worlds/pc_continental_l04.png"
         }
       ],
+      "showsCity": true,
       "nameKey": "pc_continental"
     },
     {
@@ -109007,6 +109012,7 @@
           "image": "worlds/pc_ocean_l04.png"
         }
       ],
+      "showsCity": true,
       "nameKey": "pc_ocean"
     },
     {
@@ -109034,6 +109040,7 @@
           "image": "worlds/pc_tundra_l04.png"
         }
       ],
+      "showsCity": true,
       "nameKey": "pc_tundra"
     },
     {
@@ -109061,6 +109068,7 @@
           "image": "worlds/pc_arctic_l04.png"
         }
       ],
+      "showsCity": true,
       "nameKey": "pc_arctic"
     },
     {
@@ -109092,6 +109100,7 @@
           "image": "worlds/pc_alpine_l04.png"
         }
       ],
+      "showsCity": true,
       "nameKey": "pc_alpine"
     },
     {
@@ -109123,6 +109132,7 @@
           "image": "worlds/pc_volcanic_l04.png"
         }
       ],
+      "showsCity": true,
       "nameKey": "pc_volcanic"
     },
     {
@@ -109136,6 +109146,7 @@
       "icon": "icons/planets/pc_gas_giant.png",
       "sky": "worlds/pc_gas_giant_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_gas_giant"
     },
     {
@@ -109149,6 +109160,7 @@
       "icon": "icons/planets/pc_asteroid.png",
       "sky": "worlds/pc_asteroid_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_asteroid"
     },
     {
@@ -109162,6 +109174,7 @@
       "icon": "icons/planets/pc_ice_asteroid.png",
       "sky": "worlds/pc_ice_asteroid_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_ice_asteroid"
     },
     {
@@ -109173,7 +109186,9 @@
         "value": true
       },
       "icon": "icons/planets/pc_rare_crystal_asteroid.png",
+      "sky": "worlds/pc_crystal_asteroid_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_rare_crystal_asteroid"
     },
     {
@@ -109187,6 +109202,7 @@
       "icon": "icons/planets/pc_molten.png",
       "sky": "worlds/pc_molten_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_molten"
     },
     {
@@ -109200,6 +109216,7 @@
       "icon": "icons/planets/pc_barren.png",
       "sky": "worlds/pc_barren_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_barren"
     },
     {
@@ -109213,6 +109230,7 @@
       "icon": "icons/planets/pc_barren_cold.png",
       "sky": "worlds/pc_barren_cold_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_barren_cold"
     },
     {
@@ -109226,6 +109244,7 @@
       "icon": "icons/planets/pc_toxic.png",
       "sky": "worlds/pc_toxic_sky.png",
       "scenery": [],
+      "showsCity": false,
       "nameKey": "pc_toxic"
     },
     {
@@ -109239,6 +109258,7 @@
       "icon": "icons/planets/pc_frozen.png",
       "sky": "worlds/pc_frozen_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_frozen"
     },
     {
@@ -109269,6 +109289,7 @@
           "image": "worlds/pc_nuked_l04.png"
         }
       ],
+      "showsCity": true,
       "nameKey": "pc_nuked"
     },
     {
@@ -109280,7 +109301,9 @@
         "value": true
       },
       "icon": "icons/planets/pc_hive.png",
+      "sky": "worlds/pc_infested_sky.png",
       "scenery": [],
+      "showsCity": false,
       "nameKey": "pc_hive"
     },
     {
@@ -109292,7 +109315,9 @@
         "value": true
       },
       "icon": "icons/planets/pc_machine.png",
+      "sky": "worlds/pc_ai_sky.png",
       "scenery": [],
+      "showsCity": false,
       "nameKey": "pc_machine"
     },
     {
@@ -109304,7 +109329,9 @@
         "value": true
       },
       "icon": "icons/planets/pc_machine_broken.png",
+      "sky": "worlds/pc_ai_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_machine_broken"
     },
     {
@@ -109318,6 +109345,7 @@
       "icon": "icons/planets/pc_shielded.png",
       "sky": "worlds/pc_shielded_sky.png",
       "scenery": [],
+      "showsCity": false,
       "nameKey": "pc_shielded"
     },
     {
@@ -109331,6 +109359,7 @@
       "icon": "icons/planets/pc_ai.png",
       "sky": "worlds/pc_ai_sky.png",
       "scenery": [],
+      "showsCity": false,
       "nameKey": "pc_ai"
     },
     {
@@ -109344,6 +109373,7 @@
       "icon": "icons/planets/pc_infested.png",
       "sky": "worlds/pc_infested_sky.png",
       "scenery": [],
+      "showsCity": false,
       "nameKey": "pc_infested"
     },
     {
@@ -109374,6 +109404,7 @@
           "image": "worlds/pc_gaia_l04.png"
         }
       ],
+      "showsCity": true,
       "nameKey": "pc_gaia"
     },
     {
@@ -109385,7 +109416,9 @@
         "value": true
       },
       "icon": "icons/planets/pc_cybrex.png",
+      "sky": "worlds/pc_ai_sky.png",
       "scenery": [],
+      "showsCity": false,
       "nameKey": "pc_cybrex"
     },
     {
@@ -109399,6 +109432,7 @@
       "icon": "icons/planets/pc_nanotech.png",
       "sky": "worlds/pc_nanotech_sky.png",
       "scenery": [],
+      "showsCity": false,
       "nameKey": "pc_nanotech"
     },
     {
@@ -109413,6 +109447,7 @@
       "icon": "icons/planets/pc_b_star.png",
       "sky": "worlds/pc_b_star_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_b_star"
     },
     {
@@ -109427,6 +109462,7 @@
       "icon": "icons/planets/pc_a_star.png",
       "sky": "worlds/pc_a_star_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_a_star"
     },
     {
@@ -109441,6 +109477,7 @@
       "icon": "icons/planets/pc_f_star.png",
       "sky": "worlds/pc_f_star_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_f_star"
     },
     {
@@ -109455,6 +109492,7 @@
       "icon": "icons/planets/pc_g_star.png",
       "sky": "worlds/pc_g_star_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_g_star"
     },
     {
@@ -109469,6 +109507,7 @@
       "icon": "icons/planets/pc_k_star.png",
       "sky": "worlds/pc_k_star_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_k_star"
     },
     {
@@ -109483,6 +109522,7 @@
       "icon": "icons/planets/pc_m_star.png",
       "sky": "worlds/pc_m_star_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_m_star"
     },
     {
@@ -109495,7 +109535,9 @@
         "value": true
       },
       "icon": "icons/planets/pc_m_giant_star.png",
+      "sky": "worlds/pc_m_star_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_m_giant_star"
     },
     {
@@ -109508,7 +109550,9 @@
         "value": true
       },
       "icon": "icons/planets/pc_t_star.png",
+      "sky": "worlds/pc_browndwarf_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_t_star"
     },
     {
@@ -109523,6 +109567,7 @@
       "icon": "icons/planets/pc_black_hole.png",
       "sky": "worlds/pc_black_hole_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_black_hole"
     },
     {
@@ -109537,6 +109582,7 @@
       "icon": "icons/planets/pc_neutron_star.png",
       "sky": "worlds/pc_neutron_star_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_neutron_star"
     },
     {
@@ -109551,6 +109597,7 @@
       "icon": "icons/planets/pc_pulsar.png",
       "sky": "worlds/pc_pulsar_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_pulsar"
     },
     {
@@ -109563,7 +109610,26 @@
         "value": true
       },
       "icon": "icons/planets/pc_ringworld_habitable.png",
-      "scenery": [],
+      "sky": "worlds/pc_ringworld_sky.png",
+      "scenery": [
+        {
+          "band": 1,
+          "image": "worlds/pc_ringworld_l01.png"
+        },
+        {
+          "band": 2,
+          "image": "worlds/pc_ringworld_l02.png"
+        },
+        {
+          "band": 3,
+          "image": "worlds/pc_ringworld_l03.png"
+        },
+        {
+          "band": 4,
+          "image": "worlds/pc_ringworld_l04.png"
+        }
+      ],
+      "showsCity": true,
       "nameKey": "pc_ringworld_habitable"
     },
     {
@@ -109575,7 +109641,9 @@
         "value": true
       },
       "icon": "icons/planets/pc_ringworld_habitable_damaged.png",
+      "sky": "worlds/pc_ringworld_broken_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_ringworld_habitable_damaged"
     },
     {
@@ -109587,7 +109655,9 @@
         "value": true
       },
       "icon": "icons/planets/pc_ringworld_tech.png",
+      "sky": "worlds/pc_ringworld_section_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_ringworld_tech"
     },
     {
@@ -109599,7 +109669,9 @@
         "value": true
       },
       "icon": "icons/planets/pc_ringworld_tech_damaged.png",
+      "sky": "worlds/pc_ringworld_broken_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_ringworld_tech_damaged"
     },
     {
@@ -109611,7 +109683,9 @@
         "value": true
       },
       "icon": "icons/planets/pc_ringworld_seam.png",
+      "sky": "worlds/pc_ringworld_section_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_ringworld_seam"
     },
     {
@@ -109623,7 +109697,9 @@
         "value": true
       },
       "icon": "icons/planets/pc_ringworld_seam_damaged.png",
+      "sky": "worlds/pc_ringworld_broken_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_ringworld_seam_damaged"
     },
     {
@@ -109636,7 +109712,26 @@
         "value": true
       },
       "icon": "icons/planets/pc_shattered_ring_habitable.png",
-      "scenery": [],
+      "sky": "worlds/pc_ringworld_sky.png",
+      "scenery": [
+        {
+          "band": 1,
+          "image": "worlds/pc_ringworld_l01.png"
+        },
+        {
+          "band": 2,
+          "image": "worlds/pc_ringworld_l02.png"
+        },
+        {
+          "band": 3,
+          "image": "worlds/pc_ringworld_l03.png"
+        },
+        {
+          "band": 4,
+          "image": "worlds/pc_ringworld_l04.png"
+        }
+      ],
+      "showsCity": true,
       "nameKey": "pc_shattered_ring_habitable"
     },
     {
@@ -109651,6 +109746,7 @@
       "icon": "icons/planets/pc_habitat.png",
       "sky": "worlds/pc_habitat_sky.png",
       "scenery": [],
+      "showsCity": false,
       "nameKey": "pc_habitat"
     },
     {
@@ -109665,6 +109761,7 @@
       "icon": "icons/planets/pc_cosmogenesis_world.png",
       "sky": "worlds/pc_cosmogenesis_world_sky.png",
       "scenery": [],
+      "showsCity": false,
       "nameKey": "pc_cosmogenesis_world"
     },
     {
@@ -109678,6 +109775,7 @@
       "icon": "icons/planets/pc_shrouded.png",
       "sky": "worlds/pc_shrouded_sky.png",
       "scenery": [],
+      "showsCity": false,
       "nameKey": "pc_shrouded"
     },
     {
@@ -109691,6 +109789,7 @@
       "icon": "icons/planets/pc_broken.png",
       "sky": "worlds/pc_broken_sky.png",
       "scenery": [],
+      "showsCity": false,
       "nameKey": "pc_broken"
     },
     {
@@ -109704,6 +109803,7 @@
       "icon": "icons/planets/pc_shattered.png",
       "sky": "worlds/pc_shattered_sky.png",
       "scenery": [],
+      "showsCity": false,
       "nameKey": "pc_shattered"
     },
     {
@@ -109716,7 +109816,9 @@
         "value": true
       },
       "icon": "icons/planets/pc_toxoid_star.png",
+      "sky": "worlds/pc_x_star_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_toxoid_star"
     },
     {
@@ -109731,6 +109833,7 @@
       "icon": "icons/planets/pc_rift_star.png",
       "sky": "worlds/pc_rift_star_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_rift_star"
     },
     {
@@ -109744,6 +109847,7 @@
       "icon": "icons/planets/pc_astral_scar.png",
       "sky": "worlds/pc_astral_scar_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_astral_scar"
     },
     {
@@ -109757,6 +109861,7 @@
       "icon": "icons/planets/pc_gray_goo.png",
       "sky": "worlds/pc_gray_goo_sky.png",
       "scenery": [],
+      "showsCity": false,
       "nameKey": "pc_gray_goo"
     },
     {
@@ -109770,6 +109875,7 @@
       "icon": "icons/planets/pc_egg_cracked.png",
       "sky": "worlds/pc_egg_cracked_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_egg_cracked"
     },
     {
@@ -109781,7 +109887,9 @@
         "value": true
       },
       "icon": "icons/planets/pc_crystal_habitat.png",
+      "sky": "worlds/pc_habitat_sky.png",
       "scenery": [],
+      "showsCity": false,
       "nameKey": "pc_crystal_habitat"
     },
     {
@@ -109793,7 +109901,9 @@
         "value": true
       },
       "icon": "icons/planets/pc_warden_guardian.png",
+      "sky": "worlds/pc_habitat_sky.png",
       "scenery": [],
+      "showsCity": false,
       "nameKey": "pc_warden_guardian"
     },
     {
@@ -109807,6 +109917,7 @@
       "icon": "icons/planets/pc_crystal_asteroid.png",
       "sky": "worlds/pc_crystal_asteroid_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_crystal_asteroid"
     },
     {
@@ -109818,7 +109929,26 @@
         "value": true
       },
       "icon": "icons/planets/pc_ringworld_shielded.png",
-      "scenery": [],
+      "sky": "worlds/pc_ringworld_sky.png",
+      "scenery": [
+        {
+          "band": 1,
+          "image": "worlds/pc_ringworld_l01.png"
+        },
+        {
+          "band": 2,
+          "image": "worlds/pc_ringworld_l02.png"
+        },
+        {
+          "band": 3,
+          "image": "worlds/pc_ringworld_l03.png"
+        },
+        {
+          "band": 4,
+          "image": "worlds/pc_ringworld_l04.png"
+        }
+      ],
+      "showsCity": false,
       "nameKey": "pc_ringworld_shielded"
     },
     {
@@ -109830,7 +109960,9 @@
         "value": true
       },
       "icon": "icons/planets/pc_habitat_shielded.png",
+      "sky": "worlds/pc_habitat_sky.png",
       "scenery": [],
+      "showsCity": false,
       "nameKey": "pc_habitat_shielded"
     },
     {
@@ -109845,6 +109977,8 @@
       "icon": "icons/planets/pc_city.png",
       "sky": "worlds/pc_city_sky.png",
       "scenery": [],
+      "showsCity": true,
+      "fixedCityLevel": 6,
       "nameKey": "pc_city"
     },
     {
@@ -109859,6 +109993,7 @@
       "icon": "icons/planets/pc_relic.png",
       "sky": "worlds/pc_relic_sky.png",
       "scenery": [],
+      "showsCity": false,
       "nameKey": "pc_relic"
     },
     {
@@ -109870,7 +110005,9 @@
         "value": true
       },
       "icon": "icons/planets/pc_shattered_2.png",
+      "sky": "worlds/pc_shattered_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_shattered_2"
     },
     {
@@ -109884,6 +110021,7 @@
       "icon": "icons/planets/pc_cutholoid.png",
       "sky": "worlds/pc_cutholoid_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_cutholoid"
     },
     {
@@ -109897,6 +110035,7 @@
       "icon": "icons/planets/pc_junk.png",
       "sky": "worlds/pc_junk_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_junk"
     },
     {
@@ -109910,6 +110049,7 @@
       },
       "icon": "icons/planets/pc_ark.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_ark"
     },
     {
@@ -109922,7 +110062,9 @@
         "value": true
       },
       "icon": "icons/planets/pc_protostar.png",
+      "sky": "worlds/pc_browndwarf_sky.png",
       "scenery": [],
+      "showsCity": true,
       "nameKey": "pc_protostar"
     }
   ],

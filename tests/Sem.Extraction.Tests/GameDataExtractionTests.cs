@@ -1561,6 +1561,62 @@ public sealed class GameDataExtractionTests
     }
 
     /// <summary>
+    /// A world is drawn as the picture it names, which is not always its own.
+    /// </summary>
+    /// <remarks>
+    /// Twenty-one classes borrow another's - a machine world is painted as pc_ai, a hive world as
+    /// pc_infested, and six ringworlds share three pictures between them. The art is filed under
+    /// the name given rather than under the class, so reading the class's own key found nothing:
+    /// a machine world had no sky and no landscape at all, and the empire's city was left standing
+    /// on nothing.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void AWorldIsPaintedAsThePictureItNames()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var worlds = Database.Value.PlanetClasses.ToDictionary(p => p.Key, StringComparer.Ordinal);
+
+        Assert.Contains("pc_ai_sky", worlds["pc_machine"].Sky);
+        Assert.Contains("pc_infested_sky", worlds["pc_hive"].Sky);
+
+        // And the borrowed landscape comes with it. A shattered ring had none of its own.
+        Assert.Contains("pc_ringworld_sky", worlds["pc_shattered_ring_habitable"].Sky);
+        Assert.NotEmpty(worlds["pc_shattered_ring_habitable"].Scenery);
+
+        // A world that names no picture is still drawn as itself.
+        Assert.Contains("pc_continental_sky", worlds["pc_continental"].Sky);
+    }
+
+    /// <summary>
+    /// A world that is already built has no empire's city painted over it.
+    /// </summary>
+    /// <remarks>
+    /// The game says so on twenty of them, and they are the ones that are a built thing already: a
+    /// machine world, a hive world, a habitat. One goes the other way - an ecumenopolis is built to
+    /// the horizon whatever its population, and fixes its level rather than reading one.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void AWorldThatIsAlreadyBuiltCarriesNoCity()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var worlds = Database.Value.PlanetClasses.ToDictionary(p => p.Key, StringComparer.Ordinal);
+
+        Assert.False(worlds["pc_machine"].ShowsCity);
+        Assert.False(worlds["pc_hive"].ShowsCity);
+        Assert.False(worlds["pc_habitat"].ShowsCity);
+
+        // The ordinary worlds are unchanged.
+        Assert.True(worlds["pc_continental"].ShowsCity);
+        Assert.True(worlds["pc_shattered_ring_habitable"].ShowsCity);
+
+        Assert.Equal(6, worlds["pc_city"].FixedCityLevel);
+    }
+
+    /// <summary>
     /// A perk or a tree that will not be taken always says why.
     /// </summary>
     /// <remarks>
