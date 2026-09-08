@@ -624,12 +624,17 @@ public sealed record EmpireFacet(
 /// <param name="OnByDefault">Whether it is shown before anybody has chosen.</param>
 /// <param name="Choices">What the cell draws, where the cell is things that were picked.</param>
 /// <param name="Line">What the cell says, where it is a line of text somebody typed.</param>
+/// <param name="Stacked">
+/// Whether the cell shows the first of its choices with the rest behind it rather than all of them
+/// side by side.
+/// </param>
 public sealed record EmpireColumn(
     string Key,
     string Header,
     bool OnByDefault,
     Func<EmpireRow, IReadOnlyList<EmpireChoice>>? Choices = null,
-    Func<EmpireRow, string>? Line = null)
+    Func<EmpireRow, string>? Line = null,
+    bool Stacked = false)
 {
     /// <summary>Every column, in the order they are drawn.</summary>
     /// <remarks>
@@ -640,7 +645,11 @@ public sealed record EmpireColumn(
     [
         Picked("preset", false),
         Picked("government", false),
-        Picked("personality", false),
+
+        // Stacked, because these are the one column whose cells hold alternatives rather than a
+        // set: the empire is given one of them, and the likeliest is most of the answer. Laid out
+        // flat, five of them set the width of a column nobody asked to be that wide.
+        Picked("personality", false, stacked: true),
 
         // The one column that is not read straight off its heading: nomadic belongs in the cell
         // beside the authority, where the game puts it and where the card already draws it.
@@ -687,11 +696,11 @@ public sealed record EmpireColumn(
     /// Written once from the facet, so a column and the control that narrows it can never be called
     /// different things or disagree about what an empire holds.
     /// </remarks>
-    private static EmpireColumn Picked(string key, bool onByDefault)
+    private static EmpireColumn Picked(string key, bool onByDefault, bool stacked = false)
     {
         var facet = EmpireFacet.All.First(f => f.Key == key);
 
-        return new EmpireColumn(facet.Key, facet.Label, onByDefault, facet.Values);
+        return new EmpireColumn(facet.Key, facet.Label, onByDefault, facet.Values, Stacked: stacked);
     }
 
     /// <summary>What the column sorts by, which for several choices is all of them run together.</summary>

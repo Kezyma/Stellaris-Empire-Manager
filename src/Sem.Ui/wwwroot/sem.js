@@ -404,28 +404,7 @@ export function bindPopover(anchor, panel, pinOnClick = true) {
     // A tap has no hover to leave, so a click pins the panel until something dismisses it.
     let pinned = false;
 
-    const place = () => {
-        const at = anchor.getBoundingClientRect();
-        const box = panel.getBoundingClientRect();
-        const margin = 8;
-
-        // Below by preference, above when the room below will not take it, and whichever is roomier
-        // when neither will.
-        const below = window.innerHeight - at.bottom - margin;
-        const above = at.top - margin;
-        const goesBelow = box.height <= below || below >= above;
-
-        const top = goesBelow
-            ? Math.min(at.bottom + 4, window.innerHeight - box.height - margin)
-            : Math.max(at.top - box.height - 4, margin);
-
-        const left = Math.min(
-            Math.max(at.left, margin),
-            Math.max(margin, window.innerWidth - box.width - margin));
-
-        panel.style.top = `${Math.max(margin, top)}px`;
-        panel.style.left = `${left}px`;
-    };
+    const place = () => placeUnder(anchor, panel);
 
     const show = () => {
         if (!panel.matches(':popover-open')) {
@@ -476,6 +455,118 @@ export function bindPopover(anchor, panel, pinOnClick = true) {
     panel.addEventListener('toggle', event => {
         if (event.newState === 'closed') {
             pinned = false;
+        }
+    });
+}
+
+/**
+ * Puts a panel under the thing it belongs to, inside the viewport.
+ *
+ * Below by preference, above where the room below will not take it, and whichever is roomier when
+ * neither will. Nothing about this is left to the browser: a popover is drawn in the top layer,
+ * which has no idea what it was opened from.
+ *
+ * @param {HTMLElement} anchor what the panel hangs off
+ * @param {HTMLElement} panel the popover itself
+ */
+function placeUnder(anchor, panel) {
+    const at = anchor.getBoundingClientRect();
+    const box = panel.getBoundingClientRect();
+    const margin = 8;
+
+    const below = window.innerHeight - at.bottom - margin;
+    const above = at.top - margin;
+    const goesBelow = box.height <= below || below >= above;
+
+    const top = goesBelow
+        ? Math.min(at.bottom + 4, window.innerHeight - box.height - margin)
+        : Math.max(at.top - box.height - 4, margin);
+
+    const left = Math.min(
+        Math.max(at.left, margin),
+        Math.max(margin, window.innerWidth - box.width - margin));
+
+    panel.style.top = `${Math.max(margin, top)}px`;
+    panel.style.left = `${left}px`;
+}
+
+/**
+ * Hangs a list off a chip, the way a dropdown hangs off its control.
+ *
+ * Same top layer and same placing as a description panel, and one difference that decides the
+ * shape of this: a description is only read, and a list is reached into. The pointer has to be
+ * able to leave the chip and arrive in the panel without the panel going away underneath it - so
+ * closing waits a moment, and either the chip or the panel being entered calls the wait off.
+ *
+ * The delay is what makes the four-pixel gap between them crossable. Without it the list vanished
+ * the instant the pointer left the chip, which is the frame before it arrived anywhere.
+ *
+ * @param {HTMLElement} anchor the chip the list belongs to
+ * @param {HTMLElement} panel the list itself
+ */
+export function bindDropdown(anchor, panel) {
+    if (!anchor || !panel || anchor.dataset.semDropdown === 'yes') {
+        return;
+    }
+
+    anchor.dataset.semDropdown = 'yes';
+
+    let closing = 0;
+
+    const show = () => {
+        clearTimeout(closing);
+
+        if (!panel.matches(':popover-open')) {
+            panel.showPopover();
+        }
+
+        placeUnder(anchor, panel);
+        requestAnimationFrame(() => placeUnder(anchor, panel));
+    };
+
+    const hide = () => {
+        clearTimeout(closing);
+
+        closing = setTimeout(() => {
+            if (panel.matches(':popover-open')) {
+                panel.hidePopover();
+            }
+        }, 220);
+    };
+
+    for (const part of [anchor, panel]) {
+        part.addEventListener('mouseenter', show);
+        part.addEventListener('mouseleave', hide);
+    }
+
+    // A tap has no hover at all, so the press is the whole interaction: it opens the list, and
+    // pressing the chip again is the way back out of one opened by mistake.
+    anchor.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (panel.matches(':popover-open')) {
+            clearTimeout(closing);
+            panel.hidePopover();
+        } else {
+            show();
+        }
+    });
+
+    anchor.addEventListener('focus', show);
+
+    // Not on blur: the focus is very often moving into the list, which is where it should be able
+    // to go. Leaving the whole of it is what closes it.
+    anchor.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+            clearTimeout(closing);
+            panel.hidePopover();
+        }
+    });
+
+    panel.addEventListener('focusout', event => {
+        if (!panel.contains(event.relatedTarget)) {
+            hide();
         }
     });
 }

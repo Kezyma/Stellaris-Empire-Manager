@@ -126,7 +126,7 @@
     }
 
     @* From here down is ours: everything the game's preview has no space for. *@
-    @Chips("AI Personality", Personalities)
+    @Stacked("AI Personality", Personalities)
     @Chips(Session.Localizer.Heading("ETHICS", "Ethics"), Ethics)
     @Chips(Session.Localizer.Heading("CIVICS_LABEL", "Civics"), Civics)
     @Chips(Session.Localizer.Heading("TRAITS", "Traits"), Traits)
@@ -324,6 +324,35 @@
     /// Nothing is drawn for an empty set. A gestalt empire has no civics until it has an authority,
     /// and an empty heading would read as a fault rather than as a stage.
     /// </remarks>
+    /// <summary>
+    /// The same row, with only the likeliest chip standing and the rest a hover away.
+    /// </summary>
+    /// <remarks>
+    /// For the personalities alone, which are alternatives rather than a set: the game draws one of
+    /// them, so the first is most of the answer and the others are what it might have been.
+    /// </remarks>
+    private RenderFragment Stacked(string label, IReadOnlyList<EmpireChoice> items) => builder =>
+    {
+        if (items.Count == 0)
+        {
+            return;
+        }
+
+        builder.OpenElement(0, "div");
+        builder.AddAttribute(1, "class", "sem-showcase-chips");
+
+        builder.OpenElement(2, "div");
+        builder.AddAttribute(3, "class", "heading");
+        builder.AddContent(4, label);
+        builder.CloseElement();
+
+        builder.OpenComponent<ChipStack>(5);
+        builder.AddComponentParameter(6, nameof(ChipStack.Items), items);
+        builder.CloseComponent();
+
+        builder.CloseElement();
+    };
+
     private RenderFragment Chips(string label, IEnumerable<EmpireChoice> items) => builder =>
     {
         var listed = items.ToList();

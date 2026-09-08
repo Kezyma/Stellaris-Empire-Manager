@@ -166,7 +166,7 @@
                             *@
                             @if (View.Personalities.Count > 0)
                             {
-                                @Chips("AI Personality", View.Personalities, null)
+                                @Stacked("AI Personality", View.Personalities)
                             }
                         </div>
                     </div>
@@ -719,6 +719,22 @@
         part is { } target
             ? EventCallback.Factory.Create(this, () => Open(target))
             : default;
+
+    /// <summary>
+    /// A row whose chips are one chip with the rest behind it.
+    /// </summary>
+    /// <remarks>
+    /// Only the personalities. Everything else on the card is a set the empire holds all of, where
+    /// hiding four fifths of it behind the first would be hiding the answer.
+    /// </remarks>
+    private RenderFragment Stacked(string label, IReadOnlyList<EmpireChoice> items) =>
+        @<div class="sem-lite-chips">
+            <span class="heading">@label</span>
+
+            <div class="chips">
+                <ChipStack Items="@items" />
+            </div>
+        </div>;
 
     /// <summary>One fact the game has no picture for, as a labelled line.</summary>
     private RenderFragment Row(string label, string? value, LitePart part) =>

@@ -4736,6 +4736,93 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
+    One chip with the rest of its set behind it.
+
+    The lead is drawn as a chip rather than being one: it opens the list instead of a description of
+    itself, and the list holds the real chips. Same pill, same padding, same icon size, so a row that
+    is a stack and a row that is chips line up on the same baseline.
+*/
+.sem-chip-stack {
+    position: relative;
+    display: inline-flex;
+}
+
+.sem-chip-stack > .lead {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: var(--space-2xs) var(--space-xs) var(--space-2xs) 3px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    color: var(--text);
+    font: inherit;
+    font-size: var(--text-sm);
+    text-align: left;
+    cursor: pointer;
+}
+
+.sem-chip-stack > .lead:hover,
+.sem-chip-stack > .lead:focus-visible {
+    background: var(--bg-hover);
+    border-color: var(--accent-dim);
+}
+
+.sem-chip-stack > .lead > img {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    object-fit: contain;
+}
+
+/*
+    How many more there are, as the count rather than a chevron: an arrow says a list opens and a
+    number says that and how much of one, which is the difference between pressing to find out and
+    knowing whether it is worth pressing.
+*/
+.sem-chip-stack > .lead > .more {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    min-width: var(--icon-sm);
+    height: var(--icon-sm);
+    padding: 0 3px;
+    border-radius: var(--radius-pill);
+    background: var(--bg);
+    color: var(--text-dim);
+    font-size: 0.72em;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+}
+
+.sem-chip-stack > .lead > .more::before { content: "+"; }
+
+/*
+    The list, in the top layer where nothing can clip it - which is the whole point, since these hang
+    off a cell inside a table that scrolls in both directions.
+
+    Down the page rather than across, and left-aligned under the chip, so it reads as the order it is
+    in: likeliest first, and each one under the last.
+*/
+.sem-chip-stack-list {
+    position: fixed;
+    margin: 0;
+    inset: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2xs);
+    max-height: min(20rem, calc(100vh - 2rem));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: var(--space-xs);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+}
+
+/*
     The description itself, drawn in the top layer.
 
     Placed from sem.js rather than by the browser: the top layer has no idea what a popover was

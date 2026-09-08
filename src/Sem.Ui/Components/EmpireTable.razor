@@ -134,7 +134,20 @@
                             @foreach (var column in Columns)
                             {
                                 <td>
-                                    @if (column.Choices is { } choices)
+                                    @*
+                                        A stacked column shows the first and keeps the rest behind
+                                        it, which is what the personalities want: an empire is given
+                                        one of them, so the likeliest is the answer and the others
+                                        are what it might have been instead.
+                                    *@
+                                    @if (column.Stacked && column.Choices is { } stack)
+                                    {
+                                        @if (stack(row) is { Count: > 0 } held)
+                                        {
+                                            <ChipStack @key="column.Key" Items="@held" />
+                                        }
+                                    }
+                                    else if (column.Choices is { } choices)
                                     {
                                         @*
                                             Keyed, because these are components with a script
