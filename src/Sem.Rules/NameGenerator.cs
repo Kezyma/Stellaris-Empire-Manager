@@ -462,12 +462,22 @@ public sealed partial class NameGenerator(GameDatabase database, Random? random 
     }
 
     /// <summary>
-    /// Which name list a species should be named from.
+    /// Which name list the ready-made <em>species</em> come from, for a list that borrows another's.
     /// </summary>
     /// <remarks>
-    /// A list may point at a different one for this purpose. The three human lists do, so that
-    /// randomising a species for the United Nations of Earth offers ordinary human names rather than
-    /// that empire's own conventions.
+    /// <para>
+    /// The game's <c>customize_random_override</c>, and its README says precisely how far it
+    /// reaches: "the random name button for species/homeworld/home system in empire creation will
+    /// use species_names with the specified namelist instead of this namelist". Three things, and
+    /// all three of them read <c>common/species_names</c> - the ready-made species, each of which
+    /// carries a name, a homeworld and a home star.
+    /// </para>
+    /// <para>
+    /// So it is not a general redirection of a list, and asking it about anything a name list holds
+    /// itself is asking the wrong question. The human lists point at HUM2 for this, which is why
+    /// leader names taken through here came out as Merg and Japra for an empire whose own list is
+    /// full of Johns and Peters.
+    /// </para>
     /// </remarks>
     public string? SpeciesNameSourceFor(string? nameList) =>
         Resolve(nameList) is { RandomNameSource: { Length: > 0 } source } ? source : nameList;

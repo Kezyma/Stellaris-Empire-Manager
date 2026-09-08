@@ -548,49 +548,30 @@ public sealed class EmpireRulesTests
     }
 
     /// <summary>
-    /// One the game never offers is still shown once the species has it, so it can be given up.
+    /// An origin's soft trait is forced, whatever the field it is written under is called.
     /// </summary>
     /// <remarks>
-    /// Which is the only way an origin's own trait is ever seen: the game does not offer Latent
-    /// Psionic to anybody, and hands it to Teachers of the Shroud saying in as many words that it
-    /// can be removed again. Hidden from the picker it was a trait nothing could take off.
+    /// The game's comment - "can be removed without making the government invalid" - is about a
+    /// species dropping a trait during a game, not about the designer, where Teachers of the Shroud
+    /// shows Latent Psionic greyed among the forced ones and will not let it go. Read the other way
+    /// it was a trait a player could take off and then never find again, since the game offers it to
+    /// nobody.
     /// </remarks>
     [Fact]
-    public void ATraitTheGameNeverOffersIsStillShownWhenTheSpeciesHasIt()
+    public void AnOriginsSoftTraitIsForcedLikeAnyOther()
     {
         var design = RulesTestData.ValidEmpire();
-        design.Species.SetTraits([.. design.Species.Traits, "trait_not_initial"]);
+        design.Origin = "origin_shroudwalker_apprentice";
 
-        var options = Rules.GetSpeciesTraitOptions(Context(design));
+        var forced = Rules.GetForcedTraitSources(Context(design));
+        var soft = Assert.Single(forced, f => f.Trait == "trait_not_initial");
 
-        Assert.Contains(options, o => o.Key == "trait_not_initial");
+        Assert.Equal(ForcedTraitSource.Origin, soft.Source);
+        Assert.Equal("origin_shroudwalker_apprentice", soft.Cause);
 
-        // Hidden is hidden whether it is held or not - that is what hidden means.
-        design.Species.SetTraits([.. design.Species.Traits, "trait_hidden"]);
-
-        Assert.DoesNotContain(
-            Rules.GetSpeciesTraitOptions(Context(design)),
-            o => o.Key == "trait_hidden");
-    }
-
-    /// <summary>
-    /// An origin hands its trait over when it is chosen, and not otherwise.
-    /// </summary>
-    /// <remarks>
-    /// Asked about what was newly chosen rather than about the whole design, because the player may
-    /// take the trait straight off again - the game says so - and one handed over on every edit
-    /// would be a trait that could not be removed at all.
-    /// </remarks>
-    [Fact]
-    public void AnOriginGivesItsSoftTraitToWhoeverJustChoseIt()
-    {
-        Assert.Equal(
-            ["trait_not_initial"],
-            Rules.GetGrantedTraits(["origin_shroudwalker_apprentice"]));
-
-        // Nothing from an origin that gives nothing, and nothing from one already held.
-        Assert.Empty(Rules.GetGrantedTraits(["origin_default"]));
-        Assert.Empty(Rules.GetGrantedTraits([]));
+        // And written into the file, as the game writes it: an empire the game saved with
+        // Cybernetic Creed carries its Ritualistic Implants.
+        Assert.Contains("trait_not_initial", Rules.GetWrittenForcedTraits(Context(design)));
     }
 
     [Fact]

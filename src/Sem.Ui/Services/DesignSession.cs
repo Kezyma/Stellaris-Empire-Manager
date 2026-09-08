@@ -487,7 +487,6 @@ public sealed class DesignSession
 
         var before = Written(current);
         var shape = Shape(current);
-        var chosen = Chosen(current);
 
         change(current);
 
@@ -496,7 +495,6 @@ public sealed class DesignSession
         if (!string.Equals(shape, Shape(current), StringComparison.Ordinal))
         {
             AddForcedTraits(current);
-            AddGrantedTraits(current, chosen);
         }
 
         if (string.Equals(before, Written(current), StringComparison.Ordinal))
@@ -556,14 +554,6 @@ public sealed class DesignSession
     }
 
     /// <summary>
-    /// The civics and the origin the design holds, which is what hands out a soft trait.
-    /// </summary>
-    private static IReadOnlySet<string> Chosen(EmpireDesign design) =>
-        new HashSet<string>(
-            design.Origin is { Length: > 0 } origin ? [origin, .. design.Civics] : design.Civics,
-            StringComparer.Ordinal);
-
-    /// <summary>
     /// The choices that decide which traits the empire imposes on its founders.
     /// </summary>
     private static string Shape(EmpireDesign design) => string.Join(
@@ -601,30 +591,6 @@ public sealed class DesignSession
         design.Species.SetTraits([.. held, .. missing]);
     }
 
-    /// <summary>
-    /// Writes in the traits a civic or an origin gives when it is chosen.
-    /// </summary>
-    /// <remarks>
-    /// Only what was just chosen, which is the whole difference between these and the forced ones
-    /// above. The game lets the player take a soft trait straight off again, so one handed out every
-    /// time anything moved would be a trait that could not be removed at all - taken off, it would
-    /// come back on the next edit that touched the shape.
-    ///
-    /// Teachers of the Shroud gives Latent Psionic this way, and gave nothing at all before: the
-    /// field was read out of the game's files, stored, and then never asked for.
-    /// </remarks>
-    private void AddGrantedTraits(EmpireDesign design, IReadOnlySet<string> before)
-    {
-        var granted = Rules.GetGrantedTraits(Chosen(design).Where(key => !before.Contains(key)));
-        var held = design.Species.Traits;
-
-        if (granted.Where(t => !held.Contains(t)).ToList() is not { Count: > 0 } missing)
-        {
-            return;
-        }
-
-        design.Species.SetTraits([.. held, .. missing]);
-    }
 
     /// <summary>
     /// The empire exactly as it would be written to the file, which is the only complete account of

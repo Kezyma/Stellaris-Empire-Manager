@@ -60,6 +60,54 @@ public sealed class NameGeneratorTests
         Assert.Null(names.Ship("AVI3"));
     }
 
+    /// <summary>
+    /// A list that borrows another's species borrows nothing else.
+    /// </summary>
+    /// <remarks>
+    /// The game's README draws the line: customize_random_override changes "the random name button
+    /// for species/homeworld/home system", and all three of those read common/species_names. A list
+    /// keeps its own leaders, ships, fleets and colonies. Read as a general redirection, the Systems
+    /// Alliance - whose HUMAN1 list is full of Johns and Peters - was offered HUM2's Merg and Japra
+    /// to name its Prime Minister.
+    /// </remarks>
+    [Fact]
+    public void AListPointingAtAnotherForItsSpeciesKeepsItsOwnPeople()
+    {
+        var database = new GameDatabase
+        {
+            SchemaVersion = 1,
+            GameVersion = "test",
+            ExtractorVersion = "test",
+            Defines = new GameDefines { EthicsPoints = 3, CivicPoints = 2 },
+            NameLists =
+            [
+                new NameListDefinition("HUMAN1", "Humanoid")
+                {
+                    RandomNameSource = "HUM2",
+                    CharacterNames = new NameSet
+                    {
+                        FullNames = new GenderedNames { Any = ["John Smith"] },
+                    },
+                },
+                new NameListDefinition("HUM2", "Humanoid")
+                {
+                    CharacterNames = new NameSet
+                    {
+                        FullNames = new GenderedNames { Any = ["Japra Kap"] },
+                    },
+                },
+            ],
+        };
+
+        var names = new NameGenerator(database);
+
+        // The species are asked of the list it points at.
+        Assert.Equal("HUM2", names.SpeciesNameSourceFor("HUMAN1"));
+
+        // Its rulers are its own.
+        Assert.Equal("John Smith", names.Ruler("HUMAN1", female: false));
+    }
+
     [Fact]
     public void ANameMatchingNoRuleKeepsItsOwnForm()
     {
