@@ -43,6 +43,16 @@ public sealed record EmpireChoice(string Key, string Name, string? Icon, EffectS
     /// chip without one is drawn exactly as it always was.
     /// </remarks>
     public string? Badge { get; init; }
+
+    /// <summary>
+    /// How full that number is, nought to one, which is what colours it.
+    /// </summary>
+    /// <remarks>
+    /// Kept beside the text rather than parsed back out of it. The text is rounded and sometimes not
+    /// a number at all - a share under one per cent reads "&lt;1" - and the colour wants the share
+    /// itself.
+    /// </remarks>
+    public double? BadgeLevel { get; init; }
 }
 
 /// <summary>
@@ -222,6 +232,7 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
                 {
                     Description = chance.Personality.DescriptionKey,
                     Badge = Share(chance.Share),
+                    BadgeLevel = chance.Share,
                 })
         ];
 
@@ -231,13 +242,20 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
     /// A share as a percentage, never rounded away to nothing.
     /// </summary>
     /// <remarks>
-    /// A personality the empire genuinely might be given showing "0%" would be the app saying it
-    /// cannot happen, so anything under one per cent says so as "&lt;1%" instead.
+    /// <para>
+    /// A personality the empire genuinely might be given showing "0" would be the app saying it
+    /// cannot happen, so anything under one per cent says so as "&lt;1" instead.
+    /// </para>
+    /// <para>
+    /// No per-cent sign. Every one of these is a percentage and they are drawn three characters wide
+    /// at most, in a circle the size of a chip's icon - the sign would be a fourth character saying
+    /// what the row already says.
+    /// </para>
     /// </remarks>
     private static string Share(double share) =>
-        share >= 0.995 ? "100%"
-        : share < 0.005 ? "&lt;1%"
-        : $"{share * 100:0}%";
+        share >= 0.995 ? "100"
+        : share < 0.005 ? "<1"
+        : $"{share * 100:0}";
 
     /// <summary>The ruler, as a line: their name and the title they hold, where they hold one.</summary>
     public string Ruler

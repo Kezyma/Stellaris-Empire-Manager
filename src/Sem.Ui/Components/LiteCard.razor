@@ -130,8 +130,14 @@
                 <div class="body">
                     <div class="about">
                         <div class="titles">
-                            @Named(View.Government, [], null, LitePart.Government,
-                                   "Edit ethics, authority and civics together",
+                            @*
+                                Not a way in. Nobody picks a government: it is the name the game
+                                gives whatever the authority, ethics and civics below add up to, and
+                                a name that opens the editor for the things underneath it reads as
+                                the name itself being the thing to change.
+                            *@
+                            @Named(View.Government, [], null, null,
+                                   "What the game calls this authority, these ethics and these civics",
                                    warning: View.HasGovernment ? null : "no government matches these")
                         </div>
 
@@ -152,14 +158,15 @@
                                 What the game would play this empire as, if it turned up in somebody
                                 else's galaxy. Derived from the ethics and civics beside it, exactly
                                 as the government name above is - so it belongs here rather than in a
-                                panel of its own, and pressing one opens the same editor.
+                                panel of its own, and like that name it opens nothing: it is not a
+                                thing anyone picks.
 
-                                Several, because the game draws rather than decides. Each says how
+                                Several, because the game draws rather than decides. Each carries how
                                 likely it is to be the one.
                             *@
                             @if (View.Personalities.Count > 0)
                             {
-                                @Chips("AI Personality", View.Personalities, LitePart.Government)
+                                @Chips("AI Personality", View.Personalities, null)
                             }
                         </div>
                     </div>
@@ -578,28 +585,43 @@
     /// species' plural and adjective are not two more facts about it - they are its name again, and
     /// as labelled rows they took two lines each to say so.
     /// </remarks>
+    /// <param name="part">
+    /// What pressing it opens, or null where nothing does - a name the empire is given rather than
+    /// one it chose has no editor behind it, and offering to open one is a promise the card cannot
+    /// keep.
+    /// </param>
     private RenderFragment Named(string name, IEnumerable<string?> variants, string? sub,
-                                 LitePart part, string title, string? warning = null)
+                                 LitePart? part, string title, string? warning = null)
     {
         var forms = variants.Where(v => v is { Length: > 0 }).ToList();
 
-        return @<button type="button" class="name-button" title="@title" @onclick="() => Open(part)">
-            <span class="name">@name</span>
+        RenderFragment inner =
+            @<text>
+                <span class="name">@name</span>
 
-            @if (forms.Count > 0)
-            {
-                <span class="aside">(@string.Join(", ", forms))</span>
-            }
+                @if (forms.Count > 0)
+                {
+                    <span class="aside">(@string.Join(", ", forms))</span>
+                }
 
-            @if (warning is { Length: > 0 })
-            {
-                <span class="aside bad">@warning</span>
-            }
+                @if (warning is { Length: > 0 })
+                {
+                    <span class="aside bad">@warning</span>
+                }
 
-            @if (sub is { Length: > 0 })
-            {
-                <span class="kind">@sub</span>
-            }
+                @if (sub is { Length: > 0 })
+                {
+                    <span class="kind">@sub</span>
+                }
+            </text>;
+
+        if (part is not { } target)
+        {
+            return @<span class="name-button still">@inner</span>;
+        }
+
+        return @<button type="button" class="name-button" title="@title" @onclick="() => Open(target)">
+            @inner
         </button>;
     }
 
@@ -639,7 +661,11 @@
     /// press without nesting. OptionChip gives up its own click when it is given something to open,
     /// so a chip still describes itself on hover but no longer does two things at once.
     /// </remarks>
-    private RenderFragment Chips(string? label, IEnumerable<EmpireChoice> items, LitePart part,
+    /// <param name="part">
+    /// What pressing one opens, or null where the row is something the empire is given rather than
+    /// something it picked.
+    /// </param>
+    private RenderFragment Chips(string? label, IEnumerable<EmpireChoice> items, LitePart? part,
                                  string empty = "none chosen")
     {
         // Once. Each of these costs a lookup in the database, and the row asks twice below.
@@ -653,10 +679,14 @@
             }
 
             <div class="chips">
-                @if (listed.Count == 0)
+                @if (listed.Count == 0 && part is { } target)
                 {
                     <button type="button" class="sem-lite-empty" title="@($"Edit {label ?? empty}")"
-                            @onclick="() => Open(part)">@empty</button>
+                            @onclick="() => Open(target)">@empty</button>
+                }
+                else if (listed.Count == 0)
+                {
+                    <span class="sem-lite-empty still">@empty</span>
                 }
 
                 @foreach (var choice in listed)
@@ -670,11 +700,25 @@
                     <OptionChip @key="choice.Key" Key="@choice.Key" Name="@choice.Name"
                                 Icon="@choice.Icon" Effects="@choice.Effects" Dim="@choice.Unchanged"
                                 DescriptionKey="@choice.Description" Badge="@choice.Badge"
-                                OnSelect="() => Open(part)" />
+                                BadgeLevel="@choice.BadgeLevel"
+                                OnSelect="@Opener(part)" />
                 }
             </div>
         </div>;
     }
+
+    /// <summary>
+    /// What a chip does when pressed, which for a row that opens nothing is nothing.
+    /// </summary>
+    /// <remarks>
+    /// An empty callback rather than one that does nothing: the chip reads whether it has a delegate
+    /// at all to decide between opening its own description and opening an editor, so handing it a
+    /// no-op would take the description away and put nothing in its place.
+    /// </remarks>
+    private EventCallback Opener(LitePart? part) =>
+        part is { } target
+            ? EventCallback.Factory.Create(this, () => Open(target))
+            : default;
 
     /// <summary>One fact the game has no picture for, as a labelled line.</summary>
     private RenderFragment Row(string label, string? value, LitePart part) =>
