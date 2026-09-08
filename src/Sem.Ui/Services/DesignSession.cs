@@ -490,11 +490,12 @@ public sealed class DesignSession
 
         change(current);
 
-        // Only when one of the five things that impose a trait has moved. A name being typed cannot
-        // change what the empire forces on its founders, and working it out costs a whole context.
+        // Only when something the design derives from has moved. A name being typed changes neither
+        // what the empire forces on its founders nor what its government is called, and working
+        // either out costs a whole context.
         if (!string.Equals(shape, Shape(current), StringComparison.Ordinal))
         {
-            AddForcedTraits(current);
+            Derive(current);
         }
 
         if (string.Equals(before, Written(current), StringComparison.Ordinal))
@@ -554,15 +555,67 @@ public sealed class DesignSession
     }
 
     /// <summary>
-    /// The choices that decide which traits the empire imposes on its founders.
+    /// The choices the design works something out from, rather than holds.
     /// </summary>
+    /// <remarks>
+    /// Two things are worked out: the traits the empire imposes on its founders, and the name of its
+    /// government. Between them they turn on everything here. The ethics are in the list for the
+    /// government's sake alone - nothing forces a trait on account of an ethic - which costs a
+    /// context on an ethic being changed that was not being paid before.
+    /// </remarks>
     private static string Shape(EmpireDesign design) => string.Join(
         '|',
         design.Authority,
         design.Origin,
         design.PlanetClass,
         design.Species.Class,
-        string.Join(',', design.Civics));
+        string.Join(',', design.Civics),
+        string.Join(',', design.Ethics));
+
+    /// <summary>
+    /// Writes back everything the design's own choices decide for it.
+    /// </summary>
+    /// <remarks>
+    /// One context for both, since building one is the expensive part and it has already worked the
+    /// government out by the time it is handed over.
+    /// </remarks>
+    private void Derive(EmpireDesign design)
+    {
+        var context = Rules.CreateContext(design, OwnedDlc);
+
+        AddForcedTraits(design, context);
+        WriteGovernment(design, context);
+    }
+
+    /// <summary>
+    /// Writes down what the empire's government is called.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Nobody chooses one: it is what an authority, some ethics and some civics add up to, and the
+    /// game writes the answer into the design - which is why the empires it saved carry
+    /// gov_executive_committee and gov_megacorporation while the ones made here all carried
+    /// gov_despotic_empire, the blank template's own value, whatever they had since become.
+    /// </para>
+    /// <para>
+    /// It went unseen because nothing here reads it. Every place that shows a government derives it
+    /// again from the design, so the card said Military Dictatorship while the file said despotic
+    /// empire, and the two only ever met on the way out - in an export, in a shared link, or in the
+    /// game.
+    /// </para>
+    /// <para>
+    /// Only when there is one. An empire whose choices match no government the game has is told so
+    /// on its own card; writing nothing over what the design arrived holding would be throwing away
+    /// the better of two answers.
+    /// </para>
+    /// </remarks>
+    private static void WriteGovernment(EmpireDesign design, DesignContext context)
+    {
+        if (context.Government is { Length: > 0 } government)
+        {
+            design.Government = government;
+        }
+    }
 
     /// <summary>
     /// Writes in the traits the empire's own choices impose, where the design lacks them.
@@ -578,9 +631,9 @@ public sealed class DesignSession
     /// mechanic this app does not model - and the picker will now let the player take it off, since
     /// nothing is forcing it any more.
     /// </remarks>
-    private void AddForcedTraits(EmpireDesign design)
+    private void AddForcedTraits(EmpireDesign design, DesignContext context)
     {
-        var forced = Rules.GetWrittenForcedTraits(Rules.CreateContext(design, OwnedDlc));
+        var forced = Rules.GetWrittenForcedTraits(context);
         var held = design.Species.Traits;
 
         if (forced.Where(t => !held.Contains(t)).ToList() is not { Count: > 0 } missing)
@@ -590,6 +643,7 @@ public sealed class DesignSession
 
         design.Species.SetTraits([.. held, .. missing]);
     }
+
 
     /// <summary>
     /// The empire exactly as it would be written to the file, which is the only complete account of

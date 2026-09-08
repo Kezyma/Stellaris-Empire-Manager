@@ -4736,6 +4736,109 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
+    One chip with the rest of its set behind it.
+
+    The lead is drawn as a chip rather than being one: it opens the list instead of a description of
+    itself, and the list holds the real chips. Same pill, same padding, same icon size, so a row that
+    is a stack and a row that is chips line up on the same baseline.
+*/
+.sem-chip-stack {
+    position: relative;
+    display: inline-flex;
+}
+
+.sem-chip-stack > .lead {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: var(--space-2xs) var(--space-xs) var(--space-2xs) 3px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    color: var(--text);
+    font: inherit;
+    font-size: var(--text-sm);
+    text-align: left;
+    cursor: pointer;
+}
+
+.sem-chip-stack > .lead:hover,
+.sem-chip-stack > .lead:focus-visible {
+    background: var(--bg-hover);
+    border-color: var(--accent-dim);
+}
+
+.sem-chip-stack > .lead > img {
+    width: var(--icon-sm);
+    height: var(--icon-sm);
+    object-fit: contain;
+}
+
+/*
+    How many more there are, as the count rather than a chevron: an arrow says a list opens and a
+    number says that and how much of one, which is the difference between pressing to find out and
+    knowing whether it is worth pressing.
+*/
+.sem-chip-stack > .lead > .more {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    min-width: var(--icon-sm);
+    height: var(--icon-sm);
+    padding: 0 3px;
+    border-radius: var(--radius-pill);
+    background: var(--bg);
+    color: var(--text-dim);
+    font-size: 0.72em;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+}
+
+.sem-chip-stack > .lead > .more::before { content: "+"; }
+
+/*
+    The list, in the top layer where nothing can clip it - which is the whole point, since these hang
+    off a cell inside a table that scrolls in both directions.
+
+    Down the page rather than across, and left-aligned under the chip, so it reads as the order it is
+    in: likeliest first, and each one under the last.
+*/
+.sem-chip-stack-list {
+    position: fixed;
+    margin: 0;
+    inset: auto;
+    max-height: min(20rem, calc(100vh - 2rem));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: var(--space-xs);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+}
+
+/*
+    The layout waits until it is open, and it has to.
+
+    A closed popover is hidden by one rule in the browser's own stylesheet - display: none while it
+    is not :popover-open - and any display an author writes beats it, whatever the specificity, for
+    the plain reason that author styles win over the browser's. Written on the panel itself, the
+    flex here held every list on the page permanently open: they were never popovers at all, only
+    fixed boxes sitting at whatever coordinates were last written into them, which is why nothing
+    would close them and why asking which popovers were open answered none.
+
+    The description panel beside this one never had the problem because it never set display. This
+    one needs to, so it sets it where the browser is no longer saying otherwise.
+*/
+.sem-chip-stack-list:popover-open {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2xs);
+}
+
+/*
     The description itself, drawn in the top layer.
 
     Placed from sem.js rather than by the browser: the top layer has no idea what a popover was
@@ -4748,6 +4851,16 @@ button.icon .sem-action-icon { display: block; }
     margin: 0;
     inset: auto;
     width: min(22rem, calc(100vw - 2rem));
+
+    /*
+        Said here because the panel inherits from wherever its chip is written, and the top layer
+        does not change that: it is drawn out of the flow, but its styles still come down the DOM.
+        A table's cells are nowrap - one line per row, whatever is in it, which is what makes a
+        column of empires comparable - and a paragraph of the game's prose inheriting that came out
+        as one line the width of the sentence, with a horizontal scrollbar under it. The same panel
+        on the lite card, whose ancestors say nothing about wrapping, always read properly.
+    */
+    white-space: normal;
     max-height: min(24rem, calc(100vh - 2rem));
     overflow-y: auto;
     overscroll-behavior: contain;
@@ -5573,7 +5686,7 @@ button.icon .sem-action-icon { display: block; }
     min-width: 0;
 }
 
-.sem-lite-panel .badge {
+.sem-lite-panel button.badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -5590,12 +5703,12 @@ button.icon .sem-action-icon { display: block; }
     cursor: pointer;
 }
 
-.sem-lite-panel .badge:hover {
+.sem-lite-panel button.badge:hover {
     background: var(--bg-hover);
     border-color: var(--accent-dim);
 }
 
-.sem-lite-panel .badge img {
+.sem-lite-panel button.badge img {
     width: var(--icon);
     height: var(--icon);
     object-fit: contain;
@@ -5621,7 +5734,7 @@ button.icon .sem-action-icon { display: block; }
    margin rather than displaying it. At 0.8 the sheet is 59x46 and the phoenix 40x27; a 46x33 window
    leaves three pixels of clear space around it, which is what the gender buttons have.
 */
-.sem-lite-panel .badge.large {
+.sem-lite-panel button.badge.large {
     position: absolute;
     top: var(--space-sm);
     right: var(--space-sm);
@@ -5636,7 +5749,7 @@ button.icon .sem-action-icon { display: block; }
     overflow: hidden;
 }
 
-.sem-lite-panel .badge.large img {
+.sem-lite-panel button.badge.large img {
     flex: none;
     width: 59px;
     height: 46px;
@@ -5644,7 +5757,7 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /* Room for it, so a long name does not run underneath. */
-.sem-lite-panel:has(.badge.large) > .body > .about > .titles {
+.sem-lite-panel:has(button.badge.large) > .body > .about > .titles {
     padding-right: calc(46px + var(--space-sm));
 }
 
@@ -5747,6 +5860,27 @@ button.icon .sem-action-icon { display: block; }
 .sem-lite-chips .sem-lite-empty:hover {
     background: var(--bg-hover);
     border-color: var(--accent-dim);
+}
+
+/*
+    The same thing, standing still.
+
+    A government's name and the personalities beside it are what the empire's other choices add up
+    to rather than choices of their own, so there is nothing behind them to open. They keep the shape
+    they had - the card's rows line up on it - and give up the cursor and the hover that said press
+    me.
+*/
+.sem-lite .name-button.still,
+.sem-lite-chips .sem-lite-empty.still {
+    /* A span, where the others are buttons, so it has to be told to behave like a box. */
+    display: block;
+    cursor: default;
+}
+
+.sem-lite .name-button.still:hover,
+.sem-lite-chips .sem-lite-empty.still:hover {
+    background: none;
+    border-color: transparent;
 }
 
 /*
@@ -6245,4 +6379,60 @@ button.icon .sem-action-icon { display: block; }
 
 .sem-editor-modal .head > .sem-plan-switch {
     margin-right: calc(var(--space-xs) * -1);
+}
+
+/*
+    A number carried on a chip, drawn where the chip's icon goes.
+
+    Kept apart from the glyph buttons above by being a span: those rules name button.badge, since
+    what they style is a control, and this one is a label. They collided while both were written as
+    .badge - the button's own width won, and every share came out the width of a button.
+
+    For the AI personalities, which are not one answer but a draw: the empire allows several and the
+    game picks one, so each says how likely it is to be the one. They have no artwork in the game, so
+    the number takes the icon's place and its size - it is what tells one of these chips from the
+    next, and behind the name it was a footnote on a row of names that all looked alike.
+
+    Coloured by that likelihood, red through yellow to green, which the component hands over as a
+    hue: nought degrees to a hundred and twenty is exactly that ramp, so nothing here interpolates.
+    Drawn as a ring with the number inside rather than as a filled disc, because a filled one has to
+    choose a text colour that works over both a dark red and a bright yellow, and there is none.
+
+    A pill rather than a strict circle so that "100" fits. It is a circle at one and two characters,
+    which is every share but the one an empire that allows a single personality gets.
+*/
+.sem-chip > button > .badge,
+.sem-chip-stack > .lead > .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    min-width: var(--icon-sm);
+    height: var(--icon-sm);
+    padding: 0 3px;
+    border: 1px solid hsl(var(--badge-hue, 0) 60% 45%);
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, hsl(var(--badge-hue, 0) 60% 45%) 20%, transparent);
+    color: hsl(var(--badge-hue, 0) 55% 68%);
+    font-size: 0.72em;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+/*
+    On a light ground the same hue has to come down to stay readable: a 68% lightness that reads as
+    a colour against a dark panel is nearly white against a pale one.
+*/
+@media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) .sem-chip > button > .badge,
+    :root:not([data-theme="dark"]) .sem-chip-stack > .lead > .badge {
+        color: hsl(var(--badge-hue, 0) 55% 32%);
+    }
+}
+
+:root[data-theme="light"] .sem-chip > button > .badge,
+:root[data-theme="light"] .sem-chip-stack > .lead > .badge {
+    color: hsl(var(--badge-hue, 0) 55% 32%);
 }

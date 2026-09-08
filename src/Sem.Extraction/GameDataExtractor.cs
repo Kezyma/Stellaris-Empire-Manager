@@ -107,6 +107,9 @@ public sealed class GameDataExtractor(LayeredContent content)
         var civics = GovernmentExtractor.ExtractCivics(loader, requirements, assets, Localisation);
         var governmentTypes = GovernmentExtractor.ExtractGovernmentTypes(loader, requirements);
 
+        // What one of these designs is played as when it turns up as somebody's neighbour.
+        var personalities = PersonalityExtractor.Extract(loader, requirements);
+
         Report("Reading ascension perks and tradition trees");
         var ascensionPerks = AscensionExtractor.Extract(loader, requirements, assets, Localisation);
         var traditionTrees = AscensionExtractor.ExtractTrees(loader, requirements, assets);
@@ -173,6 +176,7 @@ public sealed class GameDataExtractor(LayeredContent content)
             TraditionTrees = traditionTrees,
             Traditions = traditions,
             GovernmentTypes = governmentTypes,
+            Personalities = personalities,
             PlanetClasses = planetClasses,
             PortraitCategories = portraitCategories,
             PortraitSets = portraitSets,

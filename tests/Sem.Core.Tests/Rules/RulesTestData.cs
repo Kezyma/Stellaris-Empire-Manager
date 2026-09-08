@@ -137,10 +137,23 @@ internal static class RulesTestData
                 Initializers = ["void_dweller_system"],
                 ForcedTraits = ["trait_void_dweller_1"],
             },
+            // The other kind: an origin whose world is one the designer offers anyway, as Ocean
+            // Paradise's is. Two of the game's thirteen are like this and eleven are not.
+            new CivicDefinition("origin_ocean_paradise", IsOrigin: true)
+            {
+                StartingColony = "pc_ocean",
+            },
             new CivicDefinition("origin_syncretic_evolution", IsOrigin: true)
             {
                 RequiresSecondarySpecies = true,
                 SecondarySpeciesTraits = ["trait_syncretic_proles"],
+            },
+            // Gives a trait rather than forcing one, as Teachers of the Shroud gives Latent Psionic.
+            // The trait it gives is one the game never offers at creation, which is what both of the
+            // real ones are.
+            new CivicDefinition("origin_shroudwalker_apprentice", IsOrigin: true)
+            {
+                SoftTraits = ["trait_not_initial"],
             },
             // States its extra trait allowance in a plain modifier block, as most of them do.
             new CivicDefinition("civic_natural_design", IsOrigin: false)

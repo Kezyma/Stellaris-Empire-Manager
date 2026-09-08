@@ -418,6 +418,12 @@ public sealed class RequirementCompiler
             case "has_government" when node.ScalarValue is { } government:
                 return new FieldRequirement("government", government);
 
+            // How the ruler is chosen, which the authority states and the design therefore knows.
+            // Asked as a field for the same reason the government is: it is derived from what the
+            // design holds rather than held.
+            case "has_election_type" when node.ScalarValue is { } election:
+                return new FieldRequirement("election_type", election);
+
             case "OR" when node.Block is not null:
                 return new AnyRequirement(CompileTriggerChildren(node.Block, depth));
 

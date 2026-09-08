@@ -19,7 +19,7 @@ public sealed record GameDatabase
     /// site published with a database one version behind was read anyway, with whatever the shape had
     /// gained since taking its default and no sign that anything was missing.
     /// </remarks>
-    public const int CurrentSchemaVersion = 14;
+    public const int CurrentSchemaVersion = 16;
 
     /// <summary>Version of this file's own shape, so an old cache can be detected and rebuilt.</summary>
     public required int SchemaVersion { get; init; }
@@ -125,6 +125,12 @@ public sealed record GameDatabase
     /// government from the authority, ethics and civics rather than offering it as a choice.
     /// </summary>
     public IReadOnlyList<GovernmentTypeDefinition> GovernmentTypes { get; init; } = [];
+
+    /// <summary>
+    /// The personalities the game gives an AI empire, which is what one of these designs becomes
+    /// when it turns up in somebody's galaxy.
+    /// </summary>
+    public IReadOnlyList<PersonalityDefinition> Personalities { get; init; } = [];
 
     /// <summary>Planet classes, including which may be a homeworld.</summary>
     public IReadOnlyList<PlanetClassDefinition> PlanetClasses { get; init; } = [];
@@ -286,6 +292,16 @@ public sealed record GameDatabase
         foreach (var government in GovernmentTypes)
         {
             yield return government.Possible;
+        }
+
+        foreach (var personality in Personalities)
+        {
+            yield return personality.Allow;
+
+            foreach (var addition in personality.Additions)
+            {
+                yield return addition.When;
+            }
         }
 
         foreach (var planet in PlanetClasses)
@@ -852,8 +868,15 @@ public sealed record AuthorityDefinition(string Key)
     /// <summary>Whether the ruler has an heir.</summary>
     public bool HasHeir { get; init; }
 
-    /// <summary>How rulers are chosen, or <c>none</c>.</summary>
-    public string? ElectionType { get; init; }
+    /// <summary>
+    /// How rulers are chosen - <c>democratic</c>, <c>oligarchic</c> or <c>none</c>.
+    /// </summary>
+    /// <remarks>
+    /// None where the authority says nothing, which is the game's own default and is written in the
+    /// comment its file opens with. Left as nothing, an authority that simply has no election
+    /// answered neither yes nor no to being asked - and four personalities ask.
+    /// </remarks>
+    public string ElectionType { get; init; } = "none";
 
     /// <summary>What this authority does, and how the game describes it.</summary>
     public EffectSet Effects { get; init; } = EffectSet.None;
@@ -1148,6 +1171,53 @@ public sealed record OptionVariant(Requirement When, string? NameKey, string? De
     public string? PenaltyKey { get; init; }
 }
 
+/// <summary>
+/// One of the personalities the game hands to an AI empire.
+/// </summary>
+/// <remarks>
+/// <para>
+/// Not a thing anybody picks, and not a thing an empire is - it is what an empire will be played as
+/// when it turns up in a galaxy as somebody else's neighbour. Which makes it the same kind of fact
+/// as the government: read off the ethics, the civics and the rest rather than stored anywhere.
+/// </para>
+/// <para>
+/// And unlike the government it is not settled. The game keeps every personality the empire allows
+/// and draws one, weighted - so an empire has a set of them with odds, not a name.
+/// </para>
+/// </remarks>
+/// <param name="Key">What the game calls it.</param>
+/// <param name="Weight">Its base weight in that draw.</param>
+/// <param name="FileOrder">Where it was defined, which is the only stable order these have.</param>
+public sealed record PersonalityDefinition(string Key, double Weight, int FileOrder)
+{
+    /// <summary>What the empire has to be for this to be one of the ones drawn from.</summary>
+    public Requirement Allow { get; init; } = new AlwaysRequirement(true);
+
+    /// <summary>
+    /// What is added to the weight, and when.
+    /// </summary>
+    /// <remarks>
+    /// Added, not multiplied. The game says so itself, at the top of its own file - "NOTE: Weight
+    /// is additive!" - and it is the one place these differ from the governments, whose factors
+    /// multiply. <see cref="WeightFactor"/> is shared with them, so read its number as an addition
+    /// here.
+    /// </remarks>
+    public IReadOnlyList<WeightFactor> Additions { get; init; } = [];
+
+    /// <summary>
+    /// What it is called.
+    /// </summary>
+    /// <remarks>
+    /// Under a prefix rather than under its own key, which is the one thing about these that is not
+    /// the usual convention. Fifty of the fifty-one are named this way, with a description beside
+    /// them; the odd one out belongs to a fallen empire and no design reaches it.
+    /// </remarks>
+    public string NameKey => $"personality_{Key}";
+
+    /// <summary>And where its description is written.</summary>
+    public string DescriptionKey => $"{NameKey}_desc";
+}
+
 public sealed record GovernmentTypeDefinition(string Key, double Weight, int FileOrder)
 {
     /// <summary>What the design must look like for this government to apply.</summary>
@@ -1218,6 +1288,24 @@ public sealed record PlanetClassDefinition(string Key)
     /// of towers — which is why the backdrop cannot be one picture. Furthest from the viewer first.
     /// </remarks>
     public IReadOnlyList<SceneryBand> Scenery { get; init; } = [];
+
+    /// <summary>
+    /// Whether the empire's city is built on this world at all.
+    /// </summary>
+    /// <remarks>
+    /// Twenty worlds say no, and they are the ones that are already a built thing: a machine world,
+    /// a hive world, a habitat, an ecumenopolis's cousins. The game draws the world and stops, and
+    /// painting an empire's towers over one showed a city on a planet that is a city.
+    /// </remarks>
+    public bool ShowsCity { get; init; } = true;
+
+    /// <summary>
+    /// The level the city is always drawn at, where the world fixes it.
+    /// </summary>
+    /// <remarks>
+    /// Only the ecumenopolis, which is built to the horizon whatever its population.
+    /// </remarks>
+    public int? FixedCityLevel { get; init; }
 
     /// <summary>Localisation key for the display name.</summary>
     public string NameKey => Key;
@@ -1854,6 +1942,29 @@ public sealed record ArkshipDefinition(string Key)
 
     /// <summary>A drawing of the ship, rendered from its model the way a shipset's is.</summary>
     public string? Preview { get; init; }
+
+    /// <summary>
+    /// The ship as it appears through the window, behind the ruler.
+    /// </summary>
+    /// <remarks>
+    /// A nomad's scene is composed the way a settled empire's is - something in the distance, then
+    /// something nearer, then the room over both - and this is the nearer thing, standing where a
+    /// city stands for an empire that has one. Not the same picture as <see cref="Preview"/>: that
+    /// is the ship on a card in the picker, drawn small and whole, and this is the ship filling a
+    /// window. The game keeps three, one per family, named by each ship size's
+    /// <c>arkship_picture</c>.
+    /// </remarks>
+    public string? Picture { get; init; }
+
+    /// <summary>
+    /// The stars behind it, which are the same for all three.
+    /// </summary>
+    /// <remarks>
+    /// A world's sky is filed under the world's name in <c>gfx/portraits/environments</c>, and the
+    /// ark class has nothing there - it is not a world and has no sky of its own. This one is filed
+    /// with the ships instead.
+    /// </remarks>
+    public string? Sky { get; init; }
 }
 
 /// <summary>

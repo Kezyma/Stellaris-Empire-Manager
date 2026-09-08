@@ -1,0 +1,135 @@
+@*
+    A set of chips where one of them is usually the answer, shown as that one with the rest behind it.
+
+    For the AI personalities, which are the only thing here that is drawn rather than decided. An
+    empire allows several, the game picks one by weight, and the likeliest is very often most of the
+    answer - a fanatic militarist spiritualist is Honorbound Warriors three times in four. So the
+    likeliest is what stands on the row, and the whole list is a hover, a press or a tap away.
+
+    Five chips laid out flat said the same thing, and cost the row to say it: on the lite card they
+    wrapped onto a second line, and in a table they set the width of a column nobody had asked to be
+    that wide.
+
+    The lead is a picture of the first chip rather than the chip itself. Both of them opening a panel
+    on the same hover is two auto popovers fighting - the browser closes one when the other opens, and
+    which one survives is a matter of event order - so the lead describes nothing and the list below
+    holds every one of them, the leader included, each with its own description where it always was.
+
+    Which is also why a set of one is not a stack at all but an ordinary chip. There is nothing to
+    open, so nothing has to be given up to open it: an empire that allows a single personality reads
+    about it the way it reads about a civic.
+*@
+
+@inject IJSRuntime Js
+@implements IAsyncDisposable
+
+@if (Rest == 0)
+{
+    <OptionChip Key="@Lead.Key" Name="@Lead.Name" Icon="@Lead.Icon" Effects="@Lead.Effects"
+                DescriptionKey="@Lead.Description" Badge="@Lead.Badge" BadgeLevel="@Lead.BadgeLevel" />
+}
+else
+{
+<span class="sem-chip-stack">
+    <button type="button" @ref="_anchor" class="lead" aria-controls="@_id" aria-haspopup="true"
+            title="@Title">
+        @if (Lead.Badge is { Length: > 0 })
+        {
+            <span class="badge" style="@BadgeStyle">@Lead.Badge</span>
+        }
+
+        @if (Lead.Icon is { Length: > 0 } icon)
+        {
+            <img src="@Session.Data.AssetUrl(icon)" alt="" loading="lazy">
+        }
+
+        <span class="name">@Lead.Name</span>
+
+        @* How many more there are behind it, which is the whole reason to press. *@
+        <span class="more" aria-hidden="true">@Rest</span>
+    </button>
+
+    @*
+        popover="auto", so an outside press puts it away and opening another closes this one. The
+        chips inside keep their own panels: those are descendants of this one, which is what lets the
+        browser hold both open at once.
+    *@
+    <div id="@_id" popover="auto" class="sem-chip-stack-list" @ref="_panel">
+        @foreach (var choice in Items)
+        {
+            <OptionChip @key="choice.Key" Key="@choice.Key" Name="@choice.Name" Icon="@choice.Icon"
+                        Effects="@choice.Effects" DescriptionKey="@choice.Description"
+                        Badge="@choice.Badge" BadgeLevel="@choice.BadgeLevel" />
+        }
+    </div>
+</span>
+}
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>The whole set, likeliest first, which is the order they are shown in.</summary>
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<EmpireChoice> Items { get; set; }
+
+    /// <summary>The one that stands on the row.</summary>
+    private EmpireChoice Lead => Items[0];
+
+    /// <summary>How many are behind it.</summary>
+    private int Rest => Items.Count - 1;
+
+    /// <summary>Said on the lead, since the lead is the only part a pointer can rest on unopened.</summary>
+    private string Title => $"{Lead.Name}, and {Rest} more this empire could be given";
+
+    /// <summary>The lead's own colour, drawn the way the chip inside the list draws it.</summary>
+    private string? BadgeStyle => Lead.BadgeLevel is { } level
+        ? string.Create(
+            System.Globalization.CultureInfo.InvariantCulture,
+            $"--badge-hue:{Math.Clamp(level, 0, 1) * 120:0}")
+        : null;
+
+    /// <summary>
+    /// Ties the list to its chip, uniquely on the page.
+    /// </summary>
+    /// <remarks>
+    /// The same reason a chip's own panel needs one: a popover is addressed by id, and there is a
+    /// stack of these on every row of a table.
+    /// </remarks>
+    private readonly string _id = $"stack-{Guid.NewGuid():N}";
+
+    private ElementReference _anchor;
+    private ElementReference _panel;
+
+    private IJSObjectReference? _module;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // A set of one was drawn as an ordinary chip and has no list to hang anything off. It ties
+        // its own panel up, exactly as a chip anywhere else does.
+        if (!firstRender || Rest == 0)
+        {
+            return;
+        }
+
+        _module = await Js.InvokeAsync<IJSObjectReference>("import", "./_content/Sem.Ui/sem.js");
+        await _module.InvokeVoidAsync("bindDropdown", _anchor, _panel);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_module is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await _module.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+            // The page went away first; there is nothing left to release.
+        }
+    }
+}

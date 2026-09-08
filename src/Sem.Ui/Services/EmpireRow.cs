@@ -66,6 +66,16 @@ public sealed record EmpireRow
 
     public EmpireChoice? Government { get; init; }
 
+    /// <summary>
+    /// The personalities the game could give this empire, each carrying how likely it is.
+    /// </summary>
+    /// <remarks>
+    /// Several, because the game draws rather than decides, and ordered with the likeliest first -
+    /// so a column of these reads as an answer even where only the first cell's worth is visible,
+    /// and sorting by it sorts by what the empire would most likely be played as.
+    /// </remarks>
+    public IReadOnlyList<EmpireChoice> Personalities { get; init; } = [];
+
     public EmpireChoice? Authority { get; init; }
 
     /// <summary>
@@ -305,6 +315,10 @@ public sealed record EmpireRow
                 ? new EmpireChoice(held.Key, loc.Text(held.NameKey, Localizer.Prettify(held.Key)), null, null)
                 : null,
 
+            // The card's own answer, taken rather than worked out again: it is memoised on the view
+            // and reads the same context the government above was derived from.
+            Personalities = view.Personalities,
+
             Authority = view.Authority is { } authority
                 ? new EmpireChoice(
                     authority.Key,
@@ -495,6 +509,12 @@ public sealed record EmpireFacet(
         // picks from. What is offered is what these empires came to.
         new("government", "Government", r => Some(r.Government)),
 
+        // The same kind of thing, and offered the same way: nobody picks a personality either, and
+        // what is worth offering is the ones these empires could actually be given rather than all
+        // fifty-one the game defines - twenty of which belong to fallen empires and pre-FTL
+        // societies and can reach no design at all.
+        new("personality", "AI personality", r => r.Personalities),
+
         new("authority", "Authority", r => Some(r.Authority), o => o.Authorities),
         new("nomadic", "Nomadic", r => YesOrNo(r.Nomadic)),
         new("ethics", "Ethics", r => r.Ethics, o => o.Ethics),
@@ -565,7 +585,11 @@ public sealed record EmpireFacet(
     /// </remarks>
     public bool Several => Key is
         "ethics" or "civics" or "traits" or "rulertraits" or "secondtraits"
-        or "plantraditions" or "planperks" or "plancivics";
+        or "plantraditions" or "planperks" or "plancivics"
+
+        // An empire is given one of these but allows several, so asking for all of two is a
+        // question with an answer: the empires either of which it might turn out to be.
+        or "personality";
 
     internal static IReadOnlyList<EmpireChoice> Some(EmpireChoice? choice) =>
         choice is null ? [] : [choice];
@@ -600,12 +624,17 @@ public sealed record EmpireFacet(
 /// <param name="OnByDefault">Whether it is shown before anybody has chosen.</param>
 /// <param name="Choices">What the cell draws, where the cell is things that were picked.</param>
 /// <param name="Line">What the cell says, where it is a line of text somebody typed.</param>
+/// <param name="Stacked">
+/// Whether the cell shows the first of its choices with the rest behind it rather than all of them
+/// side by side.
+/// </param>
 public sealed record EmpireColumn(
     string Key,
     string Header,
     bool OnByDefault,
     Func<EmpireRow, IReadOnlyList<EmpireChoice>>? Choices = null,
-    Func<EmpireRow, string>? Line = null)
+    Func<EmpireRow, string>? Line = null,
+    bool Stacked = false)
 {
     /// <summary>Every column, in the order they are drawn.</summary>
     /// <remarks>
@@ -616,6 +645,11 @@ public sealed record EmpireColumn(
     [
         Picked("preset", false),
         Picked("government", false),
+
+        // Stacked, because these are the one column whose cells hold alternatives rather than a
+        // set: the empire is given one of them, and the likeliest is most of the answer. Laid out
+        // flat, five of them set the width of a column nobody asked to be that wide.
+        Picked("personality", false, stacked: true),
 
         // The one column that is not read straight off its heading: nomadic belongs in the cell
         // beside the authority, where the game puts it and where the card already draws it.
@@ -662,11 +696,11 @@ public sealed record EmpireColumn(
     /// Written once from the facet, so a column and the control that narrows it can never be called
     /// different things or disagree about what an empire holds.
     /// </remarks>
-    private static EmpireColumn Picked(string key, bool onByDefault)
+    private static EmpireColumn Picked(string key, bool onByDefault, bool stacked = false)
     {
         var facet = EmpireFacet.All.First(f => f.Key == key);
 
-        return new EmpireColumn(facet.Key, facet.Label, onByDefault, facet.Values);
+        return new EmpireColumn(facet.Key, facet.Label, onByDefault, facet.Values, Stacked: stacked);
     }
 
     /// <summary>What the column sorts by, which for several choices is all of them run together.</summary>

@@ -41,18 +41,54 @@ public static class WorldBackdrop
     /// <param name="world">The world, or null to draw the city against nothing.</param>
     /// <param name="city">The city, or null to draw the world alone.</param>
     /// <param name="level">How built-up the world is, on the game's own nought-to-five scale.</param>
+    /// <param name="arkship">
+    /// The ship the empire lives aboard, where it lives aboard one, which the window shows instead
+    /// of a world and a city.
+    /// </param>
     public static IEnumerable<string> Layers(
         PlanetClassDefinition? world,
         GraphicalCultureDefinition? city,
-        int level)
+        int level,
+        ArkshipDefinition? arkship = null)
     {
+        // A nomad's window shows its own hull against the stars, and the game composes that the same
+        // way it composes a world: something far off, then something near, then the room over both.
+        // The near thing here is the ship - the game's comment beside the field it is named in says
+        // "used in portrait background for arkships" - and it stands exactly where a city stands for
+        // an empire that has one.
+        //
+        // Which is why the city goes. It is still the empire's, and still means something for the
+        // worlds it settles later, but there is no world here to build it on, and painted over the
+        // hull it was a skyline hanging in space.
+        if (arkship is not null)
+        {
+            if (arkship.Sky is { Length: > 0 } stars)
+            {
+                yield return stars;
+            }
+
+            if (arkship.Picture is { Length: > 0 } hull)
+            {
+                yield return hull;
+            }
+
+            yield break;
+        }
+
         if (world?.Sky is { Length: > 0 } sky)
         {
             yield return sky;
         }
 
         var scenery = world?.Scenery ?? [];
-        var towers = city?.CityLayers ?? [];
+
+        // A world that is already built has no city painted on it. The game says so itself, on
+        // twenty of them - a machine world, a hive world, a habitat - and an empire's towers over
+        // one of those is a city drawn on a planet that is a city.
+        var towers = world is { ShowsCity: false } ? [] : city?.CityLayers ?? [];
+
+        // And one is built to the horizon whatever its population.
+        level = world?.FixedCityLevel ?? level;
 
         var bands = Math.Max(
             scenery.Count > 0 ? scenery.Max(s => s.Band) : 0,

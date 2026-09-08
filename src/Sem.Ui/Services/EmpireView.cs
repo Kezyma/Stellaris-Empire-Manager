@@ -33,6 +33,26 @@ public sealed record EmpireChoice(string Key, string Name, string? Icon, EffectS
     /// so what is actually being changed is the part that stands out.
     /// </remarks>
     public bool Unchanged { get; init; }
+
+    /// <summary>
+    /// A few characters drawn on the chip itself, where the thing has a number worth seeing.
+    /// </summary>
+    /// <remarks>
+    /// For the personalities, which are not one answer but a draw: the empire allows several and
+    /// the game picks one, so each says how likely it is to be the one. Nothing else sets it, and a
+    /// chip without one is drawn exactly as it always was.
+    /// </remarks>
+    public string? Badge { get; init; }
+
+    /// <summary>
+    /// How full that number is, nought to one, which is what colours it.
+    /// </summary>
+    /// <remarks>
+    /// Kept beside the text rather than parsed back out of it. The text is rounded and sometimes not
+    /// a number at all - a share under one per cent reads "&lt;1" - and the colour wants the share
+    /// itself.
+    /// </remarks>
+    public double? BadgeLevel { get; init; }
 }
 
 /// <summary>
@@ -100,6 +120,9 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
         _plan = null;
         _hasPlan = null;
         _vocabulary = null;
+
+        // Read off the context, so they go when it does.
+        _personalities = null;
     }
 
     public RoomDefinition? Room =>
@@ -127,6 +150,30 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
     /// <summary>The arkship a nomad begins aboard, when the design names one.</summary>
     public ArkshipDefinition? Arkship =>
         Database.Arkships.FirstOrDefault(a => a.Key == _design.ShipSize);
+
+    /// <summary>Whether the empire lives aboard a ship rather than on a world.</summary>
+    public bool IsNomadic => _design.IsNomadic == true;
+
+    /// <summary>
+    /// What the empire starts on, or in: a world's class, or a nomad's arkship.
+    /// </summary>
+    /// <remarks>
+    /// A nomad has no homeworld, and everything that named the world's class went on naming the one
+    /// the design used to hold - so an arkship empire read "Continental World" under the name of its
+    /// ship. The class is the wrong answer for a nomad whatever it says, the ark class included:
+    /// "Arkship" beneath a name is a label repeating itself, where the ship's own name says which of
+    /// the three was chosen.
+    /// </remarks>
+    public string StartKind => IsNomadic
+        ? Arkship is { } ark
+            ? _session.Localizer.Text(ark.NameKey, Localizer.Prettify(ark.Key))
+            : _session.Localizer.Text("arkship_cap", "Arkship")
+        : _session.Localizer.Text(Context.EffectivePlanetClass);
+
+    /// <summary>What to call that.</summary>
+    public string StartLabel => IsNomadic
+        ? _session.Localizer.Heading("arkship_cap", "Arkship")
+        : _session.Localizer.Heading("HOMEWORLD_CLASS_LABEL", "Homeworld Class");
 
     /// <summary>
     /// What the game calls a set of artwork, falling back to its readable key.
@@ -158,6 +205,58 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
             ? _session.Localizer.Text(government.Key)
             : _session.Localizer.Text(_design.Authority);
 
+    /// <summary>
+    /// The personalities the game could give this empire, likeliest first, each saying how likely.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Not one answer, which is what parts this from the government beside it. The game keeps every
+    /// personality the empire allows and draws one, weighted, and the conditions overlap heavily on
+    /// ethics - so an empire usually allows several and none of them is the answer.
+    /// </para>
+    /// <para>
+    /// Nothing at all until the empire has ethics: almost every personality asks after one, so a
+    /// design that has chosen none answers none of them. That is the truth rather than a gap, and
+    /// the row simply does not draw.
+    /// </para>
+    /// </remarks>
+    public IReadOnlyList<EmpireChoice> Personalities =>
+        _personalities ??=
+        [
+            .. _session.Rules.DerivePersonalities(Context)
+                .Select(chance => new EmpireChoice(
+                    chance.Personality.Key,
+                    _session.Localizer.Text(chance.Personality.NameKey, Localizer.Prettify(chance.Personality.Key)),
+                    null,
+                    null)
+                {
+                    Description = chance.Personality.DescriptionKey,
+                    Badge = Share(chance.Share),
+                    BadgeLevel = chance.Share,
+                })
+        ];
+
+    private IReadOnlyList<EmpireChoice>? _personalities;
+
+    /// <summary>
+    /// A share as a percentage, never rounded away to nothing.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A personality the empire genuinely might be given showing "0" would be the app saying it
+    /// cannot happen, so anything under one per cent says so as "&lt;1" instead.
+    /// </para>
+    /// <para>
+    /// No per-cent sign. Every one of these is a percentage and they are drawn three characters wide
+    /// at most, in a circle the size of a chip's icon - the sign would be a fourth character saying
+    /// what the row already says.
+    /// </para>
+    /// </remarks>
+    private static string Share(double share) =>
+        share >= 0.995 ? "100"
+        : share < 0.005 ? "<1"
+        : $"{share * 100:0}";
+
     /// <summary>The ruler, as a line: their name and the title they hold, where they hold one.</summary>
     public string Ruler
     {
@@ -180,7 +279,7 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
             new[]
             {
                 _session.Localizer.Name(_design.PlanetName, string.Empty),
-                _session.Localizer.Text(Context.EffectivePlanetClass),
+                StartKind,
             }.Where(p => p.Length > 0));
 
     /// <summary>The starting system, which most empires leave to the galaxy generator.</summary>

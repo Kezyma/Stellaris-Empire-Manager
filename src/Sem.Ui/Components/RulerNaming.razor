@@ -155,14 +155,15 @@
     /// The names the empire's own list offers.
     /// </summary>
     /// <remarks>
-    /// The list the species draws its random names from, which for the game's human empires is a
-    /// pool of ordinary human names rather than the empire's own — the same redirection the
-    /// homeworld naming already follows.
+    /// Its own, and no redirection. These went through <c>customize_random_override</c> for a while,
+    /// which the game's README limits to the species, the homeworld and the home star - all three of
+    /// them read out of <c>common/species_names</c> and none of them a leader. The human lists point
+    /// at HUM2 for that purpose, so the Systems Alliance, whose list is full of Johns and Peters, was
+    /// offered Merg and Japra to call its Prime Minister.
     /// </remarks>
     private IReadOnlyList<string> LeaderNames =>
         Session.Data.Database.NameLists
-            .FirstOrDefault(l => l.Key == (Session.Names.SpeciesNameSourceFor(Design.Species.NameList)
-                                           ?? Design.Species.NameList))
+            .FirstOrDefault(l => string.Equals(l.Key, Design.Species.NameList, StringComparison.Ordinal))
             ?.CharacterNames.Assembled(Suggestions) ?? [];
 
     /// <summary>
@@ -213,9 +214,8 @@
     private void RandomiseName()
     {
         var female = string.Equals(Design.Ruler.Gender, "female", StringComparison.Ordinal);
-        var list = Session.Names.SpeciesNameSourceFor(Design.Species.NameList) ?? Design.Species.NameList;
 
-        if (Session.Names.Ruler(list, female) is { Length: > 0 } name)
+        if (Session.Names.Ruler(Design.Species.NameList, female) is { Length: > 0 } name)
         {
             SetName(name);
         }

@@ -45,7 +45,9 @@
     }
 
     <div class="body">
-    <RoomScene Room="Room" World="World" City="City" Portrait="@RulerPortrait" Flag="@Design.Flag"
+    <RoomScene Room="Room" World="World" City="City"
+               Arkship="@(View.IsNomadic ? View.Arkship : null)"
+               Portrait="@RulerPortrait" Flag="@Design.Flag"
                Alt="@Session.Localizer.Name(Design.Species.Name, string.Empty)" />
 
     @* The game's own header: flag, empire name, and who is in charge. *@
@@ -124,6 +126,7 @@
     }
 
     @* From here down is ours: everything the game's preview has no space for. *@
+    @Stacked("AI Personality", Personalities)
     @Chips(Session.Localizer.Heading("ETHICS", "Ethics"), Ethics)
     @Chips(Session.Localizer.Heading("CIVICS_LABEL", "Civics"), Civics)
     @Chips(Session.Localizer.Heading("TRAITS", "Traits"), Traits)
@@ -134,7 +137,7 @@
     }
 
     <dl class="sem-summary">
-        @Row(Session.Localizer.Heading("HOMEWORLD_CLASS_LABEL", "Homeworld Class"), Homeworld)
+        @Row(View.StartLabel, Homeworld)
         @Row(Session.Localizer.Heading("SELECT_SYSTEM_INITIALIZER_LABEL", "Starting Solar System"), StartingSystem)
         @Row(Session.Localizer.Heading("NAME_LIST", "Name List"), Session.Localizer.Text(Design.Species.NameList))
         @Row(Session.Localizer.Heading("SHIP_PREFIX", "Ship Prefix"), Session.Localizer.Name(Design.ShipPrefix, string.Empty))
@@ -293,6 +296,9 @@
 
     private string Government => View.Government;
 
+    /// <summary>What the game would play this empire as, and how likely each is.</summary>
+    private IReadOnlyList<EmpireChoice> Personalities => View.Personalities;
+
     private string Ruler => View.Ruler;
 
     private string Homeworld => View.Homeworld;
@@ -318,6 +324,35 @@
     /// Nothing is drawn for an empty set. A gestalt empire has no civics until it has an authority,
     /// and an empty heading would read as a fault rather than as a stage.
     /// </remarks>
+    /// <summary>
+    /// The same row, with only the likeliest chip standing and the rest a hover away.
+    /// </summary>
+    /// <remarks>
+    /// For the personalities alone, which are alternatives rather than a set: the game draws one of
+    /// them, so the first is most of the answer and the others are what it might have been.
+    /// </remarks>
+    private RenderFragment Stacked(string label, IReadOnlyList<EmpireChoice> items) => builder =>
+    {
+        if (items.Count == 0)
+        {
+            return;
+        }
+
+        builder.OpenElement(0, "div");
+        builder.AddAttribute(1, "class", "sem-showcase-chips");
+
+        builder.OpenElement(2, "div");
+        builder.AddAttribute(3, "class", "heading");
+        builder.AddContent(4, label);
+        builder.CloseElement();
+
+        builder.OpenComponent<ChipStack>(5);
+        builder.AddComponentParameter(6, nameof(ChipStack.Items), items);
+        builder.CloseComponent();
+
+        builder.CloseElement();
+    };
+
     private RenderFragment Chips(string label, IEnumerable<EmpireChoice> items) => builder =>
     {
         var listed = items.ToList();
@@ -343,6 +378,9 @@
             builder.AddComponentParameter(7, nameof(OptionChip.Name), choice.Name);
             builder.AddComponentParameter(8, nameof(OptionChip.Icon), choice.Icon);
             builder.AddComponentParameter(9, nameof(OptionChip.Effects), choice.Effects);
+            builder.AddComponentParameter(10, nameof(OptionChip.DescriptionKey), choice.Description);
+            builder.AddComponentParameter(11, nameof(OptionChip.Badge), choice.Badge);
+            builder.AddComponentParameter(12, nameof(OptionChip.BadgeLevel), choice.BadgeLevel);
             builder.CloseComponent();
         }
 

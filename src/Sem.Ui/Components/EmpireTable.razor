@@ -134,7 +134,20 @@
                             @foreach (var column in Columns)
                             {
                                 <td>
-                                    @if (column.Choices is { } choices)
+                                    @*
+                                        A stacked column shows the first and keeps the rest behind
+                                        it, which is what the personalities want: an empire is given
+                                        one of them, so the likeliest is the answer and the others
+                                        are what it might have been instead.
+                                    *@
+                                    @if (column.Stacked && column.Choices is { } stack)
+                                    {
+                                        @if (stack(row) is { Count: > 0 } held)
+                                        {
+                                            <ChipStack @key="column.Key" Items="@held" />
+                                        }
+                                    }
+                                    else if (column.Choices is { } choices)
                                     {
                                         @*
                                             Keyed, because these are components with a script
@@ -157,12 +170,21 @@
                                                 and a panel that opens to say "no effects" is a
                                                 panel that teaches the reader to stop opening them.
                                             *@
-                                            @if (choice.Effects is not null)
+                                            @*
+                                                Or where it has been pointed at prose of its own. A
+                                                personality has no effects at all - what it does is
+                                                a paragraph about how it behaves - and judged on
+                                                effects alone it fell to the plain cell below and
+                                                lost both the paragraph and the odds it carries.
+                                            *@
+                                            @if (choice.Effects is not null || choice.Description is { Length: > 0 })
                                             {
                                                 <OptionChip @key="choice.Key" Key="@choice.Key"
                                                             Name="@choice.Name" Icon="@choice.Icon"
                                                             Effects="@choice.Effects"
                                                             DescriptionKey="@choice.Description"
+                                                            Badge="@choice.Badge"
+                                                            BadgeLevel="@choice.BadgeLevel"
                                                             Dim="@choice.Unchanged"
                                                             Deferred="true" />
                                             }

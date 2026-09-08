@@ -37,6 +37,18 @@
             popovertarget="@(Opens ? null : _id)" @onclick="OnSelect"
             @onclick:stopPropagation="true"
             @onmouseover="Reveal" @onfocus="Reveal">
+        @*
+            The badge takes the icon's place, at the front and at the icon's size, because on the
+            chips that carry one it is the same kind of thing: a personality has no artwork in the
+            game, and what tells one of these chips from the next at a glance is the number.
+
+            Behind the name it was a footnote to a row of names that all looked alike.
+        *@
+        @if (Badge is { Length: > 0 })
+        {
+            <span class="badge" style="@BadgeStyle">@Badge</span>
+        }
+
         @if (Icon is { Length: > 0 } icon)
         {
             <img src="@Session.Data.AssetUrl(icon)" alt="" loading="lazy">
@@ -119,6 +131,28 @@
     /// </remarks>
     [Parameter]
     public bool Dim { get; set; }
+
+    /// <summary>A few characters drawn in front of the name, for a chip that has a number to it.</summary>
+    [Parameter]
+    public string? Badge { get; set; }
+
+    /// <summary>
+    /// How full that number is, nought to one, which colours the badge.
+    /// </summary>
+    /// <remarks>
+    /// Red at nought through yellow at a half to green at one, which is the hue wheel's own first
+    /// third - nought degrees to a hundred and twenty - so every value between lands where it should
+    /// without a table of stops to interpolate between.
+    /// </remarks>
+    [Parameter]
+    public double? BadgeLevel { get; set; }
+
+    /// <summary>The hue, handed to the stylesheet, which decides what to do with it.</summary>
+    private string? BadgeStyle => BadgeLevel is { } level
+        ? string.Create(
+            System.Globalization.CultureInfo.InvariantCulture,
+            $"--badge-hue:{Math.Clamp(level, 0, 1) * 120:0}")
+        : null;
 
     /// <summary>
     /// What pressing the chip should do, where pressing it should do something.

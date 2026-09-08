@@ -167,6 +167,69 @@ public sealed class EmpireRules(GameDatabase database)
     // ---------------------------------------------------------------------------------------
 
     /// <summary>
+    /// The personalities the game could give this empire, likeliest first.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A list rather than one answer, which is where this parts company with the government. The
+    /// government is the single highest-weighted type that fits; a personality is drawn at random
+    /// from every one that fits, weighted - and the conditions overlap heavily on ethics, so an
+    /// empire usually fits several. Saying which one it "will" get would be the app settling
+    /// something the game rolls.
+    /// </para>
+    /// <para>
+    /// The weights are added rather than multiplied, which the game states at the top of its own
+    /// file. A share is that total against the total of everything else allowed, so the shares of
+    /// what comes back always add to one.
+    /// </para>
+    /// <para>
+    /// Read against the design as it stands, plan and all left out - which is the caller's business
+    /// and is what a plain context already is. A personality is given when the empire first appears,
+    /// long before any of the plan has happened. Two of them ask for an ascension perk and weigh ten
+    /// thousand apiece, so a context carrying a plan would have had them bury everything else.
+    /// </para>
+    /// </remarks>
+    public IReadOnlyList<PersonalityChance> DerivePersonalities(DesignContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        var allowed = new List<(PersonalityDefinition Personality, double Weight)>();
+
+        foreach (var personality in _database.Personalities)
+        {
+            if (!_evaluator.IsSatisfied(personality.Allow, context))
+            {
+                continue;
+            }
+
+            var weight = personality.Additions
+                .Where(a => _evaluator.IsSatisfied(a.When, context))
+                .Aggregate(personality.Weight, (running, a) => running + a.Factor);
+
+            // A personality the game would never draw is not one this empire might be given.
+            if (weight > 0)
+            {
+                allowed.Add((personality, weight));
+            }
+        }
+
+        var total = allowed.Sum(a => a.Weight);
+
+        if (total <= 0)
+        {
+            return [];
+        }
+
+        return
+        [
+            .. allowed
+                .OrderByDescending(a => a.Weight)
+                .ThenBy(a => a.Personality.FileOrder)
+                .Select(a => new PersonalityChance(a.Personality, a.Weight, a.Weight / total))
+        ];
+    }
+
+    /// <summary>
     /// Works out what the empire's government is called.
     /// </summary>
     /// <remarks>
@@ -242,12 +305,50 @@ public sealed class EmpireRules(GameDatabase database)
             return [Arkship];
         }
 
+        return GetSettledHomeworldOptions(context);
+    }
+
+    /// <summary>
+    /// The worlds this empire could start on if it stayed still.
+    /// </summary>
+    /// <remarks>
+    /// The same question asked without the nomad toggle, which is what the toggle itself needs when
+    /// it is turned off: something has to go back where the arkship was, and the arkship is the only
+    /// answer the ordinary list will give while the design still says nomadic.
+    /// </remarks>
+    public IReadOnlyList<string> GetSettledHomeworldOptions(DesignContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
         // An origin that supplies its own world leaves nothing to choose.
         if (OriginOf(context) is { } chosen &&
             (chosen.HabitabilityPreference ?? chosen.StartingColony) is { Length: > 0 } forced)
         {
             return [forced];
         }
+
+        return GetSelectableHomeworlds(context);
+    }
+
+    /// <summary>
+    /// The worlds this empire could pick for itself, before any origin overrides the choice.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Nine classes are starting worlds in the game's own files, and civics, origins and species
+    /// classes add to and take from that - Hearth of the Forge is what makes a volcanic world
+    /// something an empire may be built on.
+    /// </para>
+    /// <para>
+    /// Asked apart from the origin's own world because eleven of the thirteen origins that supply
+    /// one supply a class no design may record: a tomb world, a habitat, a relic world, a ring
+    /// segment, a machine world. The design carries an ordinary world for those and the game changes
+    /// it as the game begins, which is what the empire in front of the player is shown.
+    /// </para>
+    /// </remarks>
+    public IReadOnlyList<string> GetSelectableHomeworlds(DesignContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
 
         var candidates = new List<string>();
 
@@ -355,9 +456,15 @@ public sealed class EmpireRules(GameDatabase database)
             // An origin that calls for two species names a trait for each. Syncretic Evolution makes
             // its founders Intelligent and its subjects Proles, and giving the second species the
             // first one's trait would be the wrong answer rather than a missing one.
-            var traits = civic.IsOrigin && context.IsSecondarySpecies
+            //
+            // The soft ones are forced here too, which reads oddly beside the field's own name. The
+            // game's comment - "can be removed without making the government invalid" - is about the
+            // game, where a species may drop a trait later; it is not about the designer, which is
+            // the only thing this app writes. Teachers of the Shroud shows Latent Psionic greyed at
+            // the top of the chosen traits and will not let it go, exactly as it shows the rest.
+            IReadOnlyList<string> traits = civic.IsOrigin && context.IsSecondarySpecies
                 ? civic.SecondarySpeciesTraits
-                : civic.ForcedTraits;
+                : [.. civic.ForcedTraits, .. civic.SoftTraits];
 
             forced.AddRange(traits.Select(t => new ForcedTrait(t, civic.Key, kind)));
         }
@@ -1704,13 +1811,44 @@ public sealed class EmpireRules(GameDatabase database)
             return;
         }
 
+        // A nomadic empire lives aboard an arkship whatever its design records, exactly as an
+        // origin's own world overrides one - so the same warning rather than a refusal. The game's
+        // own nomadic empire writes pc_ark and starts there; one written with a planet still loads
+        // and still starts there.
+        //
+        // It matters because of how a design gets here: turning the toggle on is what invalidates
+        // the world, and being told the world "is not one this empire can start on" reads as
+        // something the player did wrong rather than something the toggle did.
+        if (context.IsNomadic && HasPlanetClass(Arkship))
+        {
+            if (!string.Equals(key, Arkship, StringComparison.Ordinal))
+            {
+                problems.Add(new ValidationProblem(
+                    ValidationArea.Homeworld,
+                    key,
+                    "A nomadic empire starts aboard an arkship, so the {0} homeworld is ignored.",
+                    [],
+                    ValidationSeverity.Warning)
+                {
+                    Arguments = [key],
+                });
+            }
+
+            return;
+        }
+
         // An origin that supplies its own homeworld simply overrides whatever the design recorded.
         // The game loads such a design and uses the origin's world, so this is worth mentioning
         // but is not a reason to reject the empire.
         if (OriginOf(context) is { } origin &&
             (origin.HabitabilityPreference ?? origin.StartingColony) is { Length: > 0 } imposed)
         {
-            if (!string.Equals(key, imposed, StringComparison.Ordinal))
+            // Only where the design could have carried the origin's world itself. Where it could
+            // not - a tomb world, a habitat, a relic world, none of them a class the designer
+            // offers - the design is meant to hold an ordinary world and the game changes it on the
+            // way in, so the two disagreeing is the arrangement working rather than a mistake.
+            if (!string.Equals(key, imposed, StringComparison.Ordinal) &&
+                GetSelectableHomeworlds(context).Contains(imposed, StringComparer.Ordinal))
             {
                 problems.Add(new ValidationProblem(
                     ValidationArea.Homeworld,

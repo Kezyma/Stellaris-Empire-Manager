@@ -120,9 +120,12 @@ public sealed class EmpireFilterTests
     /// game's whole database, most of which is not something an empire can be given at all.
     ///
     /// Two kinds of heading carry no list, and both are right to. The yes-or-no ones are drawn as a
-    /// dropdown with the two answers written into it. And a government is derived rather than
-    /// chosen: it is what an authority, some ethics and some civics add up to, and the hundred and
-    /// seventy the game defines are not a list anybody picks from.
+    /// dropdown with the two answers written into it. And the two derived ones are not chosen at
+    /// all: a government is what an authority, some ethics and some civics add up to, and an AI
+    /// personality is drawn from whatever that same empire allows. Neither is a list anybody picks
+    /// from - the game defines a hundred and seventy governments and fifty-one personalities, and
+    /// twenty of those personalities belong to fallen empires and pre-FTL societies and can reach no
+    /// design at all - so both are offered whatever the empires in front of the reader came to.
     /// </remarks>
     [Fact]
     public void EveryHeadingWorthAListHasOne()
@@ -131,7 +134,7 @@ public sealed class EmpireFilterTests
             .Where(f => f.Fixed is null && !f.YesNo)
             .Select(f => f.Key);
 
-        Assert.Equal(["government"], without);
+        Assert.Equal(["government", "personality"], without);
     }
 
     /// <summary>
@@ -169,10 +172,14 @@ public sealed class EmpireFilterTests
         // is the filter card's business - regrouping them into tabs moved every one of them.
         var several = EmpireFacet.All.Where(f => f.Several).Select(f => f.Key).Order();
 
+        // "personality" is here for a reason worth writing down: an empire is given exactly one,
+        // so it looks like a heading that holds one. It is not. The row lists every personality the
+        // empire allows, because the game draws among them, and asking for all of two is asking for
+        // the empires that might turn out to be either.
         Assert.Equal(
             [
-                "civics", "ethics", "plancivics", "planperks", "plantraditions", "rulertraits",
-                "secondtraits", "traits",
+                "civics", "ethics", "personality", "plancivics", "planperks", "plantraditions",
+                "rulertraits", "secondtraits", "traits",
             ],
             several);
 

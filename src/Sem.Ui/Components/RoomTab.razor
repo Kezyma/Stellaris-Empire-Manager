@@ -14,8 +14,8 @@
 *@
 
 <div class="sem-scene">
-    <RoomScene Room="@ChosenRoom" World="@Homeworld" City="@ChosenCity" Flag="@Design.Flag"
-               Portrait="@RulerPortrait"
+    <RoomScene Room="@ChosenRoom" World="@Homeworld" City="@ChosenCity" Arkship="@Arkship"
+               Flag="@Design.Flag" Portrait="@RulerPortrait"
                Alt="@Session.Localizer.Name(Design.Name, Design.Key)" />
 </div>
 
@@ -337,6 +337,12 @@
     private PlanetClassDefinition? Homeworld =>
         Session.Data.Database.PlanetClasses
             .FirstOrDefault(p => p.Key == Session.Context!.EffectivePlanetClass);
+
+    /// <summary>The ship in the window, for an empire that has no world to put one on.</summary>
+    private ArkshipDefinition? Arkship =>
+        Design.IsNomadic == true
+            ? Session.Data.Database.Arkships.FirstOrDefault(a => a.Key == Design.ShipSize)
+            : null;
 
     private string? RulerPortrait =>
         PortraitArtwork.For(Session.Data.Database, Design.Ruler.Portrait, Design.Ruler.Gender)

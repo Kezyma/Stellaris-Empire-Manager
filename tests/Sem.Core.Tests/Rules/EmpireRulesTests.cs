@@ -547,6 +547,33 @@ public sealed class EmpireRulesTests
         Assert.DoesNotContain(options, o => o.Key == "trait_not_initial");
     }
 
+    /// <summary>
+    /// An origin's soft trait is forced, whatever the field it is written under is called.
+    /// </summary>
+    /// <remarks>
+    /// The game's comment - "can be removed without making the government invalid" - is about a
+    /// species dropping a trait during a game, not about the designer, where Teachers of the Shroud
+    /// shows Latent Psionic greyed among the forced ones and will not let it go. Read the other way
+    /// it was a trait a player could take off and then never find again, since the game offers it to
+    /// nobody.
+    /// </remarks>
+    [Fact]
+    public void AnOriginsSoftTraitIsForcedLikeAnyOther()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.Origin = "origin_shroudwalker_apprentice";
+
+        var forced = Rules.GetForcedTraitSources(Context(design));
+        var soft = Assert.Single(forced, f => f.Trait == "trait_not_initial");
+
+        Assert.Equal(ForcedTraitSource.Origin, soft.Source);
+        Assert.Equal("origin_shroudwalker_apprentice", soft.Cause);
+
+        // And written into the file, as the game writes it: an empire the game saved with
+        // Cybernetic Creed carries its Ritualistic Implants.
+        Assert.Contains("trait_not_initial", Rules.GetWrittenForcedTraits(Context(design)));
+    }
+
     [Fact]
     public void TraitOptionsReportTheContentPackAPlayerIsMissing()
     {
@@ -787,11 +814,56 @@ public sealed class EmpireRulesTests
         AssertProblem(design, ValidationArea.Homeworld, "not a homeworld this empire can start on");
     }
 
+    /// <summary>
+    /// An origin whose world could have been chosen says so when the design chose something else.
+    /// </summary>
+    /// <remarks>
+    /// The game loads such a design and uses the origin's world, so rejecting it would refuse
+    /// empires the player has been happily playing.
+    /// </remarks>
     [Fact]
     public void AHomeworldAnOriginOverridesIsReportedWithoutInvalidatingTheDesign()
     {
-        // The game loads such a design and uses the origin's world, so rejecting it would refuse
-        // empires the player has been happily playing.
+        var design = RulesTestData.ValidEmpire();
+        design.Origin = "origin_ocean_paradise";
+        design.PlanetClass = "pc_continental";
+
+        var report = Validate(design);
+
+        Assert.True(report.IsValid, report.ToString());
+        var warning = Assert.Single(report.Warnings);
+        Assert.Equal(ValidationArea.Homeworld, warning.Area);
+        Assert.Contains("is ignored", warning.Message, StringComparison.Ordinal);
+
+        // The worlds are named by key rather than written into the sentence, so the interface can
+        // put their actual names there. It used to read "starts the empire on 'pc_habitat'", which
+        // is the name of a thing rather than the thing's name.
+        Assert.Equal(["pc_ocean", "pc_continental"], warning.Arguments);
+        Assert.DoesNotContain("pc_", warning.Message, StringComparison.Ordinal);
+
+        // And the sentence is one string.Format away from being readable.
+        Assert.Equal(
+            "This origin starts the empire on an ocean world, so the continental world homeworld is ignored.",
+            string.Format(
+                System.Globalization.CultureInfo.InvariantCulture,
+                warning.Message,
+                "an ocean world",
+                "continental world"));
+    }
+
+    /// <summary>
+    /// An origin whose world no design may record says nothing when the design records another.
+    /// </summary>
+    /// <remarks>
+    /// Eleven of the game's thirteen world-supplying origins are like this - a tomb world, a
+    /// habitat, a relic world, a machine world, none of them classes the designer offers. The design
+    /// has to hold an ordinary world and the game changes it as the game begins, so the two
+    /// disagreeing is the arrangement working. Warned about, every such empire carried a complaint
+    /// about the one thing it had got right.
+    /// </remarks>
+    [Fact]
+    public void AHomeworldNoDesignMayRecordIsNotComplainedAbout()
+    {
         var design = RulesTestData.ValidEmpire();
         design.Origin = "origin_void_dwellers";
         design.PlanetClass = "pc_continental";
@@ -804,24 +876,33 @@ public sealed class EmpireRulesTests
         var report = Validate(design);
 
         Assert.True(report.IsValid, report.ToString());
-        var warning = Assert.Single(report.Warnings);
-        Assert.Equal(ValidationArea.Homeworld, warning.Area);
-        Assert.Contains("is ignored", warning.Message, StringComparison.Ordinal);
+        Assert.DoesNotContain(report.Problems, p => p.Area == ValidationArea.Homeworld);
+    }
 
-        // The worlds are named by key rather than written into the sentence, so the interface can
-        // put their actual names there. It used to read "starts the empire on 'pc_habitat'", which
-        // is the name of a thing rather than the thing's name.
-        Assert.Equal(["pc_habitat", "pc_continental"], warning.Arguments);
-        Assert.DoesNotContain("pc_", warning.Message, StringComparison.Ordinal);
+    /// <summary>
+    /// What an empire may put in the file, which is not what its origin starts it on.
+    /// </summary>
+    /// <remarks>
+    /// The two questions were one, and the answer to the second was being written into designs: an
+    /// empire recording a habitat is one the game will not start.
+    /// </remarks>
+    [Fact]
+    public void TheWorldsAnEmpireMayRecordExcludeTheOneItsOriginGivesIt()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.Origin = "origin_void_dwellers";
 
-        // And the sentence is one string.Format away from being readable.
-        Assert.Equal(
-            "This origin starts the empire on a habitat, so the continental world homeworld is ignored.",
-            string.Format(
-                System.Globalization.CultureInfo.InvariantCulture,
-                warning.Message,
-                "a habitat",
-                "continental world"));
+        var context = Context(design);
+
+        Assert.Equal(["pc_habitat"], Rules.GetHomeworldOptions(context));
+        Assert.DoesNotContain("pc_habitat", Rules.GetSelectableHomeworlds(context));
+        Assert.Contains("pc_continental", Rules.GetSelectableHomeworlds(context));
+
+        // And the one whose world may be recorded is in both.
+        design.Origin = "origin_ocean_paradise";
+
+        Assert.Equal(["pc_ocean"], Rules.GetHomeworldOptions(Context(design)));
+        Assert.Contains("pc_ocean", Rules.GetSelectableHomeworlds(Context(design)));
     }
 
     [Fact]
@@ -860,6 +941,60 @@ public sealed class EmpireRulesTests
         design.IsNomadic = true;
 
         Assert.Equal(["pc_ark"], Rules.GetHomeworldOptions(Context(design)));
+    }
+
+    /// <summary>
+    /// The worlds an empire could settle can still be asked for while it is nomadic.
+    /// </summary>
+    /// <remarks>
+    /// Which is what turning the toggle off needs. A design holds one world, so the one it had
+    /// before the arkship is gone by then, and the ordinary list answers "the arkship" for as long
+    /// as the design still says nomadic - leaving nothing to put back.
+    /// </remarks>
+    [Fact]
+    public void TheWorldsAnEmpireCouldSettleAreOfferedWhateverItsToggleSays()
+    {
+        var design = RulesTestData.ValidEmpire();
+        var settled = Rules.GetSettledHomeworldOptions(Context(design));
+
+        // The same answer as the ordinary list, for an empire that is staying put.
+        Assert.Equal(Rules.GetHomeworldOptions(Context(design)), settled);
+        Assert.NotEmpty(settled);
+
+        design.IsNomadic = true;
+
+        Assert.Equal(settled, Rules.GetSettledHomeworldOptions(Context(design)));
+        Assert.DoesNotContain("pc_ark", Rules.GetSettledHomeworldOptions(Context(design)));
+    }
+
+    /// <summary>
+    /// A nomadic empire keeping a planet is told so, and not refused for it.
+    /// </summary>
+    /// <remarks>
+    /// Turning the toggle on is what invalidates the world, so a design arrives here through no
+    /// fault of the player - and the game itself does not mind: it loads such an empire and starts
+    /// it on the arkship anyway, the same way an origin's own world overrides what was recorded.
+    /// Told as a refusal it read as something the player had done wrong.
+    /// </remarks>
+    [Fact]
+    public void ANomadicEmpireKeepingAPlanetIsWarnedRatherThanRefused()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.IsNomadic = true;
+        design.PlanetClass = "pc_continental";
+
+        var problem = Rules.Validate(Context(design), design).Problems
+            .Single(p => p.Area == ValidationArea.Homeworld);
+
+        Assert.Equal(ValidationSeverity.Warning, problem.Severity);
+        Assert.Contains("arkship", problem.Message, StringComparison.OrdinalIgnoreCase);
+
+        // And the arkship itself is no problem at all.
+        design.PlanetClass = "pc_ark";
+
+        Assert.DoesNotContain(
+            Rules.Validate(Context(design), design).Problems,
+            p => p.Area == ValidationArea.Homeworld);
     }
 
     [Fact]

@@ -109,11 +109,28 @@
 
             var origin = Session.Data.Database.Civics.FirstOrDefault(c => c.Key == key);
 
-            // An origin that supplies its own homeworld overrides whatever was chosen, so the
-            // design is brought into line rather than left recording something the game ignores.
-            if ((origin?.HabitabilityPreference ?? origin?.StartingColony) is { Length: > 0 } world)
+            // An origin that supplies its own homeworld overrides whatever was chosen - but only
+            // where the design is allowed to say so. Eleven of the thirteen that supply one supply a
+            // class the designer never offers, and an empire recording a tomb world or a machine
+            // world is one the game will not start: the class has to be an ordinary world, and the
+            // origin changes it as the game begins. What the player sees is the origin's world
+            // either way, since that is what the empire actually starts on.
+            //
+            // Ocean Paradise is one of the two that can be recorded, and Red Giant's volcanic world
+            // is the reason this asks the empire rather than reading a flag - Hearth of the Forge
+            // makes a volcanic world selectable, and then it may be written down like any other.
+            var selectable = Session.Rules.GetSelectableHomeworlds(Context);
+            var world = origin?.HabitabilityPreference ?? origin?.StartingColony;
+
+            if (world is { Length: > 0 } && selectable.Contains(world, StringComparer.Ordinal))
             {
                 d.PlanetClass = world;
+            }
+            else if (!selectable.Contains(d.PlanetClass ?? string.Empty, StringComparer.Ordinal)
+                     && selectable.Count > 0)
+            {
+                // Whatever it was holding is no good either - the last origin's world, most likely.
+                d.PlanetClass = selectable[0];
             }
 
             if (origin?.RequiresSecondarySpecies == true && d.SecondarySpecies is null)

@@ -122,6 +122,18 @@ public sealed partial class NameGenerator(GameDatabase database, Random? random 
     public string? Planet(string? nameList) => Pick(Resolve(nameList)?.PlanetNames ?? []);
 
     /// <summary>
+    /// Suggests a ship name from a name list, which is how a nomad's arkship is named.
+    /// </summary>
+    /// <remarks>
+    /// The game names an arkship out of the pool it names warships from rather than the one it names
+    /// worlds from - a nomadic empire saved by the game carries
+    /// <c>HUM1_SHIP_TimaphontheImplacable</c>, which sits in that list's <c>ship_names</c> and not
+    /// in its <c>planet_names</c>. Nothing narrows it further: the pool is grouped by hull, no list
+    /// has a group for an arkship, and so the whole of a list's ship names is the pool.
+    /// </remarks>
+    public string? Ship(string? nameList) => Pick(Resolve(nameList)?.ShipNames ?? []);
+
+    /// <summary>
     /// Suggests an empire name, out of the game's own generator.
     /// </summary>
     /// <remarks>
@@ -450,12 +462,22 @@ public sealed partial class NameGenerator(GameDatabase database, Random? random 
     }
 
     /// <summary>
-    /// Which name list a species should be named from.
+    /// Which name list the ready-made <em>species</em> come from, for a list that borrows another's.
     /// </summary>
     /// <remarks>
-    /// A list may point at a different one for this purpose. The three human lists do, so that
-    /// randomising a species for the United Nations of Earth offers ordinary human names rather than
-    /// that empire's own conventions.
+    /// <para>
+    /// The game's <c>customize_random_override</c>, and its README says precisely how far it
+    /// reaches: "the random name button for species/homeworld/home system in empire creation will
+    /// use species_names with the specified namelist instead of this namelist". Three things, and
+    /// all three of them read <c>common/species_names</c> - the ready-made species, each of which
+    /// carries a name, a homeworld and a home star.
+    /// </para>
+    /// <para>
+    /// So it is not a general redirection of a list, and asking it about anything a name list holds
+    /// itself is asking the wrong question. The human lists point at HUM2 for this, which is why
+    /// leader names taken through here came out as Merg and Japra for an empire whose own list is
+    /// full of Johns and Peters.
+    /// </para>
     /// </remarks>
     public string? SpeciesNameSourceFor(string? nameList) =>
         Resolve(nameList) is { RandomNameSource: { Length: > 0 } source } ? source : nameList;

@@ -671,6 +671,61 @@ public sealed class GameDataExtractionTests
         }
     }
 
+    /// <summary>
+    /// A nomad's arkship is named from the ship names its own list holds.
+    /// </summary>
+    /// <remarks>
+    /// Checked against a nomadic empire the game itself wrote, which carries
+    /// <c>HUM1_SHIP_TimaphontheImplacable</c> in <c>planet_name</c>. That key is in HUM1's
+    /// <c>ship_names</c> and not in its <c>planet_names</c>, which is the whole reason the field
+    /// cannot draw from the same pool for both.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void AnArkshipIsNamedFromTheShipsAndNotFromTheWorlds()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var list = Database.Value.NameLists.Single(n => n.Key == "HUM1");
+
+        Assert.Contains("Timaphon the Implacable", list.ShipNames);
+        Assert.DoesNotContain("Timaphon the Implacable", list.PlanetNames);
+
+        // And no list's ships are merely its worlds again, so one pool cannot stand in for the
+        // other. Four of the sixty-seven do share a handful - HUMAN1 names both a world and a ship
+        // Concord - which is why this asks what the ship pool holds alone rather than for two sets
+        // that never meet.
+        Assert.All(
+            Database.Value.NameLists.Where(n => n.ShipNames.Count > 0 && n.PlanetNames.Count > 0),
+            n => Assert.NotEmpty(n.ShipNames.Except(n.PlanetNames, StringComparer.Ordinal)));
+    }
+
+    /// <summary>
+    /// The name field is relabelled for a nomad, and the words for it survive the pruner.
+    /// </summary>
+    /// <remarks>
+    /// The game swaps this label inside its executable rather than in its interface files -
+    /// <c>ARKSHIP_NAME</c> appears in no <c>.gui</c>, no script and no event - so nothing in the
+    /// data refers to it and the pruner drops it unless it is asked for by name. It reads through
+    /// two further entries, which the reference-following pass has to bring with it.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void TheFieldANomadNamesIsCalledTheArkshipsName()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var extractor = new GameDataExtractor(LayeredContent.ForInstall(InstallRoot!));
+        var text = extractor.ExtractLocalisation(reachableFrom: Database.Value);
+
+        Assert.Equal("$ARKSHIP_LABEL$ Name", text.GetValueOrDefault("ARKSHIP_NAME"));
+        Assert.Equal("$arkship_cap$", text.GetValueOrDefault("ARKSHIP_LABEL"));
+        Assert.Equal("Arkship", text.GetValueOrDefault("arkship_cap"));
+
+        // The one it replaces is still there, for every empire that has a world.
+        Assert.Equal("Homeworld Name", text.GetValueOrDefault("HOMEWORLD_NAME"));
+    }
+
     [SkippableFact]
     [Trait("Category", "RealData")]
     public void AShipsetIsCalledWhatTheGameCallsIt()
@@ -1437,6 +1492,183 @@ public sealed class GameDataExtractionTests
         Assert.False(
             offered.Single(o => o.Key == "tradition_statecraft").Enabled,
             "The last slot is offered to a tree that would lose the plan its grant.");
+    }
+
+    /// <summary>
+    /// The personalities read, and the ones a design could actually be given.
+    /// </summary>
+    /// <remarks>
+    /// Twenty of the fifty-one belong to fallen empires, pre-FTL societies and the like. They cost
+    /// nothing to rule out - they ask <c>is_country_type</c> for something a design never is - but
+    /// it is worth pinning that they are ruled out, because the two heaviest personalities in the
+    /// game are among the ones that could go wrong.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void ThePersonalitiesAreReadWithTheirWeights()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var database = Database.Value;
+
+        Assert.Equal(51, database.Personalities.Count);
+
+        // Every one says what it takes and what it weighs.
+        Assert.All(database.Personalities, p => Assert.True(p.Weight > 0, $"{p.Key} weighs nothing."));
+
+        var honorbound = database.Personalities.Single(p => p.Key == "honorbound_warriors");
+
+        Assert.Equal(50, honorbound.Weight);
+        Assert.Empty(honorbound.Additions);
+
+        // The additions are read, and there are seven of them here.
+        Assert.Equal(7, database.Personalities.Single(p => p.Key == "erudite_explorers").Additions.Count);
+        Assert.Equal(10, database.Personalities.Single(p => p.Key == "erudite_explorers").Weight);
+    }
+
+    /// <summary>
+    /// Every personality a design could be given has words shipped for it.
+    /// </summary>
+    /// <remarks>
+    /// Named under a prefix rather than under their own key, which is the one thing about these
+    /// that is not the usual convention - and a name nothing seeded is a name the pruner cuts.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void EveryPersonalityADesignCanGetIsNamed()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var database = Database.Value;
+
+        var text = new GameDataExtractor(LayeredContent.ForInstall(InstallRoot!))
+            .ExtractLocalisation(reachableFrom: database);
+
+        // All but one, and the one is a fallen empire's: the galactic defence force, which the
+        // game itself never names because nothing ever shows it to a player.
+        var nameless = database.Personalities
+            .Where(p => !text.ContainsKey(p.NameKey))
+            .Select(p => p.Key)
+            .ToList();
+
+        Assert.Equal(["galactic_defense_force"], nameless);
+
+        // And a real empire is offered only named ones. A blank design is offered none at all,
+        // which is right - nearly every personality asks after an ethic, and a design with no
+        // ethics answers none of them.
+        var file = EmpireDesignsFile.CreateEmpty();
+        var design = file.Add("Test");
+
+        design.Authority = "auth_democratic";
+        design.SetEthics(["ethic_fanatic_egalitarian", "ethic_xenophile"]);
+
+        var offered = new EmpireRules(database).DerivePersonalities(
+            new EmpireRules(database).CreateContext(design));
+
+        Assert.NotEmpty(offered);
+        Assert.All(offered, o => Assert.True(
+            text.ContainsKey(o.Personality.NameKey),
+            $"{o.Personality.Key} has no name in the shipped text."));
+    }
+
+    /// <summary>
+    /// A design is offered the personalities it allows, with shares that add to one.
+    /// </summary>
+    /// <remarks>
+    /// And never a fallen empire's, nor the two that ask for an ascension perk. Those two -
+    /// Became the Crisis and the hyperthermia empire - weigh ten thousand each, so if a plan's
+    /// perks ever reached this the empire would show one personality at ninety-nine per cent and
+    /// the truth nowhere.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void ADesignIsOfferedOnlyThePersonalitiesItCouldBeGiven()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var database = Database.Value;
+        var rules = new EmpireRules(database);
+
+        var file = EmpireDesignsFile.CreateEmpty();
+        var design = file.Add("Test");
+
+        design.Authority = "auth_democratic";
+        design.SetEthics(["ethic_fanatic_militarist", "ethic_spiritualist"]);
+
+        var offered = rules.DerivePersonalities(rules.CreateContext(design));
+
+        Assert.NotEmpty(offered);
+        Assert.Equal(1.0, offered.Sum(o => o.Share), 6);
+
+        // Ordered likeliest first.
+        Assert.Equal(offered.Select(o => o.Share).OrderByDescending(s => s), offered.Select(o => o.Share));
+
+        // Fanatic militarist and spiritualist is exactly what this one asks for.
+        Assert.Contains(offered, o => o.Personality.Key == "honorbound_warriors");
+
+        var keys = offered.Select(o => o.Personality.Key).ToList();
+
+        Assert.DoesNotContain("became_the_crisis", keys);
+        Assert.DoesNotContain("hyperthermia_empire", keys);
+
+        // Nothing belonging to an empire the player is not.
+        Assert.DoesNotContain("fallen_empire_materialist", keys);
+    }
+
+    /// <summary>
+    /// A world is drawn as the picture it names, which is not always its own.
+    /// </summary>
+    /// <remarks>
+    /// Twenty-one classes borrow another's - a machine world is painted as pc_ai, a hive world as
+    /// pc_infested, and six ringworlds share three pictures between them. The art is filed under
+    /// the name given rather than under the class, so reading the class's own key found nothing:
+    /// a machine world had no sky and no landscape at all, and the empire's city was left standing
+    /// on nothing.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void AWorldIsPaintedAsThePictureItNames()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var worlds = Database.Value.PlanetClasses.ToDictionary(p => p.Key, StringComparer.Ordinal);
+
+        Assert.Contains("pc_ai_sky", worlds["pc_machine"].Sky);
+        Assert.Contains("pc_infested_sky", worlds["pc_hive"].Sky);
+
+        // And the borrowed landscape comes with it. A shattered ring had none of its own.
+        Assert.Contains("pc_ringworld_sky", worlds["pc_shattered_ring_habitable"].Sky);
+        Assert.NotEmpty(worlds["pc_shattered_ring_habitable"].Scenery);
+
+        // A world that names no picture is still drawn as itself.
+        Assert.Contains("pc_continental_sky", worlds["pc_continental"].Sky);
+    }
+
+    /// <summary>
+    /// A world that is already built has no empire's city painted over it.
+    /// </summary>
+    /// <remarks>
+    /// The game says so on twenty of them, and they are the ones that are a built thing already: a
+    /// machine world, a hive world, a habitat. One goes the other way - an ecumenopolis is built to
+    /// the horizon whatever its population, and fixes its level rather than reading one.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void AWorldThatIsAlreadyBuiltCarriesNoCity()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var worlds = Database.Value.PlanetClasses.ToDictionary(p => p.Key, StringComparer.Ordinal);
+
+        Assert.False(worlds["pc_machine"].ShowsCity);
+        Assert.False(worlds["pc_hive"].ShowsCity);
+        Assert.False(worlds["pc_habitat"].ShowsCity);
+
+        // The ordinary worlds are unchanged.
+        Assert.True(worlds["pc_continental"].ShowsCity);
+        Assert.True(worlds["pc_shattered_ring_habitable"].ShowsCity);
+
+        Assert.Equal(6, worlds["pc_city"].FixedCityLevel);
     }
 
     /// <summary>

@@ -19,7 +19,7 @@
                 class="sem-icon-option sem-nomad @(Design.IsNomadic == true ? "selected" : null)"
                 title="@NomadicLabel"
                 aria-pressed="@(Design.IsNomadic == true ? "true" : "false")"
-                @onclick="() => Session.Edit(d => d.IsNomadic = d.IsNomadic != true)">
+                @onclick="ToggleNomadic">
 
             @if (Session.Data.Database.Icons.GetValueOrDefault(NomadSprite) is { Length: > 0 } icon)
             {
@@ -37,6 +37,9 @@
     /// <summary>The sprite the game's own nomad toggle wears.</summary>
     private const string NomadSprite = "GFX_toggle_nomad";
 
+    /// <summary>The world the game writes for an empire that has no world.</summary>
+    private const string Arkship = "pc_ark";
+
     [CascadingParameter]
     public required DesignSession Session { get; set; }
 
@@ -45,6 +48,63 @@
     private DesignContext Context => Session.Context!;
 
     private string NomadicLabel => Session.Localizer.Text("IS_NOMADIC", "Is a Nomadic Empire");
+
+    /// <summary>
+    /// Turns the toggle, and moves the homeworld with it.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The game writes <c>planet_class="pc_ark"</c> for a nomad and names an arkship beside it - a
+    /// nomadic empire saved by the game has both - so the toggle writes them too. Leaving the old
+    /// world behind made the app warn about a design of its own making: the empire says it lives
+    /// aboard a ship and names a continental world in the same breath, and every reader of the two
+    /// has to decide which to believe.
+    /// </para>
+    /// <para>
+    /// A world comes back on the way out, since the design would otherwise keep the ark class after
+    /// the empire had stopped being nomadic. The one it had before is gone by then - the design
+    /// holds one world and the toggle overwrote it - so it is the first the empire may settle,
+    /// which is the origin's where an origin names one.
+    /// </para>
+    /// </remarks>
+    private void ToggleNomadic()
+    {
+        var nomadic = Design.IsNomadic != true;
+
+        // Both asked before the edit. The option list collapses to the arkship the moment the
+        // design says nomadic, so afterwards there is nothing left to come back to.
+        //
+        // What the empire may pick rather than what its origin gives it: an origin's own world is
+        // usually a class no design may record, and putting one back here would write exactly what
+        // choosing the origin is careful not to.
+        var settled = Session.Rules.GetSelectableHomeworlds(Context).FirstOrDefault();
+        var arkship = Session.Data.Database.Arkships.FirstOrDefault()?.Key;
+
+        Session.Edit(d =>
+        {
+            d.IsNomadic = nomadic;
+
+            if (!nomadic)
+            {
+                if (string.Equals(d.PlanetClass, Arkship, StringComparison.Ordinal) &&
+                    settled is { Length: > 0 })
+                {
+                    d.PlanetClass = settled;
+                }
+
+                return;
+            }
+
+            d.PlanetClass = Arkship;
+
+            // Only where the design names none. The game's own blank template already carries the
+            // civilian arkship, so most designs arrive with one chosen and keep it.
+            if (d.ShipSize is not { Length: > 0 } && arkship is { Length: > 0 })
+            {
+                d.ShipSize = arkship;
+            }
+        });
+    }
 
     private IReadOnlyList<OptionGrid.GridOption> Authorities
     {

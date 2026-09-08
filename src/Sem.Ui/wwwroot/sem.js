@@ -404,28 +404,7 @@ export function bindPopover(anchor, panel, pinOnClick = true) {
     // A tap has no hover to leave, so a click pins the panel until something dismisses it.
     let pinned = false;
 
-    const place = () => {
-        const at = anchor.getBoundingClientRect();
-        const box = panel.getBoundingClientRect();
-        const margin = 8;
-
-        // Below by preference, above when the room below will not take it, and whichever is roomier
-        // when neither will.
-        const below = window.innerHeight - at.bottom - margin;
-        const above = at.top - margin;
-        const goesBelow = box.height <= below || below >= above;
-
-        const top = goesBelow
-            ? Math.min(at.bottom + 4, window.innerHeight - box.height - margin)
-            : Math.max(at.top - box.height - 4, margin);
-
-        const left = Math.min(
-            Math.max(at.left, margin),
-            Math.max(margin, window.innerWidth - box.width - margin));
-
-        panel.style.top = `${Math.max(margin, top)}px`;
-        panel.style.left = `${left}px`;
-    };
+    const place = () => placeUnder(anchor, panel);
 
     const show = () => {
         if (!panel.matches(':popover-open')) {
@@ -440,20 +419,15 @@ export function bindPopover(anchor, panel, pinOnClick = true) {
         requestAnimationFrame(place);
     };
 
-    const hide = () => {
-        if (!pinned && panel.matches(':popover-open')) {
-            panel.hidePopover();
-        }
-    };
+    const { hide, stay } = lingerWhilePointedAt(anchor, panel, show, () => pinned);
 
-    anchor.addEventListener('mouseenter', show);
-    anchor.addEventListener('mouseleave', hide);
-    anchor.addEventListener('focus', show);
+    anchor.addEventListener('focus', () => { stay(); show(); });
     anchor.addEventListener('blur', () => { pinned = false; hide(); });
 
     if (pinOnClick) {
         anchor.addEventListener('click', event => {
             event.preventDefault();
+            stay();
             pinned = !pinned;
 
             if (pinned) {
@@ -466,6 +440,7 @@ export function bindPopover(anchor, panel, pinOnClick = true) {
 
     anchor.addEventListener('keydown', event => {
         if (event.key === 'Escape') {
+            stay();
             pinned = false;
             panel.hidePopover();
         }
@@ -473,6 +448,163 @@ export function bindPopover(anchor, panel, pinOnClick = true) {
 
     // The browser closes it for its own reasons too — another popover opening, a click outside —
     // and the pin has to let go when it does, or the next hover would find it still held.
+    panel.addEventListener('toggle', event => {
+        if (event.newState === 'closed') {
+            pinned = false;
+        }
+    });
+}
+
+/**
+ * Keeps a panel open while the pointer is on its anchor or inside the panel itself.
+ *
+ * A panel that goes the moment the pointer leaves the chip is a panel nobody can reach into. Most
+ * of them only want reading and it never came up - and then one was longer than its own height,
+ * grew a scrollbar, and there was no way to get at it: the bar is inside the panel, and the pointer
+ * cannot arrive there without leaving the chip.
+ *
+ * So closing waits a moment and either of the two being entered calls the wait off. The delay is
+ * also what makes the few pixels between them crossable; without it the panel went in the frame
+ * before the pointer landed anywhere.
+ *
+ * @param {HTMLElement} anchor what the panel hangs off
+ * @param {HTMLElement} panel the popover itself
+ * @param {() => void} show what opening it means, which differs between the two kinds
+ * @param {() => boolean} held whether something is holding it open regardless of the pointer
+ * @returns {{hide: () => void, stay: () => void}}
+ */
+function lingerWhilePointedAt(anchor, panel, show, held) {
+    let closing = 0;
+
+    const stay = () => clearTimeout(closing);
+
+    const hide = () => {
+        stay();
+
+        closing = setTimeout(() => {
+            if (!held() && panel.matches(':popover-open')) {
+                panel.hidePopover();
+            }
+        }, 220);
+    };
+
+    anchor.addEventListener('mouseenter', () => {
+        stay();
+        show();
+    });
+
+    anchor.addEventListener('mouseleave', hide);
+
+    // Entering the panel only cancels the closing. Showing again would place it again, and it is
+    // under the pointer by then - it would move out from under the hand reaching for it.
+    panel.addEventListener('mouseenter', stay);
+    panel.addEventListener('mouseleave', hide);
+
+    return { hide, stay };
+}
+
+/**
+ * Puts a panel under the thing it belongs to, inside the viewport.
+ *
+ * Below by preference, above where the room below will not take it, and whichever is roomier when
+ * neither will. Nothing about this is left to the browser: a popover is drawn in the top layer,
+ * which has no idea what it was opened from.
+ *
+ * @param {HTMLElement} anchor what the panel hangs off
+ * @param {HTMLElement} panel the popover itself
+ */
+function placeUnder(anchor, panel) {
+    const at = anchor.getBoundingClientRect();
+    const box = panel.getBoundingClientRect();
+    const margin = 8;
+
+    const below = window.innerHeight - at.bottom - margin;
+    const above = at.top - margin;
+    const goesBelow = box.height <= below || below >= above;
+
+    const top = goesBelow
+        ? Math.min(at.bottom + 4, window.innerHeight - box.height - margin)
+        : Math.max(at.top - box.height - 4, margin);
+
+    const left = Math.min(
+        Math.max(at.left, margin),
+        Math.max(margin, window.innerWidth - box.width - margin));
+
+    panel.style.top = `${Math.max(margin, top)}px`;
+    panel.style.left = `${left}px`;
+}
+
+/**
+ * Hangs a list off a chip, the way a dropdown hangs off its control.
+ *
+ * Same top layer, same placing and the same lingering as a description panel.
+ *
+ * A hover and a press mean different things and are kept apart. A hover lasts exactly as long as
+ * the hover: look away and the list goes. A press holds it open until something puts it away -
+ * pressing the chip again, pressing anywhere else on the page, or Escape - which is what a tap
+ * needs, having no hover to end, and what anyone wanting to read down the list without keeping the
+ * pointer inside it wants too.
+ *
+ * The press away is the browser's own doing: an auto popover light-dismisses on an outside press.
+ * All that is needed here is to let go of the pin when it does, or the next hover would find the
+ * list still held open by a press nobody remembers making.
+ *
+ * @param {HTMLElement} anchor the chip the list belongs to
+ * @param {HTMLElement} panel the list itself
+ */
+export function bindDropdown(anchor, panel) {
+    if (!anchor || !panel || anchor.dataset.semDropdown === 'yes') {
+        return;
+    }
+
+    anchor.dataset.semDropdown = 'yes';
+
+    let pinned = false;
+
+    const show = () => {
+        if (!panel.matches(':popover-open')) {
+            panel.showPopover();
+        }
+
+        placeUnder(anchor, panel);
+        requestAnimationFrame(() => placeUnder(anchor, panel));
+    };
+
+    const { stay } = lingerWhilePointedAt(anchor, panel, show, () => pinned);
+
+    const put = () => {
+        stay();
+        pinned = false;
+        panel.hidePopover();
+    };
+
+    anchor.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (pinned) {
+            put();
+            return;
+        }
+
+        stay();
+        pinned = true;
+        show();
+    });
+
+    anchor.addEventListener('focus', () => { stay(); show(); });
+
+    // Nothing on blur, unlike a description panel: the focus leaving this chip is usually the focus
+    // moving into the list, which is where it should be able to go. Escape and a press elsewhere are
+    // the ways out.
+    anchor.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+            put();
+        }
+    });
+
+    // Closed for the browser's own reasons - a press outside, or another popover opening - and the
+    // pin has to let go with it.
     panel.addEventListener('toggle', event => {
         if (event.newState === 'closed') {
             pinned = false;
