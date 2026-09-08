@@ -141,6 +141,30 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
     public ArkshipDefinition? Arkship =>
         Database.Arkships.FirstOrDefault(a => a.Key == _design.ShipSize);
 
+    /// <summary>Whether the empire lives aboard a ship rather than on a world.</summary>
+    public bool IsNomadic => _design.IsNomadic == true;
+
+    /// <summary>
+    /// What the empire starts on, or in: a world's class, or a nomad's arkship.
+    /// </summary>
+    /// <remarks>
+    /// A nomad has no homeworld, and everything that named the world's class went on naming the one
+    /// the design used to hold - so an arkship empire read "Continental World" under the name of its
+    /// ship. The class is the wrong answer for a nomad whatever it says, the ark class included:
+    /// "Arkship" beneath a name is a label repeating itself, where the ship's own name says which of
+    /// the three was chosen.
+    /// </remarks>
+    public string StartKind => IsNomadic
+        ? Arkship is { } ark
+            ? _session.Localizer.Text(ark.NameKey, Localizer.Prettify(ark.Key))
+            : _session.Localizer.Text("arkship_cap", "Arkship")
+        : _session.Localizer.Text(Context.EffectivePlanetClass);
+
+    /// <summary>What to call that.</summary>
+    public string StartLabel => IsNomadic
+        ? _session.Localizer.Heading("arkship_cap", "Arkship")
+        : _session.Localizer.Heading("HOMEWORLD_CLASS_LABEL", "Homeworld Class");
+
     /// <summary>
     /// What the game calls a set of artwork, falling back to its readable key.
     /// </summary>
@@ -237,7 +261,7 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
             new[]
             {
                 _session.Localizer.Name(_design.PlanetName, string.Empty),
-                _session.Localizer.Text(Context.EffectivePlanetClass),
+                StartKind,
             }.Where(p => p.Length > 0));
 
     /// <summary>The starting system, which most empires leave to the galaxy generator.</summary>

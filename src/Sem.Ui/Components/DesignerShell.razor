@@ -63,8 +63,8 @@
                     <OriginTab />
                 </DesignerSection>
 
-                <DesignerSection OpenSection="@_open" OnToggle="Open" Title="Homeworld"
-                                 Summary="@Name(Session.Current.PlanetClass)"
+                <DesignerSection OpenSection="@_open" OnToggle="Open" Title="@HomeworldTitle"
+                                 Summary="@HomeworldSummary"
                                  Problems="@Problems(ValidationArea.Homeworld)">
                     <HomeworldTab />
                 </DesignerSection>
@@ -300,6 +300,38 @@
 
     private string? Name(string? key) =>
         string.IsNullOrEmpty(key) ? null : Session.Localizer.Text(key);
+
+    /// <summary>What the section is called, which for a nomad is not a world.</summary>
+    private string HomeworldTitle => Session.Current?.IsNomadic == true ? "Arkship" : "Homeworld";
+
+    /// <summary>
+    /// And what it holds, so the closed section says which one was chosen.
+    /// </summary>
+    /// <remarks>
+    /// Read from the design rather than through a context: this is drawn on every render of the
+    /// shell, and the world it would ask about is the one thing here the toggle has already settled.
+    /// </remarks>
+    private string? HomeworldSummary
+    {
+        get
+        {
+            if (Session.Current is not { } design)
+            {
+                return null;
+            }
+
+            if (design.IsNomadic != true)
+            {
+                return Name(design.PlanetClass);
+            }
+
+            return Session.Data.Database.Arkships
+                .FirstOrDefault(a => string.Equals(a.Key, design.ShipSize, StringComparison.Ordinal))
+                is { } ark
+                    ? Session.Localizer.Text(ark.NameKey, Localizer.Prettify(ark.Key))
+                    : Session.Localizer.Text("arkship_cap", "Arkship");
+        }
+    }
 
     private string? Names(IReadOnlyList<string> keys) =>
         keys.Count == 0 ? null : string.Join(", ", keys.Select(k => Session.Localizer.Text(k)));

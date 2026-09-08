@@ -305,6 +305,21 @@ public sealed class EmpireRules(GameDatabase database)
             return [Arkship];
         }
 
+        return GetSettledHomeworldOptions(context);
+    }
+
+    /// <summary>
+    /// The worlds this empire could start on if it stayed still.
+    /// </summary>
+    /// <remarks>
+    /// The same question asked without the nomad toggle, which is what the toggle itself needs when
+    /// it is turned off: something has to go back where the arkship was, and the arkship is the only
+    /// answer the ordinary list will give while the design still says nomadic.
+    /// </remarks>
+    public IReadOnlyList<string> GetSettledHomeworldOptions(DesignContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
         // An origin that supplies its own world leaves nothing to choose.
         if (OriginOf(context) is { } chosen &&
             (chosen.HabitabilityPreference ?? chosen.StartingColony) is { Length: > 0 } forced)

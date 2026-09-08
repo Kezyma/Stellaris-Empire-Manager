@@ -1,7 +1,7 @@
 {
   "schemaVersion": 15,
   "gameVersion": "v4.4.6",
-  "extractorVersion": "0.1.0\u002B581766f7a6d9267db558420b4ce64c1e255acaf5",
+  "extractorVersion": "0.1.0\u002B593ab1ace55ab83d77e019c8ff825b376121da6d",
   "defines": {
     "ethicsPoints": 3,
     "civicPoints": 2,

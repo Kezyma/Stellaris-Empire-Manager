@@ -17,11 +17,11 @@
         *@
         <div class="sem-name-row">
             <div class="sem-field">
-                <label for="planet-name">@Session.Localizer.Label("HOMEWORLD_NAME", "Homeworld Name")</label>
+                <label for="planet-name">@NameLabel</label>
                 <div class="sem-row nowrap">
                     <ComboBox Id="planet-name" Value="@Session.Localizer.Name(Design.PlanetName)"
-                              Options="@PlanetNames" OnChange="ChoosePlanetName" />
-                    <RandomiseButton Title="A world from the empire's name list" OnClick="RandomisePlanetName" />
+                              Options="@Names" OnChange="ChoosePlanetName" />
+                    <RandomiseButton Title="@NameHint" OnClick="RandomiseName" />
                 </div>
             </div>
 
@@ -81,7 +81,7 @@
         side inside one planet_class_editor window in its own interface files, the arkships shown
         instead of the planets rather than beside them. The same swap here.
     *@
-    @if (Design.IsNomadic == true && Arkships.Count > 0)
+    @if (Nomadic && Arkships.Count > 0)
     {
         <section>
             <h4>@Session.Localizer.Heading("arkship_cap", "Arkship")</h4>
@@ -128,6 +128,26 @@
     public required DesignSession Session { get; set; }
 
     private EmpireDesign Design => Session.Current!;
+
+    /// <summary>Whether the empire lives aboard a ship rather than on a world.</summary>
+    private bool Nomadic => Design.IsNomadic == true;
+
+    /// <summary>
+    /// What the one name field is called, which the game renames rather than moves.
+    /// </summary>
+    /// <remarks>
+    /// A nomad has no world to name, so the game calls the same control in the same place the
+    /// arkship's name instead - <c>ARKSHIP_NAME</c>, which reads "Arkship Name". The swap is in the
+    /// executable rather than in the interface files, so there is nothing to read: the key is the
+    /// whole of what the game tells anyone about it.
+    /// </remarks>
+    private string NameLabel => Nomadic
+        ? Session.Localizer.Label("ARKSHIP_NAME", "Arkship Name")
+        : Session.Localizer.Label("HOMEWORLD_NAME", "Homeworld Name");
+
+    private string NameHint => Nomadic
+        ? "A ship from the empire's name list"
+        : "A world from the empire's name list";
 
     /// <summary>The ships a nomad may begin aboard, in the order the game's own panel lists them.</summary>
     private IReadOnlyList<ArkshipDefinition> Arkships => Session.Data.Database.Arkships;
@@ -219,6 +239,27 @@
             : text;
     }
 
+    /// <summary>What the empire is naming: a ship, if it has no world.</summary>
+    private IReadOnlyList<string> Names => Nomadic ? ShipNames : PlanetNames;
+
+    /// <summary>
+    /// Ships the empire's own people would name one after.
+    /// </summary>
+    /// <remarks>
+    /// All of the list's ship names, because none of them is an arkship's in particular: the game
+    /// groups these by hull - generic, corvette, titan - and has no group for an arkship, so it
+    /// names one from the same pool as anything else that flies.
+    ///
+    /// No suggestions from the ready-made species, unlike the worlds below. Each of those offers a
+    /// homeworld and a home star and never a ship, so there is nothing of theirs to add.
+    /// </remarks>
+    private IReadOnlyList<string> ShipNames =>
+        [.. Session.Data.Database.NameLists
+            .Where(n => string.Equals(n.Key, Design.Species.NameList, StringComparison.Ordinal))
+            .SelectMany(n => n.ShipNames)
+            .Distinct(StringComparer.Ordinal)
+            .OrderBy(n => n, StringComparer.CurrentCulture)];
+
     /// <summary>
     /// Worlds the empire's own people would name one after, and those the game suggests.
     /// </summary>
@@ -285,10 +326,14 @@
         Session.Edit(d => NameWriter.Write(field(d), match is null ? null : key(match), typed));
     }
 
-    /// <summary>A world named the way the empire's own people would name one.</summary>
-    private void RandomisePlanetName()
+    /// <summary>A world - or a ship - named the way the empire's own people would name one.</summary>
+    private void RandomiseName()
     {
-        if (Session.Names.Planet(Design.Species.NameList) is { Length: > 0 } name)
+        var drawn = Nomadic
+            ? Session.Names.Ship(Design.Species.NameList)
+            : Session.Names.Planet(Design.Species.NameList);
+
+        if (drawn is { Length: > 0 } name)
         {
             Session.Edit(d => d.PlanetName.SetLiteral(name));
         }

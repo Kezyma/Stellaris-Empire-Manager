@@ -35,6 +35,13 @@ internal static partial class LocalisationPruner
         "GOVERNMENT_AUTHORITY_AND_TYPE", "GOVERNMENT_LABEL", "CIVICS_LABEL", "POINTS_LEFT_CIVICS",
         "ORIGIN",
         "HOMEWORLD_CLASS_LABEL", "HOMEWORLD_NAME",
+
+        // What the same field is called when the empire has no world to name. This one is not in
+        // the interface files with the rest - the game swaps the label in its executable, keyed off
+        // the nomad toggle - so it is named here or it is pruned away. It reads through
+        // ARKSHIP_LABEL, which the reference-following pass picks up from it.
+        "ARKSHIP_NAME",
+
         "SELECT_SYSTEM_INITIALIZER_LABEL", "SYSTEM_NAME",
         "RANDOM_FRONTEND_NAME", "random_system_initializer_DESC",
         "EMPIRE_ADVISOR", "EMPIRE_CREATION_ROOM_APPEARANCE", "EMPIRE_CREATION_CITY_APPEARANCE", "SHIPSETS_LABEL",

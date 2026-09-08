@@ -97,7 +97,7 @@
     /// name whole screens rather than single editors: they titled the empire's settings "Empire
     /// Name", which is the one thing that dialog does not hold.
     /// </remarks>
-    private static string TitleOf(LitePart part) => part switch
+    private string TitleOf(LitePart part) => part switch
     {
         LitePart.Naming => "Name",
         LitePart.Ethics => "Ethics",
@@ -114,7 +114,7 @@
         LitePart.Ruler => "Ruler",
         LitePart.RulerAppearance => "Ruler appearance",
         LitePart.RulerTraits => "Ruler traits",
-        LitePart.Homeworld => "Homeworld",
+        LitePart.Homeworld => Session.Current?.IsNomadic == true ? "Arkship" : "Homeworld",
         LitePart.Flag => "Flag",
         LitePart.Room => "Room",
         LitePart.Shipset => "Shipset",

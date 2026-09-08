@@ -863,6 +863,30 @@ public sealed class EmpireRulesTests
     }
 
     /// <summary>
+    /// The worlds an empire could settle can still be asked for while it is nomadic.
+    /// </summary>
+    /// <remarks>
+    /// Which is what turning the toggle off needs. A design holds one world, so the one it had
+    /// before the arkship is gone by then, and the ordinary list answers "the arkship" for as long
+    /// as the design still says nomadic - leaving nothing to put back.
+    /// </remarks>
+    [Fact]
+    public void TheWorldsAnEmpireCouldSettleAreOfferedWhateverItsToggleSays()
+    {
+        var design = RulesTestData.ValidEmpire();
+        var settled = Rules.GetSettledHomeworldOptions(Context(design));
+
+        // The same answer as the ordinary list, for an empire that is staying put.
+        Assert.Equal(Rules.GetHomeworldOptions(Context(design)), settled);
+        Assert.NotEmpty(settled);
+
+        design.IsNomadic = true;
+
+        Assert.Equal(settled, Rules.GetSettledHomeworldOptions(Context(design)));
+        Assert.DoesNotContain("pc_ark", Rules.GetSettledHomeworldOptions(Context(design)));
+    }
+
+    /// <summary>
     /// A nomadic empire keeping a planet is told so, and not refused for it.
     /// </summary>
     /// <remarks>

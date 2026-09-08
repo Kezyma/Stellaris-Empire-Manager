@@ -122,6 +122,18 @@ public sealed partial class NameGenerator(GameDatabase database, Random? random 
     public string? Planet(string? nameList) => Pick(Resolve(nameList)?.PlanetNames ?? []);
 
     /// <summary>
+    /// Suggests a ship name from a name list, which is how a nomad's arkship is named.
+    /// </summary>
+    /// <remarks>
+    /// The game names an arkship out of the pool it names warships from rather than the one it names
+    /// worlds from - a nomadic empire saved by the game carries
+    /// <c>HUM1_SHIP_TimaphontheImplacable</c>, which sits in that list's <c>ship_names</c> and not
+    /// in its <c>planet_names</c>. Nothing narrows it further: the pool is grouped by hull, no list
+    /// has a group for an arkship, and so the whole of a list's ship names is the pool.
+    /// </remarks>
+    public string? Ship(string? nameList) => Pick(Resolve(nameList)?.ShipNames ?? []);
+
+    /// <summary>
     /// Suggests an empire name, out of the game's own generator.
     /// </summary>
     /// <remarks>

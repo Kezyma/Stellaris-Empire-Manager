@@ -671,6 +671,61 @@ public sealed class GameDataExtractionTests
         }
     }
 
+    /// <summary>
+    /// A nomad's arkship is named from the ship names its own list holds.
+    /// </summary>
+    /// <remarks>
+    /// Checked against a nomadic empire the game itself wrote, which carries
+    /// <c>HUM1_SHIP_TimaphontheImplacable</c> in <c>planet_name</c>. That key is in HUM1's
+    /// <c>ship_names</c> and not in its <c>planet_names</c>, which is the whole reason the field
+    /// cannot draw from the same pool for both.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void AnArkshipIsNamedFromTheShipsAndNotFromTheWorlds()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var list = Database.Value.NameLists.Single(n => n.Key == "HUM1");
+
+        Assert.Contains("Timaphon the Implacable", list.ShipNames);
+        Assert.DoesNotContain("Timaphon the Implacable", list.PlanetNames);
+
+        // And no list's ships are merely its worlds again, so one pool cannot stand in for the
+        // other. Four of the sixty-seven do share a handful - HUMAN1 names both a world and a ship
+        // Concord - which is why this asks what the ship pool holds alone rather than for two sets
+        // that never meet.
+        Assert.All(
+            Database.Value.NameLists.Where(n => n.ShipNames.Count > 0 && n.PlanetNames.Count > 0),
+            n => Assert.NotEmpty(n.ShipNames.Except(n.PlanetNames, StringComparer.Ordinal)));
+    }
+
+    /// <summary>
+    /// The name field is relabelled for a nomad, and the words for it survive the pruner.
+    /// </summary>
+    /// <remarks>
+    /// The game swaps this label inside its executable rather than in its interface files -
+    /// <c>ARKSHIP_NAME</c> appears in no <c>.gui</c>, no script and no event - so nothing in the
+    /// data refers to it and the pruner drops it unless it is asked for by name. It reads through
+    /// two further entries, which the reference-following pass has to bring with it.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void TheFieldANomadNamesIsCalledTheArkshipsName()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var extractor = new GameDataExtractor(LayeredContent.ForInstall(InstallRoot!));
+        var text = extractor.ExtractLocalisation(reachableFrom: Database.Value);
+
+        Assert.Equal("$ARKSHIP_LABEL$ Name", text.GetValueOrDefault("ARKSHIP_NAME"));
+        Assert.Equal("$arkship_cap$", text.GetValueOrDefault("ARKSHIP_LABEL"));
+        Assert.Equal("Arkship", text.GetValueOrDefault("arkship_cap"));
+
+        // The one it replaces is still there, for every empire that has a world.
+        Assert.Equal("Homeworld Name", text.GetValueOrDefault("HOMEWORLD_NAME"));
+    }
+
     [SkippableFact]
     [Trait("Category", "RealData")]
     public void AShipsetIsCalledWhatTheGameCallsIt()

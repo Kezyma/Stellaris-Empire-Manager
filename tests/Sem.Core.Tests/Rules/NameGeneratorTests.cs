@@ -24,6 +24,42 @@ public sealed class NameGeneratorTests
         Assert.Equal(expected, NameGenerator.Adjective(name));
     }
 
+    /// <summary>
+    /// A nomad's arkship is named out of the ship names, not the planet names.
+    /// </summary>
+    /// <remarks>
+    /// A nomadic empire the game saved itself carries <c>HUM1_SHIP_TimaphontheImplacable</c> in its
+    /// <c>planet_name</c>, and that key sits in HUM1's <c>ship_names</c> block. The field is shared
+    /// and the pool behind it is not.
+    /// </remarks>
+    [Fact]
+    public void AnArkshipIsNamedFromTheShipsAndAWorldFromTheWorlds()
+    {
+        var database = new GameDatabase
+        {
+            SchemaVersion = 1,
+            GameVersion = "test",
+            ExtractorVersion = "test",
+            Defines = new GameDefines { EthicsPoints = 3, CivicPoints = 2 },
+            NameLists =
+            [
+                new NameListDefinition("HUM1", "human")
+                {
+                    PlanetNames = ["Terra"],
+                    ShipNames = ["Timaphon the Implacable"],
+                },
+            ],
+        };
+
+        var names = new NameGenerator(database);
+
+        Assert.Equal("Timaphon the Implacable", names.Ship("HUM1"));
+        Assert.Equal("Terra", names.Planet("HUM1"));
+
+        // A list nobody has is no list at all, rather than someone else's ship.
+        Assert.Null(names.Ship("AVI3"));
+    }
+
     [Fact]
     public void ANameMatchingNoRuleKeepsItsOwnForm()
     {

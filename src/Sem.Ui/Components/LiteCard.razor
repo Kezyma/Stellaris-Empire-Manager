@@ -177,7 +177,8 @@
                         is what the game records, but a picture of the ark world says nothing about
                         an empire whose whole point is that it does not live on one.
                     *@
-                    <button type="button" class="face-button" title="Edit the homeworld"
+                    <button type="button" class="face-button"
+                            title="@(View.IsNomadic ? "Edit the arkship" : "Edit the homeworld")"
                             @onclick="() => Open(LitePart.Homeworld)">
                         @if (HomePicture is { Length: > 0 } world)
                         {
@@ -191,24 +192,20 @@
 
                     <div class="about">
                         <div class="titles">
-                            @Named(Session.Localizer.Name(Design.PlanetName, "Unnamed world"),
+                            @Named(Session.Localizer.Name(
+                                       Design.PlanetName,
+                                       View.IsNomadic ? "Unnamed arkship" : "Unnamed world"),
                                    [Session.Localizer.Name(Design.SystemName, string.Empty)],
-                                   Session.Localizer.Text(View.Context.EffectivePlanetClass),
-                                   LitePart.Homeworld, "Edit the homeworld and its system")
+                                   View.StartKind,
+                                   LitePart.Homeworld,
+                                   View.IsNomadic
+                                       ? "Edit the arkship and the star it sets out from"
+                                       : "Edit the homeworld and its system")
                         </div>
 
                         <div class="sem-lite-choices">
                             @Row(Session.Localizer.Heading("SELECT_SYSTEM_INITIALIZER_LABEL", "Starting System"),
                                  View.StartingSystem, LitePart.Homeworld)
-
-                            @if (Design.IsNomadic == true)
-                            {
-                                @Row(Session.Localizer.Heading("arkship_cap", "Arkship"),
-                                     View.Arkship is { } ark
-                                         ? Session.Localizer.Text(ark.NameKey, Localizer.Prettify(ark.Key))
-                                         : null,
-                                     LitePart.Homeworld)
-                            }
                         </div>
                     </div>
                 </div>
