@@ -36,6 +36,16 @@
         }
     </div>
 
+    @*
+        What can be done to a handful at once, between the heading and the rows.
+
+        Here rather than above the whole block, because it is about the rows: the heading carries
+        the search, the preset toggle and the column picker - which say which empires are listed and
+        what is shown of them - and this says what will happen to the ones ticked. It sits against
+        the table's own top edge for the same reason the ticks are in the table.
+    *@
+    @Bulk
+
     @if (Rows.Count == 0)
     {
         <p class="sem-empty-line">@Empty</p>
@@ -415,6 +425,10 @@
     /// <summary>What one row's share button says, which is only ever news about that row.</summary>
     [Parameter]
     public Func<EmpireRow, string> CopyTitle { get; set; } = _ => "Copy a link to this empire";
+
+    /// <summary>What to do with the ticked rows, drawn just above them while there are any.</summary>
+    [Parameter]
+    public RenderFragment? Bulk { get; set; }
 
     /// <summary>
     /// The empires ticked, which the page owns and this draws.

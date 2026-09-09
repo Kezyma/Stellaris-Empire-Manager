@@ -70,6 +70,18 @@
             <path d="M4 20h4L20 8a2.8 2.8 0 0 0-4-4L4 16z" />
             break;
 
+        case "export":
+            @* Out of a box and away: an arrow leaving a tray, which is what an export is. *@
+            <path d="M12 3v10" />
+            <path d="M8 9l4 4 4-4" />
+            <path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" />
+            break;
+
+        case "apply":
+            @* A tick, for the button that carries out what the control beside it was set to. *@
+            <path d="M5 12.5l4.5 4.5L19 7" />
+            break;
+
         case "filter":
             @* A funnel, for a tab with something set under it. *@
             <path d="M4 5h16l-6 7.5V19l-4 2v-8.5z" fill="currentColor" stroke="none" />
@@ -100,7 +112,7 @@
     /// <summary>
     /// Which glyph: <c>save</c>, <c>share</c>, <c>delete</c>, <c>revert</c>, <c>edit</c>,
     /// <c>duplicate</c>, <c>close</c>, <c>edit-pencil</c>, <c>lite</c>, <c>advanced</c>,
-    /// <c>back</c>, <c>any</c>, <c>all</c> or <c>filter</c>.
+    /// <c>back</c>, <c>any</c>, <c>all</c>, <c>export</c>, <c>apply</c> or <c>filter</c>.
     /// </summary>
     [Parameter, EditorRequired]
     public required string Name { get; set; }

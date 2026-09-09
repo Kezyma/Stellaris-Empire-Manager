@@ -452,6 +452,12 @@ public sealed class DesignSession
 
         var design = add(File!);
 
+        // What the empire's own choices decide for it, written now rather than at the first edit.
+        // One of the game's empires copied off the shelf arrives with the traits its authority and
+        // origin force already listed against it as problems - which are not problems and are not
+        // the player's to fix, since nothing in the editor can add a trait the game is imposing.
+        Derive(design);
+
         Select(design, announce: false);
 
         _unsaved = design;

@@ -23,54 +23,37 @@
         all - the shader line for it is commented out, and three hundred and one of the three
         hundred and three colour blocks the game ships leave it empty.
 
-        One block of the game's palette per slot, headed by the game's own word for it. The dropdown
-        that stood over each block listed the same colours by name and did the same thing, so the
-        reader was told twice which colour is which.
+        The same arrangement as the two pickers below, and for the same reason: two palettes of
+        seventy-two side by side where there is room for them, and one at a time behind a pair of
+        tabs where there is not. Beside the flag while the row is wide enough for both, and under it
+        when it is not - which is what a phone gets, where the pair sitting in a column beside a
+        160px picture had a palette narrower than one swatch and pushed the dialog sideways.
 
-        Foldable, and folded it still says what the three are. Three palettes of seventy-two is most
-        of a phone screen spent above the thing being edited, and the flag is the answer to all of
-        it - so on a narrow screen the picture should be what fills the space, not the palette.
+        It was a fold, which answered the height and not the width. Nothing is folded now: the tab
+        you are not on says which colour is set in it, and draws it.
     *@
-    <div class="sem-colors-block">
-        <button type="button" class="sem-colors-head" aria-expanded="@(_colors ? "true" : "false")"
-                @onclick="ToggleColors">
-            <span class="chevron" aria-hidden="true">@(_colors ? "▾" : "▸")</span>
-            <span class="title">Colours</span>
+    <div class="sem-pickers colors">
+        <PickerTabs Label="Flag colours" Selected="_slot" SelectedChanged="s => _slot = s"
+                    Tabs="ColorTabs" />
 
-            @if (!_colors)
-            {
-                <span class="now">
-                    @for (var slot = 0; slot < EditableColorSlots; slot++)
-                    {
-                        <span class="sem-tag-dot" style="--tag:@(Shown(slot) ?? "transparent")"></span>
-                    }
-                </span>
-            }
-        </button>
-
-        @if (_colors)
+        @for (var at = 0; at < EditableColorSlots; at++)
         {
-            <div class="sem-colors">
-                @for (var slot = 0; slot < EditableColorSlots; slot++)
-                {
-                    var index = slot;
+            var slot = at;
 
-                    <div class="sem-field">
-                        <label>@ColorLabel(index)</label>
+            <section class="sem-picker @(_slot == slot ? null : "away")">
+                <PickerHead Tab="ColorTabs[slot]" />
 
-                        <div class="sem-swatches">
-                            @foreach (var color in Session.Data.Database.FlagColors)
-                            {
-                                <button type="button"
-                                        class="sem-swatch @(color.Key == ColorAt(index) ? "selected" : null)"
-                                        style="background:@Swatch(color)"
-                                        title="@Localizer.Prettify(color.Key)"
-                                        @onclick="() => SetColor(index, color.Key)"></button>
-                            }
-                        </div>
-                    </div>
-                }
-            </div>
+                <div class="sem-swatches">
+                    @foreach (var color in Session.Data.Database.FlagColors)
+                    {
+                        <button type="button"
+                                class="sem-swatch @(color.Key == ColorAt(slot) ? "selected" : null)"
+                                style="background:@Swatch(color)"
+                                title="@Localizer.Prettify(color.Key)"
+                                @onclick="() => SetColor(slot, color.Key)"></button>
+                    }
+                </div>
+            </section>
         }
     </div>
 </div>
@@ -352,10 +335,6 @@
     };
 
     /// <summary>
-    /// A swatch in the colour it will actually appear in. Each named colour has a different shade
-    /// for a flag and for the map, so a map swatch showing the flag shade would mislead.
-    /// </summary>
-    /// <summary>
     /// A swatch, in the colour the flag would actually be.
     /// </summary>
     /// <remarks>
@@ -366,34 +345,31 @@
     private static string Swatch(FlagColorDefinition color) =>
         $"rgb({color.Red},{color.Green},{color.Blue})";
 
-    /// <summary>The colour a slot is set to, as CSS, for the folded summary.</summary>
+    /// <summary>The palette on show, where there is only room for one.</summary>
+    /// <remarks>
+    /// The primary, to begin with, which is the order the file writes them in and the order the
+    /// game's own editor offers them. Not remembered between openings, for the reason the pattern
+    /// and emblem tabs are not.
+    /// </remarks>
+    private int _slot;
+
+    /// <summary>The two palettes, named and with the colour each holds, for tabs and heads alike.</summary>
+    private PickerTabs.Tab[] ColorTabs =>
+    [
+        .. Enumerable.Range(0, EditableColorSlots)
+            .Select(slot => new PickerTabs.Tab(ColorLabel(slot), ColorName(slot), Shown(slot)))
+    ];
+
+    /// <summary>What a slot is set to, named the way the swatches name themselves.</summary>
+    private string ColorName(int slot) =>
+        ColorAt(slot) is { Length: > 0 } key ? Localizer.Prettify(key) : "Not set";
+
+    /// <summary>The colour a slot is set to, as CSS, for the dot beside its name.</summary>
     private string? Shown(int slot) =>
         ColorAt(slot) is { } key &&
         Session.Data.Database.FlagColors.FirstOrDefault(c => c.Key == key) is { } color
             ? Swatch(color)
             : null;
-
-    /// <summary>Whether the palettes are open, which the reader decides and this remembers.</summary>
-    private bool _colors = true;
-
-    /// <summary>What that is kept under, so a phone stays folded between visits.</summary>
-    private const string ColorsSetting = "flag-colors";
-
-    /// <summary>
-    /// Opens on whatever was settled on last time, and open where nothing was.
-    /// </summary>
-    /// <remarks>
-    /// Open by default because on anything but a phone there is room for the palettes and they are
-    /// what the panel is for. The reader who folds them is the one who needed the room.
-    /// </remarks>
-    protected override void OnInitialized() =>
-        _colors = Session.Preferences.Get(ColorsSetting) != "closed";
-
-    private void ToggleColors()
-    {
-        _colors = !_colors;
-        Session.Preferences.Set(ColorsSetting, _colors ? "open" : "closed");
-    }
 
     private string? ColorAt(int slot)
     {

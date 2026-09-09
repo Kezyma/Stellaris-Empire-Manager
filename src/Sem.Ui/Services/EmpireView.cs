@@ -334,12 +334,17 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
         FlagSet is { } set ? FlagSetName(_session, set) : null;
 
     /// <summary>
-    /// What the empire flies on the galaxy map, named - or how it comes by one when it names none.
+    /// What the empire flies on the galaxy map, named - or Automatic where it names none.
     /// </summary>
+    /// <remarks>
+    /// Automatic rather than a description of the fallback. The empire has not chosen and the game
+    /// will, which is the fact; that it does so from the flag's primary is how, and belongs in the
+    /// setting rather than on the card.
+    /// </remarks>
     public string MapColorLabel =>
         _design.Flag.MapColor is { Length: > 0 } key
             ? Localizer.Prettify(key)
-            : "Follows the flag";
+            : "Automatic";
 
     /// <summary>
     /// That colour as CSS, so a reader sees the answer rather than the arrangement.

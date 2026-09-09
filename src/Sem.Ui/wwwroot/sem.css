@@ -2498,14 +2498,6 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 /* ---------------------------------------------------------------- swatches */
 
 /* The three slots side by side, each a square block of the game's palette under its own heading. */
-.sem-colors {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: var(--gap);
-    flex: 1;
-    min-width: 200px;
-}
-
 /* Eight across and 28 to a side, which is the shape the game's own colour picker uses. */
 .sem-swatches {
     display: grid;
@@ -2532,40 +2524,6 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
    flag is the answer to all of it. Folded, the line still carries the three colours as dots, so
    what is set can be read without opening anything.
 */
-.sem-colors-block {
-    flex: 1;
-    min-width: 0;
-}
-
-.sem-colors-head {
-    display: flex;
-    align-items: center;
-    gap: var(--space-xs);
-    width: 100%;
-    padding: var(--space-2xs) 0;
-    background: none;
-    border: 0;
-    color: var(--text);
-    font: inherit;
-    text-align: left;
-    cursor: pointer;
-}
-
-.sem-colors-head > .chevron {
-    color: var(--text-dim);
-}
-
-.sem-colors-head > .title {
-    font-weight: 600;
-}
-
-.sem-colors-head > .now {
-    display: inline-flex;
-    align-items: center;
-    gap: 3px;
-    margin-left: var(--space-xs);
-}
-
 /* Taking a tag off is a thing to do, so it is a tile like the colours rather than a link beside them. */
 .sem-swatch.none {
     background: repeating-linear-gradient(
@@ -2660,6 +2618,17 @@ button.icon {
 }
 
 button.icon .sem-action-icon { display: block; }
+
+/*
+    The one button in the editors' row that shows a colour rather than a glyph. Larger than the dot
+    in a table row, because it is the whole of what the button says - and ringed, so an empire with
+    no tag still reads as a button with nothing in it rather than as a gap in the row.
+*/
+button.icon.tag > .sem-tag-dot {
+    width: 14px;
+    height: 14px;
+    vertical-align: 0;
+}
 
 /*
     The stack of everything the panel shows, which is the panel itself where there is no header.
@@ -3583,6 +3552,61 @@ button.icon .sem-action-icon { display: block; }
     .sem-picker > .head { display: flex; }
 }
 
+/* A colour beside the name of it, in the line a tab or a strip gives to what is chosen. */
+.sem-picker-tabs button .state > .sem-tag-dot,
+.sem-picker > .head .state > .sem-tag-dot {
+    margin-right: var(--space-2xs);
+}
+
+/*
+    The flag's own colours, wearing the picker arrangement rather than a variant of it: two palettes
+    side by side where there is room, one at a time behind tabs where there is not.
+
+    Its own threshold, because what has to fit is different. Two lists of pictures want 930px
+    between them; two palettes want eight swatches to a row, which is the shape the game's own
+    colour picker uses and comes to about 220 each.
+
+    A basis rather than a share of the row, so the row itself wraps: beside the flag while there is
+    260px left over for it, under the flag when there is not. That is the phone, and the reason for
+    it - the palettes had been squeezed into whatever a 375px screen leaves beside a 160px picture,
+    which is not enough for one swatch and pushed the dialog sideways.
+*/
+.sem-pickers.colors {
+    flex: 1 1 260px;
+    margin-top: 0;
+}
+
+@container (min-width: 460px) {
+    .sem-pickers.colors > .sem-picker-tabs { display: none; }
+
+    .sem-pickers.colors > .sem-picker { flex-basis: calc(50% - var(--gap) / 2); }
+
+    .sem-pickers.colors > .sem-picker + .sem-picker { margin-left: var(--gap); }
+
+    .sem-pickers.colors > .sem-picker.away { display: flex; }
+
+    .sem-pickers.colors > .sem-picker > .head { display: flex; }
+}
+
+/*
+    The palette continues the frame the strip above it opens, as a picker's list does - and scrolls
+    inside it for the same reason theirs do. Seventy-two swatches is nine rows, and a palette that
+    took its own height pushed the flag off a phone screen: the flag is the answer to which colour
+    to press, and scrolling away from the question to reach the answers is the arrangement this was
+    changed to avoid.
+*/
+.sem-pickers.colors .sem-swatches {
+    margin-top: 0;
+    padding: var(--space-md);
+    justify-content: start;
+    max-height: clamp(160px, 30vh, 360px);
+    overflow-y: auto;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 var(--radius) var(--radius);
+}
+
 /*
     One scroller per picker. The patterns grid carries a ceiling of its own, which is right where it
     is the only thing on the row - but inside a picker the box around it already scrolls, and a
@@ -3771,46 +3795,59 @@ button.icon .sem-action-icon { display: block; }
    as part of the furniture: its own ground, its own edge, and the count first because the count is
    the thing that makes the rest of it mean anything.
 */
+/*
+    What can be done to the ticked empires, on the table's own top edge.
+
+    One line, and small. It appears and disappears as boxes are ticked, so anything taller moves the
+    table under the pointer that is ticking them - which is why it is a row of icons at the size the
+    editors use rather than the row of words it was.
+
+    Allowed to wrap all the same, because on a phone six controls will not fit 375px and a row that
+    scrolls sideways is one whose end nobody finds.
+*/
 .sem-bulk {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--space-sm);
-    margin-bottom: var(--space-sm);
-    padding: var(--space-sm) var(--space-md);
-    background: var(--bg-raised);
-    border: 1px solid var(--accent-dim);
-    border-radius: var(--radius);
-}
-
-.sem-bulk > .count {
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-}
-
-.sem-bulk > .acts {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
     gap: var(--space-xs);
+    padding: var(--space-2xs) var(--space-md);
+    background: var(--bg-raised);
+    border-bottom: 1px solid var(--accent-dim);
+}
+
+/* Italic, so the one thing here that is a statement rather than a control reads as one. */
+.sem-bulk > .count {
+    margin-right: var(--space-2xs);
+    font-style: italic;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+/*
+    A choice and the tick that carries it out, joined: they are one action in two presses, and the
+    space between two things in this row is what says they are not.
+*/
+.sem-bulk .set {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    margin-left: var(--space-sm);
+}
+
+.sem-bulk .set select {
+    height: var(--icon-btn);
+    max-width: 11rem;
+    padding: 0 var(--space-xs);
+}
+
+.sem-bulk .sem-spawn {
+    width: var(--icon-btn);
+    height: var(--icon-btn);
 }
 
 /* Pushed to the far end, away from the four that change something. */
 .sem-bulk > .clear {
     margin-left: auto;
-}
-
-/* The palette, under the bar it belongs to and sharing its edge. */
-.sem-bulk-tags {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, var(--swatch));
-    gap: 3px;
-    margin: calc(var(--space-sm) * -1) 0 var(--space-sm);
-    padding: var(--space-md);
-    background: var(--bg-panel);
-    border: 1px solid var(--border);
-    border-top: 0;
-    border-radius: 0 0 var(--radius) var(--radius);
 }
 
 /*
@@ -4588,6 +4625,14 @@ button.icon .sem-action-icon { display: block; }
     dark row and a pale one against a pale row, without knowing which it is.
 */
 .sem-tag-dot {
+    /*
+        Inline-block rather than nothing, so a width and a height apply wherever it is put. Every
+        use of it began inside a flex row, which blockifies its children and hid the omission; the
+        first one that was not - a colour beside its name inside an ellipsised line - drew nothing.
+        Flex containers ignore this, so it costs the older ones nothing.
+    */
+    display: inline-block;
+    vertical-align: -1px;
     flex: none;
     width: 10px;
     height: 10px;

@@ -8,9 +8,10 @@
     channel is 11 of 255. Nothing is drawn there. Yet the game has a word for the third colour, and
     four of its own empires set it to something distinctive on backgrounds with no blue at all.
 
-    Left unset it follows the flag's primary, which is what almost every empire does - the game's own
-    random combinations put black in this slot a hundred and seventy-five times out of two hundred
-    and twenty-six, and thirty-two of its fifty-three ready-made empires leave it out entirely.
+    Left unset the game picks one from the flag's primary, which is what almost every empire does -
+    thirty-two of the game's fifty-three ready-made empires write nothing here and seventeen more
+    write black. So the tile for it says Automatic rather than describing the fallback: what it
+    means is that nobody has chosen, and the game will.
 
     Drawn in the map colours rather than the flag colours, because that is the pair the game keeps
     for every name and this is the half that will be on screen. "Red" is not the same red in both.
@@ -22,7 +23,7 @@
         undoing one - most empires want it and it should not need discovering.
     *@
     <button type="button" class="sem-swatch none @(Chosen is null ? "selected" : null)"
-            title="Follow the flag's primary colour"
+            title="Automatic" aria-label="Automatic"
             aria-pressed="@(Chosen is null ? "true" : "false")"
             @onclick="() => Set(null)"></button>
 

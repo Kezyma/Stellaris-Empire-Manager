@@ -129,73 +129,13 @@ else
                 across ninety empires is the whole reason to be looking at a table, and it cannot be
                 done twice and read once. Which list a row came from is a column like any other.
             *@
-            @*
-                What can be done to a handful at once, which is only ever drawn while there is a
-                handful. Above the table rather than inside its heading row: the heading already
-                carries the search, the preset toggle and the column picker, and a fourth thing that
-                appears and disappears would make that row jump.
-            *@
-            @if (_selected.Count > 0)
-            {
-                <div class="sem-bulk">
-                    <span class="count">@Picked</span>
-
-                    <div class="acts">
-                        <button type="button" @onclick="ExportPicked"
-                                title="Write these empires to a designs file of their own">Export</button>
-
-                        <button type="button" aria-expanded="@(_tagging ? "true" : "false")"
-                                @onclick="() => _tagging = !_tagging">Tag</button>
-
-                        @*
-                            The three the game has, as the game words them, and a fourth line that
-                            is the label rather than a state - a select needs something to say while
-                            it is waiting to be told.
-                        *@
-                        <select value="" @onchange="e => SpawnPicked(e.Value?.ToString())">
-                            <option value="">AI spawning</option>
-
-                            @foreach (var state in SpawnToggle.Offered(_session))
-                            {
-                                <option value="@state.Value">@state.Name</option>
-                            }
-                        </select>
-
-                        <button type="button" class="danger"
-                                @onclick="() => _deletingPicked = true">Delete</button>
-                    </div>
-
-                    <button type="button" class="clear" @onclick="ClearPicked">Clear</button>
-                </div>
-
-                @if (_tagging)
-                {
-                    @*
-                        The game's own flag palette, because a tag is one of its colours and nothing
-                        else. "None" first, since taking a tag off is as much a thing to do as
-                        putting one on.
-                    *@
-                    <div class="sem-bulk-tags">
-                        <button type="button" class="sem-swatch none" title="No tag"
-                                @onclick="() => TagPicked(null)"></button>
-
-                        @foreach (var color in _session.Data.Database.FlagColors)
-                        {
-                            <button type="button" class="sem-swatch"
-                                    style="background:rgb(@color.Red,@color.Green,@color.Blue)"
-                                    title="@Localizer.Prettify(color.Key)"
-                                    @onclick="() => TagPicked(color.Key)"></button>
-                        }
-                    </div>
-                }
-            }
-
             <EmpireTable Heading="Empires" Setting="rows"
                          Rows="@Narrowed" Total="@AllRows.Count" Movable="@OwnRows.Count"
                          Columns="@VisibleColumns" OnOpen="OpenRow" OnMove="MoveRow"
                          OnCopyLink="row => CopyLink(row.Design)" OnDelete="Confirm"
                          CopyTitle="row => CopyTitleFor(row.Design)"
                          Selected="@_selected" OnPicked="StateHasChanged"
+                         Bulk="@(_selected.Count > 0 ? BulkBar : null)"
                          Empty="No empires match.">
                 <Title>
                     <EmpireSearch Filter="@_filter" OnChanged="FilterChanged" />
@@ -848,13 +788,111 @@ else
     /// </remarks>
     private readonly HashSet<EmpireDesign> _selected = [];
 
-    /// <summary>Whether the palette is open under the bar.</summary>
-    private bool _tagging;
-
     /// <summary>Whether the delete question is about the selection rather than one empire.</summary>
     private bool _deletingPicked;
 
     private string Picked => _selected.Count == 1 ? "1 empire" : $"{_selected.Count} empires";
+
+    /// <summary>
+    /// What can be done to the ticked empires, on one line above them.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Two shapes of control, and the difference is deliberate. Export and Delete are done the
+    /// moment they are pressed, so they are single buttons; a tag and a spawn setting have to be
+    /// chosen before they mean anything, so each is a control that holds a choice with a tick
+    /// beside it that carries it out. A dropdown that acted on being changed had no way to be read
+    /// back before it fired, and no way to be corrected after.
+    /// </para>
+    /// <para>
+    /// Icons throughout, at the size the editors use, because this row appears and disappears above
+    /// a table and a row of words was a bar the width of the page arriving unannounced.
+    /// </para>
+    /// </remarks>
+    private RenderFragment BulkBar => @<div class="sem-bulk">
+        <span class="count">@Picked</span>
+
+        <button type="button" class="icon" @onclick="ExportPicked"
+                title="@($"Write {Picked} to a designs file of their own")"
+                aria-label="@($"Write {Picked} to a designs file of their own")">
+            <ActionIcon Name="export" />
+        </button>
+
+        <button type="button" class="icon danger" @onclick="() => _deletingPicked = true"
+                title="@($"Delete {Picked}")" aria-label="@($"Delete {Picked}")">
+            <ActionIcon Name="delete" />
+        </button>
+
+        @*
+            A colour to mark them with, named rather than drawn: a native list is the one control
+            here that a phone gives a full-screen picker of its own, which is worth more on the
+            small screen than a swatch would be. The dot beside the name is in the list and on the
+            card once it is applied.
+        *@
+        <span class="set">
+            <select value="@_tag" aria-label="Tag to apply"
+                    @onchange="e => _tag = e.Value?.ToString() ?? string.Empty">
+                <option value="">No tag</option>
+
+                @foreach (var color in _session!.Data.Database.FlagColors)
+                {
+                    <option value="@color.Key">@Localizer.Prettify(color.Key)</option>
+                }
+            </select>
+
+            <button type="button" class="icon good" @onclick="() => TagPicked(Untagged(_tag))"
+                    title="@($"Tag {Picked} {TagName}")" aria-label="@($"Tag {Picked} {TagName}")">
+                <ActionIcon Name="apply" />
+            </button>
+        </span>
+
+        @*
+            The game's own cycling button, holding a state to be applied rather than one the empire
+            has - there are several empires and they need not agree, so it starts on the first of
+            the three and says which it is showing.
+        *@
+        <span class="set">
+            <button type="button" class="sem-spawn" @onclick="CycleSpawn"
+                    title="@Spawning.Name" aria-label="@Spawning.Name">
+                @if (Spawning.Icon is { Length: > 0 } icon)
+                {
+                    <img src="@_session.Data.AssetUrl(icon)" alt="">
+                }
+                else
+                {
+                    <span class="initials">@Spawning.Name</span>
+                }
+            </button>
+
+            <button type="button" class="icon good" @onclick="() => SpawnPicked(Spawning.Value)"
+                    title="@($"Set {Picked} to {Spawning.Name}")"
+                    aria-label="@($"Set {Picked} to {Spawning.Name}")">
+                <ActionIcon Name="apply" />
+            </button>
+        </span>
+
+        <button type="button" class="icon clear" @onclick="ClearPicked"
+                title="Clear the selection" aria-label="Clear the selection">
+            <ActionIcon Name="close" />
+        </button>
+    </div>;
+
+    /// <summary>The tag the bar is set to apply, empty meaning take the tag off.</summary>
+    private string _tag = string.Empty;
+
+    /// <summary>That, as the rules want it: nothing rather than an empty string.</summary>
+    private static string? Untagged(string tag) => tag is { Length: > 0 } ? tag : null;
+
+    /// <summary>What the tick beside the list will do, for its own label.</summary>
+    private string TagName => _tag is { Length: > 0 } tag ? Localizer.Prettify(tag) : "with no colour";
+
+    /// <summary>Which spawn setting the bar is showing, of the three.</summary>
+    private int _spawn;
+
+    private (string Value, string Name, string? Icon) Spawning =>
+        SpawnToggle.Offered(_session!)[_spawn];
+
+    private void CycleSpawn() => _spawn = (_spawn + 1) % SpawnToggle.Offered(_session!).Count;
 
     /// <summary>
     /// The selection as a list, taken before anything is changed.
@@ -865,11 +903,7 @@ else
     /// </remarks>
     private IReadOnlyList<EmpireDesign> Chosen => [.. _selected];
 
-    private void ClearPicked()
-    {
-        _selected.Clear();
-        _tagging = false;
-    }
+    private void ClearPicked() => _selected.Clear();
 
     /// <summary>
     /// Writes a tag onto every empire chosen, or takes one off.
@@ -882,7 +916,6 @@ else
     private void TagPicked(string? color)
     {
         var chosen = Chosen;
-        _tagging = false;
 
         _session!.EditFile(_ =>
         {

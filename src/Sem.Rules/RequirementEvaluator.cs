@@ -120,15 +120,7 @@ public sealed class RequirementEvaluator
 
         AnyRequirement any => EvaluateAny(any, context),
 
-        // Negating a condition nobody could read does not make it readable, so not knowing survives
-        // the negation rather than being turned into a refusal. This used to be a special case
-        // matching NOT wrapped directly around an unknown, which is where it usually sits and not
-        // where it does the damage: a NOR compiles to Not(Any(...)), and one unread term among
-        // seven read ones then decided the whole group.
-        //
-        // A negation that fails has nothing useful to report from inside it either: the child
-        // succeeded, and its reasons describe a failure that did not happen.
-        NotRequirement not => Negate(Evaluate(not.Item, context)),
+        NotRequirement not => Refuse(not.Item, context),
 
         // Naming what is wanted, for the conditions the game left unexplained. Anything above this
         // carrying its own wording replaces it, which is nearly everything - Evaluate prefers the
@@ -169,11 +161,83 @@ public sealed class RequirementEvaluator
     };
 
     /// <summary>
+    /// "You must not have that", answered by naming the thing the design has.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A negation's own reasons are no use: the child succeeded, and its reasons describe a failure
+    /// that did not happen. But what it holds is exactly the answer - a NOR over a list of civics
+    /// fails because the empire has one of them, and which one is the whole of what the reader
+    /// needs. So a refusal is explained by the choices inside it that hold.
+    /// </para>
+    /// <para>
+    /// Only where the game supplied nothing, since <see cref="Evaluate"/> prefers the nearest
+    /// explanation and nearly every one of these clauses has one. The ones that do not are the
+    /// clauses written beside one that does, which is where the silence was: Reanimated Armies
+    /// states in the game's own words that it will not go with Sovereign Guardianship, and rules
+    /// out Citizen Service in an unlabelled clause of the same block.
+    /// </para>
+    /// </remarks>
+    private Verdict Refuse(Requirement item, DesignContext context)
+    {
+        var verdict = Negate(Evaluate(item, context));
+
+        if (verdict.Passed || verdict.Unsure)
+        {
+            return verdict;
+        }
+
+        var held = new List<string>();
+        Collect(item, context, held);
+
+        return held.Count == 0
+            ? verdict
+            : new Verdict(false, [.. held.Select(k => RuleReasons.For(RuleReasons.Excluded, k))]);
+    }
+
+    /// <summary>
+    /// The choices named inside a condition that the design actually holds.
+    /// </summary>
+    /// <remarks>
+    /// Only the shapes a "must not have" is written in - a list of values, or several such lists.
+    /// Anything else is a condition about the empire rather than a thing it has, and naming it
+    /// would be naming a rule rather than a choice the reader could release.
+    /// </remarks>
+    private static void Collect(Requirement item, DesignContext context, List<string> into)
+    {
+        switch (item)
+        {
+            case SelectionRequirement selection when context.Has(selection.Category, selection.Key):
+                into.Add(selection.Key);
+                break;
+
+            case AnyRequirement any:
+                foreach (var child in any.Items)
+                {
+                    Collect(child, context, into);
+                }
+
+                break;
+
+            case AllRequirement all:
+                foreach (var child in all.Items)
+                {
+                    Collect(child, context, into);
+                }
+
+                break;
+        }
+    }
+
+    /// <summary>
     /// Turns a verdict around, leaving one nothing could settle unsettled.
     /// </summary>
     /// <remarks>
     /// The whole point of the third answer. "You must not have done X" where nobody knows whether X
-    /// was done is still nobody knowing, and reading it as either yes or no invents a fact.
+    /// was done is still nobody knowing, and reading it as either yes or no invents a fact. This
+    /// used to be a special case matching NOT wrapped directly around an unknown, which is where it
+    /// usually sits and not where it does the damage: a NOR compiles to Not(Any(...)), and one
+    /// unread term among seven read ones then decided the whole group.
     /// </remarks>
     private static Verdict Negate(Verdict verdict) => verdict switch
     {

@@ -54,6 +54,65 @@ public sealed class RequirementEvaluatorTests
         Assert.False(Evaluator.CanDecide(new NotRequirement(unknown), context));
     }
 
+    /// <summary>
+    /// A refusal names what caused it.
+    /// </summary>
+    /// <remarks>
+    /// The case this exists for is Reanimated Armies, whose <c>possible</c> holds two lists of
+    /// civics it will not go with. The second carries a sentence of the game's own about Sovereign
+    /// Guardianship; the first names Citizen Service and says nothing. So an empire holding both
+    /// was told why it could not have the civic, an empire holding only Citizen Service was told
+    /// nothing at all, and releasing the guardianship appeared to leave the option refused for no
+    /// reason.
+    /// </remarks>
+    [Fact]
+    public void ARefusalNamesWhatTheDesignHolds()
+    {
+        var context = Context();
+        var held = new SelectionRequirement(SelectionCategory.Civics, "civic_beacon_of_liberty");
+
+        var verdict = Evaluator.Evaluate(new NotRequirement(new AnyRequirement([held])), context);
+
+        Assert.False(verdict.Passed);
+        Assert.Equal(
+            [RuleReasons.For(RuleReasons.Excluded, "civic_beacon_of_liberty")],
+            verdict.Reasons);
+    }
+
+    /// <summary>
+    /// And only where the game left it unexplained, since its own sentence is the better one.
+    /// </summary>
+    [Fact]
+    public void UnlessTheGameSaidItBetter()
+    {
+        var context = Context();
+        var held = new SelectionRequirement(SelectionCategory.Civics, "civic_beacon_of_liberty");
+
+        var verdict = Evaluator.Evaluate(
+            new NotRequirement(new AnyRequirement([held])) { FailureText = "civic_tooltip_not_a_beacon" },
+            context);
+
+        Assert.False(verdict.Passed);
+        Assert.Equal(["civic_tooltip_not_a_beacon"], verdict.Reasons);
+    }
+
+    /// <summary>
+    /// A refusal caused by something the design does not hold says nothing rather than inventing a
+    /// cause. "You must not be a machine" fails a machine empire on what it is, and the reader is
+    /// not holding a choice they could release.
+    /// </summary>
+    [Fact]
+    public void AndNamesNothingWhenThereIsNothingToName()
+    {
+        var context = Context();
+        var always = new AlwaysRequirement(true);
+
+        var verdict = Evaluator.Evaluate(new NotRequirement(always), context);
+
+        Assert.False(verdict.Passed);
+        Assert.Empty(verdict.Reasons);
+    }
+
     /// <summary>A condition the design can answer is still negated the ordinary way.</summary>
     [Fact]
     public void AKnownConditionIsStillNegatedNormally()

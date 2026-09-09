@@ -46,6 +46,18 @@ public static class RuleReasons
     public const string Opposite = "sem.trait.opposite";
 
     /// <summary>
+    /// Something the design already has that this cannot be taken with. Followed by its key.
+    /// </summary>
+    /// <remarks>
+    /// For the "you must not have that" conditions the game states as a bare list. Most of them
+    /// carry a sentence of the game's own and never reach this; the ones that do reach it are the
+    /// clauses written beside one that does, which is where a missing explanation is least
+    /// noticeable and most misleading - Reanimated Armies refuses Sovereign Guardianship in the
+    /// game's words and refused Citizen Service in silence, from two clauses of the same block.
+    /// </remarks>
+    public const string Excluded = "sem.excluded";
+
+    /// <summary>
     /// Something the option asks for and the design does not have. Followed by its key.
     /// </summary>
     /// <remarks>

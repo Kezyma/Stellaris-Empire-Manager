@@ -321,7 +321,10 @@ public sealed record EmpireRow
             Preset = preset,
             Name = name,
             Flag = design.Flag,
-            Tag = Tagged(session, design.Flag.Tag),
+            // The player's own empires only. A preset is not in the file and cannot be tagged, so
+            // its fourth colour is the game's business - and one of the game's empires does set it,
+            // which would otherwise arrive as a tag on a row that has no way to change it.
+            Tag = preset is null ? Tagged(session, design.Flag.Tag) : null,
 
             Text = string.Join(
                 " ",
