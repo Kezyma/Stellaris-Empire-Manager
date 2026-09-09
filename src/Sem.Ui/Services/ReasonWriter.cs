@@ -40,6 +40,7 @@ public sealed class ReasonWriter(Localizer localizer)
             RuleReasons.ForbiddenByEthics => $"Not with {Names(subject)}",
             RuleReasons.WrongCivics => $"Needs {Names(subject)}",
             RuleReasons.Opposite => $"Excluded by {Names(subject)}",
+            RuleReasons.Excluded => $"Not with {Names(subject)}",
             RuleReasons.Missing => $"Needs {Names(subject)}",
             RuleReasons.NotEnoughPoints => "Not enough trait points",
             RuleReasons.NoPicksLeft => "No trait slots left",

@@ -9,8 +9,8 @@
  * @param {string} name suggested file name
  * @param {Uint8Array} bytes file contents
  */
-export function saveFile(name, bytes) {
-    const blob = new Blob([bytes], { type: 'text/plain' });
+export function saveFile(name, bytes, mediaType) {
+    const blob = new Blob([bytes], { type: mediaType || 'text/plain' });
     const url = URL.createObjectURL(blob);
 
     const link = document.createElement('a');
@@ -145,6 +145,42 @@ export async function saveDesignsFile(name, bytes) {
         // AbortError is the one the player caused, and it is not a failure: they closed the dialog.
         // Everything else is the browser refusing - a policy, a site setting, a file it will not
         // open - and the caller should fall back rather than leave them with nothing.
+        return error?.name === 'AbortError' ? 'cancelled' : 'refused';
+    }
+}
+
+/**
+ * Offers a file that is not the designs file.
+ *
+ * Deliberately not the designs picker. That one carries an id, which is how the browser remembers
+ * the folder and reopens in the player's Stellaris directory - exactly where a part of a collection
+ * or a picture of an empire must not default to. This asks with no id and no startIn, so the
+ * browser offers wherever it would ordinarily offer, and the two never share a memory.
+ *
+ * @param {string} name suggested file name
+ * @param {Uint8Array} bytes file contents
+ * @param {string} mediaType what it is, for the picker and the blob
+ * @param {string} extension the suffix the picker will accept, with its dot
+ * @param {string} description what to call the kind of file in the dialog
+ * @returns {Promise<'saved'|'cancelled'|'unavailable'|'refused'>} what became of it
+ */
+export async function exportFile(name, bytes, mediaType, extension, description) {
+    if (typeof window.showSaveFilePicker !== 'function') {
+        return 'unavailable';
+    }
+
+    try {
+        const handle = await window.showSaveFilePicker({
+            suggestedName: name,
+            types: [{ description, accept: { [mediaType]: [extension] } }],
+        });
+
+        const writable = await handle.createWritable();
+        await writable.write(bytes);
+        await writable.close();
+
+        return 'saved';
+    } catch (error) {
         return error?.name === 'AbortError' ? 'cancelled' : 'refused';
     }
 }
@@ -887,4 +923,283 @@ export function enableCardReorder(list, owner) {
     // A cancelled pointer is the system taking the gesture away - a phone call, a gesture the OS
     // claimed. Nothing moves, and every card goes back where it was.
     list.addEventListener('pointercancel', settle);
+}
+
+/**
+ * Draws a piece of the page into a PNG.
+ *
+ * The empire card is worth keeping and worth showing somebody, and neither is served by asking the
+ * player to take a screenshot: what they would get is whatever their window happened to be, with the
+ * buttons and the totals column in it, cut off wherever the scroll had stopped.
+ *
+ * So the card is redrawn rather than photographed. It is cloned, laid out in an iframe as wide as a
+ * desktop window, and rasterised through an SVG foreignObject - which is the one way a browser will
+ * render its own HTML into an image. Two things follow from that and both matter:
+ *
+ *   - An SVG used as an image loads nothing from outside itself. Every picture in the clone has to
+ *     be a data URI before it goes in, and that includes the masks a flag is cut and coloured with,
+ *     which are url() values inside style attributes rather than <img> elements.
+ *
+ *   - The media queries inside it read the SVG's own width, not the window's. That is what makes the
+ *     result the same on a phone as on a monitor: the frame is stated here, the card is laid out
+ *     against it, and the picture is cropped back to the card afterwards.
+ *
+ * The whole card is cloned, not the part of it wanted. Almost every rule that shapes what is
+ * inside is written against the card as an ancestor - ".sem-lite .face-button" and its neighbours -
+ * so cloning the inner column alone silently lost them, and the first version came out with a box
+ * drawn round every title, portrait and flag: the plain button styling, showing through where the
+ * card's own reset should have been. Cloning the card keeps them, and brings its background, its
+ * border and its padding with it, which is the frame the picture wants anyway.
+ *
+ * @param {string} selector the card to draw
+ * @param {string} omit what to take out of it, as a selector
+ * @param {number} card how wide the part being drawn is, inside the card's own padding
+ * @param {number} frame how wide to pretend the window is, so the wide arrangement applies
+ * @param {number} scale pixels per CSS pixel
+ * @returns {Promise<Uint8Array|null>} the PNG, or null where there was nothing to draw
+ */
+export async function captureCard(selector, omit, card, frame, scale) {
+    const source = document.querySelector(selector);
+
+    if (!source) {
+        return null;
+    }
+
+    const styles = appStyles();
+    const clone = source.cloneNode(true);
+
+    for (const marker of clone.querySelectorAll(omit)) {
+        marker.remove();
+    }
+
+    // The card lays itself out in two columns, one of which has just been taken out of it.
+    clone.style.display = 'block';
+
+    await inlineImages(clone);
+
+    const stage = document.createElement('iframe');
+    stage.setAttribute('aria-hidden', 'true');
+    stage.style.cssText =
+        'position:fixed;left:-20000px;top:0;border:0;visibility:hidden;' +
+        'width:' + frame + 'px;height:100px';
+    document.body.appendChild(stage);
+
+    try {
+        const doc = stage.contentDocument;
+        doc.open();
+        doc.write('<!doctype html><html><head><meta charset="utf-8"></head><body></body></html>');
+        doc.close();
+
+        const sheet = doc.createElement('style');
+        sheet.textContent = styles;
+        doc.head.appendChild(sheet);
+        doc.body.style.margin = '0';
+
+        const holder = doc.createElement('div');
+        holder.style.cssText = 'width:' + card + 'px;' + typography();
+        holder.appendChild(doc.importNode(clone, true));
+        doc.body.appendChild(holder);
+
+        // The card's own frame, measured rather than stated: the width asked for is the width of
+        // what is being drawn, and the padding and border around it are the stylesheet's business.
+        const drawnCard = holder.firstElementChild;
+        const edges = doc.defaultView.getComputedStyle(drawnCard);
+        const sides =
+            parseFloat(edges.paddingLeft) + parseFloat(edges.paddingRight) +
+            parseFloat(edges.borderLeftWidth) + parseFloat(edges.borderRightWidth);
+
+        const width = Math.ceil(card + sides);
+        holder.style.width = width + 'px';
+
+        const height = Math.ceil(holder.getBoundingClientRect().height);
+
+        // The root's own font size, because rem resolves against whatever the root turns out to be
+        // and inside an image that is the <svg> rather than an <html> the stylesheet can reach.
+        const root = getComputedStyle(document.documentElement).fontSize;
+
+        const svg =
+            '<svg xmlns="http://www.w3.org/2000/svg" width="' + frame + '" height="' + height + '"' +
+            ' style="font-size:' + root + '">' +
+            '<foreignObject x="0" y="0" width="' + frame + '" height="' + height + '">' +
+            '<div xmlns="http://www.w3.org/1999/xhtml" style="' +
+            attribute('width:' + frame + 'px;' + typography()) + '">' +
+            '<style><![CDATA[' + styles + ']]></style>' +
+            new XMLSerializer().serializeToString(holder) +
+            '</div></foreignObject></svg>';
+
+        const drawn = await load('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg));
+
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(width * scale);
+        canvas.height = Math.round(height * scale);
+
+        const context = canvas.getContext('2d');
+
+        // The card's own ground, painted first: the panels are drawn on it, and a picture with holes
+        // in it is one that reads differently on every background it is put in front of.
+        context.fillStyle = variable('--bg-panel') || '#151b24';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(drawn, 0, 0, width, height, 0, 0, canvas.width, canvas.height);
+
+        const blob = await new Promise(done => canvas.toBlob(done, 'image/png'));
+
+        return blob ? new Uint8Array(await blob.arrayBuffer()) : null;
+    } finally {
+        stage.remove();
+    }
+}
+
+/** A value safe to put inside a double-quoted XML attribute, which a font stack is not. */
+function attribute(value) {
+    return value
+        .split('&').join('&amp;')
+        .split('<').join('&lt;')
+        .split('"').join('&quot;');
+}
+
+/**
+ * What the page's own body says about text, as a style attribute.
+ *
+ * Neither the iframe's holder nor the picture's wrapper is a body, and the rules that set the app's
+ * typeface, size and colour are written against one. Left to inherit, the picture came out in the
+ * browser's default serif at the browser's default size - a card in a typeface the app does not use
+ * and a fifth larger than it should be, because html's own 81.25% went with it.
+ *
+ * Stated on both, so the height measured in the iframe is the height the picture actually needs.
+ */
+function typography() {
+    const body = getComputedStyle(document.body);
+
+    return 'font-family:' + body.fontFamily +
+        ';font-size:' + body.fontSize +
+        ';font-weight:' + body.fontWeight +
+        ';line-height:' + body.lineHeight +
+        ';color:' + body.color;
+}
+
+/**
+ * The app's own stylesheet, read back out of the page rather than fetched again.
+ *
+ * Every rule, media queries and all, because the arrangement the picture wants is the one those
+ * queries decide. They are re-evaluated against the frame stated above rather than against the
+ * window, which is the whole point of laying the clone out somewhere of a known width.
+ */
+function appStyles() {
+    let text = '';
+
+    for (const sheet of document.styleSheets) {
+        let rules;
+
+        try {
+            rules = sheet.cssRules;
+        } catch {
+            // A stylesheet from another origin. None of ours are, and anything else is not the
+            // app's to copy.
+            continue;
+        }
+
+        for (const rule of rules) {
+            text += rule.cssText + '\n';
+        }
+    }
+
+    return text;
+}
+
+/** One of the palette's values, as the page has resolved it. */
+function variable(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+/**
+ * Turns every picture in a clone into a data URI.
+ *
+ * Both kinds. The img elements are the rooms, the portraits and the emblems; the url() values in
+ * style attributes are the masks a flag is cut and coloured with, which are computed per empire and
+ * so cannot live in the stylesheet.
+ *
+ * A picture that cannot be read is left as it was rather than the whole export being abandoned: a
+ * card missing one icon is worth more than no card at all.
+ */
+async function inlineImages(root) {
+    const held = new Map();
+
+    const fetched = url => {
+        if (!held.has(url)) {
+            held.set(url, encode(url));
+        }
+
+        return held.get(url);
+    };
+
+    const jobs = [];
+
+    for (const picture of root.querySelectorAll('img')) {
+        // Nothing is scrolled into view here, so a lazy image would never be asked for.
+        picture.removeAttribute('loading');
+
+        const source = picture.getAttribute('src');
+
+        if (source) {
+            jobs.push(fetched(new URL(source, document.baseURI).href)
+                .then(data => data && picture.setAttribute('src', data)));
+        }
+    }
+
+    for (const element of root.querySelectorAll('[style]')) {
+        const style = element.getAttribute('style');
+
+        if (!style || !style.includes('url(')) {
+            continue;
+        }
+
+        const found = [...style.matchAll(/url\(\s*(["']?)([^"')]+)\1\s*\)/g)];
+
+        jobs.push(Promise.all(found.map(match =>
+            fetched(new URL(match[2], document.baseURI).href)
+                .then(data => data ? [match[2], data] : null)))
+            .then(pairs => {
+                let rewritten = style;
+
+                for (const pair of pairs.filter(Boolean)) {
+                    rewritten = rewritten.split(pair[0]).join(pair[1]);
+                }
+
+                element.setAttribute('style', rewritten);
+            }));
+    }
+
+    await Promise.all(jobs);
+}
+
+/** One file as a data URI, or nothing where it could not be read. */
+async function encode(url) {
+    try {
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            return null;
+        }
+
+        const blob = await response.blob();
+
+        return await new Promise(done => {
+            const reader = new FileReader();
+            reader.onload = () => done(reader.result);
+            reader.onerror = () => done(null);
+            reader.readAsDataURL(blob);
+        });
+    } catch {
+        return null;
+    }
+}
+
+/** An image, once the browser has finished with it. */
+function load(source) {
+    return new Promise((done, failed) => {
+        const image = new Image();
+        image.onload = () => done(image);
+        image.onerror = () => failed(new Error('The picture could not be drawn.'));
+        image.src = source;
+    });
 }

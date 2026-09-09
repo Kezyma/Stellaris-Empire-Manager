@@ -1,0 +1,206 @@
+@inject IJSRuntime Js
+@implements IAsyncDisposable
+
+@*
+    One of a list, chosen from a panel that opens under a control.
+
+    The native select cannot do the one thing this list needs: a colour beside its name. Seventy-two
+    of the game's flag colours are seventy-two words a reader has to go and look at to tell "Ship
+    Steel" from "Hard Steel", and the swatch is the half that answers.
+
+    Wears the same shell as the tick list beside it - .sem-combo for the one document-level listener
+    that closes an open list on a press outside, and .sem-list for everything the two arrangements
+    share. What is different is only how many may be held, which is what .sem-multi means and this
+    does not claim.
+*@
+
+<div class="sem-combo sem-list sem-single @(_open ? "open" : null)" @onkeydown="Dismiss">
+    <div class="control" @onclick="Show">
+        <span class="face @(Chosen is null ? "empty" : null)">
+            @if (Chosen is { } shown)
+            {
+                @Mark(shown)
+                <span class="name">@shown.Name</span>
+            }
+            else
+            {
+                @Label
+            }
+        </span>
+
+        <button type="button" class="toggle" aria-expanded="@(_open ? "true" : "false")"
+                title="@(_open ? "Close the list" : "Show every option")"
+                aria-label="@(_open ? "Close the list" : "Show every option")"
+                @onclick="Flip" @onclick:stopPropagation="true">▾</button>
+    </div>
+
+    @if (_open)
+    {
+        <div class="panel">
+            @if (Options.Count > Searchable)
+            {
+                <div class="search">
+                    <input type="text" placeholder="Find" value="@_search" @ref="_box"
+                           @oninput="e => _search = e.Value?.ToString() ?? string.Empty"
+                           @onclick:stopPropagation="true" />
+                </div>
+            }
+
+            <ul class="options">
+                @foreach (var option in Shown)
+                {
+                    var held = option.Key == Value;
+
+                    <li>
+                        @*
+                            The mousedown is suppressed for the reason the tick list gives: a press
+                            that moves focus out of the panel closes it under the pointer.
+                        *@
+                        <button type="button" class="@(held ? "selected" : null)"
+                                role="menuitemradio" aria-checked="@(held ? "true" : "false")"
+                                @onmousedown:preventDefault="true"
+                                @onclick="() => Choose(option.Key)">
+                            <span class="tick" aria-hidden="true">@(held ? "✓" : string.Empty)</span>
+
+                            @Mark(option)
+
+                            <span class="name">@option.Name</span>
+                        </button>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+</div>
+
+@code {
+    /// <summary>What stands in the control while nothing is chosen.</summary>
+    [Parameter, EditorRequired]
+    public required string Label { get; set; }
+
+    /// <summary>Everything that can be chosen, in the order to offer it.</summary>
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<EmpireChoice> Options { get; set; }
+
+    /// <summary>The key held, which need not be one this list offers.</summary>
+    [Parameter]
+    public string? Value { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> ValueChanged { get; set; }
+
+    private EmpireChoice? Chosen =>
+        Value is { Length: > 0 } key
+            ? Options.FirstOrDefault(o => string.Equals(o.Key, key, StringComparison.Ordinal))
+            : null;
+
+    /// <summary>
+    /// The picture beside a name, where the thing has one.
+    /// </summary>
+    /// <remarks>
+    /// The same two kinds the tick list draws: the game's own icon for most lists, and a dot for
+    /// the ones that are a colour.
+    /// </remarks>
+    private RenderFragment Mark(EmpireChoice option) => @<text>
+        @if (option.Swatch is { Length: > 0 } dot)
+        {
+            <span class="sem-tag-dot" style="--tag:@dot"></span>
+        }
+        else if (option.Icon is { Length: > 0 } icon)
+        {
+            <GameIcon Path="@icon" Alt="" />
+        }
+    </text>;
+
+    private bool _open;
+
+    /// <summary>Above this many options the panel offers a way to search them.</summary>
+    private const int Searchable = 6;
+
+    private string _search = string.Empty;
+
+    private ElementReference _box;
+
+    private bool _focusBox;
+
+    private IReadOnlyList<EmpireChoice> Shown =>
+        _search.Length == 0
+            ? Options
+            : [.. Options.Where(o => o.Name.Contains(_search, StringComparison.CurrentCultureIgnoreCase))];
+
+    private IJSObjectReference? _module;
+
+    /// <summary>Takes the choice and closes, since there is nothing else to pick.</summary>
+    private async Task Choose(string key)
+    {
+        _open = false;
+        _search = string.Empty;
+
+        await ValueChanged.InvokeAsync(key);
+    }
+
+    private void Dismiss(KeyboardEventArgs e)
+    {
+        if (e.Key != "Escape")
+        {
+            return;
+        }
+
+        if (_search.Length > 0)
+        {
+            _search = string.Empty;
+            return;
+        }
+
+        _open = false;
+    }
+
+    private void Show()
+    {
+        if (!_open)
+        {
+            Flip();
+        }
+    }
+
+    private void Flip()
+    {
+        _open = !_open;
+        _search = string.Empty;
+        _focusBox = _open && Options.Count > Searchable;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_focusBox)
+        {
+            _focusBox = false;
+            await _box.FocusAsync();
+        }
+
+        if (!firstRender)
+        {
+            return;
+        }
+
+        _module = await Js.InvokeAsync<IJSObjectReference>("import", "./_content/Sem.Ui/sem.js");
+        await _module.InvokeVoidAsync("closeListsOnOutsidePress");
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_module is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await _module.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+            // The page went away first; there is nothing left to release.
+        }
+    }
+}

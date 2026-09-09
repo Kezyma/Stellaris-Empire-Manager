@@ -1960,6 +1960,141 @@ public sealed class GameDataExtractionTests
             "ModifierCatalog.Settled with the evidence for it.");
     }
 
+
+    /// <summary>
+    /// Every modifier is coloured the way the game colours it.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The game declares <c>good</c> only for the few dozen modifiers its script files invent;
+    /// everything defined in code - which is nearly everything a design shows - carries no statement
+    /// at all, and <see cref="ModifierCatalog"/> has to infer it from the name. So the game is asked
+    /// a different way: its own English descriptions colour values by hand, and a modifier written
+    /// as <c>§G-10%§!</c> or <c>§R+10%§!</c> is one the game itself treats as bad.
+    /// </para>
+    /// <para>
+    /// Only where the game is unanimous, and only where it says anything at all. About a hundred and
+    /// forty modifiers are written this way; twenty-six of them are consistently inverted, none is
+    /// written both ways, and the rest are the ordinary direction. The silent majority are not
+    /// judged here - there is no evidence about them and inventing some would be worse than the
+    /// guess.
+    /// </para>
+    /// <para>
+    /// This is what found the original fault: Empire Size from Pops drew green when positive, which
+    /// is backwards - the game shows Psionic Theory's ten per cent reduction in green. It is kept so
+    /// that a patch adding another such modifier fails here rather than reading the wrong way round
+    /// on a card.
+    /// </para>
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void EveryModifierIsColouredTheWayTheGameColoursIt()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        var wrong = ColouredByTheGame()
+            .Where(stated => database.Modifiers.TryGetValue(stated.Key, out var info)
+                && info.IsGood != stated.Value)
+            .Select(stated => $"{stated.Key} should be {(stated.Value ? "good" : "bad")}")
+            .OrderBy(k => k, StringComparer.Ordinal)
+            .ToList();
+
+        Assert.True(
+            wrong.Count == 0,
+            $"{wrong.Count} modifier(s) are coloured against the game's own descriptions: " +
+            $"{string.Join(", ", wrong)}. Settle each in ModifierCatalog.LooksBad.");
+    }
+
+    /// <summary>
+    /// What the game's own descriptions say about which direction is the good one.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A description writes a modifier as <c>$MOD_SOMETHING$: §G+10%§!</c> - the token, then a
+    /// colour code, then a sign. Green-and-plus or red-and-minus is the ordinary direction;
+    /// green-and-minus or red-and-plus is the inverted one. Anything a file writes both ways is
+    /// dropped rather than guessed at, and there are none at present.
+    /// </para>
+    /// <para>
+    /// The sign has to be printed against a printed number. Sixty-four of these write a variable
+    /// instead - <c>§G+$@telekinesis_amenities_mult|0%$</c> - where the sign in the text is the
+    /// localiser's and the sign of the value is the script's, and in that very case they disagree:
+    /// the variable is -0.2. Read literally it says psionic amenities usage is a good thing to have
+    /// more of, which is the opposite of what the same file says about every other amenities usage
+    /// modifier. So a sign that is not followed by a digit is not evidence.
+    /// </para>
+    /// </remarks>
+    private static IReadOnlyDictionary<string, bool> ColouredByTheGame()
+    {
+        var folder = Path.Combine(InstallRoot!, "localisation", "english");
+        var stated = new Dictionary<string, List<bool>>(StringComparer.Ordinal);
+
+        var pattern = new System.Text.RegularExpressions.Regex(
+            @"\$(MOD_[A-Z0-9_]+)\$[^$]{0,40}?\u00a7(?<colour>[GR])\s*(?<sign>[+-])[0-9]",
+            System.Text.RegularExpressions.RegexOptions.None,
+            TimeSpan.FromSeconds(10));
+
+        foreach (var file in Directory.EnumerateFiles(folder, "*.yml", SearchOption.AllDirectories))
+        {
+            foreach (System.Text.RegularExpressions.Match match in pattern.Matches(File.ReadAllText(file)))
+            {
+                // MOD_EMPIRE_SIZE_POPS_MULT is the token for empire_size_pops_mult.
+                var key = match.Groups[1].Value[4..].ToLowerInvariant();
+                var green = match.Groups["colour"].Value == "G";
+                var up = match.Groups["sign"].Value == "+";
+
+                if (!stated.TryGetValue(key, out var seen))
+                {
+                    stated[key] = seen = [];
+                }
+
+                seen.Add(green == up);
+            }
+        }
+
+        return stated
+            .Where(m => m.Value.Distinct().Count() == 1)
+            .ToDictionary(m => m.Key, m => m.Value[0], StringComparer.Ordinal);
+    }
+
+
+    /// <summary>
+    /// A civic refused for a civic the empire holds says which one.
+    /// </summary>
+    /// <remarks>
+    /// Reanimated Armies writes its exclusions as two lists of civics in one block. The second
+    /// carries a sentence of the game's own about Sovereign Guardianship; the first names Citizen
+    /// Service and carries nothing. So an empire holding both was told why, an empire holding only
+    /// Citizen Service was told nothing at all, and releasing the guardianship left the option
+    /// refused with the explanation gone and the refusal still there.
+    ///
+    /// Written against the real files because that is where the shape came from - two sibling
+    /// clauses, one labelled and one not - and a fixture would only be testing the fixture.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void ACivicRefusedForAnotherCivicSaysWhichOne()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        var design = EmpireDesignsFile.CreateEmpty().Add("Test");
+        design.Species.Class = "MAM";
+        design.Authority = "auth_democratic";
+        design.SetEthics(["ethic_militarist"]);
+        design.SetCivics(["civic_citizen_service"]);
+
+        var rules = new EmpireRules(database);
+        var reanimators = rules.GetCivicOptions(rules.CreateContext(design))
+            .Single(o => o.Key == "civic_reanimated_armies");
+
+        Assert.False(reanimators.Enabled);
+        Assert.Contains(
+            RuleReasons.For(RuleReasons.Excluded, "civic_citizen_service"),
+            reanimators.Reasons);
+    }
+
     /// <summary>
     /// A swap that replaces an option's numbers with a sentence is shown as the sentence.
     /// </summary>

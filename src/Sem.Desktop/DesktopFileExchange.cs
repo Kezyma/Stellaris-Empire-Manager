@@ -112,6 +112,66 @@ public sealed class DesktopFileExchange(SafeFile file, string designsPath) : IFi
         return Task.FromResult(SaveOutcome.Saved);
     }
 
+    /// <inheritdoc />
+    public Task<SaveOutcome> ExportAsync(string fileName, byte[] contents, ExportKind kind) =>
+        ExportFileAsync(fileName, contents, kind);
+
+    /// <summary>
+    /// Writes a file the player names, somewhere they choose.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Nothing to do with the designs file, which is why it does not go through <see cref="SaveAsync"/>
+    /// - that one holds the path and replaces what is there, whatever name it is handed. A selection
+    /// of empires or a picture of one sent through it would have overwritten the player's whole
+    /// collection.
+    /// </para>
+    /// <para>
+    /// Least privilege here as well: the policy allows the one directory the player picked in the
+    /// dialog and nothing else, built fresh for this write. Shared with the stand-in used when no
+    /// designs file was found, because this has nothing to do with there being one.
+    /// </para>
+    /// </remarks>
+    internal static Task<SaveOutcome> ExportFileAsync(string fileName, byte[] contents, ExportKind kind)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(fileName);
+        ArgumentNullException.ThrowIfNull(contents);
+
+        var dispatcher = System.Windows.Application.Current?.Dispatcher;
+
+        if (dispatcher is null)
+        {
+            return Task.FromResult(SaveOutcome.Refused);
+        }
+
+        // The dialog belongs to the window, as the clipboard does.
+        return dispatcher.InvokeAsync(() =>
+        {
+            var dialog = new Microsoft.Win32.SaveFileDialog
+            {
+                FileName = fileName,
+                DefaultExt = kind.Extension,
+                Filter = $"{kind.Description}|*{kind.Extension}|All files|*.*",
+                AddExtension = true,
+                OverwritePrompt = true,
+            };
+
+            if (dialog.ShowDialog() is not true)
+            {
+                return SaveOutcome.Cancelled;
+            }
+
+            var chosen = dialog.FileName;
+            var policy = WritePolicy.ForApplication()
+                .Allowing(Path.GetDirectoryName(chosen)!)
+                .Named("application (export)");
+
+            new SafeFile(policy).WriteAllBytes(chosen, contents);
+
+            return SaveOutcome.Saved;
+        }).Task;
+    }
+
     /// <summary>
     /// The dated backup beside the file, following the game's own naming so the two sit together.
     /// An existing one for today is left alone, since it may be the game's.

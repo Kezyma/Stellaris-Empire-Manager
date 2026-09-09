@@ -19,7 +19,7 @@
         <button type="button" aria-pressed="@(index == Selected ? "true" : "false")"
                 @onclick="() => Choose(index)">
             <span class="title">@Tabs[index].Title</span>
-            <span class="state">@Tabs[index].State</span>
+            <span class="state">@Tabs[index].Mark@Tabs[index].State</span>
         </button>
     }
 </div>
@@ -31,7 +31,27 @@
     /// carried it, and the reason still holds. Looking at the patterns, which emblem the empire
     /// wears is worth knowing without having to go and look.
     /// </remarks>
-    public readonly record struct Tab(string Title, string? State);
+    public readonly record struct Tab(string Title, string? State, string? Swatch = null)
+    {
+        /// <summary>
+        /// The colour, where what is chosen in this list is one.
+        /// </summary>
+        /// <remarks>
+        /// A list of colours is the one list whose names are the harder half - "Ship Steel" and
+        /// "Beige" are two words a reader has to go and look at to tell apart. Inside the state
+        /// rather than beside it so the pair ellipsis together when the tab is narrow.
+        /// </remarks>
+        public RenderFragment? Mark =>
+            Swatch is { Length: > 0 } dot
+                ? builder =>
+                    {
+                        builder.OpenElement(0, "span");
+                        builder.AddAttribute(1, "class", "sem-tag-dot");
+                        builder.AddAttribute(2, "style", $"--tag:{dot}");
+                        builder.CloseElement();
+                    }
+                : null;
+    }
 
     [Parameter, EditorRequired]
     public required IReadOnlyList<Tab> Tabs { get; set; }

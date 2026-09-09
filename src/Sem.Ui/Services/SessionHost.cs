@@ -63,6 +63,13 @@ public sealed class SessionHost(
 
             var session = new DesignSession(data, assumeAllPacks, _preferences);
 
+            // Listening before the file arrives rather than after, because opening one is itself a
+            // change worth keeping: a file written before this app derived what an empire's choices
+            // force is brought up to date as it is read, and a browser's store is the only copy of
+            // it there is. Subscribed afterwards, that first notification had nobody to hear it and
+            // the stored bytes stayed as they were, correct on screen and stale on disk.
+            session.FileChanged += () => Keep(session);
+
             // The desktop app knows where the player's designs are and opens them. A browser has to
             // be handed one — but it may have been handed one before, so what it kept is opened
             // rather than starting empty and losing an evening's work to a closed tab.
@@ -87,11 +94,6 @@ public sealed class SessionHost(
             {
                 session.StartEmptyFile();
             }
-
-            // The list keeps itself: an empire added, duplicated or deleted is a decision already
-            // taken, and there is no Save button in front of it. Editing one is the thing that
-            // waits, and that goes through SaveAsync below.
-            session.FileChanged += Keep;
 
             _session = session;
             return _session;
@@ -119,14 +121,21 @@ public sealed class SessionHost(
     /// Keeps the file in the browser's store when the list of empires changes.
     /// </summary>
     /// <remarks>
+    /// The list keeps itself: an empire added, duplicated or deleted is a decision already taken,
+    /// and there is no Save button in front of it. Editing one is the thing that waits, and that
+    /// goes through SaveAsync.
+    ///
+    /// Handed the session rather than reading the field, because the first notification arrives
+    /// while the file is still being opened and the field is not set until afterwards.
+    ///
     /// Not awaited: this runs from a change notification during a render, and a save that takes a
     /// moment must not hold one up. Failures are the store's own business — nobody asked for this
     /// one, so nobody is waiting to be told. The desktop keeps nothing here, since the player's real
     /// file is the one copy and it is written when they say so.
     /// </remarks>
-    private void Keep()
+    private void Keep(DesignSession session)
     {
-        if (!_files.SavesInPlace && _session?.Save() is { } bytes)
+        if (!_files.SavesInPlace && session.Save() is { } bytes)
         {
             _ = _store.WriteAsync(Kept.Encode(bytes));
         }

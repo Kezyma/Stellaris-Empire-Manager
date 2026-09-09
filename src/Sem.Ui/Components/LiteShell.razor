@@ -116,6 +116,7 @@
         LitePart.RulerTraits => "Ruler traits",
         LitePart.Homeworld => Session.Current?.IsNomadic == true ? "Arkship" : "Homeworld",
         LitePart.Flag => "Flag",
+        LitePart.MapColor => "Map colour",
         LitePart.Room => "Room",
         LitePart.Shipset => "Shipset",
         LitePart.Plan or LitePart.PlanPerks => "Plan",
@@ -253,6 +254,11 @@
 
             case LitePart.Flag:
                 builder.OpenComponent<FlagTab>(160);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.MapColor:
+                builder.OpenComponent<MapColorField>(230);
                 builder.CloseComponent();
                 break;
 

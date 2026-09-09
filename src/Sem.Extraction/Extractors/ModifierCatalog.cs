@@ -103,7 +103,7 @@ public sealed class ModifierCatalog
         {
             return new ModifierInfo(
                 IsPercentage: decided,
-                IsGood: !LooksLikeACost(key),
+                IsGood: !LooksBad(key),
                 IsNeutral: false,
                 Decimals: 2,
                 Declared: true) { Settled = true };
@@ -111,7 +111,7 @@ public sealed class ModifierCatalog
 
         return new ModifierInfo(
             IsPercentage: InferPercentage(key, observedValues),
-            IsGood: !LooksLikeACost(key),
+            IsGood: !LooksBad(key),
             IsNeutral: false,
             Decimals: 2,
             Declared: false)
@@ -245,10 +245,53 @@ public sealed class ModifierCatalog
     }
 
     /// <summary>
-    /// Whether a lower number is the better one, which is true of anything an empire pays.
+    /// Whether a lower number is the better one.
     /// </summary>
-    private static bool LooksLikeACost(string key) =>
-        key.Contains("cost", StringComparison.OrdinalIgnoreCase) ||
-        key.Contains("upkeep", StringComparison.OrdinalIgnoreCase) ||
-        key.Contains("_time", StringComparison.OrdinalIgnoreCase);
+    /// <remarks>
+    /// <para>
+    /// The game does not declare this for anything it defines in code, which is nearly everything a
+    /// design can show - the <c>good</c> field exists, defaults to no, and appears only on the few
+    /// dozen modifiers the script files invent. So it is inferred, and the first three families are
+    /// the obvious ones: an empire pays a cost, pays an upkeep, and waits out a time.
+    /// </para>
+    /// <para>
+    /// The rest were found by reading the game's own descriptions rather than by judgement. Its
+    /// localisation colours values by hand with §G and §R, and across every English file there are
+    /// twenty-six modifiers it writes only as red-when-positive - Psionic Theory's
+    /// <c>$MOD_EMPIRE_SIZE_POPS_MULT$: §G-10%§!</c>, the Cave Dweller trait's
+    /// <c>$MOD_SPECIES_EMPIRE_SIZE_MULT$: §R+10%§!</c>, and so on - and not one that it writes both
+    /// ways. Sixteen of the twenty-six are modifiers this app ships. Two of those were already
+    /// costs; the families below are the other fourteen, and
+    /// <c>EveryModifierIsColouredTheWayTheGameColoursIt</c> is what keeps this list honest against
+    /// the next patch.
+    /// </para>
+    /// <para>
+    /// War exhaustion is the one family here the test cannot confirm, because both descriptions of
+    /// it print a scripted variable rather than a number and the sign in the text is then the
+    /// localiser's rather than the value's. It is kept on the same evidence read less strictly:
+    /// both write it red-when-positive.
+    /// </para>
+    /// <para>
+    /// Named as families rather than as keys because a family is what the evidence is about -
+    /// amenities usage, housing usage and naval capacity usage are one idea, and a patch adding a
+    /// fourth should not need this file edited. The two on the end have no family: a planet taking
+    /// bombardment damage is not the same modifier as a ship dealing it, and
+    /// <c>ship_orbital_bombardment_mult</c> is a bonus, so "bombardment" cannot be the rule.
+    /// </para>
+    /// </remarks>
+    private static bool LooksBad(string key) =>
+        Families.Any(family => key.Contains(family, StringComparison.OrdinalIgnoreCase)) ||
+        key is "planet_orbital_bombardment_damage" or "storm_ship_hull_breaker_mult";
+
+    private static readonly string[] Families =
+    [
+        "cost",
+        "upkeep",
+        "_time",
+        "empire_size",
+        "crime",
+        "_usage",
+        "war_exhaustion",
+        "trade_fee",
+    ];
 }

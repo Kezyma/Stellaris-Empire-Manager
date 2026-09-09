@@ -1494,6 +1494,38 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 }
 
 /*
+   The empire's tag, in the same corner and always there.
+
+   Larger than the ten pixels the table gives it. In a row the dot has the tag's name written beside
+   it and only has to agree with it; here it is the whole of what is said, and a reader picking one
+   empire out of a dozen cards is reading nothing but the colour.
+
+   Named through its parent, which is only there to outrank .sem-tag-dot: the two selectors are
+   worth the same and that one is written further down the file, so on equal terms it wins and the
+   dot came out at the table's size.
+*/
+.sem-empire-slot > .sem-empire-tag {
+    position: absolute;
+    top: var(--space-xs);
+    right: var(--space-xs);
+    width: 12px;
+    height: 12px;
+    pointer-events: none;
+}
+
+/*
+   And the share button steps aside for it rather than over it.
+
+   That button owns this corner on hover, with a background of its own because it sits over the
+   card's face and name - which is a fair trade for those, since they are still readable the moment
+   the pointer leaves. A tag is not: it is one dot, and covering it hides the thing at exactly the
+   moment somebody is looking hardest at the card.
+*/
+.sem-empire-slot.has-tag .sem-empire-share {
+    right: calc(var(--space-xs) * 2 + 12px);
+}
+
+/*
    Somewhere to take hold of the card.
 
    The card is a button, and a browser will not begin a drag from inside one - so with the whole
@@ -2498,14 +2530,6 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 /* ---------------------------------------------------------------- swatches */
 
 /* The three slots side by side, each a square block of the game's palette under its own heading. */
-.sem-colors {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: var(--gap);
-    flex: 1;
-    min-width: 200px;
-}
-
 /* Eight across and 28 to a side, which is the shape the game's own colour picker uses. */
 .sem-swatches {
     display: grid;
@@ -2524,6 +2548,19 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 }
 
 .sem-swatch:hover { border-color: var(--border-strong); }
+
+/*
+   The three palettes, and the line that folds them away.
+
+   Three grids of seventy-two is most of a phone screen spent above the flag they change, and the
+   flag is the answer to all of it. Folded, the line still carries the three colours as dots, so
+   what is set can be read without opening anything.
+*/
+/* Taking a tag off is a thing to do, so it is a tile like the colours rather than a link beside them. */
+.sem-swatch.none {
+    background: repeating-linear-gradient(
+        45deg, var(--bg) 0 3px, var(--bg-raised) 3px 6px);
+}
 
 /*
    The one grid that cannot use the shared treatment. A swatch's fill is an arbitrary colour from
@@ -2613,6 +2650,17 @@ button.icon {
 }
 
 button.icon .sem-action-icon { display: block; }
+
+/*
+    The one button in the editors' row that shows a colour rather than a glyph. Larger than the dot
+    in a table row, because it is the whole of what the button says - and ringed, so an empire with
+    no tag still reads as a button with nothing in it rather than as a gap in the row.
+*/
+button.icon.tag > .sem-tag-dot {
+    width: 14px;
+    height: 14px;
+    vertical-align: 0;
+}
 
 /*
     The stack of everything the panel shows, which is the panel itself where there is no header.
@@ -3536,6 +3584,61 @@ button.icon .sem-action-icon { display: block; }
     .sem-picker > .head { display: flex; }
 }
 
+/* A colour beside the name of it, in the line a tab or a strip gives to what is chosen. */
+.sem-picker-tabs button .state > .sem-tag-dot,
+.sem-picker > .head .state > .sem-tag-dot {
+    margin-right: var(--space-2xs);
+}
+
+/*
+    The flag's own colours, wearing the picker arrangement rather than a variant of it: two palettes
+    side by side where there is room, one at a time behind tabs where there is not.
+
+    Its own threshold, because what has to fit is different. Two lists of pictures want 930px
+    between them; two palettes want eight swatches to a row, which is the shape the game's own
+    colour picker uses and comes to about 220 each.
+
+    A basis rather than a share of the row, so the row itself wraps: beside the flag while there is
+    260px left over for it, under the flag when there is not. That is the phone, and the reason for
+    it - the palettes had been squeezed into whatever a 375px screen leaves beside a 160px picture,
+    which is not enough for one swatch and pushed the dialog sideways.
+*/
+.sem-pickers.colors {
+    flex: 1 1 260px;
+    margin-top: 0;
+}
+
+@container (min-width: 460px) {
+    .sem-pickers.colors > .sem-picker-tabs { display: none; }
+
+    .sem-pickers.colors > .sem-picker { flex-basis: calc(50% - var(--gap) / 2); }
+
+    .sem-pickers.colors > .sem-picker + .sem-picker { margin-left: var(--gap); }
+
+    .sem-pickers.colors > .sem-picker.away { display: flex; }
+
+    .sem-pickers.colors > .sem-picker > .head { display: flex; }
+}
+
+/*
+    The palette continues the frame the strip above it opens, as a picker's list does - and scrolls
+    inside it for the same reason theirs do. Seventy-two swatches is nine rows, and a palette that
+    took its own height pushed the flag off a phone screen: the flag is the answer to which colour
+    to press, and scrolling away from the question to reach the answers is the arrangement this was
+    changed to avoid.
+*/
+.sem-pickers.colors .sem-swatches {
+    margin-top: 0;
+    padding: var(--space-md);
+    justify-content: start;
+    max-height: clamp(200px, 42vh, 440px);
+    overflow-y: auto;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 var(--radius) var(--radius);
+}
+
 /*
     One scroller per picker. The patterns grid carries a ceiling of its own, which is right where it
     is the only thing on the row - but inside a picker the box around it already scrolls, and a
@@ -3718,6 +3821,105 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
+   What can be done to a handful of empires at once.
+
+   Only on screen while there is a handful, so it is drawn as something that has arrived rather than
+   as part of the furniture: its own ground, its own edge, and the count first because the count is
+   the thing that makes the rest of it mean anything.
+*/
+/*
+    What can be done to the ticked empires, on the table's own top edge.
+
+    One line, and small. It appears and disappears as boxes are ticked, so anything taller moves the
+    table under the pointer that is ticking them - which is why it is a row of icons at the size the
+    editors use rather than the row of words it was.
+
+    Allowed to wrap all the same, because on a phone six controls will not fit 375px and a row that
+    scrolls sideways is one whose end nobody finds.
+*/
+.sem-bulk {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-2xs) var(--space-md);
+    background: var(--bg-raised);
+    border-bottom: 1px solid var(--accent-dim);
+}
+
+/* Italic, so the one thing here that is a statement rather than a control reads as one. */
+.sem-bulk > .count {
+    margin-right: var(--space-2xs);
+    font-style: italic;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+/*
+    A choice and the tick that carries it out: one action in two presses, and the space between two
+    things in this row is what says they are not.
+*/
+.sem-bulk .set {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    margin-left: var(--space-sm);
+}
+
+/*
+    Joined into one field where the two really are one control - a list and the button that applies
+    what is in it. They share an edge and a pair of corners, which is what says the tick belongs to
+    the list beside it rather than to the row.
+*/
+.sem-bulk .set.joined {
+    gap: 0;
+}
+
+.sem-bulk .set.joined > .sem-combo {
+    width: 11rem;
+}
+
+.sem-bulk .set.joined > .sem-combo > .control {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.sem-bulk .set.joined > button.icon {
+    height: var(--icon-btn);
+    border: 1px solid var(--border-strong);
+
+    /* One border between them rather than two, as the picker tabs do it. */
+    margin-left: -1px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+/*
+    The game's own spawn control, at the height of the row and nothing else: no box, no padding, no
+    border. It is a picture the player already knows from the game's designer, and a button drawn
+    around it makes it look like one of this app's rather than one of the game's.
+*/
+.sem-bulk .sem-spawn.bare {
+    width: auto;
+    height: var(--icon-btn);
+    padding: 0;
+    background: none;
+    border: 0;
+}
+
+.sem-bulk .sem-spawn.bare img {
+    width: auto;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+}
+
+/* Pushed to the far end, away from the four that change something. */
+.sem-bulk > .clear {
+    margin-left: auto;
+}
+
+/*
    The search box in the heading's place, at the width the heading had rather than the full width a
    text box takes by default. It shrinks before the picker does, since a word is legible in a narrow
    box and a row of column chips is not.
@@ -3793,7 +3995,7 @@ button.icon .sem-action-icon { display: block; }
    A row rather than one big button, because what is in it is pressable: a chip naming something
    chosen is the obvious place to press to stop asking for it, and a button cannot hold buttons.
 */
-.sem-combo.sem-multi > .control {
+.sem-combo.sem-list > .control {
     display: flex;
     align-items: center;
     gap: var(--space-2xs);
@@ -3815,7 +4017,7 @@ button.icon .sem-action-icon { display: block; }
     cursor: pointer;
 }
 
-.sem-combo.sem-multi > .control:hover {
+.sem-combo.sem-list > .control:hover {
     border-color: var(--accent-dim);
 }
 
@@ -3841,17 +4043,25 @@ button.icon .sem-action-icon { display: block; }
    choices did not fit behind a gesture nobody makes. A card whose whole job is saying what is being
    asked for cannot keep half the answer off the end of a line. The control grows instead.
 */
-.sem-combo.sem-multi .face {
+.sem-combo.sem-list .face {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2xs);
+
+    /*
+       Centred, because what goes in here is not always a chip. A chip is as tall as the line and
+       centres its own contents; a swatch put straight into the face is ten pixels with a height of
+       its own, and a flex item that states its cross size is placed at the start of the line rather
+       than stretched - so the colour sat five pixels above the name it belongs to.
+    */
+    align-items: center;
 
     flex: 1;
     min-width: 0;
 }
 
 /* The label standing in for a choice is one line of text, and elides rather than scrolling. */
-.sem-combo.sem-multi .face.empty {
+.sem-combo.sem-list .face.empty {
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -3937,7 +4147,7 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /* The arrow, which is the one part of the control that only ever opens the list. */
-.sem-combo.sem-multi > .control > .toggle {
+.sem-combo.sem-list > .control > .toggle {
     position: static;
     flex: none;
 
@@ -3952,12 +4162,12 @@ button.icon .sem-action-icon { display: block; }
     font: inherit;
 }
 
-.sem-combo.sem-multi > .control > .toggle:hover {
+.sem-combo.sem-list > .control > .toggle:hover {
     background: none;
     color: var(--text);
 }
 
-.sem-combo.sem-multi .options > li > button {
+.sem-combo.sem-list .options > li > button {
     display: flex;
     align-items: center;
     gap: var(--space-sm);
@@ -3966,7 +4176,7 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /* A fixed box for the tick, so the names line up whether or not one is next to them. */
-.sem-combo.sem-multi .options .tick {
+.sem-combo.sem-list .options .tick {
     flex: none;
     width: 1em;
     color: var(--accent);
@@ -3977,12 +4187,12 @@ button.icon .sem-action-icon { display: block; }
    picture first - an ethic, a trait, an origin - and a list of words is a list they have to read
    rather than recognise.
 */
-.sem-combo.sem-multi .options .sem-icon {
+.sem-combo.sem-list .options .sem-icon {
     width: var(--icon-sm);
     height: var(--icon-sm);
 }
 
-.sem-combo.sem-multi .options .name {
+.sem-combo.sem-list .options .name {
     min-width: 0;
 }
 
@@ -3994,7 +4204,7 @@ button.icon .sem-action-icon { display: block; }
    laid beside the chips instead of above the options, taking their width and, being the taller of
    the two, growing the row and the card around it every time a list opened.
 */
-.sem-combo.sem-multi .panel {
+.sem-combo.sem-list .panel {
     position: absolute;
     top: calc(100% + 2px);
     left: 0;
@@ -4015,7 +4225,7 @@ button.icon .sem-action-icon { display: block; }
    Everything undone here is something the shared rule gives every combo's list on the way to
    making it the panel - which this one is not any more.
 */
-.sem-combo.sem-multi .panel > .options {
+.sem-combo.sem-list .panel > .options {
     position: static;
     background: none;
     border: none;
@@ -4024,16 +4234,16 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /* The box that narrows a long list, held above it rather than scrolling away with it. */
-.sem-combo.sem-multi .search {
+.sem-combo.sem-list .search {
     padding: var(--space-2xs);
     border-bottom: 1px solid var(--border);
 }
 
-.sem-combo.sem-multi .search input {
+.sem-combo.sem-list .search input {
     padding: var(--space-2xs) var(--space-sm);
 }
 
-.sem-combo.sem-multi .options .none {
+.sem-combo.sem-list .options .none {
     padding: var(--space-sm) var(--space-md);
 }
 
@@ -4303,6 +4513,25 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
+   The box that collects a row, at the left edge where a column of them can be run down with the eye.
+
+   As narrow as its own content and no narrower: the cell blanks itself for the game's own empires,
+   which are in the table but not in the file, so a column of boxes with gaps in it is the shape of
+   the answer rather than an omission.
+*/
+.sem-table .pick {
+    width: 1%;
+    padding-right: 0;
+    text-align: center;
+}
+
+.sem-table .pick input {
+    display: block;
+    margin: 0 auto;
+    cursor: pointer;
+}
+
+/*
    What can be done to a row, held against the right edge while the table scrolls under it.
 
    Not a column in the picker: it is not something an empire is, it is what can be done to one, and
@@ -4463,6 +4692,35 @@ button.icon .sem-action-icon { display: block; }
 .sem-cell-chip .sem-icon {
     width: var(--icon-sm);
     height: var(--icon-sm);
+}
+
+/*
+    A tag: a colour the player put on an empire, and nothing else.
+
+    Kept to a dot rather than given a shape of its own, because it means whatever its owner decided
+    it means and a shape would suggest otherwise. The ring is what keeps a dark tag visible against a
+    dark row and a pale one against a pale row, without knowing which it is.
+*/
+.sem-tag-dot {
+    /*
+        Inline-block rather than nothing, so a width and a height apply wherever it is put. Every
+        use of it began inside a flex row, which blockifies its children and hid the omission; the
+        first one that was not - a colour beside its name inside an ellipsised line - drew nothing.
+        Flex containers ignore this, so it costs the older ones nothing.
+    */
+    display: inline-block;
+    vertical-align: -1px;
+    flex: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--tag, var(--text-dim));
+    box-shadow: 0 0 0 1px var(--border-strong);
+}
+
+/* Beside a name it needs room of its own; inside a chip the chip's gap already gives it some. */
+.sem-table tbody th.name > .sem-tag-dot {
+    margin-right: var(--space-2xs);
 }
 
 /*
@@ -5056,6 +5314,34 @@ button.icon .sem-action-icon { display: block; }
     max-height: 300px;
     overflow-y: auto;
     margin-bottom: var(--gap);
+}
+
+/*
+   Smaller tiles on a phone, because the number of them on screen is the whole of what makes a
+   picker of two hundred and eighty-three emblems usable. At the desktop's sizes a phone shows four
+   patterns and a dozen emblems, which is a scroll bar with a picker attached; at these it shows
+   three times as many and the choosing starts to look like choosing.
+
+   The tiles carry no words, so nothing gets harder to read on the way down - and both stay above
+   the size a finger can reliably hit.
+
+   Named through the box they sit in, because the phone's general rule for that box is - and has to
+   remain - a hundred and twenty pixels: it is what the rooms and the ships want, and it is written
+   as ".sem-scroll-list .sem-thumbs". Two class names beat one, so ".sem-patterns" alone lost to it
+   and the patterns came out at the rooms' size.
+*/
+@media (max-width: 700px) {
+    .sem-scroll-list .sem-thumbs.emblems {
+        grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+    }
+
+    .sem-scroll-list .sem-thumbs.sem-patterns {
+        grid-template-columns: repeat(auto-fill, minmax(54px, 1fr));
+    }
+
+    /* The gap is sized for the wide pictures the default track holds, not for these. */
+    .sem-picker .sem-thumbs.emblems,
+    .sem-picker .sem-thumbs.sem-patterns { gap: var(--space-xs); }
 }
 
 .sem-patterns > .sem-thumb-option {
@@ -5851,6 +6137,13 @@ button.icon .sem-action-icon { display: block; }
     border-radius: var(--radius);
     padding: var(--space-2xs) var(--space-xs);
     cursor: pointer;
+}
+
+/* One of them shows a colour as well as naming it, and a dot in a line of text needs a line. */
+.sem-lite-chips button.value.map {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
 }
 
 .sem-lite-scene:hover,

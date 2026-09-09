@@ -6,6 +6,8 @@
 @inject NavigationManager Navigation
 @inject UnsavedWorkGuard Unsaved
 @inject EditorState Editor
+@inject IJSRuntime Js
+@inject IGameDataSource Source
 
 <PageTitle>Empires - Stellaris Empire Manager</PageTitle>
 
@@ -74,6 +76,32 @@ else
         that asked for it: a question is the page's to put on screen, and a table cell is a poor
         place to grow a dialog out of.
     *@
+    @if (_deletingPicked)
+    {
+        <ConfirmDialog Title="@($"Delete {Picked}?")"
+                       Message="@(_selected.Count == 1
+                                  ? "The empire is removed from your file. There is no undo."
+                                  : "They are removed from your file. There is no undo.")"
+                       OnDismiss="() => _deletingPicked = false">
+            <button type="button" @onclick="() => _deletingPicked = false">
+                @(_selected.Count == 1 ? "Keep it" : "Keep them")
+            </button>
+            <button type="button" class="danger" @onclick="DeletePicked">Delete</button>
+        </ConfirmDialog>
+    }
+
+    @*
+        Said over the editor rather than behind it, which is where a dialog rendered from this page
+        lands - see the note on the editor below.
+    *@
+    @if (_imageTrouble is { } trouble)
+    {
+        <ConfirmDialog Title="The picture could not be made" Message="@trouble"
+                       OnDismiss="() => _imageTrouble = null">
+            <button type="button" @onclick="() => _imageTrouble = null">Close</button>
+        </ConfirmDialog>
+    }
+
     @if (_deleting is { } doomed)
     {
         <ConfirmDialog Title="@($"Delete {_session.Localizer.Name(doomed.Name, doomed.Key)}?")"
@@ -120,6 +148,8 @@ else
                          Columns="@VisibleColumns" OnOpen="OpenRow" OnMove="MoveRow"
                          OnCopyLink="row => CopyLink(row.Design)" OnDelete="Confirm"
                          CopyTitle="row => CopyTitleFor(row.Design)"
+                         Selected="@_selected" OnPicked="StateHasChanged"
+                         Bulk="@(_selected.Count > 0 ? BulkBar : null)"
                          Empty="No empires match.">
                 <Title>
                     <EmpireSearch Filter="@_filter" OnChanged="FilterChanged" />
@@ -216,6 +246,17 @@ else
                                        OnPartClosed="() => _focused = false" />
                         </Body>
                         <Across>
+                            @*
+                                The card as a picture, which is a thing to keep or to show somebody
+                                and not a thing the app does anything with. Only here: it draws the
+                                card, and the sections page has none.
+                            *@
+                            <button type="button" class="icon" disabled="@_drawing"
+                                    title="Save a picture of this empire"
+                                    aria-label="Save a picture of this empire" @onclick="SaveImage">
+                                <ActionIcon Name="image" />
+                            </button>
+
                             @*
                                 The other editor, named for what it does rather than for what it is
                                 called: the same empire, as it stands, in a page of sections. The
@@ -552,6 +593,106 @@ else
         }
     }
 
+    /// <summary>
+    /// How wide the card is drawn, whatever the window is.
+    /// </summary>
+    /// <remarks>
+    /// The room artwork's own 952 pixels, which is where the panels stop growing - see .sem-lite in
+    /// the stylesheet. Drawn against a wider frame so that the two-column arrangement applies: the
+    /// card caps at 952 but the rule that gives it two columns asks the window for 1100, and a
+    /// picture taken on a phone should be the same picture as one taken on a monitor.
+    /// </remarks>
+    private const int CardWidth = 952;
+
+    private const int FrameWidth = 1400;
+
+    /// <summary>
+    /// What the picture leaves out of the card.
+    /// </summary>
+    /// <remarks>
+    /// The whole card is drawn rather than the column wanted, because nearly every rule inside it
+    /// is written with the card as an ancestor. So what is not wanted is taken out afterwards: the
+    /// row of buttons, which is the app rather than the empire; the totals column, which is a
+    /// reading of the empire rather than the empire; the pencil that says the scene can be pressed;
+    /// and the description panels, which are hidden until something is hovered.
+    /// </remarks>
+    private const string Omitted =
+        ".sem-lite-actions, .sem-lite-totals, .sem-lite-hint, [popover]";
+
+    /// <summary>Twice, so the text in it is still sharp printed or on a dense screen.</summary>
+    private const int ImageScale = 2;
+
+    /// <summary>Whether a picture is being drawn, which takes a moment on a large card.</summary>
+    private bool _drawing;
+
+    /// <summary>Why the last picture did not happen, where it did not.</summary>
+    private string? _imageTrouble;
+
+    private IJSObjectReference? _drawer;
+
+    /// <summary>
+    /// Saves the card as a picture.
+    /// </summary>
+    /// <remarks>
+    /// Through Export rather than Save: on the desktop, Save means the player's designs file and
+    /// means it whatever name it is handed.
+    /// </remarks>
+    private async Task SaveImage()
+    {
+        if (_drawing || _session?.Current is not { } design)
+        {
+            return;
+        }
+
+        _drawing = true;
+
+        try
+        {
+            // The ruler is drawn from a wardrobe of eight thousand pieces that is fetched only when
+            // something asks for it, and until it arrives the panel says "Drawing…". Asked for here
+            // as well as by the panel, so a picture taken the moment a card opens is a picture of
+            // the ruler rather than of the word. The source memoises it, so this usually costs
+            // nothing and waits on the fetch the panel already started.
+            await Source.LoadWardrobeAsync();
+
+            _drawer ??= await Js.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/Sem.Ui/sem.js");
+
+            var picture = await _drawer.InvokeAsync<byte[]?>(
+                "captureCard", ".sem-lite", Omitted, CardWidth, FrameWidth, ImageScale);
+
+            if (picture is not { Length: > 0 })
+            {
+                _imageTrouble = "This browser would not draw the card into a picture.";
+                return;
+            }
+
+            await Files.ExportAsync(FileNameFor(design), picture, ExportKind.Image);
+        }
+        catch (JSException failure)
+        {
+            _imageTrouble = failure.Message;
+        }
+        finally
+        {
+            _drawing = false;
+        }
+    }
+
+    /// <summary>
+    /// What to call the picture: the empire's own name, with anything a file system objects to
+    /// taken out rather than replaced, so "Blorg Commonality" stays itself.
+    /// </summary>
+    private string FileNameFor(EmpireDesign design)
+    {
+        var name = new string([
+            .. _session!.Localizer.Name(design.Name, design.Key)
+                .Where(c => !System.IO.Path.GetInvalidFileNameChars().Contains(c))
+        ]).Trim();
+
+        return $"{(name.Length == 0 ? "empire" : name)}.png";
+    }
+
     /// <summary>Opens the same empire, as it stands, in the page of sections.</summary>
     private void OpenAdvanced()
     {
@@ -650,6 +791,12 @@ else
         {
             _session.Changed -= OnChanged;
         }
+
+        // Released without being waited on, because this page is closed synchronously and the
+        // reference is to a module that is already loaded - there is nothing to fail and nothing to
+        // report. Left undisposed it would outlive the page for the rest of the session.
+        _ = _drawer?.DisposeAsync().Preserve();
+        _drawer = null;
     }
 
     private void OnChanged()
@@ -662,6 +809,11 @@ else
         _ownRows = null;
         _presetRows = null;
         _narrowed = null;
+
+        // The rows go and are built again; the designs do not, which is why the selection is kept
+        // on those. What does have to go is anything no longer in the file - deleted here, or from
+        // the editor, or by a file being opened over the top of this one.
+        _selected.RemoveWhere(design => _session?.File?.Designs.Contains(design) is not true);
 
         InvokeAsync(StateHasChanged);
     }
@@ -756,6 +908,238 @@ else
         _session?.Preferences.Set(
             ColumnSetting,
             _visible.Count == 0 ? " " : string.Join(",", _visible));
+
+    /// <summary>
+    /// The empires ticked in the table, which every bulk action reads.
+    /// </summary>
+    /// <remarks>
+    /// The page's rather than the table's, because the actions are the page's: it is the page that
+    /// owns the file, puts questions on screen and holds the export. The table draws boxes and says
+    /// when one is ticked.
+    /// </remarks>
+    private readonly HashSet<EmpireDesign> _selected = [];
+
+    /// <summary>Whether the delete question is about the selection rather than one empire.</summary>
+    private bool _deletingPicked;
+
+    private string Picked => _selected.Count == 1 ? "1 empire" : $"{_selected.Count} empires";
+
+    /// <summary>
+    /// What can be done to the ticked empires, on one line above them.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Two shapes of control, and the difference is deliberate. Export and Delete are done the
+    /// moment they are pressed, so they are single buttons; a tag and a spawn setting have to be
+    /// chosen before they mean anything, so each is a control that holds a choice with a tick
+    /// beside it that carries it out. A dropdown that acted on being changed had no way to be read
+    /// back before it fired, and no way to be corrected after.
+    /// </para>
+    /// <para>
+    /// Icons throughout, at the size the editors use, because this row appears and disappears above
+    /// a table and a row of words was a bar the width of the page arriving unannounced.
+    /// </para>
+    /// </remarks>
+    private RenderFragment BulkBar => @<div class="sem-bulk">
+        <span class="count">@Picked</span>
+
+        <button type="button" class="icon" @onclick="ExportPicked"
+                title="@($"Write {Picked} to a designs file of their own")"
+                aria-label="@($"Write {Picked} to a designs file of their own")">
+            <ActionIcon Name="export" />
+        </button>
+
+        <button type="button" class="icon danger" @onclick="() => _deletingPicked = true"
+                title="@($"Delete {Picked}")" aria-label="@($"Delete {Picked}")">
+            <ActionIcon Name="delete" />
+        </button>
+
+        @*
+            A colour to mark them with, drawn as well as named - the list the filter offers, which
+            is the same seventy-two colours and the same dots. Joined to the tick that applies it,
+            because a choice and the act of carrying it out are one thing in two presses.
+        *@
+        <span class="set joined">
+            <SingleSelect Label="Tag" Options="@TagOptions" Value="@_tag" ValueChanged="v => _tag = v" />
+
+            <button type="button" class="icon good" @onclick="() => TagPicked(_tag)"
+                    title="@($"Tag {Picked} {TagName}")" aria-label="@($"Tag {Picked} {TagName}")">
+                <ActionIcon Name="apply" />
+            </button>
+        </span>
+
+        @*
+            The game's own cycling button, holding a state to be applied rather than one the empire
+            has - there are several empires and they need not agree, so it starts on the first of
+            the three and says which it is showing. The picture alone, at the height of the row: it
+            is the game's own control and a box around it would make it look like something else.
+        *@
+        <span class="set">
+            <button type="button" class="sem-spawn bare" @onclick="CycleSpawn"
+                    title="@Spawning.Name" aria-label="@Spawning.Name">
+                @if (Spawning.Icon is { Length: > 0 } icon)
+                {
+                    <img src="@_session!.Data.AssetUrl(icon)" alt="">
+                }
+                else
+                {
+                    <span class="initials">@Spawning.Name</span>
+                }
+            </button>
+
+            <button type="button" class="icon good" @onclick="() => SpawnPicked(Spawning.Value)"
+                    title="@($"Set {Picked} to {Spawning.Name}")"
+                    aria-label="@($"Set {Picked} to {Spawning.Name}")">
+                <ActionIcon Name="apply" />
+            </button>
+        </span>
+
+        <button type="button" class="icon clear" @onclick="ClearPicked"
+                title="Clear the selection" aria-label="Clear the selection">
+            <ActionIcon Name="close" />
+        </button>
+    </div>;
+
+    /// <summary>The tag the bar is set to apply, nothing meaning take the tag off.</summary>
+    private string? _tag;
+
+    /// <summary>
+    /// The colours to choose from, and the empty one first.
+    /// </summary>
+    /// <remarks>
+    /// Taking a tag off is as much a thing to do as putting one on, so it is an entry in the list
+    /// rather than a way of undoing one. Its key is empty, which is what the rules read as no tag.
+    /// </remarks>
+    private IReadOnlyList<EmpireChoice> TagOptions =>
+    [
+        new(string.Empty, "No tag", null, null),
+        .. _session!.Data.Database.FlagColors.Select(color =>
+            new EmpireChoice(color.Key, Localizer.Prettify(color.Key), null, null)
+            {
+                Swatch = $"rgb({color.Red},{color.Green},{color.Blue})",
+            })
+    ];
+
+    /// <summary>What the tick beside the list will do, for its own label.</summary>
+    private string TagName => _tag is { Length: > 0 } tag ? Localizer.Prettify(tag) : "with no colour";
+
+    /// <summary>Which spawn setting the bar is showing, of the three.</summary>
+    private int _spawn;
+
+    private (string Value, string Name, string? Icon) Spawning =>
+        SpawnToggle.Offered(_session!)[_spawn];
+
+    private void CycleSpawn() => _spawn = (_spawn + 1) % SpawnToggle.Offered(_session!).Count;
+
+    /// <summary>
+    /// The selection as a list, taken before anything is changed.
+    /// </summary>
+    /// <remarks>
+    /// Copied out because every action below writes through EditFile, and removing designs from the
+    /// file while walking the set that names them is asking for trouble.
+    /// </remarks>
+    private IReadOnlyList<EmpireDesign> Chosen => [.. _selected];
+
+    private void ClearPicked() => _selected.Clear();
+
+    /// <summary>
+    /// Writes a tag onto every empire chosen, or takes one off.
+    /// </summary>
+    /// <remarks>
+    /// One EditFile for the lot. Each call serialises the whole file, rebuilds a rules context and
+    /// tells the host to keep it, so forty of them to tag forty empires is thirty-nine files nobody
+    /// asked for.
+    /// </remarks>
+    private void TagPicked(string? color)
+    {
+        var chosen = Chosen;
+
+        _session!.EditFile(_ =>
+        {
+            foreach (var design in chosen)
+            {
+                design.Flag.Tag = color;
+            }
+        });
+    }
+
+    /// <summary>Sets whether every empire chosen may turn up as an AI.</summary>
+    /// <remarks>
+    /// Through EditFile rather than Edit, which is the only door that reaches an empire other than
+    /// the one open in the editor - and which does not put the change behind the Save button, since
+    /// this is not an edit to the empire being worked on.
+    /// </remarks>
+    private void SpawnPicked(string? value)
+    {
+        if (value is not { Length: > 0 })
+        {
+            return;
+        }
+
+        var chosen = Chosen;
+
+        _session!.EditFile(_ =>
+        {
+            foreach (var design in chosen)
+            {
+                design.SpawnEnabled = value;
+            }
+        });
+    }
+
+    /// <summary>Removes every empire chosen, in one go.</summary>
+    private void DeletePicked()
+    {
+        var doomed = Chosen;
+
+        _deletingPicked = false;
+        _session!.EditFile(file =>
+        {
+            foreach (var design in doomed)
+            {
+                file.Remove(design);
+            }
+        });
+
+        // The same courtesy the single delete does: an empire being edited when it goes takes the
+        // editor with it, since there is nothing left for it to show.
+        if (_session.Current is { } open && doomed.Contains(open))
+        {
+            Editor.IsOpen = false;
+            _session.Select(_session.File?.Designs.FirstOrDefault());
+        }
+
+        _selected.Clear();
+    }
+
+    /// <summary>
+    /// Writes the chosen empires out as a designs file of their own.
+    /// </summary>
+    /// <remarks>
+    /// Not named as the game's file. A part of a collection saved under the name the game reads
+    /// would sit in the Stellaris folder looking exactly like the whole of one, and the first
+    /// mistake anybody made with it would cost them the rest of their empires.
+    ///
+    /// Nothing is remembered and nothing is marked saved, unlike the whole-file export: this hands
+    /// over a copy of part of the file, which settles nothing about the file itself.
+    ///
+    /// Through Export rather than Save, and the difference is not cosmetic. On the desktop, Save
+    /// means "replace the player's designs file" and means it whatever name it is given - it holds
+    /// the path. A selection sent that way would have replaced a whole collection with the handful
+    /// that was ticked.
+    /// </remarks>
+    private async Task ExportPicked()
+    {
+        var chosen = Chosen;
+        var taken = EmpireDesignsFile.CreateEmpty();
+
+        foreach (var design in chosen)
+        {
+            taken.AddCopy(design, design.Key);
+        }
+
+        await Files.ExportAsync("empire-selection.txt", taken.Save(), ExportKind.Designs);
+    }
 
     /// <summary>The empire the delete question is about, and nothing while nothing is being asked.</summary>
     private EmpireDesign? _deleting;

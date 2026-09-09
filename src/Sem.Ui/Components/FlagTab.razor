@@ -13,34 +13,47 @@
     <FlagPreview Flag="@Design.Flag" Class="large" />
 
     @*
-        Three colours, not four. The first two are the flag's, as the game's own editor offers. The
-        third is the empire's colour on the galaxy map, which the game fills in for itself and never
-        lets you choose. The fourth slot the file stores does nothing — the line that would have used
-        it is commented out in the game's own shader — so it is left exactly as it was found.
+        Two colours, of the four the file stores.
 
-        One block of the game's palette per slot, headed by the game's own word for it. The dropdown
-        that stood over each block listed the same colours by name and did the same thing, so the
-        reader was told twice which colour is which.
+        A background is three shapes packed into one file's red, green and blue channels, each tinted
+        with one of the first three colours - but across all sixty-three the game ships, the
+        brightest pixel in any blue channel is 11 of 255. Nothing is drawn there, so the third colour
+        cannot change a flag, and it is not offered as though it could: it is the empire's colour on
+        the galaxy map and it is edited with the empire's own settings. The fourth does nothing at
+        all - the shader line for it is commented out, and three hundred and one of the three
+        hundred and three colour blocks the game ships leave it empty.
+
+        The same arrangement as the two pickers below, and for the same reason: two palettes of
+        seventy-two side by side where there is room for them, and one at a time behind a pair of
+        tabs where there is not. Beside the flag while the row is wide enough for both, and under it
+        when it is not - which is what a phone gets, where the pair sitting in a column beside a
+        160px picture had a palette narrower than one swatch and pushed the dialog sideways.
+
+        It was a fold, which answered the height and not the width. Nothing is folded now: the tab
+        you are not on says which colour is set in it, and draws it.
     *@
-    <div class="sem-colors">
-        @for (var slot = 0; slot < EditableColorSlots; slot++)
-        {
-            var index = slot;
+    <div class="sem-pickers colors">
+        <PickerTabs Label="Flag colours" Selected="_slot" SelectedChanged="s => _slot = s"
+                    Tabs="ColorTabs" />
 
-            <div class="sem-field">
-                <label>@ColorLabel(index)</label>
+        @for (var at = 0; at < EditableColorSlots; at++)
+        {
+            var slot = at;
+
+            <section class="sem-picker @(_slot == slot ? null : "away")">
+                <PickerHead Tab="ColorTabs[slot]" />
 
                 <div class="sem-swatches">
                     @foreach (var color in Session.Data.Database.FlagColors)
                     {
                         <button type="button"
-                                class="sem-swatch @(color.Key == ColorAt(index) ? "selected" : null)"
-                                style="background:@Swatch(index, color)"
+                                class="sem-swatch @(color.Key == ColorAt(slot) ? "selected" : null)"
+                                style="background:@Swatch(color)"
                                 title="@Localizer.Prettify(color.Key)"
-                                @onclick="() => SetColor(index, color.Key)"></button>
+                                @onclick="() => SetColor(slot, color.Key)"></button>
                     }
                 </div>
-            </div>
+            </section>
         }
     </div>
 </div>
@@ -298,40 +311,65 @@
     private IReadOnlyList<string> BackgroundFiles =>
         Session.Data.Database.FlagCategories.FirstOrDefault(c => c.IsBackground)?.Files ?? [];
 
-    /// <summary>The slot holding the empire's colour on the galaxy map.</summary>
-    private const int MapColorSlot = 2;
-
     /// <summary>
-    /// How many colours are worth offering. The fourth slot the file stores is inert — the shader
-    /// line that would have used it is commented out — so it is preserved rather than edited.
+    /// How many colours a flag actually has, which is the first two.
     /// </summary>
-    private const int EditableColorSlots = 3;
+    /// <remarks>
+    /// The third is the empire's map colour and is edited with the empire; the fourth does nothing.
+    /// Both are preserved rather than edited here - every write goes through the whole slot list, so
+    /// changing a flag colour carries the other two through as they were.
+    /// </remarks>
+    private const int EditableColorSlots = 2;
 
     /// <summary>
     /// What the game calls each colour slot.
     /// </summary>
     /// <remarks>
-    /// The game's own words, which its flag editor puts on the first two as buttons. It offers no
-    /// third — that one it fills in itself and uses for the empire's colour on the galaxy map —
-    /// but it has a word for it all the same, so the word is the game's even where the control is
-    /// ours.
+    /// The game's own words, which its flag editor puts on both of these as buttons.
     /// </remarks>
     private string ColorLabel(int slot) => slot switch
     {
         0 => Session.Localizer.Label("PRIMARY_COLOR", "Primary Colors"),
         1 => Session.Localizer.Label("SECONDARY_COLOR", "Secondary Colors"),
-        MapColorSlot => Session.Localizer.Label("TERTIARY_COLOR", "Tertiary Colors"),
         _ => string.Empty,
     };
 
     /// <summary>
-    /// A swatch in the colour it will actually appear in. Each named colour has a different shade
-    /// for a flag and for the map, so a map swatch showing the flag shade would mislead.
+    /// A swatch, in the colour the flag would actually be.
     /// </summary>
-    private static string Swatch(int slot, FlagColorDefinition color) =>
-        slot == MapColorSlot
-            ? $"rgb({color.MapRed},{color.MapGreen},{color.MapBlue})"
-            : $"rgb({color.Red},{color.Green},{color.Blue})";
+    /// <remarks>
+    /// The game keeps two colours against every name - one for a flag and one for the map - and
+    /// these are flags, so they are the flag's. The map's are drawn in the map colour, beside the
+    /// setting that uses them.
+    /// </remarks>
+    private static string Swatch(FlagColorDefinition color) =>
+        $"rgb({color.Red},{color.Green},{color.Blue})";
+
+    /// <summary>The palette on show, where there is only room for one.</summary>
+    /// <remarks>
+    /// The primary, to begin with, which is the order the file writes them in and the order the
+    /// game's own editor offers them. Not remembered between openings, for the reason the pattern
+    /// and emblem tabs are not.
+    /// </remarks>
+    private int _slot;
+
+    /// <summary>The two palettes, named and with the colour each holds, for tabs and heads alike.</summary>
+    private PickerTabs.Tab[] ColorTabs =>
+    [
+        .. Enumerable.Range(0, EditableColorSlots)
+            .Select(slot => new PickerTabs.Tab(ColorLabel(slot), ColorName(slot), Shown(slot)))
+    ];
+
+    /// <summary>What a slot is set to, named the way the swatches name themselves.</summary>
+    private string ColorName(int slot) =>
+        ColorAt(slot) is { Length: > 0 } key ? Localizer.Prettify(key) : "Not set";
+
+    /// <summary>The colour a slot is set to, as CSS, for the dot beside its name.</summary>
+    private string? Shown(int slot) =>
+        ColorAt(slot) is { } key &&
+        Session.Data.Database.FlagColors.FirstOrDefault(c => c.Key == key) is { } color
+            ? Swatch(color)
+            : null;
 
     private string? ColorAt(int slot)
     {
@@ -339,20 +377,8 @@
         return slot < colors.Count && colors[slot] != EmpireFlag.EmptyColor ? colors[slot] : null;
     }
 
-    private void SetColor(int slot, string? value)
-    {
-        Session.Edit(d =>
-        {
-            var colors = d.Flag.Colors.ToList();
-            while (colors.Count < EmpireFlag.ColorSlots)
-            {
-                colors.Add(EmpireFlag.EmptyColor);
-            }
-
-            colors[slot] = string.IsNullOrEmpty(value) ? EmpireFlag.EmptyColor : value;
-            d.Flag.SetColors(colors);
-        });
-    }
+    private void SetColor(int slot, string? value) =>
+        Session.Edit(d => d.Flag.SetColor(slot, value));
 
     private void SetBackground(string? file)
     {
