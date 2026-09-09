@@ -308,7 +308,14 @@ public sealed class DesignSession
 
         File = file;
         FileName = fileName;
-        HasUnwrittenFileChanges = false;
+
+        // Every empire in it, not only the one that opens. A design carries the traits its own
+        // choices force, and a file written before this app wrote them holds empires that do not -
+        // which the editor could only report, since the trait picker shows a forced trait greyed
+        // and will not let one be added. So the file is brought up to date as it arrives, and says
+        // so where saying so means anything.
+        HasUnwrittenFileChanges = DeriveAll(file);
+
         Select(File.Designs.FirstOrDefault());
         FileChanged?.Invoke();
     }
@@ -334,7 +341,13 @@ public sealed class DesignSession
 
         var wasEditing = Current?.Key;
 
-        EditFile(file => file.Merge(other));
+        // Derived on the way in, for the reason Open gives: the empires arriving are as likely to
+        // predate this as the ones already here.
+        EditFile(file =>
+        {
+            file.Merge(other);
+            DeriveAll(file);
+        });
 
         if (Current is null || File.Designs.Contains(Current))
         {
@@ -577,6 +590,36 @@ public sealed class DesignSession
         design.Species.Class,
         string.Join(',', design.Civics),
         string.Join(',', design.Ethics));
+
+    /// <summary>
+    /// Does the same for every empire in a file, and says whether it changed any of them.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The answer matters as much as the work: a file that gained a trait really has changed and the
+    /// desktop should say "not yet written back" until it is saved, while a file that was already
+    /// complete has not and should say nothing. Told apart by writing each design out either side of
+    /// the call and comparing, which is how <see cref="Edit"/> avoids marking a design dirty for a
+    /// change that was not one.
+    /// </para>
+    /// <para>
+    /// A rules context per empire, which is the expensive part. The same order as the list itself,
+    /// which builds one per row to say what each empire's government is and whether it is playable.
+    /// </para>
+    /// </remarks>
+    private bool DeriveAll(EmpireDesignsFile file)
+    {
+        var changed = false;
+
+        foreach (var design in file.Designs)
+        {
+            var before = Written(design);
+            Derive(design);
+            changed |= !string.Equals(before, Written(design), StringComparison.Ordinal);
+        }
+
+        return changed;
+    }
 
     /// <summary>
     /// Writes back everything the design's own choices decide for it.

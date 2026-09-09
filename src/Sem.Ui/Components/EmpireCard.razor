@@ -15,7 +15,7 @@
     a button may not contain a button — nested, the browser closes the outer one early and the card
     comes apart. The wrapper is what the grid lays out, so the card keeps its full width inside it.
 *@
-<div class="sem-empire-slot">
+<div class="sem-empire-slot @(Tag is { Swatch.Length: > 0 } ? "has-tag" : null)">
     <button type="button" class="sem-empire @(Selected ? "selected" : null) @(Broken ? "broken" : null)"
             disabled="@Disabled" @onclick="OnClick">
 
@@ -39,6 +39,19 @@
             }
         </span>
     </button>
+
+    @*
+        The empire's tag, in the corner, and drawn rather than named - the whole point of a tag is
+        being recognised without reading. Handed in rather than read off the flag beside it: the
+        colour lives in the flag's fourth slot, and one of the game's own empires ships something
+        there, which the game's list would otherwise show as a tag nobody chose and nothing could
+        change. See EmpireRow, which draws the same conclusion for the table.
+    *@
+    @if (Tag is { Swatch: { Length: > 0 } paint } tag)
+    {
+        <span class="sem-tag-dot sem-empire-tag" style="--tag:@paint"
+              role="img" aria-label="@($"Tagged {tag.Name}")"></span>
+    }
 
     @*
         Offered on the card so a link can be taken without opening the empire first, which was the
@@ -95,6 +108,17 @@
     /// <summary>The empire's flag, drawn as the game draws one.</summary>
     [Parameter]
     public EmpireFlag? Flag { get; set; }
+
+    /// <summary>
+    /// The colour this empire is marked with, where it is marked with one.
+    /// </summary>
+    /// <remarks>
+    /// Given rather than taken from <see cref="Flag"/>, so that the list of the game's own empires
+    /// can decline to pass one. A tag is the player's mark on their own empire; a preset cannot
+    /// carry one, and the game does ship a flag with something in that slot.
+    /// </remarks>
+    [Parameter]
+    public EmpireChoice? Tag { get; set; }
 
     /// <summary>The ruler's likeness, already drawn.</summary>
     [Parameter]

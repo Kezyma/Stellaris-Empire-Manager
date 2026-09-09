@@ -217,8 +217,12 @@ public sealed record EmpireRow
     /// <remarks>
     /// Named by making its key readable rather than by looking it up: the game names its colours
     /// nowhere a player would recognise, and "dark_teal" says what it is already.
+    ///
+    /// Public because the cards show a tag as well as the rows do, and they are not built from
+    /// rows - a card is drawn straight from the design. Two ways of turning a colour key into a
+    /// name and a swatch would be two ways for the two views to disagree about one.
     /// </remarks>
-    private static EmpireChoice? Tagged(DesignSession session, string? key)
+    public static EmpireChoice? Tagged(DesignSession session, string? key)
     {
         if (key is not { Length: > 0 })
         {

@@ -52,6 +52,48 @@ public sealed class DerivedTraitTests
         Assert.Empty(session.Current!.Species.Traits);
     }
 
+    /// <summary>
+    /// A file that predates any of this is brought up to date as it is opened.
+    /// </summary>
+    /// <remarks>
+    /// The half that was missed the first time. Deriving on creation covers a new empire and one
+    /// copied off the game's shelf, and does nothing at all for the empires already in the player's
+    /// file - which are the ones they open. Left alone, such an empire reported a trait it must have
+    /// and did not, on every visit, with no way to act on it: the picker shows a forced trait greyed
+    /// and refuses to let it go, so it will not let one be added either.
+    /// </remarks>
+    [Fact]
+    public void AFileIsBroughtUpToDateAsItOpens()
+    {
+        var file = EmpireDesignsFile.CreateEmpty();
+        file.Add("Old").Species.Class = "LITH";
+
+        var session = new DesignSession(Data());
+        session.Open(file, "user_empire_designs_v3.4.txt");
+
+        Assert.Contains("trait_lithoid", session.File!.Designs[0].Species.Traits);
+        Assert.True(session.HasUnwrittenFileChanges, "The file gained a trait and has changed.");
+    }
+
+    /// <summary>
+    /// And one that was already complete opens reporting nothing, so the desktop does not offer to
+    /// write back a file it has not touched.
+    /// </summary>
+    [Fact]
+    public void AndOneThatWasAlreadyRightIsLeftAlone()
+    {
+        var file = EmpireDesignsFile.CreateEmpty();
+        var design = file.Add("Current");
+        design.Species.Class = "LITH";
+        design.Species.SetTraits(["trait_lithoid"]);
+
+        var session = new DesignSession(Data());
+        session.Open(file, "user_empire_designs_v3.4.txt");
+
+        Assert.Equal(["trait_lithoid"], session.File!.Designs[0].Species.Traits);
+        Assert.False(session.HasUnwrittenFileChanges, "Nothing changed, so nothing is outstanding.");
+    }
+
     /// <summary>A world with two classes on it, one of which insists on a trait.</summary>
     private static Sem.Ui.Services.GameData Data() => new(
         new GameDatabase

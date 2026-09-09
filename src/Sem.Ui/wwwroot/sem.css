@@ -1494,6 +1494,38 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 }
 
 /*
+   The empire's tag, in the same corner and always there.
+
+   Larger than the ten pixels the table gives it. In a row the dot has the tag's name written beside
+   it and only has to agree with it; here it is the whole of what is said, and a reader picking one
+   empire out of a dozen cards is reading nothing but the colour.
+
+   Named through its parent, which is only there to outrank .sem-tag-dot: the two selectors are
+   worth the same and that one is written further down the file, so on equal terms it wins and the
+   dot came out at the table's size.
+*/
+.sem-empire-slot > .sem-empire-tag {
+    position: absolute;
+    top: var(--space-xs);
+    right: var(--space-xs);
+    width: 12px;
+    height: 12px;
+    pointer-events: none;
+}
+
+/*
+   And the share button steps aside for it rather than over it.
+
+   That button owns this corner on hover, with a background of its own because it sits over the
+   card's face and name - which is a fair trade for those, since they are still readable the moment
+   the pointer leaves. A tag is not: it is one dot, and covering it hides the thing at exactly the
+   moment somebody is looking hardest at the card.
+*/
+.sem-empire-slot.has-tag .sem-empire-share {
+    right: calc(var(--space-xs) * 2 + 12px);
+}
+
+/*
    Somewhere to take hold of the card.
 
    The card is a button, and a browser will not begin a drag from inside one - so with the whole
