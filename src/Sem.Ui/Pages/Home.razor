@@ -7,6 +7,7 @@
 @inject UnsavedWorkGuard Unsaved
 @inject EditorState Editor
 @inject IJSRuntime Js
+@inject IGameDataSource Source
 
 <PageTitle>Empires - Stellaris Empire Manager</PageTitle>
 
@@ -605,6 +606,19 @@ else
 
     private const int FrameWidth = 1400;
 
+    /// <summary>
+    /// What the picture leaves out of the card.
+    /// </summary>
+    /// <remarks>
+    /// The whole card is drawn rather than the column wanted, because nearly every rule inside it
+    /// is written with the card as an ancestor. So what is not wanted is taken out afterwards: the
+    /// row of buttons, which is the app rather than the empire; the totals column, which is a
+    /// reading of the empire rather than the empire; the pencil that says the scene can be pressed;
+    /// and the description panels, which are hidden until something is hovered.
+    /// </remarks>
+    private const string Omitted =
+        ".sem-lite-actions, .sem-lite-totals, .sem-lite-hint, [popover]";
+
     /// <summary>Twice, so the text in it is still sharp printed or on a dense screen.</summary>
     private const int ImageScale = 2;
 
@@ -634,11 +648,18 @@ else
 
         try
         {
+            // The ruler is drawn from a wardrobe of eight thousand pieces that is fetched only when
+            // something asks for it, and until it arrives the panel says "Drawing…". Asked for here
+            // as well as by the panel, so a picture taken the moment a card opens is a picture of
+            // the ruler rather than of the word. The source memoises it, so this usually costs
+            // nothing and waits on the fetch the panel already started.
+            await Source.LoadWardrobeAsync();
+
             _drawer ??= await Js.InvokeAsync<IJSObjectReference>(
                 "import", "./_content/Sem.Ui/sem.js");
 
             var picture = await _drawer.InvokeAsync<byte[]?>(
-                "captureCard", ".sem-lite-main", CardWidth, FrameWidth, ImageScale);
+                "captureCard", ".sem-lite", Omitted, CardWidth, FrameWidth, ImageScale);
 
             if (picture is not { Length: > 0 })
             {
@@ -934,23 +955,14 @@ else
         </button>
 
         @*
-            A colour to mark them with, named rather than drawn: a native list is the one control
-            here that a phone gives a full-screen picker of its own, which is worth more on the
-            small screen than a swatch would be. The dot beside the name is in the list and on the
-            card once it is applied.
+            A colour to mark them with, drawn as well as named - the list the filter offers, which
+            is the same seventy-two colours and the same dots. Joined to the tick that applies it,
+            because a choice and the act of carrying it out are one thing in two presses.
         *@
-        <span class="set">
-            <select value="@_tag" aria-label="Tag to apply"
-                    @onchange="e => _tag = e.Value?.ToString() ?? string.Empty">
-                <option value="">No tag</option>
+        <span class="set joined">
+            <SingleSelect Label="Tag" Options="@TagOptions" Value="@_tag" ValueChanged="v => _tag = v" />
 
-                @foreach (var color in _session!.Data.Database.FlagColors)
-                {
-                    <option value="@color.Key">@Localizer.Prettify(color.Key)</option>
-                }
-            </select>
-
-            <button type="button" class="icon good" @onclick="() => TagPicked(Untagged(_tag))"
+            <button type="button" class="icon good" @onclick="() => TagPicked(_tag)"
                     title="@($"Tag {Picked} {TagName}")" aria-label="@($"Tag {Picked} {TagName}")">
                 <ActionIcon Name="apply" />
             </button>
@@ -959,14 +971,15 @@ else
         @*
             The game's own cycling button, holding a state to be applied rather than one the empire
             has - there are several empires and they need not agree, so it starts on the first of
-            the three and says which it is showing.
+            the three and says which it is showing. The picture alone, at the height of the row: it
+            is the game's own control and a box around it would make it look like something else.
         *@
         <span class="set">
-            <button type="button" class="sem-spawn" @onclick="CycleSpawn"
+            <button type="button" class="sem-spawn bare" @onclick="CycleSpawn"
                     title="@Spawning.Name" aria-label="@Spawning.Name">
                 @if (Spawning.Icon is { Length: > 0 } icon)
                 {
-                    <img src="@_session.Data.AssetUrl(icon)" alt="">
+                    <img src="@_session!.Data.AssetUrl(icon)" alt="">
                 }
                 else
                 {
@@ -987,11 +1000,25 @@ else
         </button>
     </div>;
 
-    /// <summary>The tag the bar is set to apply, empty meaning take the tag off.</summary>
-    private string _tag = string.Empty;
+    /// <summary>The tag the bar is set to apply, nothing meaning take the tag off.</summary>
+    private string? _tag;
 
-    /// <summary>That, as the rules want it: nothing rather than an empty string.</summary>
-    private static string? Untagged(string tag) => tag is { Length: > 0 } ? tag : null;
+    /// <summary>
+    /// The colours to choose from, and the empty one first.
+    /// </summary>
+    /// <remarks>
+    /// Taking a tag off is as much a thing to do as putting one on, so it is an entry in the list
+    /// rather than a way of undoing one. Its key is empty, which is what the rules read as no tag.
+    /// </remarks>
+    private IReadOnlyList<EmpireChoice> TagOptions =>
+    [
+        new(string.Empty, "No tag", null, null),
+        .. _session!.Data.Database.FlagColors.Select(color =>
+            new EmpireChoice(color.Key, Localizer.Prettify(color.Key), null, null)
+            {
+                Swatch = $"rgb({color.Red},{color.Green},{color.Blue})",
+            })
+    ];
 
     /// <summary>What the tick beside the list will do, for its own label.</summary>
     private string TagName => _tag is { Length: > 0 } tag ? Localizer.Prettify(tag) : "with no colour";

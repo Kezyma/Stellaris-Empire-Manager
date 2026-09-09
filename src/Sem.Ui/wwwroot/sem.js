@@ -944,13 +944,21 @@ export function enableCardReorder(list, owner) {
  *     result the same on a phone as on a monitor: the frame is stated here, the card is laid out
  *     against it, and the picture is cropped back to the card afterwards.
  *
- * @param {string} selector what to draw
- * @param {number} card how wide the card itself is, which is what the picture will be
+ * The whole card is cloned, not the part of it wanted. Almost every rule that shapes what is
+ * inside is written against the card as an ancestor - ".sem-lite .face-button" and its neighbours -
+ * so cloning the inner column alone silently lost them, and the first version came out with a box
+ * drawn round every title, portrait and flag: the plain button styling, showing through where the
+ * card's own reset should have been. Cloning the card keeps them, and brings its background, its
+ * border and its padding with it, which is the frame the picture wants anyway.
+ *
+ * @param {string} selector the card to draw
+ * @param {string} omit what to take out of it, as a selector
+ * @param {number} card how wide the part being drawn is, inside the card's own padding
  * @param {number} frame how wide to pretend the window is, so the wide arrangement applies
  * @param {number} scale pixels per CSS pixel
  * @returns {Promise<Uint8Array|null>} the PNG, or null where there was nothing to draw
  */
-export async function captureCard(selector, card, frame, scale) {
+export async function captureCard(selector, omit, card, frame, scale) {
     const source = document.querySelector(selector);
 
     if (!source) {
@@ -960,10 +968,12 @@ export async function captureCard(selector, card, frame, scale) {
     const styles = appStyles();
     const clone = source.cloneNode(true);
 
-    // Things that are on the card to say it can be pressed, rather than to say what it is.
-    for (const marker of clone.querySelectorAll('.sem-lite-hint, [popover]')) {
+    for (const marker of clone.querySelectorAll(omit)) {
         marker.remove();
     }
+
+    // The card lays itself out in two columns, one of which has just been taken out of it.
+    clone.style.display = 'block';
 
     await inlineImages(clone);
 
@@ -990,6 +1000,17 @@ export async function captureCard(selector, card, frame, scale) {
         holder.appendChild(doc.importNode(clone, true));
         doc.body.appendChild(holder);
 
+        // The card's own frame, measured rather than stated: the width asked for is the width of
+        // what is being drawn, and the padding and border around it are the stylesheet's business.
+        const drawnCard = holder.firstElementChild;
+        const edges = doc.defaultView.getComputedStyle(drawnCard);
+        const sides =
+            parseFloat(edges.paddingLeft) + parseFloat(edges.paddingRight) +
+            parseFloat(edges.borderLeftWidth) + parseFloat(edges.borderRightWidth);
+
+        const width = Math.ceil(card + sides);
+        holder.style.width = width + 'px';
+
         const height = Math.ceil(holder.getBoundingClientRect().height);
 
         // The root's own font size, because rem resolves against whatever the root turns out to be
@@ -1009,7 +1030,7 @@ export async function captureCard(selector, card, frame, scale) {
         const drawn = await load('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg));
 
         const canvas = document.createElement('canvas');
-        canvas.width = Math.round(card * scale);
+        canvas.width = Math.round(width * scale);
         canvas.height = Math.round(height * scale);
 
         const context = canvas.getContext('2d');
@@ -1018,7 +1039,7 @@ export async function captureCard(selector, card, frame, scale) {
         // in it is one that reads differently on every background it is put in front of.
         context.fillStyle = variable('--bg-panel') || '#151b24';
         context.fillRect(0, 0, canvas.width, canvas.height);
-        context.drawImage(drawn, 0, 0, card, height, 0, 0, canvas.width, canvas.height);
+        context.drawImage(drawn, 0, 0, width, height, 0, 0, canvas.width, canvas.height);
 
         const blob = await new Promise(done => canvas.toBlob(done, 'image/png'));
 

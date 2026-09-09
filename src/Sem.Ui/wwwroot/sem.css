@@ -3599,7 +3599,7 @@ button.icon.tag > .sem-tag-dot {
     margin-top: 0;
     padding: var(--space-md);
     justify-content: start;
-    max-height: clamp(160px, 30vh, 360px);
+    max-height: clamp(200px, 42vh, 440px);
     overflow-y: auto;
     background: var(--bg);
     border: 1px solid var(--border);
@@ -3824,8 +3824,8 @@ button.icon.tag > .sem-tag-dot {
 }
 
 /*
-    A choice and the tick that carries it out, joined: they are one action in two presses, and the
-    space between two things in this row is what says they are not.
+    A choice and the tick that carries it out: one action in two presses, and the space between two
+    things in this row is what says they are not.
 */
 .sem-bulk .set {
     display: flex;
@@ -3834,15 +3834,52 @@ button.icon.tag > .sem-tag-dot {
     margin-left: var(--space-sm);
 }
 
-.sem-bulk .set select {
-    height: var(--icon-btn);
-    max-width: 11rem;
-    padding: 0 var(--space-xs);
+/*
+    Joined into one field where the two really are one control - a list and the button that applies
+    what is in it. They share an edge and a pair of corners, which is what says the tick belongs to
+    the list beside it rather than to the row.
+*/
+.sem-bulk .set.joined {
+    gap: 0;
 }
 
-.sem-bulk .sem-spawn {
-    width: var(--icon-btn);
+.sem-bulk .set.joined > .sem-combo {
+    width: 11rem;
+}
+
+.sem-bulk .set.joined > .sem-combo > .control {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.sem-bulk .set.joined > button.icon {
     height: var(--icon-btn);
+    border: 1px solid var(--border-strong);
+
+    /* One border between them rather than two, as the picker tabs do it. */
+    margin-left: -1px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+/*
+    The game's own spawn control, at the height of the row and nothing else: no box, no padding, no
+    border. It is a picture the player already knows from the game's designer, and a button drawn
+    around it makes it look like one of this app's rather than one of the game's.
+*/
+.sem-bulk .sem-spawn.bare {
+    width: auto;
+    height: var(--icon-btn);
+    padding: 0;
+    background: none;
+    border: 0;
+}
+
+.sem-bulk .sem-spawn.bare img {
+    width: auto;
+    height: 100%;
+    max-width: none;
+    max-height: none;
 }
 
 /* Pushed to the far end, away from the four that change something. */
@@ -3926,7 +3963,7 @@ button.icon.tag > .sem-tag-dot {
    A row rather than one big button, because what is in it is pressable: a chip naming something
    chosen is the obvious place to press to stop asking for it, and a button cannot hold buttons.
 */
-.sem-combo.sem-multi > .control {
+.sem-combo.sem-list > .control {
     display: flex;
     align-items: center;
     gap: var(--space-2xs);
@@ -3948,7 +3985,7 @@ button.icon.tag > .sem-tag-dot {
     cursor: pointer;
 }
 
-.sem-combo.sem-multi > .control:hover {
+.sem-combo.sem-list > .control:hover {
     border-color: var(--accent-dim);
 }
 
@@ -3974,17 +4011,25 @@ button.icon.tag > .sem-tag-dot {
    choices did not fit behind a gesture nobody makes. A card whose whole job is saying what is being
    asked for cannot keep half the answer off the end of a line. The control grows instead.
 */
-.sem-combo.sem-multi .face {
+.sem-combo.sem-list .face {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2xs);
+
+    /*
+       Centred, because what goes in here is not always a chip. A chip is as tall as the line and
+       centres its own contents; a swatch put straight into the face is ten pixels with a height of
+       its own, and a flex item that states its cross size is placed at the start of the line rather
+       than stretched - so the colour sat five pixels above the name it belongs to.
+    */
+    align-items: center;
 
     flex: 1;
     min-width: 0;
 }
 
 /* The label standing in for a choice is one line of text, and elides rather than scrolling. */
-.sem-combo.sem-multi .face.empty {
+.sem-combo.sem-list .face.empty {
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -4070,7 +4115,7 @@ button.icon.tag > .sem-tag-dot {
 }
 
 /* The arrow, which is the one part of the control that only ever opens the list. */
-.sem-combo.sem-multi > .control > .toggle {
+.sem-combo.sem-list > .control > .toggle {
     position: static;
     flex: none;
 
@@ -4085,12 +4130,12 @@ button.icon.tag > .sem-tag-dot {
     font: inherit;
 }
 
-.sem-combo.sem-multi > .control > .toggle:hover {
+.sem-combo.sem-list > .control > .toggle:hover {
     background: none;
     color: var(--text);
 }
 
-.sem-combo.sem-multi .options > li > button {
+.sem-combo.sem-list .options > li > button {
     display: flex;
     align-items: center;
     gap: var(--space-sm);
@@ -4099,7 +4144,7 @@ button.icon.tag > .sem-tag-dot {
 }
 
 /* A fixed box for the tick, so the names line up whether or not one is next to them. */
-.sem-combo.sem-multi .options .tick {
+.sem-combo.sem-list .options .tick {
     flex: none;
     width: 1em;
     color: var(--accent);
@@ -4110,12 +4155,12 @@ button.icon.tag > .sem-tag-dot {
    picture first - an ethic, a trait, an origin - and a list of words is a list they have to read
    rather than recognise.
 */
-.sem-combo.sem-multi .options .sem-icon {
+.sem-combo.sem-list .options .sem-icon {
     width: var(--icon-sm);
     height: var(--icon-sm);
 }
 
-.sem-combo.sem-multi .options .name {
+.sem-combo.sem-list .options .name {
     min-width: 0;
 }
 
@@ -4127,7 +4172,7 @@ button.icon.tag > .sem-tag-dot {
    laid beside the chips instead of above the options, taking their width and, being the taller of
    the two, growing the row and the card around it every time a list opened.
 */
-.sem-combo.sem-multi .panel {
+.sem-combo.sem-list .panel {
     position: absolute;
     top: calc(100% + 2px);
     left: 0;
@@ -4148,7 +4193,7 @@ button.icon.tag > .sem-tag-dot {
    Everything undone here is something the shared rule gives every combo's list on the way to
    making it the panel - which this one is not any more.
 */
-.sem-combo.sem-multi .panel > .options {
+.sem-combo.sem-list .panel > .options {
     position: static;
     background: none;
     border: none;
@@ -4157,16 +4202,16 @@ button.icon.tag > .sem-tag-dot {
 }
 
 /* The box that narrows a long list, held above it rather than scrolling away with it. */
-.sem-combo.sem-multi .search {
+.sem-combo.sem-list .search {
     padding: var(--space-2xs);
     border-bottom: 1px solid var(--border);
 }
 
-.sem-combo.sem-multi .search input {
+.sem-combo.sem-list .search input {
     padding: var(--space-2xs) var(--space-sm);
 }
 
-.sem-combo.sem-multi .options .none {
+.sem-combo.sem-list .options .none {
     padding: var(--space-sm) var(--space-md);
 }
 
