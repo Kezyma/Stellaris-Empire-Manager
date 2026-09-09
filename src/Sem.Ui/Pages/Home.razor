@@ -6,6 +6,7 @@
 @inject NavigationManager Navigation
 @inject UnsavedWorkGuard Unsaved
 @inject EditorState Editor
+@inject IJSRuntime Js
 
 <PageTitle>Empires - Stellaris Empire Manager</PageTitle>
 
@@ -85,6 +86,18 @@ else
                 @(_selected.Count == 1 ? "Keep it" : "Keep them")
             </button>
             <button type="button" class="danger" @onclick="DeletePicked">Delete</button>
+        </ConfirmDialog>
+    }
+
+    @*
+        Said over the editor rather than behind it, which is where a dialog rendered from this page
+        lands - see the note on the editor below.
+    *@
+    @if (_imageTrouble is { } trouble)
+    {
+        <ConfirmDialog Title="The picture could not be made" Message="@trouble"
+                       OnDismiss="() => _imageTrouble = null">
+            <button type="button" @onclick="() => _imageTrouble = null">Close</button>
         </ConfirmDialog>
     }
 
@@ -232,6 +245,17 @@ else
                                        OnPartClosed="() => _focused = false" />
                         </Body>
                         <Across>
+                            @*
+                                The card as a picture, which is a thing to keep or to show somebody
+                                and not a thing the app does anything with. Only here: it draws the
+                                card, and the sections page has none.
+                            *@
+                            <button type="button" class="icon" disabled="@_drawing"
+                                    title="Save a picture of this empire"
+                                    aria-label="Save a picture of this empire" @onclick="SaveImage">
+                                <ActionIcon Name="image" />
+                            </button>
+
                             @*
                                 The other editor, named for what it does rather than for what it is
                                 called: the same empire, as it stands, in a page of sections. The
@@ -566,6 +590,86 @@ else
         {
             _session.Revert();
         }
+    }
+
+    /// <summary>
+    /// How wide the card is drawn, whatever the window is.
+    /// </summary>
+    /// <remarks>
+    /// The room artwork's own 952 pixels, which is where the panels stop growing - see .sem-lite in
+    /// the stylesheet. Drawn against a wider frame so that the two-column arrangement applies: the
+    /// card caps at 952 but the rule that gives it two columns asks the window for 1100, and a
+    /// picture taken on a phone should be the same picture as one taken on a monitor.
+    /// </remarks>
+    private const int CardWidth = 952;
+
+    private const int FrameWidth = 1400;
+
+    /// <summary>Twice, so the text in it is still sharp printed or on a dense screen.</summary>
+    private const int ImageScale = 2;
+
+    /// <summary>Whether a picture is being drawn, which takes a moment on a large card.</summary>
+    private bool _drawing;
+
+    /// <summary>Why the last picture did not happen, where it did not.</summary>
+    private string? _imageTrouble;
+
+    private IJSObjectReference? _drawer;
+
+    /// <summary>
+    /// Saves the card as a picture.
+    /// </summary>
+    /// <remarks>
+    /// Through Export rather than Save: on the desktop, Save means the player's designs file and
+    /// means it whatever name it is handed.
+    /// </remarks>
+    private async Task SaveImage()
+    {
+        if (_drawing || _session?.Current is not { } design)
+        {
+            return;
+        }
+
+        _drawing = true;
+
+        try
+        {
+            _drawer ??= await Js.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/Sem.Ui/sem.js");
+
+            var picture = await _drawer.InvokeAsync<byte[]?>(
+                "captureCard", ".sem-lite-main", CardWidth, FrameWidth, ImageScale);
+
+            if (picture is not { Length: > 0 })
+            {
+                _imageTrouble = "This browser would not draw the card into a picture.";
+                return;
+            }
+
+            await Files.ExportAsync(FileNameFor(design), picture, ExportKind.Image);
+        }
+        catch (JSException failure)
+        {
+            _imageTrouble = failure.Message;
+        }
+        finally
+        {
+            _drawing = false;
+        }
+    }
+
+    /// <summary>
+    /// What to call the picture: the empire's own name, with anything a file system objects to
+    /// taken out rather than replaced, so "Blorg Commonality" stays itself.
+    /// </summary>
+    private string FileNameFor(EmpireDesign design)
+    {
+        var name = new string([
+            .. _session!.Localizer.Name(design.Name, design.Key)
+                .Where(c => !System.IO.Path.GetInvalidFileNameChars().Contains(c))
+        ]).Trim();
+
+        return $"{(name.Length == 0 ? "empire" : name)}.png";
     }
 
     /// <summary>Opens the same empire, as it stands, in the page of sections.</summary>
@@ -985,6 +1089,11 @@ else
     ///
     /// Nothing is remembered and nothing is marked saved, unlike the whole-file export: this hands
     /// over a copy of part of the file, which settles nothing about the file itself.
+    ///
+    /// Through Export rather than Save, and the difference is not cosmetic. On the desktop, Save
+    /// means "replace the player's designs file" and means it whatever name it is given - it holds
+    /// the path. A selection sent that way would have replaced a whole collection with the handful
+    /// that was ticked.
     /// </remarks>
     private async Task ExportPicked()
     {
@@ -996,7 +1105,7 @@ else
             taken.AddCopy(design, design.Key);
         }
 
-        await Files.SaveAsync("empire-selection.txt", taken.Save());
+        await Files.ExportAsync("empire-selection.txt", taken.Save(), ExportKind.Designs);
     }
 
     /// <summary>The empire the delete question is about, and nothing while nothing is being asked.</summary>

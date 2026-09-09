@@ -27,6 +27,22 @@ public enum SaveOutcome
 }
 
 /// <summary>
+/// A kind of file that is not the designs file, with what a save dialog needs to offer it.
+/// </summary>
+/// <param name="MediaType">The MIME type, which is what a browser picker asks for.</param>
+/// <param name="Extension">The suffix, with its dot.</param>
+/// <param name="Description">What to call this kind of file in a dialog.</param>
+public readonly record struct ExportKind(string MediaType, string Extension, string Description)
+{
+    /// <summary>Part of a collection of empires, in the game's own format.</summary>
+    public static ExportKind Designs { get; } =
+        new("text/plain", ".txt", "Stellaris empire designs");
+
+    /// <summary>A picture of an empire.</summary>
+    public static ExportKind Image { get; } = new("image/png", ".png", "PNG image");
+}
+
+/// <summary>
 /// Hands a finished file back to the user.
 /// </summary>
 /// <remarks>
@@ -46,6 +62,24 @@ public interface IFileExchange
     /// dismissed dialog wants no response at all, and a download wants explaining.
     /// </remarks>
     Task<SaveOutcome> SaveAsync(string fileName, byte[] contents);
+
+    /// <summary>
+    /// Hands over a file that is not the designs file, under a name and a kind of its own.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Not <see cref="SaveAsync"/> with a different name. On the desktop that call means "replace
+    /// the player's designs file", and it means it whatever name it is given - it holds the path and
+    /// writes there. So a selection of empires, or a picture of one, sent through it would have
+    /// replaced a file full of hand-built empires with a fragment of itself or with a PNG.
+    /// </para>
+    /// <para>
+    /// A host with no way to offer a separate file refuses rather than falling back to the other
+    /// call, for the same reason.
+    /// </para>
+    /// </remarks>
+    Task<SaveOutcome> ExportAsync(string fileName, byte[] contents, ExportKind kind) =>
+        Task.FromResult(SaveOutcome.Refused);
 
     /// <summary>
     /// Asks the player for a file, where the host has a way to ask.
@@ -167,6 +201,33 @@ public sealed class BrowserFileExchange(IJSRuntime js) : IFileExchange, IAsyncDi
         // hands over a copy, which settles nothing about the file the session came from, and the
         // player is told so rather than left to find it in their downloads.
         await module.InvokeVoidAsync("saveFile", fileName, contents).ConfigureAwait(false);
+
+        return answer == "refused" ? SaveOutcome.Refused : SaveOutcome.Downloaded;
+    }
+
+    /// <inheritdoc />
+    public async Task<SaveOutcome> ExportAsync(string fileName, byte[] contents, ExportKind kind)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(fileName);
+        ArgumentNullException.ThrowIfNull(contents);
+
+        var module = await ModuleAsync().ConfigureAwait(false);
+
+        var answer = await module.InvokeAsync<string>(
+            "exportFile", fileName, contents, kind.MediaType, kind.Extension, kind.Description)
+            .ConfigureAwait(false);
+
+        switch (answer)
+        {
+            case "saved":
+                return SaveOutcome.Saved;
+
+            case "cancelled":
+                return SaveOutcome.Cancelled;
+        }
+
+        await module.InvokeVoidAsync("saveFile", fileName, contents, kind.MediaType)
+            .ConfigureAwait(false);
 
         return answer == "refused" ? SaveOutcome.Refused : SaveOutcome.Downloaded;
     }

@@ -27,6 +27,13 @@ public sealed class UnavailableFileExchange : IFileExchange
     /// </summary>
     public Task<bool> CopyToClipboardAsync(string text) => DesktopFileExchange.CopyAsync(text);
 
+    /// <summary>
+    /// Handing over a separate file works whether or not a designs file was found, since it writes
+    /// wherever the player says rather than back over anything.
+    /// </summary>
+    public Task<SaveOutcome> ExportAsync(string fileName, byte[] contents, ExportKind kind) =>
+        DesktopFileExchange.ExportFileAsync(fileName, contents, kind);
+
     /// <inheritdoc />
     public Task<SaveOutcome> SaveAsync(string fileName, byte[] contents) =>
         throw new InvalidOperationException(
