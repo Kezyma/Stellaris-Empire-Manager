@@ -770,6 +770,12 @@ else
         {
             _session.Changed -= OnChanged;
         }
+
+        // Released without being waited on, because this page is closed synchronously and the
+        // reference is to a module that is already loaded - there is nothing to fail and nothing to
+        // report. Left undisposed it would outlive the page for the rest of the session.
+        _ = _drawer?.DisposeAsync().Preserve();
+        _drawer = null;
     }
 
     private void OnChanged()
