@@ -86,6 +86,12 @@ internal static class PrescriptedConverter
         target.Background.Category = source.Background.Category;
         target.Background.File = source.Background.File;
         target.SetColors(source.Colors);
+
+        // Not the fourth, which this app reads as a tag. One of the game's own empires has something
+        // in it - the Infernals' pyrragthul, whose flag is written "orange" "red" "orange" "red" -
+        // and copying that through would hand the player a tag they never applied, on one template
+        // out of fifty-two, for no reason the game itself can explain.
+        target.Tag = null;
     }
 
     private static void CopyRuler(PrescriptedRuler source, RulerDesign target)

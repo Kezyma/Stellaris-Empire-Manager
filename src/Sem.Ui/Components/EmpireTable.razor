@@ -46,6 +46,21 @@
             <table class="sem-table">
                 <thead>
                     <tr>
+                        @if (Picking)
+                        {
+                            @*
+                                Takes everything the filter has left, not everything on the page.
+                                Narrowing to the militarists and then ticking one box is the whole
+                                point of having both; a box that took the visible twenty-five of
+                                ninety would be answering a question about paging.
+                            *@
+                            <th scope="col" class="pick">
+                                <input type="checkbox" checked="@AllPicked" title="@PickAllTitle"
+                                       aria-label="@PickAllTitle"
+                                       @onchange="e => PickAll(e.Value is true)" />
+                            </th>
+                        }
+
                         <th scope="col" class="index">@Header(PositionColumn, "#")</th>
                         <th scope="col" class="name">@Header(NameColumn, "Empire")</th>
 
@@ -82,6 +97,24 @@
                                 dragging a card does and the only way to do it from a table: a row
                                 sorted by government has nowhere meaningful to be dragged to.
                             *@
+                            @if (Picking)
+                            {
+                                @*
+                                    Nothing for one of the game's: it is not in the file, so there is
+                                    no bulk action that could reach it. Blank rather than disabled,
+                                    the way the number cell beside it is already blank for them.
+                                *@
+                                <td class="pick" @onclick:stopPropagation="true">
+                                    @if (row.Preset is null)
+                                    {
+                                        <input type="checkbox" checked="@Selected.Contains(row.Design)"
+                                               title="@($"Select {row.Name}")"
+                                               aria-label="@($"Select {row.Name}")"
+                                               @onchange="e => Pick(row, e.Value is true)" />
+                                    }
+                                </td>
+                            }
+
                             <td class="index" @onclick:stopPropagation="true">
                                 @*
                                     One of the game's has no number. It is not in the player's file
@@ -123,6 +156,17 @@
                                 @if (row.Flag is { } flag)
                                 {
                                     <FlagPreview Flag="@flag" Class="tiny" />
+                                }
+
+                                @*
+                                    The player's own mark, beside the empire's own. Drawn here rather
+                                    than in a column of its own so that it is there whether or not
+                                    anybody turned a column on - a tag nobody can see is a tag
+                                    nobody applies.
+                                *@
+                                @if (row.Tag is { Swatch: { Length: > 0 } swatch } tag)
+                                {
+                                    <span class="sem-tag-dot" style="--tag:@swatch" title="@tag.Name"></span>
                                 }
 
                                 <button type="button" class="sem-row-open"
@@ -196,6 +240,11 @@
                                                     @if (choice.Icon is { Length: > 0 })
                                                     {
                                                         <GameIcon Path="@choice.Icon" Alt="" />
+                                                    }
+                                                    else if (choice.Swatch is { Length: > 0 } dot)
+                                                    {
+                                                        @* A tag has no artwork; it is the colour. *@
+                                                        <span class="sem-tag-dot" style="--tag:@dot"></span>
                                                     }
 
                                                     <span>@choice.Name</span>
@@ -366,6 +415,69 @@
     /// <summary>What one row's share button says, which is only ever news about that row.</summary>
     [Parameter]
     public Func<EmpireRow, string> CopyTitle { get; set; } = _ => "Copy a link to this empire";
+
+    /// <summary>
+    /// The empires ticked, which the page owns and this draws.
+    /// </summary>
+    /// <remarks>
+    /// Keyed on the design rather than on the row, because a row is thrown away and built again
+    /// whenever anything about the file changes - so a set of rows would empty itself the first time
+    /// the reader tagged one of them. The design outlives all of that, and is already what the row
+    /// element is keyed on.
+    /// </remarks>
+    [Parameter]
+    public HashSet<EmpireDesign> Selected { get; set; } = [];
+
+    /// <summary>
+    /// Raised after the set has changed, so the page can redraw whatever it says about it.
+    /// </summary>
+    /// <remarks>
+    /// Its presence is also what decides whether there are boxes at all: a table nobody is
+    /// collecting rows from does not spend a column on offering to.
+    /// </remarks>
+    [Parameter]
+    public EventCallback OnPicked { get; set; }
+
+    /// <summary>Whether this table offers a box per row.</summary>
+    private bool Picking => OnPicked.HasDelegate;
+
+    /// <summary>The rows a box could be ticked on: the filter's own, less the game's.</summary>
+    private IReadOnlyList<EmpireRow> Pickable => [.. Rows.Where(r => r.Preset is null)];
+
+    private bool AllPicked => Pickable is { Count: > 0 } rows && rows.All(r => Selected.Contains(r.Design));
+
+    private string PickAllTitle => AllPicked ? "Clear the selection" : $"Select all {Pickable.Count}";
+
+    private async Task Pick(EmpireRow row, bool chosen)
+    {
+        if (chosen)
+        {
+            Selected.Add(row.Design);
+        }
+        else
+        {
+            Selected.Remove(row.Design);
+        }
+
+        await OnPicked.InvokeAsync();
+    }
+
+    private async Task PickAll(bool chosen)
+    {
+        foreach (var row in Pickable)
+        {
+            if (chosen)
+            {
+                Selected.Add(row.Design);
+            }
+            else
+            {
+                Selected.Remove(row.Design);
+            }
+        }
+
+        await OnPicked.InvokeAsync();
+    }
 
     /// <summary>Which empire's number is being typed into, and nothing while none is.</summary>
     private EmpireDesign? _moving;

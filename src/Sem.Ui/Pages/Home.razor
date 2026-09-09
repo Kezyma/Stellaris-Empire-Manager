@@ -74,6 +74,20 @@ else
         that asked for it: a question is the page's to put on screen, and a table cell is a poor
         place to grow a dialog out of.
     *@
+    @if (_deletingPicked)
+    {
+        <ConfirmDialog Title="@($"Delete {Picked}?")"
+                       Message="@(_selected.Count == 1
+                                  ? "The empire is removed from your file. There is no undo."
+                                  : "They are removed from your file. There is no undo.")"
+                       OnDismiss="() => _deletingPicked = false">
+            <button type="button" @onclick="() => _deletingPicked = false">
+                @(_selected.Count == 1 ? "Keep it" : "Keep them")
+            </button>
+            <button type="button" class="danger" @onclick="DeletePicked">Delete</button>
+        </ConfirmDialog>
+    }
+
     @if (_deleting is { } doomed)
     {
         <ConfirmDialog Title="@($"Delete {_session.Localizer.Name(doomed.Name, doomed.Key)}?")"
@@ -115,11 +129,73 @@ else
                 across ninety empires is the whole reason to be looking at a table, and it cannot be
                 done twice and read once. Which list a row came from is a column like any other.
             *@
+            @*
+                What can be done to a handful at once, which is only ever drawn while there is a
+                handful. Above the table rather than inside its heading row: the heading already
+                carries the search, the preset toggle and the column picker, and a fourth thing that
+                appears and disappears would make that row jump.
+            *@
+            @if (_selected.Count > 0)
+            {
+                <div class="sem-bulk">
+                    <span class="count">@Picked</span>
+
+                    <div class="acts">
+                        <button type="button" @onclick="ExportPicked"
+                                title="Write these empires to a designs file of their own">Export</button>
+
+                        <button type="button" aria-expanded="@(_tagging ? "true" : "false")"
+                                @onclick="() => _tagging = !_tagging">Tag</button>
+
+                        @*
+                            The three the game has, as the game words them, and a fourth line that
+                            is the label rather than a state - a select needs something to say while
+                            it is waiting to be told.
+                        *@
+                        <select value="" @onchange="e => SpawnPicked(e.Value?.ToString())">
+                            <option value="">AI spawning</option>
+
+                            @foreach (var state in SpawnToggle.Offered(_session))
+                            {
+                                <option value="@state.Value">@state.Name</option>
+                            }
+                        </select>
+
+                        <button type="button" class="danger"
+                                @onclick="() => _deletingPicked = true">Delete</button>
+                    </div>
+
+                    <button type="button" class="clear" @onclick="ClearPicked">Clear</button>
+                </div>
+
+                @if (_tagging)
+                {
+                    @*
+                        The game's own flag palette, because a tag is one of its colours and nothing
+                        else. "None" first, since taking a tag off is as much a thing to do as
+                        putting one on.
+                    *@
+                    <div class="sem-bulk-tags">
+                        <button type="button" class="sem-swatch none" title="No tag"
+                                @onclick="() => TagPicked(null)"></button>
+
+                        @foreach (var color in _session.Data.Database.FlagColors)
+                        {
+                            <button type="button" class="sem-swatch"
+                                    style="background:rgb(@color.Red,@color.Green,@color.Blue)"
+                                    title="@Localizer.Prettify(color.Key)"
+                                    @onclick="() => TagPicked(color.Key)"></button>
+                        }
+                    </div>
+                }
+            }
+
             <EmpireTable Heading="Empires" Setting="rows"
                          Rows="@Narrowed" Total="@AllRows.Count" Movable="@OwnRows.Count"
                          Columns="@VisibleColumns" OnOpen="OpenRow" OnMove="MoveRow"
                          OnCopyLink="row => CopyLink(row.Design)" OnDelete="Confirm"
                          CopyTitle="row => CopyTitleFor(row.Design)"
+                         Selected="@_selected" OnPicked="StateHasChanged"
                          Empty="No empires match.">
                 <Title>
                     <EmpireSearch Filter="@_filter" OnChanged="FilterChanged" />
@@ -663,6 +739,11 @@ else
         _presetRows = null;
         _narrowed = null;
 
+        // The rows go and are built again; the designs do not, which is why the selection is kept
+        // on those. What does have to go is anything no longer in the file - deleted here, or from
+        // the editor, or by a file being opened over the top of this one.
+        _selected.RemoveWhere(design => _session?.File?.Designs.Contains(design) is not true);
+
         InvokeAsync(StateHasChanged);
     }
 
@@ -756,6 +837,134 @@ else
         _session?.Preferences.Set(
             ColumnSetting,
             _visible.Count == 0 ? " " : string.Join(",", _visible));
+
+    /// <summary>
+    /// The empires ticked in the table, which every bulk action reads.
+    /// </summary>
+    /// <remarks>
+    /// The page's rather than the table's, because the actions are the page's: it is the page that
+    /// owns the file, puts questions on screen and holds the export. The table draws boxes and says
+    /// when one is ticked.
+    /// </remarks>
+    private readonly HashSet<EmpireDesign> _selected = [];
+
+    /// <summary>Whether the palette is open under the bar.</summary>
+    private bool _tagging;
+
+    /// <summary>Whether the delete question is about the selection rather than one empire.</summary>
+    private bool _deletingPicked;
+
+    private string Picked => _selected.Count == 1 ? "1 empire" : $"{_selected.Count} empires";
+
+    /// <summary>
+    /// The selection as a list, taken before anything is changed.
+    /// </summary>
+    /// <remarks>
+    /// Copied out because every action below writes through EditFile, and removing designs from the
+    /// file while walking the set that names them is asking for trouble.
+    /// </remarks>
+    private IReadOnlyList<EmpireDesign> Chosen => [.. _selected];
+
+    private void ClearPicked()
+    {
+        _selected.Clear();
+        _tagging = false;
+    }
+
+    /// <summary>
+    /// Writes a tag onto every empire chosen, or takes one off.
+    /// </summary>
+    /// <remarks>
+    /// One EditFile for the lot. Each call serialises the whole file, rebuilds a rules context and
+    /// tells the host to keep it, so forty of them to tag forty empires is thirty-nine files nobody
+    /// asked for.
+    /// </remarks>
+    private void TagPicked(string? color)
+    {
+        var chosen = Chosen;
+        _tagging = false;
+
+        _session!.EditFile(_ =>
+        {
+            foreach (var design in chosen)
+            {
+                design.Flag.Tag = color;
+            }
+        });
+    }
+
+    /// <summary>Sets whether every empire chosen may turn up as an AI.</summary>
+    /// <remarks>
+    /// Through EditFile rather than Edit, which is the only door that reaches an empire other than
+    /// the one open in the editor - and which does not put the change behind the Save button, since
+    /// this is not an edit to the empire being worked on.
+    /// </remarks>
+    private void SpawnPicked(string? value)
+    {
+        if (value is not { Length: > 0 })
+        {
+            return;
+        }
+
+        var chosen = Chosen;
+
+        _session!.EditFile(_ =>
+        {
+            foreach (var design in chosen)
+            {
+                design.SpawnEnabled = value;
+            }
+        });
+    }
+
+    /// <summary>Removes every empire chosen, in one go.</summary>
+    private void DeletePicked()
+    {
+        var doomed = Chosen;
+
+        _deletingPicked = false;
+        _session!.EditFile(file =>
+        {
+            foreach (var design in doomed)
+            {
+                file.Remove(design);
+            }
+        });
+
+        // The same courtesy the single delete does: an empire being edited when it goes takes the
+        // editor with it, since there is nothing left for it to show.
+        if (_session.Current is { } open && doomed.Contains(open))
+        {
+            Editor.IsOpen = false;
+            _session.Select(_session.File?.Designs.FirstOrDefault());
+        }
+
+        _selected.Clear();
+    }
+
+    /// <summary>
+    /// Writes the chosen empires out as a designs file of their own.
+    /// </summary>
+    /// <remarks>
+    /// Not named as the game's file. A part of a collection saved under the name the game reads
+    /// would sit in the Stellaris folder looking exactly like the whole of one, and the first
+    /// mistake anybody made with it would cost them the rest of their empires.
+    ///
+    /// Nothing is remembered and nothing is marked saved, unlike the whole-file export: this hands
+    /// over a copy of part of the file, which settles nothing about the file itself.
+    /// </remarks>
+    private async Task ExportPicked()
+    {
+        var chosen = Chosen;
+        var taken = EmpireDesignsFile.CreateEmpty();
+
+        foreach (var design in chosen)
+        {
+            taken.AddCopy(design, design.Key);
+        }
+
+        await Files.SaveAsync("empire-selection.txt", taken.Save());
+    }
 
     /// <summary>The empire the delete question is about, and nothing while nothing is being asked.</summary>
     private EmpireDesign? _deleting;

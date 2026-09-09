@@ -2526,6 +2526,53 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 .sem-swatch:hover { border-color: var(--border-strong); }
 
 /*
+   The three palettes, and the line that folds them away.
+
+   Three grids of seventy-two is most of a phone screen spent above the flag they change, and the
+   flag is the answer to all of it. Folded, the line still carries the three colours as dots, so
+   what is set can be read without opening anything.
+*/
+.sem-colors-block {
+    flex: 1;
+    min-width: 0;
+}
+
+.sem-colors-head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    width: 100%;
+    padding: var(--space-2xs) 0;
+    background: none;
+    border: 0;
+    color: var(--text);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.sem-colors-head > .chevron {
+    color: var(--text-dim);
+}
+
+.sem-colors-head > .title {
+    font-weight: 600;
+}
+
+.sem-colors-head > .now {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    margin-left: var(--space-xs);
+}
+
+/* Taking a tag off is a thing to do, so it is a tile like the colours rather than a link beside them. */
+.sem-swatch.none {
+    background: repeating-linear-gradient(
+        45deg, var(--bg) 0 3px, var(--bg-raised) 3px 6px);
+}
+
+/*
    The one grid that cannot use the shared treatment. A swatch's fill is an arbitrary colour from
    the game's palette, so an accent-blue marker disappears on a blue swatch, and a ring drawn inside
    would be read as part of the colour rather than as a mark on it. Hence the brightest colour in
@@ -3718,6 +3765,55 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
+   What can be done to a handful of empires at once.
+
+   Only on screen while there is a handful, so it is drawn as something that has arrived rather than
+   as part of the furniture: its own ground, its own edge, and the count first because the count is
+   the thing that makes the rest of it mean anything.
+*/
+.sem-bulk {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--bg-raised);
+    border: 1px solid var(--accent-dim);
+    border-radius: var(--radius);
+}
+
+.sem-bulk > .count {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.sem-bulk > .acts {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+/* Pushed to the far end, away from the four that change something. */
+.sem-bulk > .clear {
+    margin-left: auto;
+}
+
+/* The palette, under the bar it belongs to and sharing its edge. */
+.sem-bulk-tags {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, var(--swatch));
+    gap: 3px;
+    margin: calc(var(--space-sm) * -1) 0 var(--space-sm);
+    padding: var(--space-md);
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-top: 0;
+    border-radius: 0 0 var(--radius) var(--radius);
+}
+
+/*
    The search box in the heading's place, at the width the heading had rather than the full width a
    text box takes by default. It shrinks before the picker does, since a word is legible in a narrow
    box and a row of column chips is not.
@@ -4303,6 +4399,25 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
+   The box that collects a row, at the left edge where a column of them can be run down with the eye.
+
+   As narrow as its own content and no narrower: the cell blanks itself for the game's own empires,
+   which are in the table but not in the file, so a column of boxes with gaps in it is the shape of
+   the answer rather than an omission.
+*/
+.sem-table .pick {
+    width: 1%;
+    padding-right: 0;
+    text-align: center;
+}
+
+.sem-table .pick input {
+    display: block;
+    margin: 0 auto;
+    cursor: pointer;
+}
+
+/*
    What can be done to a row, held against the right edge while the table scrolls under it.
 
    Not a column in the picker: it is not something an empire is, it is what can be done to one, and
@@ -4463,6 +4578,27 @@ button.icon .sem-action-icon { display: block; }
 .sem-cell-chip .sem-icon {
     width: var(--icon-sm);
     height: var(--icon-sm);
+}
+
+/*
+    A tag: a colour the player put on an empire, and nothing else.
+
+    Kept to a dot rather than given a shape of its own, because it means whatever its owner decided
+    it means and a shape would suggest otherwise. The ring is what keeps a dark tag visible against a
+    dark row and a pale one against a pale row, without knowing which it is.
+*/
+.sem-tag-dot {
+    flex: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--tag, var(--text-dim));
+    box-shadow: 0 0 0 1px var(--border-strong);
+}
+
+/* Beside a name it needs room of its own; inside a chip the chip's gap already gives it some. */
+.sem-table tbody th.name > .sem-tag-dot {
+    margin-right: var(--space-2xs);
 }
 
 /*
@@ -5056,6 +5192,34 @@ button.icon .sem-action-icon { display: block; }
     max-height: 300px;
     overflow-y: auto;
     margin-bottom: var(--gap);
+}
+
+/*
+   Smaller tiles on a phone, because the number of them on screen is the whole of what makes a
+   picker of two hundred and eighty-three emblems usable. At the desktop's sizes a phone shows four
+   patterns and a dozen emblems, which is a scroll bar with a picker attached; at these it shows
+   three times as many and the choosing starts to look like choosing.
+
+   The tiles carry no words, so nothing gets harder to read on the way down - and both stay above
+   the size a finger can reliably hit.
+
+   Named through the box they sit in, because the phone's general rule for that box is - and has to
+   remain - a hundred and twenty pixels: it is what the rooms and the ships want, and it is written
+   as ".sem-scroll-list .sem-thumbs". Two class names beat one, so ".sem-patterns" alone lost to it
+   and the patterns came out at the rooms' size.
+*/
+@media (max-width: 700px) {
+    .sem-scroll-list .sem-thumbs.emblems {
+        grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+    }
+
+    .sem-scroll-list .sem-thumbs.sem-patterns {
+        grid-template-columns: repeat(auto-fill, minmax(54px, 1fr));
+    }
+
+    /* The gap is sized for the wide pictures the default track holds, not for these. */
+    .sem-picker .sem-thumbs.emblems,
+    .sem-picker .sem-thumbs.sem-patterns { gap: var(--space-xs); }
 }
 
 .sem-patterns > .sem-thumb-option {
@@ -5851,6 +6015,13 @@ button.icon .sem-action-icon { display: block; }
     border-radius: var(--radius);
     padding: var(--space-2xs) var(--space-xs);
     cursor: pointer;
+}
+
+/* One of them shows a colour as well as naming it, and a dot in a line of text needs a line. */
+.sem-lite-chips button.value.map {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
 }
 
 .sem-lite-scene:hover,

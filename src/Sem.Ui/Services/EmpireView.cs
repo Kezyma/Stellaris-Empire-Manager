@@ -45,6 +45,16 @@ public sealed record EmpireChoice(string Key, string Name, string? Icon, EffectS
     public string? Badge { get; init; }
 
     /// <summary>
+    /// A flat colour to draw the thing as, where it has no artwork and is a colour.
+    /// </summary>
+    /// <remarks>
+    /// Only the tags, which are a colour and nothing else - the player picks one off the game's own
+    /// flag palette and it means whatever they decide it means. Written as CSS so the chip and the
+    /// dot need no palette of their own.
+    /// </remarks>
+    public string? Swatch { get; init; }
+
+    /// <summary>
     /// How full that number is, nought to one, which is what colours it.
     /// </summary>
     /// <remarks>
@@ -322,6 +332,33 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
     /// <summary>The held set's name, or nothing when the design claims no flags.</summary>
     public string? FlagSetLabel =>
         FlagSet is { } set ? FlagSetName(_session, set) : null;
+
+    /// <summary>
+    /// What the empire flies on the galaxy map, named - or how it comes by one when it names none.
+    /// </summary>
+    public string MapColorLabel =>
+        _design.Flag.MapColor is { Length: > 0 } key
+            ? Localizer.Prettify(key)
+            : "Follows the flag";
+
+    /// <summary>
+    /// That colour as CSS, so a reader sees the answer rather than the arrangement.
+    /// </summary>
+    /// <remarks>
+    /// The map half of the game's pair, not the flag half: the game keeps two colours against every
+    /// name and this is the one the map draws. "Red" is not the same red in both. An empire naming
+    /// none takes its flag's first colour, which is what the map does with it.
+    /// </remarks>
+    public string MapSwatch =>
+        (Palette(_design.Flag.MapColor) ?? Palette(_design.Flag.Colors.FirstOrDefault())) is { } color
+            ? $"rgb({color.MapRed},{color.MapGreen},{color.MapBlue})"
+            : "transparent";
+
+    /// <summary>One entry of the game's flag palette, by name.</summary>
+    private FlagColorDefinition? Palette(string? key) =>
+        key is { Length: > 0 } named && named != EmpireFlag.EmptyColor
+            ? Database.FlagColors.FirstOrDefault(c => c.Key == named)
+            : null;
 
     /// <summary>The named set of country flags the design carries, when it carries one.</summary>
     /// <remarks>

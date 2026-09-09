@@ -21,6 +21,18 @@
     <EmpireFlagSets Id="empire-flag-set" />
 </div>
 
+@*
+    What the empire looks like on the galaxy map, which the file keeps inside the flag and which is
+    not a flag colour: no background the game ships draws anything in the channel it would tint.
+    Here rather than in the flag editor because this is where the empire's own settings are, and
+    because a colour that changes the map and not the flag has no business sitting under a picture
+    of the flag saying otherwise.
+*@
+<div class="sem-field spaced">
+    <label>Map colour</label>
+    <MapColorField />
+</div>
+
 <SpawnToggle />
 
 @*

@@ -496,6 +496,92 @@ public sealed class EmpireDesignTests
     }
 
     [Fact]
+    public void TaggingAnEmpireTouchesNothingTheFlagDraws()
+    {
+        var file = EmpireDesignsFile.LoadText(Sample);
+
+        file.Designs[0].Flag.Tag = "orange";
+
+        Assert.Equal(["ship_steel", "red", "black", "orange"], file.Designs[0].Flag.Colors);
+        Assert.Equal("orange", file.Designs[0].Flag.Tag);
+    }
+
+    /// <summary>
+    /// The whole premise of the tag: written out, it is one word of one line different, and read
+    /// back in it is still there.
+    /// </summary>
+    [Fact]
+    public void ATagIsTheOnlyThingATaggedFileGains()
+    {
+        var file = EmpireDesignsFile.LoadText(Sample);
+        file.Designs[0].Flag.Tag = "orange";
+
+        var text = file.Document.ToText();
+
+        Assert.Equal(Sample.Replace("\"null\"", "\"orange\"", StringComparison.Ordinal), text);
+        Assert.Equal("orange", EmpireDesignsFile.LoadText(text).Designs[0].Flag.Tag);
+    }
+
+    [Fact]
+    public void RemovingATagLeavesTheFileAsItWas()
+    {
+        var file = EmpireDesignsFile.LoadText(Sample);
+        file.Designs[0].Flag.Tag = "orange";
+
+        file.Designs[0].Flag.Tag = null;
+
+        Assert.Null(file.Designs[0].Flag.Tag);
+        Assert.Equal(Sample, file.Document.ToText());
+    }
+
+    /// <summary>
+    /// The flag editor rewrites a colour by name and the two slots it does not offer come through,
+    /// which is what makes a tag survive an ordinary edit.
+    /// </summary>
+    [Fact]
+    public void ChangingAFlagColourCarriesTheOtherSlotsThrough()
+    {
+        var file = EmpireDesignsFile.LoadText(Sample);
+        var flag = file.Designs[0].Flag;
+        flag.Tag = "orange";
+
+        flag.SetColor(0, "blue");
+
+        Assert.Equal(["blue", "red", "black", "orange"], flag.Colors);
+        Assert.Equal("orange", flag.Tag);
+        Assert.Equal("black", flag.MapColor);
+    }
+
+    [Fact]
+    public void TheMapColourIsTheThirdSlotAndNotTheTag()
+    {
+        var file = EmpireDesignsFile.LoadText(Sample);
+        var flag = file.Designs[0].Flag;
+
+        flag.MapColor = "green";
+
+        Assert.Equal(["ship_steel", "red", "green", "null"], flag.Colors);
+        Assert.Equal("green", flag.MapColor);
+        Assert.Null(flag.Tag);
+    }
+
+    /// <summary>
+    /// An empire that names no map colour reads as naming none, rather than as flying the game's
+    /// word for nothing.
+    /// </summary>
+    [Fact]
+    public void AnEmptyMapColourReadsAsNone()
+    {
+        var file = EmpireDesignsFile.LoadText(Sample);
+        var flag = file.Designs[0].Flag;
+
+        flag.MapColor = null;
+
+        Assert.Null(flag.MapColor);
+        Assert.Equal(["ship_steel", "red", "null", "null"], flag.Colors);
+    }
+
+    [Fact]
     public void ARulersBiographyIsWrittenWhereTheGameWritesIt()
     {
         var file = EmpireDesignsFile.LoadText(Sample);

@@ -1,0 +1,50 @@
+@*
+    The colour this empire flies on the galaxy map.
+
+    Kept in the flag's third colour slot, which is where the game keeps it, but it is not a flag
+    colour and it is not edited beside them. The evidence is in the art: a background is three shapes
+    packed into one file's red, green and blue channels, each tinted with one of the first three
+    colours - and across all sixty-three backgrounds the game ships, the brightest pixel in any blue
+    channel is 11 of 255. Nothing is drawn there. Yet the game has a word for the third colour, and
+    four of its own empires set it to something distinctive on backgrounds with no blue at all.
+
+    Left unset it follows the flag's primary, which is what almost every empire does - the game's own
+    random combinations put black in this slot a hundred and seventy-five times out of two hundred
+    and twenty-six, and thirty-two of its fifty-three ready-made empires leave it out entirely.
+
+    Drawn in the map colours rather than the flag colours, because that is the pair the game keeps
+    for every name and this is the half that will be on screen. "Red" is not the same red in both.
+*@
+
+<div class="sem-swatches">
+    @*
+        Following the flag is the ordinary answer, so it is a tile at the front rather than a way of
+        undoing one - most empires want it and it should not need discovering.
+    *@
+    <button type="button" class="sem-swatch none @(Chosen is null ? "selected" : null)"
+            title="Follow the flag's primary colour"
+            aria-pressed="@(Chosen is null ? "true" : "false")"
+            @onclick="() => Set(null)"></button>
+
+    @foreach (var color in Session.Data.Database.FlagColors)
+    {
+        <button type="button"
+                class="sem-swatch @(color.Key == Chosen ? "selected" : null)"
+                style="background:rgb(@color.MapRed,@color.MapGreen,@color.MapBlue)"
+                title="@Localizer.Prettify(color.Key)"
+                aria-pressed="@(color.Key == Chosen ? "true" : "false")"
+                @onclick="() => Set(color.Key)"></button>
+    }
+</div>
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    private EmpireDesign Design => Session.Current!;
+
+    /// <summary>What the empire flies, or nothing where it follows its flag.</summary>
+    private string? Chosen => Design.Flag.MapColor;
+
+    private void Set(string? value) => Session.Edit(d => d.Flag.MapColor = value);
+}

@@ -53,6 +53,15 @@ public sealed record EmpireRow
     public EmpireFlag? Flag { get; init; }
 
     /// <summary>
+    /// The colour the player has tagged this empire with, where they have tagged it.
+    /// </summary>
+    /// <remarks>
+    /// Nothing the game knows about. It is kept in the flag's fourth colour slot, which the game
+    /// writes and never draws, so it travels with the empire through the file and back.
+    /// </remarks>
+    public EmpireChoice? Tag { get; init; }
+
+    /// <summary>
     /// Every word of the empire somebody typed rather than picked, run together.
     /// </summary>
     /// <remarks>
@@ -202,6 +211,29 @@ public sealed record EmpireRow
     private static EmpireChoice Chosen((string Value, string Name, string? Icon) state) =>
         new(state.Value, state.Name, state.Icon, null);
 
+    /// <summary>
+    /// A tag as a choice, carrying the colour it is drawn in.
+    /// </summary>
+    /// <remarks>
+    /// Named by making its key readable rather than by looking it up: the game names its colours
+    /// nowhere a player would recognise, and "dark_teal" says what it is already.
+    /// </remarks>
+    private static EmpireChoice? Tagged(DesignSession session, string? key)
+    {
+        if (key is not { Length: > 0 })
+        {
+            return null;
+        }
+
+        var color = session.Data.Database.FlagColors
+            .FirstOrDefault(c => string.Equals(c.Key, key, StringComparison.Ordinal));
+
+        return new EmpireChoice(key, Localizer.Prettify(key), null, null)
+        {
+            Swatch = color is null ? null : $"rgb({color.Red},{color.Green},{color.Blue})",
+        };
+    }
+
     /// <summary>A portrait as a choice, wearing the face it actually resolves to.</summary>
     /// <remarks>
     /// Keyed by what the design stores - the group, usually - so two empires that both say "human"
@@ -289,6 +321,7 @@ public sealed record EmpireRow
             Preset = preset,
             Name = name,
             Flag = design.Flag,
+            Tag = Tagged(session, design.Flag.Tag),
 
             Text = string.Join(
                 " ",
@@ -504,6 +537,12 @@ public sealed record EmpireFacet(
     [
         new("preset", "Preset", r => YesOrNo(r.Preset is not null)),
 
+        // The player's own marking, first because it is theirs. Not in Several below: an empire has
+        // one tag or none, so asking for all of two is a question with no answer. No Fixed shelf
+        // either - the filter card offers whatever the loaded empires actually carry, which for
+        // something the player invents is exactly the right list.
+        new("tag", "Tag", r => Some(r.Tag)),
+
         // Derived rather than chosen: a government is what an authority, some ethics and some
         // civics add up to, and the hundred and seventy the game defines are not a list anybody
         // picks from. What is offered is what these empires came to.
@@ -644,6 +683,7 @@ public sealed record EmpireColumn(
     public static IReadOnlyList<EmpireColumn> All { get; } =
     [
         Picked("preset", false),
+        Picked("tag", false),
         Picked("government", false),
 
         // Stacked, because these are the one column whose cells hold alternatives rather than a

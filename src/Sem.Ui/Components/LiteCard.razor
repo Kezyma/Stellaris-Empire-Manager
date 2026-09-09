@@ -93,6 +93,28 @@
 
                         <div class="sem-lite-choices">
                             @*
+                                What the empire looks like on the galaxy map, which the file keeps
+                                inside the flag and which is not a flag colour: no background the
+                                game ships draws anything in the channel it would tint. Here rather
+                                than in the flag editor because a colour that changes the map and
+                                not the flag has no business sitting under a picture of the flag
+                                saying otherwise - and first in this list because it is the one
+                                thing here the flag beside it does not already show.
+                            *@
+                            <div class="sem-lite-chips">
+                                <span class="heading">Map colour</span>
+
+                                <div class="chips">
+                                    <button type="button" class="value map"
+                                            title="Choose the colour this empire flies on the galaxy map"
+                                            @onclick="() => Open(LitePart.MapColor)">
+                                        <span class="sem-tag-dot" style="--tag:@View.MapSwatch"></span>
+                                        @View.MapColorLabel
+                                    </button>
+                                </div>
+                            </div>
+
+                            @*
                                 The scripted country flags. Nothing to do with the drawn flag beside
                                 them, which is why they are named in full - see docs/empire-flags.md,
                                 written because the two were confusable enough to need it.
