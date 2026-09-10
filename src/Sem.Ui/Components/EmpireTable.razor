@@ -168,17 +168,6 @@
                                     <FlagPreview Flag="@flag" Class="tiny" />
                                 }
 
-                                @*
-                                    The player's own mark, beside the empire's own. Drawn here rather
-                                    than in a column of its own so that it is there whether or not
-                                    anybody turned a column on - a tag nobody can see is a tag
-                                    nobody applies.
-                                *@
-                                @if (row.Tag is { Swatch: { Length: > 0 } swatch } tag)
-                                {
-                                    <span class="sem-tag-dot" style="--tag:@swatch" title="@tag.Name"></span>
-                                }
-
                                 <button type="button" class="sem-row-open"
                                         @onclick="() => Open(row)" @onclick:stopPropagation="true">
                                     @row.Name
@@ -250,11 +239,6 @@
                                                     @if (choice.Icon is { Length: > 0 })
                                                     {
                                                         <GameIcon Path="@choice.Icon" Alt="" />
-                                                    }
-                                                    else if (choice.Swatch is { Length: > 0 } dot)
-                                                    {
-                                                        @* A tag has no artwork; it is the colour. *@
-                                                        <span class="sem-tag-dot" style="--tag:@dot"></span>
                                                     }
 
                                                     <span>@choice.Name</span>

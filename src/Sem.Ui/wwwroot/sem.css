@@ -1494,38 +1494,6 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 }
 
 /*
-   The empire's tag, in the same corner and always there.
-
-   Larger than the ten pixels the table gives it. In a row the dot has the tag's name written beside
-   it and only has to agree with it; here it is the whole of what is said, and a reader picking one
-   empire out of a dozen cards is reading nothing but the colour.
-
-   Named through its parent, which is only there to outrank .sem-tag-dot: the two selectors are
-   worth the same and that one is written further down the file, so on equal terms it wins and the
-   dot came out at the table's size.
-*/
-.sem-empire-slot > .sem-empire-tag {
-    position: absolute;
-    top: var(--space-xs);
-    right: var(--space-xs);
-    width: 12px;
-    height: 12px;
-    pointer-events: none;
-}
-
-/*
-   And the share button steps aside for it rather than over it.
-
-   That button owns this corner on hover, with a background of its own because it sits over the
-   card's face and name - which is a fair trade for those, since they are still readable the moment
-   the pointer leaves. A tag is not: it is one dot, and covering it hides the thing at exactly the
-   moment somebody is looking hardest at the card.
-*/
-.sem-empire-slot.has-tag .sem-empire-share {
-    right: calc(var(--space-xs) * 2 + 12px);
-}
-
-/*
    Somewhere to take hold of the card.
 
    The card is a button, and a browser will not begin a drag from inside one - so with the whole
@@ -2652,17 +2620,6 @@ button.icon {
 button.icon .sem-action-icon { display: block; }
 
 /*
-    The one button in the editors' row that shows a colour rather than a glyph. Larger than the dot
-    in a table row, because it is the whole of what the button says - and ringed, so an empire with
-    no tag still reads as a button with nothing in it rather than as a gap in the row.
-*/
-button.icon.tag > .sem-tag-dot {
-    width: 14px;
-    height: 14px;
-    vertical-align: 0;
-}
-
-/*
     The stack of everything the panel shows, which is the panel itself where there is no header.
 
     Note that everything below is matched as a descendant rather than a child. The body is a wrapper
@@ -3585,8 +3542,8 @@ button.icon.tag > .sem-tag-dot {
 }
 
 /* A colour beside the name of it, in the line a tab or a strip gives to what is chosen. */
-.sem-picker-tabs button .state > .sem-tag-dot,
-.sem-picker > .head .state > .sem-tag-dot {
+.sem-picker-tabs button .state > .sem-dot,
+.sem-picker > .head .state > .sem-dot {
     margin-right: var(--space-2xs);
 }
 
@@ -3867,34 +3824,6 @@ button.icon.tag > .sem-tag-dot {
 }
 
 /*
-    Joined into one field where the two really are one control - a list and the button that applies
-    what is in it. They share an edge and a pair of corners, which is what says the tick belongs to
-    the list beside it rather than to the row.
-*/
-.sem-bulk .set.joined {
-    gap: 0;
-}
-
-.sem-bulk .set.joined > .sem-combo {
-    width: 11rem;
-}
-
-.sem-bulk .set.joined > .sem-combo > .control {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-}
-
-.sem-bulk .set.joined > button.icon {
-    height: var(--icon-btn);
-    border: 1px solid var(--border-strong);
-
-    /* One border between them rather than two, as the picker tabs do it. */
-    margin-left: -1px;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-}
-
-/*
     The game's own spawn control, at the height of the row and nothing else: no box, no padding, no
     border. It is a picture the player already knows from the game's designer, and a button drawn
     around it makes it look like one of this app's rather than one of the game's.
@@ -3995,7 +3924,7 @@ button.icon.tag > .sem-tag-dot {
    A row rather than one big button, because what is in it is pressable: a chip naming something
    chosen is the obvious place to press to stop asking for it, and a button cannot hold buttons.
 */
-.sem-combo.sem-list > .control {
+.sem-combo.sem-multi > .control {
     display: flex;
     align-items: center;
     gap: var(--space-2xs);
@@ -4017,7 +3946,7 @@ button.icon.tag > .sem-tag-dot {
     cursor: pointer;
 }
 
-.sem-combo.sem-list > .control:hover {
+.sem-combo.sem-multi > .control:hover {
     border-color: var(--accent-dim);
 }
 
@@ -4043,17 +3972,12 @@ button.icon.tag > .sem-tag-dot {
    choices did not fit behind a gesture nobody makes. A card whose whole job is saying what is being
    asked for cannot keep half the answer off the end of a line. The control grows instead.
 */
-.sem-combo.sem-list .face {
+.sem-combo.sem-multi .face {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2xs);
 
-    /*
-       Centred, because what goes in here is not always a chip. A chip is as tall as the line and
-       centres its own contents; a swatch put straight into the face is ten pixels with a height of
-       its own, and a flex item that states its cross size is placed at the start of the line rather
-       than stretched - so the colour sat five pixels above the name it belongs to.
-    */
+    /* Centred, so anything shorter than the line sits on it rather than above it. */
     align-items: center;
 
     flex: 1;
@@ -4061,7 +3985,7 @@ button.icon.tag > .sem-tag-dot {
 }
 
 /* The label standing in for a choice is one line of text, and elides rather than scrolling. */
-.sem-combo.sem-list .face.empty {
+.sem-combo.sem-multi .face.empty {
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -4147,7 +4071,7 @@ button.icon.tag > .sem-tag-dot {
 }
 
 /* The arrow, which is the one part of the control that only ever opens the list. */
-.sem-combo.sem-list > .control > .toggle {
+.sem-combo.sem-multi > .control > .toggle {
     position: static;
     flex: none;
 
@@ -4162,12 +4086,12 @@ button.icon.tag > .sem-tag-dot {
     font: inherit;
 }
 
-.sem-combo.sem-list > .control > .toggle:hover {
+.sem-combo.sem-multi > .control > .toggle:hover {
     background: none;
     color: var(--text);
 }
 
-.sem-combo.sem-list .options > li > button {
+.sem-combo.sem-multi .options > li > button {
     display: flex;
     align-items: center;
     gap: var(--space-sm);
@@ -4176,7 +4100,7 @@ button.icon.tag > .sem-tag-dot {
 }
 
 /* A fixed box for the tick, so the names line up whether or not one is next to them. */
-.sem-combo.sem-list .options .tick {
+.sem-combo.sem-multi .options .tick {
     flex: none;
     width: 1em;
     color: var(--accent);
@@ -4187,12 +4111,12 @@ button.icon.tag > .sem-tag-dot {
    picture first - an ethic, a trait, an origin - and a list of words is a list they have to read
    rather than recognise.
 */
-.sem-combo.sem-list .options .sem-icon {
+.sem-combo.sem-multi .options .sem-icon {
     width: var(--icon-sm);
     height: var(--icon-sm);
 }
 
-.sem-combo.sem-list .options .name {
+.sem-combo.sem-multi .options .name {
     min-width: 0;
 }
 
@@ -4204,7 +4128,7 @@ button.icon.tag > .sem-tag-dot {
    laid beside the chips instead of above the options, taking their width and, being the taller of
    the two, growing the row and the card around it every time a list opened.
 */
-.sem-combo.sem-list .panel {
+.sem-combo.sem-multi .panel {
     position: absolute;
     top: calc(100% + 2px);
     left: 0;
@@ -4225,7 +4149,7 @@ button.icon.tag > .sem-tag-dot {
    Everything undone here is something the shared rule gives every combo's list on the way to
    making it the panel - which this one is not any more.
 */
-.sem-combo.sem-list .panel > .options {
+.sem-combo.sem-multi .panel > .options {
     position: static;
     background: none;
     border: none;
@@ -4234,16 +4158,16 @@ button.icon.tag > .sem-tag-dot {
 }
 
 /* The box that narrows a long list, held above it rather than scrolling away with it. */
-.sem-combo.sem-list .search {
+.sem-combo.sem-multi .search {
     padding: var(--space-2xs);
     border-bottom: 1px solid var(--border);
 }
 
-.sem-combo.sem-list .search input {
+.sem-combo.sem-multi .search input {
     padding: var(--space-2xs) var(--space-sm);
 }
 
-.sem-combo.sem-list .options .none {
+.sem-combo.sem-multi .options .none {
     padding: var(--space-sm) var(--space-md);
 }
 
@@ -4695,13 +4619,13 @@ button.icon.tag > .sem-tag-dot {
 }
 
 /*
-    A tag: a colour the player put on an empire, and nothing else.
+    A colour, said as a colour: what a flag's palette holds, what the map draws an empire in.
 
-    Kept to a dot rather than given a shape of its own, because it means whatever its owner decided
-    it means and a shape would suggest otherwise. The ring is what keeps a dark tag visible against a
-    dark row and a pale one against a pale row, without knowing which it is.
+    Kept to a dot rather than given a shape of its own, because the shape would be inventing a
+    meaning the colour does not have. The ring is what keeps a dark one visible against a dark row
+    and a pale one against a pale row, without knowing which it is.
 */
-.sem-tag-dot {
+.sem-dot {
     /*
         Inline-block rather than nothing, so a width and a height apply wherever it is put. Every
         use of it began inside a flex row, which blockifies its children and hid the omission; the
@@ -4714,13 +4638,8 @@ button.icon.tag > .sem-tag-dot {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: var(--tag, var(--text-dim));
+    background: var(--dot, var(--text-dim));
     box-shadow: 0 0 0 1px var(--border-strong);
-}
-
-/* Beside a name it needs room of its own; inside a chip the chip's gap already gives it some. */
-.sem-table tbody th.name > .sem-tag-dot {
-    margin-right: var(--space-2xs);
 }
 
 /*

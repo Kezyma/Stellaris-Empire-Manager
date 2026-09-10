@@ -1,4 +1,4 @@
-﻿// Browser side of the file exchange.
+// Browser side of the file exchange.
 //
 // Everything else in this app is C#. This exists because a page cannot hand the user a file
 // without the browser's help: there is no way to write to disk from managed code in a tab.
@@ -955,10 +955,10 @@ export function enableCardReorder(list, owner) {
  * @param {string} omit what to take out of it, as a selector
  * @param {number} card how wide the part being drawn is, inside the card's own padding
  * @param {number} frame how wide to pretend the window is, so the wide arrangement applies
- * @param {number} scale pixels per CSS pixel
+ * @param {number} across how many pixels wide the finished picture should be
  * @returns {Promise<Uint8Array|null>} the PNG, or null where there was nothing to draw
  */
-export async function captureCard(selector, omit, card, frame, scale) {
+export async function captureCard(selector, omit, card, frame, across) {
     const source = document.querySelector(selector);
 
     if (!source) {
@@ -1029,9 +1029,13 @@ export async function captureCard(selector, omit, card, frame, scale) {
 
         const drawn = await load('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg));
 
+        // Laid out at the card's full width and scaled to the width asked for, rather than laid
+        // out at that width: the arrangement has to be the wide one wherever the picture is taken,
+        // which is the whole reason for the frame above, and a card laid out at 720 would be the
+        // narrow one instead.
         const canvas = document.createElement('canvas');
-        canvas.width = Math.round(width * scale);
-        canvas.height = Math.round(height * scale);
+        canvas.width = across;
+        canvas.height = Math.round(height * (across / width));
 
         const context = canvas.getContext('2d');
 

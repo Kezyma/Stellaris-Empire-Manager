@@ -14,7 +14,7 @@
     thing to get wrong on a phone, where there is no blur to listen for.
 *@
 
-<div class="sem-combo sem-list sem-multi @(_open ? "open" : null)" @onkeydown="Dismiss">
+<div class="sem-combo sem-multi @(_open ? "open" : null)" @onkeydown="Dismiss">
     @*
         The control is a row rather than one button, because what is in it is pressable: a chip
         naming something chosen is the obvious place to press to stop asking for it, and a button
@@ -162,22 +162,15 @@
     public EventCallback OnChanged { get; set; }
 
     /// <summary>
-    /// The picture beside an option's name, where it has one.
+    /// The game's own icon beside an option's name, where the thing has one.
     /// </summary>
     /// <remarks>
-    /// The game's own icon for most lists - half of these are things a player knows by their
-    /// picture before they know them by name - and a dot for the ones that are a colour. A list of
-    /// colour names with no colours in it is the one list where the name is the harder half.
-    ///
-    /// Drawn in both places a list shows an option, which is why it is here rather than written
-    /// twice: the panel of everything, and the chips saying what has been picked out of it.
+    /// Half of these lists are things a player knows by their picture before they know them by
+    /// name. Drawn in both places a list shows an option, which is why it is here rather than
+    /// written twice: the panel of everything, and the chips saying what has been picked out of it.
     /// </remarks>
     private RenderFragment Mark(EmpireChoice option) => @<text>
-        @if (option.Swatch is { Length: > 0 } dot)
-        {
-            <span class="sem-tag-dot" style="--tag:@dot"></span>
-        }
-        else if (option.Icon is { Length: > 0 } icon)
+        @if (option.Icon is { Length: > 0 } icon)
         {
             <GameIcon Path="@icon" Alt="" />
         }

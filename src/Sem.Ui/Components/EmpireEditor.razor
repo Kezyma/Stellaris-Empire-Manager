@@ -36,25 +36,6 @@ else
             <button type="button" class="danger" @onclick="Delete">Delete</button>
         </ConfirmDialog>
     }
-    else if (_confirming == Asking.Tagging)
-    {
-        @*
-            A choice rather than a question, in the one shell on the page that nothing can clip.
-            The action row lives inside a sticky header in one editor and a dialog in the other,
-            and a panel hung off a button in either was cut off by the box around it.
-        *@
-        <ConfirmDialog Title="@($"Tag {Title}")"
-                       Message="A colour of your own, kept with the empire and shown beside it in the list. The game ignores it."
-                       OnDismiss="() => _confirming = Asking.None">
-            <Body>
-                <TagPalette Session="Session" Chosen="@Session.Current.Flag.Tag"
-                            ChosenChanged="Tag" />
-            </Body>
-            <ChildContent>
-                <button type="button" @onclick="() => _confirming = Asking.None">Done</button>
-            </ChildContent>
-        </ConfirmDialog>
-    }
     else if (_confirming == Asking.Revert)
     {
         <ConfirmDialog Title="Throw away your changes?"
@@ -168,9 +149,6 @@ else
         Delete,
         Revert,
         Leaving,
-
-        /// <summary>Not a question at all, but the one choice that needs the same shell.</summary>
-        Tagging,
     }
 
     /// <summary>Which of them is on screen.</summary>
@@ -244,16 +222,6 @@ else
             <ActionIcon Name="share" />
         </button>
 
-        @*
-            The empire's tag, which is a colour and so is drawn rather than named. Blank where there
-            is none, because a button that disappears when nothing is set is a button nobody finds
-            in order to set something.
-        *@
-        <button type="button" class="icon tag" title="@TagTitle" aria-label="@TagTitle"
-                @onclick="() => _confirming = Asking.Tagging">
-            <span class="sem-tag-dot" style="--tag:@(TagSwatch ?? "transparent")"></span>
-        </button>
-
         @if (Session.IsModified)
         {
             <button type="button" class="icon" title="Throw away your changes"
@@ -297,26 +265,6 @@ else
             @WayOut
         }
     </text>;
-
-    /// <summary>What the tag button says, which is the tag where there is one.</summary>
-    private string TagTitle =>
-        Session.Current?.Flag.Tag is { Length: > 0 } tag
-            ? $"Tagged {Localizer.Prettify(tag)}. Change it."
-            : "Tag this empire with a colour";
-
-    /// <summary>That tag as CSS, drawn in the flag shades the list draws its dots in.</summary>
-    private string? TagSwatch =>
-        Session.Current?.Flag.Tag is { Length: > 0 } tag &&
-        Session.Data.Database.FlagColors.FirstOrDefault(c => c.Key == tag) is { } color
-            ? $"rgb({color.Red},{color.Green},{color.Blue})"
-            : null;
-
-    /// <summary>Marks the empire, or takes the mark off, leaving the dialog open either way.</summary>
-    /// <remarks>
-    /// Open, because a tag is one of seventy-two shades and picking the wrong one is easy. Closing
-    /// on the first press would mean reopening the palette to correct it.
-    /// </remarks>
-    private void Tag(string? color) => Session.Edit(d => d.Flag.Tag = color);
 
     /// <summary>The way out, drawn wherever the row wants it.</summary>
     private RenderFragment WayOut => @<text>

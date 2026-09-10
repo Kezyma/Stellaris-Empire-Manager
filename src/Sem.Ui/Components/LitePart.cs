@@ -73,7 +73,7 @@ public enum LitePart
     /// <summary>The flag: its colours, its pattern and its emblem.</summary>
     Flag,
 
-    /// <summary>The colour the empire flies on the galaxy map, which is not one of the flag's.</summary>
+    /// <summary>The two colours the galaxy map draws it in, neither of which is the flag's.</summary>
     MapColor,
 
     /// <summary>The room the ruler stands in, and the city on the world behind them.</summary>

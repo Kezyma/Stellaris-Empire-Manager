@@ -102,14 +102,22 @@
                                 thing here the flag beside it does not already show.
                             *@
                             <div class="sem-lite-chips">
-                                <span class="heading">Map colour</span>
+                                <span class="heading">Map colours</span>
 
                                 <div class="chips">
+                                    @*
+                                        Two circles and no words. The border and the fill are one
+                                        setting in two halves, and naming them cost a line to say
+                                        "Automatic, Automatic" for nearly every empire - which is
+                                        what the pair of hollow rings says already, and shorter.
+                                    *@
                                     <button type="button" class="value map"
-                                            title="Choose the colour this empire flies on the galaxy map"
+                                            title="@View.MapColorsTold" aria-label="@View.MapColorsTold"
                                             @onclick="() => Open(LitePart.MapColor)">
-                                        <span class="sem-tag-dot" style="--tag:@View.MapSwatch"></span>
-                                        @View.MapColorLabel
+                                        <span class="sem-dot"
+                                              style="--dot:@(View.MapBorderSwatch ?? "transparent")"></span>
+                                        <span class="sem-dot"
+                                              style="--dot:@(View.MapFillSwatch ?? "transparent")"></span>
                                     </button>
                                 </div>
                             </div>

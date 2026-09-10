@@ -45,16 +45,6 @@ public sealed record EmpireChoice(string Key, string Name, string? Icon, EffectS
     public string? Badge { get; init; }
 
     /// <summary>
-    /// A flat colour to draw the thing as, where it has no artwork and is a colour.
-    /// </summary>
-    /// <remarks>
-    /// Only the tags, which are a colour and nothing else - the player picks one off the game's own
-    /// flag palette and it means whatever they decide it means. Written as CSS so the chip and the
-    /// dot need no palette of their own.
-    /// </remarks>
-    public string? Swatch { get; init; }
-
-    /// <summary>
     /// How full that number is, nought to one, which is what colours it.
     /// </summary>
     /// <remarks>
@@ -334,30 +324,34 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
         FlagSet is { } set ? FlagSetName(_session, set) : null;
 
     /// <summary>
-    /// What the empire flies on the galaxy map, named - or Automatic where it names none.
+    /// The empire's border on the galaxy map, as CSS, and nothing where the game will choose it.
     /// </summary>
     /// <remarks>
-    /// Automatic rather than a description of the fallback. The empire has not chosen and the game
-    /// will, which is the fact; that it does so from the flag's primary is how, and belongs in the
-    /// setting rather than on the card.
+    /// The map half of the game's pair, not the flag half: it keeps two colours against every name
+    /// and this is the one the map draws. "Red" is not the same red in both.
+    ///
+    /// Nothing rather than a guess where the slot is empty. The game picks one, and what it picks is
+    /// not written down anywhere this app can read - so the dot is drawn hollow and says so, which
+    /// is honest where a colour taken from the flag would only look like an answer.
     /// </remarks>
-    public string MapColorLabel =>
-        _design.Flag.MapColor is { Length: > 0 } key
-            ? Localizer.Prettify(key)
-            : "Automatic";
+    public string? MapBorderSwatch => Drawn(_design.Flag.MapBorder);
 
-    /// <summary>
-    /// That colour as CSS, so a reader sees the answer rather than the arrangement.
-    /// </summary>
-    /// <remarks>
-    /// The map half of the game's pair, not the flag half: the game keeps two colours against every
-    /// name and this is the one the map draws. "Red" is not the same red in both. An empire naming
-    /// none takes its flag's first colour, which is what the map does with it.
-    /// </remarks>
-    public string MapSwatch =>
-        (Palette(_design.Flag.MapColor) ?? Palette(_design.Flag.Colors.FirstOrDefault())) is { } color
-            ? $"rgb({color.MapRed},{color.MapGreen},{color.MapBlue})"
-            : "transparent";
+    /// <summary>And what fills the territory inside it, on the same terms.</summary>
+    public string? MapFillSwatch => Drawn(_design.Flag.MapFill);
+
+    /// <summary>What the pair amounts to, for a control with no room to name either.</summary>
+    public string MapColorsTold =>
+        (Told(_design.Flag.MapBorder), Told(_design.Flag.MapFill)) switch
+        {
+            ("Automatic", "Automatic") => "Map colours: the game chooses both. Press to choose.",
+            var (border, fill) => $"Map colours: {border} border, {fill} fill. Press to change.",
+        };
+
+    private static string Told(string? key) =>
+        key is { Length: > 0 } named ? Localizer.Prettify(named) : "Automatic";
+
+    private string? Drawn(string? key) =>
+        Palette(key) is { } color ? $"rgb({color.MapRed},{color.MapGreen},{color.MapBlue})" : null;
 
     /// <summary>One entry of the game's flag palette, by name.</summary>
     private FlagColorDefinition? Palette(string? key) =>

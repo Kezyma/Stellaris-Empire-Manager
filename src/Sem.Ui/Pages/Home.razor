@@ -1,4 +1,4 @@
-﻿@page "/"
+@page "/"
 @page "/e/{Shared}"
 @implements IDisposable
 @inject SessionHost Host
@@ -619,8 +619,13 @@ else
     private const string Omitted =
         ".sem-lite-actions, .sem-lite-totals, .sem-lite-hint, [popover]";
 
-    /// <summary>Twice, so the text in it is still sharp printed or on a dense screen.</summary>
-    private const int ImageScale = 2;
+    /// <summary>How wide the finished picture is, whatever it was laid out at.</summary>
+    /// <remarks>
+    /// Scaled down from the card's own width rather than laid out at this one. The arrangement has
+    /// to be the wide one wherever the picture is taken - that is what the frame above is for - and
+    /// a card laid out at seven hundred and twenty pixels would be the narrow arrangement instead.
+    /// </remarks>
+    private const int ImageWidth = 1080;
 
     /// <summary>Whether a picture is being drawn, which takes a moment on a large card.</summary>
     private bool _drawing;
@@ -659,7 +664,7 @@ else
                 "import", "./_content/Sem.Ui/sem.js");
 
             var picture = await _drawer.InvokeAsync<byte[]?>(
-                "captureCard", ".sem-lite", Omitted, CardWidth, FrameWidth, ImageScale);
+                "captureCard", ".sem-lite", Omitted, CardWidth, FrameWidth, ImageWidth);
 
             if (picture is not { Length: > 0 })
             {
@@ -955,20 +960,6 @@ else
         </button>
 
         @*
-            A colour to mark them with, drawn as well as named - the list the filter offers, which
-            is the same seventy-two colours and the same dots. Joined to the tick that applies it,
-            because a choice and the act of carrying it out are one thing in two presses.
-        *@
-        <span class="set joined">
-            <SingleSelect Label="Tag" Options="@TagOptions" Value="@_tag" ValueChanged="v => _tag = v" />
-
-            <button type="button" class="icon good" @onclick="() => TagPicked(_tag)"
-                    title="@($"Tag {Picked} {TagName}")" aria-label="@($"Tag {Picked} {TagName}")">
-                <ActionIcon Name="apply" />
-            </button>
-        </span>
-
-        @*
             The game's own cycling button, holding a state to be applied rather than one the empire
             has - there are several empires and they need not agree, so it starts on the first of
             the three and says which it is showing. The picture alone, at the height of the row: it
@@ -1000,29 +991,6 @@ else
         </button>
     </div>;
 
-    /// <summary>The tag the bar is set to apply, nothing meaning take the tag off.</summary>
-    private string? _tag;
-
-    /// <summary>
-    /// The colours to choose from, and the empty one first.
-    /// </summary>
-    /// <remarks>
-    /// Taking a tag off is as much a thing to do as putting one on, so it is an entry in the list
-    /// rather than a way of undoing one. Its key is empty, which is what the rules read as no tag.
-    /// </remarks>
-    private IReadOnlyList<EmpireChoice> TagOptions =>
-    [
-        new(string.Empty, "No tag", null, null),
-        .. _session!.Data.Database.FlagColors.Select(color =>
-            new EmpireChoice(color.Key, Localizer.Prettify(color.Key), null, null)
-            {
-                Swatch = $"rgb({color.Red},{color.Green},{color.Blue})",
-            })
-    ];
-
-    /// <summary>What the tick beside the list will do, for its own label.</summary>
-    private string TagName => _tag is { Length: > 0 } tag ? Localizer.Prettify(tag) : "with no colour";
-
     /// <summary>Which spawn setting the bar is showing, of the three.</summary>
     private int _spawn;
 
@@ -1041,27 +1009,6 @@ else
     private IReadOnlyList<EmpireDesign> Chosen => [.. _selected];
 
     private void ClearPicked() => _selected.Clear();
-
-    /// <summary>
-    /// Writes a tag onto every empire chosen, or takes one off.
-    /// </summary>
-    /// <remarks>
-    /// One EditFile for the lot. Each call serialises the whole file, rebuilds a rules context and
-    /// tells the host to keep it, so forty of them to tag forty empires is thirty-nine files nobody
-    /// asked for.
-    /// </remarks>
-    private void TagPicked(string? color)
-    {
-        var chosen = Chosen;
-
-        _session!.EditFile(_ =>
-        {
-            foreach (var design in chosen)
-            {
-                design.Flag.Tag = color;
-            }
-        });
-    }
 
     /// <summary>Sets whether every empire chosen may turn up as an AI.</summary>
     /// <remarks>

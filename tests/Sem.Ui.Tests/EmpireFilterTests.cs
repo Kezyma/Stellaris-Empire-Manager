@@ -126,10 +126,6 @@ public sealed class EmpireFilterTests
     /// defines a hundred and seventy governments and fifty-one personalities, and twenty of those
     /// personalities belong to fallen empires and pre-FTL societies and can reach no design at all -
     /// so both are offered whatever the empires in front of the reader came to.
-    ///
-    /// The tag is the same shape for the opposite reason: the game has no opinion about it at all.
-    /// It is a colour the player put on an empire, so the only sensible shelf is the one they have
-    /// actually used.
     /// </remarks>
     [Fact]
     public void EveryHeadingWorthAListHasOne()
@@ -138,7 +134,7 @@ public sealed class EmpireFilterTests
             .Where(f => f.Fixed is null && !f.YesNo)
             .Select(f => f.Key);
 
-        Assert.Equal(["tag", "government", "personality"], without);
+        Assert.Equal(["government", "personality"], without);
     }
 
     /// <summary>

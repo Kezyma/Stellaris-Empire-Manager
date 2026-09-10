@@ -495,74 +495,64 @@ public sealed class EmpireDesignTests
             () => file.Designs[0].Flag.SetColors(["a", "b", "c", "d", "e"]));
     }
 
+    /// <summary>The map's two colours are the third and fourth slots, in that order.</summary>
     [Fact]
-    public void TaggingAnEmpireTouchesNothingTheFlagDraws()
+    public void TheMapsColoursAreTheThirdAndFourthSlots()
     {
         var file = EmpireDesignsFile.LoadText(Sample);
+        var flag = file.Designs[0].Flag;
 
-        file.Designs[0].Flag.Tag = "orange";
+        flag.MapBorder = "green";
+        flag.MapFill = "orange";
 
-        Assert.Equal(["ship_steel", "red", "black", "orange"], file.Designs[0].Flag.Colors);
-        Assert.Equal("orange", file.Designs[0].Flag.Tag);
+        Assert.Equal(["ship_steel", "red", "green", "orange"], flag.Colors);
+        Assert.Equal("green", flag.MapBorder);
+        Assert.Equal("orange", flag.MapFill);
     }
 
     /// <summary>
-    /// The whole premise of the tag: written out, it is one word of one line different, and read
-    /// back in it is still there.
+    /// Setting one is one word of one line different, and it reads back as what was written.
     /// </summary>
     [Fact]
-    public void ATagIsTheOnlyThingATaggedFileGains()
+    public void AFillIsTheOnlyThingAFilledFileGains()
     {
         var file = EmpireDesignsFile.LoadText(Sample);
-        file.Designs[0].Flag.Tag = "orange";
+        file.Designs[0].Flag.MapFill = "orange";
 
         var text = file.Document.ToText();
 
         Assert.Equal(Sample.Replace("\"null\"", "\"orange\"", StringComparison.Ordinal), text);
-        Assert.Equal("orange", EmpireDesignsFile.LoadText(text).Designs[0].Flag.Tag);
+        Assert.Equal("orange", EmpireDesignsFile.LoadText(text).Designs[0].Flag.MapFill);
     }
 
     [Fact]
-    public void RemovingATagLeavesTheFileAsItWas()
+    public void HandingAColourBackToTheGameLeavesTheFileAsItWas()
     {
         var file = EmpireDesignsFile.LoadText(Sample);
-        file.Designs[0].Flag.Tag = "orange";
+        file.Designs[0].Flag.MapFill = "orange";
 
-        file.Designs[0].Flag.Tag = null;
+        file.Designs[0].Flag.MapFill = null;
 
-        Assert.Null(file.Designs[0].Flag.Tag);
+        Assert.Null(file.Designs[0].Flag.MapFill);
         Assert.Equal(Sample, file.Document.ToText());
     }
 
     /// <summary>
-    /// The flag editor rewrites a colour by name and the two slots it does not offer come through,
-    /// which is what makes a tag survive an ordinary edit.
+    /// The flag editor rewrites a colour by name and the two it does not offer come through, which
+    /// is what stops editing a flag repainting the empire's territory.
     /// </summary>
     [Fact]
-    public void ChangingAFlagColourCarriesTheOtherSlotsThrough()
+    public void ChangingAFlagColourCarriesTheMapsThrough()
     {
         var file = EmpireDesignsFile.LoadText(Sample);
         var flag = file.Designs[0].Flag;
-        flag.Tag = "orange";
+        flag.MapFill = "orange";
 
         flag.SetColor(0, "blue");
 
         Assert.Equal(["blue", "red", "black", "orange"], flag.Colors);
-        Assert.Equal("orange", flag.Tag);
-        Assert.Equal("black", flag.MapColor);
-    }
-
-    [Fact]
-    public void TheMapColourIsTheThirdSlotAndNotTheTag()
-    {
-        var file = EmpireDesignsFile.LoadText(Sample);
-        var flag = file.Designs[0].Flag;
-
-        flag.MapColor = "green";
-
-        Assert.Equal(["ship_steel", "red", "green", "null"], flag.Colors);
-        Assert.Equal("green", flag.MapColor);
-        Assert.Null(flag.Tag);
+        Assert.Equal("black", flag.MapBorder);
+        Assert.Equal("orange", flag.MapFill);
     }
 
     /// <summary>
@@ -575,9 +565,10 @@ public sealed class EmpireDesignTests
         var file = EmpireDesignsFile.LoadText(Sample);
         var flag = file.Designs[0].Flag;
 
-        flag.MapColor = null;
+        flag.MapBorder = null;
 
-        Assert.Null(flag.MapColor);
+        Assert.Null(flag.MapBorder);
+        Assert.Null(flag.MapFill);
         Assert.Equal(["ship_steel", "red", "null", "null"], flag.Colors);
     }
 

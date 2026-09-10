@@ -1,40 +1,55 @@
 @*
-    The colour this empire flies on the galaxy map.
+    The two colours the galaxy map reads: the empire's border, and the territory inside it.
 
-    Kept in the flag's third colour slot, which is where the game keeps it, but it is not a flag
-    colour and it is not edited beside them. The evidence is in the art: a background is three shapes
-    packed into one file's red, green and blue channels, each tinted with one of the first three
-    colours - and across all sixty-three backgrounds the game ships, the brightest pixel in any blue
-    channel is 11 of 255. Nothing is drawn there. Yet the game has a word for the third colour, and
-    four of its own empires set it to something distinctive on backgrounds with no blue at all.
+    Kept in the flag's third and fourth colour slots, which is where the game keeps them, and edited
+    apart from the flag because neither is one. A background is three shapes packed into one file's
+    red, green and blue channels and the shader tints each with one of the first three - but across
+    all sixty-three backgrounds the game ships, the brightest pixel in any blue channel is 11 of 255,
+    so the third draws nothing; and the shader's fourth line is commented out, so the fourth draws
+    nothing either. Looking for them in the flag's shader was looking in the wrong file.
 
-    Left unset the game picks one from the flag's primary, which is what almost every empire does -
-    thirty-two of the game's fifty-three ready-made empires write nothing here and seventeen more
-    write black. So the tile for it says Automatic rather than describing the fallback: what it
-    means is that nobody has chosen, and the game will.
+    The same arrangement as the flag's own colours: two palettes side by side where there is room and
+    one at a time behind a pair of tabs where there is not. They are the same kind of choice made
+    twice, and a reader who has met one has met both.
 
-    Drawn in the map colours rather than the flag colours, because that is the pair the game keeps
-    for every name and this is the half that will be on screen. "Red" is not the same red in both.
+    Drawn in the map colours rather than the flag colours, because the game keeps a pair against
+    every name and this is the half that will be on screen. "Red" is not the same red in both.
 *@
 
-<div class="sem-swatches">
-    @*
-        Following the flag is the ordinary answer, so it is a tile at the front rather than a way of
-        undoing one - most empires want it and it should not need discovering.
-    *@
-    <button type="button" class="sem-swatch none @(Chosen is null ? "selected" : null)"
-            title="Automatic" aria-label="Automatic"
-            aria-pressed="@(Chosen is null ? "true" : "false")"
-            @onclick="() => Set(null)"></button>
+<div class="sem-pickers colors">
+    <PickerTabs Label="Map colours" Selected="_slot" SelectedChanged="s => _slot = s" Tabs="Tabs" />
 
-    @foreach (var color in Session.Data.Database.FlagColors)
+    @for (var at = 0; at < Slots.Length; at++)
     {
-        <button type="button"
-                class="sem-swatch @(color.Key == Chosen ? "selected" : null)"
-                style="background:rgb(@color.MapRed,@color.MapGreen,@color.MapBlue)"
-                title="@Localizer.Prettify(color.Key)"
-                aria-pressed="@(color.Key == Chosen ? "true" : "false")"
-                @onclick="() => Set(color.Key)"></button>
+        var slot = at;
+
+        <section class="sem-picker @(_slot == slot ? null : "away")">
+            <PickerHead Tab="Tabs[slot]" />
+
+            <div class="sem-swatches">
+                @*
+                    Letting the game decide is the ordinary answer - nearly every empire does, and
+                    all but two leave the fill alone - so it is a tile at the front rather than a
+                    way of undoing a choice already made.
+                *@
+                <button type="button"
+                        class="sem-swatch none @(Held(slot) is null ? "selected" : null)"
+                        title="Automatic" aria-label="Automatic"
+                        aria-pressed="@(Held(slot) is null ? "true" : "false")"
+                        @onclick="() => Set(slot, null)"></button>
+
+                @foreach (var color in Session.Data.Database.FlagColors)
+                {
+                    <button type="button"
+                            class="sem-swatch @(color.Key == Held(slot) ? "selected" : null)"
+                            style="background:@Swatch(color)"
+                            title="@Localizer.Prettify(color.Key)"
+                            aria-label="@Localizer.Prettify(color.Key)"
+                            aria-pressed="@(color.Key == Held(slot) ? "true" : "false")"
+                            @onclick="() => Set(slot, color.Key)"></button>
+                }
+            </div>
+        </section>
     }
 </div>
 
@@ -44,8 +59,54 @@
 
     private EmpireDesign Design => Session.Current!;
 
-    /// <summary>What the empire flies, or nothing where it follows its flag.</summary>
-    private string? Chosen => Design.Flag.MapColor;
+    /// <summary>The two slots, in the order the file writes them.</summary>
+    private static readonly (int Slot, string Title)[] Slots =
+    [
+        (EmpireFlag.MapBorderSlot, "Border"),
+        (EmpireFlag.MapFillSlot, "Fill"),
+    ];
 
-    private void Set(string? value) => Session.Edit(d => d.Flag.MapColor = value);
+    /// <summary>Which palette is on show, where there is room for only one.</summary>
+    private int _slot;
+
+    /// <summary>The two palettes, named and with the colour each holds, for tabs and heads alike.</summary>
+    private PickerTabs.Tab[] Tabs =>
+    [
+        .. Slots.Select((s, at) => new PickerTabs.Tab(s.Title, Named(at), Shown(at)))
+    ];
+
+    /// <summary>What a slot holds, or nothing where the game is left to choose.</summary>
+    private string? Held(int at) => Design.Flag switch
+    {
+        var flag when Slots[at].Slot == EmpireFlag.MapBorderSlot => flag.MapBorder,
+        var flag => flag.MapFill,
+    };
+
+    /// <summary>That, named the way the swatches name themselves.</summary>
+    private string Named(int at) =>
+        Held(at) is { Length: > 0 } key ? Localizer.Prettify(key) : "Automatic";
+
+    /// <summary>And as CSS, for the dot beside the name.</summary>
+    private string? Shown(int at) =>
+        Held(at) is { } key &&
+        Session.Data.Database.FlagColors.FirstOrDefault(c => c.Key == key) is { } color
+            ? Swatch(color)
+            : null;
+
+    /// <summary>A swatch in the shade the map will actually draw, which is not the flag's.</summary>
+    private static string Swatch(FlagColorDefinition color) =>
+        $"rgb({color.MapRed},{color.MapGreen},{color.MapBlue})";
+
+    private void Set(int at, string? value) =>
+        Session.Edit(d =>
+        {
+            if (Slots[at].Slot == EmpireFlag.MapBorderSlot)
+            {
+                d.Flag.MapBorder = value;
+            }
+            else
+            {
+                d.Flag.MapFill = value;
+            }
+        });
 }
