@@ -829,10 +829,15 @@ else
 
     private void OnChanged()
     {
-        // The content packs decide which empires are listed, so the list is worked out again - and
-        // the rows with it, since every one of them is a reading of an empire that may have just
-        // been edited, and a government that is no longer the empire's is worse than no government.
-        _prescripted = null;
+        // The rows go, since every one of them is a reading of an empire that may have just been
+        // edited, and a government that is no longer the empire's is worse than no government.
+        //
+        // The list of built-in empires does not. It is judged against the content packs and nothing
+        // else - BuildPrescripted says so itself - but it was thrown away here along with the rows,
+        // so every keystroke in the designer rebuilt all fifty-two: a context, fifty-two rule
+        // evaluations, fifty-two localisations and a collated sort, for an answer that had not
+        // moved. It is now kept until the packs actually change, which Prescripted checks for
+        // itself rather than trusting this event to mean the right thing.
         _rows = null;
         _ownRows = null;
         _presetRows = null;
@@ -1171,10 +1176,28 @@ else
     /// fifty-two throwaway files and designs every time the page drew. Cleared when the session
     /// changes, which is what turning a content pack on and off does.
     /// </remarks>
-    private IReadOnlyList<PrescriptedEmpireSummary> Prescripted =>
-        _prescripted ??= BuildPrescripted();
+    private IReadOnlyList<PrescriptedEmpireSummary> Prescripted
+    {
+        get
+        {
+            // Compared rather than invalidated, because the only signal this page gets is "something
+            // changed" and almost none of what it carries can alter this list. A set comparison over
+            // thirty-odd pack names is nothing beside the fifty-two rule evaluations it saves.
+            if (_prescripted is null || _prescriptedFor is null ||
+                !_prescriptedFor.SetEquals(_session!.OwnedDlc))
+            {
+                _prescriptedFor = new HashSet<string>(_session!.OwnedDlc, StringComparer.Ordinal);
+                _prescripted = BuildPrescripted();
+            }
+
+            return _prescripted;
+        }
+    }
 
     private IReadOnlyList<PrescriptedEmpireSummary>? _prescripted;
+
+    /// <summary>The packs the held list was judged against, so a change of them is noticed.</summary>
+    private HashSet<string>? _prescriptedFor;
 
     private readonly RequirementEvaluator _evaluator = new();
 

@@ -360,7 +360,7 @@ public sealed record EmpireRow
         var ruler = loc.RulerName(design.Ruler, string.Empty);
         var prefix = loc.Name(design.ShipPrefix, string.Empty);
 
-        var government = session.Rules.DeriveGovernment(view.Context);
+        var government = session.Rules.GovernmentFor(view.Context);
         var world = database.PlanetClasses.FirstOrDefault(p => p.Key == view.Context.EffectivePlanetClass);
         var initializer = database.Initializers.FirstOrDefault(i => i.Key == design.Initializer);
         var rulerClass = database.LeaderClasses.FirstOrDefault(c => c.Key == design.Ruler.LeaderClass);

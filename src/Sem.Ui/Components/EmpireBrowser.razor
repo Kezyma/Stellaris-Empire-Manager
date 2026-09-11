@@ -238,7 +238,7 @@
     /// authority, so the line is never blank.
     /// </remarks>
     private string Government(EmpireDesign design, DesignContext context) =>
-        Session.Rules.DeriveGovernment(context) is { } government
+        Session.Rules.GovernmentFor(context) is { } government
             ? Session.Localizer.Text(government.Key)
             : Session.Localizer.Text(design.Authority);
 

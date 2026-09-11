@@ -128,8 +128,37 @@ public sealed partial class Localizer(
             return fallback ?? Prettify(key);
         }
 
-        return StripMarkup(ResolveScripted(ResolveConcepts(Substitute(value, 0))));
+        if (_resolved.TryGetValue(key, out var done))
+        {
+            return done;
+        }
+
+        done = StripMarkup(ResolveScripted(ResolveConcepts(Substitute(value, 0))));
+        _resolved[key] = done;
+
+        return done;
     }
+
+    /// <summary>
+    /// What each key came out as, so the work of resolving it is done once.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Resolving a line walks it for variables, then for concepts, then for scripted text, then
+    /// strips the markup - four passes, and every one of them can recurse. It was being done afresh
+    /// on every call, and the calls are not rare: a picker resolves every option's name purely to
+    /// sort by it, so drawing the civics list resolved two hundred and eighty-one lines that had
+    /// been resolved identically the render before.
+    /// </para>
+    /// <para>
+    /// Keyed on the key alone, which is sound because the two branches that consider the fallback
+    /// have already returned by this point - the fallback only decides what happens when there is
+    /// nothing to resolve. And safe to hold for the life of the localiser because everything the
+    /// resolution reads is fixed at construction: the entries, the scripted values, the scripted
+    /// text and the icons are all readonly, so a key can only ever come out one way.
+    /// </para>
+    /// </remarks>
+    private readonly Dictionary<string, string> _resolved = new(StringComparer.Ordinal);
 
     /// <summary>
     /// The text for a key as HTML, keeping the game's colour runs.

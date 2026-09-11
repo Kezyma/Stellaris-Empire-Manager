@@ -30,12 +30,39 @@ public sealed class EmpireRules(GameDatabase database)
     private readonly Dictionary<string, ArchetypeDefinition> _archetypes =
         Index(database.Archetypes, a => a.Key);
 
+    private readonly Dictionary<string, GovernmentTypeDefinition> _governments =
+        Index(database.GovernmentTypes, g => g.Key);
+
     private static Dictionary<string, T> Index<T>(IEnumerable<T> items, Func<T, string> key) =>
         items.GroupBy(key, StringComparer.Ordinal)
             .ToDictionary(g => g.Key, g => g.Last(), StringComparer.Ordinal);
 
     /// <summary>The extracted game data being enforced.</summary>
     public GameDatabase Database => _database;
+
+    /// <summary>
+    /// The government a context has already been told it has.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Deriving one reads every condition of all hundred and seventy government types, and
+    /// <see cref="CreateContext"/> has already done it and written the answer into the context. Three
+    /// callers were asking again anyway - the validator, the list's row reader, and the card browser
+    /// - which made a single edit pay for the same walk three times over before anything was drawn.
+    /// </para>
+    /// <para>
+    /// Safe because every context that exists has been through <see cref="CreateContext"/>, and the
+    /// one that is derived rather than built - <see cref="DesignContext.ForSpecies"/> - copies the
+    /// government across deliberately, saying so in a comment: the same empire has the same
+    /// government whichever of its species is being asked about.
+    /// </para>
+    /// </remarks>
+    public GovernmentTypeDefinition? GovernmentFor(DesignContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        return context.Government is { Length: > 0 } key ? _governments.GetValueOrDefault(key) : null;
+    }
 
     /// <summary>Builds a context from a design.</summary>
     public DesignContext CreateContext(EmpireDesign design, IReadOnlySet<string>? ownedDlc = null)
@@ -1480,7 +1507,10 @@ public sealed class EmpireRules(GameDatabase database)
             return;
         }
 
-        if (DeriveGovernment(context) is null)
+        // Asked of the context rather than derived again: CreateContext settled this before the
+        // validator ever saw it, and deriving it a second time was the single most expensive thing
+        // a validation did.
+        if (context.Government is null)
         {
             problems.Add(new ValidationProblem(
                 ValidationArea.Authority,
