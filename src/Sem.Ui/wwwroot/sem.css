@@ -2063,6 +2063,18 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     border-radius: var(--radius);
 }
 
+/*
+   A borrowed face rather than a badge: the three portrait packs wear the portrait they add, which
+   is a wide render with the head upper centre. Filled and pulled to the top, so what survives the
+   crop is the face; contain would letterbox a 332x220 picture into a 24px square and show mostly
+   background.
+*/
+.sem-dlc img.face {
+    object-fit: cover;
+    object-position: 50% 12%;
+    border-radius: 2px;
+}
+
 .sem-dlc img {
     width: var(--icon);
     height: var(--icon);
@@ -4616,6 +4628,62 @@ button.icon .sem-action-icon { display: block; }
 .sem-cell-chip .sem-icon {
     width: var(--icon-sm);
     height: var(--icon-sm);
+}
+
+/*
+    The pair above the palettes that set it, which is the one place with room to say what the game
+    does to them. Full width of the pickers row, so the two palettes below keep their own widths.
+*/
+.sem-map-preview {
+    display: flex;
+    flex-basis: 100%;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+}
+
+.sem-map-preview p {
+    margin: 0;
+    color: var(--text-dim);
+    font-size: var(--text-sm);
+    text-wrap: pretty;
+}
+
+/*
+    A scrap of territory, drawn the way the galaxy map draws one - see MapBlob.razor for the shader
+    lines these four layers come from.
+
+    Top to bottom: the black rim the shader multiplies in near the edge; the one lerp between the
+    border colour at the rim and the fill colour inside, as a ramp because saturate() is one; and
+    the void underneath, which is what the half-alpha interior is composited over. An automatic slot
+    paints nothing and lets the layer below show, which is the hollow the two rings used to say.
+
+    The radius is four different corners because a country is not a circle, and a circle here read
+    as one more swatch.
+*/
+.sem-blob {
+    display: inline-block;
+    flex: none;
+    width: var(--blob-size, 14px);
+    height: var(--blob-size, 14px);
+    border-radius: 58% 42% 51% 49% / 46% 55% 45% 54%;
+    background:
+        radial-gradient(closest-side at 50% 50%, rgb(0 0 0 / 0) 50%, rgb(0 0 0 / 0.25) 100%),
+        radial-gradient(closest-side at 50% 50%,
+            color-mix(in srgb, var(--blob-fill) 55%, transparent) 0 42%,
+            var(--blob-border) 76% 100%),
+        var(--bg-void);
+
+    /*
+        A ring, for the same reason the dot has one: a dark territory on a dark row is a hole
+        otherwise, and an automatic pair is very nearly transparent.
+    */
+    box-shadow: 0 0 0 1px var(--border-strong);
+}
+
+/* Big enough to see what the two colours do to each other, for the picker that sets them. */
+.sem-blob.large {
+    --blob-size: 34px;
 }
 
 /*

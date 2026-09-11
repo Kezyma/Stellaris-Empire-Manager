@@ -23,9 +23,41 @@ public sealed class SessionHostTests
             GameVersion = "test",
             ExtractorVersion = "test",
             Defines = new GameDefines { EthicsPoints = 3, CivicPoints = 2, CityPopLevel = 4 },
+
+            // One class that insists on a trait, so a file can be stale in the way opening one
+            // repairs: a design of this class that does not carry trait_lithoid gains it as it is
+            // read. See DerivedTraitTests for the repair itself.
+            SpeciesClasses = [new SpeciesClassDefinition("LITH", "BIOLOGICAL") { ForcedTrait = "trait_lithoid" }],
+            Traits = [new TraitDefinition("trait_lithoid", TraitKind.Species)],
         },
         new Dictionary<string, string>(),
         "assets");
+
+    /// <summary>A file holding one empire that does not yet carry what its class forces.</summary>
+    /// <summary>The file a stored value holds.</summary>
+    /// <remarks>
+    /// Through reflection because <c>Kept</c> is internal to the app and deserves to stay that way:
+    /// how a browser's store wraps a file is nobody else's business, including these tests'. What
+    /// they are entitled to is the file back, which is what this is.
+    /// </remarks>
+    private static byte[] Decoded(string? kept)
+    {
+        ArgumentNullException.ThrowIfNull(kept);
+
+        return typeof(SessionHost).Assembly
+            .GetType("Sem.Ui.Services.Kept")!
+            .GetMethod("TryDecode")!
+            .Invoke(null, [kept]) as byte[]
+            ?? throw new InvalidOperationException("the store did not hold bytes");
+    }
+
+    private static string Stale()
+    {
+        var file = EmpireDesignsFile.CreateEmpty();
+        file.Add("Old").Species.Class = "LITH";
+
+        return System.Text.Encoding.UTF8.GetString(file.Save());
+    }
 
     private sealed class Source : IGameDataSource
     {
@@ -87,6 +119,96 @@ public sealed class SessionHostTests
             throw new IOException("the file is in pieces");
     }
 
+    /// <summary>A store that already holds a file, and says whether anything wrote over it.</summary>
+    private sealed class Holding(string contents) : IDesignStore
+    {
+        public string Contents { get; private set; } = contents;
+
+        public int Writes { get; private set; }
+
+        public Task<string?> ReadAsync() => Task.FromResult<string?>(Contents);
+
+        public Task<bool> WriteAsync(string written)
+        {
+            Contents = written;
+            Writes++;
+            return Task.FromResult(true);
+        }
+    }
+
+    /// <summary>A store holding nothing, which is what a browser that has not been used yet is.</summary>
+    private sealed class Empty : IDesignStore
+    {
+        public int Writes { get; private set; }
+
+        public Task<string?> ReadAsync() => Task.FromResult<string?>(null);
+
+        public Task<bool> WriteAsync(string contents)
+        {
+            Writes++;
+            return Task.FromResult(true);
+        }
+    }
+
+    /// <summary>
+    /// Starting with nothing does not write nothing over the store.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The empty start is not a file arriving, and it used to be heard by the keeper along with
+    /// everything else: the store was handed an empty file the first time the app ran, and every
+    /// start afterwards read that back and kept it empty. A store saying it holds nothing is to be
+    /// left holding nothing until the player puts something in it.
+    /// </para>
+    /// <para>
+    /// Opened by hand, because the helper adds an empire afterwards - which is a change, and is
+    /// supposed to be written.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public async Task StartingEmptyKeepsNothing()
+    {
+        var store = new Empty();
+        var host = new SessionHost(new Source(), new Browser(), store);
+
+        Assert.NotNull(await host.GetAsync());
+        Assert.Equal(0, store.Writes);
+    }
+
+    /// <summary>
+    /// And a file that was brought up to date as it opened is kept, without waiting for an edit.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A design that does not carry the traits its own choices force gains them as the file is
+    /// read. The browser's store is the only copy of that, so leaving it for the next edit left the
+    /// repair correct on screen and undone on disk, to be done again on every load.
+    /// </para>
+    /// <para>
+    /// Opened by hand rather than through <see cref="OpenAsync"/>, because the opening itself is
+    /// what is being watched: that helper adds an empire and marks the file saved afterwards, which
+    /// writes a second time and clears the very flag this is about.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public async Task ARepairedFileIsKeptAsItOpens()
+    {
+        // Kept as plain text, which the older store shape used and the host still reads.
+        var store = new Holding(Stale());
+        var host = new SessionHost(new Source(), new Browser(), store);
+
+        var session = await host.GetAsync();
+
+        Assert.NotNull(session);
+        Assert.True(session.HasUnwrittenFileChanges, "opening it should have brought the file up to date");
+        Assert.Equal(1, store.Writes);
+
+        // And what was kept is the repair, not merely something that differs from what was there.
+        var kept = EmpireDesignsFile.Load(Decoded(store.Contents));
+
+        Assert.Contains("trait_lithoid", kept.Designs[0].Species.Traits);
+    }
+
     private static async Task<(SessionHost Host, DesignSession Session)> OpenAsync(IFileExchange files, IDesignStore? store)
     {
         var host = new SessionHost(new Source(), files, store);
@@ -115,12 +237,7 @@ public sealed class SessionHostTests
         Assert.NotNull(files.Kept);
 
         // What was kept has to be the edit, not the empire as it was before it.
-        var restored = EmpireDesignsFile.Load(
-            typeof(SessionHost).Assembly
-                .GetType("Sem.Ui.Services.Kept")!
-                .GetMethod("TryDecode")!
-                .Invoke(null, [files.Kept]) as byte[]
-            ?? throw new InvalidOperationException("the store did not hold bytes"));
+        var restored = EmpireDesignsFile.Load(Decoded(files.Kept));
 
         Assert.Equal("auth_democratic", restored.Designs.Single().Authority);
     }

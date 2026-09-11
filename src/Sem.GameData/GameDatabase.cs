@@ -410,6 +410,18 @@ public sealed record DlcDefinition(
     public string? Icon { get; init; }
 
     /// <summary>
+    /// Whether the game gave this pack a badge of its own.
+    /// </summary>
+    /// <remarks>
+    /// False for the three that are a single species portrait and nothing else - the game draws
+    /// them by name and has no icon set for them. Those borrow the face of the portrait they add,
+    /// so <see cref="Icon"/> is filled in either way and cannot answer this; and it is worth
+    /// answering, because a borrowed face is a different shape of thing from a badge and belongs at
+    /// the end of the row rather than among them.
+    /// </remarks>
+    public bool HasOwnIcon { get; init; } = true;
+
+    /// <summary>
     /// Whether owning this pack changes anything the designer offers.
     /// </summary>
     /// <remarks>

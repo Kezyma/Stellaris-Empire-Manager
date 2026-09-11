@@ -33,9 +33,16 @@
                 aria-pressed="@(owned ? "true" : "false")"
                 @onclick="() => Session.ToggleDlc(pack.Name, !owned)">
 
+            @*
+                A badge fits the tile; a borrowed face does not. The three packs that are one
+                species portrait wear that portrait, which is a 332x220 render with the head upper
+                centre - fitted whole into 24 pixels it is a smear, so it is cropped to the head
+                instead. See DlcDefinition.HasOwnIcon.
+            *@
             @if (pack.Icon is { Length: > 0 } icon)
             {
-                <img src="@Session.Data.AssetUrl(icon)" alt="@Name(pack)" loading="lazy">
+                <img class="@(pack.HasOwnIcon ? null : "face")"
+                     src="@Session.Data.AssetUrl(icon)" alt="@Name(pack)" loading="lazy">
             }
             else
             {
@@ -61,17 +68,26 @@
     public required DesignSession Session { get; set; }
 
     /// <summary>
-    /// The packs worth a switch.
+    /// The packs worth a switch, badges first.
     /// </summary>
     /// <remarks>
-    /// Eleven of the thirty-six decide nothing an empire is built from — a soundtrack, a set of
-    /// forum avatars, and three expansions whose content this designer never reaches. Turning one
-    /// off changed nothing on the page, which is a worse thing for a switch to do than to be absent.
+    /// <para>
+    /// Ten of the thirty-six decide nothing an empire is built from — a soundtrack, a set of forum
+    /// avatars, and three expansions whose content this designer never reaches. Turning one off
+    /// changed nothing on the page, which is a worse thing for a switch to do than to be absent.
+    /// </para>
+    /// <para>
+    /// The three with no badge of their own go last rather than alphabetically among the rest. They
+    /// are one species portrait each and wear that portrait's face, which reads differently enough
+    /// from a badge that scattering them through the row made the row look inconsistent rather than
+    /// look like two kinds of thing.
+    /// </para>
     /// </remarks>
     private IEnumerable<DlcDefinition> Packs =>
         Session.Data.Database.Dlc
             .Where(d => d.Decides)
-            .OrderBy(d => Name(d), StringComparer.CurrentCulture);
+            .OrderBy(d => d.HasOwnIcon ? 0 : 1)
+            .ThenBy(d => Name(d), StringComparer.CurrentCulture);
 
     private string Name(DlcDefinition pack) => Session.Localizer.Text(pack.NameKey, pack.Name);
 

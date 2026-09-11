@@ -17,6 +17,21 @@
 *@
 
 <div class="sem-pickers colors">
+    @*
+        The pair as the map will draw it, above the two palettes that set it. The swatches are the
+        palette's own values and have to stay flat to be picked from; what the game does with a pair
+        of them - half-alpha interior, black rim, border swallowing the middle - is not visible in
+        either swatch alone, and was the whole of the surprise. See MapBlob.razor.
+    *@
+    <div class="sem-map-preview">
+        <MapBlob Class="large" Border="@Shown(0)" Fill="@Shown(1)" />
+
+        <p>
+            @Named(0) border, @Named(1) fill, as the map draws them close in. Zoomed out the border
+            widens until it covers the fill, and the game may shift either to keep empires apart.
+        </p>
+    </div>
+
     <PickerTabs Label="Map colours" Selected="_slot" SelectedChanged="s => _slot = s" Tabs="Tabs" />
 
     @for (var at = 0; at < Slots.Length; at++)

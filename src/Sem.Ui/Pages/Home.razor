@@ -96,7 +96,7 @@ else
     *@
     @if (_imageTrouble is { } trouble)
     {
-        <ConfirmDialog Title="The picture could not be made" Message="@trouble"
+        <ConfirmDialog Title="@trouble.Title" Message="@trouble.Message"
                        OnDismiss="() => _imageTrouble = null">
             <button type="button" @onclick="() => _imageTrouble = null">Close</button>
         </ConfirmDialog>
@@ -630,8 +630,15 @@ else
     /// <summary>Whether a picture is being drawn, which takes a moment on a large card.</summary>
     private bool _drawing;
 
-    /// <summary>Why the last picture did not happen, where it did not.</summary>
-    private string? _imageTrouble;
+    /// <summary>
+    /// What went wrong with the last picture, where anything did.
+    /// </summary>
+    /// <remarks>
+    /// Two different things, which is why it carries its own heading: a picture that could not be
+    /// made at all, and one that was made with gaps in it. The second is still handed over, so
+    /// calling it a failure would be wrong.
+    /// </remarks>
+    private (string Title, string Message)? _imageTrouble;
 
     private IJSObjectReference? _drawer;
 
@@ -668,15 +675,31 @@ else
 
             if (picture is not { Length: > 0 })
             {
-                _imageTrouble = "This browser would not draw the card into a picture.";
+                _imageTrouble = ("The picture could not be made",
+                    "This browser would not draw the card into a picture.");
                 return;
             }
 
+            // The picture is still worth having with a hole in it, so it is handed over either way -
+            // but a hole is said out loud. A room that failed to embed draws as the black behind it,
+            // which looks like a bug in the card rather than a picture that came out short, and
+            // there was no way to tell the two apart from a screenshot of the result.
+            var lost = await _drawer.InvokeAsync<int>("captureMisses");
+
             await Files.ExportAsync(FileNameFor(design), picture, ExportKind.Image);
+
+            if (lost > 0)
+            {
+                _imageTrouble = ("The picture came out short", lost == 1
+                    ? "One picture in the card could not be put into the image, so there is a gap "
+                        + "where it should be."
+                    : $"{lost} pictures in the card could not be put into the image, so there are "
+                        + "gaps where they should be.");
+            }
         }
         catch (JSException failure)
         {
-            _imageTrouble = failure.Message;
+            _imageTrouble = ("The picture could not be made", failure.Message);
         }
         finally
         {

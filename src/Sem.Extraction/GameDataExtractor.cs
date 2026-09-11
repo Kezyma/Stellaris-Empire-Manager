@@ -220,6 +220,65 @@ public sealed class GameDataExtractor(LayeredContent content)
     /// Answering it here rather than in the interface means the interface has only to read a flag,
     /// and means the answer is settled against the same installation the rest of the data came from.
     /// </remarks>
+    /// <summary>
+    /// Gives a pack with no badge of its own the face of the portrait it adds.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Three of the packs the bar shows are a single species portrait and nothing else, and the
+    /// game ships no badge for any of them - <c>MetadataExtractor.PackIcon</c> looks for a sprite named after
+    /// the pack and finds none, so they fell through to their initials. The portrait each one adds
+    /// is the obvious picture for it, and it is already published: this points at a thumbnail the
+    /// baker has drawn rather than making anything.
+    /// </para>
+    /// <para>
+    /// Which is why it runs here and not with the rest of the icons. A portrait's thumbnail path is
+    /// not known until the baker has rendered it, which is after the database is otherwise built.
+    /// </para>
+    /// <para>
+    /// Found through the gate rather than by name. A portrait entry carries the pack that unlocks
+    /// it as a condition - <c>conditional_portraits { playable { host_has_dlc = … } }</c> - and
+    /// nothing in the keys says which pack they came from: Rick The Cube adds <c>cyb_machine</c>
+    /// and Vipra the Vapor adds <c>season_10_portrait</c>.
+    /// </para>
+    /// <para>
+    /// Only where a pack gates exactly one portrait, which is what makes the answer unambiguous.
+    /// The species packs gate a dozen each and have badges of their own anyway.
+    /// </para>
+    /// </remarks>
+    public static List<DlcDefinition> LendFaces(GameDatabase database)
+    {
+        ArgumentNullException.ThrowIfNull(database);
+
+        var thumbnails = database.Portraits
+            .Where(p => p.Thumbnail is { Length: > 0 })
+            .ToDictionary(p => p.Key, p => p.Thumbnail!, StringComparer.Ordinal);
+
+        var faces = new Dictionary<string, string>(StringComparer.Ordinal);
+
+        var gated = database.PortraitSets
+            .SelectMany(s => s.Portraits)
+            .Where(e => e.Playable is DlcRequirement)
+            .Select(e => (Pack: ((DlcRequirement)e.Playable).Name, e.Key))
+            .GroupBy(e => e.Pack, e => e.Key, StringComparer.Ordinal);
+
+        foreach (var pack in gated)
+        {
+            if (pack.Distinct(StringComparer.Ordinal).ToList() is [var only] &&
+                thumbnails.TryGetValue(only, out var thumbnail))
+            {
+                faces[pack.Key] = thumbnail;
+            }
+        }
+
+        return
+        [
+            .. database.Dlc.Select(d => d.Icon is { Length: > 0 }
+                ? d
+                : d with { Icon = faces.GetValueOrDefault(d.Name) })
+        ];
+    }
+
     private static List<DlcDefinition> MarkDecidingPacks(GameDatabase database)
     {
         var named = database.Requirements()
@@ -228,7 +287,17 @@ public sealed class GameDataExtractor(LayeredContent content)
             .Select(r => r.Name)
             .ToHashSet(StringComparer.Ordinal);
 
-        return [.. database.Dlc.Select(d => d with { Decides = named.Contains(d.Name) })];
+        // Whether the game gave the pack a badge is settled by now and will not be settled later:
+        // a pack with none borrows a face once the portraits are drawn, which fills Icon in and
+        // makes the question unanswerable from it. See LendFaces below.
+        return
+        [
+            .. database.Dlc.Select(d => d with
+            {
+                Decides = named.Contains(d.Name),
+                HasOwnIcon = d.Icon is { Length: > 0 },
+            })
+        ];
     }
 
     /// <summary>

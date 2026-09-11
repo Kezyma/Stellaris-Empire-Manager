@@ -34,9 +34,13 @@ internal static class PrescriptedConverter
         target.SpawnAsFallen = source.SpawnAsFallen ?? false;
         target.IgnorePortraitDuplication = source.IgnorePortraitDuplication ?? false;
 
-        // Deliberately not copied from the source: importing a preset must never quietly add an
-        // AI empire to every future game.
-        target.SpawnEnabled = "no";
+        // Copied, like everything else. It had been forced to "no" on the reasoning that importing a
+        // preset should not quietly add an AI empire to every future game - but thirty-three of the
+        // fifty-one ship with it set to yes and the game already spawns them, so forcing it was not
+        // preventing an AI empire, it was showing the wrong answer for two thirds of the list. What
+        // an import owes the player is the empire as the game has it; what they do with it after is
+        // a switch on the card.
+        target.SpawnEnabled = source.SpawnEnabled ?? "no";
 
         target.SetEthics(source.Ethics);
         target.SetCivics(source.Civics);

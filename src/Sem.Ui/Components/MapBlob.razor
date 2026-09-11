@@ -1,0 +1,41 @@
+@*
+    A scrap of territory, drawn the way the galaxy map draws one.
+
+    Two flat circles said the same thing and said it wrong: the border and the fill are not two
+    colours sitting side by side, they are one shape with a rim and an inside, and the game does
+    something specific to both on the way to the screen. This draws that instead.
+
+    What the game does, from gfx/FX/border.shader (PixelShaderSDF, line 202):
+
+        vColor = vAlphaEdge * PrimaryColor + (1 - vAlphaEdge) * SecondaryColor
+
+    where vAlphaEdge is a saturated ramp on the distance to the border - one at the rim, zero deep
+    inside - so the primary is the edge and the secondary is the interior. Two more things happen to
+    it: the interior is composited at about half alpha over the void (vAlphaMin = 0.5 zoomed in), and
+    a black rim is multiplied in approaching the edge (vColor *= 1 - 0.25 * ...). Both are why a
+    chosen fill never looks like its swatch, and both are drawn here.
+
+    Not drawn here: the edge band widens with camera distance (vEdgeWidth = 0.025 + 0.35 * camera),
+    so far enough out the border swallows the interior entirely. This is the zoomed-in picture, which
+    is the one where both colours are visible and so the one worth showing.
+
+    An irregular radius, because a country is not a circle and a circle here read as a swatch.
+*@
+
+<span class="sem-blob @Class"
+      style="--blob-border:@(Border ?? "transparent");--blob-fill:@(Fill ?? "transparent")"
+      aria-hidden="true"></span>
+
+@code {
+    /// <summary>The rim, as CSS, or nothing where the game is left to choose it.</summary>
+    [Parameter]
+    public string? Border { get; set; }
+
+    /// <summary>The inside, on the same terms.</summary>
+    [Parameter]
+    public string? Fill { get; set; }
+
+    /// <summary>Anything the caller wants to size or space it with.</summary>
+    [Parameter]
+    public string? Class { get; set; }
+}

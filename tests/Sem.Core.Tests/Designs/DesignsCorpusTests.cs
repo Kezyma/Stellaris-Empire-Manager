@@ -157,8 +157,11 @@ public sealed class DesignsCorpusTests
                 Assert.False(design.Name.IsLiteral);
                 Assert.Equal(empire.Name, design.Name.Key);
 
-                // A converted preset must never quietly spawn as an AI empire.
-                Assert.Equal("no", design.SpawnEnabled);
+                // Whether it spawns as an AI, and whether it spawns fallen, are the game's answers
+                // and not this app's to overrule. Thirty-three of the fifty-one say yes; a converted
+                // copy that said no was simply wrong about the empire it had just copied.
+                Assert.Equal(empire.SpawnEnabled ?? "no", design.SpawnEnabled);
+                Assert.Equal(empire.SpawnAsFallen ?? false, design.SpawnAsFallen);
             }
         }
 

@@ -106,18 +106,16 @@
 
                                 <div class="chips">
                                     @*
-                                        Two circles and no words. The border and the fill are one
-                                        setting in two halves, and naming them cost a line to say
-                                        "Automatic, Automatic" for nearly every empire - which is
-                                        what the pair of hollow rings says already, and shorter.
+                                        One shape and no words. The border and the fill are not two
+                                        settings, they are the rim and the inside of one piece of
+                                        territory, which is what the map shows and what this draws;
+                                        naming them cost a line to say "Automatic, Automatic" for
+                                        nearly every empire, which the shape says already.
                                     *@
                                     <button type="button" class="value map"
                                             title="@View.MapColorsTold" aria-label="@View.MapColorsTold"
                                             @onclick="() => Open(LitePart.MapColor)">
-                                        <span class="sem-dot"
-                                              style="--dot:@(View.MapBorderSwatch ?? "transparent")"></span>
-                                        <span class="sem-dot"
-                                              style="--dot:@(View.MapFillSwatch ?? "transparent")"></span>
+                                        <MapBlob Border="@View.MapBorderSwatch" Fill="@View.MapFillSwatch" />
                                     </button>
                                 </div>
                             </div>

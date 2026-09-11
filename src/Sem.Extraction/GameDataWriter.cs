@@ -77,6 +77,10 @@ public static class GameDataWriter
 
         // Written last, once every image path it refers to is known.
         database = database with { Portraits = portraits, GraphicalCultures = sets, Arkships = arkships };
+
+        // And the packs with no badge of their own borrow a face, which is a portrait's thumbnail
+        // and so is only knowable now that the portraits have been drawn.
+        database = database with { Dlc = GameDataExtractor.LendFaces(database) };
         var json = JsonSerializer.SerializeToUtf8Bytes(database, GameDataJsonContext.Default.GameDatabase);
         file.WriteAllBytes(Path.Combine(outputDirectory, DatabaseFileName), json);
 

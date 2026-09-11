@@ -63,13 +63,6 @@ public sealed class SessionHost(
 
             var session = new DesignSession(data, assumeAllPacks, _preferences);
 
-            // Listening before the file arrives rather than after, because opening one is itself a
-            // change worth keeping: a file written before this app derived what an empire's choices
-            // force is brought up to date as it is read, and a browser's store is the only copy of
-            // it there is. Subscribed afterwards, that first notification had nobody to hear it and
-            // the stored bytes stayed as they were, correct on screen and stale on disk.
-            session.FileChanged += () => Keep(session);
-
             // The desktop app knows where the player's designs are and opens them. A browser has to
             // be handed one — but it may have been handed one before, so what it kept is opened
             // rather than starting empty and losing an evening's work to a closed tab.
@@ -93,6 +86,26 @@ public sealed class SessionHost(
             else
             {
                 session.StartEmptyFile();
+            }
+
+            // The list keeps itself: an empire added, duplicated or deleted is a decision already
+            // taken, and there is no Save button in front of it. Editing one is the thing that
+            // waits, and that goes through SaveAsync below.
+            session.FileChanged += () => Keep(session);
+
+            // Opening a file can change it - one written before this app derived what an empire's
+            // choices force is brought up to date as it is read - and the browser's store is the
+            // only copy of that repair there is. So it is kept now rather than waiting for the next
+            // edit, by asking rather than by listening.
+            //
+            // Asking, because listening was wrong in a way that cost data. Subscribed before the
+            // ladder, the handler also heard StartEmptyFile above, which is not a file arriving:
+            // a store that failed to read for any reason took an empty file over the top of it, and
+            // every start after that read the empty one back and kept it empty. The repair is worth
+            // persisting; nothing about starting with nothing is.
+            if (session.HasUnwrittenFileChanges)
+            {
+                Keep(session);
             }
 
             _session = session;
@@ -121,12 +134,8 @@ public sealed class SessionHost(
     /// Keeps the file in the browser's store when the list of empires changes.
     /// </summary>
     /// <remarks>
-    /// The list keeps itself: an empire added, duplicated or deleted is a decision already taken,
-    /// and there is no Save button in front of it. Editing one is the thing that waits, and that
-    /// goes through SaveAsync.
-    ///
-    /// Handed the session rather than reading the field, because the first notification arrives
-    /// while the file is still being opened and the field is not set until afterwards.
+    /// Handed the session rather than reading the field, because it is also called directly from
+    /// the startup ladder, before the field is set.
     ///
     /// Not awaited: this runs from a change notification during a render, and a save that takes a
     /// moment must not hold one up. Failures are the store's own business — nobody asked for this

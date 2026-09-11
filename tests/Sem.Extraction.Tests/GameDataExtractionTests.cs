@@ -1940,6 +1940,55 @@ public sealed class GameDataExtractionTests
     /// point: the guarantee is exhaustiveness, not cleverness.
     /// </para>
     /// </remarks>
+
+    /// <summary>
+    /// The three packs that are a single species portrait each still are.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// They have no badge sprite - <c>PackIcon</c> looks for one named after the pack and the game
+    /// ships none - so the content bar drew them as their initials. Each borrows the face of the
+    /// portrait it adds instead, which only works because each gates exactly one.
+    /// </para>
+    /// <para>
+    /// This is the half of that arrangement the real installation can answer. Whether a face is
+    /// actually attached depends on the portrait having been drawn, which happens after extraction,
+    /// so <c>LendFacesGivesAPackTheOnePortraitItGates</c> covers the rest against a fixture.
+    /// </para>
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void ThePacksWithNoBadgeGateOnePortraitEach()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+        var database = Database.Value;
+
+        var bare = database.Dlc
+            .Where(d => d.Decides && !d.HasOwnIcon)
+            .Select(d => d.Name)
+            .OrderBy(n => n, StringComparer.Ordinal)
+            .ToList();
+
+        Assert.Equal(
+            ["Rick The Cube Species Portrait", "Stargazer Species Portrait", "Vipra the Vapor Species Portrait"],
+            bare);
+
+        foreach (var pack in bare)
+        {
+            var gated = database.PortraitSets
+                .SelectMany(s => s.Portraits)
+                .Where(e => e.Playable is DlcRequirement dlc && dlc.Name == pack)
+                .Select(e => e.Key)
+                .Distinct(StringComparer.Ordinal)
+                .ToList();
+
+            Assert.True(
+                gated.Count == 1,
+                $"{pack} gates {gated.Count} portraits ({string.Join(", ", gated)}), so there is no " +
+                "one face for it to borrow.");
+        }
+    }
+
     [SkippableFact]
     [Trait("Category", "RealData")]
     public void NothingIsLeftToAGuess()

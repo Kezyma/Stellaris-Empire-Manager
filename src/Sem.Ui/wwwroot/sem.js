@@ -975,7 +975,7 @@ export async function captureCard(selector, omit, card, frame, across) {
     // The card lays itself out in two columns, one of which has just been taken out of it.
     clone.style.display = 'block';
 
-    await inlineImages(clone);
+    lastMisses = await inlineImages(clone);
 
     const stage = document.createElement('iframe');
     stage.setAttribute('aria-hidden', 'true');
@@ -1027,6 +1027,12 @@ export async function captureCard(selector, omit, card, frame, across) {
             new XMLSerializer().serializeToString(holder) +
             '</div></foreignObject></svg>';
 
+        // A data: URL, and it has to be one. An SVG handed over as a blob: URL loads and draws,
+        // and then taints the canvas it was drawn on - the document inside it is treated as
+        // foreign however same-origin the blob was - so toBlob throws SecurityError and there is
+        // no picture at all. Only a data: URL is origin-clean here, which is why every library
+        // that rasterises a DOM node uses one. The size that made a blob tempting is dealt with
+        // where it belongs, in what goes into the document: see shrink().
         const drawn = await load('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg));
 
         // Laid out at the card's full width and scaled to the width asked for, rather than laid
@@ -1082,6 +1088,21 @@ function typography() {
 }
 
 /**
+ * How many pictures the last capture could not embed.
+ *
+ * Kept here and read by a second call rather than returned with the bytes, because a Uint8Array
+ * crosses into managed code as a byte array only when it is the whole answer - put inside an object
+ * it is serialised as JSON and arrives as a map of indices. The count is diagnostic and small; the
+ * bytes are neither.
+ */
+let lastMisses = 0;
+
+/** What the last capture could not embed, for a caller deciding whether to say so. */
+export function captureMisses() {
+    return lastMisses;
+}
+
+/**
  * The app's own stylesheet, read back out of the page rather than fetched again.
  *
  * Every rule, media queries and all, because the arrangement the picture wants is the one those
@@ -1123,10 +1144,15 @@ function variable(name) {
  * so cannot live in the stylesheet.
  *
  * A picture that cannot be read is left as it was rather than the whole export being abandoned: a
- * card missing one icon is worth more than no card at all.
+ * card missing one icon is worth more than no card at all. But it is counted and the count handed
+ * back, because a picture that is quietly wrong is worse than one that says so - a whole room going
+ * missing looked like a mystery for exactly as long as this said nothing.
+ *
+ * @returns {Promise<number>} how many pictures could not be embedded
  */
 async function inlineImages(root) {
     const held = new Map();
+    let missing = 0;
 
     const fetched = url => {
         if (!held.has(url)) {
@@ -1145,8 +1171,13 @@ async function inlineImages(root) {
         const source = picture.getAttribute('src');
 
         if (source) {
-            jobs.push(fetched(new URL(source, document.baseURI).href)
-                .then(data => data && picture.setAttribute('src', data)));
+            jobs.push(fetched(new URL(source, document.baseURI).href).then(data => {
+                if (data) {
+                    picture.setAttribute('src', data);
+                } else {
+                    missing += 1;
+                }
+            }));
         }
     }
 
@@ -1160,20 +1191,35 @@ async function inlineImages(root) {
         const found = [...style.matchAll(/url\(\s*(["']?)([^"')]+)\1\s*\)/g)];
 
         jobs.push(Promise.all(found.map(match =>
-            fetched(new URL(match[2], document.baseURI).href)
-                .then(data => data ? [match[2], data] : null)))
-            .then(pairs => {
-                let rewritten = style;
+            fetched(new URL(match[2], document.baseURI).href)))
+            .then(datas => {
+                // Rebuilt from where the matches were rather than by replacing their text. A
+                // substring replace runs over a string that already holds inserted base64, so one
+                // asset URL that happened to be a substring of another - or of a payload - would
+                // corrupt the attribute. Nothing in the app does that today; the arrangement that
+                // cannot is worth the few extra lines.
+                let rewritten = '';
+                let at = 0;
 
-                for (const pair of pairs.filter(Boolean)) {
-                    rewritten = rewritten.split(pair[0]).join(pair[1]);
-                }
+                found.forEach((match, i) => {
+                    const data = datas[i];
 
-                element.setAttribute('style', rewritten);
+                    if (!data) {
+                        missing += 1;
+                        return;
+                    }
+
+                    rewritten += style.slice(at, match.index) + 'url("' + data + '")';
+                    at = match.index + match[0].length;
+                });
+
+                element.setAttribute('style', rewritten + style.slice(at));
             }));
     }
 
     await Promise.all(jobs);
+
+    return missing;
 }
 
 /** One file as a data URI, or nothing where it could not be read. */
@@ -1187,15 +1233,82 @@ async function encode(url) {
 
         const blob = await response.blob();
 
-        return await new Promise(done => {
-            const reader = new FileReader();
-            reader.onload = () => done(reader.result);
-            reader.onerror = () => done(null);
-            reader.readAsDataURL(blob);
-        });
+        return await shrink(blob) ?? await read(blob);
     } catch {
         return null;
     }
+}
+
+/** The size above which a picture is re-encoded rather than embedded as it was shipped. */
+const HEAVY = 48 * 1024;
+
+/** The widest a re-encoded picture is drawn, which is wider than the card it goes on. */
+const BROADEST = 1200;
+
+/**
+ * A heavy picture encoded small, or nothing where it is not worth it or cannot be done.
+ *
+ * The whole card becomes one document and that document becomes one data: URL, so what is embedded
+ * is charged twice: base64 inflates it by a third, and the URL is then the length of the lot. The
+ * rooms are 264 KB apiece and a city band reaches 535 KB - a megabyte or two per card before
+ * encoding - and a phone handed a data: URL that long refuses it silently, drawing nothing where
+ * the room should be and leaving the void behind it showing. Everything else in the card is a few
+ * kilobytes and survives, which is exactly the shape the bug had.
+ *
+ * PNG at full resolution is the wrong format for a photograph of a city, which is what these are.
+ * Re-encoded as WebP with alpha kept, a room lands around a twentieth of its shipped size, and it
+ * is drawn at most 1200 across - wider than the 952 the card gives it, so nothing visible softens.
+ *
+ * Decoded straight from the blob rather than through an object URL, which keeps the canvas
+ * origin-clean: createImageBitmap on a Blob has no origin to inherit.
+ */
+async function shrink(blob) {
+    if (blob.size < HEAVY || !blob.type.startsWith('image/') || blob.type === 'image/svg+xml') {
+        return null;
+    }
+
+    if (typeof createImageBitmap !== 'function') {
+        return null;
+    }
+
+    let bitmap;
+
+    try {
+        bitmap = await createImageBitmap(blob);
+    } catch {
+        return null;
+    }
+
+    try {
+        const scale = Math.min(1, BROADEST / bitmap.width);
+        const canvas = document.createElement('canvas');
+
+        canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+        canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+
+        const context = canvas.getContext('2d');
+        context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+
+        const small = canvas.toDataURL('image/webp', 0.9);
+
+        // A browser with no WebP encoder hands back a PNG instead, which for these is bigger than
+        // what arrived. Taken only when it is actually smaller.
+        return small.startsWith('data:image/webp') && small.length < blob.size * 1.37 ? small : null;
+    } catch {
+        return null;
+    } finally {
+        bitmap.close();
+    }
+}
+
+/** A blob as a data URI, exactly as it arrived. */
+function read(blob) {
+    return new Promise(done => {
+        const reader = new FileReader();
+        reader.onload = () => done(reader.result);
+        reader.onerror = () => done(null);
+        reader.readAsDataURL(blob);
+    });
 }
 
 /** An image, once the browser has finished with it. */
