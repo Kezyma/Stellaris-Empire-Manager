@@ -82,6 +82,9 @@ public enum LitePart
     /// <summary>The ships the empire flies.</summary>
     Shipset,
 
+    /// <summary>And what colour they are, which is not what colour anything else is.</summary>
+    ShipColor,
+
     /// <summary>The voice that narrates its game.</summary>
     Advisor,
 

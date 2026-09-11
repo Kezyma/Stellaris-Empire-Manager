@@ -81,18 +81,36 @@ use_ship_color = yes/no # default no
 # When yes, slot 3 swatch ship= value is used for ships Slot 3 must be a real swatch.
 ```
 
-## Each colour is three colours
+## Each colour is three values, but only two of them are colours
 
-`flags/colors.txt` keeps **three** RGB values against every one of its 72 names, and they differ:
+`flags/colors.txt` keeps **three** RGB values against every one of its 72 names:
 
 | | flag | map | ship |
 |---|---|---|---|
 | `red` | 158 22 22 | 151 14 18 | 255 57 36 |
-| `frog_green` | 168 218 39 | 209 241 126 | — |
+| `frog_green` | 168 218 39 | 209 241 126 | 201 255 60 |
 
-So a swatch shown in the wrong column is the wrong colour. The app draws the map pickers in `map`
-and the ship picker in `ship`, and ships are lit, which is why their column is much the brightest.
-48 of the 72 have identical `flag` and `map` values, which is exactly why the error is easy to miss.
+`flag` and `map` are one value per name — **72 distinct values each**, differing for 24 of the 72.
+A swatch shown in the wrong one of those is the wrong colour, and since the other 48 agree it is an
+error that hides. The app draws the map pickers in `map` for exactly that reason.
+
+`ship` is **not** one value per name. There are only **14 distinct values across all 72**:
+
+| ship value | shared by |
+|---|---|
+| 255 228 136 | dark_brown, brown, beige, khaki_brown, ochre_brown, desert_yellow |
+| 255 57 36 | dark_red, red, red_orange, intense_red, cerise_red, pink_red |
+| 243 243 243 | black, dark_grey, grey, light_grey, off_white, white |
+
+...and so on, in families of six. The header calls it "Entity tint applied to 3D ships", but a
+picker painted with it shows six identical tiles in a row, and that is not what the game's own
+colour grid shows — the game draws **one** shared 22x22 `gridBoxType name = "colors"` for all four
+of its colour buttons, so its swatches never collapse. Nor does a fleet in game look the same for
+all six browns.
+
+So whatever `ship` is — a per-family glow or accent, most likely, layered over a hull coloured some
+other way — it is not one colour per name and nothing should be painted with it until that is
+understood. The app draws ship colours in the swatch's own `flag` value, like every other picker.
 
 ## How it is written
 

@@ -110,6 +110,38 @@ public sealed record EmpireRow
     /// <summary>The set of scripted country flags it claims, where it claims one.</summary>
     public EmpireChoice? FlagSet { get; init; }
 
+    /// <summary>
+    /// The six colour slots, each in the shade the thing it paints will actually be.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The map's two and the fleet's one are the <em>drawn</em> colour rather than the held one: an
+    /// empire with the override off still has a border and a fill, and they come from the flag. A
+    /// column that read the slots literally would say nothing for seven empires in eight and would
+    /// be wrong about all of them - see <c>EmpireFlag.DrawnMapBorder</c>.
+    /// </para>
+    /// <para>
+    /// The flag's three are held, because there is nothing to derive: what the slot says is what the
+    /// background is tinted with.
+    /// </para>
+    /// </remarks>
+    public EmpireChoice? Primary { get; init; }
+
+    /// <inheritdoc cref="Primary"/>
+    public EmpireChoice? Secondary { get; init; }
+
+    /// <inheritdoc cref="Primary"/>
+    public EmpireChoice? Tertiary { get; init; }
+
+    /// <inheritdoc cref="Primary"/>
+    public EmpireChoice? ShipColor { get; init; }
+
+    /// <inheritdoc cref="Primary"/>
+    public EmpireChoice? MapBorder { get; init; }
+
+    /// <inheritdoc cref="Primary"/>
+    public EmpireChoice? MapFill { get; init; }
+
     /// <summary>The room the ruler is shown standing in.</summary>
     public EmpireChoice? Room { get; init; }
 
@@ -207,6 +239,58 @@ public sealed record EmpireRow
     /// Keyed by what the design stores - the group, usually - so two empires that both say "human"
     /// are one thing to filter by, however differently the gender resolves them.
     /// </remarks>
+    /// <summary>One of the game's named colours, drawn in the shade the caller asks for.</summary>
+    /// <remarks>
+    /// <para>
+    /// Every name carries three: <c>red</c> is 158,22,22 on a flag, 151,14,18 on the map and
+    /// 255,57,36 on a hull. A swatch shown in the wrong one is the wrong colour, and since 48 of the
+    /// 72 have the same flag and map value it is an error that hides.
+    /// </para>
+    /// <para>
+    /// Shared by the columns and the filters, so a colour in a cell and the same colour in the menu
+    /// that narrows to it can never disagree.
+    /// </para>
+    /// </remarks>
+    public static EmpireChoice? Coloured(
+        DesignSession session,
+        string? key,
+        Func<FlagColorDefinition, (byte R, byte G, byte B)> shade)
+    {
+        ArgumentNullException.ThrowIfNull(session);
+        ArgumentNullException.ThrowIfNull(shade);
+
+        if (key is not { Length: > 0 } named)
+        {
+            return null;
+        }
+
+        var color = session.Data.Database.FlagColors
+            .FirstOrDefault(c => string.Equals(c.Key, named, StringComparison.Ordinal));
+
+        return new EmpireChoice(named, Localizer.Prettify(named), null, null)
+        {
+            Swatch = color is null ? null : $"rgb({shade(color).R},{shade(color).G},{shade(color).B})",
+        };
+    }
+
+    /// <summary>The shade a flag is tinted with.</summary>
+    public static readonly Func<FlagColorDefinition, (byte, byte, byte)> FlagShade =
+        c => (c.Red, c.Green, c.Blue);
+
+    /// <summary>The shade the galaxy map draws, which differs for 24 of the 72.</summary>
+    public static readonly Func<FlagColorDefinition, (byte, byte, byte)> MapShade =
+        c => (c.MapRed, c.MapGreen, c.MapBlue);
+
+    /*
+       There is no ShipShade beside these two, deliberately. The game keeps a third value against
+       every name under ship =, and the header of flags/colors.txt calls it the entity tint - but it
+       holds only 14 distinct values across the 72 names, so all six browns share 255,228,136 and all
+       six reds share 255,57,36. Painting anything with it collapses six choices into one tile, which
+       is not what the game's own colour grid shows and not what a player sees on their fleet. It is
+       a per-family accent of some kind; until that is understood, ships are drawn in the swatch's
+       own colour like everything else. See docs/flag-colours.md.
+    */
+
     private static EmpireChoice? Likeness(DesignSession session, string? key, string? gender) =>
         key is { Length: > 0 }
             ? new EmpireChoice(
@@ -342,6 +426,13 @@ public sealed record EmpireRow
             FlagSet = view.FlagSet is { } flags
                 ? new EmpireChoice(flags.Key, EmpireView.FlagSetName(session, flags), null, null)
                 : null,
+
+            Primary = Coloured(session, design.Flag.Primary, FlagShade),
+            Secondary = Coloured(session, design.Flag.Secondary, FlagShade),
+            Tertiary = Coloured(session, design.Flag.Tertiary, FlagShade),
+            ShipColor = Coloured(session, design.Flag.DrawnShipColor, FlagShade),
+            MapBorder = Coloured(session, design.Flag.DrawnMapBorder, MapShade),
+            MapFill = Coloured(session, design.Flag.DrawnMapFill, MapShade),
 
             Room = view.Room is { } room
                 ? new EmpireChoice(room.Key, loc.Text(room.Key, Localizer.Prettify(room.Key)), null, null)
@@ -490,6 +581,16 @@ public sealed record EmpireFacet(
     public const string Galaxy = "Galaxy";
 
     /// <summary>
+    /// The six colour slots.
+    /// </summary>
+    /// <remarks>
+    /// Their own tab because they are six headings that answer the same question about six different
+    /// things, and scattered among the rest they read as six unrelated settings. Grouped, the
+    /// arrangement of the slots is visible: three for the flag, one for the fleet, two for the map.
+    /// </remarks>
+    public const string Colours = "Colours";
+
+    /// <summary>
     /// What the empire means to become, rather than what it is.
     /// </summary>
     /// <remarks>
@@ -524,6 +625,13 @@ public sealed record EmpireFacet(
         new("fallen", "Fallen empire", r => YesOrNo(r.Fallen)),
         new("flagset", "Special flags", r => Some(r.FlagSet), o => o.FlagSets),
         new("advisor", "Advisor voice", r => Some(r.Advisor), o => o.Advisors),
+
+        new("primary", "Primary flag colour", r => Some(r.Primary), o => o.FlagColors, Colours),
+        new("secondary", "Secondary flag colour", r => Some(r.Secondary), o => o.FlagColors, Colours),
+        new("tertiary", "Tertiary colour", r => Some(r.Tertiary), o => o.FlagColors, Colours),
+        new("shipcolor", "Ship colour", r => Some(r.ShipColor), o => o.FlagColors, Colours),
+        new("mapborder", "Map border", r => Some(r.MapBorder), o => o.MapColors, Colours),
+        new("mapfill", "Map fill", r => Some(r.MapFill), o => o.MapColors, Colours),
 
         new("class", "Species", r => Some(r.SpeciesClass), o => o.SpeciesClasses, Species),
         new("portrait", "Portrait", r => Some(r.Portrait), o => o.Portraits, Species),
@@ -593,6 +701,7 @@ public sealed record EmpireFacet(
 
     internal static IReadOnlyList<EmpireChoice> Some(EmpireChoice? choice) =>
         choice is null ? [] : [choice];
+
 
     /// <summary>
     /// A heading whose answer is yes or no, as the one choice an empire holds under it.
@@ -687,6 +796,17 @@ public sealed record EmpireColumn(
         Picked("spawn", false),
         Picked("fallen", false),
         Picked("flagset", false),
+
+        // The colours the empire is actually drawn in. All off by default, like everything else
+        // that is a detail rather than an identity - the table already opens on nine columns. The
+        // flag's first two are here because every heading has a column, not because a reader is
+        // likely to want them: the flag itself is already drawn in the name cell.
+        Picked("primary", false),
+        Picked("secondary", false),
+        Picked("tertiary", false),
+        Picked("shipcolor", false),
+        Picked("mapborder", false),
+        Picked("mapfill", false),
     ];
 
     /// <summary>
@@ -869,10 +989,41 @@ public sealed class EmpireOptions(DesignSession session)
     private IReadOnlyList<EmpireChoice>? _flagSets;
     private IReadOnlyList<EmpireChoice>? _genders;
     private IReadOnlyList<EmpireChoice>? _spawning;
+    private IReadOnlyList<EmpireChoice>? _flagColors;
+    private IReadOnlyList<EmpireChoice>? _mapColors;
 
     private GameDatabase Database => _session.Data.Database;
 
     private Localizer Loc => _session.Localizer;
+
+    /// <summary>
+    /// All seventy-two of the game's colours, in the shade the thing being filtered is drawn in.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Two lists over one set of names, because the map draws 24 of the 72 in a different shade from
+    /// the flag and a filter showing the wrong one would be showing a colour the reader will never
+    /// see on screen. 48 of the 72 have the same flag and map value, which is what makes getting it
+    /// wrong survivable and so worth being careful about. There is no third list: see the note
+    /// beside <see cref="EmpireRow.MapShade"/> for why ships are not drawn in the ship column.
+    /// </para>
+    /// <para>
+    /// Not narrowed by the rules the way the other lists are. A colour has no requirements - every
+    /// empire may hold every one of them - so the whole palette is the answer, in the order the game
+    /// writes it rather than alphabetically, since that order groups the browns, the reds and the
+    /// blues together and a list of colours sorted by name is a list nobody can scan.
+    /// </para>
+    /// </remarks>
+    public IReadOnlyList<EmpireChoice> FlagColors => _flagColors ??= Palette(EmpireRow.FlagShade);
+
+    /// <inheritdoc cref="FlagColors"/>
+    public IReadOnlyList<EmpireChoice> MapColors => _mapColors ??= Palette(EmpireRow.MapShade);
+
+    private IReadOnlyList<EmpireChoice> Palette(
+        Func<FlagColorDefinition, (byte R, byte G, byte B)> shade) =>
+        [.. Database.FlagColors
+            .Select(c => EmpireRow.Coloured(_session, c.Key, shade))
+            .OfType<EmpireChoice>()];
 
     /// <summary>
     /// An empire with nothing chosen, which is what the pickers are asked about.

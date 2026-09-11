@@ -267,9 +267,10 @@ public sealed class EmpireFlag : CwView
     /// own parser help - "When yes, slot 3 swatch ship= value is used for ships" - and from the
     /// header of <c>flags/colors.txt</c>, which calls the primary "the fallback ship entity tint".
     ///
-    /// Whichever slot wins, the shade drawn is that swatch's <c>ship</c> value rather than its
-    /// <c>flag</c> or <c>map</c> one. The three differ: <c>red</c> is 158,22,22 on a flag, 151,14,18
-    /// on the map and 255,57,36 on a hull.
+    /// Which slot wins is all this answers. What shade the hull then takes is a separate question
+    /// and not a settled one: the swatch's <c>ship</c> value is the header's answer, but that column
+    /// holds only 14 distinct values across the 72 names, so it cannot be one colour per name. See
+    /// docs/flag-colours.md.
     /// </remarks>
     public string? DrawnShipColor => (UseShipColor ? ShipColor : null) ?? Primary;
 

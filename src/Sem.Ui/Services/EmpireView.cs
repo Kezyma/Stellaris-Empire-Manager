@@ -25,6 +25,16 @@ public sealed record EmpireChoice(string Key, string Name, string? Icon, EffectS
     public string? Description { get; init; }
 
     /// <summary>
+    /// A colour to draw beside it, where the thing being chosen is itself a colour.
+    /// </summary>
+    /// <remarks>
+    /// As CSS, already in the right one of the three shades the game keeps against every name - a
+    /// map colour in its map shade, a ship colour in its ship shade. Which shade to use is not
+    /// knowable here, so it is decided where the choice is made.
+    /// </remarks>
+    public string? Swatch { get; init; }
+
+    /// <summary>
     /// Whether this is something the empire already has rather than something it is planning.
     /// </summary>
     /// <remarks>
@@ -339,17 +349,15 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
     /// <summary>And what fills the territory inside it, on the same terms.</summary>
     public string? MapFillSwatch => Drawn(_design.Flag.DrawnMapFill);
 
-    /// <summary>
-    /// The tint on the empire's ships, in the shade a hull takes rather than a flag or a border.
-    /// </summary>
+    /// <summary>The colour the empire's ships are, in the swatch's own shade.</summary>
     /// <remarks>
-    /// A third column against the same names, and a very different one: <c>red</c> is 158,22,22 on a
-    /// flag, 151,14,18 on the map and 255,57,36 on a hull. Ships are lit, so the game keeps a bright
-    /// version of every colour for them.
+    /// Not the <c>ship</c> column, which holds 14 distinct values across the 72 names and so would
+    /// draw six browns identically. Whatever that column is for, it is not one colour per name, and
+    /// a dot that collapsed six choices into one would be saying something untrue about the empire.
     /// </remarks>
     public string? ShipSwatch =>
         Palette(_design.Flag.DrawnShipColor) is { } color
-            ? $"rgb({color.ShipRed},{color.ShipGreen},{color.ShipBlue})"
+            ? $"rgb({color.Red},{color.Green},{color.Blue})"
             : null;
 
     /// <summary>What the pair amounts to, for a control with no room to name either.</summary>

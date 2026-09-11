@@ -236,7 +236,11 @@
                                                 <span class="sem-cell-chip" @key="choice.Key"
                                                       title="@choice.Name"
                                                       @onclick:stopPropagation="true">
-                                                    @if (choice.Icon is { Length: > 0 })
+                                                    @if (choice.Swatch is { Length: > 0 } paint)
+                                                    {
+                                                        <span class="sem-dot" style="--dot:@paint"></span>
+                                                    }
+                                                    else if (choice.Icon is { Length: > 0 })
                                                     {
                                                         <GameIcon Path="@choice.Icon" Alt="" />
                                                     }

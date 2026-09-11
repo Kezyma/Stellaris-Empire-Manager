@@ -1,0 +1,74 @@
+@*
+    What colour the empire's fleet is.
+
+    Ordinarily the flag's primary colour - the header of flags/colors.txt calls that "the fallback
+    ship entity tint" - and an empire that wants something else turns this to Manual and picks. The
+    game keeps it on its own screen with its own checkbox too, rather than among the flag colours.
+
+    Drawn in each colour's own shade rather than in its ship value. The ship column is not a colour
+    per name - it holds only 14 distinct values across the 72, so all six browns share 255,228,136
+    and all six reds share 255,57,36 - which made the picker show six identical tiles in a row and
+    is plainly not what the game shows. The game draws one shared 22x22 colour grid for all four of
+    its colour buttons (gridBoxType name = "colors"), so its swatches never collapse either.
+
+    What the ship column actually is, then, is a per-family accent rather than the hull tint the
+    header claims. Until that is understood it is not something to paint a picker with. See
+    docs/flag-colours.md.
+*@
+
+<div class="sem-chosen-color">
+    <span class="sem-dot" style="--dot:@(View.ShipSwatch ?? "transparent")"></span>
+
+    <span class="name">@Named</span>
+
+    <button type="button" class="sem-toggle" aria-pressed="@(Manual ? "true" : "false")"
+            title="Manual uses the colour chosen here. Automatic uses the flag's primary colour."
+            @onclick="Flip">
+        @(Manual ? "Manual" : "Automatic")
+    </button>
+</div>
+
+@if (Manual)
+{
+    <div class="sem-swatches">
+        @*
+            No "automatic" tile. Handing the slot back is what the toggle above does, and a second
+            way to do it that left the toggle on Manual would be a state with nothing in it.
+        *@
+        @foreach (var color in Session.Data.Database.FlagColors)
+        {
+            <button type="button"
+                    class="sem-swatch @(color.Key == Design.Flag.ShipColor ? "selected" : null)"
+                    style="background:rgb(@color.Red,@color.Green,@color.Blue)"
+                    title="@Localizer.Prettify(color.Key)"
+                    aria-label="@Localizer.Prettify(color.Key)"
+                    aria-pressed="@(color.Key == Design.Flag.ShipColor ? "true" : "false")"
+                    @onclick="() => Session.Edit(d => d.Flag.ShipColor = color.Key)"></button>
+        }
+    </div>
+}
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    private EmpireDesign Design => Session.Current!;
+
+    private EmpireView View => new(Session, Design);
+
+    /// <summary>Whether the fleet wears a colour of its own rather than the flag's primary.</summary>
+    private bool Manual => Design.Flag.UseShipColor;
+
+    /// <summary>The colour the fleet will be, named, whichever slot it came from.</summary>
+    private string Named =>
+        Design.Flag.DrawnShipColor is { Length: > 0 } key ? Localizer.Prettify(key) : "None";
+
+    /// <summary>
+    /// Turns the choice on or off, leaving the chosen colour in place either way.
+    /// </summary>
+    /// <remarks>
+    /// The game keeps it there too - an empire switched back to Automatic still has its ship colour
+    /// written in slot three - and throwing it away would make the toggle destructive.
+    /// </remarks>
+    private void Flip() => Session.Edit(d => d.Flag.UseShipColor = !d.Flag.UseShipColor);
+}

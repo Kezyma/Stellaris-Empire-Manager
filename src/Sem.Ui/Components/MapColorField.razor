@@ -26,14 +26,10 @@
     <div class="sem-map-preview">
         <MapBlob Class="large" Border="@Shown(Design.Flag.DrawnMapBorder)" Fill="@Shown(Design.Flag.DrawnMapFill)" />
 
-        <p>
-            @Told
-        </p>
-
         <button type="button" class="sem-toggle" aria-pressed="@(Independent ? "true" : "false")"
-                title="When on, this empire's galaxy map border and fill use the two colours chosen here. When off, they are derived from the primary and secondary flag colours."
+                title="Manual uses the border and fill chosen here. Automatic derives them from the primary and secondary flag colours."
                 @onclick="Flip">
-            @(Independent ? "Independent" : "From the flag")
+            @(Independent ? "Manual" : "Automatic")
         </button>
     </div>
 
@@ -96,12 +92,6 @@
 
     private PickerTabs.Tab[] Tabs =>
         [.. Slots.Select((_, at) => new PickerTabs.Tab(Slots[at].Title, Named(at), Shown(Held(at))))];
-
-    /// <summary>What the pair amounts to, said in the words the game uses for it.</summary>
-    private string Told =>
-        Independent
-            ? "This empire's own border and fill, drawn as the map draws them close in. Zoomed out the border widens until it covers the fill."
-            : "Border from the primary flag colour, fill from the secondary - which is what the game does unless told otherwise. Where the two are close it may use the tertiary for the fill instead.";
 
     private string? Held(int at) => Design.Flag.ColorIn(Slots[at].Slot);
 

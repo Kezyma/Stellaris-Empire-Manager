@@ -4631,8 +4631,8 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
-    The pair above the palettes that set it, which is the one place with room to say what the game
-    does to them. Full width of the pickers row, so the two palettes below keep their own widths.
+    What the colour is, above the palette that sets it. Full width of the pickers row, so the
+    palettes below keep their own widths.
 */
 .sem-map-preview {
     display: flex;
@@ -4642,11 +4642,23 @@ button.icon .sem-action-icon { display: block; }
     margin-bottom: var(--space-sm);
 }
 
-.sem-map-preview p {
-    margin: 0;
-    color: var(--text-dim);
-    font-size: var(--text-sm);
-    text-wrap: pretty;
+/*
+   The same line for a colour with no shape to draw it as: a dot, its name, and the switch that
+   decides whether the name was chosen or worked out.
+*/
+.sem-chosen-color {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+}
+
+.sem-chosen-color > .name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /*
@@ -4731,7 +4743,8 @@ button.icon .sem-action-icon { display: block; }
    that measures it with the words on. What that script must not do is written down beside it.
 */
 .sem-table-wrap.compact .sem-chip > button:has(img) > span,
-.sem-table-wrap.compact .sem-cell-chip:has(.sem-icon) > span {
+.sem-table-wrap.compact .sem-cell-chip:has(.sem-icon) > span,
+.sem-table-wrap.compact .sem-cell-chip:has(.sem-dot) > span {
     display: none;
 }
 
@@ -4740,7 +4753,8 @@ button.icon .sem-action-icon { display: block; }
     padding: var(--space-2xs);
 }
 
-.sem-table-wrap.compact .sem-cell-chip:has(.sem-icon) {
+.sem-table-wrap.compact .sem-cell-chip:has(.sem-icon),
+.sem-table-wrap.compact .sem-cell-chip:has(.sem-dot) {
     padding: 1px var(--space-2xs);
 }
 

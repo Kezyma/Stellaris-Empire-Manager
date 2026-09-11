@@ -119,6 +119,7 @@
         LitePart.MapColor => "Map colours",
         LitePart.Room => "Room",
         LitePart.Shipset => "Shipset",
+        LitePart.ShipColor => "Ship colour",
         LitePart.Plan or LitePart.PlanPerks => "Plan",
         LitePart.PlanCivics => "Planned Civics",
         _ => "Advisor Voice",
@@ -269,6 +270,11 @@
 
             case LitePart.Shipset:
                 builder.OpenComponent<ShipsetTab>(180);
+                builder.CloseComponent();
+                break;
+
+            case LitePart.ShipColor:
+                builder.OpenComponent<ShipColorField>(240);
                 builder.CloseComponent();
                 break;
 

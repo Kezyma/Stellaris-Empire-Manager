@@ -170,7 +170,11 @@
     /// written twice: the panel of everything, and the chips saying what has been picked out of it.
     /// </remarks>
     private RenderFragment Mark(EmpireChoice option) => @<text>
-        @if (option.Icon is { Length: > 0 } icon)
+        @if (option.Swatch is { Length: > 0 } paint)
+        {
+            <span class="sem-dot" style="--dot:@paint"></span>
+        }
+        else if (option.Icon is { Length: > 0 } icon)
         {
             <GameIcon Path="@icon" Alt="" />
         }

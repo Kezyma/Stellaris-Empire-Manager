@@ -57,62 +57,11 @@
     </div>
 }
 
-@*
-    And what colour the fleet is, which is a property of the ships and belongs with them.
-
-    Ordinarily it is the flag's primary colour - the game calls that "the fallback ship entity tint"
-    in the header of flags/colors.txt - and an empire that wants something else turns this on and
-    picks. The game keeps this on its own screen too, with its own checkbox, rather than among the
-    flag colours.
-
-    The swatches are drawn in each colour's ship shade, which is a third value against the same name
-    and much the brightest of the three: red is 158,22,22 on a flag, 151,14,18 on the map and
-    255,57,36 on a hull. Ships are lit, so a flag-dark red would disappear against space.
-*@
-<h5 class="sem-subhead apart">Ship colour</h5>
-
-<div class="sem-field spaced">
-    <span class="sem-dot" style="--dot:@(View.ShipSwatch ?? "transparent")"></span>
-
-    <span class="sem-hint">@View.ShipColorTold</span>
-
-    <button type="button" class="sem-toggle" aria-pressed="@(Tinted ? "true" : "false")"
-            title="When on, this empire's ships use the colour chosen here. When off, they use the primary flag colour."
-            @onclick="() => Session.Edit(d => d.Flag.UseShipColor = !d.Flag.UseShipColor)">
-        @(Tinted ? "Chosen" : "From the flag")
-    </button>
-</div>
-
-@if (Tinted)
-{
-    <div class="sem-swatches">
-        @*
-            No "automatic" tile here. Handing the slot back is what the toggle above does, and a
-            second way to do it that leaves the toggle on would be a state with nothing in it.
-        *@
-        @foreach (var color in Session.Data.Database.FlagColors)
-        {
-            <button type="button"
-                    class="sem-swatch @(color.Key == Design.Flag.ShipColor ? "selected" : null)"
-                    style="background:rgb(@color.ShipRed,@color.ShipGreen,@color.ShipBlue)"
-                    title="@Localizer.Prettify(color.Key)"
-                    aria-label="@Localizer.Prettify(color.Key)"
-                    aria-pressed="@(color.Key == Design.Flag.ShipColor ? "true" : "false")"
-                    @onclick="() => Session.Edit(d => d.Flag.ShipColor = color.Key)"></button>
-        }
-    </div>
-}
-
 @code {
     [CascadingParameter]
     public required DesignSession Session { get; set; }
 
     private EmpireDesign Design => Session.Current!;
-
-    private EmpireView View => new(Session, Design);
-
-    /// <summary>Whether the fleet wears a colour of its own rather than the flag's primary.</summary>
-    private bool Tinted => Design.Flag.UseShipColor;
 
     private readonly RequirementEvaluator _evaluator = new();
 
