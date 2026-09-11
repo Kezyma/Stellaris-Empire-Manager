@@ -9,6 +9,12 @@ rem  one step a push to main cannot do for itself: re-read the game, then build 
 rem  came out, so that whatever is committed is what the site will be published from.
 rem
 rem  Run it after the game updates, after the extractor changes, and before pushing either.
+rem
+rem  It deliberately leaves --wardrobe off. That flag re-bakes 8,629 ruler-appearance images,
+rem  which is most of the run time and almost never changes - the whole of 4.5 moved one crop
+rem  box. But "almost never" is not never, so run it by hand after a major patch:
+rem
+rem      dotnet run --project src\Sem.Cli -c Release -- extract --web --wardrobe
 
 cd /d "%~dp0"
 

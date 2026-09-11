@@ -45598,8 +45598,8 @@
           {
             "texture": "gfx/models/portraits/paragon/paragon_01_renown_portrait_01.dds",
             "image": "portraits/wardrobe/par_renown_01/0-paragon_01_renown_portrait_01.png",
-            "left": 93,
-            "top": 22
+            "left": 108,
+            "top": 62
           }
         ]
       }
