@@ -43,7 +43,13 @@ public sealed class ImagePipelineTests
 
         var image = Read("flags/human/flag_human_1.dds");
 
-        Assert.Equal((256, 256), (image.Width, image.Height));
+        // Halved in 4.5, which is why the extracted flag art went from 8.8 MB to 5.5 MB in one
+        // patch. Asserted as a square of whatever it is rather than as a number, because the size
+        // is the game's to choose and the thing worth pinning is that a block-compressed emblem
+        // reads at all and keeps its alpha.
+        Assert.Equal(image.Width, image.Height);
+        Assert.InRange(image.Width, 64, 512);
+        Assert.Equal(image.Width * image.Height * 4, image.Pixels.Length);
 
         var alphas = image.Pixels.Where((_, i) => i % 4 == 3).ToList();
         Assert.Contains(alphas, a => a < 20);

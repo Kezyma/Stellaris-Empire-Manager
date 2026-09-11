@@ -477,37 +477,102 @@ public sealed class EmpireDesignTests
         Assert.Equal(["ethic_fanatic_militarist", "ethic_xenophobe"], design.Ethics);
     }
 
+    /// <summary>
+    /// The same design as Stellaris 4.5 writes it: six colour slots rather than four.
+    /// </summary>
+    /// <remarks>
+    /// Built from <see cref="Sample"/> rather than written out again, so the two differ in exactly
+    /// the thing under test and nothing else. <see cref="Sample"/> stays as it is - a file an older
+    /// game wrote is still a file somebody has, and reading it is a guarantee worth a fixture.
+    /// </remarks>
+    private static readonly string Modern = Sample.Replace(
+        "\t\t\t\"ship_steel\"\r\n\t\t\t\"red\"\r\n\t\t\t\"black\"\r\n\t\t\t\"null\"\r\n",
+        "\t\t\t\"ship_steel\"\r\n\t\t\t\"red\"\r\n\t\t\t\"black\"\r\n" +
+        "\t\t\t\"teal\"\r\n\t\t\t\"green\"\r\n\t\t\t\"orange\"\r\n",
+        StringComparison.Ordinal);
+
     [Fact]
-    public void SettingFlagColoursPadsToFourSlots()
+    public void SettingFlagColoursPadsToSixSlots()
     {
-        var file = EmpireDesignsFile.LoadText(Sample);
+        var file = EmpireDesignsFile.LoadText(Modern);
         file.Designs[0].Flag.SetColors(["blue", "white"]);
 
-        Assert.Equal(["blue", "white", "null", "null"], file.Designs[0].Flag.Colors);
+        Assert.Equal(["blue", "white", "null", "null", "null", "null"], file.Designs[0].Flag.Colors);
     }
 
+    /// <summary>Each slot is the one the game's own documentation says it is.</summary>
+    /// <remarks>
+    /// Quoted in <see cref="EmpireFlag.PrimarySlot"/> from the header of <c>flags/colors.txt</c>.
+    /// Worth pinning by name rather than by index, because the indices have moved twice.
+    /// </remarks>
     [Fact]
-    public void SettingMoreThanFourFlagColoursIsRejected()
+    public void EverySlotIsTheOneTheGameDocuments()
     {
-        var file = EmpireDesignsFile.LoadText(Sample);
+        var flag = EmpireDesignsFile.LoadText(Modern).Designs[0].Flag;
 
-        Assert.Throws<ArgumentException>(
-            () => file.Designs[0].Flag.SetColors(["a", "b", "c", "d", "e"]));
-    }
-
-    /// <summary>The map's two colours are the third and fourth slots, in that order.</summary>
-    [Fact]
-    public void TheMapsColoursAreTheThirdAndFourthSlots()
-    {
-        var file = EmpireDesignsFile.LoadText(Sample);
-        var flag = file.Designs[0].Flag;
-
-        flag.MapBorder = "green";
-        flag.MapFill = "orange";
-
-        Assert.Equal(["ship_steel", "red", "green", "orange"], flag.Colors);
+        Assert.Equal("ship_steel", flag.Primary);
+        Assert.Equal("red", flag.Secondary);
+        Assert.Equal("black", flag.Tertiary);
+        Assert.Equal("teal", flag.ShipColor);
         Assert.Equal("green", flag.MapBorder);
         Assert.Equal("orange", flag.MapFill);
+    }
+
+    /// <summary>A file an older game wrote still reads, with the slots it never had left empty.</summary>
+    [Fact]
+    public void AFourSlotFileStillReads()
+    {
+        var flag = EmpireDesignsFile.LoadText(Sample).Designs[0].Flag;
+
+        Assert.Equal(["ship_steel", "red", "black", "null"], flag.Colors);
+        Assert.Equal("black", flag.Tertiary);
+        Assert.Null(flag.ShipColor);
+        Assert.Null(flag.MapBorder);
+        Assert.Null(flag.MapFill);
+    }
+
+    /// <summary>And grows to six the first time something is written, as the game itself grew it.</summary>
+    /// <remarks>
+    /// On an edit and not on a read. Merely listing empires must not rewrite the file, which is why
+    /// nothing on the reading path calls <c>SetColors</c>.
+    /// </remarks>
+    [Fact]
+    public void EditingAFourSlotFileGrowsItToSix()
+    {
+        var file = EmpireDesignsFile.LoadText(Sample);
+
+        Assert.Equal(4, file.Designs[0].Flag.Colors.Count);
+        Assert.Equal(Sample, file.Document.ToText());
+
+        file.Designs[0].Flag.Primary = "blue";
+
+        Assert.Equal(["blue", "red", "black", "null", "null", "null"], file.Designs[0].Flag.Colors);
+    }
+
+    /// <summary>
+    /// A block wider than this version understands keeps every slot it arrived with.
+    /// </summary>
+    /// <remarks>
+    /// The regression that made this urgent: the writer used to delete every entry past the fourth,
+    /// so opening a 4.5 file and changing one flag colour threw away the ship tint and both map
+    /// colours without a word. Written against seven slots rather than six, because the guarantee is
+    /// not "keep the two 4.5 added" - it is that a file from a version that knows more than this one
+    /// survives being edited by it.
+    /// </remarks>
+    [Fact]
+    public void AWiderBlockKeepsEverySlotItArrivedWith()
+    {
+        var wider = Modern.Replace(
+            "\t\t\t\"orange\"\r\n",
+            "\t\t\t\"orange\"\r\n\t\t\t\"purple\"\r\n",
+            StringComparison.Ordinal);
+
+        var file = EmpireDesignsFile.LoadText(wider);
+        file.Designs[0].Flag.Primary = "blue";
+
+        Assert.Equal(
+            ["blue", "red", "black", "teal", "green", "orange", "purple"],
+            file.Designs[0].Flag.Colors);
     }
 
     /// <summary>
@@ -516,42 +581,41 @@ public sealed class EmpireDesignTests
     [Fact]
     public void AFillIsTheOnlyThingAFilledFileGains()
     {
-        var file = EmpireDesignsFile.LoadText(Sample);
-        file.Designs[0].Flag.MapFill = "orange";
+        var file = EmpireDesignsFile.LoadText(Modern);
+        file.Designs[0].Flag.MapFill = "pink";
 
         var text = file.Document.ToText();
 
-        Assert.Equal(Sample.Replace("\"null\"", "\"orange\"", StringComparison.Ordinal), text);
-        Assert.Equal("orange", EmpireDesignsFile.LoadText(text).Designs[0].Flag.MapFill);
+        Assert.Equal(Modern.Replace("\"orange\"", "\"pink\"", StringComparison.Ordinal), text);
+        Assert.Equal("pink", EmpireDesignsFile.LoadText(text).Designs[0].Flag.MapFill);
     }
 
     [Fact]
     public void HandingAColourBackToTheGameLeavesTheFileAsItWas()
     {
-        var file = EmpireDesignsFile.LoadText(Sample);
+        var file = EmpireDesignsFile.LoadText(Modern);
+        file.Designs[0].Flag.MapFill = "pink";
+
         file.Designs[0].Flag.MapFill = "orange";
 
-        file.Designs[0].Flag.MapFill = null;
-
-        Assert.Null(file.Designs[0].Flag.MapFill);
-        Assert.Equal(Sample, file.Document.ToText());
+        Assert.Equal("orange", file.Designs[0].Flag.MapFill);
+        Assert.Equal(Modern, file.Document.ToText());
     }
 
     /// <summary>
-    /// The flag editor rewrites a colour by name and the two it does not offer come through, which
-    /// is what stops editing a flag repainting the empire's territory.
+    /// The flag editor rewrites a colour by name and the four it does not offer come through, which
+    /// is what stops editing a flag repainting the empire's territory or its fleet.
     /// </summary>
     [Fact]
-    public void ChangingAFlagColourCarriesTheMapsThrough()
+    public void ChangingAFlagColourCarriesTheOthersThrough()
     {
-        var file = EmpireDesignsFile.LoadText(Sample);
-        var flag = file.Designs[0].Flag;
-        flag.MapFill = "orange";
+        var flag = EmpireDesignsFile.LoadText(Modern).Designs[0].Flag;
 
-        flag.SetColor(0, "blue");
+        flag.SetColor(EmpireFlag.PrimarySlot, "blue");
 
-        Assert.Equal(["blue", "red", "black", "orange"], flag.Colors);
-        Assert.Equal("black", flag.MapBorder);
+        Assert.Equal(["blue", "red", "black", "teal", "green", "orange"], flag.Colors);
+        Assert.Equal("teal", flag.ShipColor);
+        Assert.Equal("green", flag.MapBorder);
         Assert.Equal("orange", flag.MapFill);
     }
 
@@ -562,14 +626,93 @@ public sealed class EmpireDesignTests
     [Fact]
     public void AnEmptyMapColourReadsAsNone()
     {
-        var file = EmpireDesignsFile.LoadText(Sample);
-        var flag = file.Designs[0].Flag;
+        var flag = EmpireDesignsFile.LoadText(Modern).Designs[0].Flag;
 
         flag.MapBorder = null;
 
         Assert.Null(flag.MapBorder);
-        Assert.Null(flag.MapFill);
-        Assert.Equal(["ship_steel", "red", "null", "null"], flag.Colors);
+        Assert.Equal(["ship_steel", "red", "black", "teal", "null", "orange"], flag.Colors);
+    }
+
+    /// <summary>
+    /// Both switches are written as <c>yes</c> or not written at all, which is what the game does.
+    /// </summary>
+    /// <remarks>
+    /// A stray <c>use_map_color=no</c> would be a line the game never writes, appearing in every
+    /// empire that has never touched the switch - and a file that no longer round-trips byte for
+    /// byte is the one thing this layer promises it will.
+    /// </remarks>
+    [Theory]
+    [InlineData("use_map_color")]
+    [InlineData("use_ship_color")]
+    public void ASwitchIsWrittenAsYesOrNotAtAll(string key)
+    {
+        var file = EmpireDesignsFile.LoadText(Modern);
+        var flag = file.Designs[0].Flag;
+
+        void Set(bool value)
+        {
+            if (key == "use_map_color")
+            {
+                flag.UseMapColor = value;
+            }
+            else
+            {
+                flag.UseShipColor = value;
+            }
+        }
+
+        Assert.DoesNotContain(key, file.Document.ToText(), StringComparison.Ordinal);
+
+        Set(true);
+        Assert.Contains($"{key}=yes", file.Document.ToText(), StringComparison.Ordinal);
+
+        Set(false);
+        Assert.DoesNotContain(key, file.Document.ToText(), StringComparison.Ordinal);
+        Assert.Equal(Modern, file.Document.ToText());
+    }
+
+    /// <summary>
+    /// What the game will draw: the flag's colours, until a switch says otherwise.
+    /// </summary>
+    /// <remarks>
+    /// The map derives border from the primary and fill from the secondary, and the fleet takes the
+    /// primary, unless the matching switch is on. Stated in the game's own words in
+    /// <c>USE_MAP_COLOR_TOOLTIP</c> and in the header of <c>flags/colors.txt</c>.
+    /// </remarks>
+    [Fact]
+    public void TheDrawnColoursFollowTheSwitches()
+    {
+        var flag = EmpireDesignsFile.LoadText(Modern).Designs[0].Flag;
+
+        Assert.Equal("ship_steel", flag.DrawnMapBorder);
+        Assert.Equal("red", flag.DrawnMapFill);
+        Assert.Equal("ship_steel", flag.DrawnShipColor);
+
+        flag.UseMapColor = true;
+        flag.UseShipColor = true;
+
+        Assert.Equal("green", flag.DrawnMapBorder);
+        Assert.Equal("orange", flag.DrawnMapFill);
+        Assert.Equal("teal", flag.DrawnShipColor);
+    }
+
+    /// <summary>
+    /// A switch turned on over an empty slot falls back rather than leaving the empire colourless.
+    /// </summary>
+    [Fact]
+    public void AnEmptyChosenSlotFallsBackToTheFlag()
+    {
+        var flag = EmpireDesignsFile.LoadText(Modern).Designs[0].Flag;
+
+        flag.UseMapColor = true;
+        flag.MapBorder = null;
+        flag.UseShipColor = true;
+        flag.ShipColor = null;
+
+        Assert.Equal("ship_steel", flag.DrawnMapBorder);
+        Assert.Equal("orange", flag.DrawnMapFill);
+        Assert.Equal("ship_steel", flag.DrawnShipColor);
     }
 
     [Fact]

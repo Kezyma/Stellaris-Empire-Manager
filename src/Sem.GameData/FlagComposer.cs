@@ -18,6 +18,12 @@ namespace Sem.GameData;
 public static class FlagComposer
 {
     /// <summary>The placeholder an unused colour slot holds.</summary>
+    /// <remarks>
+    /// The same word as <c>Sem.Designs.EmpireFlag.EmptyColor</c>, said twice because neither project
+    /// references the other - this one reads game data and that one reads the player's file, and
+    /// they meet only in <c>Sem.Rules</c>. The two must agree; there is nowhere to put it that would
+    /// make them.
+    /// </remarks>
     public const string EmptyColor = "null";
 
     /// <summary>What is used when a design names a colour the game does not define.</summary>
@@ -33,7 +39,11 @@ public static class FlagComposer
     /// The emblem laid over it, where transparency decides what shows through. May be null for a
     /// flag that is only a background.
     /// </param>
-    /// <param name="colors">The design's four colour slots, unused ones holding the placeholder.</param>
+    /// <param name="colors">
+    /// The design's colour slots, unused ones holding the placeholder. Only the first three are
+    /// read: a flag is drawn from the primary, secondary and tertiary, and the slots after them
+    /// belong to the fleet and the galaxy map. See docs/flag-colours.md.
+    /// </param>
     /// <param name="palette">The named colours the game defines.</param>
     /// <param name="width">Width of the output.</param>
     /// <param name="height">Height of the output.</param>

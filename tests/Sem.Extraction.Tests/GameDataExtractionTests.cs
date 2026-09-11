@@ -31,7 +31,7 @@ public sealed class GameDataExtractionTests
         Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
         var database = Database.Value;
 
-        Assert.Equal("v4.4.6", database.GameVersion);
+        Assert.Equal("v4.5.0", database.GameVersion);
 
         (string What, int Expected, int Actual)[] counts =
         [

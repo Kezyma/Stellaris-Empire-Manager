@@ -334,21 +334,46 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
     /// not written down anywhere this app can read - so the dot is drawn hollow and says so, which
     /// is honest where a colour taken from the flag would only look like an answer.
     /// </remarks>
-    public string? MapBorderSwatch => Drawn(_design.Flag.MapBorder);
+    public string? MapBorderSwatch => Drawn(_design.Flag.DrawnMapBorder);
 
     /// <summary>And what fills the territory inside it, on the same terms.</summary>
-    public string? MapFillSwatch => Drawn(_design.Flag.MapFill);
+    public string? MapFillSwatch => Drawn(_design.Flag.DrawnMapFill);
+
+    /// <summary>
+    /// The tint on the empire's ships, in the shade a hull takes rather than a flag or a border.
+    /// </summary>
+    /// <remarks>
+    /// A third column against the same names, and a very different one: <c>red</c> is 158,22,22 on a
+    /// flag, 151,14,18 on the map and 255,57,36 on a hull. Ships are lit, so the game keeps a bright
+    /// version of every colour for them.
+    /// </remarks>
+    public string? ShipSwatch =>
+        Palette(_design.Flag.DrawnShipColor) is { } color
+            ? $"rgb({color.ShipRed},{color.ShipGreen},{color.ShipBlue})"
+            : null;
 
     /// <summary>What the pair amounts to, for a control with no room to name either.</summary>
+    /// <remarks>
+    /// It says where the colours came from as well as what they are, because "derived" and "chosen"
+    /// look identical on the map and are entirely different to edit. It used to say "Automatic" for
+    /// both, which was true of the slots and useless about the empire - seven of eight empires read
+    /// the same way and none of them was actually colourless.
+    /// </remarks>
     public string MapColorsTold =>
-        (Told(_design.Flag.MapBorder), Told(_design.Flag.MapFill)) switch
-        {
-            ("Automatic", "Automatic") => "Map colours: the game chooses both. Press to choose.",
-            var (border, fill) => $"Map colours: {border} border, {fill} fill. Press to change.",
-        };
+        _design.Flag.UseMapColor
+            ? $"Map colours: {Told(_design.Flag.DrawnMapBorder)} border, " +
+              $"{Told(_design.Flag.DrawnMapFill)} fill, chosen. Press to change."
+            : $"Map colours: {Told(_design.Flag.DrawnMapBorder)} border, " +
+              $"{Told(_design.Flag.DrawnMapFill)} fill, from the flag. Press to change.";
+
+    /// <summary>And the same for the fleet.</summary>
+    public string ShipColorTold =>
+        _design.Flag.UseShipColor
+            ? $"Ship colour: {Told(_design.Flag.DrawnShipColor)}, chosen."
+            : $"Ship colour: {Told(_design.Flag.DrawnShipColor)}, from the flag's primary colour.";
 
     private static string Told(string? key) =>
-        key is { Length: > 0 } named ? Localizer.Prettify(named) : "Automatic";
+        key is { Length: > 0 } named ? Localizer.Prettify(named) : "the game's choice";
 
     private string? Drawn(string? key) =>
         Palette(key) is { } color ? $"rgb({color.MapRed},{color.MapGreen},{color.MapBlue})" : null;

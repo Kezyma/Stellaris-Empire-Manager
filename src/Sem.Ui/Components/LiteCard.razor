@@ -280,6 +280,25 @@
                             @Row(Session.Localizer.Heading("SHIPSETS_LABEL", "Shipset"),
                                  View.CultureName(Design.GraphicalCulture), LitePart.Shipset)
 
+                            @*
+                                What colour the fleet is. A dot rather than a row with a name,
+                                because the name is nearly always the flag's primary colour said
+                                twice - the fleet takes it unless the empire says otherwise - and
+                                the colour is the part worth seeing at a glance.
+                            *@
+                            <div class="sem-lite-chips">
+                                <span class="heading">Ship colour</span>
+
+                                <div class="chips">
+                                    <button type="button" class="value map"
+                                            title="@View.ShipColorTold" aria-label="@View.ShipColorTold"
+                                            @onclick="() => Open(LitePart.Shipset)">
+                                        <span class="sem-dot"
+                                              style="--dot:@(View.ShipSwatch ?? "transparent")"></span>
+                                    </button>
+                                </div>
+                            </div>
+
                             @* Edited where it is read, as the flag sets are. *@
                             <div class="sem-lite-chips">
                                 <span class="heading">@Session.Localizer.Heading("SHIP_PREFIX", "Ship Prefix")</span>

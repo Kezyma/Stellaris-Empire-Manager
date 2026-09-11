@@ -1,67 +1,74 @@
 @*
-    The two colours the galaxy map reads: the empire's border, and the territory inside it.
+    What the galaxy map draws this empire as, and the choice of whether to say so directly.
 
-    Kept in the flag's third and fourth colour slots, which is where the game keeps them, and edited
-    apart from the flag because neither is one. A background is three shapes packed into one file's
-    red, green and blue channels and the shader tints each with one of the first three - but across
-    all sixty-three backgrounds the game ships, the brightest pixel in any blue channel is 11 of 255,
-    so the third draws nothing; and the shader's fourth line is commented out, so the fourth draws
-    nothing either. Looking for them in the flag's shader was looking in the wrong file.
+    The map takes two colours. Ordinarily it derives them from the flag - border from the primary,
+    fill from the secondary - and the empire's own two map slots go unread. Turning on Independent
+    Map Color reads them instead. The game states it twice, in the header of flags/colors.txt and in
+    USE_MAP_COLOR_TOOLTIP: "When disabled, they are derived from the Primary and Secondary Flag
+    colors."
 
-    The same arrangement as the flag's own colours: two palettes side by side where there is room and
-    one at a time behind a pair of tabs where there is not. They are the same kind of choice made
-    twice, and a reader who has met one has met both.
+    So the field always answers "what colour is this empire on the map", and the toggle decides which
+    editor sits under that answer:
 
-    Drawn in the map colours rather than the flag colours, because the game keeps a pair against
-    every name and this is the half that will be on screen. "Red" is not the same red in both.
+      off - the tertiary colour, which is the one slot with nowhere else to live. It draws nothing on
+            a flag (no background the game ships has anything in its blue channel), and the game
+            substitutes it for the fill when the secondary is too close to the primary. When that
+            happens is not knowable from the files - see docs/flag-colours.md - but the colour is
+            still the player's to choose, and this is the only place they can choose it.
+
+      on  - the two map colours themselves, which then decide the map outright.
+
+    Drawn in the map shades rather than the flag shades throughout, because the game keeps a pair
+    against every name and this is the half that will be on screen. "Red" is not the same red in both.
 *@
 
 <div class="sem-pickers colors">
-    @*
-        The pair as the map will draw it, above the two palettes that set it. The swatches are the
-        palette's own values and have to stay flat to be picked from; what the game does with a pair
-        of them - half-alpha interior, black rim, border swallowing the middle - is not visible in
-        either swatch alone, and was the whole of the surprise. See MapBlob.razor.
-    *@
     <div class="sem-map-preview">
-        <MapBlob Class="large" Border="@Shown(0)" Fill="@Shown(1)" />
+        <MapBlob Class="large" Border="@Shown(Design.Flag.DrawnMapBorder)" Fill="@Shown(Design.Flag.DrawnMapFill)" />
 
         <p>
-            @Named(0) border, @Named(1) fill, as the map draws them close in. Zoomed out the border
-            widens until it covers the fill, and the game may shift either to keep empires apart.
+            @Told
         </p>
+
+        <button type="button" class="sem-toggle" aria-pressed="@(Independent ? "true" : "false")"
+                title="When on, this empire's galaxy map border and fill use the two colours chosen here. When off, they are derived from the primary and secondary flag colours."
+                @onclick="Flip">
+            @(Independent ? "Independent" : "From the flag")
+        </button>
     </div>
 
-    <PickerTabs Label="Map colours" Selected="_slot" SelectedChanged="s => _slot = s" Tabs="Tabs" />
+    @if (Independent)
+    {
+        <PickerTabs Label="Map colours" Selected="_slot" SelectedChanged="s => _slot = s" Tabs="Tabs" />
+    }
 
     @for (var at = 0; at < Slots.Length; at++)
     {
-        var slot = at;
+        var index = at;
 
-        <section class="sem-picker @(_slot == slot ? null : "away")">
-            <PickerHead Tab="Tabs[slot]" />
+        <section class="sem-picker @(Independent && _slot != index ? "away" : null)">
+            <PickerHead Tab="Tabs[index]" />
 
             <div class="sem-swatches">
                 @*
-                    Letting the game decide is the ordinary answer - nearly every empire does, and
-                    all but two leave the fill alone - so it is a tile at the front rather than a
-                    way of undoing a choice already made.
+                    Letting the game decide is the ordinary answer, so it is a tile at the front
+                    rather than a way of undoing a choice already made.
                 *@
                 <button type="button"
-                        class="sem-swatch none @(Held(slot) is null ? "selected" : null)"
+                        class="sem-swatch none @(Held(index) is null ? "selected" : null)"
                         title="Automatic" aria-label="Automatic"
-                        aria-pressed="@(Held(slot) is null ? "true" : "false")"
-                        @onclick="() => Set(slot, null)"></button>
+                        aria-pressed="@(Held(index) is null ? "true" : "false")"
+                        @onclick="() => Set(index, null)"></button>
 
                 @foreach (var color in Session.Data.Database.FlagColors)
                 {
                     <button type="button"
-                            class="sem-swatch @(color.Key == Held(slot) ? "selected" : null)"
+                            class="sem-swatch @(color.Key == Held(index) ? "selected" : null)"
                             style="background:@Swatch(color)"
                             title="@Localizer.Prettify(color.Key)"
                             aria-label="@Localizer.Prettify(color.Key)"
-                            aria-pressed="@(color.Key == Held(slot) ? "true" : "false")"
-                            @onclick="() => Set(slot, color.Key)"></button>
+                            aria-pressed="@(color.Key == Held(index) ? "true" : "false")"
+                            @onclick="() => Set(index, color.Key)"></button>
                 }
             </div>
         </section>
@@ -74,54 +81,57 @@
 
     private EmpireDesign Design => Session.Current!;
 
-    /// <summary>The two slots, in the order the file writes them.</summary>
-    private static readonly (int Slot, string Title)[] Slots =
-    [
-        (EmpireFlag.MapBorderSlot, "Border"),
-        (EmpireFlag.MapFillSlot, "Fill"),
-    ];
+    private bool Independent => Design.Flag.UseMapColor;
 
     /// <summary>Which palette is on show, where there is room for only one.</summary>
     private int _slot;
 
-    /// <summary>The two palettes, named and with the colour each holds, for tabs and heads alike.</summary>
+    /// <summary>
+    /// The slots this field edits, which is not the same set either side of the toggle.
+    /// </summary>
+    private (int Slot, string Title)[] Slots =>
+        Independent
+            ? [(EmpireFlag.MapBorderSlot, "Border"), (EmpireFlag.MapFillSlot, "Fill")]
+            : [(EmpireFlag.TertiarySlot, "Tertiary")];
+
     private PickerTabs.Tab[] Tabs =>
-    [
-        .. Slots.Select((s, at) => new PickerTabs.Tab(s.Title, Named(at), Shown(at)))
-    ];
+        [.. Slots.Select((_, at) => new PickerTabs.Tab(Slots[at].Title, Named(at), Shown(Held(at))))];
 
-    /// <summary>What a slot holds, or nothing where the game is left to choose.</summary>
-    private string? Held(int at) => Design.Flag switch
-    {
-        var flag when Slots[at].Slot == EmpireFlag.MapBorderSlot => flag.MapBorder,
-        var flag => flag.MapFill,
-    };
+    /// <summary>What the pair amounts to, said in the words the game uses for it.</summary>
+    private string Told =>
+        Independent
+            ? "This empire's own border and fill, drawn as the map draws them close in. Zoomed out the border widens until it covers the fill."
+            : "Border from the primary flag colour, fill from the secondary - which is what the game does unless told otherwise. Where the two are close it may use the tertiary for the fill instead.";
 
-    /// <summary>That, named the way the swatches name themselves.</summary>
+    private string? Held(int at) => Design.Flag.ColorIn(Slots[at].Slot);
+
     private string Named(int at) =>
         Held(at) is { Length: > 0 } key ? Localizer.Prettify(key) : "Automatic";
 
-    /// <summary>And as CSS, for the dot beside the name.</summary>
-    private string? Shown(int at) =>
-        Held(at) is { } key &&
-        Session.Data.Database.FlagColors.FirstOrDefault(c => c.Key == key) is { } color
+    /// <summary>A colour in the shade the map will draw it, which is not the flag's.</summary>
+    private string? Shown(string? key) =>
+        key is { Length: > 0 } named &&
+        Session.Data.Database.FlagColors.FirstOrDefault(c => c.Key == named) is { } color
             ? Swatch(color)
             : null;
 
-    /// <summary>A swatch in the shade the map will actually draw, which is not the flag's.</summary>
     private static string Swatch(FlagColorDefinition color) =>
         $"rgb({color.MapRed},{color.MapGreen},{color.MapBlue})";
 
     private void Set(int at, string? value) =>
-        Session.Edit(d =>
-        {
-            if (Slots[at].Slot == EmpireFlag.MapBorderSlot)
-            {
-                d.Flag.MapBorder = value;
-            }
-            else
-            {
-                d.Flag.MapFill = value;
-            }
-        });
+        Session.Edit(d => d.Flag.SetColor(Slots[at].Slot, value));
+
+    /// <summary>
+    /// Turns the override on or off, and puts the tab back at the first palette.
+    /// </summary>
+    /// <remarks>
+    /// The two colours are left in place when it is turned off. The game keeps them there too - an
+    /// empire switched back still has its pair written in slots four and five - and throwing them
+    /// away would make the toggle destructive, which a toggle should never be.
+    /// </remarks>
+    private void Flip()
+    {
+        Session.Edit(d => d.Flag.UseMapColor = !d.Flag.UseMapColor);
+        _slot = 0;
+    }
 }
