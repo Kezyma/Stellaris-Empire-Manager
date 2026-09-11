@@ -330,16 +330,24 @@
     private const int EditableColorSlots = 3;
 
     /// <summary>
-    /// What the game calls each colour slot.
+    /// What each colour slot is called on its tab.
     /// </summary>
     /// <remarks>
-    /// The game's own words, which its flag editor puts on both of these as buttons.
+    /// One word each, rather than the game's own "Primary Flag Color" and "Secondary Flag Color".
+    /// The game says those on buttons stacked down a column, where their length costs nothing; these
+    /// are three tabs side by side, and a title is deliberately the one part of a tab that will not
+    /// shrink - so three of the long form could not fit a 375px screen and put a horizontal
+    /// scrollbar on the dialog.
+    ///
+    /// The same shortening the map colours already use, where the game's "Map Border Color" is a tab
+    /// headed Border. Nothing is lost: the panel above says these are the flag's colours, and every
+    /// swatch names itself on hover.
     /// </remarks>
-    private string ColorLabel(int slot) => slot switch
+    private static string ColorLabel(int slot) => slot switch
     {
-        EmpireFlag.PrimarySlot => Session.Localizer.Label("PRIMARY_COLOR", "Primary Flag Color"),
-        EmpireFlag.SecondarySlot => Session.Localizer.Label("SECONDARY_COLOR", "Secondary Flag Color"),
-        EmpireFlag.TertiarySlot => Session.Localizer.Label("TERTIARY_COLOR", "Tertiary Color"),
+        EmpireFlag.PrimarySlot => "Primary",
+        EmpireFlag.SecondarySlot => "Secondary",
+        EmpireFlag.TertiarySlot => "Tertiary",
         _ => string.Empty,
     };
 

@@ -3590,6 +3590,23 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
+   Three tabs have to fit a phone, and two rules above conspire to stop them: a tab's title is
+   deliberately flex:none - "never squeezed", because the title is what the list is - and the colour
+   dot beside it cannot shrink either. So a tab's narrowest is its title plus its dot plus its
+   padding, and three of those at the usual --space-lg came to 338px inside a 329px dialog, which is
+   a horizontal scrollbar on a 375px screen.
+
+   The padding is the part worth giving up. It buys nothing at three tabs that it did at two, and
+   taking it back to --space-sm leaves the title and the dot untouched - which is the order these
+   things should be sacrificed in.
+*/
+.sem-pickers.colors.three > .sem-picker-tabs button {
+    gap: var(--space-sm);
+    padding-right: var(--space-sm);
+    padding-left: var(--space-sm);
+}
+
+/*
    Three of them, which is the flag: primary, secondary and tertiary, one per channel of the
    background.
 
@@ -3610,7 +3627,15 @@ button.icon .sem-action-icon { display: block; }
 @container (min-width: 460px) and (max-width: 694px) {
     .sem-pickers.colors.three > .sem-picker-tabs { display: flex; }
 
-    .sem-pickers.colors.three > .sem-picker { flex-basis: auto; }
+    /*
+       A whole row each, which is what the base rule says and what this has to say again to beat the
+       two-column rule above it. Written as flex-basis:auto once, which was wrong in a way worth
+       recording: auto means "as wide as the content", and a palette's content is seventy-two
+       swatches in a row, so each picker claimed a max-content width of well over a thousand pixels.
+       That inflated the block's own intrinsic width, which stopped it wrapping under the flag - it
+       sat beside it instead - and put a horizontal scrollbar on the dialog at every narrow size.
+    */
+    .sem-pickers.colors.three > .sem-picker { flex: 1 0 100%; }
 
     .sem-pickers.colors.three > .sem-picker + .sem-picker { margin-left: 0; }
 
