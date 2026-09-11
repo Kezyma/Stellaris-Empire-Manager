@@ -28,23 +28,39 @@
     </button>
 </div>
 
+@*
+    One palette, wearing the same arrangement the flag's and the map's wear: a strip above it saying
+    what it is and what it holds, and the palette scrolling in the frame the strip opens. It has
+    nothing to switch between, and it is drawn all the same - the strip is what labels the list, and
+    without it a lone palette is seventy-two unexplained squares.
+*@
 @if (Manual)
 {
-    <div class="sem-swatches">
-        @*
-            No "automatic" tile. Handing the slot back is what the toggle above does, and a second
-            way to do it that left the toggle on Manual would be a state with nothing in it.
-        *@
-        @foreach (var color in Session.Data.Database.FlagColors)
-        {
-            <button type="button"
-                    class="sem-swatch @(color.Key == Design.Flag.ShipColor ? "selected" : null)"
-                    style="background:rgb(@color.Red,@color.Green,@color.Blue)"
-                    title="@Localizer.Prettify(color.Key)"
-                    aria-label="@Localizer.Prettify(color.Key)"
-                    aria-pressed="@(color.Key == Design.Flag.ShipColor ? "true" : "false")"
-                    @onclick="() => Session.Edit(d => d.Flag.ShipColor = color.Key)"></button>
-        }
+    <div class="sem-pickers colors">
+        @* No SelectedChanged: with one tab the strip can only ever reselect what is already open. *@
+        <PickerTabs Label="Ship colour" Selected="0" Tabs="Tabs" />
+
+        <section class="sem-picker">
+            <PickerHead Tab="Tabs[0]" />
+
+            <div class="sem-swatches">
+                @*
+                    No "automatic" tile. Handing the slot back is what the toggle above does, and a
+                    second way to do it that left the toggle on Manual would be a state with nothing
+                    in it.
+                *@
+                @foreach (var color in Session.Data.Database.FlagColors)
+                {
+                    <button type="button"
+                            class="sem-swatch @(color.Key == Design.Flag.ShipColor ? "selected" : null)"
+                            style="background:rgb(@color.Red,@color.Green,@color.Blue)"
+                            title="@Localizer.Prettify(color.Key)"
+                            aria-label="@Localizer.Prettify(color.Key)"
+                            aria-pressed="@(color.Key == Design.Flag.ShipColor ? "true" : "false")"
+                            @onclick="() => Session.Edit(d => d.Flag.ShipColor = color.Key)"></button>
+                }
+            </div>
+        </section>
     </div>
 }
 
@@ -58,6 +74,10 @@
 
     /// <summary>Whether the fleet wears a colour of its own rather than the flag's primary.</summary>
     private bool Manual => Design.Flag.UseShipColor;
+
+    /// <summary>The one palette, named and carrying the colour it holds.</summary>
+    private PickerTabs.Tab[] Tabs =>
+        [new PickerTabs.Tab("Ship colour", Named, View.ShipSwatch)];
 
     /// <summary>The colour the fleet will be, named, whichever slot it came from.</summary>
     private string Named =>

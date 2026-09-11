@@ -3590,6 +3590,42 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
+   Three of them, which is the flag: primary, secondary and tertiary, one per channel of the
+   background.
+
+   695px, and the number is arithmetic rather than taste. A palette wants eight swatches to a row,
+   which is the shape the game's own colour grid uses: eight at 24px, seven 3px gaps between them
+   and 6px of padding either side is 225. Three of those with a 10px gap between the columns is
+   3 x 225 + 2 x 10 = 695. Below it the three go back to tabs rather than becoming three columns of
+   seven, because a palette that wraps at seven puts the last row out of step with the game's and
+   there is no reading it against a screenshot any more.
+
+   The two-column rules above would otherwise apply here and wrap the third underneath, alone at
+   half width - so the band between 460 and 695 has to put the tabs back explicitly.
+
+   A class rather than :has(.sem-picker:nth-child(3)), because the count is known where the markup
+   is written and reading it back out of the DOM is a rule that silently stops applying the day
+   something else is added to the row.
+*/
+@container (min-width: 460px) and (max-width: 694px) {
+    .sem-pickers.colors.three > .sem-picker-tabs { display: flex; }
+
+    .sem-pickers.colors.three > .sem-picker { flex-basis: auto; }
+
+    .sem-pickers.colors.three > .sem-picker + .sem-picker { margin-left: 0; }
+
+    .sem-pickers.colors.three > .sem-picker.away { display: none; }
+
+    .sem-pickers.colors.three > .sem-picker > .head { display: none; }
+}
+
+@container (min-width: 695px) {
+    .sem-pickers.colors.three > .sem-picker {
+        flex-basis: calc(33.333% - var(--gap) * 2 / 3);
+    }
+}
+
+/*
     The palette continues the frame the strip above it opens, as a picker's list does - and scrolls
     inside it for the same reason theirs do. Seventy-two swatches is nine rows, and a palette that
     took its own height pushed the flag off a phone screen: the flag is the answer to which colour

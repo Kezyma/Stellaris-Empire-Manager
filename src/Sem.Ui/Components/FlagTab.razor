@@ -32,7 +32,7 @@
         It was a fold, which answered the height and not the width. Nothing is folded now: the tab
         you are not on says which colour is set in it, and draws it.
     *@
-    <div class="sem-pickers colors">
+    <div class="sem-pickers colors three">
         <PickerTabs Label="Flag colours" Selected="_slot" SelectedChanged="s => _slot = s"
                     Tabs="ColorTabs" />
 
@@ -315,11 +315,19 @@
     /// How many colours a flag actually has, which is the first two.
     /// </summary>
     /// <remarks>
-    /// The third is the empire's map colour and is edited with the empire; the fourth does nothing.
-    /// Both are preserved rather than edited here - every write goes through the whole slot list, so
-    /// changing a flag colour carries the other two through as they were.
+    /// Three of the six, and they are the three the flag is drawn from: the background is one file
+    /// whose red, green and blue channels each hold a shape, and each channel is tinted with one of
+    /// these. The other three belong to the fleet and the galaxy map and are edited where those are.
+    /// All six are preserved whichever is being changed - every write goes through the whole slot
+    /// list, so setting a flag colour carries the rest through as they were.
+    ///
+    /// The tertiary draws nothing on any background the game currently ships, since the brightest
+    /// pixel in any blue channel across all sixty-three of them is 11 of 255. It is offered anyway:
+    /// it is a flag colour by the game's own reckoning, the game keeps a name for it
+    /// (TERTIARY_COLOR) and a picker for it that is commented out rather than deleted, and it is
+    /// what the map falls back to for its fill when the secondary sits too close to the primary.
     /// </remarks>
-    private const int EditableColorSlots = 2;
+    private const int EditableColorSlots = 3;
 
     /// <summary>
     /// What the game calls each colour slot.
@@ -329,8 +337,9 @@
     /// </remarks>
     private string ColorLabel(int slot) => slot switch
     {
-        0 => Session.Localizer.Label("PRIMARY_COLOR", "Primary Colors"),
-        1 => Session.Localizer.Label("SECONDARY_COLOR", "Secondary Colors"),
+        EmpireFlag.PrimarySlot => Session.Localizer.Label("PRIMARY_COLOR", "Primary Flag Color"),
+        EmpireFlag.SecondarySlot => Session.Localizer.Label("SECONDARY_COLOR", "Secondary Flag Color"),
+        EmpireFlag.TertiarySlot => Session.Localizer.Label("TERTIARY_COLOR", "Tertiary Color"),
         _ => string.Empty,
     };
 
@@ -353,7 +362,7 @@
     /// </remarks>
     private int _slot;
 
-    /// <summary>The two palettes, named and with the colour each holds, for tabs and heads alike.</summary>
+    /// <summary>The three palettes, named and with the colour each holds, for tabs and heads alike.</summary>
     private PickerTabs.Tab[] ColorTabs =>
     [
         .. Enumerable.Range(0, EditableColorSlots)

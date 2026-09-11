@@ -7,19 +7,18 @@
     USE_MAP_COLOR_TOOLTIP: "When disabled, they are derived from the Primary and Secondary Flag
     colors."
 
-    So the field always answers "what colour is this empire on the map", and the toggle decides which
-    editor sits under that answer:
+    So the field always answers "what colour is this empire on the map", and the toggle decides
+    whether there is anything under that answer to edit: with it off there is nothing here to set,
+    because the colours are the flag's and the flag is where they are set. With it on, the two map
+    slots appear and decide the map outright.
 
-      off - the tertiary colour, which is the one slot with nowhere else to live. It draws nothing on
-            a flag (no background the game ships has anything in its blue channel), and the game
-            substitutes it for the fill when the secondary is too close to the primary. When that
-            happens is not knowable from the files - see docs/flag-colours.md - but the colour is
-            still the player's to choose, and this is the only place they can choose it.
+    The tertiary used to sit here, on the reasoning that it is the fill's fallback and had nowhere
+    else to live. It lives with the flag now, which is what it is - the blue channel of the
+    background, by the game's own reckoning - and a slot appearing under Map colours because of what
+    the map might do with it was putting it under the wrong heading for the wrong reason.
 
-      on  - the two map colours themselves, which then decide the map outright.
-
-    Drawn in the map shades rather than the flag shades throughout, because the game keeps a pair
-    against every name and this is the half that will be on screen. "Red" is not the same red in both.
+    Drawn in the map shades rather than the flag shades, because the game keeps a pair against every
+    name and this is the half that will be on screen. "Red" is not the same red in both.
 *@
 
 <div class="sem-pickers colors">
@@ -42,7 +41,7 @@
     {
         var index = at;
 
-        <section class="sem-picker @(Independent && _slot != index ? "away" : null)">
+        <section class="sem-picker @(_slot == index ? null : "away")">
             <PickerHead Tab="Tabs[index]" />
 
             <div class="sem-swatches">
@@ -83,12 +82,12 @@
     private int _slot;
 
     /// <summary>
-    /// The slots this field edits, which is not the same set either side of the toggle.
+    /// The slots this field edits, which is none at all until the override is on.
     /// </summary>
-    private (int Slot, string Title)[] Slots =>
-        Independent
-            ? [(EmpireFlag.MapBorderSlot, "Border"), (EmpireFlag.MapFillSlot, "Fill")]
-            : [(EmpireFlag.TertiarySlot, "Tertiary")];
+    private static readonly (int Slot, string Title)[] Both =
+        [(EmpireFlag.MapBorderSlot, "Border"), (EmpireFlag.MapFillSlot, "Fill")];
+
+    private (int Slot, string Title)[] Slots => Independent ? Both : [];
 
     private PickerTabs.Tab[] Tabs =>
         [.. Slots.Select((_, at) => new PickerTabs.Tab(Slots[at].Title, Named(at), Shown(Held(at))))];
