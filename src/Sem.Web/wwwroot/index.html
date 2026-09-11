@@ -6,6 +6,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Stellaris Empire Manager</title>
     <base href="/" />
+
+    <!--
+        There was no policy at all here, which cost nothing while the app held no credentials and
+        will cost a great deal the moment it holds a cloud token: any script that reaches this
+        origin can read whatever the page can.
+
+        Two directives are doing the real work. connect-src says where bytes may be sent, which is
+        what stops a stolen token being posted anywhere; providers get added to it as they arrive.
+        base-uri matters more here than in most apps, because every address in this one is relative
+        to the base href above, so an injected <base> would repoint the whole site.
+
+        script-src and style-src both carry 'unsafe-inline', and that is not laziness. The published
+        page carries an inline import map whose contents change with every build, so it cannot be
+        hashed; and colours are set through inline style attributes in about thirty places, which a
+        strict style-src would blank. What 'self' still buys is the common case: an injected
+        <script src="https://elsewhere"> is refused.
+
+        wasm-unsafe-eval is required - Blazor WebAssembly cannot start without it.
+
+        frame-ancestors is deliberately absent: a <meta> policy may not set it, so clickjacking has
+        to be answered by a header this host cannot send.
+    -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval';
+        style-src 'self' 'unsafe-inline';
+        img-src 'self' data: blob:;
+        font-src 'self';
+        connect-src 'self';
+        object-src 'none';
+        base-uri 'self';
+        form-action 'none'
+    " />
     <link rel="preload" id="webassembly" />
     <link rel="stylesheet" href="_content/Sem.Ui/sem.css" />
     <link rel="stylesheet" href="css/app.css" />

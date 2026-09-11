@@ -154,4 +154,67 @@ public sealed class LocalizerTests
 
         Assert.Equal("Owned by .", localizer.Text("X"));
     }
+
+    /*
+       The three below guard one property: nothing that reaches the page as raw HTML can carry
+       markup of its own.
+
+       Twenty places render a string with (MarkupString), which tells Blazor to stop escaping. Every
+       one of them is fed from here, and every one is game text - but "game text" is a statement
+       about where the string came from, and the answer to that is about to change. A designs file
+       can already arrive from a share link, and cloud import will let one arrive from a provider,
+       which means from somebody else. An empire carries a species biography the player types, and
+       a name they type, and those travel in the file.
+
+       So these are not tests of a feature. They are the tests that have to keep passing for the
+       feature to be safe to add, and they belong here rather than beside the cloud code because
+       this is where the escaping actually happens.
+    */
+
+    /// <summary>A key nobody has heard of is shown as itself, escaped.</summary>
+    /// <remarks>
+    /// Which is the case that matters: a string the player typed is, by definition, not a key the
+    /// game defines, so it takes this path. The fallback is what gets drawn.
+    /// </remarks>
+    [Fact]
+    public void TextFromOutsideTheGameIsEscapedRatherThanDrawn()
+    {
+        var localizer = With([]);
+
+        Assert.Equal(
+            "&lt;script&gt;alert(1)&lt;/script&gt;",
+            localizer.Html("SOME_KEY", "<script>alert(1)</script>"));
+    }
+
+    /// <summary>And so is one with no key at all.</summary>
+    [Fact]
+    public void AFallbackWithNoKeyIsEscapedToo()
+    {
+        var localizer = With([]);
+
+        Assert.Equal("&lt;img src=x onerror=alert(1)&gt;", localizer.Html(null, "<img src=x onerror=alert(1)>"));
+    }
+
+    /// <summary>
+    /// Text already in hand is escaped as it is turned into HTML, markup and all.
+    /// </summary>
+    /// <remarks>
+    /// The colour runs survive because they are the game's own notation rather than characters in
+    /// the text - a section sign and a letter become a span, and everything else goes through
+    /// HtmlEncode on the way past. So a sentence may be coloured and may not be an element.
+    /// </remarks>
+    [Fact]
+    public void MarkupSurvivesAndAngleBracketsDoNot()
+    {
+        var localizer = With([]);
+
+        var html = localizer.HtmlOf("§Y<b>bold</b>§!");
+
+        // The span is the game's colour run, and which colour it is is not what this is about.
+        Assert.StartsWith("<span style=\"color:", html, StringComparison.Ordinal);
+        Assert.EndsWith("</span>", html, StringComparison.Ordinal);
+
+        Assert.Contains("&lt;b&gt;bold&lt;/b&gt;", html, StringComparison.Ordinal);
+        Assert.DoesNotContain("<b>", html, StringComparison.Ordinal);
+    }
 }

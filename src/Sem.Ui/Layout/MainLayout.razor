@@ -768,6 +768,16 @@
                     _message = ($"This browser would not open a save dialog, so {name} was downloaded "
                         + "instead. Move it into your Stellaris folder for the game to find it.", false);
                     break;
+
+                // An outcome this was not written for, which is a mistake in this app rather than
+                // anything the player did. It is here because the alternative is silence: a switch
+                // statement over an enum is not checked for exhaustiveness, so a new member added
+                // later would fall straight through - no message, the work still marked unsaved,
+                // and nothing anywhere to say why. Better to say something imperfect out loud.
+                default:
+                    _message = ($"{name} was not saved, and this app does not know why. "
+                        + "Export it to a file to be sure of it.", true);
+                    break;
             }
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidOperationException)
