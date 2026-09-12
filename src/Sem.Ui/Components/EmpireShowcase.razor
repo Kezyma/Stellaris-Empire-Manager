@@ -47,7 +47,7 @@
     <div class="body">
     <RoomScene Room="Room" World="World" City="City"
                Arkship="@(View.IsNomadic ? View.Arkship : null)"
-               Portrait="@RulerPortrait" Flag="@Design.Flag"
+               Portrait="@RulerPortrait" Flag="@Design.Flag" Design="@Design"
                Alt="@Session.Localizer.Name(Design.Species.Name, string.Empty)" />
 
     @* The game's own header: flag, empire name, and who is in charge. *@

@@ -14,16 +14,21 @@
     which case the portrait's own flat picture stands in.
 *@
 
-@if (_loading)
-{
-    <p class="sem-hint">Drawing…</p>
-}
-else if (_outfit is { } outfit)
+@if (!_loading && _outfit is { } outfit)
 {
     <PortraitFigure Outfit="outfit"
                     Character="@TextureFor(PortraitSlot.Character)"
                     Clothes="@TextureFor(PortraitSlot.Clothes)"
                     Attachment="@TextureFor(PortraitSlot.Attachment)" />
+}
+else if (Flat is { Length: > 0 } flat)
+{
+    @* Alt is empty because a caller giving a Flat has labelled the whole figure itself. *@
+    <img class="flat" src="@Session.Data.AssetUrl(flat)" alt="">
+}
+else if (_loading)
+{
+    <p class="sem-hint">Drawing…</p>
 }
 else if (Thumbnail is { Length: > 0 } thumbnail)
 {
@@ -34,7 +39,36 @@ else if (Thumbnail is { Length: > 0 } thumbnail)
     [CascadingParameter]
     public required DesignSession Session { get; set; }
 
-    private EmpireDesign Design => Session.Current!;
+    /// <summary>
+    /// Whose ruler to draw, where it is not the design being edited.
+    /// </summary>
+    /// <remarks>
+    /// Every caller happened to be drawing the current design, so this took it from the session
+    /// directly and was correct by coincidence rather than by construction. The room is drawn for
+    /// whichever design it was handed - the card and the showcase both take theirs as a parameter -
+    /// so the coincidence had to be written down before a second empire could be drawn beside the
+    /// first.
+    /// </remarks>
+    [Parameter]
+    public EmpireDesign? Design { get; set; }
+
+    /// <summary>
+    /// A picture already drawn, to stand in wherever the layered figure cannot be.
+    /// </summary>
+    /// <remarks>
+    /// The wardrobe is a couple of megabytes and may be in flight, and a host may publish none at
+    /// all, and neither is a reason for a room to have nobody standing in it. Given one, this draws
+    /// it instead of saying "Drawing…" - which is the right answer in a panel whose whole subject
+    /// is the figure, and the wrong one in a scene where the figure is a third of the picture.
+    ///
+    /// It is the same frame either way: both the flat portrait and every wardrobe layer come out of
+    /// one renderer at 332 by 220, so the stand-in is exactly the size of what replaces it and
+    /// nothing moves when it does.
+    /// </remarks>
+    [Parameter]
+    public string? Flat { get; set; }
+
+    private EmpireDesign Subject => Design ?? Session.Current!;
 
     /// <summary>The pieces for the portrait now being worn, once they have been fetched.</summary>
     private PortraitOutfit? _outfit;
@@ -70,11 +104,11 @@ else if (Thumbnail is { Length: > 0 } thumbnail)
     /// </remarks>
     private string? Likeness => PortraitArtwork.Resolve(
         Session.Data.Database,
-        PortraitArtwork.RulerPortrait(Design),
-        PortraitArtwork.RulerGender(Design));
+        PortraitArtwork.RulerPortrait(Subject),
+        PortraitArtwork.RulerGender(Subject));
 
     private PortraitDefinition? Portrait => Session.Data.Database.Portraits
-        .FirstOrDefault(p => p.Key == PortraitArtwork.RulerPortrait(Design));
+        .FirstOrDefault(p => p.Key == PortraitArtwork.RulerPortrait(Subject));
 
     private string? Thumbnail => Session.Data.Database.Portraits
         .FirstOrDefault(p => p.Key == Likeness)?.Thumbnail;
@@ -89,7 +123,7 @@ else if (Thumbnail is { Length: > 0 } thumbnail)
     /// exactly as it asks for a colour variant.
     /// </remarks>
     private string? AscendedSkin =>
-        _outfit?.AscendedCharacter(Design.Ruler.Texture, Design.Ruler.EvolutionMask ?? 0);
+        _outfit?.AscendedCharacter(Subject.Ruler.Texture, Subject.Ruler.EvolutionMask ?? 0);
 
     protected override async Task OnParametersSetAsync()
     {
@@ -121,8 +155,8 @@ else if (Thumbnail is { Length: > 0 } thumbnail)
             ? ascended
             : _outfit?.TextureFor(slot, slot switch
             {
-                PortraitSlot.Clothes => Design.Ruler.Clothes,
-                PortraitSlot.Attachment => Design.Ruler.Attachment,
-                _ => Design.Ruler.Texture,
+                PortraitSlot.Clothes => Subject.Ruler.Clothes,
+                PortraitSlot.Attachment => Subject.Ruler.Attachment,
+                _ => Subject.Ruler.Texture,
             });
 }

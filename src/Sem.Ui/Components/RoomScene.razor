@@ -30,7 +30,29 @@
         <img class="room" src="@Session.Data.AssetUrl(room)" alt="" loading="lazy">
     }
 
-    @if (Portrait is { Length: > 0 } portrait)
+    @*
+        The ruler, dressed.
+
+        The flat portrait is the species' stock likeness and not this empire's ruler: it ignores the
+        colour, the clothes and the thing on the head that the player chose, so a ruler in a red coat
+        stood in the room wearing whatever the species picture happened to wear. RulerFigure stacks
+        the layers the game stacks, and every appearance control reaches the scene.
+
+        It costs nothing to place. Both pictures come out of one renderer at 332 by 220 covering
+        19.65 model units - the same frame this scene's own PixelsPerUnit and PortraitUnits are
+        calibrated against - so the dressed figure stands exactly where the flat one stood, at
+        exactly the size, and the flat one is still what is drawn while the wardrobe is on its way.
+
+        Given a design rather than left to read the session, because the card and the showcase are
+        each handed the empire they draw.
+    *@
+    @if (Design is not null)
+    {
+        <div class="figure dressed" style="@FigureStyle" role="img" aria-label="@Alt">
+            <RulerFigure Design="Design" Flat="@Portrait" />
+        </div>
+    }
+    else if (Portrait is { Length: > 0 } portrait)
     {
         <img class="figure" style="@FigureStyle" src="@Session.Data.AssetUrl(portrait)"
              alt="@Alt" loading="lazy">
@@ -150,6 +172,24 @@
     private const double FigureHeight = PortraitUnits * PixelsPerUnit / RoomHeight;
 
     /// <summary>
+    /// The frame a portrait is drawn in, and how wide that makes the figure here.
+    /// </summary>
+    /// <remarks>
+    /// The renderer's own output size, from <c>RenderSettings</c>: 220 tall by 220 * 575 / 380
+    /// across, which comes to 332. Stated rather than left to the picture, because the dressed
+    /// figure is a box of layers with no width of its own to be read off - where the flat portrait
+    /// was one image whose own proportions the browser could use. Both are the same frame, so
+    /// saying it costs the flat one nothing and it lands where it always did.
+    /// </remarks>
+    private const double PortraitFrameWidth = 332;
+
+    private const double PortraitFrameHeight = 220;
+
+    /// <summary>How wide the figure is drawn, as a fraction of the room.</summary>
+    private const double FigureWidth =
+        PortraitUnits * PixelsPerUnit * PortraitFrameWidth / PortraitFrameHeight / RoomWidth;
+
+    /// <summary>
     /// Where the figure's middle goes.
     /// </summary>
     /// <remarks>
@@ -176,9 +216,25 @@
     [Parameter]
     public GraphicalCultureDefinition? City { get; set; }
 
-    /// <summary>The leader's portrait, already drawn.</summary>
+    /// <summary>
+    /// The leader's portrait, already drawn.
+    /// </summary>
+    /// <remarks>
+    /// The species' stock likeness. With a <see cref="Design"/> it is the stand-in while the
+    /// wardrobe is fetched rather than the finished figure; without one it is all there is.
+    /// </remarks>
     [Parameter]
     public string? Portrait { get; set; }
+
+    /// <summary>
+    /// The empire whose ruler stands in the room, where the ruler is to be dressed.
+    /// </summary>
+    /// <remarks>
+    /// Optional, and the scene draws the flat portrait without it - so a caller that has only a
+    /// picture still gets a room, which is what the city picker's tiles want.
+    /// </remarks>
+    [Parameter]
+    public EmpireDesign? Design { get; set; }
 
     /// <summary>The empire's flag, hung on the wall.</summary>
     [Parameter]
@@ -259,7 +315,8 @@
         $"width:{Percent(BannerSize / BannerFrameWidth)}";
 
     private string FigureStyle =>
-        $"left:{Percent(FigureCentre / RoomWidth)};height:{Percent(FigureHeight)};" +
+        $"left:{Percent(FigureCentre / RoomWidth)};" +
+        $"width:{Percent(FigureWidth)};height:{Percent(FigureHeight)};" +
         $"bottom:{Percent(-FigureBury / RoomHeight)};transform:translateX(-50%)";
 
     /// <summary>

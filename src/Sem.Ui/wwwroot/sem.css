@@ -2188,13 +2188,47 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 }
 
 /*
-    Where the figure stands is set on the element, not here: the height and the depth its feet are
-    buried at are two halves of one arrangement and belong beside each other, in the component that
-    holds the game's numbers.
+    Where the figure stands is set on the element, not here: its width, its height and the depth its
+    feet are buried at are three parts of one arrangement and belong beside each other, in the
+    component that holds the game's numbers.
 */
 .sem-room > .figure {
     position: absolute;
-    width: auto;
+    object-fit: contain;
+}
+
+/*
+    A ruler drawn from their own layers rather than taken as one picture.
+
+    The layers are placed against a 332 by 220 frame and cannot be reflowed, only scaled, so the box
+    becomes a container and the figure is scaled to fill its width exactly. The arithmetic closes:
+    the box is as wide as 332/220 of its height, and a figure scaled by width/332 is 220 * width/332
+    tall, which is that same height.
+
+    Unclamped, unlike the appearance panel's version of this, which caps the scale at 1 to avoid
+    enlarging the artwork. A room is routinely drawn wider than 332, and the flat portrait it
+    replaces was being enlarged to exactly the same size from exactly the same 332 by 220 render -
+    so capping it here would shrink the ruler rather than sharpen them.
+*/
+.sem-room > .figure.dressed {
+    container-type: inline-size;
+}
+
+.sem-room > .figure.dressed .sem-figure {
+    transform-origin: top left;
+
+    /*
+        332px and not 332. A scale is a ratio, so both sides of the division have to be lengths for
+        one to come out - written against a bare number the whole declaration is invalid, and the
+        figure silently draws at its own 332 by 220 in the corner of a box that is neither.
+    */
+    scale: calc(100cqw / 332px);
+}
+
+/* The stand-in, which is one picture and so simply fills the box it is given. */
+.sem-room > .figure.dressed > .flat {
+    width: 100%;
+    height: 100%;
     object-fit: contain;
 }
 
