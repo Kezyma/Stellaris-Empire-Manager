@@ -88,8 +88,10 @@ internal static class PortraitExtractor
     /// Reads the individual portraits and how many skin variants each has.
     /// </summary>
     /// <remarks>
-    /// Every portrait in 4.4 is a three-dimensional model rather than an image, so nothing here can
-    /// produce a picture. Thumbnails are rendered separately and attached afterwards.
+    /// Every portrait the game ships is a three-dimensional model rather than an image, so nothing
+    /// here can produce a picture. Thumbnails are rendered separately and attached afterwards.
+    /// (Checked again at 4.5, which added the Nomads and Infernals faces and changed nothing about
+    /// this.)
     /// </remarks>
     public static List<PortraitDefinition> ExtractPortraits(ScriptLoader loader)
     {

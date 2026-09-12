@@ -54,10 +54,13 @@ internal static class CosmeticsExtractor
         // Every room the installation has a picture of, not only the ones the selector names.
         //
         // The selector is how the game decides which room to give an empire that has not chosen one,
-        // and it names sixty-seven. There are ninety-one pictures, and the other twenty-four are the
+        // and it names sixty-seven. There are ninety-one pictures, and the other twenty-five are the
         // same artwork in the same 952 by 340 frame - the Contingency's transmission, the Shroud,
         // the swarm, the enclaves - reached through an event's picture_event_data rather than
-        // through the selector. Nothing about them is a different kind of thing, and a design that
+        // through the selector.
+        //
+        // Twenty-five and not twenty-four, because one of the sixty-seven has no picture: the synth
+        // queen's room, named below. Sixty-six named with a picture against ninety-one pictures. Nothing about them is a different kind of thing, and a design that
         // names one loads: the extradimensional rooms were tried in the game.
         var keys = Named(selector)
             .Where(k => k.EndsWith("_room", StringComparison.Ordinal))

@@ -7,10 +7,15 @@ public sealed record CwParseOptions
     /// Whether a block left open at the end of the file is accepted instead of raising an error.
     /// </summary>
     /// <remarks>
-    /// Stellaris 4.4.6 ships one script file that genuinely ends without closing its last block
+    /// Stellaris still ships one script file that genuinely ends without closing its last block
     /// (<c>common/scripted_loc/scripted_loc_ruloc.txt</c>), and the game loads it anyway. Reading
     /// game content therefore has to tolerate it, or a single defect in Paradox's data would stop
     /// extraction outright.
+    ///
+    /// Noticed at 4.4.6 and still true at 4.5, where the file's braces are 111 open to 110 closed.
+    /// Written without a version because the version is not the point: what this tolerates is
+    /// Paradox shipping a file the game itself accepts, which no patch has ever been a promise to
+    /// stop doing.
     /// </remarks>
     public bool AllowUnclosedBlocks { get; init; }
 

@@ -271,10 +271,6 @@ internal static class GovernmentExtractor
     }
 
     /// <summary>
-    /// Whether an authority exists only for the game's own empires, which it marks by requiring a
-    /// country type the player can never be.
-    /// </summary>
-    /// <summary>
     /// The seat an authority's own ruler sits in, by the name the authority gives it.
     /// </summary>
     /// <remarks>
@@ -330,6 +326,10 @@ internal static class GovernmentExtractor
         };
     }
 
+    /// <summary>
+    /// Whether an authority exists only for the game's own empires, which it marks by requiring a
+    /// country type the player can never be.
+    /// </summary>
     private static bool IsAiOnly(CwBlock body)
     {
         var potential = body.GetBlock("potential")?.GetBlock("country_type");

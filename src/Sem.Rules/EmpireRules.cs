@@ -696,7 +696,6 @@ public sealed class EmpireRules(GameDatabase database)
     // Options
     // ---------------------------------------------------------------------------------------
 
-    /// <summary>The species classes the player may choose from.</summary>
     /// <summary>
     /// The species classes the player may choose from.
     /// </summary>

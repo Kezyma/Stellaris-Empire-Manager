@@ -23,6 +23,16 @@ public sealed record PortraitBakeReport(int Rendered, long Bytes, IReadOnlyList<
 public sealed record PortraitExtent(string Key, float Rise, float Drop, bool Clipped);
 
 /// <summary>
+/// One ascended form of one skin: the skin it replaces, and where it lets the original show.
+/// </summary>
+/// <param name="Decal">The ascended skin, a whole texture rather than an overlay.</param>
+/// <param name="Mask">
+/// Where the two are mixed rather than the decal simply winning. See
+/// <see cref="Sem.Assets.DdsImageOps.BlendEvolution"/>, which is the game's own shader written out.
+/// </param>
+public sealed record EvolutionArtwork(string Decal, string Mask);
+
+/// <summary>
 /// Everything a portrait could be wearing, rather than the one thing it opens in.
 /// </summary>
 /// <remarks>
@@ -37,16 +47,6 @@ public sealed record PortraitExtent(string Key, float Rise, float Drop, bool Cli
 /// The default of each is the one the empire designer shows, and is listed first.
 /// </para>
 /// </remarks>
-/// <summary>
-/// One ascended form of one skin: the skin it replaces, and where it lets the original show.
-/// </summary>
-/// <param name="Decal">The ascended skin, a whole texture rather than an overlay.</param>
-/// <param name="Mask">
-/// Where the two are mixed rather than the decal simply winning. See
-/// <see cref="Sem.Assets.DdsImageOps.BlendEvolution"/>, which is the game's own shader written out.
-/// </param>
-public sealed record EvolutionArtwork(string Decal, string Mask);
-
 /// <param name="Character">Body textures, which carry the skin and the eyes.</param>
 /// <param name="Clothes">Outfits.</param>
 /// <param name="Attachment">Hair, horns, masks and hats.</param>
@@ -868,6 +868,9 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
         return image;
     }
 
+    /// <summary>Everything each portrait could wear, by portrait key.</summary>
+    public IReadOnlyDictionary<string, PortraitWardrobe> Wardrobes() => ReadWardrobes();
+
     /// <summary>
     /// What each portrait says it is wearing.
     /// </summary>
@@ -876,9 +879,6 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
     /// and points at selectors for its clothes and its hair; the psionic portraits name nothing in
     /// their meshes whatsoever, which is why they came out blank.
     /// </remarks>
-    /// <summary>Everything each portrait could wear, by portrait key.</summary>
-    public IReadOnlyDictionary<string, PortraitWardrobe> Wardrobes() => ReadWardrobes();
-
     private Dictionary<string, PortraitWardrobe> ReadWardrobes()
     {
         var selectors = ReadSelectors();

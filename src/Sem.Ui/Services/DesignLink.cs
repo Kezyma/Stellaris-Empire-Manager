@@ -180,7 +180,6 @@ public static class DesignLink
         }.OrderByDescending(token => token.Length).Select(Encoding.UTF8.GetBytes),
     ];
 
-    /// <summary>Packs a design into a string that can be put in a URL.</summary>
     /// <summary>
     /// Where an empire lives, relative to wherever the app is served from.
     /// </summary>
@@ -192,6 +191,7 @@ public static class DesignLink
     /// </remarks>
     public static string Address(string encoded) => $"e/{encoded}";
 
+    /// <summary>Packs a design into a string that can be put in a URL.</summary>
     public static string Encode(EmpireDesign design)
     {
         ArgumentNullException.ThrowIfNull(design);

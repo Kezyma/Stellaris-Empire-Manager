@@ -6,6 +6,9 @@ namespace Sem.Extraction.Extractors;
 /// <summary>Reads planet classes and starting systems.</summary>
 internal static class WorldExtractor
 {
+    /// <summary>The one block in the planet-class folder that does not declare a planet class.</summary>
+    private const string RandomListBlock = "random_list";
+
     /// <summary>
     /// Reads the planet classes, marking those an empire may start on.
     /// </summary>
@@ -21,9 +24,6 @@ internal static class WorldExtractor
     /// Dwellers begin on a habitat.
     /// </para>
     /// </remarks>
-    /// <summary>The one block in the planet-class folder that does not declare a planet class.</summary>
-    private const string RandomListBlock = "random_list";
-
     public static List<PlanetClassDefinition> ExtractPlanetClasses(
         ScriptLoader loader,
         RequirementCompiler requirements,

@@ -218,15 +218,6 @@ public sealed record EmpireRow
 
     public required string ShipPrefix { get; init; }
 
-    /// <summary>
-    /// Reads one empire into a row.
-    /// </summary>
-    /// <remarks>
-    /// Through a view, which is the same thing the card and the showcase are drawn from - so a
-    /// government in this table is the government on that card, derived by one piece of code. The
-    /// view is thrown away afterwards: it holds a context, and ninety of those kept alive to answer
-    /// questions nobody is asking is a great deal of memory for a list.
-    /// </remarks>
     /// <summary>What the game calls a fleet it grows rather than builds.</summary>
     private const string BioFleet = "bio_ship";
 
@@ -234,11 +225,6 @@ public sealed record EmpireRow
     private static EmpireChoice Chosen((string Value, string Name, string? Icon) state) =>
         new(state.Value, state.Name, state.Icon, null);
 
-    /// <summary>A portrait as a choice, wearing the face it actually resolves to.</summary>
-    /// <remarks>
-    /// Keyed by what the design stores - the group, usually - so two empires that both say "human"
-    /// are one thing to filter by, however differently the gender resolves them.
-    /// </remarks>
     /// <summary>One of the game's named colours, drawn in the shade the caller asks for.</summary>
     /// <remarks>
     /// <para>
@@ -291,6 +277,11 @@ public sealed record EmpireRow
        own colour like everything else. See docs/flag-colours.md.
     */
 
+    /// <summary>A portrait as a choice, wearing the face it actually resolves to.</summary>
+    /// <remarks>
+    /// Keyed by what the design stores - the group, usually - so two empires that both say "human"
+    /// are one thing to filter by, however differently the gender resolves them.
+    /// </remarks>
     private static EmpireChoice? Likeness(DesignSession session, string? key, string? gender) =>
         key is { Length: > 0 }
             ? new EmpireChoice(
@@ -342,6 +333,15 @@ public sealed record EmpireRow
         };
     }
 
+    /// <summary>
+    /// Reads one empire into a row.
+    /// </summary>
+    /// <remarks>
+    /// Through a view, which is the same thing the card and the showcase are drawn from - so a
+    /// government in this table is the government on that card, derived by one piece of code. The
+    /// view is thrown away afterwards: it holds a context, and ninety of those kept alive to answer
+    /// questions nobody is asking is a great deal of memory for a list.
+    /// </remarks>
     public static EmpireRow Read(
         DesignSession session,
         EmpireDesign design,

@@ -85,15 +85,6 @@ public static class DesignEffects
     }
 
     /// <summary>
-    /// Every option the empire has chosen, with what it does.
-    /// </summary>
-    /// <remarks>
-    /// An option that describes itself in its own words still contributes its numbers here. The
-    /// tooltip replaces the list shown against that option, not the arithmetic — an empire whose
-    /// authority gives ten percent faction approval has it whether or not the authority chose to
-    /// spell it out.
-    /// </remarks>
-    /// <summary>
     /// Whether any of the empire's choices carries a modifier that was left out of the totals.
     /// </summary>
     /// <remarks>
@@ -154,6 +145,15 @@ public static class DesignEffects
     /// </summary>
     private static readonly RequirementEvaluator Evaluator = new();
 
+    /// <summary>
+    /// Every option the empire has chosen, with what it does.
+    /// </summary>
+    /// <remarks>
+    /// An option that describes itself in its own words still contributes its numbers here. The
+    /// tooltip replaces the list shown against that option, not the arithmetic — an empire whose
+    /// authority gives ten percent faction approval has it whether or not the authority chose to
+    /// spell it out.
+    /// </remarks>
     public static IEnumerable<(string Key, EffectSet Effects)> Selected(DesignContext context)
     {
         ArgumentNullException.ThrowIfNull(context);

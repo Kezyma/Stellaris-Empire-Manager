@@ -232,14 +232,6 @@ public sealed class GameDataExtractor(LayeredContent content)
     }
 
     /// <summary>
-    /// Says of each content pack whether owning it changes anything the designer offers.
-    /// </summary>
-    /// <remarks>
-    /// A pack decides something when some condition, anywhere in the compiled rules, asks for it.
-    /// Answering it here rather than in the interface means the interface has only to read a flag,
-    /// and means the answer is settled against the same installation the rest of the data came from.
-    /// </remarks>
-    /// <summary>
     /// Gives a pack with no badge of its own the face of the portrait it adds.
     /// </summary>
     /// <remarks>
@@ -298,6 +290,14 @@ public sealed class GameDataExtractor(LayeredContent content)
         ];
     }
 
+    /// <summary>
+    /// Says of each content pack whether owning it changes anything the designer offers.
+    /// </summary>
+    /// <remarks>
+    /// A pack decides something when some condition, anywhere in the compiled rules, asks for it.
+    /// Answering it here rather than in the interface means the interface has only to read a flag,
+    /// and means the answer is settled against the same installation the rest of the data came from.
+    /// </remarks>
     private static List<DlcDefinition> MarkDecidingPacks(GameDatabase database)
     {
         var named = database.Requirements()
@@ -319,20 +319,6 @@ public sealed class GameDataExtractor(LayeredContent content)
         ];
     }
 
-    /// <summary>
-    /// Collects the pictures that appear inline in the game's sentences.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// The game writes these as a code between pound signs — <c>£energy£</c> — and the code names a
-    /// sprite. Most are the dedicated <c>GFX_text_</c> ones, but a sentence may equally call for a
-    /// modifier's own icon, so the code is tried both ways.
-    /// </para>
-    /// <para>
-    /// Which codes exist is decided by reading the text rather than by taking every sprite in the
-    /// game: the codes are what has to be resolved, and the text is where they are.
-    /// </para>
-    /// </remarks>
     /// <summary>
     /// The numbers the script names rather than writes, which the text refers to as well.
     /// </summary>
@@ -382,6 +368,20 @@ public sealed class GameDataExtractor(LayeredContent content)
         return texts;
     }
 
+    /// <summary>
+    /// Collects the pictures that appear inline in the game's sentences.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The game writes these as a code between pound signs — <c>£energy£</c> — and the code names a
+    /// sprite. Most are the dedicated <c>GFX_text_</c> ones, but a sentence may equally call for a
+    /// modifier's own icon, so the code is tried both ways.
+    /// </para>
+    /// <para>
+    /// Which codes exist is decided by reading the text rather than by taking every sprite in the
+    /// game: the codes are what has to be resolved, and the text is where they are.
+    /// </para>
+    /// </remarks>
     private Dictionary<string, string> ExtractTextIcons(SpriteCatalog sprites, AssetCatalog assets)
     {
         var icons = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);

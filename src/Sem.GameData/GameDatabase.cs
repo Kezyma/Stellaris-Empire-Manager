@@ -24,7 +24,7 @@ public sealed record GameDatabase
     /// <summary>Version of this file's own shape, so an old cache can be detected and rebuilt.</summary>
     public required int SchemaVersion { get; init; }
 
-    /// <summary>The game version this was extracted from, such as <c>v4.4.6</c>.</summary>
+    /// <summary>The game version this was extracted from, such as <c>v4.5.0</c>.</summary>
     public required string GameVersion { get; init; }
 
     /// <summary>The extractor build that produced it.</summary>
@@ -463,21 +463,6 @@ public sealed record PortraitLayerImage(string Texture, string Image, int Left, 
 public sealed record PortraitLayer(PortraitSlot Slot, IReadOnlyList<PortraitLayerImage> Images);
 
 /// <summary>
-/// A portrait's wardrobe, as pictures that stack back into a figure.
-/// </summary>
-/// <remarks>
-/// <para>
-/// Layers rather than finished portraits, because the combinations cannot be drawn: one humanoid has
-/// eight skins, seven outfits and a hundred hairstyles, and the whole set runs to millions. Drawn
-/// one form at a time it is a sum instead of a product.
-/// </para>
-/// <para>
-/// The order is the order they are painted, furthest from the viewer first, and it matters: clothing
-/// is painted on both sides of the body, so a humanoid's layers run outfit-back, body, outfit-front,
-/// head, hair. Stacking them in any other order puts the coat's back over the chest.
-/// </para>
-/// </remarks>
-/// <summary>
 /// One slot's choices, in the order a design's index counts them.
 /// </summary>
 /// <remarks>
@@ -492,6 +477,21 @@ public sealed record PortraitLayer(PortraitSlot Slot, IReadOnlyList<PortraitLaye
 /// <param name="Textures">Every texture the portrait's own selectors offer, in their order.</param>
 public sealed record PortraitVariants(PortraitSlot Slot, IReadOnlyList<string> Textures);
 
+/// <summary>
+/// A portrait's wardrobe, as pictures that stack back into a figure.
+/// </summary>
+/// <remarks>
+/// <para>
+/// Layers rather than finished portraits, because the combinations cannot be drawn: one humanoid has
+/// eight skins, seven outfits and a hundred hairstyles, and the whole set runs to millions. Drawn
+/// one form at a time it is a sum instead of a product.
+/// </para>
+/// <para>
+/// The order is the order they are painted, furthest from the viewer first, and it matters: clothing
+/// is painted on both sides of the body, so a humanoid's layers run outfit-back, body, outfit-front,
+/// head, hair. Stacking them in any other order puts the coat's back over the chest.
+/// </para>
+/// </remarks>
 /// <param name="Portrait">The portrait's key.</param>
 /// <param name="Layers">Its layers, in painting order.</param>
 public sealed record PortraitOutfit(string Portrait, IReadOnlyList<PortraitLayer> Layers)
@@ -911,7 +911,6 @@ public sealed record AuthorityDefinition(string Key)
     public string DescriptionKey => $"{Key}_desc";
 }
 
-/// <summary>A civic, or an origin, which the game defines in the same files.</summary>
 /// <summary>
 /// One ascension perk: something a game grants over time, and a plan may say it means to take.
 /// </summary>
@@ -953,14 +952,6 @@ public sealed record AscensionPerkDefinition(string Key)
     public string DescriptionKey => $"{Key}_desc";
 }
 
-/// <summary>
-/// One tradition tree, which is what a plan names rather than the five picks inside it.
-/// </summary>
-/// <remarks>
-/// The game's own exclusions between trees are written against the tradition that opens one - the
-/// adoption bonus - rather than against the tree, so anything asking whether a tree is open has to
-/// know both names.
-/// </remarks>
 /// <summary>
 /// One tradition inside a tree: a pick, or the bonus for opening or finishing it.
 /// </summary>
@@ -1018,6 +1009,14 @@ public sealed record TraditionDefinition(string Key)
     public string? DescriptionKey { get; init; }
 }
 
+/// <summary>
+/// One tradition tree, which is what a plan names rather than the five picks inside it.
+/// </summary>
+/// <remarks>
+/// The game's own exclusions between trees are written against the tradition that opens one - the
+/// adoption bonus - rather than against the tree, so anything asking whether a tree is open has to
+/// know both names.
+/// </remarks>
 public sealed record TraditionTreeDefinition(string Key)
 {
     /// <summary>Whether an empire of this shape is offered the tree at all.</summary>
@@ -1042,6 +1041,7 @@ public sealed record TraditionTreeDefinition(string Key)
     public string DescriptionKey => $"{Key}_desc";
 }
 
+/// <summary>A civic, or an origin, which the game defines in the same files.</summary>
 public sealed record CivicDefinition(string Key, bool IsOrigin)
 {
     /// <summary>Whether this is offered at all, usually a check on owning content.</summary>
@@ -1141,10 +1141,6 @@ public sealed record CivicDefinition(string Key, bool IsOrigin)
     public string? PenaltiesKey { get; init; }
 }
 
-/// <summary>
-/// A government type. The game picks the highest-weighted one whose conditions the design meets,
-/// which is how an empire ends up called a Divine Empire rather than a Despotic Hegemony.
-/// </summary>
 /// <summary>Something that multiplies a weight when its condition holds.</summary>
 /// <param name="When">The condition.</param>
 /// <param name="Factor">What the weight is multiplied by while it does.</param>
@@ -1230,6 +1226,10 @@ public sealed record PersonalityDefinition(string Key, double Weight, int FileOr
     public string DescriptionKey => $"{NameKey}_desc";
 }
 
+/// <summary>
+/// A government type. The game picks the highest-weighted one whose conditions the design meets,
+/// which is how an empire ends up called a Divine Empire rather than a Despotic Hegemony.
+/// </summary>
 public sealed record GovernmentTypeDefinition(string Key, double Weight, int FileOrder)
 {
     /// <summary>What the design must look like for this government to apply.</summary>
@@ -2031,11 +2031,6 @@ public sealed record FlagFrameDefinition(
     public string? MaskImage { get; init; }
 }
 
-/// <summary>A named colour a flag can be tinted with.</summary>
-/// <param name="Key">The colour's name, as stored in a design.</param>
-/// <param name="Red">Red channel of the flag colour, 0 to 255.</param>
-/// <param name="Green">Green channel of the flag colour, 0 to 255.</param>
-/// <param name="Blue">Blue channel of the flag colour, 0 to 255.</param>
 /// <summary>
 /// A named colour a flag can use.
 /// </summary>

@@ -309,6 +309,7 @@ public sealed class RequirementCompiler
                     items.Add(new AlwaysRequirement(node.ScalarValue == "yes"));
                     break;
 
+
                 // An AND is what a requirements list already means, so it just nests one.
                 case "AND" when node.Block is not null:
                     items.Add(CompileRequirementsList(node.Block));
@@ -410,6 +411,21 @@ public sealed class RequirementCompiler
         switch (key)
         {
             case "always":
+                return new AlwaysRequirement(node.ScalarValue == "yes");
+
+            // A guard against there being no scope to ask about. That can happen to the game and
+            // cannot happen here: every condition this project compiles is read against a country
+            // that exists, because the player is sitting there designing it. So it gets the answer
+            // it always has rather than being filed as a mystery.
+            //
+            // It settles nothing by itself, and is not meant to. All three occurrences sit in a
+            // swap's trigger beside a has_country_flag that no design can answer, so the swap stays
+            // unreadable and its modifier stays out of the totals - which was already the right
+            // answer. The audit that found this believed it was making the Fanatic Purifiers'
+            // unconditional modifier look conditional; that modifier carries no trigger at all, and
+            // the is_scope_valid in that civic is inside its swap_type. What this buys is three
+            // fewer lines of noise in a report that is meant to be read.
+            case "is_scope_valid":
                 return new AlwaysRequirement(node.ScalarValue == "yes");
 
             case "host_has_dlc" or "local_has_dlc" when node.ScalarValue is { } dlc:

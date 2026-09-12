@@ -1,7 +1,7 @@
 {
   "schemaVersion": 16,
   "gameVersion": "v4.5.0",
-  "extractorVersion": "0.1.0\u002B57ef30d54e899957b1ccc56876cff0e3e573e87b",
+  "extractorVersion": "0.1.0\u002B5cf4e130bcb6563eec2d33fe19d8c17eb14c4878",
   "defines": {
     "ethicsPoints": 3,
     "civicPoints": 2,
@@ -41829,9 +41829,8 @@
             "kind": "all",
             "items": [
               {
-                "kind": "unknown",
-                "name": "is_scope_valid",
-                "assume": true
+                "kind": "always",
+                "value": true
               },
               {
                 "kind": "selection",
@@ -42941,9 +42940,8 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "unknown",
-                  "name": "is_scope_valid",
-                  "assume": true
+                  "kind": "always",
+                  "value": true
                 },
                 {
                   "kind": "always",
@@ -42985,9 +42983,8 @@
             "kind": "all",
             "items": [
               {
-                "kind": "unknown",
-                "name": "is_scope_valid",
-                "assume": true
+                "kind": "always",
+                "value": true
               },
               {
                 "kind": "always",
@@ -191877,7 +191874,6 @@
   "newEmpireTemplate": "\u0022New Empire\u0022=\r\n{\r\n\tkey=\u0022New Empire\u0022\r\n\tship_prefix=\r\n\t{\r\n\t\tkey=\u0022\u0022\r\n\t}\r\n\tspecies=\r\n\t{\r\n\t\tclass=\u0022HUM\u0022\r\n\t\tportrait=\u0022human\u0022\r\n\t\tname_list=\u0022HUM1\u0022\r\n\t\tgender=not_set\r\n\t\ttrait=\u0022trait_organic\u0022\r\n\t}\r\n\tname=\r\n\t{\r\n\t\tkey=\u0022\u0022\r\n\t}\r\n\tadjective=\r\n\t{\r\n\t\tkey=\u0022\u0022\r\n\t}\r\n\tauthority=\u0022auth_democratic\u0022\r\n\tgovernment=\u0022gov_despotic_empire\u0022\r\n\tis_nomadic=no\r\n\tplanet_name=\r\n\t{\r\n\t\tkey=\u0022\u0022\r\n\t}\r\n\tplanet_class=\u0022pc_continental\u0022\r\n\tship_size=\u0022civilian_arkship_tier_1\u0022\r\n\tsystem_name=\r\n\t{\r\n\t\tkey=\u0022\u0022\r\n\t}\r\n\tinitializer=\u0022\u0022\r\n\tgraphical_culture=\u0022mammalian_01\u0022\r\n\tcity_graphical_culture=\u0022mammalian_01\u0022\r\n\tempire_flag=\r\n\t{\r\n\t\ticon=\r\n\t\t{\r\n\t\t\tcategory=\u0022pointy\u0022\r\n\t\t\tfile=\u0022flag_pointy_2.dds\u0022\r\n\t\t}\r\n\t\tbackground=\r\n\t\t{\r\n\t\t\tcategory=\u0022backgrounds\u0022\r\n\t\t\tfile=\u0022v.dds\u0022\r\n\t\t}\r\n\t\tcolors=\r\n\t\t{\r\n\t\t\t\u0022red\u0022\r\n\t\t\t\u0022black\u0022\r\n\t\t\t\u0022null\u0022\r\n\t\t\t\u0022null\u0022\r\n\t\t\t\u0022null\u0022\r\n\t\t\t\u0022null\u0022\r\n\t\t}\r\n\t}\r\n\truler=\r\n\t{\r\n\t\tgender=female\r\n\t\tname=\r\n\t\t{\r\n\t\t\tfull_names=\r\n\t\t\t{\r\n\t\t\t\tkey=\u0022\u0022\r\n\t\t\t}\r\n\t\t}\r\n\t\tportrait=\u0022human_female_04\u0022\r\n\t\ttexture=0\r\n\t\tevolution_mask=0\r\n\t\tattachment=0\r\n\t\tclothes=4\r\n\t\tleader_class=\u0022official\u0022\r\n\t}\r\n\tspawn_as_fallen=no\r\n\tignore_portrait_duplication=no\r\n\troom=\u0022default_room\u0022\r\n\tspawn_enabled=no\r\n\torigin=\u0022origin_default\u0022\r\n}\r\n",
   "unrecognisedTriggers": {},
   "unrecognisedEffectConditions": {
-    "is_scope_valid": 3,
     "any_rival_country": 3,
     "resource_expenses_compare": 3,
     "has_federation": 2,
