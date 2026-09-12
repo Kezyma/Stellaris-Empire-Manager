@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using Sem.Ui.Services;
@@ -45,6 +45,10 @@ internal sealed class WindowControls : IWindowControls
 
     private readonly Window _window;
 
+    /// <summary>When the band was last pressed, and where the window was standing when it was.</summary>
+    private long _pressed;
+    private (double Left, double Top) _pressedAt;
+
     /// <summary>Takes the window this is to drive, and follows what it does.</summary>
     public WindowControls(Window window)
     {
@@ -71,7 +75,45 @@ internal sealed class WindowControls : IWindowControls
     public void Close() => _window.Close();
 
     /// <inheritdoc />
-    public void BeginDrag() => Begin(HtCaption);
+    /// <remarks>
+    /// <para>
+    /// The double-click is counted here rather than in the page, because the page never sees one.
+    /// The first press hands the pointer straight to Windows for the move, and everything after it
+    /// - the release, the second press, the pair of them together - belongs to that loop, so a
+    /// dblclick handler on the band sat there and never fired once.
+    /// </para>
+    /// <para>
+    /// What is left is the pair of presses: two within the system's double-click time, with the
+    /// window still exactly where it was at the first, is a double-click - and if it moved in
+    /// between, that was a drag and this is the start of another.
+    /// </para>
+    /// <para>
+    /// Every part of that is read as the press arrives, and nothing waits on the move that follows.
+    /// It has to be: the move is a message loop of its own, and the second press can be delivered
+    /// from inside it, before the first call has returned to note anything down. Written the other
+    /// way round - decide, then record afterwards - it worked or did not by a margin of
+    /// milliseconds.
+    /// </para>
+    /// </remarks>
+    public void BeginDrag()
+    {
+        var now = Environment.TickCount64;
+        var at = (_window.Left, _window.Top);
+        var again = now - _pressed < GetDoubleClickTime() && at == _pressedAt;
+
+        _pressed = now;
+        _pressedAt = at;
+
+        if (again)
+        {
+            // So the press after this one begins a drag rather than folding the window back again.
+            _pressed = 0;
+            ToggleMaximise();
+            return;
+        }
+
+        Begin(HtCaption);
+    }
 
     /// <inheritdoc />
     public void BeginResize(WindowEdge edge) => Begin(edge switch
@@ -222,6 +264,9 @@ internal sealed class WindowControls : IWindowControls
 
     [DllImport("user32.dll", EntryPoint = "SendMessageW")]
     private static extern IntPtr SendMessage(IntPtr window, uint message, nint wParam, nint lParam);
+
+    [DllImport("user32.dll")]
+    private static extern uint GetDoubleClickTime();
 
     [DllImport("user32.dll")]
     private static extern IntPtr MonitorFromWindow(IntPtr window, uint fallback);

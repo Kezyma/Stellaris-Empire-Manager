@@ -28,10 +28,15 @@
             The band of nothing between the brand and the file's controls, which on a host with no
             title bar is what a title bar was: press it to move the window, double-click it to
             maximise. Drawn only there, so a browser tab pays nothing for it.
+
+            The mousedown is the only handler, and the double-click is not missing. The first press
+            hands the pointer to the window for the move, so nothing after it - the release, the
+            second press, the pair - ever reaches the page; a dblclick here never fired once. The
+            host counts them instead, where it can see the move end.
         *@
         @if (_windows is not null)
         {
-            <div class="sem-drag-region" @onmousedown="BeginDrag" @ondblclick="ToggleMaximise"></div>
+            <div class="sem-drag-region" @onmousedown="BeginDrag"></div>
         }
 
         @*
@@ -418,9 +423,6 @@
 
     /// <summary>Moves the window, from a press anywhere the header has nothing else to do.</summary>
     private void BeginDrag() => _windows?.BeginDrag();
-
-    /// <summary>Fills the screen or gives the window its old size back, on a double-click.</summary>
-    private void ToggleMaximise() => _windows?.ToggleMaximise();
 
     /// <summary>Resizes the window, from a press on one of the strips at the edge of the page.</summary>
     private void Resize(WindowEdge edge) => _windows?.BeginResize(edge);
