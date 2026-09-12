@@ -537,7 +537,7 @@ public sealed class GameDataExtractor(LayeredContent content)
         IEnumerable<AscensionPerkDefinition> perks,
         IEnumerable<TraditionDefinition> traditions)
     {
-        var catalog = ModifierCatalog.Read(_content, InstallRoot);
+        var catalog = ModifierCatalog.Read(_content);
         var observed = new Dictionary<string, List<double>>(StringComparer.Ordinal);
 
         foreach (var effects in ethics.Select(e => e.Effects)

@@ -322,55 +322,12 @@ public static class DesignLink
     }
 
     /// <summary>
-    /// Replaces every run the table knows with the two bytes that stand for it.
+    /// Expands the coded runs in a v1 link back into text.
     /// </summary>
     /// <remarks>
-    /// A single pass taking the first entry that matches, which is the longest because the table is
-    /// ordered that way. A coded run cannot be matched into afterwards, since the marker is not a
-    /// byte any entry contains, so the pass cannot code the same text twice.
+    /// Only ever read, never written. A link is written by <see cref="DesignLinkV2"/> now; this
+    /// stays so that links already shared go on opening.
     /// </remarks>
-    private static byte[] Tokenise(byte[] text)
-    {
-        var coded = new List<byte>(text.Length);
-
-        for (var i = 0; i < text.Length;)
-        {
-            var match = -1;
-
-            for (var candidate = 0; candidate < Tokens.Length && match < 0; candidate++)
-            {
-                if (Matches(text, i, Tokens[candidate]))
-                {
-                    match = candidate;
-                }
-            }
-
-            if (match >= 0)
-            {
-                coded.Add(Marker);
-                coded.Add((byte)(match + 1));
-                i += Tokens[match].Length;
-            }
-            else
-            {
-                if (text[i] == Marker)
-                {
-                    coded.Add(Marker);
-                    coded.Add(Escaped);
-                }
-                else
-                {
-                    coded.Add(text[i]);
-                }
-
-                i++;
-            }
-        }
-
-        return [.. coded];
-    }
-
-    /// <summary>Puts back what <see cref="Tokenise"/> took out.</summary>
     private static byte[] Expand(byte[] coded)
     {
         var text = new List<byte>(coded.Length * 2);
@@ -408,24 +365,6 @@ public static class DesignLink
         }
 
         return [.. text];
-    }
-
-    private static bool Matches(byte[] text, int at, byte[] token)
-    {
-        if (at + token.Length > text.Length)
-        {
-            return false;
-        }
-
-        for (var i = 0; i < token.Length; i++)
-        {
-            if (text[at + i] != token[i])
-            {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     /// <summary>

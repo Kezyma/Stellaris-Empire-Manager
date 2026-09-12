@@ -19,7 +19,7 @@ public sealed record GameDatabase
     /// site published with a database one version behind was read anyway, with whatever the shape had
     /// gained since taking its default and no sign that anything was missing.
     /// </remarks>
-    public const int CurrentSchemaVersion = 16;
+    public const int CurrentSchemaVersion = 17;
 
     /// <summary>Version of this file's own shape, so an old cache can be detected and rebuilt.</summary>
     public required int SchemaVersion { get; init; }
@@ -377,9 +377,6 @@ public sealed record GameDefines
     /// rather than typed here, so a patch that moves the slot moves this too.
     /// </remarks>
     public int PlannedCivicPoints { get; init; } = 3;
-
-    /// <summary>The planet class the city appearance preview defaults to.</summary>
-    public string? DefaultCityPreviewPlanetClass { get; init; }
 
     /// <summary>
     /// How built-up the world in the designer's own preview is, on the game's nought-to-five scale.
@@ -809,12 +806,6 @@ public sealed record TraitDefinition(string Key, TraitKind Kind)
     /// <summary>Grouping used by the trait list, such as <c>normal</c>, <c>robotic</c> or <c>cyborg</c>.</summary>
     public string? Category { get; init; }
 
-    /// <summary>Ordering hint the game's own trait list uses.</summary>
-    public int SortingPriority { get; init; }
-
-    /// <summary>Descriptive tags, used for filtering.</summary>
-    public IReadOnlyList<string> Tags { get; init; } = [];
-
     /// <summary>What this trait does, and how the game describes it.</summary>
     public EffectSet Effects { get; init; } = EffectSet.None;
 
@@ -932,9 +923,6 @@ public sealed record AscensionPerkDefinition(string Key)
 
     /// <summary>The game's own grouping, which is how the ascension paths are known.</summary>
     public string? Category { get; init; }
-
-    /// <summary>Whether taking this puts an empire on an ascension path.</summary>
-    public bool IsPath { get; init; }
 
     /// <summary>What it does, and how the game describes it.</summary>
     public EffectSet Effects { get; init; } = EffectSet.None;
@@ -1279,9 +1267,6 @@ public sealed record PlanetClassDefinition(string Key)
     /// <summary>Whether an empire may start here without an origin saying so.</summary>
     public bool IsStartingWorld { get; init; }
 
-    /// <summary>Whether the class can be colonised at all.</summary>
-    public bool Colonizable { get; init; }
-
     /// <summary>What must hold for this to be offered, normally owning a content pack.</summary>
     public Requirement Potential { get; init; } = new AlwaysRequirement(true);
 
@@ -1433,9 +1418,6 @@ public sealed record NameListDefinition(string Key, string? Category)
 {
     /// <summary>Whether the player may choose it. A few lists exist only for the game's own use.</summary>
     public Requirement Selectable { get; init; } = new AlwaysRequirement(true);
-
-    /// <summary>Whether it may be picked when an empire asks for any name list at random.</summary>
-    public bool Randomized { get; init; } = true;
 
     /// <summary>
     /// A different name list to draw species, homeworld and system names from.
@@ -1827,9 +1809,6 @@ public sealed record GraphicalCultureDefinition(string Key)
 
     /// <summary>Whether this set has city artwork, and so can be used as a city appearance.</summary>
     public bool HasCityArt { get; init; }
-
-    /// <summary>A preview of the city artwork within the extracted assets, when there is any.</summary>
-    public string? CityPreview { get; init; }
 
     /// <summary>
     /// The city's own layers, nearest the viewer last, for building the scene behind a portrait.

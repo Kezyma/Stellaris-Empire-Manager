@@ -112,8 +112,6 @@ internal static class MetadataExtractor
             PlannedCivicPoints = civicPoints + ResearchableCivicPoints(loader),
             AscensionPerkSlots = FindInt(defines, "ASCENSION_PERKS_SLOTS") ?? 8,
             TraditionSlots = FindInt(defines, "TRADITION_CATEGORIES_MAX") ?? 7,
-            DefaultCityPreviewPlanetClass =
-                Find(defines, "CITY_SELECTION_DEFAULT_PLANET_CLASS")?.Trim('"'),
 
             // The game says outright which of the six city bands its own designer draws, and marks
             // the line "Shown in empire designer". Four: everything but the ecumenopolis.

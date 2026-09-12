@@ -526,33 +526,6 @@
         return moved;
     }
 
-    /// <summary>
-    /// Turns planning on, or off and gives the biography back.
-    /// </summary>
-    /// <remarks>
-    /// Turning it on writes nothing. It only says which biography a plan would go into, so the
-    /// pickers have somewhere to aim - and so that changing one's mind about which to use has not
-    /// already taken the other. The first thing actually decided is what writes.
-    /// </remarks>
-    private void TogglePlanning(ChangeEventArgs e)
-    {
-        if (e.Value is bool on && on)
-        {
-            // Nothing at all when neither biography is free, which is what the disabled box says.
-            Session.PlanIntent = FirstFree;
-
-            return;
-        }
-
-        Session.PlanIntent = null;
-
-        Session.Edit(d =>
-        {
-            Session.Plans.Clear(d, PlanHome.Species, Vocabulary);
-            Session.Plans.Clear(d, PlanHome.Ruler, Vocabulary);
-        });
-    }
-
     /// <summary>Whether a plan may use that biography, which it may not if it holds writing.</summary>
     private bool CanCarry(PlanHome home) => Session.Plans.CanCarry(Design, home, Vocabulary);
 

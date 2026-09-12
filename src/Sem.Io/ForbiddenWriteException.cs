@@ -10,7 +10,6 @@ public sealed class ForbiddenWriteException : IOException
     {
         Path = path;
         Reason = reason;
-        PolicyDescription = policyDescription;
     }
 
     /// <summary>The path the caller tried to write to, as supplied.</summary>
@@ -18,7 +17,4 @@ public sealed class ForbiddenWriteException : IOException
 
     /// <summary>Why the policy refused it.</summary>
     public string Reason { get; }
-
-    /// <summary>Human-readable name of the policy that refused it.</summary>
-    public string PolicyDescription { get; }
 }

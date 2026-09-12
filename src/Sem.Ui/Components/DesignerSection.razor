@@ -64,10 +64,6 @@
     [Parameter]
     public int Problems { get; set; }
 
-    /// <summary>Whether it begins open.</summary>
-    [Parameter]
-    public bool StartOpen { get; set; }
-
     /// <summary>
     /// Which section the page has open, where a page is keeping them to one at a time.
     /// </summary>
@@ -101,5 +97,4 @@
         return Task.CompletedTask;
     }
 
-    protected override void OnInitialized() => _open = StartOpen;
 }

@@ -183,12 +183,6 @@ public sealed partial class Localizer(
     }
 
     /// <summary>
-    /// Renders a piece of the game's text that is already in hand, rather than one looked up by key.
-    /// </summary>
-    public string HtmlOf(string? value) =>
-        string.IsNullOrEmpty(value) ? string.Empty : ToHtml(Substitute(value, 0));
-
-    /// <summary>
     /// Reads a name out of a design.
     /// </summary>
     /// <remarks>

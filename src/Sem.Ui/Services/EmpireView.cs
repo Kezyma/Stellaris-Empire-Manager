@@ -93,8 +93,9 @@ public sealed record OptionContribution(EmpireChoice Option, EffectSet Effects);
 /// </para>
 /// <para>
 /// The context and the report are computed once and kept, because building a context walks every
-/// government the game defines and a card asks for it several times per render. Call
-/// <see cref="Refresh"/> when the design changes underneath.
+/// government the game defines and a card asks for it several times per render. A view is therefore
+/// good only for as long as the design it was built from: the cards throw theirs away and build
+/// another in <c>OnParametersSet</c>.
 /// </para>
 /// </remarks>
 public sealed class EmpireView(DesignSession session, EmpireDesign design)
@@ -117,23 +118,6 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
     /// <summary>What is wrong with it, kept for the same reason.</summary>
     public ValidationReport Report =>
         _report ??= _session.Rules.Validate(Context, _design);
-
-    /// <summary>Throws away what was worked out, for when the design has changed.</summary>
-    public void Refresh()
-    {
-        _context = null;
-        _report = null;
-
-        // The plan and its vocabulary too. Both are read off the design and the vocabulary is built
-        // from the context, so leaving them behind would answer questions about the empire as it
-        // was with the words of the empire as it is.
-        _plan = null;
-        _hasPlan = null;
-        _vocabulary = null;
-
-        // Read off the context, so they go when it does.
-        _personalities = null;
-    }
 
     public RoomDefinition? Room =>
         Database.Rooms.FirstOrDefault(r => r.Key == _design.Room);

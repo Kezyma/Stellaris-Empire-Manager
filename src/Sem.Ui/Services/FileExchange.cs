@@ -111,12 +111,6 @@ public interface IFileExchange
     bool SavesInPlace => false;
 
     /// <summary>
-    /// What to call the button that hands the file over, which is a different act on each host: the
-    /// desktop writes the player's own file, and a browser can only offer a copy to download.
-    /// </summary>
-    string SaveVerb => SavesInPlace ? "Save file" : "Download";
-
-    /// <summary>
     /// Asks the host to warn before the page is closed with work not yet saved.
     /// </summary>
     /// <remarks>

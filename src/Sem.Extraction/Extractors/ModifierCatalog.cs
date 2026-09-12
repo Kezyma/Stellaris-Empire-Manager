@@ -45,7 +45,7 @@ public sealed class ModifierCatalog
     public int Count => _known.Count;
 
     /// <summary>Reads the settings an installation declares.</summary>
-    public static ModifierCatalog Read(LayeredContent content, string? installRoot = null)
+    public static ModifierCatalog Read(LayeredContent content)
     {
         ArgumentNullException.ThrowIfNull(content);
 

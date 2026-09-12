@@ -67,17 +67,6 @@ public sealed class LocRef : CwView
     /// <summary>True when this name has no key at all, as an omitted ship prefix does.</summary>
     public bool IsEmpty => Key.Length == 0;
 
-    /// <summary>Builds a block holding text the player typed.</summary>
-    public static CwBlock CreateLiteralBlock(string text)
-    {
-        ArgumentNullException.ThrowIfNull(text);
-
-        var block = new CwBlock();
-        block.Add(CwNode.QuotedAssignment("key", text));
-        block.Add(CwNode.BareAssignment("literal", "yes"));
-        return block;
-    }
-
     /// <summary>Builds a block referring to a localisation key.</summary>
     public static CwBlock CreateKeyBlock(string localisationKey)
     {

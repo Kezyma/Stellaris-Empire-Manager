@@ -32,15 +32,6 @@ internal static class CwBlockExtensions
             _ => defaultValue,
         };
 
-    /// <summary>Reads a <c>yes</c>/<c>no</c> field that may be absent.</summary>
-    public static bool? GetBoolOrNull(this CwBlock block, string key) =>
-        block.GetString(key) switch
-        {
-            "yes" => true,
-            "no" => false,
-            _ => null,
-        };
-
     /// <summary>
     /// Reads a modifier block into modifier keys and their values, following <c>@</c> variables.
     /// </summary>

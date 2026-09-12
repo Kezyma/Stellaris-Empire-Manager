@@ -67,8 +67,6 @@ internal static class TraitsExtractor
                 Hidden = body.GetBool("hidden"),
                 RequiredDlc = body.GetString("host_has_dlc"),
                 Category = body.GetString("category"),
-                SortingPriority = loader.ResolveInt(body.GetString("sorting_priority")) ?? 0,
-                Tags = body.GetList("tags"),
 
                 // A trait's own tags group it for filtering and have no text; the categories it
                 // displays are the separate localized_tags field.

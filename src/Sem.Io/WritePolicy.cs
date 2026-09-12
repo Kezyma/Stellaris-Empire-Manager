@@ -35,12 +35,6 @@ public sealed class WritePolicy
     /// <summary>Human-readable name, included in refusal messages.</summary>
     public string Description { get; }
 
-    /// <summary>Normalised roots writes are permitted under.</summary>
-    public IReadOnlyList<string> AllowedRoots => _allowed;
-
-    /// <summary>Normalised roots writes are refused under, whatever else is allowed.</summary>
-    public IReadOnlyList<string> ForbiddenRoots => _forbidden;
-
     /// <summary>
     /// The development policy: writes are confined to the repo sandbox, the process temp
     /// directory, and the local application-data cache.

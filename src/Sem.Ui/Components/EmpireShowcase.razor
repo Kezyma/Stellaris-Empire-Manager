@@ -110,16 +110,6 @@
         copy of it, and is shown here rather than written into a design. Written in, it would bake
         one language permanently into a file the game would otherwise have shown in the player's own.
     *@
-    @*
-        Passed an empty fallback so an empire the game wrote nothing about shows nothing: five of its
-        fifty-two have no description at all, and without this they showed their own key made
-        readable, which reads as a paragraph that failed to load.
-    *@
-    @if (Session.Localizer.Html(Lore, string.Empty) is { Length: > 0 } lore)
-    {
-        <p class="sem-lore">@((MarkupString)lore)</p>
-    }
-
     @if (Biography is { Length: > 0 } biography)
     {
         <p class="sem-lore">@biography</p>
@@ -153,8 +143,7 @@
         into being the same forty lines twice, and a modifier shown one way here and another there is
         the sort of difference nobody notices until it matters.
     *@
-    <CombinedEffects Context="@Context" Baseline="@Baseline"
-                     Collapsible="@FoldModifiers" />
+    <CombinedEffects Context="@Context" Baseline="@Baseline" />
 
     @*
         And under that, what is wrong with it, folded away.
@@ -229,13 +218,6 @@
     /// </remarks>
     [Parameter]
     public DesignContext? Baseline { get; set; }
-
-    /// <summary>
-    /// The localisation key of the blurb the game writes for one of its own empires, where this is
-    /// one of them.
-    /// </summary>
-    [Parameter]
-    public string? Lore { get; set; }
 
     /// <summary>
     /// The species' own story, where the player wrote one.

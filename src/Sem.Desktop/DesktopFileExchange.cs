@@ -25,9 +25,6 @@ public sealed class DesktopFileExchange(SafeFile file, string designsPath) : IFi
     /// <inheritdoc />
     public bool SavesInPlace => true;
 
-    /// <summary>The file being edited.</summary>
-    public string DesignsPath => _designsPath;
-
     /// <summary>
     /// The published site, which is where a shared link has to point.
     /// </summary>

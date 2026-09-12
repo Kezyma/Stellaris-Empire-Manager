@@ -198,9 +198,6 @@ internal static class CosmeticsExtractor
                 // and asking for the picture anyway is what put two dozen entries in the report of
                 // images the installation is missing.
                 HasCityArt = loader.Content.Contains(citySource),
-                CityPreview = loader.Content.Contains(citySource)
-                    ? assets.Register(citySource, $"cities/{entry.Key}.png", maxDimension: 400)
-                    : null,
                 CityLayers = CityLayers(entry.Key, bands, loader, assets),
 
                 // The first kind a set builds is what the game's own browser sorts it by. A set
@@ -466,7 +463,6 @@ internal static class CosmeticsExtractor
                 Selectable = body.GetBlock("selectable") is { } selectable
                     ? requirements.CompileTrigger(selectable)
                     : new AlwaysRequirement(true),
-                Randomized = body.GetBool("randomized", defaultValue: true),
                 RandomNameSource = body.GetString("customize_random_override"),
                 CharacterNames = pools.Characters,
                 PlanetNames = pools.Planets,

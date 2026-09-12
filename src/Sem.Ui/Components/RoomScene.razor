@@ -12,7 +12,7 @@
     the character stands at the lower left, seventy-five in.
 *@
 
-<div class="sem-room @Class">
+<div class="sem-room">
     @*
         The world first, because the room is painted over it: a room's artwork has its window cut
         out of it — a third of every one of them is transparent — and the view shows through. Placed
@@ -111,8 +111,6 @@
 
     /// <summary>The game's character frame, and how far in from the left edge it stands.</summary>
     private const double FigureFrameWidth = 575;
-
-    private const double FigureFrameHeight = 380;
 
     private const double FigureInset = 75;
 
@@ -243,15 +241,7 @@
     /// <summary>
     /// How built-up the world through the window is, on the game's own nought-to-five scale.
     /// </summary>
-    /// <remarks>
-    /// The game's own <c>DEFAULT_CITY_POP_LEVEL</c> unless a host says otherwise, whose line in the
-    /// defines is commented "Shown in empire designer". It comes to four, which draws every band the
-    /// game has except the last — that one wants a world at five and is a city from edge to edge.
-    /// </remarks>
-    [Parameter]
-    public int? Development { get; set; }
-
-    private int Level => Development ?? Session.Data.Database.Defines.CityPopLevel;
+    private int Level => Session.Data.Database.Defines.CityPopLevel;
 
     /// <summary>
     /// The ship the empire lives aboard, where it lives aboard one.
@@ -266,10 +256,6 @@
     /// <summary>What to call the figure for a reader who cannot see it.</summary>
     [Parameter]
     public string Alt { get; set; } = string.Empty;
-
-    /// <summary>Extra classes, for sizing.</summary>
-    [Parameter]
-    public string? Class { get; set; }
 
     /// <summary>
     /// The world and the city interleaved, furthest from the viewer first.

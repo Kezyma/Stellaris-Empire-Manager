@@ -35,9 +35,6 @@ public sealed record CwToken(CwTokenKind Kind, string Text, string? LeadingTrivi
     /// <summary>Creates a token with no source formatting, to be laid out by the writer.</summary>
     public static CwToken Synthetic(CwTokenKind kind, string text) => new(kind, text, LeadingTrivia: null);
 
-    /// <summary>True when this token came from parsed source and carries its original formatting.</summary>
-    public bool IsFromSource => LeadingTrivia is not null;
-
     /// <summary>
     /// The token's semantic value: quoted strings without their surrounding quotes, everything
     /// else unchanged.

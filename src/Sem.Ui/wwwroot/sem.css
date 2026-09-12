@@ -2265,8 +2265,6 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     color: var(--text);
 }
 
-.sem-hint.unlisted { color: var(--warn); }
-
 /* The scene an origin opens on, above whatever is written about it and fixed while that scrolls. */
 /*
     Cropped the way the game crops it. Its own entry frames a picture at 216 by 115 with clipping on

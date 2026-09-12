@@ -86,8 +86,5 @@ public sealed class SpeciesDesign : CwView
     /// <summary>Replaces the trait list, reusing existing lines so the diff stays small.</summary>
     public void SetTraits(IReadOnlyList<string> traits) => SetStrings("trait", traits);
 
-    /// <summary>Builds an empty species block with no fields set.</summary>
-    public static CwBlock CreateBlock() => new();
-
     public override string ToString() => $"{Class} ({Portrait})";
 }

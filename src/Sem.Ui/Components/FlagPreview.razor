@@ -21,7 +21,7 @@
     over the top, so it is drawn as an ordinary picture.
 *@
 
-<div class="sem-flag @Class" title="@Title">
+<div class="sem-flag @Class">
     @*
         The cut covers the whole frame and carries the game's own mask, which is what rounds the
         field's corners. It has to sit in the frame's coordinates rather than the field's, because
@@ -64,10 +64,6 @@
     /// <summary>Extra classes for sizing.</summary>
     [Parameter]
     public string? Class { get; set; }
-
-    /// <summary>Tooltip text.</summary>
-    [Parameter]
-    public string? Title { get; set; }
 
     /// <summary>
     /// A pattern to draw instead of the flag's own, and whether to leave the emblem off.

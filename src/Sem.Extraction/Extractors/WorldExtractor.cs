@@ -48,7 +48,6 @@ internal static class WorldExtractor
             {
                 Climate = body.GetString("climate"),
                 IsStartingWorld = body.GetBool("initial") && body.GetBool("starting_planet", defaultValue: true),
-                Colonizable = body.GetBool("colonizable"),
                 Potential = requirements.CompileTrigger(body.GetBlock("potential")),
 
                 // Each class names its own picture, and the larger of the two is a frame of a strip

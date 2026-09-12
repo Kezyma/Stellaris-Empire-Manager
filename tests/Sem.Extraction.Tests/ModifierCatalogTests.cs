@@ -18,7 +18,7 @@ public sealed class ModifierCatalogTests
     private static ModifierCatalog? Catalog { get; } =
         InstallRoot is null
             ? null
-            : ModifierCatalog.Read(LayeredContent.ForInstall(InstallRoot), InstallRoot);
+            : ModifierCatalog.Read(LayeredContent.ForInstall(InstallRoot));
 
     [SkippableFact]
     [Trait("Category", "RealData")]

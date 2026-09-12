@@ -44,7 +44,6 @@ internal static class AscensionExtractor
             results.Add(new AscensionPerkDefinition(entry.Key)
             {
                 Category = category,
-                IsPath = category == PathCategory,
 
                 // Potential decides whether it is listed at all; possible whether it may be taken
                 // now, and its failures are sentences the game wrote to be read.

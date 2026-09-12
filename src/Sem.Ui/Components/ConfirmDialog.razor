@@ -31,8 +31,6 @@
             <p>@Message</p>
         }
 
-        @Body
-
         <div class="choices">
             @ChildContent
         </div>
@@ -66,9 +64,6 @@
     /// is fixed to the viewport and sits over both editors - so a second modal of its own would be
     /// the same dialog written twice.
     /// </remarks>
-    [Parameter]
-    public RenderFragment? Body { get; set; }
-
     /// <summary>Called when the dialog is dismissed rather than answered.</summary>
     [Parameter]
     public EventCallback OnDismiss { get; set; }
