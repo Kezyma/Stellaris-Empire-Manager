@@ -21,7 +21,14 @@
 <button type="button" class="sem-toggle" aria-pressed="@(Fallen ? "true" : "false")"
         title="A fallen empire the galaxy generates may wear this design's species, portrait, name and flag. It does not change the empire you play."
         @onclick="() => Session.Edit(d => d.SpawnAsFallen = d.SpawnAsFallen != true)">
-    @(Fallen ? "Allowed" : "Disallowed")
+    @*
+        The game's own pair. It has no words for this setting - there is no localisation key and no
+        .gui element, which is why this control exists at all - but it does have words for the
+        setting beside it, and EMPIRE_SPAWN_ALLOWED / EMPIRE_SPAWN_DISALLOWED read "Empire Spawning
+        Allowed" and "Empire Spawning Forbidden". Saying "Disallowed" here put a third word for one
+        idea on a card that already showed the game's two.
+    *@
+    @(Fallen ? "Allowed" : "Forbidden")
 </button>
 
 @code {

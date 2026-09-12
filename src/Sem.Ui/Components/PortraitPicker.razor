@@ -32,7 +32,8 @@
         <label>Portrait duplication</label>
         <button type="button" class="sem-toggle" aria-pressed="@(Shared ? "true" : "false")"
                 @onclick="() => Session.Edit(d => d.IgnorePortraitDuplication = d.IgnorePortraitDuplication != true)">
-            @(Shared ? "Allowed" : "Disallowed")
+            @* Allowed/Forbidden, which is the pair the game itself uses - see FallenToggle. *@
+            @(Shared ? "Allowed" : "Forbidden")
         </button>
     </div>
 }

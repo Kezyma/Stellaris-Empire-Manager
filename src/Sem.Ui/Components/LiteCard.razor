@@ -139,7 +139,7 @@
                                         <button type="button" class="value"
                                                 title="Choose a set of scripted country flags"
                                                 @onclick="() => _flagging = true">
-                                            @(View.FlagSetLabel ?? "None")
+                                            @(View.FlagSetLabel ?? "Not set")
                                         </button>
                                     }
                                 </div>
@@ -315,7 +315,7 @@
                                                 @onclick="() => _prefixing = true">
                                             @(Session.Localizer.Name(Design.ShipPrefix, string.Empty) is { Length: > 0 } worn
                                                 ? worn
-                                                : "not set")
+                                                : "Not set")
                                         </button>
                                     }
                                 </div>
@@ -401,13 +401,13 @@
                     <div class="about">
                         <div class="sem-lite-choices">
                             @Chips(Session.Localizer.Heading("TRADITIONS", "Traditions"),
-                                   View.PlanTrees, LitePart.Plan, empty: "none planned")
+                                   View.PlanTrees, LitePart.Plan, empty: "None planned")
 
                             @Chips(Session.Localizer.Heading("ASCENSION_PERKS", "Ascension Perks"),
-                                   View.PlanPerks, LitePart.PlanPerks, empty: "none planned")
+                                   View.PlanPerks, LitePart.PlanPerks, empty: "None planned")
 
                             @Chips(Session.Localizer.Heading("GOVERNMENT_CIVICS", "Civics"),
-                                   View.PlanCivics, LitePart.PlanCivics, empty: "none planned")
+                                   View.PlanCivics, LitePart.PlanCivics, empty: "None planned")
                         </div>
                     </div>
                 </div>
@@ -614,7 +614,7 @@
                         @if (founder)
                         {
                             @Row("Portrait duplication",
-                                 Design.IgnorePortraitDuplication == true ? "Allowed" : "Disallowed",
+                                 Design.IgnorePortraitDuplication == true ? "Allowed" : "Forbidden",
                                  portrait)
                         }
 
@@ -713,8 +713,16 @@
     /// What pressing one opens, or null where the row is something the empire is given rather than
     /// something it picked.
     /// </param>
+    /// <param name="empty">
+    /// What to say when there are none. Capitalised, because it stands exactly where a chip's own
+    /// name would stand and those are capitalised - the one caller that already passed its own word
+    /// here passed "Automatic", which is what settled it.
+    ///
+    /// "None chosen" rather than the "Not set" a single value gets: a list that is empty and a
+    /// field nobody filled in are different states, and the row can afford to say which.
+    /// </param>
     private RenderFragment Chips(string? label, IEnumerable<EmpireChoice> items, LitePart? part,
-                                 string empty = "none chosen")
+                                 string empty = "None chosen")
     {
         // Once. Each of these costs a lookup in the database, and the row asks twice below.
         var listed = items.ToList();
@@ -784,14 +792,25 @@
             </div>
         </div>;
 
-    /// <summary>One fact the game has no picture for, as a labelled line.</summary>
+    /// <summary>
+    /// One fact the game has no picture for, as a labelled line.
+    /// </summary>
+    /// <remarks>
+    /// "Not set" rather than "not set", which this card said in two places and the flag and room
+    /// tabs contradicted in four. It stands where a chosen name would stand, and every chosen name
+    /// is capitalised, so it is capitalised too.
+    ///
+    /// "None" is kept where it is a choice somebody made rather than the absence of one - a city
+    /// set of none, a gender of none - because those are different things and the reader can only
+    /// tell them apart if we do.
+    /// </remarks>
     private RenderFragment Row(string label, string? value, LitePart part) =>
         @<div class="sem-lite-chips">
             <span class="heading">@label</span>
 
             <div class="chips">
                 <button type="button" class="value" title="@($"Edit {label}")"
-                        @onclick="() => Open(part)">@(value is { Length: > 0 } ? value : "not set")</button>
+                        @onclick="() => Open(part)">@(value is { Length: > 0 } ? value : "Not set")</button>
             </div>
         </div>;
 }
