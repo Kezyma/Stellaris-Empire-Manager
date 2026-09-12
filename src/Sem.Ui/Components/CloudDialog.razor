@@ -1,0 +1,327 @@
+@using Sem.Ui.Services.Cloud
+@implements IDisposable
+@inject CloudConnection Cloud
+@inject NavigationManager Navigation
+
+@*
+    Connecting the app to a designs file kept at a cloud provider.
+
+    Three states in one sheet, because they are three steps of one errand and a player who has just
+    signed in should not have to find their way back to a second dialog to say which file. What is
+    on screen is whichever step they have reached.
+*@
+
+<div class="sem-modal" @onclick="Close" @onclick:stopPropagation="true">
+    <div class="sheet sem-cloud" role="dialog" aria-modal="true" aria-labelledby="@_titleId"
+         tabindex="-1" @ref="_sheet" @onkeydown="OnKey" @onkeydown:stopPropagation="true"
+         @onclick:stopPropagation="true">
+
+        <h2 id="@_titleId">@(Cloud.Connected ? $"Saving to {Cloud.ProviderName}" : $"Open a file from {Cloud.ProviderName}")</h2>
+
+        @if (Cloud.Connected && Cloud.File is { } open)
+        {
+            <p>
+                Save writes to <strong>@open.Name</strong>@(open.Folder is { Length: > 0 } where ? $", in {where}" : null).
+                Changes made to it elsewhere are loaded when you come back to the list.
+            </p>
+        }
+        else if (!_signedIn)
+        {
+            <p>
+                Your empires stay in your own @Cloud.ProviderName. This app reads and writes the one
+                file you choose and nothing else - though @Cloud.ProviderName has no way to ask for
+                less than all your files, so the permission screen will say more than that.
+            </p>
+        }
+        else
+        {
+            @*
+                A folder at a time, the way a file browser works, because somebody looking for their
+                designs file knows where it is and does not know what it is called. Searching is
+                still here for the case where they know the name and not the place.
+            *@
+            <nav class="sem-cloud-path" aria-label="Where you are">
+                @for (var depth = 0; depth < _path.Count; depth++)
+                {
+                    var step = depth;
+
+                    <button type="button" @onclick="() => GoTo(step)" disabled="@_busy">
+                        @_path[depth].Name
+                    </button>
+
+                    @if (depth < _path.Count - 1)
+                    {
+                        <span aria-hidden="true">›</span>
+                    }
+                }
+            </nav>
+
+            <div class="sem-cloud-find">
+                <input type="search" value="@_query" placeholder="Search by name instead"
+                       aria-label="Search your files"
+                       @onchange="e => _query = e.Value?.ToString() ?? string.Empty"
+                       @onkeydown="OnSearchKey" />
+
+                <button type="button" @onclick="Search" disabled="@_busy">Search</button>
+            </div>
+
+            @if (_searching)
+            {
+                @if (_found is { Count: > 0 })
+                {
+                    <ul class="sem-cloud-files">
+                        @foreach (var file in _found)
+                        {
+                            <li>
+                                <button type="button" @onclick="() => Use(file)" disabled="@_busy">
+                                    <span class="name">@file.Name</span>
+                                    <span class="where">@(file.Folder is { Length: > 0 } ? file.Folder : "/")</span>
+                                </button>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="sem-hint">Nothing there matched. Try part of the name.</p>
+                }
+            }
+            else if (_here is { Count: > 0 })
+            {
+                <ul class="sem-cloud-files">
+                    @foreach (var entry in _here)
+                    {
+                        <li>
+                            @if (entry.IsFolder)
+                            {
+                                <button type="button" class="folder" @onclick="() => Into(entry)"
+                                        disabled="@_busy">
+                                    <span class="name">@entry.Name</span>
+                                </button>
+                            }
+                            else
+                            {
+                                <button type="button" @onclick="() => Use(Chosen(entry))" disabled="@_busy">
+                                    <span class="name">@entry.Name</span>
+                                    <span class="where">@Sized(entry.Size)</span>
+                                </button>
+                            }
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p class="sem-hint">@(_busy ? "Looking…" : "There is nothing in this folder.")</p>
+            }
+        }
+
+        @if (Cloud.Note is { } trouble)
+        {
+            <p class="sem-header-error">@trouble</p>
+        }
+
+        <div class="choices">
+            <button type="button" @onclick="Close">Close</button>
+
+            @if (Cloud.Connected)
+            {
+                <button type="button" class="danger" @onclick="Disconnect" disabled="@_busy">
+                    Disconnect
+                </button>
+            }
+            else if (!_signedIn)
+            {
+                <button type="button" class="primary" @onclick="SignIn" disabled="@_busy">
+                    Sign in to @Cloud.ProviderName
+                </button>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private ElementReference _sheet;
+    private readonly string _titleId = $"cloud-{Guid.NewGuid():N}";
+
+    private bool _signedIn;
+    private bool _busy;
+    private bool _searching;
+    private string _query = string.Empty;
+    private IReadOnlyList<CloudFile>? _found;
+
+    /// <summary>What is in the folder being looked at.</summary>
+    private IReadOnlyList<CloudEntry>? _here;
+
+    /// <summary>The way down from the top of the drive, so any step of it can be gone back to.</summary>
+    private readonly List<(string? Id, string Name)> _path = [(null, "Your OneDrive")];
+
+    /// <summary>Called when the dialog is closed, however it was closed.</summary>
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+    /// <summary>
+    /// Asked before anything replaces what is open, which is the caller's question to ask.
+    /// </summary>
+    /// <remarks>
+    /// The same arrangement Import uses. Connecting opens a different file, and whatever was being
+    /// edited goes with it.
+    /// </remarks>
+    [Parameter]
+    public Func<Task<bool>>? ConfirmFirst { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Cloud.Changed += OnChanged;
+        _signedIn = await Cloud.SignedInAsync();
+
+        if (_signedIn && !Cloud.Connected)
+        {
+            await Open();
+        }
+    }
+
+    /// <summary>Lists whatever folder the path now ends at.</summary>
+    private async Task Open()
+    {
+        _busy = true;
+        _searching = false;
+
+        try
+        {
+            _here = await Cloud.ListAsync(_path[^1].Id);
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private async Task Into(CloudEntry folder)
+    {
+        _path.Add((folder.Id, folder.Name));
+
+        await Open();
+    }
+
+    private async Task GoTo(int depth)
+    {
+        if (depth >= _path.Count - 1 && !_searching)
+        {
+            return;
+        }
+
+        _path.RemoveRange(depth + 1, _path.Count - depth - 1);
+
+        await Open();
+    }
+
+    /// <summary>A file in the folder being looked at, named by where it was found.</summary>
+    private CloudFile Chosen(CloudEntry entry) =>
+        new(entry.Id, entry.Name, string.Join(" › ", _path.Select(step => step.Name)));
+
+    /// <summary>Roughly how large, which is enough to tell a designs file from an empty one.</summary>
+    private static string Sized(long bytes) =>
+        bytes < 1024 ? $"{bytes} B" : $"{bytes / 1024:N0} KB";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await _sheet.FocusAsync();
+        }
+    }
+
+    private void OnChanged() => InvokeAsync(StateHasChanged);
+
+    private Task OnKey(KeyboardEventArgs e) =>
+        e.Key == "Escape" ? Close() : Task.CompletedTask;
+
+    private Task OnSearchKey(KeyboardEventArgs e) =>
+        e.Key == "Enter" ? Search() : Task.CompletedTask;
+
+    /// <summary>
+    /// Leaves for the provider, which is a whole-page navigation rather than a popup.
+    /// </summary>
+    /// <remarks>
+    /// A popup is blocked more often than not and leaves two windows to keep in step. Leaving and
+    /// coming back costs the page's state, which here is nothing that is not on disk or in the
+    /// browser's own store - and the verifier the return leg needs is kept where a navigation
+    /// cannot disturb it.
+    /// </remarks>
+    private async Task SignIn()
+    {
+        _busy = true;
+
+        var address = await Cloud.BeginSignInAsync();
+
+        Navigation.NavigateTo(address, forceLoad: true);
+    }
+
+    private async Task Search()
+    {
+        // An empty box means "stop searching", which is the only way back to the folders from here.
+        if (_query is not { Length: > 0 })
+        {
+            await Open();
+            return;
+        }
+
+        _busy = true;
+
+        try
+        {
+            _found = await Cloud.FindAsync(_query);
+            _searching = true;
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private async Task Use(CloudFile file)
+    {
+        if (ConfirmFirst is { } ask && !await ask())
+        {
+            return;
+        }
+
+        _busy = true;
+
+        try
+        {
+            if (await Cloud.UseAsync(file))
+            {
+                await Close();
+            }
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private async Task Disconnect()
+    {
+        _busy = true;
+
+        try
+        {
+            await Cloud.DisconnectAsync();
+            _signedIn = false;
+            _found = null;
+            _here = null;
+            _searching = false;
+            _path.RemoveRange(1, _path.Count - 1);
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    private Task Close() => OnClose.InvokeAsync();
+
+    public void Dispose() => Cloud.Changed -= OnChanged;
+}

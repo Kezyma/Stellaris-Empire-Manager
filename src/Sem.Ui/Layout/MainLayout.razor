@@ -92,6 +92,23 @@
                 }
 
                 @*
+                    Where the file lives, for a host that can be pointed at one somewhere else.
+                    Beside Import because it is the same question - where the empires come from -
+                    and marked active while it is answered, since that is what changes what Save
+                    means. Drawn only in a browser: the desktop already has a real file.
+                *@
+                @if (_cloud is not null)
+                {
+                    <button type="button" class="sem-tab @(_cloud.Connected ? "active" : null)"
+                            title="@(_cloud.File is { } open
+                                ? $"Saving to {open.Name} in your {_cloud.ProviderName}"
+                                : $"Open a designs file from your {_cloud.ProviderName}")"
+                            @onclick="() => _connecting = true">
+                        @_cloud.ProviderName
+                    </button>
+                }
+
+                @*
                     Save, and the answer to whether saving is something you ask for at all.
 
                     Together, because they are one decision read left to right - the word, then
@@ -261,6 +278,16 @@
         </ConfirmDialog>
     }
 
+    @*
+        Signing in, choosing a file, and disconnecting - one sheet, because they are three steps of
+        one errand. The question about unsaved work is handed in rather than asked here: connecting
+        opens a different file, exactly as importing one does.
+    *@
+    @if (_connecting)
+    {
+        <CloudDialog OnClose="() => _connecting = false" ConfirmFirst="Guard.ConfirmAsync" />
+    }
+
     @if (_message is { } note)
     {
         <p class="@(note.IsProblem ? "sem-header-error" : "sem-header-note")">@note.Text</p>
@@ -413,6 +440,18 @@
     /// </remarks>
     private FileExchangeRouter? _files;
 
+    /// <summary>Whether the connect-to-a-provider sheet is on screen.</summary>
+    private bool _connecting;
+
+    /// <summary>
+    /// The provider the app can be pointed at, where this host has one.
+    /// </summary>
+    /// <remarks>
+    /// Absent on the desktop, which already has the player's real file and needs nothing fetching.
+    /// Asked for the same way as the window controls, and for the same reason.
+    /// </remarks>
+    private CloudConnection? _cloud;
+
     /// <summary>What the sync box does, in the one sentence a tooltip has.</summary>
     private string SyncExplained =>
         Sync.Enabled
@@ -465,6 +504,28 @@
             // before the player touches anything.
             Sync.Changed += OnChanged;
             await Sync.AttachAsync(_session);
+
+            // After the session exists, because connecting opens a file into it.
+            _cloud = Services.GetService(typeof(CloudConnection)) as CloudConnection;
+
+            if (_cloud is not null)
+            {
+                _cloud.Changed += OnChanged;
+
+                // This load may be the way back from the provider's sign-in page. If it is, the
+                // code in the address is spent here and taken back out of it, so that a reload -
+                // or a link somebody copies out of the bar - does not carry it around.
+                if (await _cloud.CompleteSignInAsync(Navigation.Uri))
+                {
+                    Navigation.NavigateTo(Navigation.BaseUri, replace: true);
+                }
+                else
+                {
+                    // An ordinary load. A session kept in this tab survives a reload, so the file
+                    // chosen before is picked up again without anybody being asked anything.
+                    await _cloud.ResumeAsync();
+                }
+            }
         }
     }
 
@@ -509,6 +570,11 @@
         if (_files is not null)
         {
             _files.Changed -= OnChanged;
+        }
+
+        if (_cloud is not null)
+        {
+            _cloud.Changed -= OnChanged;
         }
     }
 

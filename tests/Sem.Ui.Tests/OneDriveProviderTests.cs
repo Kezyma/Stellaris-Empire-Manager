@@ -35,10 +35,13 @@ public sealed class OneDriveProviderTests
     private static HttpResponseMessage Json(string body) =>
         new(HttpStatusCode.OK) { Content = new StringContent(body, Encoding.UTF8, "application/json") };
 
+    private const string Download = "https://my.microsoftpersonalcontent.com/personal/x/download.aspx?tempauth=abc";
+
     private const string Item =
         """
         {"id":"item-1","name":"user_empire_designs_v3.4.txt","eTag":"\"tag-7\"","size":1234,
          "lastModifiedDateTime":"2026-09-12T10:11:12Z",
+         "@microsoft.graph.downloadUrl":"https://my.microsoftpersonalcontent.com/personal/x/download.aspx?tempauth=abc",
          "parentReference":{"id":"folder-9","path":"/drive/root:/KEZYMA-DT/Documents/Paradox Interactive/Stellaris"}}
         """;
 
@@ -88,7 +91,7 @@ public sealed class OneDriveProviderTests
     public async Task ReadingGivesTheBytesAndTheVersion()
     {
         var (provider, _) = await Built(request =>
-            request.RequestUri!.ToString().EndsWith("/content", StringComparison.Ordinal)
+            request.RequestUri!.Host.Contains("microsoftpersonalcontent", StringComparison.Ordinal)
                 ? new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent([1, 2, 3]) }
                 : Json(Item));
 
@@ -97,6 +100,88 @@ public sealed class OneDriveProviderTests
         Assert.Equal([1, 2, 3], read?.Contents);
         Assert.Equal("\"tag-7\"", read?.Stamp.Version);
         Assert.Equal(1234, read?.Stamp.Size);
+    }
+
+    /// <summary>
+    /// The item is asked for whole, because naming fields loses the download link.
+    /// </summary>
+    /// <remarks>
+    /// The link is an annotation rather than a field, so a request carrying $select comes back 200
+    /// with every field that was asked for and no link at all - which reads downstream as a file
+    /// that cannot be read, with nothing to say why. Found that way, and pinned here so the next
+    /// person to tidy this URL by trimming what it fetches finds out at once.
+    /// </remarks>
+    [Fact]
+    public async Task ReadingAsksForTheWholeItemSoTheLinkSurvives()
+    {
+        var (provider, wire) = await Built(request =>
+            request.RequestUri!.Host.Contains("microsoftpersonalcontent", StringComparison.Ordinal)
+                ? new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent([1]) }
+                : Json(Item));
+
+        await provider.ReadAsync("item-1");
+
+        var metadata = wire.Sent.First(s => s.Url.StartsWith("https://graph.microsoft.com", StringComparison.Ordinal));
+
+        Assert.DoesNotContain("select", metadata.Url, StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>
+    /// The session's token is never sent to the host the bytes come from.
+    /// </summary>
+    /// <remarks>
+    /// Graph answers the content endpoint with a redirect to a content host whose name varies per
+    /// account, and following that with the Authorization header attached would hand the token to
+    /// somewhere it has no business being. So the item's own download link is asked for instead and
+    /// fetched bare - it carries a short-lived permission for that one file, which is all that is
+    /// needed. Worth a test because getting it wrong is invisible: it would work perfectly.
+    /// </remarks>
+    [Fact]
+    public async Task TheTokenNeverReachesTheDownloadHost()
+    {
+        var (provider, wire) = await Built(request =>
+            request.RequestUri!.Host.Contains("microsoftpersonalcontent", StringComparison.Ordinal)
+                ? new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent([1]) }
+                : Json(Item));
+
+        await provider.ReadAsync("item-1");
+
+        var download = wire.Sent.Single(s => s.Url == Download);
+
+        Assert.False(download.Bearer);
+        Assert.True(wire.Sent.Single(s => s.Url.StartsWith("https://graph.microsoft.com", StringComparison.Ordinal)).Bearer);
+    }
+
+    /// <summary>A folder lists what is in it, with folders before files and each by name.</summary>
+    [Fact]
+    public async Task AFolderListsItsContentsFoldersFirst()
+    {
+        var (provider, wire) = await Built(_ => Json(
+            """
+            {"value":[
+              {"id":"f-2","name":"Stellaris","folder":{"childCount":3}},
+              {"id":"x-1","name":"zeta.txt","size":10},
+              {"id":"x-2","name":"alpha.txt","size":20},
+              {"id":"f-1","name":"Documents","folder":{"childCount":9}}
+            ]}
+            """));
+
+        var listed = await provider.ListAsync(null);
+
+        Assert.Equal(["Documents", "Stellaris", "alpha.txt", "zeta.txt"], listed.Select(e => e.Name));
+        Assert.Equal([true, true, false, false], listed.Select(e => e.IsFolder));
+        Assert.Contains("/me/drive/root/children", wire.Sent[0].Url, StringComparison.Ordinal);
+    }
+
+    /// <summary>And going into one asks for that folder rather than the top of the drive.</summary>
+    [Fact]
+    public async Task GoingIntoAFolderAsksForThatFolder()
+    {
+        var (provider, wire) = await Built(_ => Json("""{"value":[]}"""));
+
+        await provider.ListAsync("folder-9");
+
+        Assert.Contains("/me/drive/items/folder-9/children", wire.Sent[0].Url, StringComparison.Ordinal);
     }
 
     /// <summary>

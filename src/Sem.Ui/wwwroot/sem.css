@@ -5846,6 +5846,99 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
+   Connecting to a provider: a little wider than a question, because it holds a list of files whose
+   names are long and whose folders are longer.
+*/
+.sem-modal > .sheet.sem-cloud { width: min(36rem, 100%); }
+
+/*
+   The way down from the top of the drive, every step of it clickable.
+
+   A trail rather than an up arrow, because the folder somebody wants is four deep under a device
+   name they did not choose, and climbing back one rung at a time to reach the one above is the
+   part that makes a file browser tiring.
+*/
+.sem-cloud-path {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+    font-size: var(--text-sm);
+}
+
+.sem-cloud-path > button {
+    padding: 2px var(--space-xs);
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font: inherit;
+    font-size: var(--text-sm);
+    cursor: pointer;
+}
+
+.sem-cloud-path > button:last-of-type { color: var(--text); }
+
+.sem-cloud-path > button:hover:not(:disabled) {
+    background: var(--bg-hover);
+    color: var(--text);
+}
+
+.sem-cloud-path > span { color: var(--text-faint); }
+
+.sem-cloud-find {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.sem-cloud-find > input { flex: 1; min-width: 0; }
+
+/*
+   The files found, as rows rather than as a picker: there are rarely more than a handful, and each
+   needs two lines - the name, and the folder that tells two machines' copies apart.
+*/
+.sem-cloud-files {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    max-height: 16rem;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.sem-cloud-files > li > button {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+    text-align: left;
+}
+
+.sem-cloud-files .name { color: var(--text); }
+
+/*
+   A folder reads as a way in rather than as a thing to choose, which is the one distinction this
+   list has to make and the only one it makes: the arrow, and no size beside the name.
+*/
+.sem-cloud-files > li > button.folder .name::before {
+    content: "▸ ";
+    color: var(--text-faint);
+}
+
+.sem-cloud-files > li > button.folder { color: var(--accent); }
+
+.sem-cloud-files .where {
+    color: var(--text-dim);
+    font-size: var(--text-xs);
+
+    /* A path is the one thing here that can outgrow the sheet, and it must not widen it. */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/*
    A choice inside a question: what the answer will do, rather than what the answer is. It is one
    item in the sheet's own column, so the room above and below it is the dialog's; the box is its
    own, so that it reads as a control rather than as a second sentence.

@@ -36,6 +36,29 @@ public sealed class GraphItem
     /// <summary>The folder it sits in.</summary>
     [JsonPropertyName("parentReference")]
     public GraphParent? Parent { get; set; }
+
+    /// <summary>Present only on a folder, which is how one is told from a file.</summary>
+    [JsonPropertyName("folder")]
+    public GraphFolder? Folder { get; set; }
+
+    /// <summary>
+    /// A link to the bytes that carries its own short-lived permission.
+    /// </summary>
+    /// <remarks>
+    /// Asked for instead of following the redirect from the content endpoint, so that the session's
+    /// own token is never sent to the content host - which is a different host, on a name that
+    /// varies per account. The link is good for a few minutes and for this file only.
+    /// </remarks>
+    [JsonPropertyName("@microsoft.graph.downloadUrl")]
+    public string? DownloadUrl { get; set; }
+}
+
+/// <summary>The mark of a folder. Its presence is the whole message.</summary>
+public sealed class GraphFolder
+{
+    /// <summary>How much is inside, which is worth showing beside the name.</summary>
+    [JsonPropertyName("childCount")]
+    public int ChildCount { get; set; }
 }
 
 /// <summary>Where an item sits, as much of it as is useful.</summary>

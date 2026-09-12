@@ -15,6 +15,15 @@ namespace Sem.Ui.Services.Cloud;
 public sealed record CloudFile(string Id, string Name, string Folder);
 
 /// <summary>
+/// One row in a folder listing, which may be a folder itself.
+/// </summary>
+/// <param name="Id">The provider's handle, to descend into or to open.</param>
+/// <param name="Name">What to show.</param>
+/// <param name="IsFolder">Whether going into it lists more, or choosing it opens a file.</param>
+/// <param name="Size">How large a file is; nothing for a folder.</param>
+public sealed record CloudEntry(string Id, string Name, bool IsFolder, long Size);
+
+/// <summary>
 /// What a provider says about a file without handing over its contents.
 /// </summary>
 /// <param name="Version">
@@ -60,7 +69,15 @@ public interface ICloudProvider
     /// <summary>What to call this provider in the interface.</summary>
     string Name { get; }
 
-    /// <summary>Files whose name matches, for the player to choose between.</summary>
+    /// <summary>
+    /// What is in a folder, so somebody can find their file by looking rather than by guessing.
+    /// </summary>
+    /// <param name="folderId">The folder to open, or null for the top of the drive.</param>
+    /// <param name="cancellationToken">Dropped when the dialog goes.</param>
+    Task<IReadOnlyList<CloudEntry>> ListAsync(
+        string? folderId, CancellationToken cancellationToken = default);
+
+    /// <summary>Files whose name matches, for somebody who would rather not go looking.</summary>
     Task<IReadOnlyList<CloudFile>> FindAsync(string query, CancellationToken cancellationToken = default);
 
     /// <summary>The file's contents and the stamp they were read at, or null if it is not there.</summary>

@@ -64,6 +64,9 @@ public sealed class CloudFileExchangeTests
         public Task<IReadOnlyList<CloudFile>> FindAsync(string query, CancellationToken cancellationToken = default) =>
             Task.FromResult<IReadOnlyList<CloudFile>>([File]);
 
+        public Task<IReadOnlyList<CloudEntry>> ListAsync(string? folderId, CancellationToken cancellationToken = default) =>
+            Task.FromResult<IReadOnlyList<CloudEntry>>([new(File.Id, File.Name, false, Contents.Length)]);
+
         public Task<(byte[] Contents, CloudStamp Stamp)?> ReadAsync(string id, CancellationToken cancellationToken = default)
         {
             Reads++;

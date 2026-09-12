@@ -49,6 +49,19 @@ builder.Services.AddScoped(s => new OneDriveAuth(
 builder.Services.AddScoped(s => new OneDriveProvider(
     new HttpClient(), s.GetRequiredService<OneDriveAuth>()));
 
+builder.Services.AddScoped<ICloudProvider>(s => s.GetRequiredService<OneDriveProvider>());
+
+// Registered last, because it is the piece that knows about all of the others - signing in, the
+// file chosen, and the router that decides where Save goes.
+builder.Services.AddScoped(s => new CloudConnection(
+    s.GetRequiredService<ICloudProvider>(),
+    s.GetRequiredService<OneDriveAuth>(),
+    s.GetRequiredService<FileExchangeRouter>(),
+    s.GetRequiredService<BrowserFileExchange>(),
+    s.GetRequiredService<SessionHost>(),
+    s.GetRequiredService<Preferences>(),
+    s.GetRequiredService<DesignSync>()));
+
 // Every content pack is assumed here: the installation the data was read from is not the player's,
 // and a designer that hides half the game until a setting is found is worse than one that offers
 // too much.

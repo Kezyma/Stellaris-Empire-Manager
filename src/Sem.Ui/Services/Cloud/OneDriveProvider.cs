@@ -59,26 +59,35 @@ public sealed class OneDriveProvider(HttpClient client, OneDriveAuth auth) : ICl
     }
 
     /// <inheritdoc />
+    /// <remarks>
+    /// In two steps rather than one, and deliberately. Asking the content endpoint for the bytes
+    /// answers with a redirect to whichever content host the account lives on, and following it
+    /// carries the session's token to a host that has no business holding it - besides which the
+    /// host's name varies per account, so a policy naming where the page may connect cannot name it
+    /// exactly. The item's own download link is asked for instead and fetched with no Authorization
+    /// header at all: it carries a short-lived permission of its own, for this one file.
+    /// </remarks>
     public async Task<(byte[] Contents, CloudStamp Stamp)?> ReadAsync(
         string id, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(id);
 
-        // The stamp first, so what is returned describes the bytes rather than a moment after them.
-        if (await StatAsync(id, cancellationToken).ConfigureAwait(false) is not { } stamp)
+        // No $select on this one, deliberately. The download link is an annotation rather than a
+        // field, and asking for a list of fields drops it - Graph answers 200 with everything that
+        // was asked for and no link, which looks exactly like a file that cannot be read. The whole
+        // item is a little larger and always carries it.
+        var item = await ReadAsync(
+            $"{Graph}/me/drive/items/{Uri.EscapeDataString(id)}",
+            CloudJson.Default.GraphItem,
+            cancellationToken).ConfigureAwait(false);
+
+        if (Stamped(item) is not { } stamp || item?.DownloadUrl is not { Length: > 0 } link)
         {
             return null;
         }
 
-        using var request = await RequestAsync(
-            HttpMethod.Get, $"{Graph}/me/drive/items/{Uri.EscapeDataString(id)}/content")
-            .ConfigureAwait(false);
-
-        if (request is null)
-        {
-            return null;
-        }
-
+        // No token on this one. The link is the permission.
+        using var request = new HttpRequestMessage(HttpMethod.Get, link);
         using var response = await Send(request, cancellationToken).ConfigureAwait(false);
 
         if (response is not { IsSuccessStatusCode: true })
@@ -89,6 +98,36 @@ public sealed class OneDriveProvider(HttpClient client, OneDriveAuth auth) : ICl
         var bytes = await response.Content.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false);
 
         return (bytes, stamp);
+    }
+
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<CloudEntry>> ListAsync(
+        string? folderId, CancellationToken cancellationToken = default)
+    {
+        var where = folderId is { Length: > 0 } folder
+            ? $"items/{Uri.EscapeDataString(folder)}"
+            : "root";
+
+        var found = await ReadAsync(
+            $"{Graph}/me/drive/{where}/children?$select=id,name,size,folder&$top=200&$orderby=name",
+            CloudJson.Default.GraphItems,
+            cancellationToken).ConfigureAwait(false);
+
+        if (found?.Value is not { } items)
+        {
+            return [];
+        }
+
+        // Folders first, then files, each by name - which is how every file browser has ever done
+        // it, and the order Graph does not promise even when asked.
+        return
+        [
+            .. items
+                .Where(i => i.Id is { Length: > 0 } && i.Name is { Length: > 0 })
+                .Select(i => new CloudEntry(i.Id!, i.Name!, i.Folder is not null, i.Size))
+                .OrderByDescending(e => e.IsFolder)
+                .ThenBy(e => e.Name, StringComparer.OrdinalIgnoreCase),
+        ];
     }
 
     /// <inheritdoc />

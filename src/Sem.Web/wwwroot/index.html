@@ -15,8 +15,14 @@
         Two directives are doing the real work. connect-src says where bytes may be sent, which is
         what stops a stolen token being posted anywhere; providers get added to it as they arrive,
         and OneDrive is the first - graph.microsoft.com for the file, login.microsoftonline.com for
-        the sign-in. Both are named outright rather than by wildcard, so this list stays a list of
-        places a token could go rather than a shape that new ones can grow into.
+        the sign-in.
+
+        The two wildcards after those are not by choice. Asking Graph for a file's contents hands
+        back a redirect to whichever content host that account lives on - my.microsoftpersonalcontent.com
+        for this one - and the name varies per account, so there is nothing exact to name. A policy
+        without them refuses the download with the file sitting right there, which is precisely how
+        this was found. The app never sends the token to either: the download link carries its own
+        short-lived one, and the request is built without an Authorization header on purpose.
         base-uri matters more here than in most apps, because every address in this one is relative
         to the base href above, so an injected <base> would repoint the whole site.
 
@@ -41,7 +47,8 @@
         style-src 'self' 'unsafe-inline';
         img-src 'self' data: blob:;
         font-src 'self';
-        connect-src 'self' https://graph.microsoft.com https://login.microsoftonline.com;
+        connect-src 'self' https://graph.microsoft.com https://login.microsoftonline.com
+            https://*.microsoftpersonalcontent.com https://*.files.1drv.com;
         object-src 'none';
         base-uri 'self';
         form-action 'none'
