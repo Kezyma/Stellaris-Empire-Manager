@@ -130,7 +130,13 @@ internal static class WorldExtractor
     /// <remarks>
     /// A system marked <c>custom_empire</c> can be chosen for any empire. One marked <c>origin</c>
     /// appears only when the selected origin names it, whatever else it is marked as, so origin
-    /// takes precedence.
+    /// takes precedence. One marked <c>nomad_init</c> belongs to an empire that starts aboard an
+    /// arkship.
+    ///
+    /// The last of those is 4.5's, and reading only the first two dropped all seven of them - which
+    /// included vela_system, the system the game's own nomadic empire starts in. Importing that
+    /// empire therefore produced a design whose own starting system this app had never heard of,
+    /// and the picker marked it unavailable.
     /// </remarks>
     public static List<InitializerDefinition> ExtractInitializers(ScriptLoader loader)
     {
@@ -144,7 +150,9 @@ internal static class WorldExtractor
                 ? InitializerUsage.Origin
                 : usages.Contains("custom_empire")
                     ? InitializerUsage.CustomEmpire
-                    : InitializerUsage.None;
+                    : usages.Contains("nomad_init")
+                        ? InitializerUsage.Nomad
+                        : InitializerUsage.None;
 
             if (usage != InitializerUsage.None)
             {

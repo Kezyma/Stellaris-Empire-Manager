@@ -259,6 +259,7 @@ internal static class RulesTestData
         [
             new InitializerDefinition("custom_starting_init_01", InitializerUsage.CustomEmpire),
             new InitializerDefinition("void_dweller_system", InitializerUsage.Origin),
+            new InitializerDefinition("vela_system", InitializerUsage.Nomad),
         ],
 
         Traits =

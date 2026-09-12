@@ -53,7 +53,9 @@ public sealed class GameDataExtractionTests
             // phantom that sat in the shipped data being counted as a world.
             ("planet classes", 69, database.PlanetClasses.Count),
             ("starting worlds", 9, database.PlanetClasses.Count(p => p.IsStartingWorld)),
-            ("starting systems", 23, database.Initializers.Count),
+            // 23 before 4.5's nomad_init pool was read: six systems headed "Nomad Starting
+            // Systems" plus vela_system, where the game's own nomadic empire starts.
+            ("starting systems", 30, database.Initializers.Count),
             ("advisor voices", 27, database.AdvisorVoices.Count),
             // Ninety-one: every room the installation has a picture of. Forty-one the game's own
             // designer offers, twenty-five more it hands out during play, and twenty-five it draws

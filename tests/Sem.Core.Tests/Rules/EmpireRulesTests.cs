@@ -968,33 +968,58 @@ public sealed class EmpireRulesTests
     }
 
     /// <summary>
-    /// A nomadic empire keeping a planet is told so, and not refused for it.
+    /// A nomadic empire is not told anything about its homeworld, whatever it records.
     /// </summary>
     /// <remarks>
-    /// Turning the toggle on is what invalidates the world, so a design arrives here through no
-    /// fault of the player - and the game itself does not mind: it loads such an empire and starts
-    /// it on the arkship anyway, the same way an origin's own world overrides what was recorded.
-    /// Told as a refusal it read as something the player had done wrong.
+    /// Not refused, because the game does not mind - it loads such an empire and starts it on the
+    /// arkship anyway, the same way an origin's own world overrides what was recorded.
+    ///
+    /// And not warned either, which this used to do. The homeworld is not the player's to change
+    /// while the toggle is on: it is ignored whatever they set it to, so a line naming the planet
+    /// class at them offered nothing to act on, on a panel where everything else is actionable.
     /// </remarks>
     [Fact]
-    public void ANomadicEmpireKeepingAPlanetIsWarnedRatherThanRefused()
+    public void ANomadicEmpireIsNeitherRefusedNorWarnedAboutItsHomeworld()
     {
         var design = RulesTestData.ValidEmpire();
         design.IsNomadic = true;
-        design.PlanetClass = "pc_continental";
 
-        var problem = Rules.Validate(Context(design), design).Problems
-            .Single(p => p.Area == ValidationArea.Homeworld);
+        foreach (var world in new[] { "pc_continental", "pc_ark" })
+        {
+            design.PlanetClass = world;
 
-        Assert.Equal(ValidationSeverity.Warning, problem.Severity);
-        Assert.Contains("arkship", problem.Message, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain(
+                Rules.Validate(Context(design), design).Problems,
+                p => p.Area == ValidationArea.Homeworld);
+        }
+    }
 
-        // And the arkship itself is no problem at all.
-        design.PlanetClass = "pc_ark";
+    /// <summary>
+    /// And it is offered the systems the game keeps for nomads, not the ordinary ones.
+    /// </summary>
+    /// <remarks>
+    /// 4.5 marks seven systems <c>nomad_init</c> and they are built round a black hole, a neutron
+    /// star, a protoplanetary disc - nothing to land on, which is what an arkship is for. Reading
+    /// only <c>custom_empire</c> dropped all seven, so a nomadic empire had no starting system it
+    /// could pick and the one the game's own nomadic empire ships with was marked unavailable.
+    /// </remarks>
+    [Fact]
+    public void ANomadicEmpireStartsInASystemKeptForNomads()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.IsNomadic = true;
 
-        Assert.DoesNotContain(
-            Rules.Validate(Context(design), design).Problems,
-            p => p.Area == ValidationArea.Homeworld);
+        var offered = Rules.GetStartingSystemOptions(Context(design));
+
+        Assert.Contains("vela_system", offered);
+        Assert.DoesNotContain("custom_starting_init_01", offered);
+
+        design.IsNomadic = false;
+
+        var ordinary = Rules.GetStartingSystemOptions(Context(design));
+
+        Assert.Contains("custom_starting_init_01", ordinary);
+        Assert.DoesNotContain("vela_system", ordinary);
     }
 
     [Fact]

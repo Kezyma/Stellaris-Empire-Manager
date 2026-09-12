@@ -406,9 +406,18 @@ public sealed class EmpireRules(GameDatabase database)
     }
 
     /// <summary>
-    /// The starting systems this empire may use: those an origin names, or the ones open to any
-    /// custom empire.
+    /// The starting systems this empire may use: those an origin names, the ones a nomadic empire
+    /// starts in, or the ones open to any custom empire.
     /// </summary>
+    /// <remarks>
+    /// The nomadic pool is separate rather than additional, because the game made it separate: 4.5
+    /// marks seven systems <c>nomad_init</c> and they are built round a black hole, a neutron star,
+    /// a protoplanetary disc - nothing to land on, which is what an arkship is for. Offering an
+    /// ordinary custom-empire system to an empire with no world to put on it would be offering a
+    /// start the game does not have.
+    ///
+    /// An origin still wins where it names its own, which is the precedence the extractor records.
+    /// </remarks>
     public IReadOnlyList<string> GetStartingSystemOptions(DesignContext context)
     {
         ArgumentNullException.ThrowIfNull(context);
@@ -418,8 +427,10 @@ public sealed class EmpireRules(GameDatabase database)
             return origin.Initializers;
         }
 
+        var wanted = context.IsNomadic ? InitializerUsage.Nomad : InitializerUsage.CustomEmpire;
+
         return [.. _database.Initializers
-            .Where(i => i.Usage == InitializerUsage.CustomEmpire)
+            .Where(i => i.Usage == wanted)
             .Select(i => i.Key)];
     }
 
@@ -1841,29 +1852,17 @@ public sealed class EmpireRules(GameDatabase database)
             return;
         }
 
-        // A nomadic empire lives aboard an arkship whatever its design records, exactly as an
-        // origin's own world overrides one - so the same warning rather than a refusal. The game's
-        // own nomadic empire writes pc_ark and starts there; one written with a planet still loads
-        // and still starts there.
+        // A nomadic empire lives aboard an arkship whatever its design records. The game's own
+        // nomadic empire writes pc_ark and starts there; one written with a planet still loads and
+        // still starts there, so there is nothing here to refuse.
         //
-        // It matters because of how a design gets here: turning the toggle on is what invalidates
-        // the world, and being told the world "is not one this empire can start on" reads as
-        // something the player did wrong rather than something the toggle did.
+        // Nor anything to say. This used to warn that the recorded world was being ignored, on the
+        // reasoning that the player should know the toggle had done it. But the homeworld is not
+        // theirs to change while the toggle is on - it is ignored whatever they set it to - so the
+        // warning named a planet class at them and offered nothing to do about it, which is the
+        // definition of noise on a panel whose other entries are all actionable.
         if (context.IsNomadic && HasPlanetClass(Arkship))
         {
-            if (!string.Equals(key, Arkship, StringComparison.Ordinal))
-            {
-                problems.Add(new ValidationProblem(
-                    ValidationArea.Homeworld,
-                    key,
-                    "A nomadic empire starts aboard an arkship, so the {0} homeworld is ignored.",
-                    [],
-                    ValidationSeverity.Warning)
-                {
-                    Arguments = [key],
-                });
-            }
-
             return;
         }
 

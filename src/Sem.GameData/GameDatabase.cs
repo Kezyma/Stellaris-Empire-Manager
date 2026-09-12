@@ -1656,6 +1656,20 @@ public enum InitializerUsage
 
     /// <summary>Only available when an origin names it.</summary>
     Origin,
+
+    /// <summary>
+    /// A system a nomadic empire starts in.
+    /// </summary>
+    /// <remarks>
+    /// Added by 4.5 with the Nomads pack, and a separate pool rather than more of
+    /// <see cref="CustomEmpire"/>: the six in <c>00_nomad_custom_initializers.txt</c> are headed
+    /// "Nomad Starting Systems" and are built round a black hole, a neutron star, a protoplanetary
+    /// disc - places with nothing to land on, which is the point of arriving by arkship. The
+    /// seventh is vela_system, which is where the game's own nomadic empire starts.
+    ///
+    /// Appended rather than inserted because the value is serialised as its number.
+    /// </remarks>
+    Nomad,
 }
 
 /// <summary>A starting system.</summary>

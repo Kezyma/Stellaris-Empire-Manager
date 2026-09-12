@@ -1,7 +1,7 @@
 {
   "schemaVersion": 16,
   "gameVersion": "v4.5.0",
-  "extractorVersion": "0.1.0\u002Bd52e342fdb5614c8c61d9f4cc638c056af44b6f3",
+  "extractorVersion": "0.1.0\u002B57ef30d54e899957b1ccc56876cff0e3e573e87b",
   "defines": {
     "ethicsPoints": 3,
     "civicPoints": 2,
@@ -165813,6 +165813,42 @@
   ],
   "initializers": [
     {
+      "key": "black_hole_nomad_init",
+      "usage": 3,
+      "nameKey": "black_hole_nomad_init_NAME",
+      "descriptionKey": "black_hole_nomad_init_DESC"
+    },
+    {
+      "key": "blue_giant_nomad_init",
+      "usage": 3,
+      "nameKey": "blue_giant_nomad_init_NAME",
+      "descriptionKey": "blue_giant_nomad_init_DESC"
+    },
+    {
+      "key": "xray_binary_nomad_init",
+      "usage": 3,
+      "nameKey": "xray_binary_nomad_init_NAME",
+      "descriptionKey": "xray_binary_nomad_init_DESC"
+    },
+    {
+      "key": "protoplanetary_nomad_init",
+      "usage": 3,
+      "nameKey": "protoplanetary_nomad_init_NAME",
+      "descriptionKey": "protoplanetary_nomad_init_DESC"
+    },
+    {
+      "key": "neutron_star_nomad_init",
+      "usage": 3,
+      "nameKey": "neutron_star_nomad_init_NAME",
+      "descriptionKey": "neutron_star_nomad_init_DESC"
+    },
+    {
+      "key": "twin_blue_star_nomad_init",
+      "usage": 3,
+      "nameKey": "twin_blue_star_nomad_init_NAME",
+      "descriptionKey": "twin_blue_star_nomad_init_DESC"
+    },
+    {
       "key": "ocean_paradise_start",
       "usage": 2,
       "nameKey": "ocean_paradise_start_NAME",
@@ -165901,6 +165937,12 @@
       "usage": 1,
       "nameKey": "deneb_system_NAME",
       "descriptionKey": "deneb_system_DESC"
+    },
+    {
+      "key": "vela_system",
+      "usage": 3,
+      "nameKey": "vela_system_NAME",
+      "descriptionKey": "vela_system_DESC"
     },
     {
       "key": "mindwarden_system_init",
