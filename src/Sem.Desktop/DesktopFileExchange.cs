@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using Sem.Io;
 using Sem.Ui.Services;
 
@@ -114,14 +114,21 @@ public sealed class DesktopFileExchange(SafeFile file, string designsPath) : IFi
     }
 
     /// <inheritdoc />
-    public Task<SaveOutcome> SaveAsync(string fileName, byte[] contents)
+    public Task<SaveOutcome> SaveAsync(string fileName, byte[] contents) =>
+        SaveAsync(fileName, contents, backUp: true);
+
+    /// <inheritdoc />
+    public Task<SaveOutcome> SaveAsync(string fileName, byte[] contents, bool backUp)
     {
         ArgumentNullException.ThrowIfNull(contents);
 
-        // Kept before anything is replaced, so a save that goes wrong still leaves a way back.
+        // Kept before anything is replaced, so a save that goes wrong still leaves a way back. Not
+        // what the player is choosing about: this one is the app's own, out of sight and out of
+        // their folder, and it costs them nothing to have.
         Archive(contents);
 
-        _file.ReplaceAtomically(_designsPath, contents, DatedBackupPath());
+        _file.ReplaceAtomically(
+            _designsPath, contents, backUp ? SafeFile.DatedBackupPath(_designsPath) : null);
 
         // Always saved here: there is no dialog to dismiss, and a failure throws rather than
         // returning. The other outcomes only arise in a browser, where the player may say no.
@@ -137,10 +144,10 @@ public sealed class DesktopFileExchange(SafeFile file, string designsPath) : IFi
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Nothing to do with the designs file, which is why it does not go through <see cref="SaveAsync"/>
-    /// - that one holds the path and replaces what is there, whatever name it is handed. A selection
-    /// of empires or a picture of one sent through it would have overwritten the player's whole
-    /// collection.
+    /// Nothing to do with the designs file, which is why it does not go through
+    /// <see cref="SaveAsync(string, byte[])"/> - that one holds the path and replaces what is there,
+    /// whatever name it is handed. A selection of empires or a picture of one sent through it
+    /// would have overwritten the player's whole collection.
     /// </para>
     /// <para>
     /// Least privilege here as well: the policy allows the one directory the player picked in the
@@ -186,24 +193,6 @@ public sealed class DesktopFileExchange(SafeFile file, string designsPath) : IFi
 
             return SaveOutcome.Saved;
         }).Task;
-    }
-
-    /// <summary>
-    /// The dated backup beside the file, following the game's own naming so the two sit together.
-    /// An existing one for today is left alone, since it may be the game's.
-    /// </summary>
-    private string? DatedBackupPath()
-    {
-        var directory = Path.GetDirectoryName(_designsPath);
-        if (directory is null)
-        {
-            return null;
-        }
-
-        var name = Path.GetFileNameWithoutExtension(_designsPath);
-        var backup = Path.Combine(directory, $"{name}_{DateTime.Now:yyMMdd}.txt");
-
-        return File.Exists(backup) ? null : backup;
     }
 
     /// <summary>Keeps a copy in the app's own folder, where the game will never overwrite it.</summary>

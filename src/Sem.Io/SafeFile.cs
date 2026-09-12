@@ -76,6 +76,46 @@ public sealed class SafeFile(WritePolicy policy)
     }
 
     /// <summary>
+    /// Where to keep what a replacement writes over: beside the file, under its own name and the
+    /// moment it was replaced.
+    /// </summary>
+    /// <param name="path">The file about to be replaced.</param>
+    /// <param name="moment">When, for a caller that needs to say; otherwise now.</param>
+    /// <returns>A path to hand <see cref="ReplaceAtomically"/>, or null if there is no folder.</returns>
+    /// <remarks>
+    /// <para>
+    /// Beside the file and named after it, so the two sort together in a folder the player already
+    /// has reason to look in, and so the name says at a glance what it is a copy of. The game names
+    /// its own backups this way.
+    /// </para>
+    /// <para>
+    /// Timed as well as dated, which is the part that had to be learnt. A name carrying only the
+    /// date is one file per day: a session that saves six times either keeps the first state and
+    /// refuses the rest or keeps overwriting until only the last survives, and the one that is
+    /// wanted back is almost always one of the four in between.
+    /// </para>
+    /// <para>
+    /// HH rather than hh, which is the twelve-hour clock. It collides twice a day and does it in
+    /// silence, taking the morning's copy away at the same minute of the afternoon - the one thing
+    /// a timed backup exists to prevent.
+    /// </para>
+    /// </remarks>
+    public static string? DatedBackupPath(string path, DateTime? moment = null)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(path);
+
+        if (Path.GetDirectoryName(path) is not { Length: > 0 } directory)
+        {
+            return null;
+        }
+
+        var name = Path.GetFileNameWithoutExtension(path);
+        var extension = Path.GetExtension(path);
+
+        return Path.Combine(directory, $"{name}_{moment ?? DateTime.Now:yyMMdd_HHmmss}{extension}");
+    }
+
+    /// <summary>
     /// Replaces a file's contents as close to atomically as Windows allows: the new content is
     /// staged next to the target, then swapped in. If <paramref name="backupPath"/> is given, the
     /// previous contents are preserved there.

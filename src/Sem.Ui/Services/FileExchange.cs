@@ -1,4 +1,4 @@
-using Microsoft.JSInterop;
+﻿using Microsoft.JSInterop;
 
 namespace Sem.Ui.Services;
 
@@ -64,14 +64,25 @@ public interface IFileExchange
     Task<SaveOutcome> SaveAsync(string fileName, byte[] contents);
 
     /// <summary>
+    /// The same save, saying whether to keep a copy of what is being replaced.
+    /// </summary>
+    /// <remarks>
+    /// Only a host that replaces a file has anything to keep, which is why this defaults to the
+    /// call above and not the other way round: a browser save writes where the player pointed it
+    /// and overwrites nothing they did not name, so there is nothing there to ask about.
+    /// </remarks>
+    Task<SaveOutcome> SaveAsync(string fileName, byte[] contents, bool backUp) =>
+        SaveAsync(fileName, contents);
+
+    /// <summary>
     /// Hands over a file that is not the designs file, under a name and a kind of its own.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Not <see cref="SaveAsync"/> with a different name. On the desktop that call means "replace
-    /// the player's designs file", and it means it whatever name it is given - it holds the path and
-    /// writes there. So a selection of empires, or a picture of one, sent through it would have
-    /// replaced a file full of hand-built empires with a fragment of itself or with a PNG.
+    /// Not <see cref="SaveAsync(string, byte[])"/> with a different name. On the desktop that call
+    /// means "replace the player's designs file", and it means it whatever name it is given - it
+    /// holds the path and writes there. So a selection of empires, or a picture of one, sent through
+    /// it would have replaced a file full of hand-built empires with a fragment of itself or a PNG.
     /// </para>
     /// <para>
     /// A host with no way to offer a separate file refuses rather than falling back to the other
@@ -99,14 +110,15 @@ public interface IFileExchange
     Task<bool> CanOpenAsync() => Task.FromResult(false);
 
     /// <summary>
-    /// Whether <see cref="SaveAsync"/> writes back over the file the session was opened from.
+    /// Whether <see cref="SaveAsync(string, byte[])"/> writes back over the file the session was
+    /// opened from.
     /// </summary>
     /// <remarks>
     /// True on the desktop, where saving means the player's real designs file is replaced, and that
     /// is what the Save button should do. False in a browser, where the same call may reach a file
     /// and may not - the player has to be shown a dialog and may dismiss it, and there are browsers
     /// with no dialog to show. Whether one save actually landed is a different question, and
-    /// <see cref="SaveAsync"/> answers that one.
+    /// <see cref="SaveAsync(string, byte[])"/> answers that one.
     /// </remarks>
     bool SavesInPlace => false;
 

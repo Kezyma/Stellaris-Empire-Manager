@@ -28,6 +28,11 @@ public sealed class Preferences(IJSRuntime? js = null) : IAsyncDisposable
     private const string ListView = "list";
     private const string GridView = "grid";
 
+    /// <summary>Where the backup setting is filed, and the two answers it can have.</summary>
+    private const string BackupKey = "save.backup";
+    private const string Kept = "kept";
+    private const string Dropped = "dropped";
+
     private readonly Dictionary<string, string> _values = new(StringComparer.Ordinal);
 
     private Task<IJSObjectReference>? _module;
@@ -70,6 +75,20 @@ public sealed class Preferences(IJSRuntime? js = null) : IAsyncDisposable
     /// <summary>Remembers how a picker is drawn.</summary>
     public void SetPickerView(string picker, bool list) =>
         Set(PickerPrefix + picker, list ? ListView : GridView);
+
+    /// <summary>
+    /// Whether replacing the designs file leaves a dated copy of the old one beside it.
+    /// </summary>
+    /// <remarks>
+    /// Kept is what an unanswered question means. The save being asked about writes over a file
+    /// that may hold a hundred hours of empires, and the moment anybody first thinks about the
+    /// backup is the moment they needed one. Only the desktop ever asks - a browser save goes
+    /// wherever the player points it and replaces nothing they did not name.
+    /// </remarks>
+    public bool KeepsBackup => Get(BackupKey) is not Dropped;
+
+    /// <summary>Remembers whether to keep one.</summary>
+    public void SetKeepsBackup(bool keep) => Set(BackupKey, keep ? Kept : Dropped);
 
     /// <summary>Remembers a setting, for this visit and for the next one.</summary>
     public void Set(string key, string value)

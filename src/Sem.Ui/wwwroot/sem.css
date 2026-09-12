@@ -5784,6 +5784,20 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
+   A choice inside a question: what the answer will do, rather than what the answer is. It is one
+   item in the sheet's own column, so the room around it is the dialog's and not its own.
+*/
+.sem-modal > .sheet .sem-option {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    color: var(--text-dim);
+    cursor: pointer;
+}
+
+.sem-modal > .sheet .sem-option:hover { color: var(--text); }
+
+/*
    The lite editor, over the list it was opened from.
 
    The card is the sheet: it carries its own panel background, its border and its padding, so

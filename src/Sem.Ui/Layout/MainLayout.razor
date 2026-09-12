@@ -167,10 +167,23 @@
     @if (_saving)
     {
         <ConfirmDialog Title="Replace your empire designs file?"
-                       Message="@($"Your {Count(Empires)} will be written over the file the game reads. A dated backup is kept beside it.")"
+                       Message="@($"Your {Count(Empires)} will be written over the file the game reads.")"
                        OnDismiss="() => _saving = false">
-            <button type="button" @onclick="() => _saving = false">Cancel</button>
-            <button type="button" class="danger" @onclick="Export">Replace it</button>
+            <Options>
+                @*
+                    Remembered as it is changed rather than when the file is written, so that
+                    turning it off and then thinking better of the save still leaves it off next
+                    time. It is an answer about backups, not about this one save.
+                *@
+                <label class="sem-option">
+                    <input type="checkbox" checked="@_backUp" @onchange="KeepBackup" />
+                    <span>Keep a dated copy of the file it replaces</span>
+                </label>
+            </Options>
+            <ChildContent>
+                <button type="button" @onclick="() => _saving = false">Cancel</button>
+                <button type="button" class="danger" @onclick="Export">Replace it</button>
+            </ChildContent>
         </ConfirmDialog>
     }
 
@@ -273,16 +286,27 @@
     /// <summary>Whether the "replace your designs file" question is on screen.</summary>
     private bool _saving;
 
+    /// <summary>Whether this save keeps a dated copy of the file it writes over.</summary>
+    private bool _backUp = true;
+
     /// <summary>Asks first where the answer would overwrite something, and otherwise gets on with it.</summary>
     private async Task AskToSave()
     {
         if (Files.SavesInPlace)
         {
+            _backUp = _session?.Preferences.KeepsBackup ?? true;
             _saving = true;
             return;
         }
 
         await Export();
+    }
+
+    /// <summary>Remembers whether to keep the copy, for this save and for every one after it.</summary>
+    private void KeepBackup(ChangeEventArgs e)
+    {
+        _backUp = e.Value is true;
+        _session?.Preferences.SetKeepsBackup(_backUp);
     }
 
     /// <summary>A file that has been read and parsed, waiting to hear what to do with it.</summary>
@@ -635,7 +659,7 @@
 
         try
         {
-            switch (await Files.SaveAsync(name, _session.Save()))
+            switch (await Files.SaveAsync(name, _session.Save(), _backUp))
             {
                 case SaveOutcome.Saved:
                     // Kept before it is called saved. The file the player named is not the copy this
