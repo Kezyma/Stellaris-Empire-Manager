@@ -50,6 +50,18 @@ public sealed class DesignSync : IDisposable
     /// <summary>Set while this is the one reading or writing, so it does not answer itself.</summary>
     private bool _busy;
 
+    /// <summary>
+    /// Something arrived while that flag was up and has not been dealt with.
+    /// </summary>
+    /// <remarks>
+    /// Without this, anything that happened during a read or a write was simply lost. A read that
+    /// finds a half-written file waits and reads again, holding the flag for the best part of a
+    /// second, and an empire deleted during that second would never have reached the file - the
+    /// app and the file would have gone quietly out of step, which is the one thing being on is
+    /// supposed to prevent.
+    /// </remarks>
+    private bool _missed;
+
     /// <summary>A file read from disk that is waiting on an answer about unsaved edits.</summary>
     private (EmpireDesignsFile File, byte[] Contents, string Name)? _waiting;
 
@@ -205,13 +217,62 @@ public sealed class DesignSync : IDisposable
     /// <summary>The list gained, lost or moved an empire, so the file is owed the change.</summary>
     private void OnListChanged()
     {
-        if (Enabled && !_busy)
+        if (!Enabled)
         {
-            _ = WriteAsync();
+            return;
         }
+
+        if (_busy)
+        {
+            _missed = true;
+            return;
+        }
+
+        _ = WriteAsync();
     }
 
-    private void OnFileTouched() => _ = LoadFromDiskAsync();
+    private void OnFileTouched()
+    {
+        if (_busy)
+        {
+            _missed = true;
+            return;
+        }
+
+        _ = LoadFromDiskAsync();
+    }
+
+    /// <summary>
+    /// Settles whatever was put off, for a caller that knows only that something happened.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Read first, then write if what is held still differs from what the file holds. Which way
+    /// round matters: the file is read to find out whether it actually moved, and only what the app
+    /// is still holding afterwards is worth writing.
+    /// </para>
+    /// <para>
+    /// By comparing the bytes rather than by asking the session what it owes. It cannot be asked:
+    /// a write settles the session's "unwritten" flag for the state at the moment it began, and a
+    /// change made during that write leaves the flag saying everything is written when the newest
+    /// empire has never reached the file. The comparison cannot be lied to.
+    /// </para>
+    /// </remarks>
+    private async Task SettleAsync()
+    {
+        await LoadFromDiskAsync().ConfigureAwait(false);
+
+        // A file waiting on an answer is not one to write over while the question is on screen.
+        if (Asking || _session is not { File: not null } session)
+        {
+            return;
+        }
+
+        if (_onDisk is null || !Same(session.Save(), _onDisk))
+        {
+            await WriteAsync().ConfigureAwait(false);
+        }
+    }
 
     private async Task WriteAsync()
     {
@@ -229,8 +290,21 @@ public sealed class DesignSync : IDisposable
         finally
         {
             _busy = false;
+            Catch();
             Changed?.Invoke();
         }
+    }
+
+    /// <summary>Deals with whatever arrived while the flag was up, now that it is down again.</summary>
+    private void Catch()
+    {
+        if (!_missed)
+        {
+            return;
+        }
+
+        _missed = false;
+        _ = SettleAsync();
     }
 
     /// <summary>
@@ -263,6 +337,9 @@ public sealed class DesignSync : IDisposable
                 // which at that point is what was opened, and so is the same thing.
                 if (Same(existing.Contents, _onDisk ?? session.Save()))
                 {
+                    // Reading it at all settles any earlier complaint that it could not be read,
+                    // which would otherwise sit in the header for the rest of the session.
+                    Note = null;
                     return;
                 }
 
@@ -291,8 +368,12 @@ public sealed class DesignSync : IDisposable
                 return;
             }
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        catch (Exception ex)
+            when (ex is IOException or UnauthorizedAccessException
+                or CwSyntaxException or InvalidOperationException)
         {
+            // Reported rather than thrown, because nobody asked for this read: it happens because
+            // the file moved, and the page it would have been thrown from is one somebody is using.
             Note = $"Your empire designs file changed, but could not be read: {ex.Message}";
         }
         finally
@@ -303,7 +384,12 @@ public sealed class DesignSync : IDisposable
             // itself - which is exactly what the flag is there to prevent.
             if (owed)
             {
+                _missed = false;
                 _ = WriteAsync();
+            }
+            else
+            {
+                Catch();
             }
 
             Changed?.Invoke();
@@ -318,8 +404,8 @@ public sealed class DesignSync : IDisposable
         }
         catch (CwSyntaxException)
         {
-            // Read as bytes here, so this is the host objecting to the file rather than the parse
-            // below. Treated the same way: it may simply be half written.
+            // A host that reads bytes cannot raise this; one that parses on the way out can. Nothing
+            // is taken this time, and the next change - or the next visit to the list - tries again.
             return null;
         }
     }
@@ -354,8 +440,10 @@ public sealed class DesignSync : IDisposable
         }
 
         // Held down across the whole of this, because opening a file announces itself and the
-        // announcement is the one this class answers by writing.
+        // announcement is the one this class answers by writing. What was owed beforehand is put
+        // back afterwards, so the open's own announcement is not counted as a debt of its own.
         var already = _busy;
+        var owed = _missed;
         _busy = true;
 
         try
@@ -379,6 +467,7 @@ public sealed class DesignSync : IDisposable
         finally
         {
             _busy = already;
+            _missed = owed;
         }
     }
 

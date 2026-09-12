@@ -78,11 +78,18 @@ public sealed class DesignSyncTests
         public Task<SaveOutcome> SaveAsync(string fileName, byte[] contents) =>
             SaveAsync(fileName, contents, backUp: true);
 
+        /// <summary>Something to do in the middle of a write, so the busy window can be tested.</summary>
+        public Action? DuringSave { get; set; }
+
         public Task<SaveOutcome> SaveAsync(string fileName, byte[] contents, bool backUp)
         {
             Contents = contents;
             LastBackUp = backUp;
             Writes++;
+
+            var interrupt = DuringSave;
+            DuringSave = null;
+            interrupt?.Invoke();
 
             return Task.FromResult(SaveOutcome.Saved);
         }
@@ -217,6 +224,30 @@ public sealed class DesignSyncTests
         // The same objects, so nothing was opened over the top of them.
         Assert.Same(held, session.File!.Designs[0]);
         Assert.Equal(["First", "Second"], Names(session));
+    }
+
+    /// <summary>
+    /// A change made while a write is already going out is not lost.
+    /// </summary>
+    /// <remarks>
+    /// Writing and reading both hold a flag that stops this answering its own announcements, and
+    /// anything arriving while it is held used to be dropped on the floor. Nothing said so: the app
+    /// showed the empire and the file did not have it, and it stayed that way until something else
+    /// happened to be written. The window is milliseconds for a write and most of a second for a
+    /// read that finds the file half written, which is the very moment the game is saving.
+    /// </remarks>
+    [Fact]
+    public async Task AChangeMadeDuringAWriteStillReachesTheFile()
+    {
+        var disk = new Disk("First");
+        var (sync, _, session) = await OpenAsync(disk);
+
+        await sync.SetAsync(true);
+
+        disk.DuringSave = () => session.EditFile(file => file.Add("Third"));
+        session.EditFile(file => file.Add("Second"));
+
+        Assert.Equal(["First", "Second", "Third"], Names(EmpireDesignsFile.Load(disk.Contents)));
     }
 
     /// <summary>A change made in the game arrives without being asked for.</summary>

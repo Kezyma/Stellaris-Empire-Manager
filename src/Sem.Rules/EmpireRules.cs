@@ -1,4 +1,4 @@
-﻿using Sem.Designs;
+using Sem.Designs;
 using Sem.GameData;
 
 namespace Sem.Rules;

@@ -1,4 +1,4 @@
-﻿using System.CommandLine;
+using System.CommandLine;
 using System.Text.Json;
 using Sem.Extraction;
 using Sem.Extraction.Extractors;

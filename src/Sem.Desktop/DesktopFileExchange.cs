@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using Sem.Io;
 using Sem.Ui.Services;
 

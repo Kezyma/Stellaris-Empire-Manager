@@ -1,4 +1,4 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
 @implements IDisposable
 @inject SessionHost Host
 @inject IFileExchange Files
@@ -417,10 +417,10 @@
     private string FileTitle =>
         _session?.FileName is { Length: > 0 } named ? named : "your empire designs file";
 
-    /// <summary>", to Iferyx Amalgamated Fleets" - or nothing, where nothing is open.</summary>
+    /// <summary>" to Iferyx Amalgamated Fleets" - or nothing, where nothing is open.</summary>
     private string Editing =>
         _session?.Current is { } design
-            ? $", to {_session.Localizer.Name(design.Name, design.Key)}"
+            ? $" to {_session.Localizer.Name(design.Name, design.Key)}"
             : string.Empty;
 
     protected override async Task OnInitializedAsync()
