@@ -28,6 +28,22 @@ public sealed class DesktopFileExchange(SafeFile file, string designsPath) : IFi
     /// <inheritdoc />
     public string SaveVerb => "Save";
 
+    /// <summary>Whether the editor is currently holding work nobody has saved.</summary>
+    /// <remarks>
+    /// The window reads this when it is asked to close. A browser has beforeunload and the editor
+    /// already keeps it in step through <see cref="WarnBeforeLeavingAsync"/>; a WPF window has
+    /// Closing, which runs outside Blazor entirely and cannot await a dialog - so the same call that
+    /// arms the browser's warning leaves a flag here for the window to read synchronously.
+    /// </remarks>
+    public bool HasUnsavedWork { get; private set; }
+
+    /// <inheritdoc />
+    public Task WarnBeforeLeavingAsync(bool unsaved)
+    {
+        HasUnsavedWork = unsaved;
+        return Task.CompletedTask;
+    }
+
     /// <summary>
     /// The published site, which is where a shared link has to point.
     /// </summary>

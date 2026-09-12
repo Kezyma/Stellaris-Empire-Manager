@@ -35,15 +35,45 @@ public partial class MainWindow : Window
     private string? _installRoot;
     private string? _designsPath;
 
+    /// <summary>How the designer reaches the player's file, kept so the window can ask it things.</summary>
+    private IFileExchange? _files;
+
     /// <summary>Builds the window, and starts reading the game data once it is shown.</summary>
     public MainWindow()
     {
         InitializeComponent();
         Loaded += async (_, _) => await StartAsync();
+        Closing += AskBeforeClosing;
     }
 
     /// <summary>Whether a start is already running, so a second one cannot be begun over it.</summary>
     private bool _starting;
+
+    /// <summary>
+    /// Refuses to close over work nobody has saved, unless the player says to.
+    /// </summary>
+    /// <remarks>
+    /// The web has beforeunload for this and the desktop had nothing: closing the window threw away
+    /// an unsaved empire without a word. Asked natively rather than in the designer, because Closing
+    /// is synchronous and cannot wait for a dialog drawn by Blazor.
+    /// </remarks>
+    private void AskBeforeClosing(object? sender, System.ComponentModel.CancelEventArgs e)
+    {
+        if (_files is not DesktopFileExchange { HasUnsavedWork: true })
+        {
+            return;
+        }
+
+        var answer = MessageBox.Show(
+            this,
+            "The empire you are editing has changes that have not been saved. Close anyway?",
+            "Unsaved changes",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Warning,
+            MessageBoxResult.No);
+
+        e.Cancel = answer != MessageBoxResult.Yes;
+    }
 
     /// <summary>
     /// Finds the game, builds the data if it needs building, and opens the designer.
@@ -153,7 +183,8 @@ public partial class MainWindow : Window
         services.AddScoped<IGameDataSource>(_ =>
             new FileGameDataSource(cache.Directory, $"https://{AssetHost}/assets"));
 
-        services.AddScoped(_ => CreateFileExchange());
+        _files = CreateFileExchange();
+        services.AddScoped(_ => _files);
 
         // No design store, because the player's own file is the one that counts and a second copy
         // would be a rival to it. Only the packs they actually have: this installation is theirs.
@@ -164,6 +195,14 @@ public partial class MainWindow : Window
         {
             Selector = "#app",
             ComponentType = typeof(DesktopApp),
+        });
+
+        // So <PageTitle> reaches the window's own title bar. Without it every page's title was
+        // rendered into nothing, and the web host had this and the desktop did not.
+        WebView.RootComponents.Add(new RootComponent
+        {
+            Selector = "head::after",
+            ComponentType = typeof(Microsoft.AspNetCore.Components.Web.HeadOutlet),
         });
 
         WebView.BlazorWebViewInitialized += (_, e) =>
