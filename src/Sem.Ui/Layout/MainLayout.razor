@@ -99,13 +99,18 @@
                 *@
                 @if (_cloud is not null)
                 {
+                    @*
+                        Always the one word. The path belongs in the sheet, where there is room for
+                        it to be read - on a button it would either be cut short at the end that
+                        identifies it or push the rest of the row off the line.
+                    *@
                     <button type="button"
                             class="sem-tab sem-cloud-tab @(_cloud.Connected ? "active" : null) @(_cloud.SessionEnded ? "ended" : null)"
                             title="@(_cloud.Where is { } path
                                 ? $"Saving to {path} in your {_cloud.ProviderName}"
                                 : "Open a designs file you keep in the cloud")"
                             @onclick="() => _connecting = true">
-                        @(_cloud.Where ?? "Cloud")
+                        Cloud
                     </button>
                 }
 

@@ -86,9 +86,16 @@ public sealed class CloudConnection : IDisposable
     /// <summary>Whether the last answer about writing as you go was yes, for seeding the question.</summary>
     public bool AutoSaveRemembered => _preferences.SyncsWithFile;
 
-    /// <summary>Where the file sits, as a trail worth showing on a button.</summary>
+    /// <summary>
+    /// The file's whole path at the provider, which is the only form that identifies it.
+    /// </summary>
+    /// <remarks>
+    /// The name alone does not. One account backing up two machines holds two files called
+    /// user_empire_designs_v3.4.txt, in folders named after each machine, and being shown the name
+    /// tells somebody nothing about which of them this app is about to write.
+    /// </remarks>
     public string? Where => File is { } file
-        ? file.Folder is { Length: > 0 } folder ? $"{folder} › {file.Name}" : file.Name
+        ? file.Folder is { Length: > 0 } and not "/" ? $"{file.Folder}/{file.Name}" : $"/{file.Name}"
         : null;
 
     /// <summary>
@@ -235,7 +242,9 @@ public sealed class CloudConnection : IDisposable
         _router.SwitchTo(exchange);
         _host.Current?.Open(parsed, read.Name);
 
-        _preferences.Set(ChosenKey, $"{file.Id}|{file.Name}");
+        // The folder goes in too. Without it a reload knows which file to reopen and cannot say
+        // where it is, so the sheet would name the file and leave the one useful half out.
+        _preferences.Set(ChosenKey, $"{file.Id}|{file.Name}|{file.Folder}");
         Note = null;
         SessionEnded = false;
 
@@ -266,14 +275,17 @@ public sealed class CloudConnection : IDisposable
             return false;
         }
 
-        var bar = kept.IndexOf('|', StringComparison.Ordinal);
+        // Three parts, and two is tolerated: a choice remembered before the folder was kept should
+        // reopen rather than be thrown away for being short.
+        var parts = kept.Split('|');
 
-        if (bar <= 0)
+        if (parts.Length < 2 || parts[0].Length == 0)
         {
             return false;
         }
 
-        return await UseAsync(new CloudFile(kept[..bar], kept[(bar + 1)..], string.Empty))
+        return await UseAsync(
+            new CloudFile(parts[0], parts[1], parts.Length > 2 ? parts[2] : string.Empty))
             .ConfigureAwait(false);
     }
 

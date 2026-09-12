@@ -5868,21 +5868,10 @@ button.icon .sem-action-icon { display: block; }
 .sem-modal > .sheet.sem-cloud { width: min(36rem, 100%); }
 
 /*
-   The cloud button, which becomes the path to the file once there is one.
-
-   A path is longer than a word and must not push the rest of the row off the line, so it is capped
-   and told to lose its middle - the end of a path is the file's name, which is the half worth
-   keeping. Marked when the sign-in has lapsed, because a save that will not work is worth knowing
-   about before pressing Save rather than after.
+   The cloud button keeps its one word and says the rest on hover; the path itself is shown in the
+   sheet, where it has room to be read. Marked when the sign-in has lapsed, because a save that
+   will not work is worth knowing about before pressing Save rather than after.
 */
-.sem-tab.sem-cloud-tab {
-    max-width: 22rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    direction: rtl;
-    text-align: right;
-}
-
 .sem-tab.sem-cloud-tab.ended {
     color: var(--bad);
     border-bottom-color: var(--bad);
@@ -5921,6 +5910,22 @@ button.icon .sem-action-icon { display: block; }
 }
 
 .sem-cloud-path > span { color: var(--text-faint); }
+
+/*
+   The path of the connected file. Long, and worth reading end to end, so it wraps at the slashes
+   rather than being cut short - and is set apart from the sentences either side of it so the eye
+   can find the one line that says which file this actually is.
+*/
+.sem-cloud-where {
+    margin: 0;
+    padding: var(--space-md) var(--space-lg);
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-size: var(--text-sm);
+    overflow-wrap: anywhere;
+}
 
 .sem-cloud-find {
     display: flex;

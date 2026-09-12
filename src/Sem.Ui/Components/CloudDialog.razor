@@ -22,10 +22,14 @@
                 : "Where do you keep your empires?")
         </h2>
 
-        @if (Cloud.Connected && Cloud.File is { } open)
+        @if (Cloud.Connected && Cloud.Where is { } path)
         {
+            <p>Save writes to this file in your @Cloud.ProviderName:</p>
+
+            @* The whole path, because the name on its own does not say which file this is. *@
+            <p class="sem-cloud-where"><strong>@path</strong></p>
+
             <p>
-                Save writes to <strong>@open.Name</strong>@(open.Folder is { Length: > 0 } where ? $", in {where}" : null).
                 @(Cloud.AutoSaveRemembered
                     ? "Your changes are written to it as you go, and changes made to it elsewhere are loaded back."
                     : "Changes made to it elsewhere are loaded when you come back to the list.")
@@ -251,9 +255,16 @@
         await Open();
     }
 
-    /// <summary>A file in the folder being looked at, named by where it was found.</summary>
+    /// <summary>
+    /// A file in the folder being looked at, carrying the path it was found at.
+    /// </summary>
+    /// <remarks>
+    /// Built to the same shape a search result comes back in - slashes from the drive's root, with
+    /// the top step dropped because "Your OneDrive" is a label rather than a folder anybody has.
+    /// One shape, however the file was found, so what is shown afterwards does not depend on how.
+    /// </remarks>
     private CloudFile Chosen(CloudEntry entry) =>
-        new(entry.Id, entry.Name, string.Join(" › ", _path.Select(step => step.Name)));
+        new(entry.Id, entry.Name, "/" + string.Join("/", _path.Skip(1).Select(step => step.Name)));
 
     /// <summary>Roughly how large, which is enough to tell a designs file from an empty one.</summary>
     private static string Sized(long bytes) =>
