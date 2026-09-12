@@ -6648,9 +6648,35 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /* The three views, sized to sit beside a heading rather than above a picker. */
-.sem-combined .heading > .sem-view-toggle button {
+.sem-combined .heading > .sem-view-controls > .sem-view-toggle button {
     padding: var(--space-2xs) var(--space-sm);
     font-size: var(--text-xs);
+}
+
+/* The views and the switch that says which empire they are about, at the heading's right-hand end. */
+.sem-combined .heading > .sem-view-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+/*
+   Not a fourth view, so not a fourth button: it qualifies the three beside it rather than joining
+   them. A box and a word, which is what the plan switch in the editor's own heading looks like.
+*/
+.sem-combined .sem-plan-count {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    font-size: var(--text-xs);
+    color: var(--text-dim);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.sem-combined .sem-plan-count:has(input:disabled) {
+    opacity: 0.5;
+    cursor: default;
 }
 
 @media (max-width: 900px) {

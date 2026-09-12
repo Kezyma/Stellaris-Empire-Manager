@@ -1,4 +1,4 @@
-using Sem.Designs;
+﻿using Sem.Designs;
 using Sem.GameData;
 
 namespace Sem.Rules;
@@ -1186,6 +1186,56 @@ public sealed partial class EmpireRules(GameDatabase database)
         }
 
         return locked;
+    }
+
+    /// <summary>
+    /// The same empire as it would be once its plan is finished.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The perks and the trees it means to take, and the civics it means to hold - which is not the
+    /// same list the plan names. A civic the empire cannot reform away is still there afterwards, so
+    /// the final set is the locked ones plus the planned ones, exactly as the plan's own civic
+    /// picker works it out. That handles a plan naming fewer than a full slate without a special
+    /// case: whatever it names is what the empire ends with.
+    /// </para>
+    /// <para>
+    /// The government is not derived again. Deriving one reads every condition of all hundred and
+    /// seventy types, and this is asked for while a panel is drawing; a modifier gated on the
+    /// government therefore answers for the one the empire has rather than the one its new civics
+    /// might produce.
+    /// </para>
+    /// </remarks>
+    /// <param name="context">The empire as it stands.</param>
+    /// <param name="perks">The ascension perks the plan names.</param>
+    /// <param name="trees">The tradition trees the plan opens.</param>
+    /// <param name="civics">
+    /// The civics the plan means it to swap to, or none where it names no civics at all - which
+    /// leaves the empire's own alone rather than reducing it to the ones it cannot reform away.
+    /// </param>
+    /// <returns>A copy carrying the plan, which nothing else holds.</returns>
+    public DesignContext WithPlanApplied(
+        DesignContext context,
+        IReadOnlyCollection<string> perks,
+        IReadOnlyCollection<string> trees,
+        IReadOnlyCollection<string> civics)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(perks);
+        ArgumentNullException.ThrowIfNull(trees);
+        ArgumentNullException.ThrowIfNull(civics);
+
+        // A plan that names no civic has no opinion about civics, which is not the same as planning
+        // to have none: swapping there would quietly strip every civic the empire could reform away
+        // and leave it holding only the ones it is stuck with.
+        if (civics.Count == 0)
+        {
+            return context.WithPlan(perks, trees);
+        }
+
+        var locked = GetLockedCivics(context).Select(o => o.Key);
+
+        return context.WithPlan(perks, trees, locked.Concat(civics));
     }
 
     /// <summary>

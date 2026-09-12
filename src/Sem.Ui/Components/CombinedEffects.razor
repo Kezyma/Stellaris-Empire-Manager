@@ -1,4 +1,4 @@
-@*
+﻿@*
     Everything the empire's choices add up to.
 
     Modifiers are summed rather than listed per source, because an empire whose ethic and whose civic
@@ -37,6 +37,8 @@
             Changes only where there is something to compare with: an empire nobody is editing, or
             one created and never saved, was never anything other than what it is.
         *@
+        @* Grouped, so the heading still has two ends and the toggle is not left in the middle. *@
+        <div class="sem-view-controls">
         <div class="sem-view-toggle" role="group" aria-label="Modifiers">
             <button type="button" aria-pressed="@(_view == View.Individual ? "true" : "false")"
                     title="What each choice contributes"
@@ -52,6 +54,21 @@
                         title="What your edits changed"
                         @onclick="() => _view = View.Changes">Changes</button>
             }
+        </div>
+
+        @*
+            Beside the three rather than among them, because it is not a fourth way of looking at the
+            same numbers - it changes which numbers all three are about. Off unless it is asked for:
+            what an empire is now is the honest default, and a total quietly counting things it has
+            not taken yet would be the wrong answer to every question the panel is otherwise asked.
+        *@
+        <label class="sem-plan-count" title="@PlanExplained">
+            @* Ticked only where it counts for something: a plan cleared while the box was on left
+               it reading as ticked over totals it was no longer changing. *@
+            <input type="checkbox" checked="@(_withPlan && Plan.Any)" disabled="@(!Plan.Any)"
+                   @onchange="e => _withPlan = e.Value is true" />
+            <span>Plan</span>
+        </label>
         </div>
     </div>
 
@@ -244,7 +261,10 @@
                 return [];
             }
 
-            var before = DesignEffects.Combine(baseline).ToDictionary(m => m.Key, m => m.Total, StringComparer.Ordinal);
+            // Both sides planned, so this keeps meaning "what my edits moved" rather than becoming
+            // "what the plan adds" - which is what Combined already says.
+            var before = DesignEffects.Combine(Planned(baseline)!)
+                .ToDictionary(m => m.Key, m => m.Total, StringComparer.Ordinal);
             var after = Combined.ToDictionary(m => m.Key, m => m.Total, StringComparer.Ordinal);
 
             return
@@ -260,12 +280,37 @@
         }
     }
 
+    /// <summary>Whether the totals are of the empire as planned rather than as it stands.</summary>
+    private bool _withPlan;
+
+    /// <summary>What this empire means to become, or nothing where it is not being planned.</summary>
+    private EmpirePlan Plan => Session.Plans.PlanOf(Session.Current, Session.PlanVocabulary);
+
+    /// <summary>What the box says it will do, and why it will not where there is nothing to count.</summary>
+    private string PlanExplained => Plan.Any
+        ? "Count the perks, traditions and civics this empire plans to take"
+        : "This empire has no plan to count";
+
+    /// <summary>
+    /// The empire these numbers are about: as it stands, or as its plan would leave it.
+    /// </summary>
+    /// <remarks>
+    /// In one place, so the three views cannot disagree about which empire they describe.
+    /// </remarks>
+    private DesignContext? Subject => Planned(Context ?? Session.Context);
+
+    /// <summary>The same context with the plan folded in, where the box is ticked and there is one.</summary>
+    private DesignContext? Planned(DesignContext? context) =>
+        context is { } held && _withPlan && Plan.Any
+            ? Session.Rules.WithPlanApplied(held, Plan.Perks, Plan.Trees, Plan.Civics)
+            : context;
+
     private IReadOnlyList<CombinedModifier> Combined =>
-        (Context ?? Session.Context) is { } context ? DesignEffects.Combine(context) : [];
+        Subject is { } context ? DesignEffects.Combine(context) : [];
 
     /// <summary>Each chosen option that changes something, with everything it changes.</summary>
     private IReadOnlyList<OptionContribution> Contributions =>
-        (Context ?? Session.Context) is { } context
+        Subject is { } context
             ? [.. DesignEffects.Selected(context)
                 .Where(o => !o.Effects.IsEmpty)
                 .Select(o => new OptionContribution(Named(context, o.Key), o.Effects))]
@@ -348,6 +393,20 @@
         if (database.Civic(key) is { } civic)
         {
             return new EmpireChoice(key, Session.Localizer.Text(key), civic.Icon, civic.Effects);
+        }
+
+        if (database.AscensionPerk(key) is { } perk)
+        {
+            return new EmpireChoice(key, Session.Localizer.Text(perk.NameKey), perk.Icon, perk.Effects);
+        }
+
+        if (database.Tradition(key) is { } tradition)
+        {
+            return new EmpireChoice(
+                key,
+                Session.OptionName(tradition.Variants, tradition.NameKey),
+                tradition.Icon,
+                tradition.Effects);
         }
 
         var trait = database.Trait(key);

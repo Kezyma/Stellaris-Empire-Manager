@@ -1,4 +1,4 @@
-using Sem.GameData;
+﻿using Sem.GameData;
 
 namespace Sem.Rules;
 
@@ -189,6 +189,49 @@ public static class DesignEffects
         foreach (var trait in database.Traits.Where(t => context.RulerTraits.Contains(t.Key)))
         {
             yield return (trait.Key, trait.Effects);
+        }
+
+        // Both of these are empty unless the context was built with a plan, so an empire being
+        // designed is unaffected and the panel showing one adds them without a second code path.
+        foreach (var perk in database.AscensionPerks.Where(p => context.AscensionPerks.Contains(p.Key)))
+        {
+            yield return (perk.Key, perk.Effects);
+        }
+
+        foreach (var tradition in Traditions(context))
+        {
+            yield return (tradition.Key, tradition.Effects);
+        }
+    }
+
+    /// <summary>
+    /// Every tradition inside the trees a plan opens: the adoption bonus, the picks, the finish.
+    /// </summary>
+    /// <remarks>
+    /// A tree carries no effects of its own - what a tree does is spread across the seven entries
+    /// inside it, and those are what the game actually grants. Opening a tree and taking none of it
+    /// is not a thing an empire does, so a planned tree counts for all of it.
+    /// </remarks>
+    private static IEnumerable<TraditionDefinition> Traditions(DesignContext context)
+    {
+        var database = context.Database;
+
+        foreach (var key in context.TraditionTrees)
+        {
+            if (database.TraditionTree(key) is not { } tree)
+            {
+                continue;
+            }
+
+            IEnumerable<string> inside =
+                [.. new[] { tree.AdoptionBonus }.OfType<string>(),
+                 .. tree.Traditions,
+                 .. new[] { tree.FinishBonus }.OfType<string>()];
+
+            foreach (var tradition in inside.Select(database.Tradition).OfType<TraditionDefinition>())
+            {
+                yield return tradition;
+            }
         }
     }
 }
