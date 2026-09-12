@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Sem.Ui.Services;
+using Sem.Ui.Services.Cloud;
 using Sem.Web;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -24,6 +25,29 @@ builder.Services.AddScoped<IFileExchange>(s => s.GetRequiredService<FileExchange
 // A tab that is closed should not take an evening's work with it, so the designs are kept in the
 // browser between visits.
 builder.Services.AddScoped<IDesignStore, BrowserDesignStore>();
+
+// OneDrive, for a player who keeps their designs file there - which Windows arranges by itself for
+// a great many people by redirecting Documents into it.
+//
+// The identifier below is public and belongs in this file. It is not a credential: an application
+// that runs in somebody else's browser cannot keep one, so what refuses an impostor is the redirect
+// allowlist Microsoft holds and the PKCE verifier this tab keeps to itself. docs/cloud-setup.md
+// sets out the registration this names, and why that is enough.
+builder.Services.AddScoped<ISessionStore, BrowserSessionStore>();
+
+builder.Services.AddScoped(s => new OneDriveAuth(
+    // A client of its own, because the site's carries the site's base address and these do not go
+    // to the site. Microsoft's endpoints are absolute.
+    new HttpClient(),
+    s.GetRequiredService<ISessionStore>(),
+    clientId: "3275b739-5f92-47b4-9210-3f1def80ec25",
+
+    // Wherever this copy of the app is served from, which is the address registered against it:
+    // the published site in production, the dev server locally. Both are on the allowlist.
+    redirectUri: builder.HostEnvironment.BaseAddress));
+
+builder.Services.AddScoped(s => new OneDriveProvider(
+    new HttpClient(), s.GetRequiredService<OneDriveAuth>()));
 
 // Every content pack is assumed here: the installation the data was read from is not the player's,
 // and a designer that hides half the game until a setting is found is worse than one that offers
