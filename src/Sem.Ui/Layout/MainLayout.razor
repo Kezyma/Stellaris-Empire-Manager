@@ -404,6 +404,15 @@
     /// </remarks>
     private IWindowControls? _windows;
 
+    /// <summary>
+    /// The thing that decides where a save goes, where that can change during a visit.
+    /// </summary>
+    /// <remarks>
+    /// Asked for the same way as the window, and absent for the same reason: the desktop has one
+    /// file exchange for the life of the window, so there is nothing there to hear about.
+    /// </remarks>
+    private FileExchangeRouter? _files;
+
     /// <summary>What the sync box does, in the one sentence a tooltip has.</summary>
     private string SyncExplained =>
         Sync.Enabled
@@ -425,6 +434,15 @@
     protected override async Task OnInitializedAsync()
     {
         _windows = Services.GetService(typeof(IWindowControls)) as IWindowControls;
+
+        // The header draws itself from the exchange - Save or Export, and whether to ask before
+        // replacing a file - so it has to be told when the exchange underneath changes.
+        _files = Services.GetService(typeof(FileExchangeRouter)) as FileExchangeRouter;
+
+        if (_files is not null)
+        {
+            _files.Changed += OnChanged;
+        }
 
         if (_windows is not null)
         {
@@ -487,6 +505,11 @@
         }
 
         Sync.Changed -= OnChanged;
+
+        if (_files is not null)
+        {
+            _files.Changed -= OnChanged;
+        }
     }
 
     private void OnChanged() => InvokeAsync(StateHasChanged);

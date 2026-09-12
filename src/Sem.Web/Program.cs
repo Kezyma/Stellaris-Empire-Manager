@@ -14,7 +14,12 @@ builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.H
 builder.Services.AddScoped<IGameDataSource>(services =>
     new HttpGameDataSource(services.GetRequiredService<HttpClient>()));
 
-builder.Services.AddScoped<IFileExchange, BrowserFileExchange>();
+// Through a router rather than registered outright, because where a save goes stops being fixed
+// for the visit the moment a cloud provider can be connected to part-way through one. Nothing
+// switches it yet; what it forwards to today is the same browser exchange as before.
+builder.Services.AddScoped<BrowserFileExchange>();
+builder.Services.AddScoped(s => new FileExchangeRouter(s.GetRequiredService<BrowserFileExchange>()));
+builder.Services.AddScoped<IFileExchange>(s => s.GetRequiredService<FileExchangeRouter>());
 
 // A tab that is closed should not take an evening's work with it, so the designs are kept in the
 // browser between visits.
