@@ -4802,10 +4802,17 @@ button.icon .sem-action-icon { display: block; }
 
    Whether the table is too wide is not a question CSS can ask, so the class comes from a script
    that measures it with the words on. What that script must not do is written down beside it.
+
+   Each picture is excluded from its own rule by name, because "> span" cannot tell a word from a
+   picture and a picture is not always an img. A colour is a span with a background, so the rule
+   hid the colour itself: a Colours column has nothing in it but the dot, and compacting it emptied
+   the cell rather than shortening it. The icon rule reads the same way and is safe only because
+   its branch never runs without a path; :not(.sem-icon) is there so it stays safe if the
+   placeholder - which is also a span - ever reaches a cell.
 */
 .sem-table-wrap.compact .sem-chip > button:has(img) > span,
-.sem-table-wrap.compact .sem-cell-chip:has(.sem-icon) > span,
-.sem-table-wrap.compact .sem-cell-chip:has(.sem-dot) > span {
+.sem-table-wrap.compact .sem-cell-chip:has(.sem-icon) > span:not(.sem-icon),
+.sem-table-wrap.compact .sem-cell-chip:has(.sem-dot) > span:not(.sem-dot) {
     display: none;
 }
 
