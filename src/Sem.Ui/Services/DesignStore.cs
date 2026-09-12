@@ -97,6 +97,7 @@ public sealed class BrowserDesignStore(IJSRuntime js) : IDesignStore, IAsyncDisp
         _module ??= _js.InvokeAsync<IJSObjectReference>(
             "import", "./_content/Sem.Ui/sem.js").AsTask();
 
+    /// <summary>Hands the imported script module back, if one was ever imported.</summary>
     public async ValueTask DisposeAsync()
     {
         if (_module is not null)

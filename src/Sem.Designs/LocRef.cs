@@ -263,6 +263,7 @@ public sealed class LocRef : CwView
         return variable;
     }
 
+    /// <summary>The text itself, or the key in brackets where it is one.</summary>
     public override string ToString() => IsLiteral ? Key : $"[{Key}]";
 }
 
@@ -281,5 +282,6 @@ public sealed class LocVariable(CwBlock block) : CwView(block, FieldOrder)
     /// <summary>What the placeholder resolves to, itself a name.</summary>
     public LocRef? Value => GetBlock("value") is { } value ? new LocRef(value) : null;
 
+    /// <summary>The variable and what stands in for it.</summary>
     public override string ToString() => $"{Key} = {Value}";
 }

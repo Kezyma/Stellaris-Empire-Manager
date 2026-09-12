@@ -36,6 +36,10 @@ public sealed class DirectoryContentSource : IContentSource
 {
     private readonly string _root;
 
+    /// <summary>Reads a content layer from a folder on disk.</summary>
+    /// <param name="root">The folder to read from.</param>
+    /// <param name="name">What to call the layer in a message; its folder name by default.</param>
+    /// <exception cref="DirectoryNotFoundException">The folder is not there.</exception>
     public DirectoryContentSource(string root, string? name = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(root);

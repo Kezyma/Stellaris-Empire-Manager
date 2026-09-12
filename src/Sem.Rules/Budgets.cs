@@ -125,6 +125,7 @@ public sealed record ValidationProblem(
     /// </remarks>
     public IReadOnlyList<string> Arguments { get; init; } = [];
 
+    /// <summary>The problem as one line: where it is, what it names, and what is wrong.</summary>
     public override string ToString() => Key is null ? $"{Area}: {Message}" : $"{Area} ({Key}): {Message}";
 }
 
@@ -149,6 +150,7 @@ public sealed record ValidationReport(IReadOnlyList<ValidationProblem> Problems)
     public IReadOnlyList<ValidationProblem> Warnings { get; } =
         [.. Problems.Where(p => p.Severity == ValidationSeverity.Warning)];
 
+    /// <summary>Every problem on one line, or "valid" where there are none.</summary>
     public override string ToString() => Problems.Count == 0
         ? "valid"
         : string.Join("; ", Problems.Select(p => p.ToString()));

@@ -112,6 +112,7 @@ public sealed class EmpireOptions(DesignSession session)
         EmpireDesignsFile.CreateEmpty().Add("scratch"),
         _session.OwnedDlc);
 
+    /// <summary>Every ethic a design could hold.</summary>
     public IReadOnlyList<EmpireChoice> Ethics => _ethics ??=
         Named(Visible(_session.Rules.GetEthicOptions(Blank)), key =>
         {
@@ -119,6 +120,7 @@ public sealed class EmpireOptions(DesignSession session)
             return new EmpireChoice(key, Loc.Text(key), ethic?.Icon, ethic?.Effects);
         });
 
+    /// <summary>Every civic one could take.</summary>
     public IReadOnlyList<EmpireChoice> Civics => _civics ??=
         Named(Visible(_session.Rules.GetCivicOptions(Blank)), key => Civic(key));
 
@@ -158,6 +160,7 @@ public sealed class EmpireOptions(DesignSession session)
 
     private IReadOnlyList<EmpireChoice>? _plannableCivics;
 
+    /// <summary>Every tradition tree a plan could name.</summary>
     public IReadOnlyList<EmpireChoice> TraditionTrees => _traditionTrees ??=
     [
         .. Database.TraditionTrees
@@ -167,6 +170,7 @@ public sealed class EmpireOptions(DesignSession session)
 
     private IReadOnlyList<EmpireChoice>? _traditionTrees;
 
+    /// <summary>Every origin an empire could begin from.</summary>
     public IReadOnlyList<EmpireChoice> Origins => _origins ??=
         Named(Visible(_session.Rules.GetOriginOptions(Blank)), key =>
         {
@@ -178,6 +182,7 @@ public sealed class EmpireOptions(DesignSession session)
                 origin?.Effects);
         });
 
+    /// <summary>The game's four authorities.</summary>
     public IReadOnlyList<EmpireChoice> Authorities => _authorities ??=
         Named(Visible(_session.Rules.GetAuthorityOptions(Blank)), key =>
         {
@@ -189,13 +194,16 @@ public sealed class EmpireOptions(DesignSession session)
                 authority?.Effects);
         });
 
+    /// <summary>Every class a species could be.</summary>
     public IReadOnlyList<EmpireChoice> SpeciesClasses => _speciesClasses ??=
         Named(Visible(_session.Rules.GetSpeciesClassOptions(Blank)), key =>
             new EmpireChoice(key, Loc.Text(key), null, null));
 
+    /// <summary>Every trait a species could be given.</summary>
     public IReadOnlyList<EmpireChoice> Traits => _traits ??=
         Named(Visible(_session.Rules.GetSpeciesTraitOptions(Blank)), key => Trait(key));
 
+    /// <summary>Every trait a starting ruler could have.</summary>
     public IReadOnlyList<EmpireChoice> RulerTraits => _rulerTraits ??=
         Named(Visible(_session.Rules.GetRulerTraitOptions(Blank)), key => Trait(key));
 
@@ -240,6 +248,7 @@ public sealed class EmpireOptions(DesignSession session)
                     Database.PlanetClass(key)?.Icon,
                     null));
 
+    /// <summary>Every system an empire could begin in.</summary>
     public IReadOnlyList<EmpireChoice> StartingSystems => _startingSystems ??=
         Named(_session.Rules.GetStartingSystemOptions(Blank), key =>
         {
@@ -283,6 +292,7 @@ public sealed class EmpireOptions(DesignSession session)
                 };
             });
 
+    /// <summary>Every advisor voice on offer.</summary>
     public IReadOnlyList<EmpireChoice> Advisors => _advisors ??=
         Named(
             Database.AdvisorVoices.Select(v => v.Key),
@@ -293,6 +303,7 @@ public sealed class EmpireOptions(DesignSession session)
                     key, Loc.Text(voice?.NameKey, Localizer.Prettify(key)), voice?.Icon, null);
             });
 
+    /// <summary>Every class a ruler could be.</summary>
     public IReadOnlyList<EmpireChoice> RulerClasses => _rulerClasses ??=
         Named(
             Database.LeaderClasses.Where(c => c.CanRule).Select(c => c.Key),
@@ -303,11 +314,13 @@ public sealed class EmpireOptions(DesignSession session)
                     key, Loc.Text(held?.NameKey, Localizer.Prettify(key)), held?.Icon, null);
             });
 
+    /// <summary>Every name pool a species could draw from.</summary>
     public IReadOnlyList<EmpireChoice> NameLists => _nameLists ??=
         Named(
             Database.NameLists.Select(n => n.Key),
             key => new EmpireChoice(key, Loc.Text(key, Localizer.Prettify(key)), null, null));
 
+    /// <summary>Every scripted flag set a design could claim.</summary>
     public IReadOnlyList<EmpireChoice> FlagSets => _flagSets ??=
         Named(
             Database.EmpireFlagSets.Select(f => f.Key),

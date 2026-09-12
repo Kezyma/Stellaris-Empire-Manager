@@ -29,6 +29,12 @@ public abstract class CwView
     private readonly CwView? _parent;
     private readonly string? _key;
 
+    /// <summary>Views a block that already exists.</summary>
+    /// <param name="block">The block this view reads and writes.</param>
+    /// <param name="fieldOrder">
+    /// The order the game writes this block's fields in, so a field added here lands where the game
+    /// would have put it rather than at the end.
+    /// </param>
     protected CwView(CwBlock block, IReadOnlyList<string>? fieldOrder = null)
     {
         ArgumentNullException.ThrowIfNull(block);

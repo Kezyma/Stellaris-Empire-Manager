@@ -172,6 +172,7 @@ public sealed class RulerDesign : CwView
         set => SetString("leader_class", value);
     }
 
+    /// <summary>The ruler's name and what they are.</summary>
     public override string ToString() => $"{Name} ({LeaderClass})";
 }
 
@@ -232,5 +233,6 @@ public sealed class RulerName : CwView
         set => SetString("use_full_regnal_name", value ? "yes" : null, quoted: false);
     }
 
+    /// <summary>The name as written, in whichever of the two forms the design holds.</summary>
     public override string ToString() => FullNames?.ToString() ?? $"{FirstName} {SecondName}".Trim();
 }

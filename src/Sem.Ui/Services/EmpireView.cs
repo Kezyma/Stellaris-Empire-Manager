@@ -119,6 +119,7 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
     public ValidationReport Report =>
         _report ??= _session.Rules.Validate(Context, _design);
 
+    /// <summary>The room the ruler is shown standing in.</summary>
     public RoomDefinition? Room =>
         Database.Room(_design.Room);
 
@@ -132,12 +133,15 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
     public PlanetClassDefinition? World =>
         Database.PlanetClass(Context.EffectivePlanetClass);
 
+    /// <summary>The city built on the world below the window.</summary>
     public GraphicalCultureDefinition? City =>
         Database.GraphicalCulture(_design.CityGraphicalCulture);
 
+    /// <summary>What the fleet looks like.</summary>
     public GraphicalCultureDefinition? Shipset =>
         Database.GraphicalCulture(_design.GraphicalCulture);
 
+    /// <summary>The voice that talks to the player.</summary>
     public AdvisorVoiceDefinition? Advisor =>
         Database.AdvisorVoice(_design.AdvisorVoiceType);
 
@@ -180,12 +184,15 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
         ? _session.Localizer.Text(key.ToUpperInvariant(), Localizer.Prettify(key))
         : null;
 
+    /// <summary>The ruler's likeness, as a path to its picture.</summary>
     public string? RulerPortrait => PortraitArtwork.For(
         Database, PortraitArtwork.RulerPortrait(_design), PortraitArtwork.RulerGender(_design));
 
+    /// <summary>The founders' likeness, likewise.</summary>
     public string? SpeciesPortrait =>
         PortraitArtwork.For(Database, _design.Species.Portrait, _design.Species.Gender);
 
+    /// <summary>Who rules, of the game's four.</summary>
     public AuthorityDefinition? Authority =>
         Database.Authority(_design.Authority);
 
@@ -379,6 +386,7 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
             ? Database.EmpireFlagSet(key)
             : null;
 
+    /// <summary>What the empire believes, as chips to draw.</summary>
     public IEnumerable<EmpireChoice> Ethics =>
         _design.Ethics.Select(key =>
         {
@@ -386,6 +394,7 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
             return Chip(key, ethic?.Icon, ethic?.Effects);
         });
 
+    /// <summary>How it goes about it, named through whatever swaps apply to it.</summary>
     public IEnumerable<EmpireChoice> Civics =>
         _design.Civics.Select(key =>
         {
@@ -402,8 +411,12 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
                     Drawbacks(civic));
         });
 
+    /// <summary>What the founders are good and bad at.</summary>
     public IEnumerable<EmpireChoice> Traits => TraitsOf(_design.Species);
 
+    /// <summary>The same for whichever species is asked about, founders or not.</summary>
+    /// <param name="species">The species whose traits are wanted.</param>
+    /// <returns>Its traits as chips, each carrying its icon and what it does.</returns>
     public IEnumerable<EmpireChoice> TraitsOf(SpeciesDesign species)
     {
         ArgumentNullException.ThrowIfNull(species);

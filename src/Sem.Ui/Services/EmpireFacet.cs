@@ -31,12 +31,16 @@ public sealed record EmpireFacet(
     Func<EmpireOptions, IReadOnlyList<EmpireChoice>>? Fixed = null,
     string Group = "Empire")
 {
+    /// <summary>Headings about the empire itself.</summary>
     public const string Empire = "Empire";
 
+    /// <summary>Headings about its founders.</summary>
     public const string Species = "Species";
 
+    /// <summary>Headings about whoever leads them.</summary>
     public const string Ruler = "Ruler";
 
+    /// <summary>Headings about where and how it appears in a game.</summary>
     public const string Galaxy = "Galaxy";
 
     /// <summary>

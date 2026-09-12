@@ -115,6 +115,7 @@ public sealed class PrescriptedEmpire : CwView
     /// <summary>Whether the empire may share a portrait with another.</summary>
     public bool? IgnorePortraitDuplication => GetBool("ignore_portrait_duplication");
 
+    /// <summary>The empire's key and the name it goes by.</summary>
     public override string ToString() => $"{Key} ({Name})";
 }
 
@@ -148,6 +149,7 @@ public sealed class PrescriptedSpecies(CwBlock block) : CwView(block)
     /// <summary>Species traits, including the class trait.</summary>
     public IReadOnlyList<string> Traits => GetStrings("trait");
 
+    /// <summary>The species' class and the face it wears.</summary>
     public override string ToString() => $"{Class} ({Portrait})";
 }
 
@@ -206,5 +208,6 @@ public sealed class PrescriptedRuler(CwBlock block) : CwView(block)
     /// <summary>Leader class.</summary>
     public string? LeaderClass => GetString("leader_class");
 
+    /// <summary>The ruler's name, however the file happens to store it.</summary>
     public override string ToString() => Name ?? $"{FirstName} {SecondName}".Trim();
 }

@@ -112,6 +112,7 @@ public sealed class CwNode
     public static CwNode BareAssignment(string key, string value, bool quoteKey = false) =>
         Assignment(key, CwScalar.Bare(value), quoteKey);
 
+    /// <summary>The node as one readable line, with a block shown as its braces.</summary>
     public override string ToString() => IsAssignment
         ? $"{Key} {Operator} {(Value is CwBlock ? "{ ... }" : ScalarValue)}"
         : ScalarValue ?? "{ ... }";

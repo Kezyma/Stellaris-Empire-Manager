@@ -17,6 +17,9 @@ public abstract class CwValue
 /// <summary>A single token value: an identifier, number, keyword or quoted string.</summary>
 public sealed class CwScalar : CwValue
 {
+    /// <summary>Wraps one token as a scalar.</summary>
+    /// <param name="token">A bare or quoted token; any other kind is refused.</param>
+    /// <exception cref="ArgumentException">The token is neither bare nor quoted.</exception>
     public CwScalar(CwToken token)
     {
         ArgumentNullException.ThrowIfNull(token);
@@ -49,6 +52,7 @@ public sealed class CwScalar : CwValue
     /// <inheritdoc />
     public override CwValue Clone() => new CwScalar(Token);
 
+    /// <summary>The value without its quotes.</summary>
     public override string ToString() => Value;
 }
 
@@ -57,6 +61,10 @@ public sealed class CwBlock : CwValue
 {
     private readonly List<CwNode> _nodes;
 
+    /// <summary>Builds a block from its braces and what they hold.</summary>
+    /// <param name="open">The opening brace, carrying its original formatting.</param>
+    /// <param name="nodes">What the block holds, in file order.</param>
+    /// <param name="close">The closing brace, absent for a block the file never closed.</param>
     public CwBlock(CwToken open, IEnumerable<CwNode> nodes, CwToken? close)
     {
         ArgumentNullException.ThrowIfNull(open);

@@ -318,5 +318,6 @@ public sealed class EmpireDesign : CwView
     /// <summary>The node this design was read from.</summary>
     internal CwNode Node => _node;
 
+    /// <summary>The name the file keys this empire by.</summary>
     public override string ToString() => Key;
 }

@@ -22,6 +22,8 @@ namespace Sem.Cli.Commands;
 /// </remarks>
 public static class PortraitBoundsCommand
 {
+    /// <summary>Builds the command line this verb is invoked by.</summary>
+    /// <returns>The verb, its options and what to run. Measures how far each portrait rises and drops within its frame.</returns>
     public static Command Create()
     {
         var installOption = new Option<DirectoryInfo?>("--install", "-i")

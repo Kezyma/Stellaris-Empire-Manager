@@ -298,6 +298,7 @@ public sealed class EmpireFlag : CwView
         SetColors(colors);
     }
 
+    /// <summary>The emblem and the background it sits on.</summary>
     public override string ToString() => $"{Icon} on {Background}";
 }
 
@@ -332,5 +333,6 @@ public sealed class FlagImage : CwView
         set => SetString("file", value);
     }
 
+    /// <summary>The image as the game names it: its category and file.</summary>
     public override string ToString() => $"{Category}/{File}";
 }

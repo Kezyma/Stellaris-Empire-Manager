@@ -1,0 +1,16 @@
+<Project>
+
+  <Import Project="$([MSBuild]::GetPathOfFileAbove($(MSBuildThisFile), $(MSBuildThisFileDirectory)..))" />
+
+  <PropertyGroup>
+    <!--
+      CS1591 - "missing doc comment on a public member" - stays suppressed for the tests. A test is
+      named for the thing it asserts, and a summary repeating that name in a sentence is noise; where
+      a test needs saying rather than reading, the class carries a <remarks> explaining what went
+      wrong once. The rule is on for src/, which is where a public member has callers who cannot see
+      the body.
+    -->
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+
+</Project>

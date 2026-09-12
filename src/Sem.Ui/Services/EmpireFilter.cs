@@ -35,6 +35,9 @@ public sealed class EmpireFilter
     /// <summary>Whether the heading wants every one of them rather than any.</summary>
     public bool RequiresAll(string facet) => Under(facet).All;
 
+    /// <summary>Says whether a heading wants every one of its ticks rather than any.</summary>
+    /// <param name="facet">Which heading.</param>
+    /// <param name="all">True to require them all, false to accept any.</param>
     public void SetRequiresAll(string facet, bool all) => Under(facet).All = all;
 
     private Chosen Under(string facet)
@@ -57,6 +60,7 @@ public sealed class EmpireFilter
     public int Headings =>
         (Search.Length > 0 ? 1 : 0) + _headings.Values.Count(c => c.Keys.Count > 0);
 
+    /// <summary>Drops the search text and every tick, leaving nothing being asked.</summary>
     public void Clear()
     {
         Search = string.Empty;
@@ -67,6 +71,9 @@ public sealed class EmpireFilter
         }
     }
 
+    /// <summary>Whether one empire answers everything currently being asked.</summary>
+    /// <param name="row">The empire to judge.</param>
+    /// <returns>True when it matches the search text and every heading's ticks.</returns>
     public bool Matches(EmpireRow row)
     {
         ArgumentNullException.ThrowIfNull(row);

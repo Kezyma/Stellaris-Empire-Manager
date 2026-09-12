@@ -47,6 +47,7 @@ public sealed class PdxNode(string name)
         }
     }
 
+    /// <summary>The node's name and how much hangs off it.</summary>
     public override string ToString() =>
         $"{Name} ({Properties.Count} properties, {Children.Count} children)";
 }
@@ -73,6 +74,7 @@ public sealed class PdxValue
 
     internal static PdxValue Of(string[] values) => new() { Strings = values };
 
+    /// <summary>Which of the three kinds this holds, and how many.</summary>
     public override string ToString() =>
         Ints is not null ? $"int[{Ints.Length}]"
         : Floats is not null ? $"float[{Floats.Length}]"

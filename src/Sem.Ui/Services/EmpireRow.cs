@@ -37,6 +37,7 @@ public sealed record EmpireRow
     /// </remarks>
     public PrescriptedEmpireSummary? Preset { get; init; }
 
+    /// <summary>What the empire is called, as the list shows it.</summary>
     public required string Name { get; init; }
 
     /// <summary>
@@ -64,6 +65,7 @@ public sealed record EmpireRow
 
     // ---------------------------------------------------------------- the things that were chosen
 
+    /// <summary>What its authority, ethics and civics add up to being called.</summary>
     public EmpireChoice? Government { get; init; }
 
     /// <summary>
@@ -76,6 +78,7 @@ public sealed record EmpireRow
     /// </remarks>
     public IReadOnlyList<EmpireChoice> Personalities { get; init; } = [];
 
+    /// <summary>Who rules, of the game's four.</summary>
     public EmpireChoice? Authority { get; init; }
 
     /// <summary>
@@ -148,13 +151,16 @@ public sealed record EmpireRow
     /// <summary>The founders' likeness, their gender, and the list their names come from.</summary>
     public EmpireChoice? Portrait { get; init; }
 
+    /// <summary>The founders' gender.</summary>
     public EmpireChoice? Gender { get; init; }
 
+    /// <summary>The pool their people's names are drawn from.</summary>
     public EmpireChoice? NameList { get; init; }
 
     /// <summary>The ruler's own likeness and gender, which need not be their people's.</summary>
     public EmpireChoice? RulerPortrait { get; init; }
 
+    /// <summary>The ruler's gender, which need not be their people's.</summary>
     public EmpireChoice? RulerGender { get; init; }
 
     /// <summary>
@@ -166,8 +172,10 @@ public sealed record EmpireRow
     /// </remarks>
     public bool HasSecondSpecies { get; init; }
 
+    /// <summary>What that second species is.</summary>
     public EmpireChoice? SecondClass { get; init; }
 
+    /// <summary>And what it was given.</summary>
     public required IReadOnlyList<EmpireChoice> SecondTraits { get; init; }
 
     /// <summary>
@@ -180,42 +188,57 @@ public sealed record EmpireRow
     /// </remarks>
     public required IReadOnlyList<EmpireChoice> PlanTrees { get; init; }
 
+    /// <summary>The ascension perks the plan names.</summary>
     public required IReadOnlyList<EmpireChoice> PlanPerks { get; init; }
 
+    /// <summary>And the civics it means to swap to.</summary>
     public required IReadOnlyList<EmpireChoice> PlanCivics { get; init; }
 
+    /// <summary>What the empire believes.</summary>
     public required IReadOnlyList<EmpireChoice> Ethics { get; init; }
 
+    /// <summary>How it goes about it.</summary>
     public required IReadOnlyList<EmpireChoice> Civics { get; init; }
 
+    /// <summary>The story it starts from.</summary>
     public EmpireChoice? Origin { get; init; }
 
     /// <summary>What the founders are, as the game classes them: humanoid, lithoid, machine.</summary>
     public EmpireChoice? SpeciesClass { get; init; }
 
+    /// <summary>What the founders are good and bad at.</summary>
     public required IReadOnlyList<EmpireChoice> Traits { get; init; }
 
     /// <summary>What kind of world it starts on, which an origin can change from what is stored.</summary>
     public EmpireChoice? PlanetClass { get; init; }
 
+    /// <summary>Where in the galaxy it begins, where that is fixed.</summary>
     public EmpireChoice? StartingSystem { get; init; }
 
+    /// <summary>What its fleet looks like.</summary>
     public EmpireChoice? Shipset { get; init; }
 
+    /// <summary>The voice that talks to the player.</summary>
     public EmpireChoice? Advisor { get; init; }
 
+    /// <summary>What kind of leader the ruler is.</summary>
     public EmpireChoice? RulerClass { get; init; }
 
+    /// <summary>And what they are known for.</summary>
     public required IReadOnlyList<EmpireChoice> RulerTraits { get; init; }
 
     // ---------------------------------------------------------------- the things that were typed
 
+    /// <summary>What the founders call themselves.</summary>
     public required string SpeciesName { get; init; }
 
+    /// <summary>What they call their homeworld.</summary>
     public required string PlanetName { get; init; }
 
+    /// <summary>What they call their ruler.</summary>
     public required string RulerName { get; init; }
 
+    /// <summary>The letters painted on their hulls.</summary>
     public required string ShipPrefix { get; init; }
 
     /// <summary>What the game calls a fleet it grows rather than builds.</summary>

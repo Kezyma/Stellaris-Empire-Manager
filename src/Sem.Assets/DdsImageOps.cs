@@ -3,8 +3,13 @@ namespace Sem.Assets;
 /// <summary>One colour channel of a texture.</summary>
 public enum ColorChannel
 {
+    /// <summary>The red channel.</summary>
     Red,
+
+    /// <summary>The green channel.</summary>
     Green,
+
+    /// <summary>The blue channel.</summary>
     Blue,
 }
 

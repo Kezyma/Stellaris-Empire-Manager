@@ -48,6 +48,7 @@ public sealed record EmpirePlan(
         && Perks.SequenceEqual(other.Perks, StringComparer.Ordinal)
         && Civics.SequenceEqual(other.Civics, StringComparer.Ordinal);
 
+    /// <summary>Hashed on the three lists, to match how two plans are compared.</summary>
     public override int GetHashCode()
     {
         var code = new HashCode();

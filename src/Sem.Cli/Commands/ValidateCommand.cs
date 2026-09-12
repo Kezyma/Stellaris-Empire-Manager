@@ -16,6 +16,8 @@ namespace Sem.Cli.Commands;
 /// </remarks>
 public static class ValidateCommand
 {
+    /// <summary>Builds the command line this verb is invoked by.</summary>
+    /// <returns>The verb, its options and what to run. Checks a designs file against the rules and reports what the game would refuse.</returns>
     public static Command Create()
     {
         var installOption = new Option<DirectoryInfo?>("--install")

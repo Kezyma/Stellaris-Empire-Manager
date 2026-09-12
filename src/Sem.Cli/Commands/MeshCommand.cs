@@ -10,6 +10,8 @@ namespace Sem.Cli.Commands;
 /// </summary>
 public static class MeshCommand
 {
+    /// <summary>Builds the command line this verb is invoked by.</summary>
+    /// <returns>The verb, its options and what to run. Bakes the game's portrait and ship meshes into flat images.</returns>
     public static Command Create()
     {
         var pathArgument = new Argument<FileInfo>("file")

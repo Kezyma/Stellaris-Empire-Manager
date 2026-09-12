@@ -86,5 +86,6 @@ public sealed class SpeciesDesign : CwView
     /// <summary>Replaces the trait list, reusing existing lines so the diff stays small.</summary>
     public void SetTraits(IReadOnlyList<string> traits) => SetStrings("trait", traits);
 
+    /// <summary>The species' class and the face it wears.</summary>
     public override string ToString() => $"{Class} ({Portrait})";
 }

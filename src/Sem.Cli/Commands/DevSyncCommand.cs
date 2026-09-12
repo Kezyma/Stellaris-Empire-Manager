@@ -31,6 +31,8 @@ public static class DevSyncCommand
         "launcher-settings.json",
     ];
 
+    /// <summary>Builds the command line this verb is invoked by.</summary>
+    /// <returns>The verb, its options and what to run. Copies freshly extracted data into the web project's wwwroot.</returns>
     public static Command Create()
     {
         var installOption = new Option<DirectoryInfo?>("--install")

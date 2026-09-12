@@ -12,6 +12,8 @@ namespace Sem.Cli.Commands;
 /// </summary>
 public static class ExtractCommand
 {
+    /// <summary>Builds the command line this verb is invoked by.</summary>
+    /// <returns>The verb, its options and what to run. Reads a Stellaris installation and writes the game database.</returns>
     public static Command Create()
     {
         var installOption = new Option<DirectoryInfo?>("--install")

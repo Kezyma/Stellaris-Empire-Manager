@@ -21,6 +21,8 @@ public sealed class GameDataCache
 {
     private readonly string _installRoot;
 
+    /// <summary>Points the cache at the installation it is to be built from.</summary>
+    /// <param name="installRoot">Where the game is installed.</param>
     public GameDataCache(string installRoot)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(installRoot);

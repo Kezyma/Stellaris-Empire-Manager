@@ -273,6 +273,7 @@ public sealed class BrowserFileExchange(IJSRuntime js) : IFileExchange, IAsyncDi
         await module.InvokeVoidAsync("warnBeforeLeaving", unsaved).ConfigureAwait(false);
     }
 
+    /// <summary>Hands the imported script module back, if one was ever imported.</summary>
     public async ValueTask DisposeAsync()
     {
         if (_module is not null)

@@ -35,6 +35,7 @@ public partial class MainWindow : Window
     private string? _installRoot;
     private string? _designsPath;
 
+    /// <summary>Builds the window, and starts reading the game data once it is shown.</summary>
     public MainWindow()
     {
         InitializeComponent();
