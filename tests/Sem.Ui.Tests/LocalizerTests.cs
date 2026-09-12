@@ -196,7 +196,7 @@ public sealed class LocalizerTests
     }
 
     /// <summary>
-    /// Text already in hand is escaped as it is turned into HTML, markup and all.
+    /// And the game's own text is escaped as it is turned into HTML, markup and all.
     /// </summary>
     /// <remarks>
     /// The colour runs survive because they are the game's own notation rather than characters in
@@ -206,9 +206,9 @@ public sealed class LocalizerTests
     [Fact]
     public void MarkupSurvivesAndAngleBracketsDoNot()
     {
-        var localizer = With([]);
+        var localizer = With(new() { ["COLOURED"] = "§Y<b>bold</b>§!" });
 
-        var html = localizer.HtmlOf("§Y<b>bold</b>§!");
+        var html = localizer.Html("COLOURED");
 
         // The span is the game's colour run, and which colour it is is not what this is about.
         Assert.StartsWith("<span style=\"color:", html, StringComparison.Ordinal);
