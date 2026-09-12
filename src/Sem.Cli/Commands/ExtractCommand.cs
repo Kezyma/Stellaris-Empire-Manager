@@ -103,6 +103,7 @@ public static class ExtractCommand
         WriteFailures("portrait(s) could not be drawn", result.Portraits.Failures);
         WriteFailures("shipset(s) could not be drawn", result.Ships.Failures);
         WriteFailures("image(s) could not be converted", result.Images.Failures);
+        WriteFailures("script file(s) could not be read", result.ScriptFailures);
 
         if (result.MissingImages.Count > 0)
         {

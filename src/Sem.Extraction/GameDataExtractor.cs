@@ -63,6 +63,21 @@ public sealed class GameDataExtractor(LayeredContent content)
     /// </summary>
     public AssetCatalog Assets { get; private set; } = new(content);
 
+    /// <summary>
+    /// Script files the last extraction could not read, with the reason. Empty until
+    /// <see cref="Extract"/> has run.
+    /// </summary>
+    /// <remarks>
+    /// The loader has recorded these since it was written, with two comments explaining why
+    /// silence would be bad, and nothing had ever read them - so the answer went into a list that
+    /// was thrown away with the extractor. It is not hypothetical: 4.5 ships
+    /// common/inline_scripts/traditions/tr_purity_imperfection_remediation_wilderness with no .txt
+    /// extension while both its siblings have one, so the include cannot be found and a tradition
+    /// loses a condition. That one is harmless - the tradition is a tooltip dummy gated always=no -
+    /// and the point is that a patch doing the same to something that matters would say nothing.
+    /// </remarks>
+    public IReadOnlyList<string> ScriptFailures { get; private set; } = [];
+
     /// <summary>Builds a database from an installation directory.</summary>
     public static GameDatabase ExtractFrom(string installRoot, IProgress<string>? progress = null) =>
         new GameDataExtractor(LayeredContent.ForInstall(installRoot)).Extract(progress);
@@ -79,6 +94,10 @@ public sealed class GameDataExtractor(LayeredContent content)
     {
         var loader = new ScriptLoader(_content);
         var requirements = new RequirementCompiler();
+
+        // Taken now rather than at the end, because it is the loader's own live list: whatever it
+        // records between here and the last extractor is in it by the time anyone asks.
+        ScriptFailures = loader.Failures;
 
         Report("Reading sprite definitions");
         var sprites = SpriteCatalog.Read(_content);
@@ -374,8 +393,11 @@ public sealed class GameDataExtractor(LayeredContent content)
             // Shown at the size of a letter, so there is no reason to carry a large picture.
             const int LetterHeight = 32;
 
-            var path = assets.RegisterSprite($"GFX_text_{code}", destination, LetterHeight)
-                       ?? assets.RegisterSprite($"GFX_{code}", destination, LetterHeight)
+            // Probed rather than registered: these two are guesses at a naming convention, and
+            // the chain below ends with RegisterFirst, which records the destination once if none
+            // of the five lands.
+            var path = assets.ProbeSprite($"GFX_text_{code}", destination, LetterHeight)
+                       ?? assets.ProbeSprite($"GFX_{code}", destination, LetterHeight)
 
                        // Not every icon is declared as a sprite. A modifier's own picture is found
                        // by its name, which is how the game finds it when nothing declares one.

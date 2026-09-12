@@ -82,19 +82,52 @@ public sealed class AssetCatalog(LayeredContent content, SpriteCatalog? sprites 
         string? spriteName,
         string destination,
         int? maxDimension = null,
-        int? frame = null)
+        int? frame = null) =>
+        RegisterSprite(spriteName, destination, maxDimension, frame, record: true);
+
+    /// <summary>
+    /// Registers a sprite, saying nothing if there is no such sprite.
+    /// </summary>
+    /// <remarks>
+    /// For a caller trying several names in turn, where a name that does not land is a guess rather
+    /// than a fault. The text icons guess twice at a sprite and then three times at a file for each
+    /// of the game's six hundred and seventy icon codes, and recording every guess that missed
+    /// wrote eight hundred and ninety-six lines into the missing-image report - including a line
+    /// for every code that resolved perfectly well on the second guess. The two lines in that
+    /// report that meant something were unfindable underneath it.
+    ///
+    /// A chain ended with <see cref="RegisterFirst"/> still records its destination once when
+    /// nothing at all matched, so what is lost is the guesses and not the failure.
+    /// </remarks>
+    public string? ProbeSprite(string? spriteName, string destination, int? maxDimension = null) =>
+        RegisterSprite(spriteName, destination, maxDimension, frame: null, record: false);
+
+    private string? RegisterSprite(
+        string? spriteName,
+        string destination,
+        int? maxDimension,
+        int? frame,
+        bool record)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(destination);
 
         if (Sprites.Resolve(spriteName) is not { } sprite)
         {
-            _missing.Add(spriteName is { Length: > 0 } name ? $"sprite {name}" : destination);
+            if (record)
+            {
+                _missing.Add(spriteName is { Length: > 0 } name ? $"sprite {name}" : destination);
+            }
+
             return null;
         }
 
         if (!_content.Contains(sprite.Texture))
         {
-            _missing.Add(sprite.Texture);
+            if (record)
+            {
+                _missing.Add(sprite.Texture);
+            }
+
             return null;
         }
 
@@ -102,7 +135,11 @@ public sealed class AssetCatalog(LayeredContent content, SpriteCatalog? sprites 
         // fifth of four, and a picture made from past the end of the strip would be worse than none.
         if (frame is { } asked && (asked < 1 || asked > sprite.FrameCount))
         {
-            _missing.Add($"sprite {spriteName} frame {asked} of {sprite.FrameCount}");
+            if (record)
+            {
+                _missing.Add($"sprite {spriteName} frame {asked} of {sprite.FrameCount}");
+            }
+
             return null;
         }
 

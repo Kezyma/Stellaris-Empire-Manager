@@ -21,7 +21,8 @@ public sealed record ExtractionResult(
     BakeReport Images,
     PortraitBakeReport Portraits,
     ShipBakeReport Ships,
-    IReadOnlyList<string> MissingImages);
+    IReadOnlyList<string> MissingImages,
+    IReadOnlyList<string> ScriptFailures);
 
 /// <summary>
 /// Runs a whole extraction and writes everything the designer needs into one directory.
@@ -97,6 +98,7 @@ public static class GameDataWriter
                 Bytes = shipReport.Bytes + arkshipReport.Bytes,
                 Failures = [.. shipReport.Failures, .. arkshipReport.Failures],
             },
-            extractor.Assets.Missing);
+            extractor.Assets.Missing,
+            extractor.ScriptFailures);
     }
 }

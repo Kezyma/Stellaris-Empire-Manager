@@ -16,6 +16,7 @@ public sealed class ScriptLoader(LayeredContent content)
 {
     private readonly Dictionary<string, CwDocument?> _cache = new(StringComparer.OrdinalIgnoreCase);
     private readonly List<string> _failures = [];
+    private readonly HashSet<string> _reported = new(StringComparer.Ordinal);
 
     /// <summary>The content layers being read.</summary>
     public LayeredContent Content { get; } = content;
@@ -34,9 +35,20 @@ public sealed class ScriptLoader(LayeredContent content)
     /// <see cref="Load"/>, and were dropping a whole file on a syntax error without telling anyone -
     /// so a patch that changed that syntax would quietly remove every built-in empire in it while
     /// the extract command still reported success. This is where the rest of the failures collect.
+    ///
+    /// Said once however often it happens. An inline script is resolved at each of its call sites
+    /// rather than cached like a parsed file, so one missing include filed the same sentence four
+    /// times - and a reader counting lines would have read four defects into one.
     /// </remarks>
-    public void RecordFailure(string relativePath, string reason) =>
-        _failures.Add($"{relativePath}: {reason}");
+    public void RecordFailure(string relativePath, string reason)
+    {
+        var failure = $"{relativePath}: {reason}";
+
+        if (_reported.Add(failure))
+        {
+            _failures.Add(failure);
+        }
+    }
 
     /// <summary>Parses one file, or returns null when it is missing or unparseable.</summary>
     public CwDocument? Load(string relativePath)
@@ -60,7 +72,10 @@ public sealed class ScriptLoader(LayeredContent content)
             }
             catch (Exception ex) when (ex is CwSyntaxException or IOException)
             {
-                _failures.Add($"{relativePath}: {ex.Message}");
+                // Through the same door as everything else. This one cannot repeat itself - a file
+                // is parsed once and the result cached, failure included - but there being two ways
+                // to record a failure is how one of them ends up without the other's rules.
+                RecordFailure(relativePath, ex.Message);
             }
         }
 
