@@ -792,6 +792,14 @@
                         + "instead. Move it into your Stellaris folder for the game to find it.", false);
                     break;
 
+                // Not a failure to save: the file moved on since it was read, and writing would
+                // have gone over the top of whatever arrived. Nothing was lost here - the work is
+                // still in hand, and still unsaved, which is why this says so rather than clearing.
+                case SaveOutcome.Conflicted:
+                    _message = ($"{name} changed somewhere else while you were editing, so nothing "
+                        + "was written over it. Reload it to see what arrived.", true);
+                    break;
+
                 // An outcome this was not written for, which is a mistake in this app rather than
                 // anything the player did. It is here because the alternative is silence: a switch
                 // statement over an enum is not checked for exhaustiveness, so a new member added

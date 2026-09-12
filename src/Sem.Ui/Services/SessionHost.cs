@@ -207,6 +207,15 @@ public sealed class SessionHost(
                     .SaveAsync(session.FileName ?? EmpireDesignsFile.FileName, contents, KeepsBackup)
                     .ConfigureAwait(false);
 
+                // Said apart from the rest, because it is the one that is not a failure: the file
+                // was not written because writing it would have thrown away a change somebody else
+                // made, and trying again is the wrong thing to do about that.
+                if (outcome is SaveOutcome.Conflicted)
+                {
+                    return "Your designs file changed somewhere else while you were editing, so "
+                        + "nothing was written over it. Reload it to see what arrived.";
+                }
+
                 if (outcome is not SaveOutcome.Saved)
                 {
                     return "Your empires were not written to their file.";

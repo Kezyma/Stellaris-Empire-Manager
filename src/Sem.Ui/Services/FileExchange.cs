@@ -24,6 +24,18 @@ public enum SaveOutcome
 
     /// <summary>A dialog exists but the browser would not open it or would not write. Downloaded instead.</summary>
     Refused,
+
+    /// <summary>
+    /// The file had moved on since it was read, so nothing was written over it.
+    /// </summary>
+    /// <remarks>
+    /// Only a host that can tell says this, which means one that keeps a version alongside the file
+    /// and promises not to write past it - a cloud provider. A disk cannot: two programs writing the
+    /// same file simply both write it, and the second wins. So this is not a failure to save, it is
+    /// a refusal to overwrite somebody, and the answer to it is to look at what arrived rather than
+    /// to try again.
+    /// </remarks>
+    Conflicted,
 }
 
 /// <summary>
