@@ -324,24 +324,22 @@
 
     /// <summary>The pieces of the scene at the top: what has been chosen, drawn together.</summary>
     private RoomDefinition? ChosenRoom =>
-        Session.Data.Database.Rooms.FirstOrDefault(r => r.Key == Design.Room);
+        Session.Data.Database.Room(Design.Room);
 
     private GraphicalCultureDefinition? ChosenCity =>
-        Session.Data.Database.GraphicalCultures
-            .FirstOrDefault(c => c.Key == Design.CityGraphicalCulture);
+        Session.Data.Database.GraphicalCulture(Design.CityGraphicalCulture);
 
     /// <summary>
     /// The world the scene looks out on: where the empire actually begins, which an origin can
     /// decide for itself whatever the homeworld picker was left saying.
     /// </summary>
     private PlanetClassDefinition? Homeworld =>
-        Session.Data.Database.PlanetClasses
-            .FirstOrDefault(p => p.Key == Session.Context!.EffectivePlanetClass);
+        Session.Data.Database.PlanetClass(Session.Context!.EffectivePlanetClass);
 
     /// <summary>The ship in the window, for an empire that has no world to put one on.</summary>
     private ArkshipDefinition? Arkship =>
         Design.IsNomadic == true
-            ? Session.Data.Database.Arkships.FirstOrDefault(a => a.Key == Design.ShipSize)
+            ? Session.Data.Database.Arkship(Design.ShipSize)
             : null;
 
     private string? RulerPortrait =>

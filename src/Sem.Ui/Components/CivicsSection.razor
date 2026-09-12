@@ -35,7 +35,7 @@
     {
         get
         {
-            var byKey = Session.Data.Database.Civics.ToDictionary(c => c.Key, StringComparer.Ordinal);
+            var database = Session.Data.Database;
 
             var states = Session.Rules.GetCivicOptions(Context)
                 .OrderBy(o => Session.Localizer.Text(o.Key), StringComparer.CurrentCulture);
@@ -43,7 +43,7 @@
             return GridOptions.Build(
                 Session,
                 states,
-                key => (byKey.GetValueOrDefault(key)?.Icon, byKey.GetValueOrDefault(key)?.Effects),
+                key => (database.Civic(key)?.Icon, database.Civic(key)?.Effects),
                 Design.Civics.Contains);
         }
     }

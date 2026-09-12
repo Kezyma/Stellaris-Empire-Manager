@@ -335,22 +335,22 @@
     {
         var database = context.Database;
 
-        if (database.Ethics.FirstOrDefault(e => e.Key == key) is { } ethic)
+        if (database.Ethic(key) is { } ethic)
         {
             return new EmpireChoice(key, Session.Localizer.Text(key), ethic.Icon, ethic.Effects);
         }
 
-        if (database.Authorities.FirstOrDefault(a => a.Key == key) is { } authority)
+        if (database.Authority(key) is { } authority)
         {
             return new EmpireChoice(key, Session.Localizer.Text(key), authority.Icon, authority.Effects);
         }
 
-        if (database.Civics.FirstOrDefault(c => c.Key == key) is { } civic)
+        if (database.Civic(key) is { } civic)
         {
             return new EmpireChoice(key, Session.Localizer.Text(key), civic.Icon, civic.Effects);
         }
 
-        var trait = database.Traits.FirstOrDefault(t => t.Key == key);
+        var trait = database.Trait(key);
 
         return new EmpireChoice(key, Session.Localizer.Text(key), trait?.Icon, trait?.Effects);
     }

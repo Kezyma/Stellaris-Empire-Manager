@@ -110,12 +110,12 @@
     {
         get
         {
-            var byKey = Session.Data.Database.Authorities.ToDictionary(a => a.Key, StringComparer.Ordinal);
+            var database = Session.Data.Database;
 
             return GridOptions.Build(
                 Session,
                 Session.Rules.GetAuthorityOptions(Context),
-                key => (byKey.GetValueOrDefault(key)?.Icon, byKey.GetValueOrDefault(key)?.Effects),
+                key => (database.Authority(key)?.Icon, database.Authority(key)?.Effects),
                 key => key == Design.Authority);
         }
     }

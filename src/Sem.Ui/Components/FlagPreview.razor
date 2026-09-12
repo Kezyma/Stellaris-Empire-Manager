@@ -163,6 +163,9 @@
     private static string Percent(double fraction) =>
         (fraction * 100).ToString("0.####", System.Globalization.CultureInfo.InvariantCulture) + "%";
 
+    /// <summary>
+    /// Every named colour by key, which the composer needs whole rather than one at a time.
+    /// </summary>
     private IReadOnlyDictionary<string, FlagColorDefinition> Palette =>
         _palette ??= Session.Data.Database.FlagColors.ToDictionary(c => c.Key, StringComparer.Ordinal);
 

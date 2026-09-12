@@ -100,7 +100,7 @@
     /// <summary>A colour in the shade the map will draw it, which is not the flag's.</summary>
     private string? Shown(string? key) =>
         key is { Length: > 0 } named &&
-        Session.Data.Database.FlagColors.FirstOrDefault(c => c.Key == named) is { } color
+        Session.Data.Database.FlagColor(named) is { } color
             ? Swatch(color)
             : null;
 

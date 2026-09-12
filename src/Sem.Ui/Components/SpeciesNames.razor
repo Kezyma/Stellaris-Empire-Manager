@@ -177,7 +177,7 @@
     {
         get
         {
-            var list = Session.Data.Database.NameLists.FirstOrDefault(n => n.Key == Species.NameList);
+            var list = Session.Data.Database.NameList(Species.NameList);
 
             yield return ("Leaders", list is null ? [] : list.CharacterNames.Assembled(AssembledLeaderNames));
             yield return ("Ships", list?.ShipNames ?? []);

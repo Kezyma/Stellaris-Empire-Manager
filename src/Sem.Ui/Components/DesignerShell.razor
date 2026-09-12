@@ -325,8 +325,7 @@
                 return Name(design.PlanetClass);
             }
 
-            return Session.Data.Database.Arkships
-                .FirstOrDefault(a => string.Equals(a.Key, design.ShipSize, StringComparison.Ordinal))
+            return Session.Data.Database.Arkship(design.ShipSize)
                 is { } ark
                     ? Session.Localizer.Text(ark.NameKey, Localizer.Prettify(ark.Key))
                     : Session.Localizer.Text("arkship_cap", "Arkship");

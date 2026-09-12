@@ -250,8 +250,7 @@ public sealed record EmpireRow
             return null;
         }
 
-        var color = session.Data.Database.FlagColors
-            .FirstOrDefault(c => string.Equals(c.Key, named, StringComparison.Ordinal));
+        var color = session.Data.Database.FlagColor(named);
 
         return new EmpireChoice(named, Localizer.Prettify(named), null, null)
         {
@@ -321,7 +320,7 @@ public sealed record EmpireRow
         PlanetClassDefinition world)
     {
         var preference = session.Rules.HabitabilityTraitFor(view.Context);
-        var trait = preference is null ? null : database.Traits.FirstOrDefault(t => t.Key == preference);
+        var trait = preference is null ? null : database.Trait(preference);
 
         return new EmpireChoice(
             world.Key,
@@ -361,9 +360,9 @@ public sealed record EmpireRow
         var prefix = loc.Name(design.ShipPrefix, string.Empty);
 
         var government = session.Rules.GovernmentFor(view.Context);
-        var world = database.PlanetClasses.FirstOrDefault(p => p.Key == view.Context.EffectivePlanetClass);
-        var initializer = database.Initializers.FirstOrDefault(i => i.Key == design.Initializer);
-        var rulerClass = database.LeaderClasses.FirstOrDefault(c => c.Key == design.Ruler.LeaderClass);
+        var world = database.PlanetClass(view.Context.EffectivePlanetClass);
+        var initializer = database.Initializer(design.Initializer);
+        var rulerClass = database.LeaderClass(design.Ruler.LeaderClass);
         var shipset = view.Shipset;
         var advisor = view.Advisor;
 
@@ -937,7 +936,7 @@ public sealed class EmpireFilter
 /// The lists a filter offers should be the lists the editor offers. Narrower than that - only what
 /// the empires in front of the reader happen to hold - and a heading quietly says the rest do not
 /// exist; wider, and it is the game's whole database, of which the great majority is not something
-/// an empire can be given at all: 1127 traits, 546 portraits, 358 civics, 170 government types.
+/// an empire can be given at all: 398 traits, 546 portraits, 358 civics, 170 government types.
 /// </para>
 /// <para>
 /// So every heading asks whoever already answers the question. The pickers do it through the rules,
@@ -1039,7 +1038,7 @@ public sealed class EmpireOptions(DesignSession session)
     public IReadOnlyList<EmpireChoice> Ethics => _ethics ??=
         Named(Visible(_session.Rules.GetEthicOptions(Blank)), key =>
         {
-            var ethic = Database.Ethics.FirstOrDefault(e => e.Key == key);
+            var ethic = Database.Ethic(key);
             return new EmpireChoice(key, Loc.Text(key), ethic?.Icon, ethic?.Effects);
         });
 
@@ -1094,7 +1093,7 @@ public sealed class EmpireOptions(DesignSession session)
     public IReadOnlyList<EmpireChoice> Origins => _origins ??=
         Named(Visible(_session.Rules.GetOriginOptions(Blank)), key =>
         {
-            var origin = Database.Civics.FirstOrDefault(c => c.Key == key);
+            var origin = Database.Civic(key);
             return new EmpireChoice(
                 key,
                 Loc.Text(origin?.NameKey, Localizer.Prettify(key)),
@@ -1105,7 +1104,7 @@ public sealed class EmpireOptions(DesignSession session)
     public IReadOnlyList<EmpireChoice> Authorities => _authorities ??=
         Named(Visible(_session.Rules.GetAuthorityOptions(Blank)), key =>
         {
-            var authority = Database.Authorities.FirstOrDefault(a => a.Key == key);
+            var authority = Database.Authority(key);
             return new EmpireChoice(
                 key,
                 Loc.Text(authority?.NameKey, Localizer.Prettify(key)),
@@ -1149,7 +1148,7 @@ public sealed class EmpireOptions(DesignSession session)
     public IReadOnlyList<EmpireChoice> Homeworlds => _homeworlds ??=
         Named(
             _session.Rules.GetHomeworldOptions(Blank).Concat(Database.Arkships.Select(a => a.Key)),
-            key => Database.Arkships.FirstOrDefault(a => a.Key == key) is { } ark
+            key => Database.Arkship(key) is { } ark
                 ? new EmpireChoice(
                     ark.Key,
                     Loc.Text(ark.NameKey, Localizer.Prettify(ark.Key)),
@@ -1161,13 +1160,13 @@ public sealed class EmpireOptions(DesignSession session)
                 : new EmpireChoice(
                     key,
                     Loc.Text(key),
-                    Database.PlanetClasses.FirstOrDefault(p => p.Key == key)?.Icon,
+                    Database.PlanetClass(key)?.Icon,
                     null));
 
     public IReadOnlyList<EmpireChoice> StartingSystems => _startingSystems ??=
         Named(_session.Rules.GetStartingSystemOptions(Blank), key =>
         {
-            var start = Database.Initializers.FirstOrDefault(i => i.Key == key);
+            var start = Database.Initializer(key);
             return new EmpireChoice(key, Loc.Text(start?.NameKey, Localizer.Prettify(key)), null, null);
         });
 
@@ -1196,7 +1195,7 @@ public sealed class EmpireOptions(DesignSession session)
                 .Select(c => c.Key),
             key =>
             {
-                var set = Database.GraphicalCultures.FirstOrDefault(c => c.Key == key);
+                var set = Database.GraphicalCulture(key);
                 return new EmpireChoice(
                     key,
                     Loc.Text(key.ToUpperInvariant(), Localizer.Prettify(key)),
@@ -1212,7 +1211,7 @@ public sealed class EmpireOptions(DesignSession session)
             Database.AdvisorVoices.Select(v => v.Key),
             key =>
             {
-                var voice = Database.AdvisorVoices.FirstOrDefault(v => v.Key == key);
+                var voice = Database.AdvisorVoice(key);
                 return new EmpireChoice(
                     key, Loc.Text(voice?.NameKey, Localizer.Prettify(key)), voice?.Icon, null);
             });
@@ -1222,7 +1221,7 @@ public sealed class EmpireOptions(DesignSession session)
             Database.LeaderClasses.Where(c => c.CanRule).Select(c => c.Key),
             key =>
             {
-                var held = Database.LeaderClasses.FirstOrDefault(c => c.Key == key);
+                var held = Database.LeaderClass(key);
                 return new EmpireChoice(
                     key, Loc.Text(held?.NameKey, Localizer.Prettify(key)), held?.Icon, null);
             });
@@ -1237,7 +1236,7 @@ public sealed class EmpireOptions(DesignSession session)
             Database.EmpireFlagSets.Select(f => f.Key),
             key =>
             {
-                var set = Database.EmpireFlagSets.FirstOrDefault(f => f.Key == key);
+                var set = Database.EmpireFlagSet(key);
                 return new EmpireChoice(
                     key,
                     set is null ? Localizer.Prettify(key) : EmpireView.FlagSetName(_session, set),
@@ -1260,14 +1259,14 @@ public sealed class EmpireOptions(DesignSession session)
 
     private EmpireChoice Civic(string key)
     {
-        var civic = Database.Civics.FirstOrDefault(c => c.Key == key);
+        var civic = Database.Civic(key);
 
         return new EmpireChoice(key, Loc.Text(key), civic?.Icon, civic?.Effects);
     }
 
     private EmpireChoice Trait(string key)
     {
-        var trait = Database.Traits.FirstOrDefault(t => t.Key == key);
+        var trait = Database.Trait(key);
 
         return new EmpireChoice(key, Loc.Text(key), trait?.Icon, trait?.Effects);
     }

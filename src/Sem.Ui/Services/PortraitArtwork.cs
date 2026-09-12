@@ -70,8 +70,7 @@ public static class PortraitArtwork
             return null;
         }
 
-        var portrait = database.Portraits.FirstOrDefault(p =>
-            string.Equals(p.Key, key, StringComparison.Ordinal));
+        var portrait = database.Portrait(key);
 
         // A key naming no portrait at all is still worth returning: a design may name a likeness
         // from a version we did not read, and the caller's own lookup will say so.
@@ -90,8 +89,7 @@ public static class PortraitArtwork
             return null;
         }
 
-        var portrait = database.Portraits.FirstOrDefault(p =>
-            string.Equals(p.Key, key, StringComparison.Ordinal));
+        var portrait = database.Portrait(key);
 
         if (portrait is null)
         {
@@ -104,8 +102,7 @@ public static class PortraitArtwork
         }
 
         return portrait.For(gender) is { Length: > 0 } member
-            ? database.Portraits
-                .FirstOrDefault(p => string.Equals(p.Key, member, StringComparison.Ordinal))?.Thumbnail
+            ? database.Portrait(member)?.Thumbnail
             : null;
     }
 }

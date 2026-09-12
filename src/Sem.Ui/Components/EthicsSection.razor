@@ -117,7 +117,7 @@
             .Select(g => g.OrderBy(o => Definition(o.Key)?.CategoryValue ?? 0));
 
     private EthicDefinition? Definition(string key) =>
-        Session.Data.Database.Ethics.FirstOrDefault(e => string.Equals(e.Key, key, StringComparison.Ordinal));
+        Session.Data.Database.Ethic(key);
 
     /// <summary>
     /// What the panel describes: whatever is under the pointer, failing that whatever is held,
@@ -155,7 +155,7 @@
     {
         get
         {
-            var byKey = Session.Data.Database.Ethics.ToDictionary(e => e.Key, StringComparer.Ordinal);
+            var database = Session.Data.Database;
 
             return
             [
@@ -164,8 +164,8 @@
                     .Select(o => new OptionGrid.GridOption(o.Key, Session.Localizer.Text(o.Key))
                     {
                         Description = Session.Localizer.Html($"{o.Key}_desc", string.Empty),
-                        Effects = byKey.GetValueOrDefault(o.Key)?.Effects,
-                        Icon = byKey.GetValueOrDefault(o.Key)?.Icon,
+                        Effects = database.Ethic(o.Key)?.Effects,
+                        Icon = database.Ethic(o.Key)?.Icon,
                         Cost = o.Cost,
                         Selected = Design.Ethics.Contains(o.Key),
                         Enabled = o.Enabled,
@@ -193,7 +193,7 @@
             }
 
             // Gestalt consciousness stands alone, and taking it means clearing the rest.
-            var definition = Session.Data.Database.Ethics.FirstOrDefault(e => e.Key == key);
+            var definition = Session.Data.Database.Ethic(key);
             if (definition?.IsGestalt == true)
             {
                 d.SetEthics([key]);
@@ -201,7 +201,7 @@
             }
 
             ethics.RemoveAll(e =>
-                Session.Data.Database.Ethics.FirstOrDefault(x => x.Key == e)?.IsGestalt == true);
+                Session.Data.Database.Ethic(e)?.IsGestalt == true);
 
             // Moving between an ethic and its fanatic form replaces it rather than joining it, which
             // is how the game's own designer behaves. Added beside it, the empire would hold both

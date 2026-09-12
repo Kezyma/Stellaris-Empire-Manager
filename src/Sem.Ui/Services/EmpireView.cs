@@ -120,7 +120,7 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
         _report ??= _session.Rules.Validate(Context, _design);
 
     public RoomDefinition? Room =>
-        Database.Rooms.FirstOrDefault(r => r.Key == _design.Room);
+        Database.Room(_design.Room);
 
     /// <summary>
     /// The world through the window: the homeworld the empire actually starts on.
@@ -130,20 +130,20 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
     /// said - and the context has already worked that out.
     /// </remarks>
     public PlanetClassDefinition? World =>
-        Database.PlanetClasses.FirstOrDefault(p => p.Key == Context.EffectivePlanetClass);
+        Database.PlanetClass(Context.EffectivePlanetClass);
 
     public GraphicalCultureDefinition? City =>
-        Database.GraphicalCultures.FirstOrDefault(c => c.Key == _design.CityGraphicalCulture);
+        Database.GraphicalCulture(_design.CityGraphicalCulture);
 
     public GraphicalCultureDefinition? Shipset =>
-        Database.GraphicalCultures.FirstOrDefault(c => c.Key == _design.GraphicalCulture);
+        Database.GraphicalCulture(_design.GraphicalCulture);
 
     public AdvisorVoiceDefinition? Advisor =>
-        Database.AdvisorVoices.FirstOrDefault(v => v.Key == _design.AdvisorVoiceType);
+        Database.AdvisorVoice(_design.AdvisorVoiceType);
 
     /// <summary>The arkship a nomad begins aboard, when the design names one.</summary>
     public ArkshipDefinition? Arkship =>
-        Database.Arkships.FirstOrDefault(a => a.Key == _design.ShipSize);
+        Database.Arkship(_design.ShipSize);
 
     /// <summary>Whether the empire lives aboard a ship rather than on a world.</summary>
     public bool IsNomadic => _design.IsNomadic == true;
@@ -187,11 +187,11 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
         PortraitArtwork.For(Database, _design.Species.Portrait, _design.Species.Gender);
 
     public AuthorityDefinition? Authority =>
-        Database.Authorities.FirstOrDefault(a => a.Key == _design.Authority);
+        Database.Authority(_design.Authority);
 
     /// <summary>An origin is a civic, as the game files have it, so it is looked up among them.</summary>
     public CivicDefinition? Origin =>
-        Database.Civics.FirstOrDefault(c => c.Key == _design.Origin);
+        Database.Civic(_design.Origin);
 
     /// <summary>The government the game would name this empire's, derived rather than stored.</summary>
     public string Government =>
@@ -280,7 +280,7 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
     public string StartingSystem =>
         _design.Initializer is { Length: > 0 } initializer
             ? _session.Localizer.Text(
-                Database.Initializers.FirstOrDefault(i => i.Key == initializer)?.NameKey ?? initializer)
+                Database.Initializer(initializer)?.NameKey ?? initializer)
             : string.Empty;
 
     /// <summary>
@@ -373,7 +373,7 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
     /// <summary>One entry of the game's flag palette, by name.</summary>
     private FlagColorDefinition? Palette(string? key) =>
         key is { Length: > 0 } named && named != EmpireFlag.EmptyColor
-            ? Database.FlagColors.FirstOrDefault(c => c.Key == named)
+            ? Database.FlagColor(named)
             : null;
 
     /// <summary>The named set of country flags the design carries, when it carries one.</summary>
@@ -383,20 +383,20 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
     /// </remarks>
     public EmpireFlagSet? FlagSet =>
         _design.PrescriptedFlag is { Length: > 0 } key
-            ? Database.EmpireFlagSets.FirstOrDefault(f => f.Key == key)
+            ? Database.EmpireFlagSet(key)
             : null;
 
     public IEnumerable<EmpireChoice> Ethics =>
         _design.Ethics.Select(key =>
         {
-            var ethic = Database.Ethics.FirstOrDefault(d => d.Key == key);
+            var ethic = Database.Ethic(key);
             return Chip(key, ethic?.Icon, ethic?.Effects);
         });
 
     public IEnumerable<EmpireChoice> Civics =>
         _design.Civics.Select(key =>
         {
-            var civic = Database.Civics.FirstOrDefault(d => d.Key == key);
+            var civic = Database.Civic(key);
 
             // Named through the swaps, which is the difference between a wilderness empire being
             // shown its own Natural Neural Network and being shown the hive's.
@@ -417,7 +417,7 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
 
         return species.Traits.Select(key =>
         {
-            var trait = Database.Traits.FirstOrDefault(d => d.Key == key);
+            var trait = Database.Trait(key);
             return Chip(key, trait?.Icon, trait?.Effects);
         });
     }
@@ -426,7 +426,7 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
     public IEnumerable<EmpireChoice> RulerTraits =>
         _design.Ruler.Traits.Select(key =>
         {
-            var trait = Database.Traits.FirstOrDefault(d => d.Key == key);
+            var trait = Database.Trait(key);
             return Chip(key, trait?.Icon, trait?.Effects);
         });
 
@@ -554,7 +554,7 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
     /// <summary>The tradition trees the plan means to open, as chips.</summary>
     public IEnumerable<EmpireChoice> PlanTrees =>
         Plan.Trees
-            .Select(key => Database.TraditionTrees.FirstOrDefault(t => t.Key == key) is { } tree
+            .Select(key => Database.TraditionTree(key) is { } tree
                 ? new EmpireChoice(key, _session.Localizer.Text(tree.NameKey), tree.Icon, null)
                     { Description = tree.DescriptionKey }
                 : Chip(key, null, null));
@@ -567,7 +567,7 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
     /// </remarks>
     public IEnumerable<EmpireChoice> PlanPerks =>
         Plan.Perks
-            .Select(key => Database.AscensionPerks.FirstOrDefault(p => p.Key == key) is { } perk
+            .Select(key => Database.AscensionPerk(key) is { } perk
                 ? new EmpireChoice(key, _session.Localizer.Text(perk.NameKey), perk.Icon, perk.Effects)
                     { Description = perk.DescriptionKey }
                 : Chip(key, null, null));
@@ -598,7 +598,7 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
 
             foreach (var key in locked.Concat(Plan.Civics).Distinct(StringComparer.Ordinal))
             {
-                var chip = Database.Civics.FirstOrDefault(c => c.Key == key) is { } civic
+                var chip = Database.Civic(key) is { } civic
                     ? new EmpireChoice(
                         key,
                         Named(civic.Variants, civic.NameKey),

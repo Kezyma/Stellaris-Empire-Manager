@@ -90,7 +90,7 @@
 
             return ShipSetGroups.SelectMany(g => g.Value).Any(c => c.Key == key)
                 ? null
-                : Session.Data.Database.GraphicalCultures.FirstOrDefault(c => c.Key == key);
+                : Session.Data.Database.GraphicalCulture(key);
         }
     }
 

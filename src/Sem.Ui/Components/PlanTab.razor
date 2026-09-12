@@ -274,7 +274,7 @@
     /// </remarks>
     private IReadOnlyList<PlanOption> Inside(string treeKey)
     {
-        if (Session.Data.Database.TraditionTrees.FirstOrDefault(t => t.Key == treeKey) is not { } tree)
+        if (Session.Data.Database.TraditionTree(treeKey) is not { } tree)
         {
             return [];
         }
@@ -287,7 +287,7 @@
         return
         [
             .. order
-                .Select(key => Session.Data.Database.Traditions.FirstOrDefault(t => t.Key == key))
+                .Select(key => Session.Data.Database.Tradition(key))
                 .OfType<TraditionDefinition>()
                 .Select(t => new PlanOption(
                     t.Key,
@@ -363,7 +363,7 @@
     private static class Describe
     {
         public static Func<string, (string, string?, string?, EffectSet?)> Perk(DesignSession session) =>
-            key => session.Data.Database.AscensionPerks.FirstOrDefault(p => p.Key == key) is { } perk
+            key => session.Data.Database.AscensionPerk(key) is { } perk
                 ? (session.OptionNameKey(perk.Variants, perk.NameKey),
                    session.OptionDescriptionKey(perk.Variants, perk.DescriptionKey),
                    perk.Icon,
@@ -371,12 +371,12 @@
                 : (key, null, null, null);
 
         public static Func<string, (string, string?, string?, EffectSet?)> Tree(DesignSession session) =>
-            key => session.Data.Database.TraditionTrees.FirstOrDefault(t => t.Key == key) is { } tree
+            key => session.Data.Database.TraditionTree(key) is { } tree
                 ? (tree.NameKey, tree.DescriptionKey, tree.Icon, null)
                 : (key, null, null, null);
 
         public static Func<string, (string, string?, string?, EffectSet?)> Civic(DesignSession session) =>
-            key => session.Data.Database.Civics.FirstOrDefault(c => c.Key == key) is { } civic
+            key => session.Data.Database.Civic(key) is { } civic
                 ? (session.OptionNameKey(civic.Variants, civic.NameKey),
                    session.OptionDescriptionKey(civic.Variants, $"{civic.Key}_desc"),
                    civic.Icon,

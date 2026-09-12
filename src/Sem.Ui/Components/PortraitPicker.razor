@@ -208,7 +208,7 @@
 
             var kept = Species.Traits.Where(t => !classTraits.Contains(t)).ToList();
 
-            if (Session.Data.Database.SpeciesClasses.FirstOrDefault(c => c.Key == key)?.ForcedTrait is { } trait)
+            if (Session.Data.Database.SpeciesClass(key)?.ForcedTrait is { } trait)
             {
                 kept.Insert(0, trait);
             }

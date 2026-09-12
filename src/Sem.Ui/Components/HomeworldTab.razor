@@ -181,19 +181,18 @@
     {
         get
         {
-            var planets = Session.Data.Database.PlanetClasses.ToDictionary(p => p.Key, StringComparer.Ordinal);
-            var traits = Session.Data.Database.Traits.ToDictionary(t => t.Key, StringComparer.Ordinal);
+            var database = Session.Data.Database;
 
             return
             [
                 .. Options.Select(key =>
                 {
                     var preference = Session.Rules.HabitabilityTraitFor(key);
-                    var trait = preference is null ? null : traits.GetValueOrDefault(preference);
+                    var trait = database.Trait(preference);
 
                     return new OptionGrid.GridOption(key, Session.Localizer.Text(key))
                     {
-                        Icon = planets.GetValueOrDefault(key)?.Icon,
+                        Icon = database.PlanetClass(key)?.Icon,
                         Effects = trait?.Effects,
                         Description = preference is null
                             ? string.Empty
@@ -230,8 +229,7 @@
     private IReadOnlyList<string> Systems => Session.Rules.GetStartingSystemOptions(Session.Context!);
 
     private InitializerDefinition? System(string key) =>
-        Session.Data.Database.Initializers
-            .FirstOrDefault(i => string.Equals(i.Key, key, StringComparison.Ordinal));
+        Session.Data.Database.Initializer(key);
 
     private string SystemName(string key) =>
         Session.Localizer.Text(System(key)?.NameKey, Localizer.Prettify(key));

@@ -549,8 +549,7 @@
         : View.World?.Icon;
 
     /// <summary>The kind of leader who rules, where the design names one.</summary>
-    private LeaderClassDefinition? RulerClass => Session.Data.Database.LeaderClasses
-        .FirstOrDefault(c => c.Key == Design.Ruler.LeaderClass);
+    private LeaderClassDefinition? RulerClass => Session.Data.Database.LeaderClass(Design.Ruler.LeaderClass);
 
     private string RulerClassName => RulerClass is { } held
         ? Session.Localizer.Text(held.NameKey, Localizer.Prettify(held.Key))

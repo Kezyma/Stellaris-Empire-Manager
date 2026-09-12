@@ -107,11 +107,9 @@ else if (Thumbnail is { Length: > 0 } thumbnail)
         PortraitArtwork.RulerPortrait(Subject),
         PortraitArtwork.RulerGender(Subject));
 
-    private PortraitDefinition? Portrait => Session.Data.Database.Portraits
-        .FirstOrDefault(p => p.Key == PortraitArtwork.RulerPortrait(Subject));
+    private PortraitDefinition? Portrait => Session.Data.Database.Portrait(PortraitArtwork.RulerPortrait(Subject));
 
-    private string? Thumbnail => Session.Data.Database.Portraits
-        .FirstOrDefault(p => p.Key == Likeness)?.Thumbnail;
+    private string? Thumbnail => Session.Data.Database.Portrait(Likeness)?.Thumbnail;
 
     /// <summary>
     /// The skin an ascended form wears, where the design holds a stage and the portrait has artwork.

@@ -129,8 +129,7 @@
         PortraitArtwork.RulerPortrait(Design),
         PortraitArtwork.RulerGender(Design));
 
-    private PortraitDefinition? Portrait => Session.Data.Database.Portraits
-        .FirstOrDefault(p => p.Key == PortraitArtwork.RulerPortrait(Design));
+    private PortraitDefinition? Portrait => Session.Data.Database.Portrait(PortraitArtwork.RulerPortrait(Design));
 
     /// <summary>
     /// The group the worn likeness belongs to, whether the design named the group or the face.
@@ -204,7 +203,7 @@
         var faces = FacesFor(key);
 
         var named = Design.Ruler.Portrait is { Length: > 0 } own
-            && Session.Data.Database.Portraits.FirstOrDefault(p => p.Key == own) is { IsGroup: false } face
+            && Session.Data.Database.Portrait(own) is { IsGroup: false } face
             && !faces.Contains(face.Key, StringComparer.Ordinal);
 
         Session.Edit(d =>

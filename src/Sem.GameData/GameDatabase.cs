@@ -8,7 +8,7 @@
 /// The desktop app builds this from the player's own install; the web app ships one built at
 /// publish time. Both then behave identically, because the designer only ever reads this.
 /// </remarks>
-public sealed record GameDatabase
+public sealed partial record GameDatabase
 {
     /// <summary>
     /// The shape this version of the code reads and writes.

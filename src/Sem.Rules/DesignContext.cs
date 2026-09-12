@@ -35,8 +35,7 @@ public sealed class DesignContext
     /// be if the game read it now.
     /// </remarks>
     public string ElectionType =>
-        Database.Authorities
-            .FirstOrDefault(a => string.Equals(a.Key, Authority, StringComparison.Ordinal))
+        Database.Authority(Authority)
             ?.ElectionType ?? "none";
 
     /// <summary>
@@ -365,7 +364,7 @@ public sealed class DesignContext
             return true;
         }
 
-        var tree = Database.Traditions.FirstOrDefault(t => string.Equals(t.Key, key, StringComparison.Ordinal))?.Tree;
+        var tree = Database.Tradition(key)?.Tree;
 
         return tree is { Length: > 0 } && TraditionTrees.Contains(tree);
     }
@@ -459,8 +458,7 @@ public sealed class DesignContext
     private static string? ArchetypeOf(GameDatabase database, string? speciesClass) =>
         speciesClass is null
             ? null
-            : database.SpeciesClasses
-                .FirstOrDefault(c => string.Equals(c.Key, speciesClass, StringComparison.Ordinal))
+            : database.SpeciesClass(speciesClass)
                 ?.Archetype;
 
     private static HashSet<string> InstalledDlc(GameDatabase database) =>

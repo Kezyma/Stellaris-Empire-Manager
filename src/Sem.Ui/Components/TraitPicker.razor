@@ -97,10 +97,6 @@
     private ForcedTrait? ForcedBy(string key) =>
         Forced.FirstOrDefault(f => string.Equals(f.Trait, key, StringComparison.Ordinal));
 
-    private IReadOnlyDictionary<string, TraitDefinition> ByKey =>
-        _byKey ??= Session.Data.Database.Traits.ToDictionary(t => t.Key, StringComparer.Ordinal);
-
-    private IReadOnlyDictionary<string, TraitDefinition>? _byKey;
 
     /// <summary>
     /// Traits that may be taken, dearest first and alphabetically within a price.
@@ -155,7 +151,7 @@
                     true,
                     Enabled: true,
                     Reasons: [],
-                    Cost: ByKey.GetValueOrDefault(key)?.Cost ?? 0)))
+                    Cost: Session.Data.Database.Trait(key)?.Cost ?? 0)))
             ];
         }
     }
@@ -190,7 +186,7 @@
 
     private TraitEntry Entry(OptionState state)
     {
-        var definition = ByKey.GetValueOrDefault(state.Key);
+        var definition = Session.Data.Database.Trait(state.Key);
         var forcedBy = ForcedBy(state.Key);
         var forced = forcedBy is not null;
         var reasons = Session.Reasons.Describe([.. state.Reasons.Where(r => !IsBudget(r))]).ToList();

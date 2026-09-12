@@ -113,8 +113,7 @@
     /// between a hereditary system and an election. Where there is no heir the two heir titles are
     /// shown and disabled: a design may already carry them, and that is kept.
     /// </remarks>
-    private bool HasHeir => Session.Data.Database.Authorities
-        .FirstOrDefault(a => a.Key == Design.Authority)?.HasHeir ?? false;
+    private bool HasHeir => Session.Data.Database.Authority(Design.Authority)?.HasHeir ?? false;
 
     /// <summary>
     /// What the heir's boxes say when the design leaves them blank.
@@ -162,8 +161,7 @@
     /// offered Merg and Japra to call its Prime Minister.
     /// </remarks>
     private IReadOnlyList<string> LeaderNames =>
-        Session.Data.Database.NameLists
-            .FirstOrDefault(l => string.Equals(l.Key, Design.Species.NameList, StringComparison.Ordinal))
+        Session.Data.Database.NameList(Design.Species.NameList)
             ?.CharacterNames.Assembled(Suggestions) ?? [];
 
     /// <summary>

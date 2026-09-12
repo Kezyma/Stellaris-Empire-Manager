@@ -384,7 +384,7 @@
     /// <summary>The colour a slot is set to, as CSS, for the dot beside its name.</summary>
     private string? Shown(int slot) =>
         ColorAt(slot) is { } key &&
-        Session.Data.Database.FlagColors.FirstOrDefault(c => c.Key == key) is { } color
+        Session.Data.Database.FlagColor(key) is { } color
             ? Swatch(color)
             : null;
 

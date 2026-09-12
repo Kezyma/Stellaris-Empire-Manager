@@ -63,7 +63,7 @@
     {
         get
         {
-            var byKey = Session.Data.Database.Civics.ToDictionary(c => c.Key, StringComparer.Ordinal);
+            var database = Session.Data.Database;
 
             var states = Session.Rules.GetOriginOptions(Context)
                 .OrderBy(o => Session.Localizer.Text(o.Key), StringComparer.CurrentCulture);
@@ -71,9 +71,9 @@
             return GridOptions.Build(
                 Session,
                 states,
-                key => (byKey.GetValueOrDefault(key)?.Icon, byKey.GetValueOrDefault(key)?.Effects),
+                key => (database.Civic(key)?.Icon, database.Civic(key)?.Effects),
                 key => key == Design.Origin,
-                key => byKey.GetValueOrDefault(key)?.Picture);
+                key => database.Civic(key)?.Picture);
         }
     }
 
@@ -107,7 +107,7 @@
         {
             d.Origin = key;
 
-            var origin = Session.Data.Database.Civics.FirstOrDefault(c => c.Key == key);
+            var origin = Session.Data.Database.Civic(key);
 
             // An origin that supplies its own homeworld overrides whatever was chosen - but only
             // where the design is allowed to say so. Eleven of the thirteen that supply one supply a

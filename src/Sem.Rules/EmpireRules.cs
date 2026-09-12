@@ -16,27 +16,6 @@ public sealed class EmpireRules(GameDatabase database)
     private readonly GameDatabase _database = database ?? throw new ArgumentNullException(nameof(database));
     private readonly RequirementEvaluator _evaluator = new();
 
-    // All four indexed the same way: last definition wins, which is the game's own load order and
-    // what the extractor already applies. Three of them used to build the dictionary directly and
-    // threw on a repeated key — inside a field initialiser, so a database with one duplicate in it
-    // brought the app down at start rather than being read the way the game reads it. Only traits
-    // were defended, which said the asymmetry was an oversight rather than a decision.
-    private readonly Dictionary<string, TraitDefinition> _traits = Index(database.Traits, t => t.Key);
-
-    private readonly Dictionary<string, EthicDefinition> _ethics = Index(database.Ethics, e => e.Key);
-
-    private readonly Dictionary<string, CivicDefinition> _civics = Index(database.Civics, c => c.Key);
-
-    private readonly Dictionary<string, ArchetypeDefinition> _archetypes =
-        Index(database.Archetypes, a => a.Key);
-
-    private readonly Dictionary<string, GovernmentTypeDefinition> _governments =
-        Index(database.GovernmentTypes, g => g.Key);
-
-    private static Dictionary<string, T> Index<T>(IEnumerable<T> items, Func<T, string> key) =>
-        items.GroupBy(key, StringComparer.Ordinal)
-            .ToDictionary(g => g.Key, g => g.Last(), StringComparer.Ordinal);
-
     /// <summary>The extracted game data being enforced.</summary>
     public GameDatabase Database => _database;
 
@@ -61,7 +40,7 @@ public sealed class EmpireRules(GameDatabase database)
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        return context.Government is { Length: > 0 } key ? _governments.GetValueOrDefault(key) : null;
+        return context.Government is { Length: > 0 } key ? _database.GovernmentType(key) : null;
     }
 
     /// <summary>Builds a context from a design.</summary>
@@ -98,7 +77,7 @@ public sealed class EmpireRules(GameDatabase database)
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        var archetype = context.SpeciesArchetype is { } key && _archetypes.TryGetValue(key, out var found)
+        var archetype = context.SpeciesArchetype is { } key && _database.Archetype(key) is { } found
             ? found
             : null;
 
@@ -146,7 +125,7 @@ public sealed class EmpireRules(GameDatabase database)
 
         foreach (var trait in context.Traits)
         {
-            if (!_traits.TryGetValue(trait, out var definition))
+            if (_database.Trait(trait) is not { } definition)
             {
                 continue;
             }
@@ -168,7 +147,7 @@ public sealed class EmpireRules(GameDatabase database)
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        var spent = context.Ethics.Sum(e => _ethics.TryGetValue(e, out var ethic) ? ethic.Cost : 0);
+        var spent = context.Ethics.Sum(e => _database.Ethic(e) is { } ethic ? ethic.Cost : 0);
         return new Budget(spent, _database.Defines.EthicsPoints);
     }
 
@@ -480,8 +459,7 @@ public sealed class EmpireRules(GameDatabase database)
 
         if (context.Authority is { } authorityKey)
         {
-            var authority = _database.Authorities
-                .FirstOrDefault(a => string.Equals(a.Key, authorityKey, StringComparison.Ordinal));
+            var authority = _database.Authority(authorityKey);
 
             forced.AddRange((authority?.ForcedTraits ?? [])
                 .Select(t => new ForcedTrait(t, authorityKey, ForcedTraitSource.Authority)));
@@ -571,8 +549,7 @@ public sealed class EmpireRules(GameDatabase database)
             return exact;
         }
 
-        var climate = _database.PlanetClasses
-            .FirstOrDefault(p => string.Equals(p.Key, planetClass, StringComparison.Ordinal))?.Climate;
+        var climate = _database.PlanetClass(planetClass)?.Climate;
 
         if (climate is { Length: > 0 } && Named($"trait_auto_{climate}_preference") is { } shared)
         {
@@ -593,7 +570,7 @@ public sealed class EmpireRules(GameDatabase database)
             .FirstOrDefault();
 
         string? Named(string key) =>
-            _traits.TryGetValue(key, out var trait) && Allows(trait, archetype) ? key : null;
+            _database.Trait(key) is { } trait && Allows(trait, archetype) ? key : null;
     }
 
     /// <summary>Whether a species of this archetype may hold the trait. An empty list allows any.</summary>
@@ -630,7 +607,7 @@ public sealed class EmpireRules(GameDatabase database)
     /// </remarks>
     public bool IsHabitabilityPreference(string traitKey) =>
         traitKey is { Length: > 0 } &&
-        _traits.TryGetValue(traitKey, out var trait) &&
+        _database.Trait(traitKey) is { } trait &&
         IsPreference(trait);
 
     /// <summary>
@@ -647,7 +624,6 @@ public sealed class EmpireRules(GameDatabase database)
         ArgumentNullException.ThrowIfNull(context);
 
         var groups = new List<PortraitGroup>();
-        var setsByKey = _database.PortraitSets.ToDictionary(s => s.Key, StringComparer.Ordinal);
 
         foreach (var category in _database.PortraitCategories)
         {
@@ -655,7 +631,7 @@ public sealed class EmpireRules(GameDatabase database)
 
             foreach (var setKey in category.Sets)
             {
-                if (!setsByKey.TryGetValue(setKey, out var set))
+                if (_database.PortraitSet(setKey) is not { } set)
                 {
                     continue;
                 }
@@ -1079,7 +1055,7 @@ public sealed class EmpireRules(GameDatabase database)
     /// </remarks>
     private Requirement Adopting(TraditionTreeDefinition tree) =>
         tree.AdoptionBonus is { } adopt &&
-        _database.Traditions.FirstOrDefault(t => t.Key == adopt) is { } opening
+        _database.Tradition(adopt) is { } opening
             ? opening.Possible
             : AlwaysAllowed;
 
@@ -1117,7 +1093,7 @@ public sealed class EmpireRules(GameDatabase database)
 
         for (var at = 0; at < perks.Count; at++)
         {
-            if (_database.AscensionPerks.FirstOrDefault(p => p.Key == perks[at]) is not { } perk)
+            if (_database.AscensionPerk(perks[at]) is not { } perk)
             {
                 continue;
             }
@@ -1162,7 +1138,7 @@ public sealed class EmpireRules(GameDatabase database)
 
         for (var at = 0; at < trees.Count; at++)
         {
-            if (_database.TraditionTrees.FirstOrDefault(t => t.Key == trees[at]) is not { } tree)
+            if (_database.TraditionTree(trees[at]) is not { } tree)
             {
                 continue;
             }
@@ -1293,7 +1269,7 @@ public sealed class EmpireRules(GameDatabase database)
         {
             yield return key;
 
-            if (_database.TraditionTrees.FirstOrDefault(t => t.Key == key) is not { } tree)
+            if (_database.TraditionTree(key) is not { } tree)
             {
                 continue;
             }
@@ -1358,7 +1334,7 @@ public sealed class EmpireRules(GameDatabase database)
             // Opposing ethics share a category, and only one may be taken from each.
             var conflicting = context.Ethics.FirstOrDefault(
                 e => !IsSameEthicAtAnotherStrength(e, ethic) &&
-                     _ethics.TryGetValue(e, out var taken) &&
+                     _database.Ethic(e) is { } taken &&
                      string.Equals(taken.Category, ethic.Category, StringComparison.Ordinal));
 
             if (conflicting is not null)
@@ -1367,7 +1343,7 @@ public sealed class EmpireRules(GameDatabase database)
             }
 
             // A swap costs only the difference, since what it replaces is given back.
-            var refunded = replaced is not null && _ethics.TryGetValue(replaced, out var previous)
+            var refunded = replaced is not null && _database.Ethic(replaced) is { } previous
                 ? previous.Cost
                 : 0;
 
@@ -1398,7 +1374,7 @@ public sealed class EmpireRules(GameDatabase database)
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        return _ethics.TryGetValue(ethicKey, out var wanted)
+        return _database.Ethic(ethicKey) is { } wanted
             ? context.Ethics.FirstOrDefault(e => IsSameEthicAtAnotherStrength(e, wanted))
             : null;
     }
@@ -1575,13 +1551,9 @@ public sealed class EmpireRules(GameDatabase database)
                 []));
         }
 
-        var traits = _database.Traits
-            .Where(t => t.Kind == TraitKind.StartingRuler)
-            .ToDictionary(t => t.Key, StringComparer.Ordinal);
-
         foreach (var key in context.RulerTraits)
         {
-            if (!traits.TryGetValue(key, out var trait))
+            if (_database.Trait(key) is not { Kind: TraitKind.StartingRuler } trait)
             {
                 problems.Add(new ValidationProblem(
                     ValidationArea.Ruler,
@@ -1695,7 +1667,7 @@ public sealed class EmpireRules(GameDatabase database)
 
         foreach (var key in context.Traits)
         {
-            if (!_traits.TryGetValue(key, out var trait))
+            if (_database.Trait(key) is not { } trait)
             {
                 problems.Add(new ValidationProblem(
                     area, key, $"'{key}' is not a trait this game defines.", []));
@@ -1723,7 +1695,7 @@ public sealed class EmpireRules(GameDatabase database)
             return;
         }
 
-        foreach (var key in context.Ethics.Where(e => !_ethics.ContainsKey(e)))
+        foreach (var key in context.Ethics.Where(e => _database.Ethic(e) is null))
         {
             problems.Add(new ValidationProblem(
                 ValidationArea.Ethics, key, $"'{key}' is not an ethic this game defines.", []));
@@ -1756,7 +1728,7 @@ public sealed class EmpireRules(GameDatabase database)
         }
 
         foreach (var group in context.Ethics
-                     .Select(e => _ethics.GetValueOrDefault(e))
+                     .Select(e => _database.Ethic(e))
                      .OfType<EthicDefinition>()
                      .GroupBy(e => e.Category, StringComparer.Ordinal)
                      .Where(g => g.Count() > 1))
@@ -1782,8 +1754,7 @@ public sealed class EmpireRules(GameDatabase database)
             return;
         }
 
-        var authority = _database.Authorities
-            .FirstOrDefault(a => string.Equals(a.Key, key, StringComparison.Ordinal));
+        var authority = _database.Authority(key);
 
         if (authority is null)
         {
@@ -1811,7 +1782,7 @@ public sealed class EmpireRules(GameDatabase database)
 
         foreach (var key in context.Civics)
         {
-            if (!_civics.TryGetValue(key, out var civic) || civic.IsOrigin)
+            if (_database.Civic(key) is not { } civic || civic.IsOrigin)
             {
                 problems.Add(new ValidationProblem(
                     ValidationArea.Civics, key, $"'{key}' is not a civic this game defines.", []));
@@ -1832,7 +1803,7 @@ public sealed class EmpireRules(GameDatabase database)
             return;
         }
 
-        if (!_civics.TryGetValue(key, out var origin) || !origin.IsOrigin)
+        if (_database.Civic(key) is not { } origin || !origin.IsOrigin)
         {
             problems.Add(new ValidationProblem(
                 ValidationArea.Origin, key, $"'{key}' is not an origin this game defines.", []));
@@ -2094,18 +2065,18 @@ public sealed class EmpireRules(GameDatabase database)
 
     private SpeciesClassDefinition? SpeciesClassOf(DesignContext context) =>
         context.SpeciesClass is { } key
-            ? _database.SpeciesClasses.FirstOrDefault(c => string.Equals(c.Key, key, StringComparison.Ordinal))
+            ? _database.SpeciesClass(key)
             : null;
 
     private CivicDefinition? OriginOf(DesignContext context) =>
-        context.Origin is { } key && _civics.TryGetValue(key, out var origin) && origin.IsOrigin ? origin : null;
+        context.Origin is { } key && _database.Civic(key) is { } origin && origin.IsOrigin ? origin : null;
 
     /// <summary>The selected civics together with the origin, which behaves like one.</summary>
     private IEnumerable<CivicDefinition> SelectedCivicsAndOrigin(DesignContext context)
     {
         foreach (var key in context.Civics)
         {
-            if (_civics.TryGetValue(key, out var civic))
+            if (_database.Civic(key) is { } civic)
             {
                 yield return civic;
             }

@@ -474,7 +474,7 @@ public sealed partial class NameGenerator(GameDatabase database, Random? random 
 
     private NameListDefinition? Resolve(string? key) =>
         key is { Length: > 0 }
-            ? _database.NameLists.FirstOrDefault(n => string.Equals(n.Key, key, StringComparison.Ordinal))
+            ? _database.NameList(key)
             : null;
 
     private T? Pick<T>(IReadOnlyList<T> items) =>
