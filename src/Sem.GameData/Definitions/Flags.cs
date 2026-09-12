@@ -1,4 +1,4 @@
-namespace Sem.GameData;
+﻿namespace Sem.GameData;
 
 /// <summary>
 /// A named set of country flags a design may carry.
@@ -107,12 +107,22 @@ public sealed record FlagColorDefinition(string Key, byte Red, byte Green, byte 
     /// <summary>The colour of an empire's territory on the galaxy map.</summary>
     public byte MapBlue { get; init; }
 
-    /// <summary>The colour of the empire's ship trails.</summary>
+    /// <summary>
+    /// The value the game keeps under <c>ship =</c>, whose meaning is not settled.
+    /// </summary>
+    /// <remarks>
+    /// Not "the colour of the empire's ships", which is what this used to claim and what the name
+    /// invites. It holds only fourteen distinct values across the seventy-two names - all six browns
+    /// share one, all six reds share another - so it cannot be one colour per swatch, and nothing
+    /// draws with it. Extracted and kept because the game writes it and a later reading may explain
+    /// it; see the note beside the two shades that are used, in <c>Sem.Ui.Services.Swatches</c>, and
+    /// <c>docs/flag-colours.md</c>.
+    /// </remarks>
     public byte ShipRed { get; init; }
 
-    /// <summary>The colour of the empire's ship trails.</summary>
+    /// <inheritdoc cref="ShipRed"/>
     public byte ShipGreen { get; init; }
 
-    /// <summary>The colour of the empire's ship trails.</summary>
+    /// <inheritdoc cref="ShipRed"/>
     public byte ShipBlue { get; init; }
 }
