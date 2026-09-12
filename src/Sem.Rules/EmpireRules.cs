@@ -2005,11 +2005,12 @@ public sealed class EmpireRules(GameDatabase database)
         context.SpeciesArchetype is null ||
         trait.AllowedArchetypes.Contains(context.SpeciesArchetype);
 
-    /// <param name="whenTaken">
-    /// The empire as it would be at the moment this option is taken, where that is not the empire
-    /// the plan ends with. Whether an option is ever possible and whether it is possible yet are
-    /// different questions, and a plan is the one place they come apart.
-    /// </param>
+    /// <summary>Weighs a list of options against a design, saying of each whether it may be taken.</summary>
+    /// <remarks>
+    /// <c>whenTaken</c> is the empire as it would be at the moment an option is taken, where that is
+    /// not the empire the plan ends with. Whether an option is ever possible and whether it is
+    /// possible yet are different questions, and a plan is the one place they come apart.
+    /// </remarks>
     private IReadOnlyList<OptionState> Options<T>(
         IEnumerable<T> items,
         Func<T, string> key,

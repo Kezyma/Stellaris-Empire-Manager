@@ -7,6 +7,12 @@ namespace Sem.Io;
 /// <remarks>
 /// The sandbox is populated one way only, real to sandbox, by the CLI's <c>devsync</c> command.
 /// Nothing copies back. See <c>docs/file-safety.md</c>.
+/// <para>
+/// A map of the repository, used by the CLI and the tests and never by a shipped host. That is why
+/// it knows names from further up the graph - the solution file, <c>sandbox/</c>, and the web app's
+/// committed game data, which <see cref="CreateDevelopmentPolicy"/> has to name in order to permit
+/// writing to it. Tooling knowing the repository's shape is the job rather than a layering fault.
+/// </para>
 /// </remarks>
 public sealed class SandboxLayout
 {

@@ -72,6 +72,10 @@ public static class EffectsReader
     /// <param name="hidesTriggeredBlocks">
     /// Whether the plain <c>triggered_modifier</c> is a block the game keeps to itself.
     /// </param>
+    /// <param name="readsScriptedUnlocks">
+    /// Whether to read <c>on_enabled</c>, which is where an ascension perk states what taking it
+    /// unlocks. Nothing else in the game writes one.
+    /// </param>
     /// <remarks>
     /// True only for traits, whose own documentation says which triggered blocks are displayed and
     /// expects the rest to describe themselves in a tooltip. That rule used to be applied to

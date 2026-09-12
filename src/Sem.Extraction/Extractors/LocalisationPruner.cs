@@ -79,10 +79,10 @@ internal static partial class LocalisationPruner
     ];
 
     /// <summary>Keeps only the entries the database can reach, following references between them.</summary>
-    /// <param name="alwaysKept">
-    /// Entries to keep whatever refers to them — the name lists and the name-system formats, which a
-    /// player's own empire may use and no part of the game's own content points at.
-    /// </param>
+    /// <remarks>
+    /// <c>alwaysKept</c> survives whatever refers to it — the name lists and the name-system
+    /// formats, which a player's own empire may use and no part of the game's own content points at.
+    /// </remarks>
     public static Dictionary<string, string> Prune(
         GameDatabase database,
         IReadOnlyDictionary<string, string> all,

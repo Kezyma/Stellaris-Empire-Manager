@@ -288,12 +288,11 @@
         </button>;
 
     /// <summary>One trait as the two lists need it.</summary>
-    /// <param name="Unavailable">
-    /// Whether something other than the budget blocks it, which is what decides where it sorts.
-    /// </param>
-    /// <param name="Overspends">
-    /// Whether taking it would put the species over one of its allowances. It may still be taken.
-    /// </param>
+    /// <remarks>
+    /// <c>Unavailable</c> means something other than the budget blocks it, which is what decides
+    /// where it sorts. <c>Overspends</c> means taking it would put the species over one of its
+    /// allowances - it may still be taken.
+    /// </remarks>
     private sealed record TraitEntry(
         string Key,
         string Name,

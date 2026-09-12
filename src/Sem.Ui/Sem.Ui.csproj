@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
 
@@ -24,7 +22,13 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
   </ItemGroup>
 
+  <!--
+    Sem.Clausewitz is referenced directly, not only through Sem.Designs: the share-link codecs and
+    the file-open paths catch CwSyntaxException by name. It used to arrive transitively, which
+    compiled but meant Sem.Ui would break the day Sem.Designs stopped needing the parser.
+  -->
   <ItemGroup>
+    <ProjectReference Include="..\Sem.Clausewitz\Sem.Clausewitz.csproj" />
     <ProjectReference Include="..\Sem.Designs\Sem.Designs.csproj" />
     <ProjectReference Include="..\Sem.GameData\Sem.GameData.csproj" />
     <ProjectReference Include="..\Sem.Rules\Sem.Rules.csproj" />

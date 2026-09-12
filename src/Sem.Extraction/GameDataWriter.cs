@@ -13,6 +13,7 @@ namespace Sem.Extraction;
 /// <param name="Portraits">What came of drawing the portraits.</param>
 /// <param name="Ships">What came of drawing one ship for each appearance set.</param>
 /// <param name="MissingImages">Images the data referred to that the installation does not have.</param>
+/// <param name="ScriptFailures">Script files that would not read, with the reason.</param>
 public sealed record ExtractionResult(
     GameDatabase Database,
     int LocalisationEntries,

@@ -7,8 +7,17 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <AnalysisLevel>latest</AnalysisLevel>
-    <GenerateDocumentationFile>false</GenerateDocumentationFile>
-    <NoWarn>$(NoWarn);CA1848;CA1031</NoWarn>
+    <!--
+      On so the compiler checks doc comments: malformed XML, a <param> naming an argument that does
+      not exist, two <summary> elements on one member. Nothing checked them before, and sixteen
+      members had quietly ended up carrying a second summary that belonged to something else.
+
+      CS1591 - "missing doc comment on a public member" - is suppressed while the comment pass works
+      through the projects one at a time. Removing it from this list is how each project is declared
+      finished.
+    -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CA1848;CA1031;CS1591</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup>

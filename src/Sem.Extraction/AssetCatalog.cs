@@ -71,13 +71,14 @@ public sealed class AssetCatalog(LayeredContent content, SpriteCatalog? sprites 
     /// This is how anything the game names by sprite should be registered. Guessing at a file path
     /// from the name works for the icons that happen to have their own file and silently fails for
     /// the ones that do not, which is how the planet pictures came to be the wrong artwork.
-    /// </remarks>
-    /// <param name="frame">
-    /// Which slice of a sheet to take, counting from one, where the caller wants a different one
-    /// from the sprite's own. The leader classes are one picture each of a strip of four, and the
+///
+    /// <para>
+    /// <c>frame</c> takes a slice of a sheet, counting from one, where the caller wants a different
+    /// one from the sprite's own. The leader classes are one picture each of a strip of four and the
     /// spawn setting is one of three; in both cases the slice is chosen elsewhere than in the
     /// sprite, so it has to be said here.
-    /// </param>
+    /// </para>
+    /// </remarks>
     public string? RegisterSprite(
         string? spriteName,
         string destination,
@@ -161,10 +162,12 @@ public sealed class AssetCatalog(LayeredContent content, SpriteCatalog? sprites 
     /// A sprite that cannot be resolved drops out of the stack rather than losing the whole icon:
     /// the layers are independent by construction, and a trait wearing its background and glyph
     /// without its tier marker is far better than one wearing nothing.
+///
+    /// <para>
+    /// <c>layers</c> stack bottom first, each naming a sprite. A tint of null leaves the layer as
+    /// drawn.
+    /// </para>
     /// </remarks>
-    /// <param name="layers">
-    /// What to stack, bottom first, each naming a sprite. A tint of null leaves the layer as drawn.
-    /// </param>
     public string? RegisterLayers(
         IEnumerable<(string? Sprite, (byte R, byte G, byte B, byte A)? Tint)> layers,
         string destination)

@@ -2019,7 +2019,8 @@ public sealed class GameDataExtractionTests
     /// <para>
     /// The game declares <c>good</c> only for the few dozen modifiers its script files invent;
     /// everything defined in code - which is nearly everything a design shows - carries no statement
-    /// at all, and <see cref="ModifierCatalog"/> has to infer it from the name. So the game is asked
+    /// at all, and <see cref="Sem.Extraction.Extractors.ModifierCatalog"/> has to infer it from the
+    /// name. So the game is asked
     /// a different way: its own English descriptions colour values by hand, and a modifier written
     /// as <c>§G-10%§!</c> or <c>§R+10%§!</c> is one the game itself treats as bad.
     /// </para>

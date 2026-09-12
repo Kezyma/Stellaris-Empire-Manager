@@ -206,11 +206,12 @@ public sealed partial class Localizer(
     /// <c>%ADJECTIVE%</c> of <c>SPEC_Oxanalytor</c> over <c>Union</c>, and comes back out as its
     /// name.
     /// </para>
+///
+    /// <para>
+    /// <c>gender</c> is used where the caller knows it: some name parts are written in two forms and
+    /// the game picks between them. Nothing else in a name depends on it.
+    /// </para>
     /// </remarks>
-    /// <param name="gender">
-    /// The gender of whoever is being named, where the caller knows it. Some name parts are written
-    /// in two forms and the game picks between them; nothing else in a name depends on it.
-    /// </param>
     public string Name(LocRef? name, string? fallback = null, string? gender = null)
     {
         if (name is null || name.IsEmpty)

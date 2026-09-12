@@ -632,12 +632,11 @@
     /// The variants are bracketed and italic beside the name rather than given rows of their own. A
     /// species' plural and adjective are not two more facts about it - they are its name again, and
     /// as labelled rows they took two lines each to say so.
+    ///
+    /// <c>part</c> is what pressing it opens, or null where nothing does - a name the empire is
+    /// given rather than one it chose has no editor behind it, and offering to open one is a
+    /// promise the card cannot keep.
     /// </remarks>
-    /// <param name="part">
-    /// What pressing it opens, or null where nothing does - a name the empire is given rather than
-    /// one it chose has no editor behind it, and offering to open one is a promise the card cannot
-    /// keep.
-    /// </param>
     private RenderFragment Named(string name, IEnumerable<string?> variants, string? sub,
                                  LitePart? part, string title, string? warning = null)
     {
@@ -704,23 +703,23 @@
     /// A labelled row of chips, where the label and every chip open the same editor.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// The chips are siblings of the label rather than inside it. A chip is already a button, and a
     /// button within a button is both invalid and unusable; as siblings they can each carry the
     /// press without nesting. OptionChip gives up its own click when it is given something to open,
     /// so a chip still describes itself on hover but no longer does two things at once.
+    /// </para>
+    /// <para>
+    /// <c>part</c> is what pressing one opens, or null where the row is something the empire is
+    /// given rather than something it picked.
+    /// </para>
+    /// <para>
+    /// <c>empty</c> is what to say when there are none, capitalised because it stands exactly where
+    /// a chip's own name would stand and those are capitalised. "None chosen" rather than the "Not
+    /// set" a single value gets: an empty list and a field nobody filled in are different states,
+    /// and the row can afford to say which.
+    /// </para>
     /// </remarks>
-    /// <param name="part">
-    /// What pressing one opens, or null where the row is something the empire is given rather than
-    /// something it picked.
-    /// </param>
-    /// <param name="empty">
-    /// What to say when there are none. Capitalised, because it stands exactly where a chip's own
-    /// name would stand and those are capitalised - the one caller that already passed its own word
-    /// here passed "Automatic", which is what settled it.
-    ///
-    /// "None chosen" rather than the "Not set" a single value gets: a list that is empty and a
-    /// field nobody filled in are different states, and the row can afford to say which.
-    /// </param>
     private RenderFragment Chips(string? label, IEnumerable<EmpireChoice> items, LitePart? part,
                                  string empty = "None chosen")
     {

@@ -6,10 +6,11 @@ namespace Sem.Ui.Services;
 /// Keeps the one working session alive across pages, so moving between the empire list and the
 /// designer does not reload the game data or lose unsaved changes.
 /// </summary>
-/// <param name="assumeAllPacks">
-/// Whether to open with every content pack enabled. True on the web, where the installation the
-/// data was read from is not the player's; false on the desktop, where it is.
-/// </param>
+/// <remarks>
+/// <c>assumeAllPacks</c> decides whether to open with every content pack enabled: true on the web,
+/// where the installation the data was read from is not the player's; false on the desktop, where
+/// it is.
+/// </remarks>
 public sealed class SessionHost(
     IGameDataSource source,
     IFileExchange files,

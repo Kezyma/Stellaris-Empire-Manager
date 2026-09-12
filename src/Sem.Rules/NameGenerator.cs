@@ -2,16 +2,6 @@ using Sem.GameData;
 
 namespace Sem.Rules;
 
-/// <summary>A species and the world it came from, all of a piece.</summary>
-/// <param name="Name">The species name.</param>
-/// <param name="Plural">Its plural.</param>
-/// <param name="HomePlanet">A name for the homeworld.</param>
-/// <param name="HomeSystem">A name for the home system.</param>
-/// <param name="NameList">The name list that goes with it.</param>
-// A suggestion is returned as the database holds it. Copying it into a narrower shape dropped the
-// localisation keys the game stores a chosen name by, and the copy said nothing the original did
-// not.
-
 /// <summary>
 /// Invents names the way the game's own randomise buttons do.
 /// </summary>

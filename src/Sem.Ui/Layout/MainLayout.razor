@@ -315,23 +315,12 @@
         }
     }
 
-    /// <summary>
-    /// Opens a file, and says so when it does not look like the one the game keeps.
-    /// </summary>
-    /// <remarks>
-    /// A remark rather than a refusal. The picker cannot be told to show only these - a browser will
-    /// filter by extension and by nothing else, and says so: an accept entry "must start with '.'".
-    /// So the name is checked once it is chosen. A renamed file, or one of the game's own dated
-    /// backups, reads perfectly well and is opened; the player is only told in case they reached for
-    /// the wrong thing.
-    /// </remarks>
+    /// <summary>Opens a designs file, asking first where there is unsaved work to weigh against it.</summary>
     private void Load(string name, byte[] contents)
     {
         // Parsed here rather than after the question, so a file that will not parse is refused with
         // the reason - the callers' catch is what turns that into a message.
         var incoming = EmpireDesignsFile.Load(contents);
-
-        Named(name);
 
         // Nothing to weigh up: an empty file has nothing to lose, and neither has an empty import.
         if (_session!.File is not { Designs.Count: > 0 } || incoming.Designs.Count == 0)
@@ -371,19 +360,6 @@
 
     /// <summary>A number of empires, said the way a sentence would say it.</summary>
     private static string Count(int empires) => empires == 1 ? "one empire" : $"{empires} empires";
-
-    /// <summary>Says so when the file is not named like one of the game's.</summary>
-    private void Named(string name)
-    {
-        if (!name.StartsWith(DesignsFilePrefix, StringComparison.OrdinalIgnoreCase))
-        {
-            _message = ($"That file opened, but it is not named like a designs file. "
-                + $"The game's own is called {EmpireDesignsFile.FileName}.", false);
-        }
-    }
-
-    /// <summary>What the game calls its designs files, before the version and the extension.</summary>
-    private const string DesignsFilePrefix = "user_empire_designs_";
 
     /// <summary>
     /// Starts a new empire and opens it.
