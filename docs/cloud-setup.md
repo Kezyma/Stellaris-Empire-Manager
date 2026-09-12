@@ -92,6 +92,10 @@ UI rather than hoped past.
 
 ## Google Drive
 
+**Not built yet.** The app offers OneDrive only, and Google Drive is not listed in the cloud dialog
+at all - a row that cannot be pressed is a promise on screen, so the promise is kept here instead.
+What follows is the registration to do if and when it is added; none of it is needed today.
+
 Better behaved than OneDrive on consent, and worse on reach: the designs file is only in Drive if
 somebody mirrors Documents with Drive for Desktop.
 

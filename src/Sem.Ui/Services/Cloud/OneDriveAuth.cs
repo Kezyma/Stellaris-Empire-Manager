@@ -24,9 +24,9 @@ namespace Sem.Ui.Services.Cloud;
 /// cannot be exchanged by whoever intercepted it. See docs/cloud-setup.md.
 /// </para>
 /// <para>
-/// The refresh token lives in sessionStorage, which the browser empties when the tab closes. That
-/// costs a redirect through Microsoft on the next visit and buys the one thing worth buying: a
-/// token this app holds is not left on the machine after the player has finished with it.
+/// The refresh token is kept by <see cref="ITokenStore"/>, which puts it in localStorage so that a
+/// sign-in outlives the tab it was made in. That leaves it on the machine until the player
+/// disconnects, and the remark on <see cref="BrowserTokenStore"/> is where that trade is argued.
 /// </para>
 /// </remarks>
 public sealed class OneDriveAuth
