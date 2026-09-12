@@ -15,7 +15,12 @@
     a button may not contain a button — nested, the browser closes the outer one early and the card
     comes apart. The wrapper is what the grid lays out, so the card keeps its full width inside it.
 *@
-<div class="sem-empire-slot">
+@*
+    The reason sits on the wrapper rather than on the button, because a disabled button is sent no
+    mouse events and so never shows a title of its own - the same reason the option grids mark an
+    unavailable choice instead of disabling it.
+*@
+<div class="sem-empire-slot" title="@Unreadable">
     <button type="button" class="sem-empire @(Selected ? "selected" : null) @(Broken ? "broken" : null)"
             disabled="@Disabled" @onclick="OnClick">
 
@@ -131,6 +136,18 @@
     /// <summary>Whether there is nothing to show, as for a built-in empire stored unreadably.</summary>
     [Parameter]
     public bool Disabled { get; set; }
+
+    /// <summary>
+    /// Why there is nothing to show, where that is known.
+    /// </summary>
+    /// <remarks>
+    /// The game's own empires are parsed on the way in, and one written in a way the parser refuses
+    /// is caught rather than allowed to take the page down. It was caught silently: the card went
+    /// grey and the reason was dropped on the floor, so the one empire of fifty-two that does not
+    /// open looked the same as a bug.
+    /// </remarks>
+    [Parameter]
+    public string? Unreadable { get; set; }
 
     [Parameter]
     public EventCallback OnClick { get; set; }

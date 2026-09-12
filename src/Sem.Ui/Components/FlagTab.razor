@@ -162,7 +162,17 @@
     /// <summary>The scrolling box of emblems, so the chosen one can be brought into it.</summary>
     private ElementReference _emblems;
 
-    private IJSObjectReference? _module;
+    /// <summary>
+    /// The script module, imported once however many callers ask for it at once.
+    /// </summary>
+    /// <remarks>
+    /// Held as the task rather than its result. Written as <c>_module ??= await Import()</c> the
+    /// check and the assignment sat either side of an await, so a second caller arriving during the
+    /// import started another - and the reference the loser assigned was overwritten and never
+    /// released. Holding the task closes that without a lock: nothing can yield between the test
+    /// and the store.
+    /// </remarks>
+    private Task<IJSObjectReference>? _module;
 
     /// <summary>
     /// Opens the emblems on the one the design already has, where both lists are on show at once.
@@ -210,10 +220,10 @@
         // catches this; the two Reveal calls did not.
         try
         {
-            _module ??= await Js.InvokeAsync<IJSObjectReference>(
-                "import", "./_content/Sem.Ui/sem.js").ConfigureAwait(true);
+            var module = await (_module ??= Js.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/Sem.Ui/sem.js").AsTask()).ConfigureAwait(true);
 
-            await _module.InvokeVoidAsync("revealSelected", _emblems, ".sem-thumb-option.selected")
+            await module.InvokeVoidAsync("revealSelected", _emblems, ".sem-thumb-option.selected")
                 .ConfigureAwait(true);
         }
         catch (JSDisconnectedException)
@@ -232,11 +242,16 @@
 
         try
         {
-            await _module.DisposeAsync().ConfigureAwait(false);
+            await (await _module.ConfigureAwait(false)).DisposeAsync().ConfigureAwait(false);
         }
         catch (JSDisconnectedException)
         {
             // The page went away first; there is nothing left to release.
+        }
+        catch (JSException)
+        {
+            // The import never succeeded, so it left nothing to release. Reachable only now
+            // that the task is what is held: a failed import used to leave the field null.
         }
     }
 

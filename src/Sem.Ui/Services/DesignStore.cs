@@ -40,7 +40,7 @@ public sealed class BrowserDesignStore(IJSRuntime js) : IDesignStore, IAsyncDisp
     private const string Key = "sem.designs.v1";
 
     private readonly IJSRuntime _js = js ?? throw new ArgumentNullException(nameof(js));
-    private IJSObjectReference? _module;
+    private Task<IJSObjectReference>? _module;
 
     /// <inheritdoc />
     public async Task<string?> ReadAsync()
@@ -83,9 +83,19 @@ public sealed class BrowserDesignStore(IJSRuntime js) : IDesignStore, IAsyncDisp
         }
     }
 
-    private async Task<IJSObjectReference> ModuleAsync() =>
-        _module ??= await _js.InvokeAsync<IJSObjectReference>(
-            "import", "./_content/Sem.Ui/sem.js").ConfigureAwait(false);
+    /// <summary>
+    /// The script module, imported once however many callers ask for it at once.
+    /// </summary>
+    /// <remarks>
+    /// The import is held as the task rather than its result. Written as
+    /// <c>_module ??= await Import()</c> the check and the assignment sat either side of an await,
+    /// so a second caller arriving during the import saw no module and started another - and the
+    /// reference the loser assigned was overwritten and never released. Holding the task closes it
+    /// without a lock: there is nothing to yield to between the test and the store.
+    /// </remarks>
+    private Task<IJSObjectReference> ModuleAsync() =>
+        _module ??= _js.InvokeAsync<IJSObjectReference>(
+            "import", "./_content/Sem.Ui/sem.js").AsTask();
 
     public async ValueTask DisposeAsync()
     {
@@ -93,11 +103,16 @@ public sealed class BrowserDesignStore(IJSRuntime js) : IDesignStore, IAsyncDisp
         {
             try
             {
-                await _module.DisposeAsync().ConfigureAwait(false);
+                await (await _module.ConfigureAwait(false)).DisposeAsync().ConfigureAwait(false);
             }
             catch (JSDisconnectedException)
             {
                 // The page went away first; there is nothing left to release.
+            }
+            catch (JSException)
+            {
+                // The import never succeeded, so it left nothing to release. Reachable only now
+                // that the task is what is held: a failed import used to leave the field null.
             }
         }
     }

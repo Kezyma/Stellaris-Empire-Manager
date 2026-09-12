@@ -624,7 +624,7 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
     public string RulerTitle =>
         _design.Ruler.Title is { } held && _session.Localizer.Name(held, string.Empty) is { Length: > 0 } title
             ? title
-            : _session.Rules.GovernmentFor(Context)?.RulerTitleKey is { } key
+            : _session.Rules.GovernmentFor(Context)?.RulerTitleFor(_design.Ruler.Gender) is { } key
                 ? _session.Localizer.Text(key)
                 : string.Empty;
 

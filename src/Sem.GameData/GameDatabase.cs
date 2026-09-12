@@ -1254,6 +1254,22 @@ public sealed record GovernmentTypeDefinition(string Key, double Weight, int Fil
     /// <summary>Localisation key for the female form of the heir's title.</summary>
     public string? HeirTitleFemaleKey { get; init; }
 
+    /// <summary>
+    /// The ruler's title for a ruler of this gender, as the game would write it.
+    /// </summary>
+    /// <remarks>
+    /// A hundred and twenty-eight of the hundred and seventy governments name a female form -
+    /// Empress for Emperor, Matriarch for Patriarch - and it was extracted, kept through pruning and
+    /// then never read, so every female ruler who had not been given a title by hand was shown the
+    /// male one. Only <c>female</c> takes the second form: the game has four genders and writes two
+    /// titles, so the unset and indeterminable cases are the plain one.
+    /// </remarks>
+    /// <param name="gender">The ruler's gender, as the design stores it.</param>
+    public string? RulerTitleFor(string? gender) =>
+        string.Equals(gender, "female", StringComparison.Ordinal)
+            ? RulerTitleFemaleKey ?? RulerTitleKey
+            : RulerTitleKey;
+
     /// <summary>Localisation key for the display name.</summary>
     public string NameKey => Key;
 }

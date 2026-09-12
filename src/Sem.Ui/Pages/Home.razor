@@ -215,6 +215,7 @@ else
                                         Government="@read?.Government"
                                         SpeciesClass="@ClassOf(empire)"
                                         Disabled="@(read is null)"
+                                        Unreadable="@(read is null ? _unreadable.GetValueOrDefault(empire.Key) : null)"
                                         OnCopyLink="@(read is null ? default : EventCallback.Factory.Create(this, () => CopyLink(read.Design)))"
                                         CopyTitle="@(read is null ? string.Empty : CopyTitleFor(read.Design))"
                                         OnClick="() => OpenPrescripted(empire)" />
@@ -640,7 +641,15 @@ else
     /// </remarks>
     private (string Title, string Message)? _imageTrouble;
 
-    private IJSObjectReference? _drawer;
+    /// <summary>
+    /// The script module that draws a card, imported once however many callers ask at once.
+    /// </summary>
+    /// <remarks>
+    /// Held as the task rather than its result. Written as <c>_drawer ??= await Import()</c> the
+    /// check and the assignment sat either side of an await, so a second press arriving mid-import
+    /// started another and the reference the loser assigned was never released.
+    /// </remarks>
+    private Task<IJSObjectReference>? _drawer;
 
     /// <summary>
     /// Saves the card as a picture.
@@ -667,10 +676,10 @@ else
             // nothing and waits on the fetch the panel already started.
             await Source.LoadWardrobeAsync();
 
-            _drawer ??= await Js.InvokeAsync<IJSObjectReference>(
-                "import", "./_content/Sem.Ui/sem.js");
+            var drawer = await (_drawer ??= Js.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/Sem.Ui/sem.js").AsTask());
 
-            var picture = await _drawer.InvokeAsync<byte[]?>(
+            var picture = await drawer.InvokeAsync<byte[]?>(
                 "captureCard", ".sem-lite", Omitted, CardWidth, FrameWidth, ImageWidth);
 
             if (picture is not { Length: > 0 })
@@ -684,7 +693,7 @@ else
             // but a hole is said out loud. A room that failed to embed draws as the black behind it,
             // which looks like a bug in the card rather than a picture that came out short, and
             // there was no way to tell the two apart from a screenshot of the result.
-            var lost = await _drawer.InvokeAsync<int>("captureMisses");
+            var lost = await drawer.InvokeAsync<int>("captureMisses");
 
             await Files.ExportAsync(FileNameFor(design), picture, ExportKind.Image);
 
@@ -823,7 +832,13 @@ else
         // Released without being waited on, because this page is closed synchronously and the
         // reference is to a module that is already loaded - there is nothing to fail and nothing to
         // report. Left undisposed it would outlive the page for the rest of the session.
-        _ = _drawer?.DisposeAsync().Preserve();
+        // Only where the import actually finished: a module still arriving, or one that never
+        // did, has nothing to hand back.
+        if (_drawer is { IsCompletedSuccessfully: true } drawn)
+        {
+            _ = drawn.Result.DisposeAsync().Preserve();
+        }
+
         _drawer = null;
     }
 
@@ -1257,6 +1272,9 @@ else
 
     private readonly Dictionary<string, Preset?> _presets = new(StringComparer.Ordinal);
 
+    /// <summary>Why a built-in empire could not be read, for the few that cannot be.</summary>
+    private readonly Dictionary<string, string> _unreadable = new(StringComparer.Ordinal);
+
     private Preset? Parse(PrescriptedEmpireSummary empire)
     {
         if (empire.Design is not { Length: > 0 } text)
@@ -1279,9 +1297,12 @@ else
                     ? _session.Localizer.Text(government.Key)
                     : _session.Localizer.Text(design.Authority));
         }
-        catch (Sem.Clausewitz.CwSyntaxException)
+        catch (Sem.Clausewitz.CwSyntaxException failure)
         {
-            // One unreadable built-in empire should not take the page down with it.
+            // One unreadable built-in empire should not take the page down with it - but it should
+            // not disappear into a grey card with nothing to say either. The card is drawn disabled
+            // whatever happens; this is what it can then tell somebody who wonders why.
+            _unreadable[empire.Key] = failure.Message;
             return null;
         }
     }

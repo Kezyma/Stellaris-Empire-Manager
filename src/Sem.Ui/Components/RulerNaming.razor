@@ -182,7 +182,7 @@
             .Order(StringComparer.CurrentCulture)];
 
     private string DefaultTitle =>
-        Session.Rules.GovernmentFor(Context)?.RulerTitleKey is { } key
+        Session.Rules.GovernmentFor(Context)?.RulerTitleFor(Design.Ruler.Gender) is { } key
             ? Session.Localizer.Text(key)
             : "chosen by the government";
 

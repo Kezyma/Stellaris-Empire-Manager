@@ -817,7 +817,15 @@ public sealed record EmpireColumn(
     /// </remarks>
     private static EmpireColumn Picked(string key, bool onByDefault, bool stacked = false)
     {
-        var facet = EmpireFacet.All.First(f => f.Key == key);
+        // Named rather than found missing. These run in a static initialiser, so a key with no
+        // facet behind it used to surface as a TypeInitializationException wrapping "sequence
+        // contains no matching element" - a blank page saying nothing about which of the nineteen
+        // keys was wrong. EmpireColumnTests walks this list, so a typo is a red test first.
+        var facet = EmpireFacet.All.FirstOrDefault(f => f.Key == key)
+            ?? throw new InvalidOperationException(
+                $"No empire facet is called '{key}'. A column is written from its facet, so the two "
+                + $"lists have to agree; the facets are: "
+                + $"{string.Join(", ", EmpireFacet.All.Select(f => f.Key))}.");
 
         return new EmpireColumn(facet.Key, facet.Label, onByDefault, facet.Values, Stacked: stacked);
     }

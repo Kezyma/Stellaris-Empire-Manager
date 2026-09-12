@@ -42,7 +42,8 @@ public interface IGameDataSource
 /// Serves both hosts. The web app fetches from where the site is published; the desktop app maps
 /// its local cache to a hostname the embedded browser can reach, so neither needs its own loader.
 /// </remarks>
-public sealed class HttpGameDataSource(HttpClient client, string baseUrl = "gamedata") : IGameDataSource
+public sealed class HttpGameDataSource(HttpClient client, string baseUrl = "gamedata")
+    : IGameDataSource, IDisposable
 {
     private readonly HttpClient _client = client ?? throw new ArgumentNullException(nameof(client));
     private readonly string _baseUrl = baseUrl.TrimEnd('/');
@@ -153,5 +154,17 @@ public sealed class HttpGameDataSource(HttpClient client, string baseUrl = "game
         var bytes = await _client.GetByteArrayAsync(url, cancellationToken).ConfigureAwait(false);
 
         return JsonSerializer.Deserialize(bytes, typeInfo);
+    }
+
+    /// <summary>Releases the two gates that keep a concurrent load from fetching twice.</summary>
+    /// <remarks>
+    /// Registered as a scoped service, so one is built per page in the browser and per window on the
+    /// desktop. A SemaphoreSlim holds a wait handle once anyone has waited on it, and nothing was
+    /// ever handing those back.
+    /// </remarks>
+    public void Dispose()
+    {
+        _gate.Dispose();
+        _wardrobeGate.Dispose();
     }
 }

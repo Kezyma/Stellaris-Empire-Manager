@@ -16,7 +16,7 @@ public sealed class SessionHost(
     IFileExchange files,
     IDesignStore? store = null,
     bool assumeAllPacks = false,
-    Preferences? preferences = null)
+    Preferences? preferences = null) : IDisposable
 {
     private readonly IGameDataSource _source = source ?? throw new ArgumentNullException(nameof(source));
     private readonly IFileExchange _files = files ?? throw new ArgumentNullException(nameof(files));
@@ -250,4 +250,11 @@ public sealed class SessionHost(
             return null;
         }
     }
+
+    /// <summary>Releases the gate that keeps two openings from racing each other.</summary>
+    /// <remarks>
+    /// Scoped, so one is built per page in the browser and per window on the desktop, and a
+    /// SemaphoreSlim holds a wait handle from the first wait onwards.
+    /// </remarks>
+    public void Dispose() => _gate.Dispose();
 }
