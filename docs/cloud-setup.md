@@ -117,37 +117,21 @@ somebody mirrors Documents with Drive for Desktop.
 
 ---
 
-## Dropbox
+## The two compared
 
-Worth registering only if you want it, because it is the weakest fit of the three.
+| | OneDrive | Google Drive |
+|---|---|---|
+| Reaches an existing designs file | Yes | Yes, via the Picker |
+| Consent needed for it | All files | That one file |
+| Provider verification | None | None with `drive.file` |
+| Session survives quietly | Yes, with `offline_access` | Yes, once published |
+| Likely to already hold the file | **Yes** - Windows redirects Documents | Only with Drive for Desktop |
 
-1. At **https://www.dropbox.com/developers/apps**, choose **Create app**.
-2. **Choose an API:** *Scoped access*.
-3. **Choose the type of access:** *Full Dropbox*. An app folder cannot see a designs file that
-   already exists elsewhere in the account, so the app-folder option cannot do what this feature is.
-4. Name the app and create it.
-5. On **Settings**, under **OAuth 2 → Redirect URIs**, add `https://kezyma.github.io/Stellaris-Empire-Manager/`
-   and `http://localhost:5155/`.
-6. On **Permissions**, tick `files.metadata.read`, `files.content.read` and `files.content.write`,
-   then **Submit**. Permissions have to be submitted before they take effect, and an app that was
-   authorised before you changed them keeps the old set until the player signs in again.
-7. Copy the **App key** from Settings. Ignore the App secret entirely.
-
-**Be aware:** Dropbox's own guidance for a pure-JavaScript app is short-lived access tokens with
-PKCE and **no refresh token**, so a session lasts about four hours and then needs signing in again.
-That is a real difference from the other two, not a detail.
-
----
-
-## The three compared
-
-| | OneDrive | Google Drive | Dropbox |
-|---|---|---|---|
-| Reaches an existing designs file | Yes | Yes, via the Picker | Yes |
-| Consent needed for it | All files | That one file | All files |
-| Provider verification | None | None with `drive.file` | None |
-| Session survives quietly | Yes, with `offline_access` | Yes, once published | No - about four hours |
-| Likely to already hold the file | **Yes** - Windows redirects Documents | Only with Drive for Desktop | Only if deliberately moved |
+Dropbox was considered and dropped. It can do this, but it is the worst fit of the three: an app
+folder cannot see a designs file that already exists elsewhere, so it would need *Full Dropbox*
+consent - as broad as OneDrive's, with none of OneDrive's likelihood of already holding the file -
+and Dropbox's own guidance for a browser app is short-lived tokens with no refresh token, so a
+session would last about four hours and then need signing in again.
 
 ---
 
