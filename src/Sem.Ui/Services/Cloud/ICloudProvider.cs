@@ -24,6 +24,17 @@ public sealed record CloudFile(string Id, string Name, string Folder);
 public sealed record CloudEntry(string Id, string Name, bool IsFolder, long Size);
 
 /// <summary>
+/// A provider offered in the chooser, and whether it can be picked.
+/// </summary>
+/// <param name="Name">What it is called.</param>
+/// <param name="Ready">Whether choosing it does anything.</param>
+/// <param name="Why">
+/// A word about its state where there is one to give - that it is the one signed in to, or the
+/// reason it cannot be chosen. Null where the name says everything.
+/// </param>
+public sealed record CloudChoice(string Name, bool Ready, string? Why);
+
+/// <summary>
 /// What a provider says about a file without handing over its contents.
 /// </summary>
 /// <param name="Version">
@@ -68,6 +79,16 @@ public interface ICloudProvider
 {
     /// <summary>What to call this provider in the interface.</summary>
     string Name { get; }
+
+    /// <summary>
+    /// Whether there is still a session to act with, without going out to find out.
+    /// </summary>
+    /// <remarks>
+    /// Asked after something has already failed, to tell the two reasons apart. A provider that
+    /// refuses a write because the session ended and one that refuses because the account is full
+    /// need different things said to the player, and only this can tell which happened.
+    /// </remarks>
+    Task<bool> SignedInAsync();
 
     /// <summary>
     /// What is in a folder, so somebody can find their file by looking rather than by guessing.

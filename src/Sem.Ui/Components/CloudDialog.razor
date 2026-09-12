@@ -16,22 +16,49 @@
          tabindex="-1" @ref="_sheet" @onkeydown="OnKey" @onkeydown:stopPropagation="true"
          @onclick:stopPropagation="true">
 
-        <h2 id="@_titleId">@(Cloud.Connected ? $"Saving to {Cloud.ProviderName}" : $"Open a file from {Cloud.ProviderName}")</h2>
+        <h2 id="@_titleId">
+            @(Cloud.Connected ? $"Saving to {Cloud.ProviderName}"
+                : _signedIn ? "Which file holds your empires?"
+                : "Where do you keep your empires?")
+        </h2>
 
         @if (Cloud.Connected && Cloud.File is { } open)
         {
             <p>
                 Save writes to <strong>@open.Name</strong>@(open.Folder is { Length: > 0 } where ? $", in {where}" : null).
-                Changes made to it elsewhere are loaded when you come back to the list.
+                @(Cloud.AutoSaveRemembered
+                    ? "Your changes are written to it as you go, and changes made to it elsewhere are loaded back."
+                    : "Changes made to it elsewhere are loaded when you come back to the list.")
             </p>
         }
         else if (!_signedIn)
         {
             <p>
-                Your empires stay in your own @Cloud.ProviderName. This app reads and writes the one
-                file you choose and nothing else - though @Cloud.ProviderName has no way to ask for
-                less than all your files, so the permission screen will say more than that.
+                Your empires stay in your own storage. This app reads and writes the one file you
+                choose and nothing else - though OneDrive has no way to ask for less than all your
+                files, so its permission screen will say more than that.
             </p>
+
+            @*
+                Both named even though one is built, so that being signed in to one visibly rules
+                out the other rather than the other simply not being there.
+            *@
+            <ul class="sem-cloud-files">
+                @foreach (var choice in Cloud.Providers)
+                {
+                    <li>
+                        <button type="button" disabled="@(!choice.Ready || _busy)"
+                                @onclick="SignIn">
+                            <span class="name">@choice.Name</span>
+
+                            @if (choice.Why is { Length: > 0 } why)
+                            {
+                                <span class="where">@why</span>
+                            }
+                        </button>
+                    </li>
+                }
+            </ul>
         }
         else
         {
@@ -64,6 +91,16 @@
 
                 <button type="button" @onclick="Search" disabled="@_busy">Search</button>
             </div>
+
+            @*
+                Asked here rather than after, because it is part of choosing the file: whether this
+                one writes itself is a thing to decide while deciding which one it is.
+            *@
+            <label class="sem-choice">
+                <input type="checkbox" checked="@_autoSave"
+                       @onchange="e => _autoSave = e.Value is true" />
+                <span>Write my changes to it as I go</span>
+            </label>
 
             @if (_searching)
             {
@@ -130,12 +167,6 @@
                     Disconnect
                 </button>
             }
-            else if (!_signedIn)
-            {
-                <button type="button" class="primary" @onclick="SignIn" disabled="@_busy">
-                    Sign in to @Cloud.ProviderName
-                </button>
-            }
         </div>
     </div>
 </div>
@@ -148,6 +179,9 @@
     private bool _busy;
     private bool _searching;
     private string _query = string.Empty;
+
+    /// <summary>Whether the file being chosen should write itself, seeded from last time.</summary>
+    private bool _autoSave;
     private IReadOnlyList<CloudFile>? _found;
 
     /// <summary>What is in the folder being looked at.</summary>
@@ -173,6 +207,7 @@
     protected override async Task OnInitializedAsync()
     {
         Cloud.Changed += OnChanged;
+        _autoSave = Cloud.AutoSaveRemembered;
         _signedIn = await Cloud.SignedInAsync();
 
         if (_signedIn && !Cloud.Connected)
@@ -291,7 +326,7 @@
 
         try
         {
-            if (await Cloud.UseAsync(file))
+            if (await Cloud.UseAsync(file, _autoSave))
             {
                 await Close();
             }

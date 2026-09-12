@@ -50,7 +50,7 @@ public sealed class OneDriveProviderTests
     {
         var granting = new Graph(_ => Json("""{"access_token":"token-1","expires_in":3600,"refresh_token":"r"}"""));
         var auth = new OneDriveAuth(
-            new HttpClient(granting), new NoSessionStore(), "client", "https://example.invalid/");
+            new HttpClient(granting), new NoTokenStore(), "client", "https://example.invalid/");
 
         var address = await auth.BeginAsync();
         var state = Uri.UnescapeDataString(address.Split("state=")[1].Split('&')[0]);
@@ -234,7 +234,7 @@ public sealed class OneDriveProviderTests
     {
         var wire = new Graph(_ => Json(Item));
         var auth = new OneDriveAuth(
-            new HttpClient(wire), new NoSessionStore(), "client", "https://example.invalid/");
+            new HttpClient(wire), new NoTokenStore(), "client", "https://example.invalid/");
         var provider = new OneDriveProvider(new HttpClient(wire), auth);
 
         Assert.Empty(await provider.FindAsync("anything"));

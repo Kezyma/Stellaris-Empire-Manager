@@ -38,6 +38,11 @@ public sealed class CloudFileExchangeTests
 
         public bool Refuse { get; set; }
 
+        /// <summary>Set when the session has ended, which is a different failure from refusing.</summary>
+        public bool SignedOut { get; set; }
+
+        public Task<bool> SignedInAsync() => Task.FromResult(!SignedOut);
+
         public CloudFile File { get; } = new("item-1", "user_empire_designs_v3.4.txt", "/Documents");
 
         public string Version => _version.ToString(System.Globalization.CultureInfo.InvariantCulture);
@@ -265,6 +270,23 @@ public sealed class CloudFileExchangeTests
         await files.TryOpenExistingAsync();
 
         Assert.Equal(SaveOutcome.Refused, await files.SaveAsync("ignored", [1], backUp: false));
+    }
+
+    /// <summary>
+    /// A session that has ended is told apart from a provider that said no.
+    /// </summary>
+    /// <remarks>
+    /// The two look identical from the outside and need opposite things said. A refusal is the
+    /// provider's problem and there may be nothing to do about it; an ended session is one button
+    /// away from working, and reporting it as a plain failure hides that.
+    /// </remarks>
+    [Fact]
+    public async Task AnEndedSessionIsToldApartFromARefusal()
+    {
+        var provider = new Provider("First") { Refuse = true, SignedOut = true };
+        var files = new CloudFileExchange(provider, provider.File, new Browser());
+
+        Assert.Equal(SaveOutcome.SignedOut, await files.SaveAsync("ignored", [1], backUp: false));
     }
 
     /// <summary>

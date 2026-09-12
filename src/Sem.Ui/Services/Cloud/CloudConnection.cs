@@ -74,8 +74,57 @@ public sealed class CloudConnection : IDisposable
     /// <summary>What went wrong, where something did.</summary>
     public string? Note { get; private set; }
 
-    /// <summary>Whether there is a session at the provider to act with.</summary>
-    public Task<bool> SignedInAsync() => _auth.SignedInAsync();
+    /// <summary>
+    /// Whether the session ended while the app was still pointed at a file there.
+    /// </summary>
+    /// <remarks>
+    /// Different from simply not being connected: the file is still chosen and still wanted, and
+    /// one sign-in puts it back. The header says so rather than leaving a save to fail quietly.
+    /// </remarks>
+    public bool SessionEnded { get; private set; }
+
+    /// <summary>Whether the last answer about writing as you go was yes, for seeding the question.</summary>
+    public bool AutoSaveRemembered => _preferences.SyncsWithFile;
+
+    /// <summary>Where the file sits, as a trail worth showing on a button.</summary>
+    public string? Where => File is { } file
+        ? file.Folder is { Length: > 0 } folder ? $"{folder} › {file.Name}" : file.Name
+        : null;
+
+    /// <summary>
+    /// The providers on offer, and whether each can be chosen now.
+    /// </summary>
+    /// <remarks>
+    /// One is built. The other is named anyway, because a chooser that silently offers a single
+    /// option tells somebody nothing about whether the app will ever have more - and because being
+    /// signed in to one has to visibly rule out the other, which needs both on screen to show.
+    /// </remarks>
+    public IReadOnlyList<CloudChoice> Providers => _providers;
+
+    private CloudChoice[] _providers = [];
+
+    /// <summary>
+    /// Whether there is a session at the provider to act with, and what to offer if not.
+    /// </summary>
+    /// <remarks>
+    /// Also rebuilds the list of providers, because what can be chosen depends on the answer:
+    /// signing in to one rules the others out until it is let go of.
+    /// </remarks>
+    public async Task<bool> SignedInAsync()
+    {
+        var signedIn = await _auth.SignedInAsync().ConfigureAwait(false);
+
+        _providers =
+        [
+            new(_provider.Name, Ready: true, signedIn ? "Signed in" : null),
+            new(
+                "Google Drive",
+                Ready: false,
+                signedIn ? $"Disconnect {_provider.Name} first" : "Not built yet"),
+        ];
+
+        return signedIn;
+    }
 
     /// <summary>Where to send the browser to sign in.</summary>
     public Task<string> BeginSignInAsync() => _auth.BeginAsync();
@@ -136,7 +185,7 @@ public sealed class CloudConnection : IDisposable
     /// Works on this file from now on, opening what it holds.
     /// </summary>
     /// <returns>True when the file was opened and Save now goes to it.</returns>
-    public async Task<bool> UseAsync(CloudFile file)
+    public async Task<bool> UseAsync(CloudFile file, bool? autoSave = null)
     {
         ArgumentNullException.ThrowIfNull(file);
 
@@ -146,7 +195,18 @@ public sealed class CloudConnection : IDisposable
         if (opened is not { } read)
         {
             exchange.Dispose();
-            Note = $"{file.Name} could not be read from {_provider.Name}.";
+
+            // Which of the two it was decides both what to say and what the header offers, so it
+            // is asked here rather than guessed from a null.
+            SessionEnded = !await _provider.SignedInAsync().ConfigureAwait(false);
+
+            // No instruction on the end of this one: where it is shown, the way out of it is a
+            // button immediately after the full stop, and telling somebody to press the thing they
+            // are looking at reads as a stutter.
+            Note = SessionEnded
+                ? $"Your {_provider.Name} sign-in has ended, so {file.Name} could not be opened."
+                : $"{file.Name} could not be read from {_provider.Name}.";
+
             Changed?.Invoke();
 
             return false;
@@ -177,6 +237,20 @@ public sealed class CloudConnection : IDisposable
 
         _preferences.Set(ChosenKey, $"{file.Id}|{file.Name}");
         Note = null;
+        SessionEnded = false;
+
+        // Said here rather than left to a second trip to the header, because choosing the file and
+        // deciding whether it writes itself are one decision made in one place.
+        if (autoSave is { } wanted)
+        {
+            _preferences.SetSyncsWithFile(wanted);
+        }
+
+        // And turned on for real, which is what makes it survive a reload: the answer is
+        // remembered in preferences, but the sync itself could not be started before now because
+        // there was nothing in place for it to watch.
+        await _sync.SetAsync(_preferences.SyncsWithFile).ConfigureAwait(false);
+
         Changed?.Invoke();
 
         return true;
@@ -222,7 +296,12 @@ public sealed class CloudConnection : IDisposable
         _preferences.Set(ChosenKey, string.Empty);
         await _auth.SignOutAsync().ConfigureAwait(false);
 
+        // The answer about writing by itself goes with the file it was about. Left set, a later
+        // connection to a different file would start writing it without anybody having said so.
+        _preferences.SetSyncsWithFile(false);
+
         Note = null;
+        SessionEnded = false;
         Changed?.Invoke();
     }
 

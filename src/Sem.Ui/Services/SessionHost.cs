@@ -210,6 +210,13 @@ public sealed class SessionHost(
                 // Said apart from the rest, because it is the one that is not a failure: the file
                 // was not written because writing it would have thrown away a change somebody else
                 // made, and trying again is the wrong thing to do about that.
+                // The one failure with a button behind it, so it says which button.
+                if (outcome is SaveOutcome.SignedOut)
+                {
+                    return "Your cloud sign-in has ended, so nothing was written. "
+                        + "Connect again to carry on saving there.";
+                }
+
                 if (outcome is SaveOutcome.Conflicted)
                 {
                     return "Your designs file changed somewhere else while you were editing, so "

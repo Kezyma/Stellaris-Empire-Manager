@@ -387,6 +387,22 @@ code {
 .sem-header-error { color: var(--bad); }
 
 /*
+   A way out of a problem, offered in the sentence describing it. A whole button beside a line of
+   text would read as a separate thing to consider; this reads as the end of the sentence, which is
+   what it is - "connect again" is the rest of "your sign-in has ended".
+*/
+.sem-header-error > button.sem-inline {
+    margin-left: var(--space-sm);
+    padding: 0;
+    background: none;
+    border: none;
+    color: inherit;
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/*
    The same line, for something that is true rather than wrong: a file downloaded because this
    browser has no save dialog, or one opened under a name the game will not recognise. Both used to
    be red, which told the player they had made a mistake they had not made — and left real failures
@@ -5850,6 +5866,27 @@ button.icon .sem-action-icon { display: block; }
    names are long and whose folders are longer.
 */
 .sem-modal > .sheet.sem-cloud { width: min(36rem, 100%); }
+
+/*
+   The cloud button, which becomes the path to the file once there is one.
+
+   A path is longer than a word and must not push the rest of the row off the line, so it is capped
+   and told to lose its middle - the end of a path is the file's name, which is the half worth
+   keeping. Marked when the sign-in has lapsed, because a save that will not work is worth knowing
+   about before pressing Save rather than after.
+*/
+.sem-tab.sem-cloud-tab {
+    max-width: 22rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    direction: rtl;
+    text-align: right;
+}
+
+.sem-tab.sem-cloud-tab.ended {
+    color: var(--bad);
+    border-bottom-color: var(--bad);
+}
 
 /*
    The way down from the top of the drive, every step of it clickable.

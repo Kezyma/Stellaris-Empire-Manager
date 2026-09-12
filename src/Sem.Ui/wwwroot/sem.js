@@ -205,41 +205,15 @@ export function readStored(key) {
  * @param {string} value the contents
  */
 export function writeStored(key, value) {
-    localStorage.setItem(key, value);
-}
-
-/**
- * The same pair again, for something that must not outlive the tab.
- *
- * A cloud session is the one thing this app holds that is worth stealing, so it is kept where the
- * browser throws it away by itself: sessionStorage is scoped to this tab and cleared when it closes,
- * where localStorage would leave a refresh token on the machine until somebody cleared site data.
- * The cost is a redirect through the provider the next time the app is opened, which is a flicker
- * rather than a password — the provider remembers the sign-in even though this app does not.
- *
- * It survives what it has to: a reload, and the round trip out to the provider and back, both of
- * which are the same tab.
- *
- * @param {string} key where it was filed
- * @returns {string|null} the contents, or null when there is nothing there
- */
-export function readSession(key) {
-    return sessionStorage.getItem(key);
-}
-
-/**
- * Keeps something for the rest of this tab's life, or forgets it when value is null.
- *
- * @param {string} key where to file it
- * @param {string|null} value the contents, or null to drop it
- */
-export function writeSession(key, value) {
-    if (value === null) {
-        sessionStorage.removeItem(key);
+    // Null means forget it, which is what signing out of a provider does. Without this branch
+    // setItem stores the four characters "null", and a token read back as those is a session the
+    // app believes in and cannot use.
+    if (value === null || value === undefined) {
+        localStorage.removeItem(key);
         return;
     }
 
-    sessionStorage.setItem(key, value);
+    localStorage.setItem(key, value);
 }
 
 /**

@@ -34,6 +34,9 @@ public sealed class OneDriveProvider(HttpClient client, OneDriveAuth auth) : ICl
     public string Name => "OneDrive";
 
     /// <inheritdoc />
+    public Task<bool> SignedInAsync() => _auth.SignedInAsync();
+
+    /// <inheritdoc />
     /// <remarks>
     /// Graph's own search, across the whole drive, because the file cannot be found by path - see
     /// the class remark. What comes back is offered to the player to choose from rather than

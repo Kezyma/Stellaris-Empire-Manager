@@ -57,7 +57,7 @@ public sealed class OneDriveAuth
     private const string RefreshKey = "sem.cloud.refresh";
 
     private readonly HttpClient _client;
-    private readonly ISessionStore _session;
+    private readonly ITokenStore _session;
     private readonly string _clientId;
     private readonly string _redirectUri;
 
@@ -65,7 +65,7 @@ public sealed class OneDriveAuth
     private DateTimeOffset _expires;
 
     /// <summary>Takes the registration this app is, and where the browser will come back to.</summary>
-    public OneDriveAuth(HttpClient client, ISessionStore session, string clientId, string redirectUri)
+    public OneDriveAuth(HttpClient client, ITokenStore session, string clientId, string redirectUri)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
         _session = session ?? throw new ArgumentNullException(nameof(session));

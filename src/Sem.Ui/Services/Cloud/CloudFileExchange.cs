@@ -109,7 +109,16 @@ public sealed class CloudFileExchange : IFileExchange, IDisposable
             return SaveOutcome.Saved;
         }
 
-        return outcome is CloudWrite.Conflicted ? SaveOutcome.Conflicted : SaveOutcome.Refused;
+        if (outcome is CloudWrite.Conflicted)
+        {
+            return SaveOutcome.Conflicted;
+        }
+
+        // Asked only once something has gone wrong, and only to say which of two things it was: a
+        // session that has ended is the player's to fix in one click, and everything else is not.
+        return await _provider.SignedInAsync().ConfigureAwait(false)
+            ? SaveOutcome.Refused
+            : SaveOutcome.SignedOut;
     }
 
     /// <summary>What the file holds now, for the dated copy to be a copy of.</summary>

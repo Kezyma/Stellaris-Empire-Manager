@@ -53,11 +53,11 @@ public sealed class OneDriveAuthTests
         };
     }
 
-    private static (OneDriveAuth Auth, Handler Handler, NoSessionStore Session) Built(
+    private static (OneDriveAuth Auth, Handler Handler, NoTokenStore Session) Built(
         Func<HttpRequestMessage, string, HttpResponseMessage>? answer = null)
     {
         var handler = new Handler(answer ?? ((_, _) => Granting("token-1", "refresh-1")));
-        var session = new NoSessionStore();
+        var session = new NoTokenStore();
 
         return (new OneDriveAuth(new HttpClient(handler), session, ClientId, Redirect), handler, session);
     }

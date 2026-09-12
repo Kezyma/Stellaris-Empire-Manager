@@ -33,13 +33,13 @@ builder.Services.AddScoped<IDesignStore, BrowserDesignStore>();
 // that runs in somebody else's browser cannot keep one, so what refuses an impostor is the redirect
 // allowlist Microsoft holds and the PKCE verifier this tab keeps to itself. docs/cloud-setup.md
 // sets out the registration this names, and why that is enough.
-builder.Services.AddScoped<ISessionStore, BrowserSessionStore>();
+builder.Services.AddScoped<ITokenStore, BrowserTokenStore>();
 
 builder.Services.AddScoped(s => new OneDriveAuth(
     // A client of its own, because the site's carries the site's base address and these do not go
     // to the site. Microsoft's endpoints are absolute.
     new HttpClient(),
-    s.GetRequiredService<ISessionStore>(),
+    s.GetRequiredService<ITokenStore>(),
     clientId: "3275b739-5f92-47b4-9210-3f1def80ec25",
 
     // Wherever this copy of the app is served from, which is the address registered against it:

@@ -3,14 +3,15 @@ using Microsoft.JSInterop;
 namespace Sem.Ui.Services.Cloud;
 
 /// <summary>
-/// Somewhere to keep something that must not outlive the tab.
+/// Where a session with a cloud provider is kept.
 /// </summary>
 /// <remarks>
-/// An interface for one reason: the sign-in flow below is worth testing, and a test has no
-/// sessionStorage. It is deliberately not <see cref="IDesignStore"/> or <see cref="Preferences"/> -
-/// both of those keep things on purpose, between visits, and this is the opposite promise.
+/// An interface for one reason: the sign-in flow is worth testing, and a test has no browser
+/// storage. Kept apart from <see cref="Preferences"/> even though both end up in the same place,
+/// because one holds answers about how the app is arranged and this holds a credential, and the
+/// two should be findable separately when something has to be cleared.
 /// </remarks>
-public interface ISessionStore
+public interface ITokenStore
 {
     /// <summary>What is filed under a key, or null when nothing is.</summary>
     Task<string?> ReadAsync(string key);
@@ -19,8 +20,22 @@ public interface ISessionStore
     Task WriteAsync(string key, string? value);
 }
 
-/// <summary>The browser's own sessionStorage, which it empties when the tab closes.</summary>
-public sealed class BrowserSessionStore(IJSRuntime js) : ISessionStore, IAsyncDisposable
+/// <summary>
+/// The browser's own localStorage, so a sign-in outlives the tab it was made in.
+/// </summary>
+/// <remarks>
+/// sessionStorage was the first answer and is the safer one: the browser empties it by itself, so
+/// nothing is left on the machine once somebody has finished. It was changed because the cost
+/// landed on every visit. A new tab, or a browser reopened, meant signing in again to reach a file
+/// the app was supposed to already be connected to - and being asked to prove yourself to
+/// something that ought to remember you is what gets a feature switched off.
+///
+/// So the trade is written down rather than hidden. The refresh token now sits on the machine
+/// until it is disconnected or site data is cleared, which means anything able to run script on
+/// this origin can read it. That is what the Content-Security-Policy and the escaping tests are
+/// for, and why disconnecting removes it before anything else.
+/// </remarks>
+public sealed class BrowserTokenStore(IJSRuntime js) : ITokenStore, IAsyncDisposable
 {
     private readonly IJSRuntime _js = js ?? throw new ArgumentNullException(nameof(js));
     private Task<IJSObjectReference>? _module;
@@ -46,7 +61,7 @@ public sealed class BrowserSessionStore(IJSRuntime js) : ISessionStore, IAsyncDi
         try
         {
             return await (await ModuleAsync().ConfigureAwait(false))
-                .InvokeAsync<string?>("readSession", key).ConfigureAwait(false);
+                .InvokeAsync<string?>("readStored", key).ConfigureAwait(false);
         }
         catch (JSException)
         {
@@ -63,7 +78,7 @@ public sealed class BrowserSessionStore(IJSRuntime js) : ISessionStore, IAsyncDi
         try
         {
             await (await ModuleAsync().ConfigureAwait(false))
-                .InvokeVoidAsync("writeSession", key, value).ConfigureAwait(false);
+                .InvokeVoidAsync("writeStored", key, value).ConfigureAwait(false);
         }
         catch (JSException)
         {
@@ -95,8 +110,8 @@ public sealed class BrowserSessionStore(IJSRuntime js) : ISessionStore, IAsyncDi
     }
 }
 
-/// <summary>Keeps nothing anywhere, for a test or a host with no browser under it.</summary>
-public sealed class NoSessionStore : ISessionStore
+/// <summary>Keeps it in memory only, for a test or a host with no browser under it.</summary>
+public sealed class NoTokenStore : ITokenStore
 {
     private readonly Dictionary<string, string> _held = new(StringComparer.Ordinal);
 

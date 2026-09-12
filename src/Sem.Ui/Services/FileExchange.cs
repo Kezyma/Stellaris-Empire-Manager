@@ -36,6 +36,17 @@ public enum SaveOutcome
     /// to try again.
     /// </remarks>
     Conflicted,
+
+    /// <summary>
+    /// The host has no session to write with any more, so nothing was attempted.
+    /// </summary>
+    /// <remarks>
+    /// A sign-in that has expired or been revoked, which only a host that signs in can have. Worth
+    /// its own answer because it is the one failure with an obvious remedy: nothing is wrong with
+    /// the file or the work, and connecting again fixes it. Reported as an ordinary refusal it read
+    /// as "your empires were not written" with no hint that a button would put it right.
+    /// </remarks>
+    SignedOut,
 }
 
 /// <summary>

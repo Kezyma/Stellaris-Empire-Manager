@@ -99,12 +99,13 @@
                 *@
                 @if (_cloud is not null)
                 {
-                    <button type="button" class="sem-tab @(_cloud.Connected ? "active" : null)"
-                            title="@(_cloud.File is { } open
-                                ? $"Saving to {open.Name} in your {_cloud.ProviderName}"
-                                : $"Open a designs file from your {_cloud.ProviderName}")"
+                    <button type="button"
+                            class="sem-tab sem-cloud-tab @(_cloud.Connected ? "active" : null) @(_cloud.SessionEnded ? "ended" : null)"
+                            title="@(_cloud.Where is { } path
+                                ? $"Saving to {path} in your {_cloud.ProviderName}"
+                                : "Open a designs file you keep in the cloud")"
                             @onclick="() => _connecting = true">
-                        @_cloud.ProviderName
+                        @(_cloud.Where ?? "Cloud")
                     </button>
                 }
 
@@ -295,6 +296,24 @@
     else if (Sync.Note is { } trouble)
     {
         <p class="sem-header-error">@trouble</p>
+    }
+    else if (_cloud?.Note is { } cloudTrouble)
+    {
+        @*
+            Said in the header rather than only inside the sheet, because the sheet is not open
+            when this matters most: a sign-in that lapsed overnight is found on the next load, and
+            a warning nobody opens a dialog to see is a warning nobody gets.
+        *@
+        <p class="sem-header-error">
+            @cloudTrouble
+
+            @if (_cloud.SessionEnded)
+            {
+                <button type="button" class="sem-inline" @onclick="() => _connecting = true">
+                    Connect again
+                </button>
+            }
+        </p>
     }
 
     @*
@@ -518,6 +537,11 @@
                 if (await _cloud.CompleteSignInAsync(Navigation.Uri))
                 {
                     Navigation.NavigateTo(Navigation.BaseUri, replace: true);
+
+                    // Signing in was never the errand; opening a file was. So unless coming back
+                    // reconnected to the file chosen before, the picker is put straight back up
+                    // rather than leaving somebody to find their way to it a second time.
+                    _connecting = !_cloud.Connected;
                 }
                 else
                 {
