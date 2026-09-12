@@ -93,6 +93,11 @@
     /// <summary>Whether a press is a finger reading or a hand choosing.</summary>
     private readonly PressReading _press = new();
 
+    private IReadOnlyList<OptionGrid.GridOption> _options = [];
+
+    /// <summary>Which revision <see cref="_options"/> was worked out at; -1 is "never".</summary>
+    private int _stamp = -1;
+
     [CascadingParameter]
     public required DesignSession Session { get; set; }
 
@@ -151,13 +156,36 @@
         }
     }
 
+    /// <summary>
+    /// The convictions on offer, worked out once per change rather than once per read.
+    /// </summary>
+    /// <remarks>
+    /// This is a whole ethics rules pass, and it used to run two to four times per render - the grid
+    /// reads it, and the detail panel reads it again for each of its three fallbacks. Worse, every
+    /// button reports its own hover, so crossing the grid with the pointer re-rendered the section
+    /// and paid for all of them again, on a design that had not changed.
+    /// </remarks>
     private IReadOnlyList<OptionGrid.GridOption> Options
     {
         get
         {
-            var database = Session.Data.Database;
+            if (_stamp == Session.Revision)
+            {
+                return _options;
+            }
 
-            return
+            _stamp = Session.Revision;
+            _options = Offered();
+
+            return _options;
+        }
+    }
+
+    private IReadOnlyList<OptionGrid.GridOption> Offered()
+    {
+        var database = Session.Data.Database;
+
+        return
             [
                 .. Session.Rules.GetEthicOptions(Context)
                     .Where(o => o.Visible)
@@ -177,7 +205,6 @@
                         Reasons = Session.Reasons.Describe(o.Reasons),
                     })
             ];
-        }
     }
 
     private void Toggle(string key)

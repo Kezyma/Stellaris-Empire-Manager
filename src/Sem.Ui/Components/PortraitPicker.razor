@@ -62,16 +62,22 @@
         }
     </div>
 
-    @if (Portraits.Count == 0)
+    @{
+        // Read once: each read is a whole portrait rules pass over the class's faces.
+        var portraits = Portraits;
+    }
+
+    @if (portraits.Count == 0)
     {
         <p class="sem-hint">No portraits for this class.</p>
     }
     else
     {
         <div class="sem-portraits">
-            @foreach (var portrait in Portraits)
+            @foreach (var portrait in portraits)
             {
                 var thumbnail = Thumbnail(portrait.Key);
+                var caption = Caption(portrait.Key);
 
                 @*
                     No caption. The game gives portraits no names — its own picker is a bare grid of
@@ -80,12 +86,12 @@
                 <button type="button"
                         class="sem-portrait @(portrait.Key == Selected ? "selected" : null) @(portrait.Enabled ? null : "blocked")"
                         disabled="@(!portrait.Enabled && portrait.Key != Selected)"
-                        title="@Caption(portrait.Key)"
+                        title="@caption"
                         @onclick="() => Choose(portrait.Key)">
 
                     @if (thumbnail is not null)
                     {
-                        <img src="@Session.Data.AssetUrl(thumbnail)" alt="@Caption(portrait.Key)" loading="lazy" />
+                        <img src="@Session.Data.AssetUrl(thumbnail)" alt="@caption" loading="lazy" />
                     }
                     else
                     {
@@ -132,10 +138,10 @@
     /// <remarks>
     /// Only a handful of portraits have text of their own. For the rest the key is all there is, and
     /// made readable it is at least an identifier rather than an eyesore — but it stays out of the
-    /// grid itself, where the picture is the point.
+    /// grid itself, where the picture is the point. That fallback is what the localiser does with a
+    /// key it has no entry for, so asking it plainly says the same thing and is held for next time.
     /// </remarks>
-    private string Caption(string key) =>
-        Session.Localizer.Has(key) ? Session.Localizer.Text(key) : Localizer.Prettify(key);
+    private string Caption(string key) => Session.Localizer.Text(key);
 
     /// <summary>
     /// Every portrait the chosen class allows, in the game's own order.

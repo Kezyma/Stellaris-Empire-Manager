@@ -125,7 +125,7 @@ public sealed partial class Localizer(
 
         if (!_entries.TryGetValue(key, out var value))
         {
-            return fallback ?? Prettify(key);
+            return fallback ?? Prettified(key);
         }
 
         if (_resolved.TryGetValue(key, out var done))
@@ -176,11 +176,32 @@ public sealed partial class Localizer(
 
         if (!_entries.TryGetValue(key, out var value))
         {
-            return System.Net.WebUtility.HtmlEncode(fallback ?? Prettify(key));
+            return System.Net.WebUtility.HtmlEncode(fallback ?? Prettified(key));
         }
 
-        return ToHtml(Substitute(value, 0));
+        if (_rendered.TryGetValue(key, out var done))
+        {
+            return done;
+        }
+
+        done = ToHtml(Substitute(value, 0));
+        _rendered[key] = done;
+
+        return done;
     }
+
+    /// <summary>
+    /// What each key came out as in HTML, so the markup is rendered once.
+    /// </summary>
+    /// <remarks>
+    /// Held for the same reasons as <see cref="_resolved"/> and sound for the same reasons: the
+    /// fallback is only consulted by the branches above, and everything the rendering reads is fixed
+    /// at construction. This one was the more expensive of the two to leave uncached - on top of the
+    /// variable, concept and scripted passes it walks the line a character at a time to turn the
+    /// game's colour runs into spans - and a picker asks it for every option's description on every
+    /// render, which for the civics list is eighty-one lines re-rendered identically each time.
+    /// </remarks>
+    private readonly Dictionary<string, string> _rendered = new(StringComparer.Ordinal);
 
     /// <summary>
     /// Reads a name out of a design.
@@ -403,6 +424,33 @@ public sealed partial class Localizer(
     }
 
     /// <summary>
+    /// A readable label for a key the game has no text for, held so it is worked out once.
+    /// </summary>
+    /// <remarks>
+    /// This is the answer for every key the game has no text for, which is not the rare case it
+    /// sounds like: two of the fifty-two shipsets have an entry, and the rest reach this on every
+    /// render that names them.
+    /// </remarks>
+    private string Prettified(string key)
+    {
+        if (_prettified.TryGetValue(key, out var done))
+        {
+            return done;
+        }
+
+        done = Prettify(key);
+        _prettified[key] = done;
+
+        return done;
+    }
+
+    private readonly Dictionary<string, string> _prettified = new(StringComparer.Ordinal);
+
+    /// <summary>The prefixes a key wears to say what kind of thing it names, which a label does not.</summary>
+    private static readonly string[] KeyPrefixes =
+        ["trait_", "civic_", "origin_", "ethic_", "auth_", "gov_", "pc_"];
+
+    /// <summary>
     /// A readable label for a key the game has no text for, by turning it into words.
     /// </summary>
     public static string Prettify(string key)
@@ -410,7 +458,7 @@ public sealed partial class Localizer(
         ArgumentNullException.ThrowIfNull(key);
 
         var trimmed = key;
-        foreach (var prefix in (string[])["trait_", "civic_", "origin_", "ethic_", "auth_", "gov_", "pc_"])
+        foreach (var prefix in KeyPrefixes)
         {
             if (trimmed.StartsWith(prefix, StringComparison.Ordinal))
             {

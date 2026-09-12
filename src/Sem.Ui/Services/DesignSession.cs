@@ -226,6 +226,19 @@ public sealed class DesignSession
     public DesignContext? Context { get; private set; }
 
     /// <summary>
+    /// Counts the times anything an interface derives from has moved.
+    /// </summary>
+    /// <remarks>
+    /// A component that derives something expensive - a rules pass, a sorted list of every trait -
+    /// holds the answer and the revision it was worked out at, and works it out again only when the
+    /// two disagree. Blazor renders for reasons that have nothing to do with the design, of which
+    /// the pointer crossing a grid is the most frequent, and without this each of those paid for the
+    /// whole derivation again. Bumped in the one place that rebuilds the context, so it cannot fall
+    /// out of step with what it is standing for.
+    /// </remarks>
+    public int Revision { get; private set; }
+
+    /// <summary>
     /// What an option is called for the empire in hand, which is not always what it is called.
     /// </summary>
     /// <remarks>
@@ -891,6 +904,7 @@ public sealed class DesignSession
             Report = Rules.Validate(Context, Current);
         }
 
+        Revision++;
         Changed?.Invoke();
     }
 }

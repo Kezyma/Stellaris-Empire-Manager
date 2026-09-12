@@ -195,7 +195,7 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
 
     /// <summary>The government the game would name this empire's, derived rather than stored.</summary>
     public string Government =>
-        _session.Rules.DeriveGovernment(Context) is { } government
+        _session.Rules.GovernmentFor(Context) is { } government
             ? _session.Localizer.Text(government.Key)
             : _session.Localizer.Text(_design.Authority);
 
@@ -624,7 +624,7 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
     public string RulerTitle =>
         _design.Ruler.Title is { } held && _session.Localizer.Name(held, string.Empty) is { Length: > 0 } title
             ? title
-            : _session.Rules.DeriveGovernment(Context)?.RulerTitleKey is { } key
+            : _session.Rules.GovernmentFor(Context)?.RulerTitleKey is { } key
                 ? _session.Localizer.Text(key)
                 : string.Empty;
 
@@ -635,7 +635,7 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
     /// The card shows all three at once and the government name they produce, so when they produce
     /// none it can say so where the choices are rather than only in the problem list.
     /// </remarks>
-    public bool HasGovernment => _session.Rules.DeriveGovernment(Context) is not null;
+    public bool HasGovernment => _session.Rules.GovernmentFor(Context) is not null;
 
     /// <summary>What to call a second species' traits, since two rows of "Traits" would not say.</summary>
     public string SecondName(SpeciesDesign species)

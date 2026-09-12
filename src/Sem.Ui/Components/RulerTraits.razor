@@ -42,15 +42,10 @@
             Session,
             Session.Rules.GetRulerTraitOptions(Context)
                 .OrderBy(o => Session.Localizer.Text(o.Key), StringComparer.CurrentCulture),
-            key => Definitions.FirstOrDefault(t => t.Key == key) is { } trait
+            key => Session.Data.Database.Trait(key) is { } trait
                 ? (trait.Icon, trait.Effects)
                 : (null, null),
             Design.Ruler.Traits.Contains);
-
-    private IEnumerable<TraitDefinition> Definitions =>
-        Session.Data.Database.Traits
-            .Where(t => t.Kind == TraitKind.StartingRuler)
-            .OrderBy(t => Session.Localizer.Text(t.Key), StringComparer.CurrentCulture);
 
     private void Toggle(string key)
     {

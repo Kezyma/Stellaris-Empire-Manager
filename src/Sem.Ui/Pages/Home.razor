@@ -1275,7 +1275,7 @@ else
 
             return new Preset(
                 design,
-                _session.Rules.DeriveGovernment(context) is { } government
+                _session.Rules.GovernmentFor(context) is { } government
                     ? _session.Localizer.Text(government.Key)
                     : _session.Localizer.Text(design.Authority));
         }

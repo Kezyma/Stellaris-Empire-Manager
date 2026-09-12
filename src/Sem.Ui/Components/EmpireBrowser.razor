@@ -50,7 +50,7 @@
                             Government="@Government(design, context)"
                             SpeciesClass="@Session.Localizer.Text(design.Species.Class)"
                             Selected="@ReferenceEquals(design, Session.Current)"
-                            Broken="@(!Session.Rules.Validate(context, design).IsValid)"
+                            Broken="@Broken(design, context)"
                             OnCopyLink="@(OnCopyLink.HasDelegate ? EventCallback.Factory.Create(this, () => OnCopyLink.InvokeAsync(design)) : default)"
                             CopyTitle="@(CopyTitle?.Invoke(design) ?? "Copy a link to this empire")"
                             OnMove="@(by => Move(design, index + by))"
@@ -127,6 +127,7 @@
         // What the rules make of an empire only changes when the empire or the packs do, and both
         // of those raise this.
         _read.Clear();
+        _broken.Clear();
         InvokeAsync(StateHasChanged);
     }
 
@@ -150,6 +151,29 @@
     }
 
     private readonly Dictionary<EmpireDesign, DesignContext> _read = [];
+
+    /// <summary>
+    /// Whether the game would refuse one empire in the list, held for as long as its context is.
+    /// </summary>
+    /// <remarks>
+    /// Validating is a second pass over the whole design, and it was being run for every empire on
+    /// every render to decide whether to mark a card. Renders are not rare and most are nothing to
+    /// do with the empires: typing in the search box redraws the list on every keystroke without
+    /// changing a single design. Cleared beside the contexts, by the one event that means an empire
+    /// really has moved.
+    /// </remarks>
+    private bool Broken(EmpireDesign design, DesignContext context)
+    {
+        if (!_broken.TryGetValue(design, out var broken))
+        {
+            broken = !Session.Rules.Validate(context, design).IsValid;
+            _broken[design] = broken;
+        }
+
+        return broken;
+    }
+
+    private readonly Dictionary<EmpireDesign, bool> _broken = [];
 
     private ElementReference _list;
     private IJSObjectReference? _module;

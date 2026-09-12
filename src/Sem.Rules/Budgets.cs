@@ -135,11 +135,18 @@ public sealed record ValidationReport(IReadOnlyList<ValidationProblem> Problems)
     public bool IsValid => Errors.Count == 0;
 
     /// <summary>The problems that would stop the design being used.</summary>
-    public IReadOnlyList<ValidationProblem> Errors =>
+    /// <remarks>
+    /// Split once here rather than on every read. Both of these were expression properties, so each
+    /// read walked the problems and allocated a fresh list - and the designer's shell asks how many
+    /// errors belong to an area once per section, seven times per render, to put a count on a
+    /// heading. Sound only while nothing rebuilds a report with <c>with</c>, which nothing does:
+    /// every report is constructed from its problems and never amended.
+    /// </remarks>
+    public IReadOnlyList<ValidationProblem> Errors { get; } =
         [.. Problems.Where(p => p.Severity == ValidationSeverity.Error)];
 
     /// <summary>The problems worth mentioning that do not block the design.</summary>
-    public IReadOnlyList<ValidationProblem> Warnings =>
+    public IReadOnlyList<ValidationProblem> Warnings { get; } =
         [.. Problems.Where(p => p.Severity == ValidationSeverity.Warning)];
 
     public override string ToString() => Problems.Count == 0

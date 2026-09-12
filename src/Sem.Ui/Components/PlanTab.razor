@@ -320,13 +320,25 @@
         Func<string, (string Name, string? Desc, string? Icon, EffectSet? Effects)> describe,
         Func<string, IReadOnlyList<PlanOption>>? contents = null)
     {
+        // Both of these were a scan inside a loop: the planned list was searched once per offered
+        // option, and the offered list once per key. Ascension perks are the big one - forty-nine
+        // of them against a plan - and the tab rebuilds all four of its lists on every render.
+        var already = new HashSet<string>(planned, StringComparer.Ordinal);
+        var byKey = new Dictionary<string, OptionState>(StringComparer.Ordinal);
+
+        foreach (var state in states)
+        {
+            // First wins, which is what FirstOrDefault said.
+            _ = byKey.TryAdd(state.Key, state);
+        }
+
         IReadOnlyList<string> keys = chosen
             ? planned
-            : [.. states.Where(s => s.Visible && !planned.Contains(s.Key)).Select(s => s.Key)];
+            : [.. states.Where(s => s.Visible && !already.Contains(s.Key)).Select(s => s.Key)];
 
         var options = keys.Select(key =>
         {
-            var state = states.FirstOrDefault(s => s.Key == key) ?? OptionState.Available(key, 0);
+            var state = byKey.GetValueOrDefault(key) ?? OptionState.Available(key, 0);
             var (name, description, icon, effects) = describe(key);
 
             var reasons = Session.Reasons
