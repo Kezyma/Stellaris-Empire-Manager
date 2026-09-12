@@ -91,37 +91,36 @@
                     <InputFile id="designs-file" OnChange="Import" class="sem-visually-hidden" accept=".txt" />
                 }
 
-                <button type="button" class="sem-tab"
-                        disabled="@(Nothing || Sync.Enabled)"
-                        title="@(Sync.Enabled ? "Your empires are written to the file as you go." : null)"
-                        @onclick="AskToSave">
-                    @Files.SaveVerb
-                </button>
-
                 @*
-                    Beside the button it replaces, because it is the same decision: whether writing
-                    the file is something you ask for or something that happens. Offered only where
-                    there is a file to keep in step, which is the desktop.
+                    Save, and the answer to whether saving is something you ask for at all.
+
+                    Together, because they are one decision read left to right - the word, then
+                    whether it happens by itself. A chip rather than another tab: it is a state the
+                    file is in, which is what a chip means everywhere else in this app, and a tab
+                    beside a tab read as a second button to press.
+
+                    The switch cannot be inside the button, however much it belongs there: a label
+                    with a checkbox in it is interactive content, and interactive content inside a
+                    button is not something a browser will lay out. So they are set against each
+                    other instead, and the button gives up its right-hand padding to close the gap.
                 *@
-                @if (Sync.Available)
-                {
-                    <label class="sem-tab sem-sync" title="@SyncExplained">
-                        <input type="checkbox" checked="@Sync.Enabled"
-                               @onchange="e => Sync.SetAsync(e.Value is true)" />
+                <div class="sem-save">
+                    <button type="button" class="sem-tab"
+                            disabled="@(Nothing || Sync.Enabled)"
+                            title="@(Sync.Enabled ? "Your empires are written to the file as you go." : null)"
+                            @onclick="AskToSave">
+                        @Files.SaveVerb
+                    </button>
 
-                        @* Two arrows round a circle, which is what every app means by this. *@
-                        <svg viewBox="0 0 24 24" width="1.05em" height="1.05em" fill="none"
-                             stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                             stroke-linejoin="round" aria-hidden="true" focusable="false">
-                            <path d="M21 10a9 9 0 0 0-15.5-5.5L1 9" />
-                            <path d="M1 4v5h5" />
-                            <path d="M3 14a9 9 0 0 0 15.5 5.5L23 15" />
-                            <path d="M23 20v-5h-5" />
-                        </svg>
-
-                        <span class="sem-visually-hidden">Keep my designs file in step</span>
-                    </label>
-                }
+                    @if (Sync.Available)
+                    {
+                        <label class="sem-auto" title="@SyncExplained">
+                            <input type="checkbox" checked="@Sync.Enabled"
+                                   @onchange="e => Sync.SetAsync(e.Value is true)" />
+                            <span>Auto</span>
+                        </label>
+                    }
+                </div>
 
                 @*
                     Last in the row, and disabled by the same question as Export: both act on the

@@ -481,6 +481,16 @@ code {
         width: 100%;
         text-align: left;
     }
+
+    /*
+       Save is wrapped now, so the rule above reaches the wrapper and stops one short of the button
+       inside it. Both are given the width, which leaves this column exactly as it was - and the
+       chip is never here anyway, since only a host with a file to keep in step draws one.
+    */
+    .sem-save > button.sem-tab {
+        width: 100%;
+        padding-right: var(--space-xl);
+    }
 }
 
 /*
@@ -959,21 +969,56 @@ button.sem-tab:disabled:hover { background: none; }
 }
 
 /*
-   The switch beside Save, on a host that has a file to keep in step.
+   Save, and the switch that says whether saving is something you ask for.
 
-   A tab rather than a control of its own, because it stands in the row of them and belongs to the
-   same decision as the button it turns off. Narrower, since a checkbox and an icon are not a word,
-   and coloured when it is on: this is a mode that stays on rather than a button that was pressed,
-   and the row has to say so at a glance.
+   One group, read left to right, so the word and the state that changes what it means are not
+   separated by the row's own gap. The button gives up its right-hand padding to the chip, which is
+   the whole trick: without that the two sit a tab's width apart and read as unrelated.
 */
-.sem-tab.sem-sync {
-    gap: var(--space-sm);
-    padding: 0 var(--space-lg);
+.sem-save {
+    display: inline-flex;
+    align-items: center;
 }
 
-.sem-tab.sem-sync:has(input:checked) { color: var(--accent); }
+.sem-save > button.sem-tab { padding-right: var(--space-sm); }
 
-.sem-tab.sem-sync input { margin: 0; }
+/*
+   A chip, because that is what this app calls a state a thing is in - same pill, same raised
+   ground, same border - rather than a tab, which is a thing to press. The checkbox stays visible
+   instead of being replaced by a tick or an icon: it is the control, and hiding it would leave the
+   only way of telling on from off as a colour.
+*/
+.sem-save > .sem-auto {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    margin-right: var(--space-sm);
+    padding: var(--space-2xs) var(--space-sm) var(--space-2xs) var(--space-xs);
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    color: var(--text-dim);
+    font-size: var(--text-sm);
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.sem-save > .sem-auto:hover {
+    background: var(--bg-hover);
+    color: var(--text);
+}
+
+/* On, it is a mode the file is in rather than a button that was pressed, and it should read as one. */
+.sem-save > .sem-auto:has(input:checked) {
+    border-color: var(--accent-dim);
+    color: var(--accent);
+}
+
+.sem-save > .sem-auto input {
+    margin: 0;
+    cursor: pointer;
+}
 
 
 /* ---------------------------------------------------------------- options */
@@ -5856,6 +5901,17 @@ button.icon .sem-action-icon { display: block; }
     padding: var(--space-lg);
     background: rgb(0 0 0 / 0.85);
 }
+
+/*
+   On a host that draws its own window, the editor stops at the header rather than covering it.
+
+   The three window buttons live up there, and they are the only way this window has of being
+   minimised or closed - a card laid over them leaves somebody holding an empire with no way out
+   except the keyboard. So the modal starts below the header and the row stays both visible and
+   usable, which is a thing worth giving up over a browser tab, where the same band is only tabs
+   and covering it is ordinary modal behaviour.
+*/
+.sem-app.framed .sem-lite-modal { top: var(--header-height); }
 
 .sem-lite-modal > .sheet {
     width: 100%;
