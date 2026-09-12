@@ -6216,15 +6216,14 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
-   The ruler is drawn from stacked layers at the artwork's own size, which is several times a
-   panel's width. Scaled as a whole rather than resized, since every layer's position is recorded
-   against that size and the pieces are placed inside it rather than fitted to it.
+   One frame for both faces, drawn by the button.
 
-   Framed to the same box as a species' face beside it, and scaled so the height fills rather than
-   the width: the canvas is landscape and mostly empty either side of the figure, so fitting the
-   width left a thumbnail of a ruler adrift in a tall box. Centred by origin rather than by an
-   offset, because the canvas is a different width for every portrait.
+   The species' border used to be on its image while the ruler's was on its button, which put the
+   two outer edges two pixels apart and sat the panels beside them out of line. Worse on hover: the
+   button's own border lights up, so a species showed an accent ring outside a solid one - the
+   double edge that reads as a border inside a border.
 */
+.sem-lite-panel .face-button,
 .sem-lite-panel .face-button.figure {
     position: relative;
     width: var(--face-lg-w);
@@ -6236,17 +6235,47 @@ button.icon .sem-action-icon { display: block; }
     border-radius: var(--radius);
 }
 
+/*
+   Whatever is inside fills that frame and draws no edge of its own: a face, or the flat thumbnail
+   the ruler falls back to where no wardrobe was published - which is every desktop cache built
+   before this, and is where the border-inside-a-border was actually seen. Cover from the top, which
+   is what the species' face has always done.
+*/
+.sem-lite-panel .face-button > .face,
+.sem-lite-panel .face-button.figure .sem-thumb {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    object-fit: cover;
+    object-position: top center;
+    border: 0;
+    border-radius: 0;
+}
+
+/*
+   The ruler is drawn from stacked layers at the artwork's own size, which is several times a
+   panel's width. Scaled as a whole rather than resized, since every layer's position is recorded
+   against that size and the pieces are placed inside it rather than fitted to it.
+
+   Scaled so the height fills rather than the width: the canvas is landscape and mostly empty either
+   side of the figure, so fitting the width left a thumbnail of a ruler adrift in a tall box. Centred
+   by origin rather than by an offset, because the canvas is a different width for every portrait.
+
+   Measured off the frame rather than written down. It was scale(0.44) against the 0.4273 that
+   covering a 220-tall canvas actually needs, so the ruler was drawn three per cent larger than the
+   species beside it and lost its last three pixels to the clip - the same trick the room scene
+   already uses, and it tracks the frame if the frame ever changes.
+*/
+.sem-lite-panel .face-button.figure {
+    container-type: size;
+}
+
 .sem-lite-panel .face-button.figure .sem-figure {
     position: absolute;
     top: 0;
     left: 50%;
-    transform: translateX(-50%) scale(0.44);
+    transform: translateX(-50%) scale(calc(100cqh / 220px));
     transform-origin: top center;
-}
-
-.sem-lite-panel .face-button.figure .sem-thumb {
-    width: 100%;
-    height: auto;
 }
 
 /*

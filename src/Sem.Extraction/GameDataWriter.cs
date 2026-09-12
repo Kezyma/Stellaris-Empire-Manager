@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using Sem.GameData;
 using Sem.Io;
 
@@ -23,7 +23,14 @@ public sealed record ExtractionResult(
     PortraitBakeReport Portraits,
     ShipBakeReport Ships,
     IReadOnlyList<string> MissingImages,
-    IReadOnlyList<string> ScriptFailures);
+    IReadOnlyList<string> ScriptFailures)
+{
+    /// <summary>What came of drawing the wardrobe, or nothing where it was not asked for.</summary>
+    public PortraitBakeReport? Wardrobe { get; init; }
+
+    /// <summary>How many outfits it came to, across how many layers.</summary>
+    public (int Outfits, int Layers) WardrobeSize { get; init; }
+}
 
 /// <summary>
 /// Runs a whole extraction and writes everything the designer needs into one directory.
@@ -38,12 +45,27 @@ public static class GameDataWriter
     /// <summary>The database file, relative to the output directory.</summary>
     public const string DatabaseFileName = "gamedb.json";
 
+    /// <summary>The wardrobe file, relative to the output directory.</summary>
+    public const string WardrobeFileName = "wardrobe.json";
+
     /// <summary>Reads an installation and writes the database, its text and its images.</summary>
+    /// <param name="installRoot">The game to read.</param>
+    /// <param name="outputDirectory">Where everything is written.</param>
+    /// <param name="file">The guarded writer everything goes through.</param>
+    /// <param name="progress">Told what is happening, for a host that shows it.</param>
+    /// <param name="wardrobe">
+    /// Whether to draw every outfit, hairstyle and skin as well. Thousands of pictures and the bulk
+    /// of a run, so it is asked for rather than assumed - but both hosts that show a dressed ruler
+    /// need it, and it lived in the command-line tool alone until the desktop was found drawing a
+    /// flat thumbnail instead. That is the same way the portraits were once lost; see the remark on
+    /// this class.
+    /// </param>
     public static ExtractionResult Write(
         string installRoot,
         string outputDirectory,
         SafeFile file,
-        IProgress<string>? progress = null)
+        IProgress<string>? progress = null,
+        bool wardrobe = false)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(installRoot);
         ArgumentException.ThrowIfNullOrWhiteSpace(outputDirectory);
@@ -86,6 +108,10 @@ public static class GameDataWriter
         var json = JsonSerializer.SerializeToUtf8Bytes(database, GameDataJsonContext.Default.GameDatabase);
         file.WriteAllBytes(Path.Combine(outputDirectory, DatabaseFileName), json);
 
+        var (outfits, wardrobeReport) = wardrobe
+            ? WriteWardrobe(content, database, outputDirectory, file, progress)
+            : ([], null);
+
         return new ExtractionResult(
             database,
             localisation.Count,
@@ -100,6 +126,38 @@ public static class GameDataWriter
                 Failures = [.. shipReport.Failures, .. arkshipReport.Failures],
             },
             extractor.Assets.Missing,
-            extractor.ScriptFailures);
+            extractor.ScriptFailures)
+        {
+            Wardrobe = wardrobeReport,
+            WardrobeSize = (outfits.Count, outfits.Sum(o => o.Layers.Count)),
+        };
+    }
+
+    /// <summary>
+    /// Draws every outfit, hairstyle and skin each portrait can wear, and writes them beside the
+    /// database.
+    /// </summary>
+    /// <remarks>
+    /// Beside the database rather than inside it: the empire designer shows one face per portrait
+    /// and should not read a wardrobe to do it.
+    /// </remarks>
+    private static (IReadOnlyList<PortraitOutfit> Outfits, PortraitBakeReport Report) WriteWardrobe(
+        LayeredContent content,
+        GameDatabase database,
+        string outputDirectory,
+        SafeFile file,
+        IProgress<string>? progress)
+    {
+        progress?.Report("Drawing every outfit, hairstyle and skin");
+
+        var (outfits, report) = new PortraitBaker(content, file)
+            .BakeWardrobe(database.Portraits, Path.Combine(outputDirectory, "assets"), progress);
+
+        file.WriteAllBytes(
+            Path.Combine(outputDirectory, WardrobeFileName),
+            JsonSerializer.SerializeToUtf8Bytes(
+                outfits, GameDataJsonContext.Default.IReadOnlyListPortraitOutfit));
+
+        return (outfits, report);
     }
 }

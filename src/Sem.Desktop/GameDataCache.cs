@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -74,6 +74,15 @@ public sealed class GameDataCache
                 return false;
             }
 
+            // And the wardrobe beside it, which older caches were built without. Checked as a file
+            // rather than believed from the version, because a cache that predates the drawing is
+            // otherwise perfectly valid by every other test and would never be rebuilt.
+            if (!File.Exists(Path.Combine(Directory, GameDataWriter.WardrobeFileName)))
+            {
+                reason = "built before the ruler's wardrobe was drawn";
+                return false;
+            }
+
             // A game patch changes what the designer must offer, so the data is rebuilt with it.
             var installed = ReadInstalledVersion();
             if (root.TryGetProperty("gameVersion", out var cached) &&
@@ -94,9 +103,17 @@ public sealed class GameDataCache
         return true;
     }
 
-    /// <summary>Reads the installation and fills the cache.</summary>
+    /// <summary>
+    /// Reads the installation and fills the cache, wardrobe and all.
+    /// </summary>
+    /// <remarks>
+    /// The wardrobe is what dresses the ruler. Without it the appearance panel and the lite card
+    /// both fall back to a flat thumbnail, which is what this host did for as long as the drawing
+    /// lived in the command-line tool. It is the bulk of the run, and it is the reason a first
+    /// launch takes as long as it does.
+    /// </remarks>
     public void Rebuild(SafeFile file, IProgress<string>? progress = null) =>
-        GameDataWriter.Write(_installRoot, Directory, file, progress);
+        GameDataWriter.Write(_installRoot, Directory, file, progress, wardrobe: true);
 
     private string? ReadInstalledVersion()
     {

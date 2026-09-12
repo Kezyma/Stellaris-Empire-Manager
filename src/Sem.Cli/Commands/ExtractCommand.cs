@@ -1,4 +1,4 @@
-using System.CommandLine;
+﻿using System.CommandLine;
 using System.Text.Json;
 using Sem.Extraction;
 using Sem.Extraction.Extractors;
@@ -77,11 +77,17 @@ public static class ExtractCommand
 
         var progress = new Progress<string>(message => Console.WriteLine($"  {message}"));
 
-        var result = GameDataWriter.Write(installRoot, outputDirectory, file, progress);
-
         if (wardrobe)
         {
-            WriteWardrobe(installRoot, outputDirectory, file, result, progress);
+            Console.WriteLine("Drawing every outfit, hairstyle and skin. This takes a while.");
+            Console.WriteLine();
+        }
+
+        var result = GameDataWriter.Write(installRoot, outputDirectory, file, progress, wardrobe);
+
+        if (result.Wardrobe is { } drawn)
+        {
+            ReportWardrobe(result, drawn);
         }
 
         Console.WriteLine();
@@ -175,44 +181,21 @@ public static class ExtractCommand
     }
 
     /// <summary>
-    /// Draws every portrait's wardrobe and says what it cost.
+    /// Says what drawing the wardrobe cost.
     /// </summary>
     /// <remarks>
-    /// Kept behind a switch because the empire designer needs none of it: it shows one face per
-    /// portrait, and the wardrobe exists for a leader designer that will come later. It is thousands
-    /// of pictures, and whether they are worth publishing is a question that needs the number this
-    /// prints rather than an estimate.
+    /// The drawing itself is the writer's, so both hosts get it; only the arithmetic is here.
+    /// Whether thousands of pictures are worth publishing is a question that needs these numbers
+    /// rather than an estimate, which is why they are printed at all.
     /// </remarks>
-    private static void WriteWardrobe(
-        string installRoot,
-        string outputDirectory,
-        SafeFile file,
-        ExtractionResult result,
-        IProgress<string> progress)
+    private static void ReportWardrobe(ExtractionResult result, PortraitBakeReport report)
     {
-        Console.WriteLine();
-        Console.WriteLine("Drawing every outfit, hairstyle and skin. This takes a while.");
-
-        var content = LayeredContent.ForInstall(installRoot);
-        var assets = Path.Combine(outputDirectory, "assets");
-
-        var (outfits, report) = new PortraitBaker(content, file)
-            .BakeWardrobe(result.Database.Portraits, assets, progress);
-
-        var layers = outfits.Sum(o => o.Layers.Count);
-
-        // Beside the database rather than inside it: the empire designer shows one face per portrait
-        // and should not read a wardrobe to do it.
-        file.WriteAllBytes(
-            Path.Combine(outputDirectory, "wardrobe.json"),
-            JsonSerializer.SerializeToUtf8Bytes(
-                outfits,
-                GameDataJsonContext.Default.IReadOnlyListPortraitOutfit));
+        var (outfits, layers) = result.WardrobeSize;
 
         Console.WriteLine();
         Console.WriteLine(
             $"Wardrobe: {report.Rendered:N0} picture(s) across {layers:N0} layer(s) of " +
-            $"{outfits.Count:N0} portrait(s), {report.Bytes / 1024.0 / 1024.0:F1} MB");
+            $"{outfits:N0} portrait(s), {report.Bytes / 1024.0 / 1024.0:F1} MB");
 
         Console.WriteLine(
             $"  against {result.Portraits.Bytes / 1024.0 / 1024.0:F1} MB for the portraits themselves");
