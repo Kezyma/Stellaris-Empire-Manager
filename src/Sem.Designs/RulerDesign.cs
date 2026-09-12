@@ -124,9 +124,11 @@ public sealed class RulerDesign : CwView
     /// <remarks>
     /// The game's own editor keeps a box for this and for its female form beside the two ruler
     /// titles, and shows "N/A" where a government has no heir. Rare in practice: no design in the
-    /// player's own file carries one, and of the game's fifty-two empires only the Infernals'
-    /// Pyrragthul does. Modelled because the editor offers it, and written only when something is
-    /// typed — a design that never had one must not grow one.
+    /// player's own file carries one, and of the game's fifty-two empires only humans3 — the
+    /// Gundersen Research Society, from the Nomads pack — does, with both forms. It was said here
+    /// to be the Infernals' Pyrragthul, which has neither: heir_title appears on exactly two lines
+    /// in all twenty-one prescripted files, and both of them are humans3's.
+    /// Written only when something is there — a design that never had one must not grow one.
     /// </remarks>
     public LocRef? HeirTitle => GetBlock("heir_title") is { } title ? new LocRef(title) : null;
 
@@ -155,11 +157,19 @@ public sealed class RulerDesign : CwView
     /// <summary>Replaces the trait list, reusing existing lines so the diff stays small.</summary>
     public void SetTraits(IReadOnlyList<string> traits) => SetStrings("trait", traits);
 
-    /// <summary>Leader class: <c>official</c>, <c>commander</c> or <c>scientist</c>.</summary>
+    /// <summary>
+    /// Leader class: <c>official</c>, <c>commander</c> or <c>scientist</c>.
+    /// </summary>
+    /// <remarks>
+    /// Quoted, because the game quotes it in every entry of a file it wrote, and every field beside
+    /// it here already matched. Bare was only ever visible on an imported preset: SetString leaves
+    /// a value's existing quoting alone, so the quotes decide nothing for a design that came from
+    /// the game and only stop an imported one spelling the same field a second way in the same file.
+    /// </remarks>
     public string? LeaderClass
     {
         get => GetString("leader_class");
-        set => SetString("leader_class", value, quoted: false);
+        set => SetString("leader_class", value);
     }
 
     public override string ToString() => $"{Name} ({LeaderClass})";

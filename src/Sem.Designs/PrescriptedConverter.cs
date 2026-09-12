@@ -6,8 +6,11 @@ namespace Sem.Designs;
 /// <remarks>
 /// Names arrive as plain localisation keys and become structured names referring to those same
 /// keys, so a converted empire still displays its original translated name until the player types
-/// over it. Prescripted-only fields are dropped: <c>playable</c> gates which built-ins the game
-/// offers, and <c>heir_title</c> has no equivalent in a player design.
+/// over it. One prescripted-only field is dropped: <c>playable</c>, which gates which built-ins the
+/// game offers rather than saying anything about the empire.
+/// <c>heir_title</c> used to be dropped beside it, on the claim that it has no equivalent in a
+/// player design. It has an exact one — the game's editor keeps a box for it and its female form,
+/// and the empire card already draws a row for them — so both are copied now.
 /// </remarks>
 internal static class PrescriptedConverter
 {
@@ -29,7 +32,10 @@ internal static class PrescriptedConverter
         target.Room = source.Room;
         target.AdvisorVoiceType = source.AdvisorVoiceType;
         target.PrescriptedFlag = source.PrescriptedFlag;
-        target.IsNomadic = source.IsNomadic;
+        // Defaulted like the three booleans around it. The game writes is_nomadic into every
+        // design it saves, and only one preset of the fifty-two states it, so leaving it null wrote
+        // the field out of fifty-one empires that do have an answer to it.
+        target.IsNomadic = source.IsNomadic ?? false;
         target.ShipSize = source.ShipSize;
         target.SpawnAsFallen = source.SpawnAsFallen ?? false;
         target.IgnorePortraitDuplication = source.IgnorePortraitDuplication ?? false;
@@ -108,8 +114,26 @@ internal static class PrescriptedConverter
         target.SetTraits(source.Traits);
 
         // Player designs always use the full_names form, even when the source split the name.
-        var name = source.Name ?? source.FirstName;
-        if (name is not null)
+        // A split name keeps both halves rather than only the first: the game says a two-part name
+        // inside full_names, with a format key and the parts as numbered variables, so there is a
+        // shape for it here and dropping the second name was never needed. Two presets have one -
+        // gorthikan and knights, both from the Toxoids pack.
+        //
+        // %LEADER_1% of the two keys the game uses. Neither is defined in any file it ships - both
+        // are compiled into the executable - so what separates them was read off the player's own
+        // designs file, where the two entries carrying use_full_regnal_name=yes are the two written
+        // %LEADER_2% and the one without it is written %LEADER_1%. A prescripted empire has no
+        // regnal flag to copy, so it takes the key that goes with the flag's absence.
+        //
+        // Which does not decide what is displayed: Localizer.Name reads both keys the same way, as
+        // a given name and a family name meaning the whole name, and says so from a corpus where
+        // reading only the first part had dropped twelve rulers' surnames. So the choice is about
+        // writing the file the way the game writes it, and both halves are read either way.
+        if (source.FirstName is { } first && source.SecondName is { } second)
+        {
+            target.Name.GetOrAddFullNames().SetFormat("%LEADER_1%", [first, second]);
+        }
+        else if ((source.Name ?? source.FirstName) is { } name)
         {
             target.Name.GetOrAddFullNames().Key = name;
         }
@@ -122,6 +146,16 @@ internal static class PrescriptedConverter
         if (source.TitleFemale is not null)
         {
             target.GetOrAddTitleFemale().Key = source.TitleFemale;
+        }
+
+        if (source.HeirTitle is not null)
+        {
+            target.GetOrAddHeirTitle().Key = source.HeirTitle;
+        }
+
+        if (source.HeirTitleFemale is not null)
+        {
+            target.GetOrAddHeirTitleFemale().Key = source.HeirTitleFemale;
         }
     }
 
