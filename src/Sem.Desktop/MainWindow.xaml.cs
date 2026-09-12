@@ -223,7 +223,6 @@ public partial class MainWindow : Window
             // Nothing here is a web page the user should be able to leave or right-click into.
             e.WebView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
             e.WebView.CoreWebView2.Settings.IsSwipeNavigationEnabled = false;
-
         };
 
         // The whole layer, so the startup screen's own window buttons go with it: from here on the

@@ -32,6 +32,27 @@ public sealed class SessionHost(
     /// <summary>What went wrong loading the game data, if anything did.</summary>
     public string? LoadError { get; private set; }
 
+    /// <summary>
+    /// Raised after the file has been written, carrying the bytes that went into it.
+    /// </summary>
+    /// <remarks>
+    /// For whoever is keeping the file and the app in step, which needs to recognise its own
+    /// writing when the file system reports it a moment later - otherwise every save would be read
+    /// straight back in as though somebody else had made it.
+    /// </remarks>
+    public event Action<byte[]>? Saved;
+
+    /// <summary>
+    /// Whether a save keeps a dated copy of the file it replaces.
+    /// </summary>
+    /// <remarks>
+    /// The player's own answer, except while the file is being kept in step: saving then happens by
+    /// itself, several times a minute, and one dated file per save would bury the folder the game
+    /// keeps its saves in. The app's own archive still holds the newest twenty, which is what that
+    /// is for.
+    /// </remarks>
+    private bool KeepsBackup => _preferences.KeepsBackup && !_preferences.SyncsWithFile;
+
     /// <summary>Opens the session, loading the game data the first time it is asked for.</summary>
     public async Task<DesignSession?> GetAsync(CancellationToken cancellationToken = default)
     {
@@ -183,7 +204,7 @@ public sealed class SessionHost(
                 // The desktop saves or throws, so this can only be Saved today. Checked anyway: a
                 // host that could answer otherwise must not have its "no" reported as a success.
                 var outcome = await _files
-                    .SaveAsync(session.FileName ?? EmpireDesignsFile.FileName, contents)
+                    .SaveAsync(session.FileName ?? EmpireDesignsFile.FileName, contents, KeepsBackup)
                     .ConfigureAwait(false);
 
                 if (outcome is not SaveOutcome.Saved)
@@ -197,6 +218,7 @@ public sealed class SessionHost(
             }
 
             session.MarkSaved();
+            Saved?.Invoke(contents);
             return null;
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidOperationException)

@@ -5,6 +5,7 @@
 @inject NavigationManager Navigation
 @inject UnsavedWorkGuard Guard
 @inject EditorState Editor
+@inject DesignSync Sync
 @inject IServiceProvider Services
 
 @*
@@ -91,10 +92,36 @@
                 }
 
                 <button type="button" class="sem-tab"
-                        disabled="@(Nothing)"
+                        disabled="@(Nothing || Sync.Enabled)"
+                        title="@(Sync.Enabled ? "Your empires are written to the file as you go." : null)"
                         @onclick="AskToSave">
                     @Files.SaveVerb
                 </button>
+
+                @*
+                    Beside the button it replaces, because it is the same decision: whether writing
+                    the file is something you ask for or something that happens. Offered only where
+                    there is a file to keep in step, which is the desktop.
+                *@
+                @if (Sync.Available)
+                {
+                    <label class="sem-tab sem-sync" title="@SyncExplained">
+                        <input type="checkbox" checked="@Sync.Enabled"
+                               @onchange="e => Sync.SetAsync(e.Value is true)" />
+
+                        @* Two arrows round a circle, which is what every app means by this. *@
+                        <svg viewBox="0 0 24 24" width="1.05em" height="1.05em" fill="none"
+                             stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                             stroke-linejoin="round" aria-hidden="true" focusable="false">
+                            <path d="M21 10a9 9 0 0 0-15.5-5.5L1 9" />
+                            <path d="M1 4v5h5" />
+                            <path d="M3 14a9 9 0 0 0 15.5 5.5L23 15" />
+                            <path d="M23 20v-5h-5" />
+                        </svg>
+
+                        <span class="sem-visually-hidden">Keep my designs file in step</span>
+                    </label>
+                }
 
                 @*
                     Last in the row, and disabled by the same question as Export: both act on the
@@ -180,7 +207,7 @@
                     turning it off and then thinking better of the save still leaves it off next
                     time. It is an answer about backups, not about this one save.
                 *@
-                <label class="sem-option">
+                <label class="sem-choice">
                     <input type="checkbox" checked="@_backUp" @onchange="KeepBackup" />
                     <span>Keep a dated copy of the file it replaces</span>
                 </label>
@@ -219,9 +246,29 @@
         </ConfirmDialog>
     }
 
+    @*
+        Asked only where it cannot be decided: the file changed underneath an empire carrying edits
+        nobody has saved, and taking the file would take those with it. Everywhere else the file is
+        simply loaded, which is the whole point of the thing being on.
+    *@
+    @if (Sync.Asking)
+    {
+        <ConfirmDialog Title="Your designs file changed while you were editing."
+                       Message="@($"Something else has written {FileTitle}. Loading it replaces the "
+                                 + $"changes you have not saved{Editing}.")"
+                       OnDismiss="Sync.Decline">
+            <button type="button" @onclick="Sync.Decline">Keep my changes</button>
+            <button type="button" class="danger" @onclick="Sync.AcceptAsync">Load the file</button>
+        </ConfirmDialog>
+    }
+
     @if (_message is { } note)
     {
         <p class="@(note.IsProblem ? "sem-header-error" : "sem-header-note")">@note.Text</p>
+    }
+    else if (Sync.Note is { } trouble)
+    {
+        <p class="sem-header-error">@trouble</p>
     }
 
     @*
@@ -358,6 +405,24 @@
     /// </remarks>
     private IWindowControls? _windows;
 
+    /// <summary>What the sync box does, in the one sentence a tooltip has.</summary>
+    private string SyncExplained =>
+        Sync.Enabled
+            ? "Your empires are written to your designs file as you go, and changes made to it "
+              + "outside this app are loaded. Untick to go back to saving when you say so."
+            : "Write to your designs file as you go, and load anything the game writes to it. "
+              + "No dated backups are kept while this is on.";
+
+    /// <summary>The file the question is about, named where there is a name to use.</summary>
+    private string FileTitle =>
+        _session?.FileName is { Length: > 0 } named ? named : "your empire designs file";
+
+    /// <summary>", to Iferyx Amalgamated Fleets" - or nothing, where nothing is open.</summary>
+    private string Editing =>
+        _session?.Current is { } design
+            ? $", to {_session.Localizer.Name(design.Name, design.Key)}"
+            : string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
         _windows = Services.GetService(typeof(IWindowControls)) as IWindowControls;
@@ -377,6 +442,12 @@
         if (_session is not null)
         {
             _session.Changed += OnChanged;
+
+            // After the session exists, because it is what gets kept in step. This is also where a
+            // remembered "yes" from the last visit is acted on, so the file is already in step
+            // before the player touches anything.
+            Sync.Changed += OnChanged;
+            await Sync.AttachAsync(_session);
         }
     }
 
@@ -415,6 +486,8 @@
         {
             _windows.StateChanged -= OnWindowChanged;
         }
+
+        Sync.Changed -= OnChanged;
     }
 
     private void OnChanged() => InvokeAsync(StateHasChanged);

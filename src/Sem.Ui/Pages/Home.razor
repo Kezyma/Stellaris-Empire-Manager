@@ -6,6 +6,7 @@
 @inject NavigationManager Navigation
 @inject UnsavedWorkGuard Unsaved
 @inject EditorState Editor
+@inject DesignSync Sync
 @inject IJSRuntime Js
 @inject IGameDataSource Source
 
@@ -417,6 +418,11 @@ else
             // Last, and only here. Until the link has been read there is nothing to say about the
             // address, and saying it early is what wiped the link.
             _ready = true;
+
+            // The list being drawn afresh is a natural moment to check the file, and the second of
+            // the two ways a change out there arrives - the first being the watcher, which can miss
+            // one. Does nothing at all unless the file is being kept in step.
+            await Sync.RefreshAsync();
         }
     }
 

@@ -33,6 +33,11 @@ public sealed class Preferences(IJSRuntime? js = null) : IAsyncDisposable
     private const string Kept = "kept";
     private const string Dropped = "dropped";
 
+    /// <summary>Where the answer about keeping the file in step is filed.</summary>
+    private const string SyncKey = "save.sync";
+    private const string On = "on";
+    private const string Off = "off";
+
     private readonly Dictionary<string, string> _values = new(StringComparer.Ordinal);
 
     private Task<IJSObjectReference>? _module;
@@ -89,6 +94,19 @@ public sealed class Preferences(IJSRuntime? js = null) : IAsyncDisposable
 
     /// <summary>Remembers whether to keep one.</summary>
     public void SetKeepsBackup(bool keep) => Set(BackupKey, keep ? Kept : Dropped);
+
+    /// <summary>
+    /// Whether the app and the designs file are being kept in step with each other.
+    /// </summary>
+    /// <remarks>
+    /// Off is what an unanswered question means, and deliberately so: this hands the player's real
+    /// file over to be written whenever anything changes, and nobody should discover that they
+    /// turned it on by finding out what it did. Only the desktop has a file to keep in step.
+    /// </remarks>
+    public bool SyncsWithFile => Get(SyncKey) is On;
+
+    /// <summary>Remembers the answer, so the next visit opens the way the last one was left.</summary>
+    public void SetSyncsWithFile(bool sync) => Set(SyncKey, sync ? On : Off);
 
     /// <summary>Remembers a setting, for this visit and for the next one.</summary>
     public void Set(string key, string value)

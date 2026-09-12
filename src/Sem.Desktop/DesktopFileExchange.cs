@@ -136,6 +136,20 @@ public sealed class DesktopFileExchange(SafeFile file, string designsPath) : IFi
     }
 
     /// <inheritdoc />
+    public IDisposable? Watch(Action onChanged)
+    {
+        ArgumentNullException.ThrowIfNull(onChanged);
+
+        var directory = Path.GetDirectoryName(_designsPath);
+
+        // The folder rather than the file: a file that does not exist yet still has to be noticed
+        // when it arrives, and a watcher cannot be pointed at something that is not there.
+        return directory is { Length: > 0 } && Directory.Exists(directory)
+            ? new DesignsWatcher(directory, Path.GetFileName(_designsPath), onChanged)
+            : null;
+    }
+
+    /// <inheritdoc />
     public Task<SaveOutcome> ExportAsync(string fileName, byte[] contents, ExportKind kind) =>
         ExportFileAsync(fileName, contents, kind);
 

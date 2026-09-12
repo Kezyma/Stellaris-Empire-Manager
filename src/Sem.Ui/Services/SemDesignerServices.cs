@@ -51,6 +51,14 @@ public static class SemDesignerServices
             assumeAllPacks,
             s.GetRequiredService<Preferences>()));
 
+        // Keeping that file and the app in step, where the host has a file of its own. Registered
+        // for both, because it answers "not here" rather than needing to be absent: a browser's
+        // exchange does not save in place and has nothing to watch, so it is never offered.
+        services.AddScoped(s => new DesignSync(
+            s.GetRequiredService<SessionHost>(),
+            s.GetRequiredService<IFileExchange>(),
+            s.GetRequiredService<Preferences>()));
+
         return services;
     }
 }

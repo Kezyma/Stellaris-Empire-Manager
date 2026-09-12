@@ -958,6 +958,23 @@ button.sem-tab:disabled:hover { background: none; }
     border-bottom-color: var(--accent);
 }
 
+/*
+   The switch beside Save, on a host that has a file to keep in step.
+
+   A tab rather than a control of its own, because it stands in the row of them and belongs to the
+   same decision as the button it turns off. Narrower, since a checkbox and an icon are not a word,
+   and coloured when it is on: this is a mode that stays on rather than a button that was pressed,
+   and the row has to say so at a glance.
+*/
+.sem-tab.sem-sync {
+    gap: var(--space-sm);
+    padding: 0 var(--space-lg);
+}
+
+.sem-tab.sem-sync:has(input:checked) { color: var(--accent); }
+
+.sem-tab.sem-sync input { margin: 0; }
+
 
 /* ---------------------------------------------------------------- options */
 
@@ -5785,17 +5802,28 @@ button.icon .sem-action-icon { display: block; }
 
 /*
    A choice inside a question: what the answer will do, rather than what the answer is. It is one
-   item in the sheet's own column, so the room around it is the dialog's and not its own.
+   item in the sheet's own column, so the room above and below it is the dialog's; the box is its
+   own, so that it reads as a control rather than as a second sentence.
+
+   Not .sem-option, which is the picker's card and was lending this its padding and its background
+   by accident. The two are unrelated and only looked alike.
 */
-.sem-modal > .sheet .sem-option {
+.sem-modal > .sheet .sem-choice {
     display: flex;
     align-items: center;
     gap: var(--space-sm);
+    padding: var(--space-md) var(--space-lg);
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
     color: var(--text-dim);
     cursor: pointer;
 }
 
-.sem-modal > .sheet .sem-option:hover { color: var(--text); }
+.sem-modal > .sheet .sem-choice:hover {
+    border-color: var(--border-strong);
+    color: var(--text);
+}
 
 /*
    The lite editor, over the list it was opened from.

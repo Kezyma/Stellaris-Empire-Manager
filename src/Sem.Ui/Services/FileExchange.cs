@@ -93,6 +93,21 @@ public interface IFileExchange
         Task.FromResult(SaveOutcome.Refused);
 
     /// <summary>
+    /// Watches the file this host saves in place, and says so when anything else writes it.
+    /// </summary>
+    /// <param name="onChanged">
+    /// Called on whichever thread the app renders on, once the writing has settled, however many
+    /// times the file system actually reported it.
+    /// </param>
+    /// <returns>Something to dispose to stop watching, or null where there is nothing to watch.</returns>
+    /// <remarks>
+    /// Only the desktop has a file of its own to watch, and only the desktop has a second writer to
+    /// watch for: the game writes this file every time an empire is created in it. A browser has
+    /// neither, and returns null, which is how the header knows not to offer the choice at all.
+    /// </remarks>
+    IDisposable? Watch(Action onChanged) => null;
+
+    /// <summary>
     /// Asks the player for a file, where the host has a way to ask.
     /// </summary>
     /// <remarks>
