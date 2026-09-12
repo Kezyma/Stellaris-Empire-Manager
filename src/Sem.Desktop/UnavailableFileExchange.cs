@@ -11,6 +11,9 @@ public sealed class UnavailableFileExchange : IFileExchange
     /// <inheritdoc />
     public bool SavesInPlace => true;
 
+    /// <inheritdoc />
+    public string SaveVerb => "Save";
+
     /// <summary>
     /// Where a shared link has to point, which is a question about the host and not about the file.
     /// </summary>

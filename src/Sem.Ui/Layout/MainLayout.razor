@@ -76,8 +76,8 @@
 
                 <button type="button" class="sem-tab"
                         disabled="@(Nothing)"
-                        @onclick="Export">
-                    Export
+                        @onclick="AskToSave">
+                    @Files.SaveVerb
                 </button>
 
                 @*
@@ -95,6 +95,22 @@
             }
         </nav>
     </header>
+
+    @*
+        Asked only where the button writes over something. In a browser it opens a dialog and the
+        player picks the file, so asking first would be asking twice; on the desktop it replaces the
+        designs file the game itself reads, which is worth a moment's pause even though a dated
+        backup is written beside it.
+    *@
+    @if (_saving)
+    {
+        <ConfirmDialog Title="@($"Replace {SaveTarget}?")"
+                       Message="@($"Your {Count(Empires)} will be written over the file the game reads. A dated backup is kept beside it.")"
+                       OnDismiss="() => _saving = false">
+            <button type="button" @onclick="() => _saving = false">Cancel</button>
+            <button type="button" class="danger" @onclick="Export">Replace it</button>
+        </ConfirmDialog>
+    }
 
     @if (_resetting)
     {
@@ -167,6 +183,25 @@
 
     /// <summary>Whether the "delete everything" question is on screen.</summary>
     private bool _resetting;
+
+    /// <summary>Whether the "replace your designs file" question is on screen.</summary>
+    private bool _saving;
+
+    /// <summary>The file the player's work would be written over, named as they would know it.</summary>
+    private string SaveTarget =>
+        _session?.FileName is { Length: > 0 } named ? named : EmpireDesignsFile.FileName;
+
+    /// <summary>Asks first where the answer would overwrite something, and otherwise gets on with it.</summary>
+    private async Task AskToSave()
+    {
+        if (Files.SavesInPlace)
+        {
+            _saving = true;
+            return;
+        }
+
+        await Export();
+    }
 
     /// <summary>A file that has been read and parsed, waiting to hear what to do with it.</summary>
     private (string Name, EmpireDesignsFile File)? _importing;
@@ -477,6 +512,8 @@
     /// </remarks>
     private async Task Export()
     {
+        _saving = false;
+
         var name = _session!.FileName is { Length: > 0 } existing ? existing : EmpireDesignsFile.FileName;
 
         try

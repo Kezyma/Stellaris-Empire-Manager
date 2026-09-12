@@ -111,6 +111,17 @@ public interface IFileExchange
     bool SavesInPlace => false;
 
     /// <summary>
+    /// What the button that hands the file over should be called on this host.
+    /// </summary>
+    /// <remarks>
+    /// "Export" is honest in a browser, where the player is offered a file and chooses where it
+    /// lands. On the desktop the same button replaces the designs file the game reads, in place, and
+    /// calling that Export described the wrong action entirely - the one host where the button is
+    /// destructive was the one host whose label said it was not.
+    /// </remarks>
+    string SaveVerb => "Export";
+
+    /// <summary>
     /// Asks the host to warn before the page is closed with work not yet saved.
     /// </summary>
     /// <remarks>

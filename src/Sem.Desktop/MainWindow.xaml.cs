@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using System.Net.Http;
 using System.Windows;
 using Microsoft.AspNetCore.Components.WebView.Wpf;
@@ -140,11 +140,18 @@ public partial class MainWindow : Window
         var services = new ServiceCollection();
         services.AddWpfBlazorWebView();
 
-        // The designer fetches its data over HTTP whichever host it runs in. Here that is the
-        // local cache, mapped to a hostname the embedded browser can reach.
-        services.AddScoped(_ => new HttpClient { BaseAddress = new Uri($"https://{AssetHost}/") });
-        services.AddScoped<IGameDataSource>(s =>
-            new HttpGameDataSource(s.GetRequiredService<HttpClient>(), baseUrl: string.Empty));
+#if DEBUG
+        // Only in a debug build. Without it there is no way into the embedded browser at all, which
+        // is how a host page that never started Blazor went unnoticed: the window simply sat there
+        // saying "Starting…" with no console to ask.
+        services.AddBlazorWebViewDeveloperTools();
+#endif
+
+        // Read off disk rather than fetched: this host extracted the data itself, moments earlier,
+        // into a folder it chose. The images are a different matter - those are fetched by the page,
+        // so they go through the virtual host mapped below, which is what that mapping is for.
+        services.AddScoped<IGameDataSource>(_ =>
+            new FileGameDataSource(cache.Directory, $"https://{AssetHost}/assets"));
 
         services.AddScoped(_ => CreateFileExchange());
 
