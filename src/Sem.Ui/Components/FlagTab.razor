@@ -43,16 +43,8 @@
             <section class="sem-picker @(_slot == slot ? null : "away")">
                 <PickerHead Tab="ColorTabs[slot]" />
 
-                <div class="sem-swatches">
-                    @foreach (var color in Session.Data.Database.FlagColors)
-                    {
-                        <button type="button"
-                                class="sem-swatch @(color.Key == ColorAt(slot) ? "selected" : null)"
-                                style="background:@Swatch(color)"
-                                title="@Localizer.Prettify(color.Key)"
-                                @onclick="() => SetColor(slot, color.Key)"></button>
-                    }
-                </div>
+                <SwatchGrid Selected="@ColorAt(slot)"
+                            OnPick="key => SetColor(slot, key)" />
             </section>
         }
     </div>
@@ -374,9 +366,6 @@
     /// these are flags, so they are the flag's. The map's are drawn in the map colour, beside the
     /// setting that uses them.
     /// </remarks>
-    private static string Swatch(FlagColorDefinition color) =>
-        $"rgb({color.Red},{color.Green},{color.Blue})";
-
     /// <summary>The palette on show, where there is only room for one.</summary>
     /// <remarks>
     /// The primary, to begin with, which is the order the file writes them in and the order the
@@ -393,15 +382,11 @@
     ];
 
     /// <summary>What a slot is set to, named the way the swatches name themselves.</summary>
-    private string ColorName(int slot) =>
-        ColorAt(slot) is { Length: > 0 } key ? Localizer.Prettify(key) : "Not set";
+    private string ColorName(int slot) => Swatches.Named(ColorAt(slot), "Not set");
 
     /// <summary>The colour a slot is set to, as CSS, for the dot beside its name.</summary>
     private string? Shown(int slot) =>
-        ColorAt(slot) is { } key &&
-        Session.Data.Database.FlagColor(key) is { } color
-            ? Swatch(color)
-            : null;
+        Swatches.Of(Session.Data.Database, ColorAt(slot), Swatches.FlagShade);
 
     private string? ColorAt(int slot)
     {

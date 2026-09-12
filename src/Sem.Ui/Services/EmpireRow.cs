@@ -254,27 +254,9 @@ public sealed record EmpireRow
 
         return new EmpireChoice(named, Localizer.Prettify(named), null, null)
         {
-            Swatch = color is null ? null : $"rgb({shade(color).R},{shade(color).G},{shade(color).B})",
+            Swatch = color is null ? null : Swatches.Css(shade(color)),
         };
     }
-
-    /// <summary>The shade a flag is tinted with.</summary>
-    public static readonly Func<FlagColorDefinition, (byte, byte, byte)> FlagShade =
-        c => (c.Red, c.Green, c.Blue);
-
-    /// <summary>The shade the galaxy map draws, which differs for 24 of the 72.</summary>
-    public static readonly Func<FlagColorDefinition, (byte, byte, byte)> MapShade =
-        c => (c.MapRed, c.MapGreen, c.MapBlue);
-
-    /*
-       There is no ShipShade beside these two, deliberately. The game keeps a third value against
-       every name under ship =, and the header of flags/colors.txt calls it the entity tint - but it
-       holds only 14 distinct values across the 72 names, so all six browns share 255,228,136 and all
-       six reds share 255,57,36. Painting anything with it collapses six choices into one tile, which
-       is not what the game's own colour grid shows and not what a player sees on their fleet. It is
-       a per-family accent of some kind; until that is understood, ships are drawn in the swatch's
-       own colour like everything else. See docs/flag-colours.md.
-    */
 
     /// <summary>A portrait as a choice, wearing the face it actually resolves to.</summary>
     /// <remarks>
@@ -426,12 +408,12 @@ public sealed record EmpireRow
                 ? new EmpireChoice(flags.Key, EmpireView.FlagSetName(session, flags), null, null)
                 : null,
 
-            Primary = Coloured(session, design.Flag.Primary, FlagShade),
-            Secondary = Coloured(session, design.Flag.Secondary, FlagShade),
-            Tertiary = Coloured(session, design.Flag.Tertiary, FlagShade),
-            ShipColor = Coloured(session, design.Flag.DrawnShipColor, FlagShade),
-            MapBorder = Coloured(session, design.Flag.DrawnMapBorder, MapShade),
-            MapFill = Coloured(session, design.Flag.DrawnMapFill, MapShade),
+            Primary = Coloured(session, design.Flag.Primary, Swatches.FlagShade),
+            Secondary = Coloured(session, design.Flag.Secondary, Swatches.FlagShade),
+            Tertiary = Coloured(session, design.Flag.Tertiary, Swatches.FlagShade),
+            ShipColor = Coloured(session, design.Flag.DrawnShipColor, Swatches.FlagShade),
+            MapBorder = Coloured(session, design.Flag.DrawnMapBorder, Swatches.MapShade),
+            MapFill = Coloured(session, design.Flag.DrawnMapFill, Swatches.MapShade),
 
             Room = view.Room is { } room
                 ? new EmpireChoice(room.Key, loc.Text(room.Key, Localizer.Prettify(room.Key)), null, null)
@@ -1012,7 +994,7 @@ public sealed class EmpireOptions(DesignSession session)
     /// the flag and a filter showing the wrong one would be showing a colour the reader will never
     /// see on screen. 48 of the 72 have the same flag and map value, which is what makes getting it
     /// wrong survivable and so worth being careful about. There is no third list: see the note
-    /// beside <see cref="EmpireRow.MapShade"/> for why ships are not drawn in the ship column.
+    /// beside <see cref="Swatches.MapShade"/> for why ships are not drawn in the ship column.
     /// </para>
     /// <para>
     /// Not narrowed by the rules the way the other lists are. A colour has no requirements - every
@@ -1021,10 +1003,10 @@ public sealed class EmpireOptions(DesignSession session)
     /// blues together and a list of colours sorted by name is a list nobody can scan.
     /// </para>
     /// </remarks>
-    public IReadOnlyList<EmpireChoice> FlagColors => _flagColors ??= Palette(EmpireRow.FlagShade);
+    public IReadOnlyList<EmpireChoice> FlagColors => _flagColors ??= Palette(Swatches.FlagShade);
 
     /// <inheritdoc cref="FlagColors"/>
-    public IReadOnlyList<EmpireChoice> MapColors => _mapColors ??= Palette(EmpireRow.MapShade);
+    public IReadOnlyList<EmpireChoice> MapColors => _mapColors ??= Palette(Swatches.MapShade);
 
     private IReadOnlyList<EmpireChoice> Palette(
         Func<FlagColorDefinition, (byte R, byte G, byte B)> shade) =>

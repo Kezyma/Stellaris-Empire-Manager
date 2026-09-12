@@ -203,7 +203,7 @@
 
         // Only the budget standing in the way is not a bar: the trait may be taken and the design
         // then reads as overspent until something else gives way.
-        var overspends = !state.Enabled && state.Reasons.Count > 0 && state.Reasons.All(IsBudget);
+        var overspends = state.AtLimit;
 
         return new TraitEntry(
             state.Key,

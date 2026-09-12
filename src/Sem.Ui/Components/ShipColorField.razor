@@ -43,23 +43,13 @@
         <section class="sem-picker">
             <PickerHead Tab="Tabs[0]" />
 
-            <div class="sem-swatches">
-                @*
-                    No "automatic" tile. Handing the slot back is what the toggle above does, and a
-                    second way to do it that left the toggle on Manual would be a state with nothing
-                    in it.
-                *@
-                @foreach (var color in Session.Data.Database.FlagColors)
-                {
-                    <button type="button"
-                            class="sem-swatch @(color.Key == Design.Flag.ShipColor ? "selected" : null)"
-                            style="background:rgb(@color.Red,@color.Green,@color.Blue)"
-                            title="@Localizer.Prettify(color.Key)"
-                            aria-label="@Localizer.Prettify(color.Key)"
-                            aria-pressed="@(color.Key == Design.Flag.ShipColor ? "true" : "false")"
-                            @onclick="() => Session.Edit(d => d.Flag.ShipColor = color.Key)"></button>
-                }
-            </div>
+            @*
+                No "automatic" tile. Handing the slot back is what the toggle above does, and a
+                second way to do it that left the toggle on Manual would be a state with nothing
+                in it.
+            *@
+            <SwatchGrid Selected="@Design.Flag.ShipColor"
+                        OnPick="key => Session.Edit(d => d.Flag.ShipColor = key)" />
         </section>
     </div>
 }
@@ -84,8 +74,7 @@
     /// "Not set" rather than "None": there is no colour to name, which is not the same as somebody
     /// having chosen none. The card and the flag tab say it the same way.
     /// </remarks>
-    private string Named =>
-        Design.Flag.DrawnShipColor is { Length: > 0 } key ? Localizer.Prettify(key) : "Not set";
+    private string Named => Swatches.Named(Design.Flag.DrawnShipColor, "Not set");
 
     /// <summary>
     /// Turns the choice on or off, leaving the chosen colour in place either way.

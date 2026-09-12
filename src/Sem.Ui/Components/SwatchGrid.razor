@@ -1,0 +1,70 @@
+@*
+    The game's seventy-two flag colours, as a grid of tiles to pick one from.
+
+    Written out three times before this: once for the flag's own slots, once for the map's pair and
+    once for the fleet. They had already drifted - the flag's copy carried neither an aria-label nor
+    an aria-pressed, so a screen reader was read seventy-two unnamed buttons and told nothing about
+    which was chosen, while the other two were correct. That is the argument for one of these rather
+    than three.
+*@
+
+<div class="sem-swatches">
+    @if (Automatic)
+    {
+        @*
+            Letting the game decide is the ordinary answer, so it is a tile at the front rather than
+            a way of undoing a choice already made.
+        *@
+        <button type="button"
+                class="sem-swatch none @(Selected is null ? "selected" : null)"
+                title="@AutomaticLabel" aria-label="@AutomaticLabel"
+                aria-pressed="@(Selected is null ? "true" : "false")"
+                @onclick="() => OnPick.InvokeAsync(null)"></button>
+    }
+
+    @foreach (var color in Session.Data.Database.FlagColors)
+    {
+        var name = Localizer.Prettify(color.Key);
+        var chosen = string.Equals(color.Key, Selected, StringComparison.Ordinal);
+
+        <button type="button"
+                class="sem-swatch @(chosen ? "selected" : null)"
+                style="background:@Swatches.Css(Shade(color))"
+                title="@name"
+                aria-label="@name"
+                aria-pressed="@(chosen ? "true" : "false")"
+                @onclick="() => OnPick.InvokeAsync(color.Key)"></button>
+    }
+</div>
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>The palette name currently held, or null where none is.</summary>
+    [Parameter]
+    public string? Selected { get; set; }
+
+    /// <summary>
+    /// Which of the two shades the tiles are painted in.
+    /// </summary>
+    /// <remarks>
+    /// The game keeps one colour for a flag and one for the map against every name, and they differ
+    /// for twenty-four of the seventy-two - so a grid that paints the wrong one is showing the
+    /// player a colour their empire will not be.
+    /// </remarks>
+    [Parameter]
+    public Func<FlagColorDefinition, (byte R, byte G, byte B)> Shade { get; set; } = Swatches.FlagShade;
+
+    /// <summary>Whether to offer a tile that hands the slot back to the game.</summary>
+    [Parameter]
+    public bool Automatic { get; set; }
+
+    /// <summary>What that tile is called, since the three callers word it differently.</summary>
+    [Parameter]
+    public string AutomaticLabel { get; set; } = "Automatic";
+
+    /// <summary>Raised with the palette name picked, or null for the automatic tile.</summary>
+    [Parameter]
+    public EventCallback<string?> OnPick { get; set; }
+}

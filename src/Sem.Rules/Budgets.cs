@@ -176,6 +176,18 @@ public sealed record OptionState(
 {
     /// <summary>An option that can be chosen.</summary>
     public static OptionState Available(string key, int cost = 0) => new(key, true, true, [], cost);
+
+    /// <summary>
+    /// Whether the only thing standing in the way is that there is no room left.
+    /// </summary>
+    /// <remarks>
+    /// Being full is not the same objection as being wrong - one is undone by letting something go
+    /// and the other is not - and every picker draws the two differently, because at the blocked
+    /// treatment a whole grid goes dim at the moment the player is deciding what to give up. Four
+    /// of them worked it out for themselves, in the same four terms, from reasons that are still
+    /// keys at that point. One answer here is one thing to be right about.
+    /// </remarks>
+    public bool AtLimit => !Enabled && Reasons.Count > 0 && Reasons.All(RuleReasons.IsBudget);
 }
 
 /// <summary>One tab of the portrait picker, holding the portraits it shows.</summary>

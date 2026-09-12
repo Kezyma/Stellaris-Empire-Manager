@@ -198,9 +198,7 @@
                         Selected = Design.Ethics.Contains(o.Key),
                         Enabled = o.Enabled,
 
-                        // Read from the reasons while they are still keys, the same line the grids
-                        // and the trait picker use to tell "no room left" from "not for this empire".
-                        AtLimit = !o.Enabled && o.Reasons.Count > 0 && o.Reasons.All(RuleReasons.IsBudget),
+                        AtLimit = o.AtLimit,
 
                         Reasons = Session.Reasons.Describe(o.Reasons),
                     })

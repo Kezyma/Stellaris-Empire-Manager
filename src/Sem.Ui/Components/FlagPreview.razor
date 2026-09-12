@@ -186,7 +186,7 @@
             {
                 if (MaskUrl(suffix) is { Length: > 0 } mask)
                 {
-                    yield return (mask, Css(FlagComposer.Resolve(Flag.Colors, slot, Palette)) ?? "#000");
+                    yield return (mask, Swatches.Css(FlagComposer.Resolve(Flag.Colors, slot, Palette)) ?? "#000");
                 }
             }
         }
@@ -219,6 +219,4 @@
         }
     }
 
-    private static string? Css((byte R, byte G, byte B)? color) =>
-        color is { } c ? $"rgb({c.R},{c.G},{c.B})" : null;
 }

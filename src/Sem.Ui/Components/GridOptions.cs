@@ -48,12 +48,7 @@ public static class GridOptions
                     Selected = isSelected(state.Key),
                     Enabled = state.Enabled,
 
-                    // Worked out here rather than in each section, from the reasons before they are
-                    // turned into sentences: this is the last place they are still keys. The same
-                    // line the trait picker uses to tell an overspend from a bar.
-                    AtLimit = !state.Enabled
-                        && state.Reasons.Count > 0
-                        && state.Reasons.All(RuleReasons.IsBudget),
+                    AtLimit = state.AtLimit,
 
                     Reasons = Reasons(session, state),
                 };

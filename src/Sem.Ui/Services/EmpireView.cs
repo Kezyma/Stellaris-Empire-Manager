@@ -340,9 +340,7 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
     /// a dot that collapsed six choices into one would be saying something untrue about the empire.
     /// </remarks>
     public string? ShipSwatch =>
-        Palette(_design.Flag.DrawnShipColor) is { } color
-            ? $"rgb({color.Red},{color.Green},{color.Blue})"
-            : null;
+        Swatches.Of(Database, _design.Flag.DrawnShipColor, Swatches.FlagShade);
 
     /// <summary>What the pair amounts to, for a control with no room to name either.</summary>
     /// <remarks>
@@ -364,17 +362,12 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
             ? $"Ship colour: {Told(_design.Flag.DrawnShipColor)}, chosen."
             : $"Ship colour: {Told(_design.Flag.DrawnShipColor)}, from the flag's primary colour.";
 
-    private static string Told(string? key) =>
-        key is { Length: > 0 } named ? Localizer.Prettify(named) : "the game's choice";
+    private static string Told(string? key) => Swatches.Named(key, "the game's choice");
 
-    private string? Drawn(string? key) =>
-        Palette(key) is { } color ? $"rgb({color.MapRed},{color.MapGreen},{color.MapBlue})" : null;
+    private string? Drawn(string? key) => Swatches.Of(Database, key, Swatches.MapShade);
 
     /// <summary>One entry of the game's flag palette, by name.</summary>
-    private FlagColorDefinition? Palette(string? key) =>
-        key is { Length: > 0 } named && named != EmpireFlag.EmptyColor
-            ? Database.FlagColor(named)
-            : null;
+    private FlagColorDefinition? Palette(string? key) => Swatches.Entry(Database, key);
 
     /// <summary>The named set of country flags the design carries, when it carries one.</summary>
     /// <remarks>

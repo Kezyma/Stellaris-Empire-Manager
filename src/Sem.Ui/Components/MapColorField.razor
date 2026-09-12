@@ -44,28 +44,10 @@
         <section class="sem-picker @(_slot == index ? null : "away")">
             <PickerHead Tab="Tabs[index]" />
 
-            <div class="sem-swatches">
-                @*
-                    Letting the game decide is the ordinary answer, so it is a tile at the front
-                    rather than a way of undoing a choice already made.
-                *@
-                <button type="button"
-                        class="sem-swatch none @(Held(index) is null ? "selected" : null)"
-                        title="Automatic" aria-label="Automatic"
-                        aria-pressed="@(Held(index) is null ? "true" : "false")"
-                        @onclick="() => Set(index, null)"></button>
-
-                @foreach (var color in Session.Data.Database.FlagColors)
-                {
-                    <button type="button"
-                            class="sem-swatch @(color.Key == Held(index) ? "selected" : null)"
-                            style="background:@Swatch(color)"
-                            title="@Localizer.Prettify(color.Key)"
-                            aria-label="@Localizer.Prettify(color.Key)"
-                            aria-pressed="@(color.Key == Held(index) ? "true" : "false")"
-                            @onclick="() => Set(index, color.Key)"></button>
-                }
-            </div>
+            <SwatchGrid Selected="@Held(index)"
+                        Shade="Swatches.MapShade"
+                        Automatic="true"
+                        OnPick="key => Set(index, key)" />
         </section>
     }
 </div>
@@ -94,18 +76,11 @@
 
     private string? Held(int at) => Design.Flag.ColorIn(Slots[at].Slot);
 
-    private string Named(int at) =>
-        Held(at) is { Length: > 0 } key ? Localizer.Prettify(key) : "Automatic";
+    private string Named(int at) => Swatches.Named(Held(at), "Automatic");
 
     /// <summary>A colour in the shade the map will draw it, which is not the flag's.</summary>
     private string? Shown(string? key) =>
-        key is { Length: > 0 } named &&
-        Session.Data.Database.FlagColor(named) is { } color
-            ? Swatch(color)
-            : null;
-
-    private static string Swatch(FlagColorDefinition color) =>
-        $"rgb({color.MapRed},{color.MapGreen},{color.MapBlue})";
+        Swatches.Of(Session.Data.Database, key, Swatches.MapShade);
 
     private void Set(int at, string? value) =>
         Session.Edit(d => d.Flag.SetColor(Slots[at].Slot, value));

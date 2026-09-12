@@ -350,9 +350,8 @@
                 reasons.Add($"Requires {dlc}.");
             }
 
-            // Being full is not the same objection as being wrong: one is undone by letting
-            // something go and the other is not, so only the second sinks to the bottom.
-            var full = !state.Enabled && state.Reasons.Count > 0 && state.Reasons.All(RuleReasons.IsBudget);
+            // Only the second sinks to the bottom: being full is undone by letting something go.
+            var full = state.AtLimit;
 
             return new PlanOption(
                 key,
