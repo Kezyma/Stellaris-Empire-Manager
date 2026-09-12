@@ -102,9 +102,12 @@ public sealed class CloudConnection : IDisposable
     /// The providers on offer, and whether each can be chosen now.
     /// </summary>
     /// <remarks>
-    /// One is built. The other is named anyway, because a chooser that silently offers a single
-    /// option tells somebody nothing about whether the app will ever have more - and because being
-    /// signed in to one has to visibly rule out the other, which needs both on screen to show.
+    /// One, until there are two. Google Drive was listed here as a disabled row for a while and has
+    /// been taken out: a row that cannot be pressed is a promise on screen, and the honest place for
+    /// one of those is a note in the docs rather than a control somebody keeps trying.
+    ///
+    /// The shape stays a list, and the rule that being signed in to one rules out the others is
+    /// already written below, so adding the second is adding a row rather than reworking a dialog.
     /// </remarks>
     public IReadOnlyList<CloudChoice> Providers => _providers;
 
@@ -121,14 +124,9 @@ public sealed class CloudConnection : IDisposable
     {
         var signedIn = await _auth.SignedInAsync().ConfigureAwait(false);
 
-        _providers =
-        [
-            new(_provider.Name, Ready: true, signedIn ? "Signed in" : null),
-            new(
-                "Google Drive",
-                Ready: false,
-                signedIn ? $"Disconnect {_provider.Name} first" : "Not built yet"),
-        ];
+        // Anything added here answers the same question the one row does: can it be chosen now,
+        // and if not, why not - where being signed in somewhere else is one of the reasons.
+        _providers = [new(_provider.Name, Ready: true, signedIn ? "Signed in" : null)];
 
         return signedIn;
     }
