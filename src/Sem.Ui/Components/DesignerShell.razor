@@ -1,4 +1,4 @@
-@implements IDisposable
+﻿@implements IDisposable
 
 @*
     The empire designer: every choice on the left, what the empire amounts to on the right.
@@ -89,8 +89,19 @@
                     <RoomTab />
                 </DesignerSection>
 
+                @*
+                    The fleet's colour belongs with the fleet, not among the empire's names. It sits
+                    here rather than inside ShipsetTab because the lite editor opens that same
+                    component for its Shipset popup and keeps the colour as a popup of its own -
+                    putting the markup in the component would draw it in both.
+                *@
                 <DesignerSection OpenSection="@_open" OnToggle="Open" Title="Shipset" Summary="@ShipsetSummary">
                     <ShipsetTab />
+
+                    <div class="sem-field spaced">
+                        <label>Ship colour</label>
+                        <ShipColorField />
+                    </div>
                 </DesignerSection>
 
                 <DesignerSection OpenSection="@_open" OnToggle="Open" Title="Advisor Voice" Summary="@AdvisorSummary">

@@ -3639,6 +3639,37 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
+   And the padding was not enough either. It bought about forty-two pixels against a rigid minimum
+   near two hundred and ninety-six, which fits a 375px phone with eleven pixels to spare per tab -
+   so a 360px device, a wider platform font, or a base size above the browser default puts the
+   scrollbar back. Below 460px of container width the tab strip is what is shown whether the
+   palettes sit beside the flag or wrapped beneath it, which is why it was seen both ways.
+
+   So here, and only here, the title gives up "never squeezed". Three of them is the one place that
+   promise cannot be kept, and an ellipsised PRIMARY still says which slot it is - where a dialog
+   that scrolls sideways says nothing and hides the palette as well.
+*/
+.sem-pickers.colors.three > .sem-picker-tabs button .title {
+    /* flex-shrink, not only min-width: the rule above is flex:none, which pins it either way. */
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/*
+   And the strip itself, which is the part that was actually overflowing. It is flex:1 0 100% - a
+   basis of the full width and no shrink - which reads as "exactly as wide as its parent" and is
+   not: min-width on a flex item defaults to auto, which is a floor of its own content, so the
+   strip was clamped *up* from the 274px it was given to the 296px its three buttons wanted. The
+   buttons could already shrink; nothing was asking them to.
+*/
+.sem-pickers.colors.three > .sem-picker-tabs {
+    min-width: 0;
+}
+
+/*
    Three of them, which is the flag: primary, secondary and tertiary, one per channel of the
    background.
 

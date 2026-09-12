@@ -1,4 +1,4 @@
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
 @implements IDisposable
 @inject SessionHost Host
 @inject IFileExchange Files
@@ -104,7 +104,7 @@
     *@
     @if (_saving)
     {
-        <ConfirmDialog Title="@($"Replace {SaveTarget}?")"
+        <ConfirmDialog Title="Replace your empire designs file?"
                        Message="@($"Your {Count(Empires)} will be written over the file the game reads. A dated backup is kept beside it.")"
                        OnDismiss="() => _saving = false">
             <button type="button" @onclick="() => _saving = false">Cancel</button>
@@ -186,10 +186,6 @@
 
     /// <summary>Whether the "replace your designs file" question is on screen.</summary>
     private bool _saving;
-
-    /// <summary>The file the player's work would be written over, named as they would know it.</summary>
-    private string SaveTarget =>
-        _session?.FileName is { Length: > 0 } named ? named : EmpireDesignsFile.FileName;
 
     /// <summary>Asks first where the answer would overwrite something, and otherwise gets on with it.</summary>
     private async Task AskToSave()

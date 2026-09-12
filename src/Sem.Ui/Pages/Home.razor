@@ -1,4 +1,4 @@
-@page "/"
+﻿@page "/"
 @page "/e/{Shared}"
 @implements IDisposable
 @inject SessionHost Host
@@ -50,26 +50,13 @@ else
         they are reachable from the designer too and are not written out twice.
     *@
     @*
-        What is open. It used to sit in the header beside the buttons that act on it, which made the
-        header four items and a sentence; this is the file's own page, so it says so here.
+        What to do when there is nothing here yet. The count of a file that does have empires in it
+        is beside the toggle that draws them, where the thing being counted is.
     *@
-    <p class="sem-hint">
-        @if (_session.File is { } file && file.Designs.Count > 0)
-        {
-            @($"{file.Designs.Count} empires in {_session.FileName}.")
-
-            @* The desktop's alone: a browser stores the file as soon as the list changes, so
-               nothing is ever outstanding there. *@
-            @if (Files.SavesInPlace && _session.HasUnwrittenFileChanges)
-            {
-                <text> Not yet written back.</text>
-            }
-        }
-        else
-        {
-            <text>No empires yet. Import a designs file, or create one.</text>
-        }
-    </p>
+    @if (_session.File is not { } opened || opened.Designs.Count == 0)
+    {
+        <p class="sem-hint">No empires yet. Import a designs file, or create one.</p>
+    }
 
     @*
         Asked before an empire goes, since there is no undo behind it. Here rather than in the row
@@ -131,6 +118,24 @@ else
                         @onclick="() => ShowList(true)">List</button>
             </div>
 
+            @*
+                How many there are, which is about the list rather than about the file: naming the
+                file here said the wrong thing anyway, since the desktop writes to the player's own
+                designs file whatever was imported.
+            *@
+            @if (_session.File is { } file && file.Designs.Count > 0)
+            {
+                <p class="sem-hint">
+                    @(file.Designs.Count == 1 ? "1 empire" : $"{file.Designs.Count} empires")
+
+                    @* The desktop's alone: a browser stores the file as soon as the list changes,
+                       so nothing is ever outstanding there. *@
+                    @if (Files.SavesInPlace && _session.HasUnwrittenFileChanges)
+                    {
+                        <text> · Not yet written back.</text>
+                    }
+                </p>
+            }
         </div>
 
         @if (_listView)
