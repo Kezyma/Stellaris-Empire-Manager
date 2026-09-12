@@ -281,6 +281,100 @@ code {
     gap: var(--space-md);
 }
 
+/*
+   ---- the window's own furniture, where the app draws the window
+
+   The desktop has no title bar, so the three things a title bar did are here instead: a band that
+   moves the window, three buttons at the corner, and strips at the edges that resize it. None of
+   these elements is rendered in a browser at all, so none of this needs a host to switch it off.
+*/
+
+/* Whatever the header is not using, which is the same shape a title bar was. */
+.sem-drag-region {
+    flex: 1 1 auto;
+    align-self: stretch;
+    min-width: 0;
+}
+
+/*
+   Beside the header rather than inside it, and fixed to the corner.
+
+   Inside, they could not have been raised: the header is a stacking context at z-index 10 and every
+   dialog sits at 100, so an open question would have covered the only way this window has of being
+   closed. Out here they stay reachable, which is the difference between a dialog and a dead end.
+*/
+.sem-window-buttons {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 300;
+    display: flex;
+    height: var(--header-height);
+}
+
+/* And the header makes room, since the buttons no longer take any in its own row. */
+.sem-app.framed .sem-header { padding-right: calc(3 * 46px + var(--space-md)); }
+
+/*
+   Written through the container, which is what carries them over the general button rules further
+   down the file: those reach a hover at the same weight, and this one is written first.
+*/
+.sem-window-buttons > .sem-window-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    padding: 0;
+    background: none;
+    border: 0;
+    border-radius: 0;
+    color: var(--text-dim);
+    cursor: pointer;
+}
+
+.sem-window-buttons > .sem-window-button:hover {
+    background: var(--bg-hover);
+    color: var(--text);
+}
+
+/* The one control in the app worth colouring, in the one colour every window agrees on. */
+.sem-window-buttons > .sem-window-button.close:hover {
+    background: #c42b1c;
+    color: #fff;
+}
+
+/*
+   The borders.
+
+   Thin, because the right-hand strip lies over the scrollbar and a wide one would make the bar hard
+   to take hold of; the corners are larger, as a window's corners have always been. Above everything,
+   including a dialog, since a window that cannot be resized while a question is open would be the
+   same trap the buttons above are out here to avoid.
+*/
+.sem-resize > * {
+    position: fixed;
+    z-index: 1000;
+}
+
+.sem-resize > .n { top: 0; left: 0; right: 0; height: 4px; cursor: ns-resize; }
+.sem-resize > .s { bottom: 0; left: 0; right: 0; height: 4px; cursor: ns-resize; }
+.sem-resize > .w { top: 0; bottom: 0; left: 0; width: 4px; cursor: ew-resize; }
+.sem-resize > .e { top: 0; bottom: 0; right: 0; width: 4px; cursor: ew-resize; }
+
+.sem-resize > .nw,
+.sem-resize > .ne,
+.sem-resize > .sw,
+.sem-resize > .se {
+    z-index: 1001;
+    width: 12px;
+    height: 12px;
+}
+
+.sem-resize > .nw { top: 0; left: 0; cursor: nwse-resize; }
+.sem-resize > .ne { top: 0; right: 0; cursor: nesw-resize; }
+.sem-resize > .sw { bottom: 0; left: 0; cursor: nesw-resize; }
+.sem-resize > .se { bottom: 0; right: 0; cursor: nwse-resize; }
+
 /* A file that would not open. Full width under the header, since it is a sentence and not a chip. */
 .sem-header-error,
 .sem-header-note {

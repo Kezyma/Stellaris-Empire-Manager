@@ -5,6 +5,7 @@
 @inject NavigationManager Navigation
 @inject UnsavedWorkGuard Guard
 @inject EditorState Editor
+@inject IServiceProvider Services
 
 @*
     The file lives in the header: the empire list, a new empire, the file in, the file out, and
@@ -19,9 +20,19 @@
     since the question belongs to the designer and this is not it.
 *@
 
-<div class="sem-app">
+<div class="sem-app @(_windows is null ? null : "framed")">
     <header class="sem-header">
         <span class="brand">Stellaris Empire Manager</span>
+
+        @*
+            The band of nothing between the brand and the file's controls, which on a host with no
+            title bar is what a title bar was: press it to move the window, double-click it to
+            maximise. Drawn only there, so a browser tab pays nothing for it.
+        *@
+        @if (_windows is not null)
+        {
+            <div class="sem-drag-region" @onmousedown="BeginDrag" @ondblclick="ToggleMaximise"></div>
+        }
 
         @*
             The menu on a narrow screen. A checkbox and its label rather than a scripted button: the
@@ -97,6 +108,57 @@
     </header>
 
     @*
+        The window's own three buttons, beside the header rather than inside it.
+
+        Inside, they would have been trapped: the header is a stacking context of its own and sits
+        below any dialog, so an open question would have covered the only way this window has of
+        being closed. Out here they are always reachable, which for a window with no title bar is the
+        difference between a dialog and a dead end.
+    *@
+    @if (_windows is { } window)
+    {
+        <div class="sem-window-buttons">
+            <button type="button" class="sem-window-button" title="Minimise" aria-label="Minimise"
+                    @onclick="window.Minimise">
+                <svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor"
+                     stroke-width="1.2" aria-hidden="true" focusable="false">
+                    <path d="M2 8h12" />
+                </svg>
+            </button>
+
+            <button type="button" class="sem-window-button"
+                    title="@(window.IsMaximised ? "Restore" : "Maximise")"
+                    aria-label="@(window.IsMaximised ? "Restore" : "Maximise")"
+                    @onclick="window.ToggleMaximise">
+                @if (window.IsMaximised)
+                {
+                    @* Two overlapping frames, which is how every window has said "restore" since 95. *@
+                    <svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor"
+                         stroke-width="1.2" aria-hidden="true" focusable="false">
+                        <path d="M4.5 4.5V2.5h9v9h-2" />
+                        <rect x="2.5" y="4.5" width="9" height="9" />
+                    </svg>
+                }
+                else
+                {
+                    <svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor"
+                         stroke-width="1.2" aria-hidden="true" focusable="false">
+                        <rect x="2.5" y="2.5" width="11" height="11" />
+                    </svg>
+                }
+            </button>
+
+            <button type="button" class="sem-window-button close" title="Close" aria-label="Close"
+                    @onclick="window.Close">
+                <svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor"
+                     stroke-width="1.2" aria-hidden="true" focusable="false">
+                    <path d="M3 3l10 10M13 3L3 13" />
+                </svg>
+            </button>
+        </div>
+    }
+
+    @*
         Asked only where the button writes over something. In a browser it opens a dialog and the
         player picks the file, so asking first would be asking twice; on the desktop it replaces the
         designs file the game itself reads, which is worth a moment's pause even though a dated
@@ -158,6 +220,30 @@
     <main class="sem-main">
         @Body
     </main>
+
+    @*
+        The window's borders, drawn by the page because nothing else can reach them.
+
+        A WindowChrome's resize borders are hit tested by the window they belong to, and this app
+        covers that window entirely with the web view's own, which answers for every pixel the
+        pointer is over. So the frame is where the pointer is: eight strips at the edges of the
+        viewport, each of which tells the window which border was taken hold of and lets Windows do
+        the rest. None of them when the window is already filling the screen, where there is nothing
+        to drag and the strips would only sit over the content.
+    *@
+    @if (_windows is { IsMaximised: false })
+    {
+        <div class="sem-resize" aria-hidden="true">
+            <div class="n" @onmousedown="() => Resize(WindowEdge.Top)"></div>
+            <div class="s" @onmousedown="() => Resize(WindowEdge.Bottom)"></div>
+            <div class="w" @onmousedown="() => Resize(WindowEdge.Left)"></div>
+            <div class="e" @onmousedown="() => Resize(WindowEdge.Right)"></div>
+            <div class="nw" @onmousedown="() => Resize(WindowEdge.TopLeft)"></div>
+            <div class="ne" @onmousedown="() => Resize(WindowEdge.TopRight)"></div>
+            <div class="sw" @onmousedown="() => Resize(WindowEdge.BottomLeft)"></div>
+            <div class="se" @onmousedown="() => Resize(WindowEdge.BottomRight)"></div>
+        </div>
+    }
 </div>
 
 @*
@@ -233,8 +319,27 @@
     /// </remarks>
     private bool _canPickFiles;
 
+    /// <summary>
+    /// The window this app is drawn in, where it is drawn in one of its own.
+    /// </summary>
+    /// <remarks>
+    /// Asked for rather than injected, because it is absent in a browser and an injected service
+    /// that is not registered is an exception rather than a null. Null is the answer this wants:
+    /// no window chrome, no resize grips, and nothing to keep up to date.
+    /// </remarks>
+    private IWindowControls? _windows;
+
     protected override async Task OnInitializedAsync()
     {
+        _windows = Services.GetService(typeof(IWindowControls)) as IWindowControls;
+
+        if (_windows is not null)
+        {
+            // Snapping and the shortcuts maximise a window without going through the button, and
+            // the glyph beside them has to say what the window actually did.
+            _windows.StateChanged += OnWindowChanged;
+        }
+
         _session = await Host.GetAsync();
 
         // The bar redraws when it is clicked because its own handler ran, not because it was told.
@@ -276,9 +381,25 @@
         {
             _session.Changed -= OnChanged;
         }
+
+        if (_windows is not null)
+        {
+            _windows.StateChanged -= OnWindowChanged;
+        }
     }
 
     private void OnChanged() => InvokeAsync(StateHasChanged);
+
+    private void OnWindowChanged(object? sender, EventArgs e) => InvokeAsync(StateHasChanged);
+
+    /// <summary>Moves the window, from a press anywhere the header has nothing else to do.</summary>
+    private void BeginDrag() => _windows?.BeginDrag();
+
+    /// <summary>Fills the screen or gives the window its old size back, on a double-click.</summary>
+    private void ToggleMaximise() => _windows?.ToggleMaximise();
+
+    /// <summary>Resizes the window, from a press on one of the strips at the edge of the page.</summary>
+    private void Resize(WindowEdge edge) => _windows?.BeginResize(edge);
 
     /// <summary>
     /// Opens a designs file in place of whatever is open.

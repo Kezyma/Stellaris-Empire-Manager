@@ -44,6 +44,10 @@ public partial class MainWindow : Window
         InitializeComponent();
         Loaded += async (_, _) => await StartAsync();
         Closing += AskBeforeClosing;
+
+        // Before the window has a handle, since that is what it hooks. Nothing to do with the
+        // buttons in the header; it is the rest of what the title bar was taking care of.
+        WindowControls.KeepMaximisedInsideTheScreen(this);
     }
 
     /// <summary>Whether a start is already running, so a second one cannot be begun over it.</summary>
@@ -186,6 +190,10 @@ public partial class MainWindow : Window
         _files = CreateFileExchange();
         services.AddScoped(_ => _files);
 
+        // Registered here and nowhere else, which is the whole gate on the window buttons: the
+        // header draws them only where something answers this, and in a browser nothing does.
+        services.AddScoped<IWindowControls>(_ => new WindowControls(this));
+
         // No design store, because the player's own file is the one that counts and a second copy
         // would be a rival to it. Only the packs they actually have: this installation is theirs.
         services.AddSemDesigner(assumeAllPacks: false);
@@ -215,9 +223,12 @@ public partial class MainWindow : Window
             // Nothing here is a web page the user should be able to leave or right-click into.
             e.WebView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
             e.WebView.CoreWebView2.Settings.IsSwipeNavigationEnabled = false;
+
         };
 
-        StartupPanel.Visibility = Visibility.Collapsed;
+        // The whole layer, so the startup screen's own window buttons go with it: from here on the
+        // designer's header draws them, and two sets at once would be one set too many.
+        StartupLayer.Visibility = Visibility.Collapsed;
         WebView.Visibility = Visibility.Visible;
 
         Title = _designsPath is { Length: > 0 }
@@ -288,4 +299,32 @@ public partial class MainWindow : Window
     }
 
     private void OnRetry(object sender, RoutedEventArgs e) => _ = StartAsync();
+
+    /// <summary>
+    /// Moves the window by its startup screen, which has no title bar to be dragged by.
+    /// </summary>
+    /// <remarks>
+    /// Only here. Once the designer is showing, the web view owns the pointer and the drag is begun
+    /// from its header instead - see <see cref="WindowControls"/>, which also explains why this call
+    /// is the one that works on this side and not on that one.
+    /// </remarks>
+    private void OnDragWindow(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        // DragMove throws outright if the button has already come up, which a fast click can do
+        // between the event being raised and this running.
+        if (e.ButtonState == System.Windows.Input.MouseButtonState.Pressed)
+        {
+            DragMove();
+        }
+    }
+
+    private void OnMinimise(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
+
+    private void OnToggleMaximise(object sender, RoutedEventArgs e) =>
+        WindowState = WindowState == WindowState.Maximized
+            ? WindowState.Normal
+            : WindowState.Maximized;
+
+    /// <summary>Closes rather than exits, so the unsaved-work question is still asked.</summary>
+    private void OnCloseWindow(object sender, RoutedEventArgs e) => Close();
 }
