@@ -32,6 +32,35 @@ public sealed class RequirementEvaluatorTests
         Assert.True(Evaluator.IsSatisfied(new UnknownRequirement("some_future_trigger"), Context()));
     }
 
+    /// <summary>
+    /// Every field the extractor may compile a comparison for is one a design can answer.
+    /// </summary>
+    /// <remarks>
+    /// The two halves sit in projects that cannot see each other - FieldRequirement.Known is the
+    /// extractor's guard, DesignContext.Field is the answer - so nothing but this holds them
+    /// together. A name in the guard that the reader has never heard of is the exact shape of the
+    /// bug the guard was added for: a comparison that can never be equal, quietly refusing an
+    /// option where every other unreadable condition permits one.
+    /// </remarks>
+    [Fact]
+    public void EveryKnownFieldIsAnswered()
+    {
+        var design = RulesTestData.ValidEmpire();
+        design.GraphicalCulture = "mammalian_01";
+
+        var context = new EmpireRules(RulesTestData.Database).CreateContext(design, AllDlc());
+
+        foreach (var field in FieldRequirement.Known)
+        {
+            Assert.True(
+                context.Field(field) is not null,
+                $"{field} is named in FieldRequirement.Known but DesignContext.Field does not answer it");
+        }
+    }
+
+    private static HashSet<string> AllDlc() =>
+        [.. RulesTestData.Database.Dlc.Select(d => d.Name)];
+
     [Fact]
     public void AndStillPermitsItWhenNegated()
     {

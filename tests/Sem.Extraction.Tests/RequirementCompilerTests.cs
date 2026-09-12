@@ -99,6 +99,28 @@ public sealed class RequirementCompilerTests
         Assert.Equal(("is_nomadic", "no"), (field.Field, field.Value));
     }
 
+    /// <summary>
+    /// But only under a name the design can answer to.
+    /// </summary>
+    /// <remarks>
+    /// A comparison against a field nothing knows is answered with null, compares unequal to
+    /// whatever it wanted, and refuses the option - so compiling one turned a condition this
+    /// project could not read into the one outcome the compiler is careful never to produce. Every
+    /// other unknown here permits. This one has to permit too, and be counted while it does, or the
+    /// next patch takes an option away with nothing said.
+    /// </remarks>
+    [Fact]
+    public void ButAScalarFieldNobodyKnowsPermitsInsteadOfRefusing()
+    {
+        var compiler = new RequirementCompiler();
+        var compiled = compiler.CompileRequirementsList(Block("some_future_field = yes"));
+
+        var unknown = Assert.IsType<UnknownRequirement>(compiled);
+        Assert.Equal("some_future_field", unknown.Name);
+        Assert.True(unknown.Assume);
+        Assert.Contains("some_future_field", compiler.Unrecognised.Keys);
+    }
+
     [Fact]
     public void ALimitGuardsItsSiblingsRatherThanJoiningThem()
     {

@@ -88,7 +88,41 @@ public sealed record DlcRequirement(string Name) : Requirement;
 /// <summary>
 /// A plain field on the design must have a given value, such as <c>is_nomadic = no</c>.
 /// </summary>
-public sealed record FieldRequirement(string Field, string Value) : Requirement;
+public sealed record FieldRequirement(string Field, string Value) : Requirement
+{
+    /// <summary>
+    /// Every field a design can answer, and so every field one of these may name.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Here rather than beside the reader because two projects have to agree on it and neither can
+    /// see the other: the extractor decides whether a bare <c>key = value</c> is a comparison worth
+    /// emitting, and the rules layer answers it. They agreed only by coincidence, and the shape of
+    /// the disagreement was bad in a particular way - a key the rules layer had never heard of
+    /// still compiled to one of these, was answered with null, compared unequal to whatever it
+    /// wanted, and refused the option. Every other unreadable condition in the compiler permits, on
+    /// purpose, so that a patch never hides something the player should be able to choose. This one
+    /// quietly did the opposite, and said nothing while doing it.
+    /// </para>
+    /// <para>
+    /// A name not in here is recorded as unrecognised instead, which both permits and prints.
+    /// Nothing in 4.5 needs that - the field names the game ships are all known - so this guards
+    /// against the next patch rather than fixing a live symptom.
+    /// </para>
+    /// </remarks>
+    public static readonly IReadOnlySet<string> Known = new HashSet<string>(StringComparer.Ordinal)
+    {
+        "is_nomadic",
+        "authority",
+        "election_type",
+        "government",
+        "origin",
+        "species_class",
+        "species_archetype",
+        "planet_class",
+        "graphical_culture",
+    };
+}
 
 /// <summary>
 /// A named condition about the design as a whole, such as <c>is_gestalt</c>, which the rules

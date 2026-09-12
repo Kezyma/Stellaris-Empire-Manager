@@ -1,7 +1,7 @@
 {
   "schemaVersion": 16,
   "gameVersion": "v4.5.0",
-  "extractorVersion": "0.1.0\u002Bbcdf60a525539476f81b6d47468bb413966c8602",
+  "extractorVersion": "0.1.0\u002Bd52e342fdb5614c8c61d9f4cc638c056af44b6f3",
   "defines": {
     "ethicsPoints": 3,
     "civicPoints": 2,
@@ -39273,6 +39273,7 @@
           "country_edict_fund_add": 5
         }
       },
+      "icon": "icons/authorities/auth_ancient_machine_intelligence.png",
       "nameKey": "auth_ancient_machine_intelligence",
       "descriptionKey": "auth_ancient_machine_intelligence_desc"
     },

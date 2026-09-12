@@ -433,7 +433,15 @@ public sealed class DesignContext
         DesignPredicates.IsRegularEmpire or
         DesignPredicates.IsNomadic;
 
-    /// <summary>Reads a plain field of the design by the name the game's script uses.</summary>
+    /// <summary>
+    /// Reads a plain field of the design by the name the game's script uses.
+    /// </summary>
+    /// <remarks>
+    /// The names answered here are <see cref="FieldRequirement.Known"/>, which is what the extractor
+    /// checks a bare <c>key = value</c> against before compiling one. The two are held in step by
+    /// <c>EveryKnownFieldIsAnswered</c>. Null from here means the design has not chosen that field
+    /// yet, and never that the name itself was a surprise.
+    /// </remarks>
     public string? Field(string name) => name switch
     {
         "is_nomadic" => IsNomadic ? "yes" : "no",

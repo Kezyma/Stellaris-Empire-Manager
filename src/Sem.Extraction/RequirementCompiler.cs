@@ -327,9 +327,12 @@ public sealed class RequirementCompiler
                     items.Add(Group(node.Block, children => new NotRequirement(new AnyRequirement(children))));
                     break;
 
-                // A bare scalar such as is_nomadic = no, which the 4.x grammar allows here.
+                // A bare scalar such as is_nomadic = no, which the 4.x grammar allows here -
+                // but only under a name the design can answer to. A comparison against a field
+                // nothing knows can never be equal, so emitting one turned a condition we could not
+                // read into a refusal, which is the opposite of what every other unknown here does.
                 default:
-                    items.Add(node.ScalarValue is { } value
+                    items.Add(node.ScalarValue is { } value && FieldRequirement.Known.Contains(key)
                         ? new FieldRequirement(key, value)
                         : RecordUnrecognised(key));
                     break;

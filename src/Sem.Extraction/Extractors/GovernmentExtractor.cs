@@ -40,9 +40,7 @@ internal static class GovernmentExtractor
                     EffectsReader.Read(body, loader, requirements, tagsKey: "tags"),
                     body.GetString("ruler_council_position"),
                     councilors),
-                Icon = assets.Register(
-                    $"gfx/interface/icons/governments/authorities/{entry.Key}.dds",
-                    $"icons/authorities/{entry.Key}.png"),
+                Icon = ResolveIcon(entry.Key, body, "authorities", assets),
             });
         }
 
@@ -96,7 +94,7 @@ internal static class GovernmentExtractor
                 // out - Natural Neural Network is called the wilderness one to a wilderness empire
                 // because the civic says so, and Arc Welders renames itself for a nomad.
                 Variants = EffectsReader.ReadVariants(body, "swap_type", requirements, text),
-                Icon = ResolveIcon(entry.Key, body, isOrigin, assets),
+                Icon = ResolveIcon(entry.Key, body, isOrigin ? "origins" : "civics", assets),
 
                 // The scene an origin opens on. Only origins have one, so a civic is not asked;
                 // asking and being told no is how two hundred civics came to be counted as missing
@@ -369,13 +367,21 @@ internal static class GovernmentExtractor
         block is null ? [] : block.GetStrings("trait");
 
     /// <summary>
-    /// Works out a civic or origin's icon. Origins state theirs outright, one of them without
-    /// quotes. Civics normally follow the naming convention but two dozen override it.
+    /// Works out an authority, civic or origin's icon, all three of which the game keeps in a
+    /// folder per kind and occasionally points away from.
     /// </summary>
-    private static string? ResolveIcon(string key, CwBlock body, bool isOrigin, AssetCatalog assets)
+    /// <remarks>
+    /// Origins state theirs outright, one of them without quotes, and two dozen civics override the
+    /// naming convention. Authorities were built from the key alone and so were the one kind that
+    /// could not say where its icon lived: 4.5 has exactly one that tries, and it is
+    /// auth_ancient_machine_intelligence borrowing auth_hive_mind.dds because it has no file of its
+    /// own. That one is gated country_type = ai_empire, so nothing a player can pick was ever drawn
+    /// wrong - it was only the line reading "1 gfx/interface/icons/governments/authorities" in the
+    /// missing-image report, waiting for a playable authority to do the same thing.
+    /// </remarks>
+    private static string? ResolveIcon(string key, CwBlock body, string folder, AssetCatalog assets)
     {
-        var folder = isOrigin ? "origins" : "civics";
-        var destination = $"icons/{folder}/{key}.png";
+        var conventional = $"gfx/interface/icons/governments/{folder}/{key}.dds";
 
         // A declared path is used as given; the game's own files are the authority on where an
         // icon lives, and several do not match their key.
@@ -384,9 +390,7 @@ internal static class GovernmentExtractor
             : null;
 
         return assets.RegisterFirst(
-            declared is null
-                ? [$"gfx/interface/icons/governments/{folder}/{key}.dds"]
-                : [declared, $"gfx/interface/icons/governments/{folder}/{key}.dds"],
-            destination);
+            declared is null ? [conventional] : [declared, conventional],
+            $"icons/{folder}/{key}.png");
     }
 }
