@@ -1,0 +1,128 @@
+# Builds the Windows desktop app and publishes it as a download, on every push to main.
+#
+# One release, tagged `latest`, replaced each time. That is deliberate: there are no versioned
+# releases to choose between, so the only question a visitor has is "where is the newest one", and a
+# fixed tag answers it with an address that never changes -
+# /releases/latest/download/StellarisEmpireManager-win-x64.zip.
+#
+# Windows only, and a Windows runner, because the shell is WPF. Other platforms are not being built:
+# the web app already runs everywhere, and a second desktop shell would be a second host to keep the
+# file promises on. See the README.
+
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+  # So a release can be rebuilt without a commit.
+  workflow_dispatch:
+
+# Creating and deleting the release, and moving its tag.
+permissions:
+  contents: write
+
+# Never two at once. A newer build wins rather than queueing behind an older one, which for a
+# rolling release is the only order that makes sense - the older one would overwrite the newer.
+concurrency:
+  group: release
+  cancel-in-progress: true
+
+jobs:
+  # The same gate Pages uses. Nothing people download should come from a commit whose tests did not
+  # pass, and a publish that merely compiles is not that check: the build here would succeed over a
+  # failing test without noticing.
+  check:
+    uses: ./.github/workflows/ci.yml
+
+  release:
+    needs: check
+
+    # WPF, so this cannot be built anywhere else.
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      # Self-contained, so there is nothing to install first: somebody who wants to build empires
+      # should not have to read about .NET runtimes to do it. Not single-file, because WPF and the
+      # embedded browser both ship native assets that a single file cannot carry, and not trimmed,
+      # which WPF does not support at all.
+      - name: Publish
+        run: >
+          dotnet publish src/Sem.Desktop
+          --configuration Release
+          --runtime win-x64
+          --self-contained
+          --output artifacts/desktop
+
+      # Eighty-five megabytes of native debugging symbols for the drawing library, which nobody
+      # downloading this will ever open, and the documentation files that exist for writing code
+      # against these assemblies rather than running them. Together a third of the download.
+      #
+      # Our own symbols stay - about a megabyte, and they are what turns a crash report into a line
+      # number.
+      - name: Leave out what nobody downloading it needs
+        shell: pwsh
+        run: |
+          $symbols = 'artifacts/desktop/libSkiaSharp.pdb'
+
+          if (Test-Path $symbols) { Remove-Item $symbols }
+
+          Get-ChildItem artifacts/desktop -Filter *.xml -Recurse | Remove-Item
+
+      - name: Zip it
+        shell: pwsh
+        run: |
+          Compress-Archive `
+            -Path artifacts/desktop/* `
+            -DestinationPath artifacts/StellarisEmpireManager-win-x64.zip `
+            -Force
+
+      # The prose lives in .github/release-notes.md, with two placeholders filled in here. Kept
+      # out of this file because a here-string inside a YAML block is two sets of quoting rules
+      # arguing over the same backticks, and because the words are worth editing without reading
+      # any of this.
+      - name: Write the notes
+        shell: pwsh
+        run: |
+          $notes = Get-Content .github/release-notes.md -Raw
+          $notes = $notes.Replace('{sha}', $env:GITHUB_SHA.Substring(0, 7))
+          $notes = $notes.Replace('{date}', (Get-Date -Format 'd MMMM yyyy'))
+
+          Set-Content release-notes.md -Value $notes -Encoding utf8
+
+      # Deleted and remade rather than edited, so the tag follows main instead of staying on
+      # whatever commit first created it. Not finding one is the ordinary case on the first run and
+      # is not a failure.
+      #
+      # It must not be flagged a pre-release. /releases/latest skips pre-releases entirely, so the
+      # download address above would answer 404 against a release plainly visible on the page.
+      - name: Replace the rolling release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Not finding a release to delete is the ordinary case on the first run. Actions runs
+          # this with the error preference set to stop, and PowerShell 7.4 turned that into "a
+          # native command exiting non-zero throws" - so without this the first run would fail on
+          # the one command that is expected to.
+          #
+          # A delete that failed for a real reason is not lost by it: the create below then
+          # refuses, and that one is checked.
+          $PSNativeCommandUseErrorActionPreference = $false
+
+          gh release delete latest --cleanup-tag --yes
+
+          gh release create latest `
+            artifacts/StellarisEmpireManager-win-x64.zip `
+            --target $env:GITHUB_SHA `
+            --title 'Latest build' `
+            --notes-file release-notes.md `
+            --latest
+
+          if ($LASTEXITCODE -ne 0) { throw 'The release could not be created.' }

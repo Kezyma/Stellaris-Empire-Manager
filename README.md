@@ -5,6 +5,9 @@ for what every choice does.
 
 **[Open the designer →](https://kezyma.github.io/Stellaris-Empire-Manager/)**
 
+Or [download the Windows app](#the-desktop-app), which opens your designs file itself and saves
+straight back to it.
+
 ## Your file stays yours
 
 There is no account to make here and no server of ours behind it. By default nothing is uploaded at
@@ -115,3 +118,26 @@ if they press Save.
 Your file is kept in the browser between visits, so closing the tab does not cost you an evening's
 work. It is not a backup: it belongs to that one browser on that one machine, and clearing site data
 clears it. Export anything you would be sorry to lose.
+
+## The desktop app
+
+**[Download it for Windows →](https://github.com/Kezyma/Stellaris-Empire-Manager/releases/latest/download/StellarisEmpireManager-win-x64.zip)**
+
+The same designer in a window, with the one difference that matters: it has your designs file. It
+finds your Stellaris installation, opens the file on launch, and **Save** writes it back in place,
+keeping a dated copy beside it. Nothing to import first, and nothing to export afterwards.
+
+Windows 10 or 11, 64-bit. Unzip it anywhere and run `StellarisEmpireManager.exe` - there is nothing
+else to install, since the .NET runtime is inside the download. The first start reads your game
+files, which takes a minute, and remembers the result until the game is patched.
+
+It can also write the file as you go, so the game and the designer can be open together: turn on the
+tick beside Save. Something else writing the file - the game, usually, on the way out - is noticed,
+and where taking it would cost you work you are asked what to do with it rather than told.
+
+The download is always the newest build. There is no version to choose and no updater: the link
+above is replaced every time the code changes.
+
+There is no macOS or Linux build. The window is WPF, which is Windows only, and the site already
+runs everywhere a browser does - a second desktop shell would be a second place to keep the same
+promises about somebody's file, which is not a cost worth paying twice.
