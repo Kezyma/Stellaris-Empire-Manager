@@ -29,11 +29,16 @@ public enum SaveOutcome
     /// The file had moved on since it was read, so nothing was written over it.
     /// </summary>
     /// <remarks>
-    /// Only a host that can tell says this, which means one that keeps a version alongside the file
-    /// and promises not to write past it - a cloud provider. A disk cannot: two programs writing the
-    /// same file simply both write it, and the second wins. So this is not a failure to save, it is
-    /// a refusal to overwrite somebody, and the answer to it is to look at what arrived rather than
-    /// to try again.
+    /// <para>
+    /// Not a failure to save. It is a refusal to overwrite somebody, and the answer to it is to
+    /// look at what arrived rather than to try again.
+    /// </para>
+    /// <para>
+    /// Said by any host that remembers what the file held when it last read or wrote it. A provider
+    /// is handed a version and asked to refuse the write itself; a disk has nobody to ask, so the
+    /// file is read back and compared before anything replaces it. The mechanisms differ and the
+    /// promise does not: nothing is written over a change this app has not seen.
+    /// </para>
     /// </remarks>
     Conflicted,
 

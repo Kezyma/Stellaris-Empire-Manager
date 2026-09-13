@@ -30,6 +30,59 @@ public sealed class SafeFileTests
         Assert.Equal("payload", File.ReadAllText(target));
     }
 
+    /// <summary>
+    /// The check that stands between a save and somebody else's change.
+    /// </summary>
+    /// <remarks>
+    /// Every case it is asked in. The game rewrites the designs file as it exits, so the ordinary
+    /// way to reach this is to edit in the app, quit Stellaris, and press Save - and the one thing
+    /// that must not happen then is the editor's copy going silently over what the game wrote.
+    /// </remarks>
+    [Fact]
+    public void Holds_AnswersOnContentsAndNotOnTheClock()
+    {
+        using var temp = new TempDirectory();
+        var target = temp.Combine("designs.txt");
+
+        // Nothing there at all.
+        Assert.False(SafeFile.Holds(target, "first"u8));
+
+        File.WriteAllBytes(target, "first"u8.ToArray());
+
+        Assert.True(SafeFile.Holds(target, "first"u8));
+        Assert.False(SafeFile.Holds(target, "second"u8));
+
+        // Written again with the same bytes: newer by the clock, unchanged by anything that
+        // matters, and so not something to stop a save over.
+        File.SetLastWriteTimeUtc(target, DateTime.UtcNow.AddHours(1));
+
+        Assert.True(SafeFile.Holds(target, "first"u8));
+
+        // And written by something else, which is the case the whole check exists for.
+        File.WriteAllBytes(target, "written in the game"u8.ToArray());
+
+        Assert.False(SafeFile.Holds(target, "first"u8));
+    }
+
+    /// <summary>A file kept open by whatever is writing it is still readable.</summary>
+    /// <remarks>
+    /// The read shares the file deliberately, so the check does not turn into a refusal every time
+    /// the game happens to have the file open.
+    /// </remarks>
+    [Fact]
+    public void Holds_ReadsAFileSomethingElseHasOpen()
+    {
+        using var temp = new TempDirectory();
+        var target = temp.Combine("designs.txt");
+
+        File.WriteAllBytes(target, "first"u8.ToArray());
+
+        using var held = new FileStream(
+            target, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite | FileShare.Delete);
+
+        Assert.True(SafeFile.Holds(target, "first"u8));
+    }
+
     [Fact]
     public void ReplaceAtomically_ReplacesContentAndKeepsTheOldVersionAsABackup()
     {

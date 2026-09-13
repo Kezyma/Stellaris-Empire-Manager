@@ -22,6 +22,17 @@ public sealed class DesktopFileExchange(SafeFile file, string designsPath) : IFi
     private readonly SafeFile _file = file ?? throw new ArgumentNullException(nameof(file));
     private readonly string _designsPath = designsPath ?? throw new ArgumentNullException(nameof(designsPath));
 
+    /// <summary>
+    /// What the file held the last time this app read or wrote it.
+    /// </summary>
+    /// <remarks>
+    /// Kept here rather than by the thing that polls, because it has to exist whether or not
+    /// anything is polling. The sync only runs when the player has switched it on, and a write
+    /// going over somebody else's is no less of a loss for the switch being off - it was simply
+    /// nobody's job to notice.
+    /// </remarks>
+    private byte[]? _baseline;
+
     /// <inheritdoc />
     public bool SavesInPlace => true;
 
@@ -102,15 +113,25 @@ public sealed class DesktopFileExchange(SafeFile file, string designsPath) : IFi
     }
 
     /// <inheritdoc />
+    /// <remarks>
+    /// Every read moves the baseline, which is what makes the check before a write mean anything:
+    /// the question it answers is "has anything written this since we last looked", and a look is
+    /// exactly what this is. The sync reads through here too, so its polling and this stay in step
+    /// without either knowing about the other.
+    /// </remarks>
     public Task<(string Name, byte[] Contents)?> TryOpenExistingAsync()
     {
         if (!File.Exists(_designsPath))
         {
+            _baseline = null;
+
             return Task.FromResult<(string, byte[])?>(null);
         }
 
-        return Task.FromResult<(string, byte[])?>(
-            (Path.GetFileName(_designsPath), SafeFile.ReadAllBytes(_designsPath)));
+        var contents = SafeFile.ReadAllBytes(_designsPath);
+        _baseline = contents;
+
+        return Task.FromResult<(string, byte[])?>((Path.GetFileName(_designsPath), contents));
     }
 
     /// <inheritdoc />
@@ -122,6 +143,15 @@ public sealed class DesktopFileExchange(SafeFile file, string designsPath) : IFi
     {
         ArgumentNullException.ThrowIfNull(contents);
 
+        // Nothing is written over a change this app has not seen. The game rewrites this file as it
+        // exits, so the ordinary way to meet this is to edit here, quit Stellaris, and press Save -
+        // which used to put the editor's copy straight over what the game had just written, without
+        // a word. The caller is told instead, and asks.
+        if (Moved())
+        {
+            return Task.FromResult(SaveOutcome.Conflicted);
+        }
+
         // Kept before anything is replaced, so a save that goes wrong still leaves a way back. Not
         // what the player is choosing about: this one is the app's own, out of sight and out of
         // their folder, and it costs them nothing to have.
@@ -130,9 +160,46 @@ public sealed class DesktopFileExchange(SafeFile file, string designsPath) : IFi
         _file.ReplaceAtomically(
             _designsPath, contents, backUp ? SafeFile.DatedBackupPath(_designsPath) : null);
 
-        // Always saved here: there is no dialog to dismiss, and a failure throws rather than
-        // returning. The other outcomes only arise in a browser, where the player may say no.
+        // What was written is what is there, so the next write is measured against this one.
+        _baseline = contents;
+
+        // Saved, now that the refusal above is the only other way out. A failure throws rather than
+        // returning; the outcomes about dialogs only arise in a browser, where a player may say no.
         return Task.FromResult(SaveOutcome.Saved);
+    }
+
+    /// <summary>
+    /// Whether the file has been written by something else since this app last looked at it.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Compared by contents rather than by a timestamp, because a timestamp answers a different
+    /// question: a file rewritten with the same bytes has moved by the clock and not at all by
+    /// anything a player would call a change, and being asked about that would teach them to
+    /// dismiss the question without reading it.
+    /// </para>
+    /// <para>
+    /// Never having read it is not a conflict - there is nothing this app could be overwriting
+    /// unseen - and neither is the file having gone, since putting it back takes nothing away.
+    /// </para>
+    /// </remarks>
+    private bool Moved()
+    {
+        if (_baseline is not { } seen || !File.Exists(_designsPath))
+        {
+            return false;
+        }
+
+        try
+        {
+            return !SafeFile.Holds(_designsPath, seen);
+        }
+        catch (IOException)
+        {
+            // Held open by whatever is writing it, most likely. Refusing is the safe answer: the
+            // one thing that must not happen is writing over a change nobody has seen.
+            return true;
+        }
     }
 
     /// <inheritdoc />

@@ -37,6 +37,25 @@ public sealed class SafeFile(WritePolicy policy)
         return buffer.ToArray();
     }
 
+    /// <summary>
+    /// Whether the file still holds exactly these bytes.
+    /// </summary>
+    /// <param name="path">The file to look at.</param>
+    /// <param name="expected">What it held when this app last read or wrote it.</param>
+    /// <returns>False where it differs, or where there is no file there at all.</returns>
+    /// <remarks>
+    /// For the check before a write that must not go over a change nobody has seen. Contents
+    /// rather than a timestamp, because a timestamp answers a different question: a file rewritten
+    /// with the same bytes has moved by the clock and not at all by anything a player would call a
+    /// change, and being asked about that would teach them to dismiss the question unread.
+    /// </remarks>
+    public static bool Holds(string path, ReadOnlySpan<byte> expected)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(path);
+
+        return File.Exists(path) && ReadAllBytes(path).AsSpan().SequenceEqual(expected);
+    }
+
     /// <summary>Creates a directory, after checking the policy permits writing there.</summary>
     public void CreateDirectory(string path)
     {

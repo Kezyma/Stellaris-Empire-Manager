@@ -109,6 +109,23 @@ public sealed class SessionHostTests
             Task.FromResult(SaveOutcome.Saved);
     }
 
+    /// <summary>
+    /// A host that will not write over a change it has not seen, which both in-place hosts now are.
+    /// </summary>
+    private sealed class Refusing : IFileExchange
+    {
+        public int Writes { get; private set; }
+
+        public bool SavesInPlace => true;
+
+        public Task<SaveOutcome> SaveAsync(string fileName, byte[] contents)
+        {
+            Writes++;
+
+            return Task.FromResult(SaveOutcome.Conflicted);
+        }
+    }
+
     /// <summary>A host whose own file is unreadable, which is what a truncated designs file looks like.</summary>
     private sealed class Unreadable : IFileExchange
     {
@@ -273,6 +290,32 @@ public sealed class SessionHostTests
         session.Edit(design => design.Authority = "auth_democratic");
 
         Assert.NotNull(await host.RememberAsync());
+    }
+
+    /// <summary>
+    /// A file that moved under the app is reported rather than written over, and stays unsaved.
+    /// </summary>
+    /// <remarks>
+    /// The half of the promise that is not about the writing. Reporting a refusal and then marking
+    /// the work saved would be the worst of both: nothing in the file, and nothing on screen saying
+    /// so - which is how somebody closes the tab believing their empires are safe.
+    /// </remarks>
+    [Fact]
+    public async Task AWriteRefusedOverSomebodyElsesChangeLeavesTheWorkUnsaved()
+    {
+        var files = new Refusing();
+        var (host, session) = await OpenAsync(files, store: null);
+
+        session.Edit(design => design.Authority = "auth_democratic");
+
+        var trouble = await host.SaveAsync();
+
+        Assert.NotNull(trouble);
+        Assert.Contains("changed somewhere else", trouble, StringComparison.Ordinal);
+        Assert.Equal(1, files.Writes);
+
+        // Still in hand, and still owed to the file.
+        Assert.True(session.IsModified);
     }
 
     /// <summary>
