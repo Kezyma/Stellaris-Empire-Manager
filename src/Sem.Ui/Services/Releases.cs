@@ -123,7 +123,11 @@ public sealed class Releases(HttpClient http)
                 return null;
             }
 
-            return _found = new DesktopBuild(named, address, built.Bytes, release!.Published);
+            // The asset's date, not the release's. The release is put up once and kept - the tag
+            // moves and the file inside it is replaced - so its published date is when the first
+            // build went up and stays there for ever. The file is what changes, so the file is
+            // what is asked.
+            return _found = new DesktopBuild(named, address, built.Bytes, built.Updated);
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or JsonException)
         {
@@ -139,12 +143,12 @@ public sealed class Releases(HttpClient http)
 }
 
 /// <summary>One release as GitHub describes it. Only the fields this app reads.</summary>
+/// <remarks>
+/// Which is one field. published_at looked like the build date and is not: this project keeps one
+/// release and replaces what is inside it, so that date is when the first build ever went up.
+/// </remarks>
 public sealed class GitHubRelease
 {
-    /// <summary>When it went up, which for a rolling release is when it was built.</summary>
-    [JsonPropertyName("published_at")]
-    public DateTimeOffset Published { get; set; }
-
     /// <summary>The files attached to it.</summary>
     [JsonPropertyName("assets")]
     public List<GitHubAsset>? Assets { get; set; }
@@ -164,6 +168,10 @@ public sealed class GitHubAsset
     /// <summary>Where the bytes are.</summary>
     [JsonPropertyName("browser_download_url")]
     public string? Address { get; set; }
+
+    /// <summary>When this file was last replaced, which is when it was built.</summary>
+    [JsonPropertyName("updated_at")]
+    public DateTimeOffset Updated { get; set; }
 }
 
 /// <summary>

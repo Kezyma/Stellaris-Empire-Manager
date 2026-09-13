@@ -109,6 +109,11 @@ jobs:
       # which is two steps with no release in between, and a run cancelled in that gap left the
       # repository with nothing to download.
       #
+      # One window is left and cannot be closed from here: --clobber takes the old file down before
+      # it puts the new one up, so the download address answers 404 for the seconds that upload
+      # takes. Left rather than worked around - assets cannot be renamed, so the alternative is
+      # uploading twice - and nothing can interrupt it now, which is the difference that mattered.
+      #
       # It must not be flagged a pre-release. /releases/latest skips pre-releases entirely, so the
       # download address at the top of this file would answer 404 against a release plainly visible
       # on the page.
