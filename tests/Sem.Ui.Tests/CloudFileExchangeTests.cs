@@ -326,6 +326,185 @@ public sealed class CloudFileExchangeTests
         Assert.Equal(0, provider.Writes);
     }
 
+    /// <summary>The watch, with the loop taken out of it so nothing has to wait on a clock.</summary>
+    private static CloudFileExchange.CloudWatch Watching(
+        CloudFileExchange files, Action onChanged, PageAttention? attention = null) =>
+        (CloudFileExchange.CloudWatch)files.Watch(onChanged)!;
+
+    /// <summary>
+    /// A change that was noticed and never read is not a change this app may write over.
+    /// </summary>
+    /// <remarks>
+    /// The sharpest one here, and it failed before this was written. Looking at the file moved the
+    /// version a write promises not to overwrite, so merely noticing somebody else's change licensed
+    /// the next save to go straight over it - and a change that is noticed and then not dealt with
+    /// is the ordinary case, not a rare one: the read is skipped when the sync is off, and the
+    /// question can simply be dismissed.
+    /// </remarks>
+    [Fact]
+    public async Task ALookDoesNotPromiseWhatItNeverRead()
+    {
+        var provider = new Provider("First");
+        var files = new CloudFileExchange(provider, provider.File, new Browser());
+
+        await files.TryOpenExistingAsync();
+
+        provider.WrittenElsewhere("Built somewhere else");
+
+        // Noticed, and deliberately not acted on.
+        using var watch = Watching(files, () => { });
+        await watch.CheckAsync();
+
+        var changed = EmpireDesignsFile.CreateEmpty();
+        changed.Add("Mine");
+
+        Assert.Equal(SaveOutcome.Conflicted, await files.SaveAsync("ignored", changed.Save(), backUp: false));
+        Assert.Equal(["Built somewhere else"], Names(provider.Contents));
+    }
+
+    /// <summary>One change is announced once, however often it is looked at.</summary>
+    [Fact]
+    public async Task AChangeIsAnnouncedOnceUntilSomethingIsDoneAboutIt()
+    {
+        var provider = new Provider("First");
+        var files = new CloudFileExchange(provider, provider.File, new Browser());
+
+        await files.TryOpenExistingAsync();
+        provider.WrittenElsewhere("Built somewhere else");
+
+        var announced = 0;
+        using var watch = Watching(files, () => announced++);
+
+        await watch.CheckAsync();
+        await watch.CheckAsync();
+        await watch.CheckAsync();
+
+        Assert.Equal(1, announced);
+
+        // And a further change is a further announcement, so the question on screen can follow the
+        // newest arrival rather than going quiet after the first.
+        provider.WrittenElsewhere("Built again");
+        await watch.CheckAsync();
+
+        Assert.Equal(2, announced);
+    }
+
+    /// <summary>Reading it settles the promise, and the next look has nothing to say.</summary>
+    [Fact]
+    public async Task ReadingWhatArrivedSettlesIt()
+    {
+        var provider = new Provider("First");
+        var files = new CloudFileExchange(provider, provider.File, new Browser());
+
+        await files.TryOpenExistingAsync();
+        provider.WrittenElsewhere("Built somewhere else");
+
+        var announced = 0;
+        using var watch = Watching(files, () => announced++);
+
+        await watch.CheckAsync();
+        await files.TryOpenExistingAsync();
+        await watch.CheckAsync();
+
+        Assert.Equal(1, announced);
+
+        // And having read it, a save is against what is actually there.
+        var changed = EmpireDesignsFile.CreateEmpty();
+        changed.Add("Mine");
+
+        Assert.Equal(SaveOutcome.Saved, await files.SaveAsync("ignored", changed.Save(), backUp: false));
+    }
+
+    /// <summary>A tab nobody is looking at asks nothing, and asks at once on coming back.</summary>
+    /// <remarks>
+    /// The whole of the instant-on-return feature. A hidden tab spending somebody's data on a
+    /// question nobody can see the answer to is waste; a tab just returned to making them wait out
+    /// the rest of an interval is the staleness this exists to remove.
+    /// </remarks>
+    [Fact]
+    public async Task AHiddenTabAsksNothingAndAsksOnComingBack()
+    {
+        var provider = new Provider("First");
+        var attention = new PageAttention();
+        var files = new CloudFileExchange(provider, provider.File, new Browser(), attention: attention);
+
+        await files.TryOpenExistingAsync();
+
+        var announced = 0;
+        using var watch = Watching(files, () => announced++, attention);
+
+        attention.Attend(false);
+        provider.WrittenElsewhere("Built while you were away");
+
+        var asked = provider.Stats;
+
+        await watch.TickAsync();
+        await watch.TickAsync();
+
+        Assert.Equal(asked, provider.Stats);
+        Assert.Equal(0, announced);
+
+        // Back in front of them, and told without a tick having to come round.
+        attention.Attend(true);
+
+        Assert.True(provider.Stats > asked);
+        Assert.Equal(1, announced);
+    }
+
+    /// <summary>Coming back twice in a moment asks once.</summary>
+    /// <remarks>
+    /// Focus arrives a beat after visibility, and a frozen page resuming can fire several pending
+    /// delays together. Without a floor each of those is its own request.
+    /// </remarks>
+    [Fact]
+    public async Task ComingBackTwiceInAMomentAsksOnce()
+    {
+        var provider = new Provider("First");
+        var attention = new PageAttention();
+        var files = new CloudFileExchange(provider, provider.File, new Browser(), attention: attention);
+
+        await files.TryOpenExistingAsync();
+
+        using var watch = Watching(files, () => { }, attention);
+
+        attention.Attend(false);
+        attention.Attend(true);
+
+        var asked = provider.Stats;
+
+        // Everything a return can arrive as, all at once.
+        attention.Reconnected();
+        attention.Reconnected();
+        await watch.TickAsync();
+
+        Assert.Equal(asked, provider.Stats);
+    }
+
+    /// <summary>A disposed watch asks nothing, even when told the page came back.</summary>
+    [Fact]
+    public async Task StoppingTheWatchStopsTheAsking()
+    {
+        var provider = new Provider("First");
+        var attention = new PageAttention();
+        var files = new CloudFileExchange(provider, provider.File, new Browser(), attention: attention);
+
+        await files.TryOpenExistingAsync();
+
+        var watch = Watching(files, () => { }, attention);
+        watch.Dispose();
+
+        var asked = provider.Stats;
+
+        await watch.TickAsync();
+        await watch.CheckAsync();
+        attention.Reconnected();
+
+        Assert.Equal(asked, provider.Stats);
+
+        // And disposing it again is not a way to fail.
+        watch.Dispose();
+    }
+
     private static Sem.Ui.Services.GameData Data() => new(
         new GameDatabase
         {

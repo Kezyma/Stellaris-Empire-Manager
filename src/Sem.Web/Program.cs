@@ -60,7 +60,11 @@ builder.Services.AddScoped(s => new CloudConnection(
     s.GetRequiredService<BrowserFileExchange>(),
     s.GetRequiredService<SessionHost>(),
     s.GetRequiredService<Preferences>(),
-    s.GetRequiredService<DesignSync>()));
+    s.GetRequiredService<DesignSync>(),
+
+    // So a tab nobody is looking at stops asking OneDrive anything, and a tab somebody has just
+    // come back to asks at once rather than waiting out the rest of an interval.
+    s.GetRequiredService<PageAttention>()));
 
 // Every content pack is assumed here: the installation the data was read from is not the player's,
 // and a designer that hides half the game until a setting is found is worse than one that offers

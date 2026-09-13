@@ -41,6 +41,9 @@ public sealed class DesignSync : IDisposable
     private readonly IFileExchange _files;
     private readonly Preferences _preferences;
 
+    /// <summary>What announces that the file being kept in step has been swapped, where one can.</summary>
+    private readonly FileExchangeRouter? _router;
+
     private DesignSession? _session;
     private IDisposable? _watch;
 
@@ -65,12 +68,65 @@ public sealed class DesignSync : IDisposable
     /// <summary>A file read from disk that is waiting on an answer about unsaved edits.</summary>
     private (EmpireDesignsFile File, byte[] Contents, string Name)? _waiting;
 
-    /// <summary>Takes the session's owner, the file, and where the answer is remembered.</summary>
-    public DesignSync(SessionHost host, IFileExchange files, Preferences preferences)
+    /// <summary>Takes what it keeps in step, and where to notice that the file underneath changed.</summary>
+    /// <param name="host">The session being kept in step with a file.</param>
+    /// <param name="files">Where that file is, which on the web is whatever the router points at.</param>
+    /// <param name="preferences">Where the answer about writing as you go is remembered.</param>
+    /// <param name="router">
+    /// The thing that can be repointed at a different file mid-visit, where there is one. Optional
+    /// because the desktop has no such thing - its file is the one it started with - and null there
+    /// simply means nothing ever announces a switch.
+    /// </param>
+    public DesignSync(
+        SessionHost host,
+        IFileExchange files,
+        Preferences preferences,
+        FileExchangeRouter? router = null)
     {
         _host = host ?? throw new ArgumentNullException(nameof(host));
         _files = files ?? throw new ArgumentNullException(nameof(files));
         _preferences = preferences ?? throw new ArgumentNullException(nameof(preferences));
+        _router = router;
+
+        if (_router is not null)
+        {
+            _router.Changed += OnExchangeChanged;
+        }
+    }
+
+    /// <summary>
+    /// Points the watch at whatever the router now holds, and forgets the last file entirely.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Connecting to a second file used to leave the watch on the first. <see cref="SetAsync"/>
+    /// returns at once when asked to turn on something already on, which is right for a toggle and
+    /// wrong as the way a new file arrives - so the old watch went on polling the file that had
+    /// been left, and the new one was watched by nothing.
+    /// </para>
+    /// <para>
+    /// The baseline goes with it, which was latent and worse: nothing cleared it on a switch, so a
+    /// read of the newly connected file was compared against the bytes of the previous one.
+    /// </para>
+    /// </remarks>
+    private void OnExchangeChanged()
+    {
+        Stop();
+
+        _onDisk = null;
+
+        if (Enabled && Available)
+        {
+            _watch = _files.Watch(OnFileTouched);
+        }
+        else
+        {
+            // Nothing in place to keep in step with any more - a disconnection puts the browser's
+            // own exchange back, which saves nowhere in particular.
+            Enabled = Enabled && Available;
+        }
+
+        Changed?.Invoke();
     }
 
     /// <summary>Raised when anything here that a header would draw has changed.</summary>
@@ -119,13 +175,26 @@ public sealed class DesignSync : IDisposable
     /// written is theirs and goes to the file; a session with nothing outstanding takes whatever the
     /// file holds, which is how an empire built in the game while this was off arrives.
     /// </remarks>
-    public async Task SetAsync(bool on)
-    {
-        if (!Available || on == Enabled)
-        {
-            return;
-        }
+    public Task SetAsync(bool on) =>
+        !Available || on == Enabled ? Task.CompletedTask : SettleAsync(on, holds: null);
 
+    /// <summary>
+    /// Takes the file now in place as the one to keep in step, and what it was just read as.
+    /// </summary>
+    /// <param name="on">Whether writing as you go is wanted, which the answer outlives the file.</param>
+    /// <param name="holds">What that file was found to hold, where the caller has just read it.</param>
+    /// <remarks>
+    /// Apart from <see cref="SetAsync"/> because they answer different questions. That one is the
+    /// player changing their mind, and doing nothing when asked to turn on something already on is
+    /// exactly right for it. This one is the file changing underneath an answer already given, and
+    /// there "it was already on" is not a reason to leave the watch pointed at the file they left.
+    /// </remarks>
+    public Task RepointAsync(bool on, byte[]? holds) =>
+        !Available ? Task.CompletedTask : SettleAsync(on, holds);
+
+    /// <summary>Puts the answer, the watch and the baseline in step with one another.</summary>
+    private async Task SettleAsync(bool on, byte[]? holds)
+    {
         Enabled = on;
         _preferences.SetSyncsWithFile(on);
 
@@ -136,7 +205,16 @@ public sealed class DesignSync : IDisposable
             return;
         }
 
+        // Stopped first, so repointing at a second file does not leave the first one watched.
+        Stop();
         _watch = _files.Watch(OnFileTouched);
+
+        // What the caller has just read is what the file holds, and saying so here is what stops
+        // the first look after connecting reporting the file to itself as somebody else's change.
+        if (holds is not null)
+        {
+            _onDisk = holds;
+        }
 
         if (_session is { File: not null, HasUnwrittenFileChanges: false, IsModified: false })
         {
@@ -264,6 +342,11 @@ public sealed class DesignSync : IDisposable
         if (_session is not null)
         {
             _session.FileChanged -= OnListChanged;
+        }
+
+        if (_router is not null)
+        {
+            _router.Changed -= OnExchangeChanged;
         }
 
         _host.Saved -= OnSaved;

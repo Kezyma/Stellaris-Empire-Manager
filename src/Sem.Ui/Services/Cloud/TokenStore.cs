@@ -18,6 +18,22 @@ public interface ITokenStore
 
     /// <summary>Files something, or forgets it when the value is null.</summary>
     Task WriteAsync(string key, string? value);
+
+    /// <summary>
+    /// The same, for something that belongs to one tab and to the time it is open.
+    /// </summary>
+    /// <remarks>
+    /// Two places rather than one, because two different things are kept here and they want
+    /// opposite lifetimes. A session outlives the tab on purpose - that is what stops a new tab
+    /// asking somebody to prove themselves to an app that should remember them. The verifier and
+    /// the state of a sign-in that is part-way through are the opposite: they belong to the tab
+    /// that left, and sharing them means two tabs signing in overwrite each other's half of the
+    /// handshake, so whichever comes back second finds the other one's and is refused.
+    /// </remarks>
+    Task<string?> ReadForTabAsync(string key);
+
+    /// <inheritdoc cref="ReadForTabAsync"/>
+    Task WriteForTabAsync(string key, string? value);
 }
 
 /// <summary>
@@ -87,6 +103,38 @@ public sealed class BrowserTokenStore(IJSRuntime js) : ITokenStore, IAsyncDispos
         }
     }
 
+    /// <inheritdoc />
+    public async Task<string?> ReadForTabAsync(string key)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(key);
+
+        try
+        {
+            return await (await ModuleAsync().ConfigureAwait(false))
+                .InvokeAsync<string?>("readForTab", key).ConfigureAwait(false);
+        }
+        catch (JSException)
+        {
+            return null;
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task WriteForTabAsync(string key, string? value)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(key);
+
+        try
+        {
+            await (await ModuleAsync().ConfigureAwait(false))
+                .InvokeVoidAsync("writeForTab", key, value).ConfigureAwait(false);
+        }
+        catch (JSException)
+        {
+            // As above.
+        }
+    }
+
     /// <summary>Hands the imported module back, if one was ever imported.</summary>
     public async ValueTask DisposeAsync()
     {
@@ -115,6 +163,9 @@ public sealed class NoTokenStore : ITokenStore
 {
     private readonly Dictionary<string, string> _held = new(StringComparer.Ordinal);
 
+    /// <summary>Kept apart, so a test can be two tabs sharing one browser.</summary>
+    private readonly Dictionary<string, string> _thisTab = new(StringComparer.Ordinal);
+
     /// <inheritdoc />
     public Task<string?> ReadAsync(string key) => Task.FromResult(_held.GetValueOrDefault(key));
 
@@ -128,6 +179,24 @@ public sealed class NoTokenStore : ITokenStore
         else
         {
             _held[key] = value;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public Task<string?> ReadForTabAsync(string key) => Task.FromResult(_thisTab.GetValueOrDefault(key));
+
+    /// <inheritdoc />
+    public Task WriteForTabAsync(string key, string? value)
+    {
+        if (value is null)
+        {
+            _thisTab.Remove(key);
+        }
+        else
+        {
+            _thisTab[key] = value;
         }
 
         return Task.CompletedTask;

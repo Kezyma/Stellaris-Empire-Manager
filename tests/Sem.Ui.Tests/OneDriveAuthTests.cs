@@ -91,7 +91,7 @@ public sealed class OneDriveAuthTests
         var (auth, _, session) = Built();
 
         var address = await auth.BeginAsync();
-        var verifier = await session.ReadAsync("sem.cloud.verifier");
+        var verifier = await session.ReadForTabAsync("sem.cloud.verifier");
 
         Assert.NotNull(verifier);
         Assert.DoesNotContain(verifier!, address, StringComparison.Ordinal);
@@ -114,15 +114,79 @@ public sealed class OneDriveAuthTests
 
         await auth.BeginAsync();
 
-        Assert.NotNull(await session.ReadAsync("sem.cloud.verifier"));
-        Assert.NotNull(await session.ReadAsync("sem.cloud.state"));
+        Assert.NotNull(await session.ReadForTabAsync("sem.cloud.verifier"));
+        Assert.NotNull(await session.ReadForTabAsync("sem.cloud.state"));
 
         await auth.SignOutAsync();
 
-        Assert.Null(await session.ReadAsync("sem.cloud.verifier"));
-        Assert.Null(await session.ReadAsync("sem.cloud.state"));
+        Assert.Null(await session.ReadForTabAsync("sem.cloud.verifier"));
+        Assert.Null(await session.ReadForTabAsync("sem.cloud.state"));
         Assert.Null(await session.ReadAsync("sem.cloud.refresh"));
         Assert.False(await auth.SignedInAsync());
+    }
+
+    /// <summary>
+    /// A second tab signing in does not spoil the first tab's sign-in.
+    /// </summary>
+    /// <remarks>
+    /// The bug this exists to stop, and it was mine. The verifier and the state began in
+    /// sessionStorage, which is one tab's; moving the refresh token to localStorage so a session
+    /// would outlive a tab took those two along with it, and localStorage is shared by every tab on
+    /// the origin. So a second tab beginning a sign-in wrote its state over the first tab's, and
+    /// the first tab came back to find somebody else's and was refused - correctly, and for a
+    /// reason nobody could see. Anyone who keeps the app open in a tab and opens another to try
+    /// again reproduces it every time.
+    /// </remarks>
+    [Fact]
+    public async Task ASecondTabSigningInDoesNotSpoilTheFirst()
+    {
+        // One browser: the lasting half is shared, and each tab has its own of the other half.
+        var handler = new Handler((_, _) => Granting("token-1", "refresh-1"));
+        var firstTab = new NoTokenStore();
+        var secondTab = new NoTokenStore();
+
+        var first = new OneDriveAuth(new HttpClient(handler), firstTab, ClientId, Redirect);
+        var second = new OneDriveAuth(new HttpClient(handler), secondTab, ClientId, Redirect);
+
+        await first.BeginAsync();
+        var began = await firstTab.ReadForTabAsync("sem.cloud.state");
+
+        // The other tab starts its own, which used to overwrite what the first one was waiting on.
+        await second.BeginAsync();
+
+        Assert.NotNull(began);
+        Assert.Equal(began, await firstTab.ReadForTabAsync("sem.cloud.state"));
+
+        // So the first tab's return is still the answer to the question it asked.
+        Assert.True(await first.CompleteAsync(
+            $"{Redirect}?code=the-code&state={Uri.EscapeDataString(began!)}"));
+    }
+
+    /// <summary>
+    /// The session outlives the tab; the half-finished sign-in does not.
+    /// </summary>
+    /// <remarks>
+    /// Both halves of the arrangement in one place, because they are only correct together: the
+    /// refresh token is kept where a new tab can find it, and the handshake where no other tab can
+    /// reach it.
+    /// </remarks>
+    [Fact]
+    public async Task TheSessionIsSharedAndTheHandshakeIsNot()
+    {
+        var (auth, _, session) = Built();
+
+        await auth.BeginAsync();
+
+        Assert.NotNull(await session.ReadForTabAsync("sem.cloud.verifier"));
+        Assert.NotNull(await session.ReadForTabAsync("sem.cloud.state"));
+        Assert.Null(await session.ReadAsync("sem.cloud.verifier"));
+        Assert.Null(await session.ReadAsync("sem.cloud.state"));
+
+        await auth.CompleteAsync($"{Redirect}?code=c&state={Uri.EscapeDataString(
+            (await session.ReadForTabAsync("sem.cloud.state"))!)}");
+
+        // And the token that came of it is the half a new tab is meant to find.
+        Assert.NotNull(await session.ReadAsync("sem.cloud.refresh"));
     }
 
     /// <summary>And the rest of what a sign-in needs, in the address rather than anywhere else.</summary>

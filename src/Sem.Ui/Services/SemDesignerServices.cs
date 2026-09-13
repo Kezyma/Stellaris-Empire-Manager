@@ -41,6 +41,11 @@ public static class SemDesignerServices
         // apart from it.
         services.AddScoped(s => new Preferences(s.GetRequiredService<IJSRuntime>()));
 
+        // Whether anybody is looking, for anything that asks a provider something on a timer. Both
+        // hosts register it: inside the desktop's embedded browser the document is always visible,
+        // so it answers "attended" forever and costs nothing.
+        services.AddScoped(s => new PageAttention(s.GetRequiredService<IJSRuntime>()));
+
         // One session for the whole app, so moving between the list and the designer keeps unsaved
         // work. The store is asked for rather than required: the desktop keeps none, because the
         // player's own file is the one that counts and a second copy would be a rival to it.
@@ -57,7 +62,11 @@ public static class SemDesignerServices
         services.AddScoped(s => new DesignSync(
             s.GetRequiredService<SessionHost>(),
             s.GetRequiredService<IFileExchange>(),
-            s.GetRequiredService<Preferences>()));
+            s.GetRequiredService<Preferences>(),
+
+            // Asked for rather than required, the way the design store is: only a host whose file
+            // can change mid-visit registers one, and null means nothing ever announces a switch.
+            s.GetService<FileExchangeRouter>()));
 
         return services;
     }

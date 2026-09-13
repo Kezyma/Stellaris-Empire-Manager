@@ -217,6 +217,46 @@ export function writeStored(key, value) {
 }
 
 /**
+ * Reads something kept for this tab alone.
+ *
+ * sessionStorage rather than localStorage, and the difference is the whole point: localStorage is
+ * shared by every tab on the origin, so two tabs part-way through the same handshake overwrite one
+ * another's half of it and whichever comes back second finds the other's. sessionStorage is this
+ * tab's, survives a navigation away and back - which is exactly the trip a sign-in takes - and goes
+ * when the tab does.
+ *
+ * @param {string} key where it was filed
+ * @returns {string|null} the contents, or null when there is nothing there
+ */
+export function readForTab(key) {
+    try {
+        return sessionStorage.getItem(key);
+    } catch {
+        return null;
+    }
+}
+
+/**
+ * Keeps something for this tab alone.
+ *
+ * @param {string} key where to file it
+ * @param {string} value the contents, or null to forget it
+ */
+export function writeForTab(key, value) {
+    try {
+        if (value === null || value === undefined) {
+            sessionStorage.removeItem(key);
+            return;
+        }
+
+        sessionStorage.setItem(key, value);
+    } catch {
+        // Switched off or full. The sign-in that needed this will fail on the way back and say so,
+        // which is the one place there is somebody waiting to be told.
+    }
+}
+
+/**
  * Brings the chosen item of a scrolling list into view without scrolling the page.
  *
  * A list that scrolls inside its own box opens showing its first rows, which for a design already
@@ -679,6 +719,56 @@ function warn(event) {
 
     // Required by browsers old enough to want it, ignored by the rest.
     event.returnValue = '';
+}
+
+/** Who to tell about the page coming and going, or null while nothing is listening. */
+let attentive = null;
+
+/**
+ * Tells the app when it is in front of the player, and when it comes back.
+ *
+ * Visibility is the only thing that decides whether the app is attended. Focus, coming back online
+ * and a page restored from the back-forward cache all mean "worth looking again" without meaning
+ * anything about visibility - the desktop is the reason that distinction matters, since inside an
+ * embedded browser the document is visible forever and a visibility handler would never fire.
+ *
+ * The handlers are named rather than inline so that removeEventListener can find them again, which
+ * is the same reason warnBeforeLeaving above keeps `warn` at the top level.
+ *
+ * @param {object} owner the .NET object to call back
+ * @returns {boolean} whether the page is visible right now
+ */
+export function watchAttention(owner) {
+    stopWatchingAttention();
+    attentive = owner;
+
+    document.addEventListener('visibilitychange', onVisibilityChanged);
+    window.addEventListener('focus', onReconnected);
+    window.addEventListener('online', onReconnected);
+    window.addEventListener('pageshow', onReconnected);
+
+    return document.visibilityState === 'visible';
+}
+
+/** Stops telling it. */
+export function stopWatchingAttention() {
+    document.removeEventListener('visibilitychange', onVisibilityChanged);
+    window.removeEventListener('focus', onReconnected);
+    window.removeEventListener('online', onReconnected);
+    window.removeEventListener('pageshow', onReconnected);
+
+    attentive = null;
+}
+
+function onVisibilityChanged() {
+    // Caught, and not merely for tidiness: these outlive whatever set them up, so once .NET has
+    // let the reference go every call rejects, and an uncaught rejection per event is a console
+    // nobody can read anything else in.
+    attentive?.invokeMethodAsync('Attend', document.visibilityState === 'visible').catch(() => {});
+}
+
+function onReconnected() {
+    attentive?.invokeMethodAsync('Reconnected').catch(() => {});
 }
 
 /**

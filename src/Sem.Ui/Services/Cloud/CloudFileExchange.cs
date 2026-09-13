@@ -33,10 +33,25 @@ public sealed class CloudFileExchange : IFileExchange, IDisposable
 
     private readonly ICloudProvider _provider;
     private readonly IFileExchange _browser;
+
+    /// <summary>Whether anybody is looking, or null where nothing can say.</summary>
+    private readonly PageAttention? _attention;
     private readonly CancellationTokenSource _stopped = new();
 
     /// <summary>The version last read or written, which is what a write promises not to overwrite.</summary>
-    private string? _version;
+    private string? _baseline;
+
+    /// <summary>
+    /// The version the watch has already announced, so one change is not announced twice.
+    /// </summary>
+    /// <remarks>
+    /// Kept apart from the baseline, because noticing a change and having dealt with one are
+    /// different events and only the second is a promise. Moving the baseline on a mere look was
+    /// the bug: a change that was noticed and then never answered - the read skipped, the question
+    /// dismissed - left the next write licensed to go straight over it. Cleared whenever the
+    /// baseline moves, since the baseline moving is what having dealt with it looks like.
+    /// </remarks>
+    private string? _reported;
 
     /// <summary>
     /// Takes a provider ready to act, the file chosen at it, and the browser underneath.
@@ -49,13 +64,23 @@ public sealed class CloudFileExchange : IFileExchange, IDisposable
     /// has changed it since. Picking up from a stamp rather than from a read is what lets a reload
     /// leave an edit in progress alone: there is no reason to fetch a file that has not moved.
     /// </param>
+    /// <param name="attention">
+    /// Whether anybody is looking, so a tab nobody has in front of them stops asking and a tab
+    /// somebody has just come back to asks at once. Null means always attended, which is what the
+    /// desktop and a test get.
+    /// </param>
     public CloudFileExchange(
-        ICloudProvider provider, CloudFile file, IFileExchange browser, string? version = null)
+        ICloudProvider provider,
+        CloudFile file,
+        IFileExchange browser,
+        string? version = null,
+        PageAttention? attention = null)
     {
         _provider = provider ?? throw new ArgumentNullException(nameof(provider));
         File = file ?? throw new ArgumentNullException(nameof(file));
         _browser = browser ?? throw new ArgumentNullException(nameof(browser));
-        _version = version;
+        _baseline = version;
+        _attention = attention;
     }
 
     /// <summary>
@@ -69,7 +94,24 @@ public sealed class CloudFileExchange : IFileExchange, IDisposable
     public event Action<string, byte[]>? Settled;
 
     /// <summary>The version last read or written, or null where neither has happened.</summary>
-    public string? Version => _version;
+    public string? Version => _baseline;
+
+    /// <summary>
+    /// Takes this version and these bytes as what the file now holds, and says so.
+    /// </summary>
+    /// <remarks>
+    /// The one place the baseline moves, and it moves only for a read or a write - the two things
+    /// that put this app's own eyes on the contents. Anything the watch merely saw goes in
+    /// <see cref="_reported"/> instead, and is forgotten here, because whatever it saw has now
+    /// either been taken or been written over.
+    /// </remarks>
+    private void Settle(string version, byte[] contents)
+    {
+        _baseline = version;
+        _reported = null;
+
+        Settled?.Invoke(version, contents);
+    }
 
     /// <summary>The file this is pointed at.</summary>
     public CloudFile File { get; }
@@ -97,8 +139,7 @@ public sealed class CloudFileExchange : IFileExchange, IDisposable
             return null;
         }
 
-        _version = read.Stamp.Version;
-        Settled?.Invoke(_version, read.Contents);
+        Settle(read.Stamp.Version, read.Contents);
 
         return (File.Name, read.Contents);
     }
@@ -125,18 +166,16 @@ public sealed class CloudFileExchange : IFileExchange, IDisposable
         }
 
         var (outcome, stamp) = await _provider
-            .WriteAsync(File.Id, contents, _version, _stopped.Token)
+            .WriteAsync(File.Id, contents, _baseline, _stopped.Token)
             .ConfigureAwait(false);
 
         if (outcome is CloudWrite.Written)
         {
-            _version = stamp?.Version ?? _version;
-
             // What was written is now what is there, so the next visit has both halves of the
             // answer without fetching anything.
-            if (_version is { Length: > 0 } settled)
+            if ((stamp?.Version ?? _baseline) is { Length: > 0 } settled)
             {
-                Settled?.Invoke(settled, contents);
+                Settle(settled, contents);
             }
 
             return SaveOutcome.Saved;
@@ -172,44 +211,187 @@ public sealed class CloudFileExchange : IFileExchange, IDisposable
     {
         ArgumentNullException.ThrowIfNull(onChanged);
 
-        var stopped = CancellationTokenSource.CreateLinkedTokenSource(_stopped.Token);
-
-        _ = PollAsync(onChanged, stopped.Token);
-
-        return stopped;
+        return new CloudWatch(this, onChanged, _attention, _stopped.Token);
     }
 
-    private async Task PollAsync(Action onChanged, CancellationToken cancellationToken)
+    /// <summary>
+    /// Asks the provider what the file is now, and says so where it is not what was expected.
+    /// </summary>
+    /// <remarks>
+    /// The look itself, with no gate of its own - whoever calls it has already decided it is worth
+    /// taking. Kept apart from the loop so that everything about it can be tested by calling it,
+    /// rather than by waiting for a timer.
+    /// </remarks>
+    private async Task<bool> LookedAsync(CancellationToken cancellationToken)
     {
-        while (!cancellationToken.IsCancellationRequested)
+        if (await _provider.StatAsync(File.Id, cancellationToken).ConfigureAwait(false) is not { } now)
         {
-            try
+            return false;
+        }
+
+        // In step. Anything the watch said before has been dealt with by whatever moved the
+        // baseline, so it is free to say it again should the file move away and back.
+        if (string.Equals(now.Version, _baseline, StringComparison.Ordinal))
+        {
+            _reported = null;
+
+            return false;
+        }
+
+        if (string.Equals(now.Version, _reported, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        // Recorded before telling anyone, so a reader that takes a moment cannot be told twice
+        // about the same version by the next look coming round underneath it. The baseline is
+        // deliberately left where it is: nothing has read this yet, and nothing may write over it.
+        _reported = now.Version;
+
+        return true;
+    }
+
+    /// <summary>
+    /// One file being watched at a provider, and everything that decides when to ask about it.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A handle that stops when it is disposed, which the last one did not: it returned the linked
+    /// cancellation source, and disposing one of those does not cancel it. So turning the sync off
+    /// left a request going out every fifteen seconds for as long as the tab was open.
+    /// </para>
+    /// <para>
+    /// The tab's attention is answered here rather than anywhere else. Deciding when to ask a
+    /// provider something is this class's whole job, and nothing upstream should have to learn what
+    /// a hidden tab is to get the benefit of one.
+    /// </para>
+    /// </remarks>
+    public sealed class CloudWatch : IDisposable
+    {
+        /// <summary>
+        /// How soon after one look another is worth taking.
+        /// </summary>
+        /// <remarks>
+        /// One floor guarding three things: an alt-tab storm, a frozen page resuming and firing
+        /// several pending delays at once, and focus arriving a moment after visibility.
+        /// </remarks>
+        private static readonly TimeSpan Soonest = TimeSpan.FromSeconds(5);
+
+        private readonly CloudFileExchange _file;
+        private readonly Action _onChanged;
+        private readonly PageAttention? _attention;
+
+        private CancellationTokenSource? _stopped;
+
+        /// <summary>When the last look was taken, or null before any has been.</summary>
+        /// <remarks>
+        /// Nullable rather than a sentinel. A "long ago" value of long.MinValue looks harmless and
+        /// is not: the subtraction below overflows against it and comes out negative, so the floor
+        /// reads as "asked a moment ago" and the very first return is the one it suppresses.
+        /// </remarks>
+        private long? _asked;
+
+        /// <summary>Starts watching, and goes on until it is disposed or the exchange is.</summary>
+        /// <param name="file">The file to ask about.</param>
+        /// <param name="onChanged">Told when the file is not what this app last read or wrote.</param>
+        /// <param name="attention">Whether anybody is looking, or null for always.</param>
+        /// <param name="until">Cancelled when the exchange itself goes.</param>
+        public CloudWatch(
+            CloudFileExchange file, Action onChanged, PageAttention? attention, CancellationToken until)
+        {
+            _file = file;
+            _onChanged = onChanged;
+            _attention = attention;
+            _stopped = CancellationTokenSource.CreateLinkedTokenSource(until);
+
+            if (_attention is not null)
             {
-                await Task.Delay(Interval, cancellationToken).ConfigureAwait(false);
-
-                if (await _provider.StatAsync(File.Id, cancellationToken).ConfigureAwait(false) is not { } now)
-                {
-                    continue;
-                }
-
-                if (_version is not null && string.Equals(now.Version, _version, StringComparison.Ordinal))
-                {
-                    continue;
-                }
-
-                // Recorded before telling anyone, so a reader that takes a moment cannot be told
-                // twice about the same version by the next tick coming round underneath it.
-                _version = now.Version;
-                onChanged();
+                _attention.Returned += OnReturned;
             }
-            catch (OperationCanceledException)
+
+            _ = LoopAsync(_stopped.Token);
+        }
+
+        /// <summary>One look now, whatever the tab is doing.</summary>
+        public async Task CheckAsync()
+        {
+            if (_stopped is not { } stopped || stopped.IsCancellationRequested)
             {
                 return;
             }
-            catch (Exception ex) when (ex is HttpRequestException or InvalidOperationException)
+
+            _asked = Environment.TickCount64;
+
+            bool changed;
+
+            try
+            {
+                changed = await _file.LookedAsync(stopped.Token).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+                when (ex is OperationCanceledException or HttpRequestException or InvalidOperationException)
             {
                 // A provider that cannot be reached this minute is not a reason to stop watching,
-                // and nobody asked for this request - the next tick tries again.
+                // and nobody asked for this request - the next look tries again.
+                return;
+            }
+
+            // Outside the guard above on purpose. What the callback does is not this class's to
+            // swallow, and a failure in it faulting a loop nobody is awaiting would be a fault
+            // nobody ever hears about.
+            if (changed)
+            {
+                _onChanged();
+            }
+        }
+
+        /// <summary>A look, unless the tab is away or one was taken a moment ago.</summary>
+        public Task TickAsync() =>
+            _attention is { Attended: false } || Recently() ? Task.CompletedTask : CheckAsync();
+
+        /// <summary>Stops the asking, for good, and lets go of the page.</summary>
+        public void Dispose()
+        {
+            // Exchanged, so a second dispose does not cancel a source that has already gone.
+            if (Interlocked.Exchange(ref _stopped, null) is not { } stopped)
+            {
+                return;
+            }
+
+            if (_attention is not null)
+            {
+                _attention.Returned -= OnReturned;
+            }
+
+            stopped.Cancel();
+            stopped.Dispose();
+        }
+
+        private bool Recently() =>
+            _asked is { } last && Environment.TickCount64 - last < (long)Soonest.TotalMilliseconds;
+
+        private void OnReturned()
+        {
+            if (!Recently())
+            {
+                _ = CheckAsync();
+            }
+        }
+
+        private async Task LoopAsync(CancellationToken cancellationToken)
+        {
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                try
+                {
+                    await Task.Delay(Interval, cancellationToken).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                    return;
+                }
+
+                await TickAsync().ConfigureAwait(false);
             }
         }
     }

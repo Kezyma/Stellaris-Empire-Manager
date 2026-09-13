@@ -134,6 +134,9 @@ public sealed class CloudConnectionTests
     {
         private readonly Dictionary<string, string> _held = new(StringComparer.Ordinal);
 
+        /// <summary>This tab's half, which another tab on the same browser does not share.</summary>
+        private readonly Dictionary<string, string> _thisTab = new(StringComparer.Ordinal);
+
         public Tokens(bool signedIn)
         {
             if (signedIn)
@@ -155,6 +158,22 @@ public sealed class CloudConnectionTests
             else
             {
                 _held[key] = value;
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public Task<string?> ReadForTabAsync(string key) => Task.FromResult(_thisTab.GetValueOrDefault(key));
+
+        public Task WriteForTabAsync(string key, string? value)
+        {
+            if (value is null)
+            {
+                _thisTab.Remove(key);
+            }
+            else
+            {
+                _thisTab[key] = value;
             }
 
             return Task.CompletedTask;
@@ -729,7 +748,7 @@ public sealed class CloudConnectionTests
         // Half of it - the verifier survived and the state did not.
         using var half = new Rig();
         await half.Connection.BeginSignInAsync();
-        await half.Store.WriteAsync("sem.cloud.state", null);
+        await half.Store.WriteForTabAsync("sem.cloud.state", null);
 
         Assert.False(await half.Connection.CompleteSignInAsync("https://example.invalid/?code=abc&state=xyz"));
         Assert.Contains("Only part of the sign-in", half.Connection.Note, StringComparison.Ordinal);
@@ -916,6 +935,50 @@ public sealed class CloudConnectionTests
         {
             to.Preferences.Set(key, from.Preferences.Get(key)!);
         }
+    }
+
+    /// <summary>
+    /// Connecting to a second file watches that one, and stops watching the one left behind.
+    /// </summary>
+    /// <remarks>
+    /// It did neither. Turning on something already on returns at once, which is right for a toggle
+    /// and wrong as the way a new file arrives - so the watch stayed pointed at the first file, and
+    /// the handle that was supposed to stop it did not, because disposing a cancellation source
+    /// does not cancel it. The likeliest reason this appeared not to work at all.
+    /// </remarks>
+    [Fact]
+    public async Task ConnectingToADifferentFileWatchesThatOne()
+    {
+        using var rig = new Rig();
+        rig.Preferences.SetSyncsWithFile(true);
+
+        await rig.OpenAsync();
+        Assert.True(await rig.Connection.UseAsync(TheFile(), autoSave: true));
+
+        var first = new CloudFile("item-2", "second.txt", "/Elsewhere");
+
+        Assert.True(await rig.Connection.UseAsync(first, autoSave: true));
+
+        // Whatever is watched now is the second file, and the provider is asked about it by id.
+        Assert.Equal("second.txt", rig.Connection.File!.Name);
+        Assert.True(rig.Connection.Connected);
+    }
+
+    /// <summary>Disconnecting stops it entirely.</summary>
+    [Fact]
+    public async Task DisconnectingStopsTheWatching()
+    {
+        using var rig = new Rig();
+        rig.Preferences.SetSyncsWithFile(true);
+
+        await rig.OpenAsync();
+        Assert.True(await rig.Connection.UseAsync(TheFile(), autoSave: true));
+
+        await rig.Connection.DisconnectAsync();
+
+        Assert.False(rig.Connection.Connected);
+        Assert.False(rig.Router.SavesInPlace);
+        Assert.False(rig.Preferences.SyncsWithFile);
     }
 
     /// <summary>Disconnecting leaves the row saying what is true of it afterwards.</summary>

@@ -29,6 +29,12 @@ namespace Sem.Ui.Services.Cloud;
 /// sign-in outlives the tab it was made in. That leaves it on the machine until the player
 /// disconnects, and the remark on <see cref="BrowserTokenStore"/> is where that trade is argued.
 /// </para>
+/// <para>
+/// The verifier and the state are kept the other way, for this tab alone, and the difference is
+/// load-bearing. They are one sign-in's half-finished handshake; shared across tabs, a second tab
+/// beginning one overwrites what the first is waiting on, and the first comes back to find an
+/// answer to somebody else's question and is refused.
+/// </para>
 /// </remarks>
 public sealed class OneDriveAuth
 {
@@ -95,8 +101,8 @@ public sealed class OneDriveAuth
         var verifier = Random(64);
         var state = Random(16);
 
-        await _session.WriteAsync(VerifierKey, verifier).ConfigureAwait(false);
-        await _session.WriteAsync(StateKey, state).ConfigureAwait(false);
+        await _session.WriteForTabAsync(VerifierKey, verifier).ConfigureAwait(false);
+        await _session.WriteForTabAsync(StateKey, state).ConfigureAwait(false);
 
         var query = new Dictionary<string, string>(StringComparer.Ordinal)
         {
@@ -233,11 +239,11 @@ public sealed class OneDriveAuth
             return false;
         }
 
-        var expected = await _session.ReadAsync(StateKey).ConfigureAwait(false);
-        await _session.WriteAsync(StateKey, null).ConfigureAwait(false);
+        var expected = await _session.ReadForTabAsync(StateKey).ConfigureAwait(false);
+        await _session.WriteForTabAsync(StateKey, null).ConfigureAwait(false);
 
-        var verifier = await _session.ReadAsync(VerifierKey).ConfigureAwait(false);
-        await _session.WriteAsync(VerifierKey, null).ConfigureAwait(false);
+        var verifier = await _session.ReadForTabAsync(VerifierKey).ConfigureAwait(false);
+        await _session.WriteForTabAsync(VerifierKey, null).ConfigureAwait(false);
 
         var keptState = expected is { Length: > 0 };
         var keptVerifier = verifier is { Length: > 0 };
@@ -340,8 +346,8 @@ public sealed class OneDriveAuth
         _expires = default;
 
         await _session.WriteAsync(RefreshKey, null).ConfigureAwait(false);
-        await _session.WriteAsync(VerifierKey, null).ConfigureAwait(false);
-        await _session.WriteAsync(StateKey, null).ConfigureAwait(false);
+        await _session.WriteForTabAsync(VerifierKey, null).ConfigureAwait(false);
+        await _session.WriteForTabAsync(StateKey, null).ConfigureAwait(false);
     }
 
     private async Task<bool> RedeemAsync(Dictionary<string, string> form)

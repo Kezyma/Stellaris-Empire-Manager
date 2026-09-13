@@ -52,6 +52,7 @@ public sealed class CloudConnection : IDisposable
     private readonly SessionHost _host;
     private readonly Preferences _preferences;
     private readonly DesignSync _sync;
+    private readonly PageAttention? _attention;
 
     private CloudFileExchange? _connected;
 
@@ -63,7 +64,8 @@ public sealed class CloudConnection : IDisposable
         BrowserFileExchange browser,
         SessionHost host,
         Preferences preferences,
-        DesignSync sync)
+        DesignSync sync,
+        PageAttention? attention = null)
     {
         _provider = provider ?? throw new ArgumentNullException(nameof(provider));
         _auth = auth ?? throw new ArgumentNullException(nameof(auth));
@@ -72,6 +74,7 @@ public sealed class CloudConnection : IDisposable
         _host = host ?? throw new ArgumentNullException(nameof(host));
         _preferences = preferences ?? throw new ArgumentNullException(nameof(preferences));
         _sync = sync ?? throw new ArgumentNullException(nameof(sync));
+        _attention = attention;
     }
 
     /// <summary>Raised when any of the answers below changes.</summary>
@@ -249,7 +252,7 @@ public sealed class CloudConnection : IDisposable
     {
         ArgumentNullException.ThrowIfNull(file);
 
-        var exchange = new CloudFileExchange(_provider, file, _browser);
+        var exchange = new CloudFileExchange(_provider, file, _browser, attention: _attention);
         var opened = await exchange.TryOpenExistingAsync().ConfigureAwait(false);
 
         if (opened is not { } read)
@@ -380,8 +383,10 @@ public sealed class CloudConnection : IDisposable
 
         // And turned on for real, which is what makes it survive a reload: the answer is
         // remembered in preferences, but the sync itself could not be started before now because
-        // there was nothing in place for it to watch.
-        await _sync.SetAsync(_preferences.SyncsWithFile).ConfigureAwait(false);
+        // there was nothing in place for it to watch. Repointed rather than merely set, because
+        // this may be a second file arriving over a first while the answer was already yes - and
+        // handed what was just read, so the first look does not report the file to itself.
+        await _sync.RepointAsync(_preferences.SyncsWithFile, read.Contents).ConfigureAwait(false);
 
         Changed?.Invoke();
 
@@ -430,7 +435,9 @@ public sealed class CloudConnection : IDisposable
         Note = null;
         SessionEnded = false;
 
-        await _sync.SetAsync(_preferences.SyncsWithFile).ConfigureAwait(false);
+        // Nothing was read on this path - the stamp said there was no reason to - so there are no
+        // contents to hand over, and the baseline is whatever the next look establishes.
+        await _sync.RepointAsync(_preferences.SyncsWithFile, holds: null).ConfigureAwait(false);
     }
 
     /// <summary>Lets go of an exchange, and of the notifications it was sending.</summary>
@@ -513,7 +520,7 @@ public sealed class CloudConnection : IDisposable
 
             if (string.Equals(now.Version, seen, StringComparison.Ordinal))
             {
-                await AttachAsync(new CloudFileExchange(_provider, file, _browser, seen))
+                await AttachAsync(new CloudFileExchange(_provider, file, _browser, seen, _attention))
                     .ConfigureAwait(false);
 
                 // What is open is either that file or an edit standing on top of it. The print
