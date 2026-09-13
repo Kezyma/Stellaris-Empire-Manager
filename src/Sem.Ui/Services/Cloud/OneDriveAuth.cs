@@ -254,8 +254,9 @@ public sealed class OneDriveAuth
         // the tab that came back with nothing, which on a phone means it was discarded while the
         // password was being typed. Where both exist they agree unless another tab has been signing
         // in, and in that case this tab's is the right one by construction.
-        var expected = await _session.ReadForTabAsync(StateKey).ConfigureAwait(false)
-            ?? await _session.ReadAsync(StateKey).ConfigureAwait(false);
+        var kept = await _session.ReadForTabAsync(StateKey).ConfigureAwait(false);
+        var shared = kept is null ? await _session.ReadAsync(StateKey).ConfigureAwait(false) : null;
+        var expected = kept ?? shared;
 
         var verifier = await _session.ReadForTabAsync(VerifierKey).ConfigureAwait(false)
             ?? await _session.ReadAsync(VerifierKey).ConfigureAwait(false);
@@ -300,18 +301,17 @@ public sealed class OneDriveAuth
         {
             // An answer to a question this tab is no longer asking: a second sign-in started over
             // the first, or a code arriving that nobody here asked for. Not spent either way.
-            Trouble = "The answer that came back was for a different sign-in, so it was not used. "
-                + "Connect again.";
+            // Shown, not merely logged. A phone has no console to open, and without this the
+            // sentence above cannot tell apart the three things that produce it: a second context
+            // that overwrote this one's half of the handshake, a stale value left somewhere by an
+            // older build, and a provider that answered with no state at all. Short prefixes are
+            // enough to compare two values by eye, and none of this is a secret - the state is a
+            // nonce, it travelled in the address bar, and it has just been spent.
+            var arrived = query.TryGetValue("state", out var carried) ? carried : null;
 
-            // Written where a developer can read it, because the sentence above is all the person
-            // in front of it can use and it is not enough to tell two causes apart: a second tab
-            // that overwrote this one's half of the handshake, and a provider that answered with no
-            // state at all. Neither value is a secret - the state is a nonce, it travels in the
-            // address bar, and it has just been spent.
-            Console.WriteLine(
-                "Sem: sign-in refused. Expected state '{0}', the address carried '{1}'.",
-                expected,
-                query.TryGetValue("state", out var arrived) ? arrived : "(none)");
+            Trouble = "The answer that came back was for a different sign-in, so it was not used. "
+                + $"Connect again. (This {(kept is not null ? "tab" : "browser")} was waiting for "
+                + $"{Short(expected)}; what came back was {Short(arrived)}.)";
 
             return false;
         }
@@ -461,6 +461,16 @@ public sealed class OneDriveAuth
 
         return found;
     }
+
+    /// <summary>
+    /// Enough of a value to compare two of them by eye, for a message somebody has to read.
+    /// </summary>
+    /// <remarks>
+    /// Eight characters of a hundred and twenty-eight bits. Two that differ will differ here, and
+    /// showing the whole thing would put twenty-two characters of noise in a sentence.
+    /// </remarks>
+    private static string Short(string? value) =>
+        value is not { Length: > 0 } ? "nothing" : value.Length <= 8 ? value : value[..8];
 
     /// <summary>Random bytes as base64url, which is what both the verifier and the state are.</summary>
     internal static string Random(int bytes) => Encoded(RandomNumberGenerator.GetBytes(bytes));
