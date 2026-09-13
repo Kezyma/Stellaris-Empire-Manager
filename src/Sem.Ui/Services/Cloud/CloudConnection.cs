@@ -206,18 +206,14 @@ public sealed class CloudConnection : IDisposable
                         ? trouble
                         : $"Signing in to {_provider.Name} did not finish. Try connecting again.";
 
-                // Where the app was added to a home screen, that is almost certainly the whole of
-                // it, and no amount of trying again will help. Said as an addition rather than
-                // instead, because the sentence above is still what happened and this is why.
-                if (_attention is { Standalone: true })
-                {
-                    Note += " This app was opened from your home screen, which on an iPhone or iPad"
-                        + " keeps its own separate storage and hands the sign-in to Safari - so the"
-                        + " answer comes back to Safari rather than here. Open the site in Safari"
-                        + " and connect there. Note that the two keep separate copies of your"
-                        + " empires, so export anything here you want to keep.";
-                }
-
+                // There was a paragraph here blaming the home screen: that a standalone app keeps
+                // its own storage and hands the sign-in to the browser, so the answer comes back
+                // somewhere else. A good theory, and wrong - and the app's own diagnostic is what
+                // disproved it. A refusal from a home-screen app reported that the half being
+                // waited on belonged to this tab, which can only be true if the context that asked
+                // is the context that was answered. Sending somebody away to use Safari instead
+                // would have sent them away from something that works, so it is gone rather than
+                // softened.
                 LastSignInFailed = true;
                 Changed?.Invoke();
             }

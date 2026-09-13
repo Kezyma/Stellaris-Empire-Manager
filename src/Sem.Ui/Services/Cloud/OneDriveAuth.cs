@@ -309,8 +309,14 @@ public sealed class OneDriveAuth
             return false;
         }
 
-        if (!query.TryGetValue("state", out var state)
-            || !string.Equals(state, expected, StringComparison.Ordinal))
+        // Trimmed on both sides before comparing. A state is base64url - letters, digits, dash and
+        // underscore - so whitespace at either end cannot be part of one, and removing it cannot
+        // make two different states look alike. It can only forgive something that put a stray
+        // character on the end of one of them, which is what the first report of this looked like:
+        // two values whose visible halves were identical and which compared unequal anyway.
+        var carried = query.TryGetValue("state", out var found) ? found.Trim() : null;
+
+        if (carried is null || !string.Equals(carried, expected.Trim(), StringComparison.Ordinal))
         {
             // An answer to a question this tab is no longer asking: a second sign-in started over
             // the first, or a code arriving that nobody here asked for. Not spent either way.
@@ -320,11 +326,13 @@ public sealed class OneDriveAuth
             // older build, and a provider that answered with no state at all. Short prefixes are
             // enough to compare two values by eye, and none of this is a secret - the state is a
             // nonce, it travelled in the address bar, and it has just been spent.
-            var arrived = query.TryGetValue("state", out var carried) ? carried : null;
-
+            // Whole values and their lengths. Eight characters were not enough: the first report
+            // of this showed two prefixes that matched and a comparison that failed anyway, which
+            // says the difference is in a tail - and a length says so at a glance.
             Trouble = "The answer that came back was for a different sign-in, so it was not used. "
                 + $"Connect again. (This {(kept is not null ? "tab" : "browser")} was waiting for "
-                + $"{Short(expected)}; what came back was {Short(arrived)}.)";
+                + $"'{expected}' [{expected.Length}]; what came back was "
+                + $"'{carried ?? "nothing"}' [{carried?.Length ?? 0}].)";
 
             return false;
         }
