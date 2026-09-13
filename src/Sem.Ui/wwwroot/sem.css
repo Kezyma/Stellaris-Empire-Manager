@@ -4886,12 +4886,17 @@ button.icon .sem-action-icon { display: block; }
 /*
    The name column, which is the row's heading rather than a cell of it - it is what the other
    cells are about, and a screen reader reading across says which empire it is reading.
+
+   The flag and the name are laid out by a box inside the cell rather than by the cell. Told to be
+   a flex container the cell stops being a cell: the table wraps it in an anonymous one, and an
+   anonymous cell is aligned to the row's baseline rather than its middle. So the heading kept its
+   own height - 34 pixels in a row the chips beside it had made 49 - and sat seven pixels above the
+   middle of everything it names. Only ever visible where the rows are tall, which is a phone.
 */
-.sem-table tbody th.name {
+.sem-table tbody th.name > .inner {
     display: flex;
     align-items: center;
     gap: var(--space-sm);
-    white-space: nowrap;
 }
 
 .sem-table .sem-flag.tiny {
@@ -5795,8 +5800,22 @@ button.icon .sem-action-icon { display: block; }
         And the same chip inside a table squeezed narrow, which is the case that only ever happens
         on a phone - the compact rule below is more specific than the line above and was quietly
         holding the target at about twenty-two pixels in exactly the place it mattered.
+
+        Square, and the padding the same on all four sides. The line above it is shaped for a chip
+        that reads picture-then-word, so its four pixels on the left and ten on the right are the
+        room the word needs - and this is the one place the word is hidden, so all that reached the
+        phone was a pill wider on one side than the other with the icon three pixels off centre.
+
+        The picture also grows, because here it is the whole of what the chip says. Trading padding
+        for icon keeps the target the size a finger needs while spending it on the part that has to
+        be recognised.
     */
-    .sem-table-wrap.compact .sem-chip > button:has(img) { padding: 8px 10px 8px 4px; }
+    .sem-table-wrap.compact .sem-chip > button:has(img) { padding: 5px; }
+
+    .sem-table-wrap.compact .sem-chip > button:has(img) img {
+        width: 22px;
+        height: 22px;
+    }
 
     /*
         A row's own buttons. The table asks for 1.7rem, which is twenty-two pixels at this root and

@@ -163,15 +163,22 @@
                             </td>
 
                             <th scope="row" class="name">
-                                @if (row.Flag is { } flag)
-                                {
-                                    <FlagPreview Flag="@flag" Class="tiny" />
-                                }
+                                @*
+                                    A box inside the cell rather than the cell itself, because a
+                                    cell told to lay its contents out stops being a cell. Why that
+                                    matters is written beside the rule that does the laying out.
+                                *@
+                                <span class="inner">
+                                    @if (row.Flag is { } flag)
+                                    {
+                                        <FlagPreview Flag="@flag" Class="tiny" />
+                                    }
 
-                                <button type="button" class="sem-row-open"
-                                        @onclick="() => Open(row)" @onclick:stopPropagation="true">
-                                    @row.Name
-                                </button>
+                                    <button type="button" class="sem-row-open"
+                                            @onclick="() => Open(row)" @onclick:stopPropagation="true">
+                                        @row.Name
+                                    </button>
+                                </span>
                             </th>
 
                             @foreach (var column in Columns)
