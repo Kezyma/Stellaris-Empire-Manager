@@ -420,8 +420,10 @@ else
         _saveError = await Host.SaveAsync();
 
         // A save that did not happen is not a reason to go anyway: that would be leaving the work
-        // behind with nothing said about it.
-        Answer(_saveError is null);
+        // behind with nothing said about it. Deferred is the third answer - the file moved and
+        // there is a question about it on screen - and it reports no trouble, so without this the
+        // editor closed over a save that had not happened yet.
+        Answer(_saveError is null && !Host.Deferred);
     }
 
     /// <summary>

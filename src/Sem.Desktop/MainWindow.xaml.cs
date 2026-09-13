@@ -141,7 +141,22 @@ public partial class MainWindow : Window
 
         var cache = new GameDataCache(_installRoot);
 
-        if (!cache.IsUsable(out var reason))
+        ShowStatus("Checking your game files…", detail: null, busy: true);
+
+        // Off the window's thread. Deciding whether the cache still fits the installation walks
+        // every file in it - thirty-five thousand of them, a second of work - and the window is
+        // already on screen by now, so done here it was a second of a frozen window on every
+        // launch, including the fast one this check exists to allow.
+        //
+        // A tuple rather than the out parameter, which cannot cross into the lambda.
+        var (usable, reason) = await Task.Run(() =>
+        {
+            var fits = cache.IsUsable(out var why);
+
+            return (fits, why);
+        });
+
+        if (!usable)
         {
             ShowStatus(
                 "Reading your Stellaris installation…",

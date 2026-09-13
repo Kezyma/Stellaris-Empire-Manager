@@ -52,6 +52,16 @@ public sealed class DesignSyncTests
 
         public byte[] Contents { get; private set; }
 
+        /// <summary>
+        /// What the file held when this app last read or wrote it, as the real host keeps it.
+        /// </summary>
+        /// <remarks>
+        /// Here rather than left out, because the refusal it produces is the thing several of
+        /// these tests are about. A double that always says yes cannot tell a sync that handles a
+        /// refusal from one that has never met one.
+        /// </remarks>
+        private byte[]? _baseline;
+
         public int Writes { get; private set; }
 
         public int Reads { get; private set; }
@@ -60,7 +70,18 @@ public sealed class DesignSyncTests
 
         public bool Watching { get; private set; }
 
+        /// <summary>Whether reading throws, the way a file something else is writing does.</summary>
+        public bool Unreadable { get; set; }
+
         public bool SavesInPlace => true;
+
+        /// <summary>Writes given bytes the way something outside this app would.</summary>
+        /// <remarks>
+        /// For the case where the file moved and came to hold what is already open. Built from the
+        /// session rather than from names, because what that case turns on is the bytes matching
+        /// exactly and names only nearly guarantee it.
+        /// </remarks>
+        public void WrittenElsewhere(byte[] contents) => Contents = contents;
 
         /// <summary>Writes the file the way something outside this app would.</summary>
         public void WrittenElsewhere(params string[] empires)
@@ -83,7 +104,15 @@ public sealed class DesignSyncTests
 
         public Task<SaveOutcome> SaveAsync(string fileName, byte[] contents, bool backUp)
         {
+            // Nothing is written over a change this app has not seen, which is what the desktop
+            // promises and what makes a conflict reachable from a test at all.
+            if (_baseline is { } seen && !seen.AsSpan().SequenceEqual(Contents))
+            {
+                return Task.FromResult(SaveOutcome.Conflicted);
+            }
+
             Contents = contents;
+            _baseline = contents;
             LastBackUp = backUp;
             Writes++;
 
@@ -97,6 +126,13 @@ public sealed class DesignSyncTests
         public Task<(string Name, byte[] Contents)?> TryOpenExistingAsync()
         {
             Reads++;
+
+            if (Unreadable)
+            {
+                throw new IOException("held open by something else");
+            }
+
+            _baseline = Contents;
 
             return Task.FromResult<(string, byte[])?>((EmpireDesignsFile.FileName, Contents));
         }
@@ -408,11 +444,35 @@ public sealed class DesignSyncTests
         var (sync, _, session) = await OpenAsync(disk);
 
         session.EditFile(file => file.Add("Added while it was off"));
+
+        await sync.SetAsync(true);
+
+        Assert.False(sync.Asking);
+        Assert.Equal(["First", "Added while it was off"], Names(EmpireDesignsFile.Load(disk.Contents)));
+    }
+
+    /// <summary>
+    /// And where the file moved as well, it asks rather than picking a side.
+    /// </summary>
+    /// <remarks>
+    /// Both sides hold something the other has not seen, so there is no answer that is not a
+    /// choice. The host refuses the write for exactly that reason - it will not go over a change
+    /// nobody has looked at - and this used to be a double that said yes to everything, so the
+    /// test asserted the loss it was written to prevent.
+    /// </remarks>
+    [Fact]
+    public async Task TurningItOnWhenBothSidesHaveMovedAsks()
+    {
+        var disk = new Disk("First");
+        var (sync, _, session) = await OpenAsync(disk);
+
+        session.EditFile(file => file.Add("Added while it was off"));
         disk.WrittenElsewhere("Something else entirely");
 
         await sync.SetAsync(true);
 
-        Assert.Equal(["First", "Added while it was off"], Names(EmpireDesignsFile.Load(disk.Contents)));
+        Assert.True(sync.Asking);
+        Assert.Equal(["Something else entirely"], Names(EmpireDesignsFile.Load(disk.Contents)));
     }
 
     /// <summary>And with nothing in hand, takes whatever the file has come to hold.</summary>
@@ -427,6 +487,133 @@ public sealed class DesignSyncTests
         await sync.SetAsync(true);
 
         Assert.Equal(["First", "Built in the game while this was shut"], Names(session));
+    }
+
+    /// <summary>
+    /// A save refused because the file moved reads it and asks, with writing as you go switched off.
+    /// </summary>
+    /// <remarks>
+    /// The case the old sentence could not be followed. It said to reload the file, and the reload
+    /// it meant is the one this class does only when it is switched on - so with it off there was
+    /// no button anywhere that did what the message asked for, and pressing Save again only asked
+    /// the same refusal a second time.
+    /// </remarks>
+    [Fact]
+    public async Task ARefusedSaveAsksEvenWithWritingAsYouGoOff()
+    {
+        var disk = new Disk("First");
+        var (sync, host, session) = await OpenAsync(disk);
+
+        session.EditFile(file => file.Add("Mine"));
+        disk.WrittenElsewhere("First", "Theirs");
+
+        var trouble = await host.SaveAsync();
+
+        Assert.Null(trouble);
+        Assert.True(host.Deferred);
+        Assert.False(sync.Enabled);
+        Assert.True(sync.Asking);
+        Assert.Equal(2, sync.Arrived?.Holds);
+    }
+
+    /// <summary>
+    /// And every answer to it finishes the save, whichever side the answer keeps.
+    /// </summary>
+    /// <remarks>
+    /// One assertion says it for all four: what is open and what is in the file agree. That is what
+    /// a finished save means, and it is true by a different route each time - two of the answers
+    /// write the result out, one takes a file that already holds it, and the fourth writes the side
+    /// that was refused in the first place.
+    /// </remarks>
+    [Theory]
+    [InlineData(Arrival.KeepMine)]
+    [InlineData(Arrival.TakeTheirs)]
+    [InlineData(Arrival.MineWin)]
+    [InlineData(Arrival.TheirsWin)]
+    public async Task EveryAnswerToARefusedSaveFinishesIt(Arrival answer)
+    {
+        var disk = new Disk("First");
+        var (sync, host, session) = await OpenAsync(disk);
+
+        session.EditFile(file => file.Add("Mine"));
+        disk.WrittenElsewhere("First", "Theirs");
+
+        await host.SaveAsync();
+        await sync.ResolveAsync(answer);
+
+        Assert.False(sync.Asking);
+        Assert.Equal(Names(session), Names(EmpireDesignsFile.Load(disk.Contents)));
+    }
+
+    /// <summary>And each answer keeps what it says it keeps.</summary>
+    [Theory]
+    [InlineData(Arrival.KeepMine, new[] { "First", "Mine" })]
+    [InlineData(Arrival.TakeTheirs, new[] { "First", "Theirs" })]
+    [InlineData(Arrival.MineWin, new[] { "First", "Mine", "Theirs" })]
+    [InlineData(Arrival.TheirsWin, new[] { "First", "Mine", "Theirs" })]
+    public async Task AnAnswerToARefusedSaveKeepsWhatItNames(Arrival answer, string[] expected)
+    {
+        var disk = new Disk("First");
+        var (sync, host, session) = await OpenAsync(disk);
+
+        session.EditFile(file => file.Add("Mine"));
+        disk.WrittenElsewhere("First", "Theirs");
+
+        await host.SaveAsync();
+        await sync.ResolveAsync(answer);
+
+        Assert.Equal(expected, Names(session));
+    }
+
+    /// <summary>
+    /// A refusal over a file that turns out to hold what is open settles itself.
+    /// </summary>
+    /// <remarks>
+    /// The refusal is about a baseline rather than about the contents: something wrote the file,
+    /// and what it wrote happens to be what is already here. Asking four questions about a file
+    /// nobody disagrees with is how a question gets dismissed unread.
+    /// </remarks>
+    [Fact]
+    public async Task ARefusalOverAFileThatAgreesAsksNothing()
+    {
+        var disk = new Disk("First");
+        var (sync, host, session) = await OpenAsync(disk);
+
+        session.EditFile(file => file.Add("Mine"));
+        disk.WrittenElsewhere(session.Save());
+
+        var trouble = await host.SaveAsync();
+
+        Assert.Null(trouble);
+        Assert.False(sync.Asking);
+        Assert.Equal(["First", "Mine"], Names(session));
+    }
+
+    /// <summary>
+    /// A file that cannot be read at all leaves the refusal to be explained in words.
+    /// </summary>
+    /// <remarks>
+    /// The one outcome where there is nothing to ask about: something refused the write and nothing
+    /// here can say what over. Reported rather than swallowed, and the work stays in hand.
+    /// </remarks>
+    [Fact]
+    public async Task ARefusalOverAFileThatWillNotReadIsReported()
+    {
+        var disk = new Disk("First");
+        var (sync, host, session) = await OpenAsync(disk);
+
+        session.EditFile(file => file.Add("Mine"));
+        disk.WrittenElsewhere("First", "Theirs");
+
+        // After the open, which has to succeed for there to be a session to save.
+        disk.Unreadable = true;
+
+        var trouble = await host.SaveAsync();
+
+        Assert.NotNull(trouble);
+        Assert.Contains("changed somewhere else", trouble, StringComparison.Ordinal);
+        Assert.False(host.Deferred);
+        Assert.False(sync.Asking);
     }
 
     /// <summary>Turning it off stops the watching, and leaves the file where it stands.</summary>

@@ -554,7 +554,8 @@
         + "app as it was on your first visit. Your Stellaris designs file is not touched - nothing "
         + "on disk changes unless you export."
         + (_cloud is { Connected: true } cloud
-            ? $" You are let go of {cloud.Where}, which is left exactly as it is."
+            ? $" You are let go of {cloud.Where} and signed out of {cloud.ProviderName}, and the "
+                + "file there is left exactly as it is."
             : string.Empty)
         + " There is no undo.";
 
@@ -1008,9 +1009,16 @@
         // visit, and there is no first visit that is connected to anything - staying would leave
         // Save pointed at a file holding empires the list no longer shows, which is the most
         // confusing of the three states this could end in.
-        if (_cloud is { Connected: true })
+        //
+        // Signed out as well, which the button pressed by hand deliberately does not do: letting
+        // go of a file is not the same as forgetting who you are, and somebody swapping files
+        // should not have to sign in twice. This is the throw-everything-away button, and a first
+        // visit is not signed in.
+        // Whether or not a file was ever reached, because a chosen file that has not been fetched
+        // yet is still a file the next load would go looking for.
+        if (_cloud is not null)
         {
-            await _cloud.DisconnectAsync();
+            await _cloud.DisconnectAsync(signOut: true);
         }
 
         _session!.StartEmptyFile();
@@ -1091,11 +1099,22 @@
                     break;
 
                 // Not a failure to save: the file moved on since it was read, and writing would
-                // have gone over the top of whatever arrived. Nothing was lost here - the work is
-                // still in hand, and still unsaved, which is why this says so rather than clearing.
+                // have gone over the top of whatever arrived. So it is read and the question is
+                // put, which is the only answer that works with writing as you go switched off -
+                // this used to say "reload it", and with that off there is no reload to press.
                 case SaveOutcome.Conflicted:
-                    _message = ($"{name} changed somewhere else while you were editing, so nothing "
-                        + "was written over it. Reload it to see what arrived.", true);
+                    if (await Sync.ReconcileAsync())
+                    {
+                        _message = null;
+                        break;
+                    }
+
+                    // And the file that refused the write could not be read either. Nothing was
+                    // lost - the work is still in hand, and still unsaved - and the way out is to
+                    // let whatever is holding the file finish and press again.
+                    _message = ($"{name} changed somewhere else while you were editing, and could "
+                        + "not be read back, so nothing was written over it. "
+                        + "Try again in a moment.", true);
                     break;
 
                 // An outcome this was not written for, which is a mistake in this app rather than

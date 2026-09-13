@@ -160,6 +160,11 @@ public sealed class DesignSync : IDisposable
         session.FileChanged += OnListChanged;
         _host.Saved += OnSaved;
 
+        // What the host does about a write it was not allowed to make. It is this class rather
+        // than the host that can read the file and ask, so the host holds the question and this
+        // one answers it.
+        _host.Reconcile = ReconcileAsync;
+
         if (Available && _preferences.SyncsWithFile)
         {
             await SetAsync(true).ConfigureAwait(false);
@@ -238,6 +243,93 @@ public sealed class DesignSync : IDisposable
     /// </remarks>
     public Task RefreshAsync() =>
         Enabled ? LoadFromDiskAsync() : Task.CompletedTask;
+
+    /// <summary>
+    /// Reads the file that would not be written over, and asks what to do about what is in it.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The answer to a refused save. A host that keeps a file refuses to write over a change it
+    /// has not seen, which is right, and on its own leaves nowhere to go: what it said was to
+    /// reload the file, and with this switched off there is no reload -
+    /// <see cref="LoadFromDiskAsync"/> returns at its first guard. So the file is read here
+    /// instead, directly rather than through that gated path, and handed to the same question the
+    /// watcher asks, whose answers write.
+    /// </para>
+    /// <para>
+    /// Reading is also what lifts the refusal. Both hosts move the baseline they measure a write
+    /// against whenever they read, because a look is exactly what that baseline records - so by
+    /// the time an answer is pressed the write is allowed again, and the write that follows the
+    /// answer is the save that was asked for.
+    /// </para>
+    /// </remarks>
+    /// <returns>
+    /// Whether the refusal has been taken in hand. False means the file could not be read at all,
+    /// and whoever asked still owes the player a sentence about it.
+    /// </returns>
+    public async Task<bool> ReconcileAsync()
+    {
+        if (!Available || _session is not { } session)
+        {
+            return false;
+        }
+
+        // Already asked, about the same file. A second question is not a second chance to answer.
+        if (Asking)
+        {
+            return true;
+        }
+
+        try
+        {
+            for (var attempt = 1; ; attempt++)
+            {
+                // Nothing there to have been protecting. Whatever the write was refused over is
+                // gone, and there is nothing here to ask about.
+                if (await Read().ConfigureAwait(false) is not { } existing)
+                {
+                    return false;
+                }
+
+                if (Parse(existing.Contents) is not { } file)
+                {
+                    if (attempt < Attempts)
+                    {
+                        // Being written this moment, most likely - a refused save and a file in
+                        // the middle of being replaced are the same event seen from two sides.
+                        await Task.Delay(Settling).ConfigureAwait(false);
+                        continue;
+                    }
+
+                    return false;
+                }
+
+                _waiting = (file, existing.Contents, existing.Name);
+
+                // A file that holds what is already open is not a question. The refusal was about
+                // a baseline rather than about the contents, and taking a copy of what you have
+                // costs nothing, settles the flag, and leaves the Save button with nothing to do.
+                if (Same(existing.Contents, session.Save()))
+                {
+                    await ResolveAsync(Arrival.TakeTheirs).ConfigureAwait(false);
+
+                    return true;
+                }
+
+                Changed?.Invoke();
+
+                return true;
+            }
+        }
+        catch (Exception ex)
+            when (ex is IOException or UnauthorizedAccessException
+                or CwSyntaxException or InvalidOperationException)
+        {
+            // Said by whoever asked, in the words of the button they pressed. Nothing is recorded
+            // here, because a note under a sentence saying the same thing is one to dismiss twice.
+            return false;
+        }
+    }
 
     /// <summary>Takes the file that was waiting, losing the edits it replaces.</summary>
     public async Task AcceptAsync() => await ResolveAsync(Arrival.TakeTheirs).ConfigureAwait(false);
@@ -350,6 +442,11 @@ public sealed class DesignSync : IDisposable
         }
 
         _host.Saved -= OnSaved;
+
+        if (_host.Reconcile == ReconcileAsync)
+        {
+            _host.Reconcile = null;
+        }
     }
 
     private void Stop()
@@ -600,6 +697,11 @@ public sealed class DesignSync : IDisposable
             session.Open(file, name);
             _onDisk = contents;
             Note = null;
+
+            // Taking the file is an answer to any question about the file, however the taking was
+            // arrived at. Without this a question raised over a refused write, and then settled by
+            // an ordinary load a moment later, stayed on screen with nothing behind it.
+            _waiting = null;
 
             if (editing is { Length: > 0 } && session.File?.Find(editing) is { } same)
             {

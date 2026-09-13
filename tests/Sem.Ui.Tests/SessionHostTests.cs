@@ -116,13 +116,16 @@ public sealed class SessionHostTests
     {
         public int Writes { get; private set; }
 
+        /// <summary>Whether the file has stopped moving underneath, so a write can land.</summary>
+        public bool Allow { get; set; }
+
         public bool SavesInPlace => true;
 
         public Task<SaveOutcome> SaveAsync(string fileName, byte[] contents)
         {
             Writes++;
 
-            return Task.FromResult(SaveOutcome.Conflicted);
+            return Task.FromResult(Allow ? SaveOutcome.Saved : SaveOutcome.Conflicted);
         }
     }
 
@@ -316,6 +319,84 @@ public sealed class SessionHostTests
 
         // Still in hand, and still owed to the file.
         Assert.True(session.IsModified);
+    }
+
+    /// <summary>
+    /// And where something can read the file and ask about it, the save says nothing and defers.
+    /// </summary>
+    /// <remarks>
+    /// The question is the thing to read, so a sentence behind it would only be something to
+    /// dismiss on the way to answering. But no sentence is what every caller reads as success, and
+    /// one of them closes the editor on it - which is what the flag is for.
+    /// </remarks>
+    [Fact]
+    public async Task ARefusedWriteWithSomewhereToTakeItSaysNothingAndDefers()
+    {
+        var files = new Refusing();
+        var (host, session) = await OpenAsync(files, store: null);
+
+        var asked = 0;
+        host.Reconcile = () =>
+        {
+            asked++;
+
+            return Task.FromResult(true);
+        };
+
+        session.Edit(design => design.Authority = "auth_democratic");
+
+        Assert.Null(await host.SaveAsync());
+        Assert.Equal(1, asked);
+        Assert.True(host.Deferred);
+
+        // Still owed to the file: the answer is what writes it, and nothing has answered yet.
+        Assert.True(session.IsModified);
+    }
+
+    /// <summary>
+    /// A reconciler that could not read the file leaves the refusal to be explained in words.
+    /// </summary>
+    [Fact]
+    public async Task ARefusedWriteNobodyCouldReadIsStillReported()
+    {
+        var files = new Refusing();
+        var (host, session) = await OpenAsync(files, store: null);
+
+        host.Reconcile = () => Task.FromResult(false);
+
+        session.Edit(design => design.Authority = "auth_democratic");
+
+        var trouble = await host.SaveAsync();
+
+        Assert.NotNull(trouble);
+        Assert.Contains("could not be read back", trouble, StringComparison.Ordinal);
+        Assert.False(host.Deferred);
+    }
+
+    /// <summary>
+    /// And the flag does not outlive the save that raised it.
+    /// </summary>
+    /// <remarks>
+    /// Left standing it would be worse than never having existed: the editor would refuse to close
+    /// over every later save, for a question answered long ago.
+    /// </remarks>
+    [Fact]
+    public async Task DeferredDoesNotSurviveTheNextSave()
+    {
+        var files = new Refusing();
+        var (host, session) = await OpenAsync(files, store: null);
+
+        host.Reconcile = () => Task.FromResult(true);
+        session.Edit(design => design.Authority = "auth_democratic");
+
+        await host.SaveAsync();
+
+        Assert.True(host.Deferred);
+
+        files.Allow = true;
+
+        Assert.Null(await host.SaveAsync());
+        Assert.False(host.Deferred);
     }
 
     /// <summary>

@@ -43,6 +43,34 @@ public sealed class SessionHost(
     public event Action<byte[]>? Saved;
 
     /// <summary>
+    /// What to do about a write refused because the file moved, where anything can be done.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Set by whoever can read the file and ask about it, which is the thing that keeps the app
+    /// and the file in step. Answering true means the refusal has been taken in hand - the file
+    /// has been read and a question about it is in front of the player - and the save this was
+    /// called from says nothing, because the question is the thing to read.
+    /// </para>
+    /// <para>
+    /// Null, or false, leaves the sentence below to explain it. That is the honest answer where
+    /// the file could not be read at all: something refused the write, and nothing can say what
+    /// over.
+    /// </para>
+    /// </remarks>
+    public Func<Task<bool>>? Reconcile { get; set; }
+
+    /// <summary>
+    /// Whether the last save is waiting on an answer rather than finished or failed.
+    /// </summary>
+    /// <remarks>
+    /// A save that raised a question returns no message, and no message is what every caller reads
+    /// as success - one of them leaves the editor on it. So the state that says otherwise is kept
+    /// here, rather than encoded in a string somebody has to remember not to trust.
+    /// </remarks>
+    public bool Deferred { get; private set; }
+
+    /// <summary>
     /// Whether a save keeps a dated copy of the file it replaces.
     /// </summary>
     /// <remarks>
@@ -199,6 +227,8 @@ public sealed class SessionHost(
             return "There is nothing open to save.";
         }
 
+        Deferred = false;
+
         try
         {
             var contents = session.Save();
@@ -225,8 +255,20 @@ public sealed class SessionHost(
                 // made, and trying again is the wrong thing to do about that.
                 if (outcome is SaveOutcome.Conflicted)
                 {
-                    return "Your designs file changed somewhere else while you were editing, so "
-                        + "nothing was written over it. Reload it to see what arrived.";
+                    // Read it and ask, where there is anything here that can. Telling somebody to
+                    // reload was the old answer and only ever worked by luck: with writing as you
+                    // go switched off there is no reload to press, so the sentence named a way out
+                    // that did not exist.
+                    if (Reconcile is { } ask && await ask().ConfigureAwait(false))
+                    {
+                        Deferred = true;
+
+                        return null;
+                    }
+
+                    return "Your designs file changed somewhere else while you were editing, and "
+                        + "could not be read back, so nothing was written over it. "
+                        + "Try again in a moment.";
                 }
 
                 if (outcome is not SaveOutcome.Saved)
