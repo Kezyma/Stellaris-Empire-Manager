@@ -89,7 +89,27 @@ public sealed class GraphItems
 /// a trimmed WebAssembly bundle, where a reflecting serialiser is both a warning and a way to find
 /// out at runtime that a property was trimmed away.
 /// </remarks>
+/// <summary>
+/// What the token endpoint hands back when it will not grant one.
+/// </summary>
+/// <remarks>
+/// The same two fields the authorize leg puts in the address, for the same reason: without them a
+/// refusal is indistinguishable from every other way a sign-in can fail to arrive, and the person
+/// in front of it has nothing to act on.
+/// </remarks>
+public sealed class TokenRefusal
+{
+    /// <summary>The machine-readable reason, such as <c>invalid_grant</c>.</summary>
+    [JsonPropertyName("error")]
+    public string? Error { get; set; }
+
+    /// <summary>The readable one, which is the half worth showing.</summary>
+    [JsonPropertyName("error_description")]
+    public string? Description { get; set; }
+}
+
 [JsonSerializable(typeof(TokenGrant))]
+[JsonSerializable(typeof(TokenRefusal))]
 [JsonSerializable(typeof(GraphItem))]
 [JsonSerializable(typeof(GraphItems))]
 internal sealed partial class CloudJson : JsonSerializerContext;

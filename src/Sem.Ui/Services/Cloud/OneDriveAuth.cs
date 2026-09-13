@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Sem.Ui.Services.Cloud;
@@ -115,6 +116,86 @@ public sealed class OneDriveAuth
     }
 
     /// <summary>
+    /// Why the last exchange was refused, where one was and the endpoint said.
+    /// </summary>
+    /// <remarks>
+    /// Held rather than thrown, because the callers of this are dialogs and headers with somebody
+    /// standing in front of them, and a message is what they can use. Cleared by the next attempt
+    /// that gets as far as asking.
+    /// </remarks>
+    public string? Refusal { get; private set; }
+
+    /// <summary>
+    /// What went wrong on this side, where the provider is not the one that said no.
+    /// </summary>
+    /// <remarks>
+    /// Kept apart from <see cref="Refusal"/> because the two want opposite sentences. A browser
+    /// that would not keep the verifier - storage switched off, or full - fails the return leg
+    /// looking exactly like a refusal, and telling somebody that OneDrive turned them down sends
+    /// them to check the one thing that is working.
+    /// </remarks>
+    public string? Trouble { get; private set; }
+
+    /// <summary>The readable half of a refusal from the token endpoint, where there is one.</summary>
+    private static async Task<string?> SaidAsync(HttpResponseMessage response)
+    {
+        try
+        {
+            var refused = await response.Content
+                .ReadFromJsonAsync(CloudJson.Default.TokenRefusal)
+                .ConfigureAwait(false);
+
+            if (refused?.Description is { Length: > 0 } said)
+            {
+                // One line of it. Microsoft's runs to a paragraph with a trace id on the end.
+                var lines = said.ReplaceLineEndings("\n").Split('\n', StringSplitOptions.RemoveEmptyEntries);
+
+                return lines.Length > 0 ? lines[0].Trim() : refused.Error;
+            }
+
+            return refused?.Error;
+        }
+        catch (Exception ex) when (ex is JsonException or HttpRequestException or TaskCanceledException)
+        {
+            // A refusal that will not parse is still a refusal; it just cannot say why.
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// What the provider said when it refused, where that is what it did.
+    /// </summary>
+    /// <remarks>
+    /// The description rather than the code, because the code is for us and the description is the
+    /// only part that tells somebody what to do about it. Microsoft's runs to several lines with a
+    /// trace id on the end, so the first line is taken and the rest left for the console.
+    /// </remarks>
+    public static string? RefusalIn(string address)
+    {
+        var query = Parsed(address);
+
+        if (!query.TryGetValue("error", out var code) || code.Length == 0)
+        {
+            return null;
+        }
+
+        if (!query.TryGetValue("error_description", out var said) || said.Length == 0)
+        {
+            return code;
+        }
+
+        // Plus for space, which is the form encoding a query is written in and not the one
+        // UnescapeDataString undoes. Done here rather than for every parameter because the two
+        // that matter - the code and the state - must come back exactly as they were sent, and
+        // this one is prose that nobody can read with the spaces still written as punctuation.
+        var line = said.Replace('+', ' ')
+            .ReplaceLineEndings("\n")
+            .Split('\n', StringSplitOptions.RemoveEmptyEntries);
+
+        return line.Length > 0 ? line[0].Trim() : code;
+    }
+
+    /// <summary>
     /// Whether this address is the provider answering, whether it said yes or no.
     /// </summary>
     /// <param name="address">The address the app was loaded at, query and all.</param>
@@ -143,6 +224,8 @@ public sealed class OneDriveAuth
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(address);
 
+        Trouble = null;
+
         var query = Parsed(address);
 
         if (!query.TryGetValue("code", out var code) || code.Length == 0)
@@ -153,15 +236,27 @@ public sealed class OneDriveAuth
         var expected = await _session.ReadAsync(StateKey).ConfigureAwait(false);
         await _session.WriteAsync(StateKey, null).ConfigureAwait(false);
 
+        var verifier = await _session.ReadAsync(VerifierKey).ConfigureAwait(false);
+        await _session.WriteAsync(VerifierKey, null).ConfigureAwait(false);
+
+        // Neither kept, with a code in hand, means the leg that left here stored nothing - the
+        // browser refusing to keep site data, or a different browser finishing what this one
+        // started. Worth its own sentence: the sign-in itself went through, and nothing the
+        // provider did is wrong.
+        if (expected is not { Length: > 0 } && verifier is not { Length: > 0 })
+        {
+            Trouble = "This browser did not keep the sign-in it started, so it could not be "
+                + "finished. Allow site data for this page, then connect again.";
+
+            return false;
+        }
+
         if (expected is not { Length: > 0 }
             || !query.TryGetValue("state", out var state)
             || !string.Equals(state, expected, StringComparison.Ordinal))
         {
             return false;
         }
-
-        var verifier = await _session.ReadAsync(VerifierKey).ConfigureAwait(false);
-        await _session.WriteAsync(VerifierKey, null).ConfigureAwait(false);
 
         if (verifier is not { Length: > 0 })
         {
@@ -227,6 +322,7 @@ public sealed class OneDriveAuth
     {
         form["client_id"] = _clientId;
         form["scope"] = Scopes;
+        Refusal = null;
 
         try
         {
@@ -236,6 +332,11 @@ public sealed class OneDriveAuth
 
             if (!response.IsSuccessStatusCode)
             {
+                // Kept before the session is dropped, because dropping it is also what clears the
+                // way to ask again and somebody is owed a reason first. A code that will not
+                // exchange looks identical from outside to one that never arrived.
+                Refusal = await SaidAsync(response).ConfigureAwait(false);
+
                 // A refresh that is refused means the session is over rather than that something
                 // went wrong this minute, so what is kept is dropped and the player signs in again.
                 await SignOutAsync().ConfigureAwait(false);

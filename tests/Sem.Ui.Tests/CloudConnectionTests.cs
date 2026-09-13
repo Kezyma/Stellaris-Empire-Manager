@@ -556,7 +556,10 @@ public sealed class CloudConnectionTests
     {
         using var rig = new Rig();
 
-        // A return carrying a code this tab never asked for, which is dropped rather than spent.
+        // Something was asked for, so the leg that left is remembered - and what came back does
+        // not match it, which is a code for somebody else's sign-in rather than a lost one.
+        await rig.Connection.BeginSignInAsync();
+
         Assert.False(await rig.Connection.CompleteSignInAsync("https://example.invalid/?code=abc&state=nope"));
         Assert.NotNull(rig.Connection.Note);
         Assert.Contains("did not finish", rig.Connection.Note, StringComparison.Ordinal);
@@ -566,6 +569,63 @@ public sealed class CloudConnectionTests
 
         Assert.False(await plain.Connection.CompleteSignInAsync("https://example.invalid/"));
         Assert.Null(plain.Connection.Note);
+    }
+
+    /// <summary>
+    /// A provider that refuses is quoted rather than paraphrased.
+    /// </summary>
+    /// <remarks>
+    /// The description is the only part of a refusal anybody can act on. Reported as the app's own
+    /// sentence it became one of five different things that message could mean, which is no use to
+    /// the person in front of it and none to whoever they report it to.
+    /// </remarks>
+    [Fact]
+    public async Task AProviderThatRefusesIsQuoted()
+    {
+        using var rig = new Rig();
+
+        Assert.False(await rig.Connection.CompleteSignInAsync(
+            "https://example.invalid/?error=consent_required"
+            + "&error_description=AADSTS65004%3A+User+declined+to+consent.%0D%0ATrace+ID%3A+abc"));
+
+        Assert.NotNull(rig.Connection.Note);
+        Assert.Contains("would not sign you in", rig.Connection.Note, StringComparison.Ordinal);
+        Assert.Contains("AADSTS65004: User declined to consent.", rig.Connection.Note, StringComparison.Ordinal);
+
+        // The trace id and the rest of the paragraph stay out of the header.
+        Assert.DoesNotContain("Trace ID", rig.Connection.Note, StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// A browser that kept nothing is told apart from a provider that said no.
+    /// </summary>
+    /// <remarks>
+    /// The two fail the return leg identically, and blaming the provider sends somebody off to
+    /// check the one part of this that is working.
+    /// </remarks>
+    [Fact]
+    public async Task ABrowserThatKeptNothingIsNotTheProviderRefusing()
+    {
+        using var rig = new Rig();
+
+        // A code in hand and nothing kept from the leg that left: never asked, or not remembered.
+        Assert.False(await rig.Connection.CompleteSignInAsync("https://example.invalid/?code=abc&state=xyz"));
+
+        Assert.NotNull(rig.Connection.Note);
+        Assert.Contains("did not keep the sign-in", rig.Connection.Note, StringComparison.Ordinal);
+        Assert.DoesNotContain("would not sign you in", rig.Connection.Note, StringComparison.Ordinal);
+    }
+
+    /// <summary>And one with no description at all is named by its code.</summary>
+    [Fact]
+    public async Task ARefusalWithNothingToSayIsStillNamed()
+    {
+        using var rig = new Rig();
+
+        Assert.False(await rig.Connection.CompleteSignInAsync(
+            "https://example.invalid/?error=access_denied"));
+
+        Assert.Contains("access_denied", rig.Connection.Note, StringComparison.Ordinal);
     }
 
     /// <summary>

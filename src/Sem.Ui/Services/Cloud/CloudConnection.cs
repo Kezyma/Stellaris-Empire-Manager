@@ -181,7 +181,17 @@ public sealed class CloudConnection : IDisposable
             // reaches here too, and has nothing to report.
             if (OneDriveAuth.IsReturn(address))
             {
-                Note = $"Signing in to {_provider.Name} did not finish. Try connecting again.";
+                // The provider's own words where it gave any, from whichever leg refused: the
+                // address carries them when the sign-in itself was turned down, and the token
+                // endpoint's reply carries them when the code would not exchange. Rolling both
+                // into one house sentence threw away the only part that says what to do about it,
+                // and left a message that could equally mean any of five different things.
+                Note = (OneDriveAuth.RefusalIn(address) ?? _auth.Refusal) is { Length: > 0 } refused
+                    ? $"{_provider.Name} would not sign you in: {refused}"
+                    : _auth.Trouble is { Length: > 0 } trouble
+                        ? trouble
+                        : $"Signing in to {_provider.Name} did not finish. Try connecting again.";
+
                 Changed?.Invoke();
             }
 
