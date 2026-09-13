@@ -22,12 +22,30 @@ public sealed class CloudConnectionTests
     private sealed class Provider : ICloudProvider
     {
         private byte[] _contents = FileOf("First", "Second");
+        private int _version;
 
-        /// <summary>Puts a chosen set of empires in the file, for the merges to be read off.</summary>
+        /// <summary>Puts a chosen set of empires in the file, as this app would.</summary>
         public void Holds(params string[] empires) => _contents = FileOf(empires);
+
+        /// <summary>
+        /// Writes it the way something else would: new contents, and a version that moves.
+        /// </summary>
+        public void WrittenElsewhere(params string[] empires)
+        {
+            _contents = FileOf(empires);
+            _version++;
+        }
+
+        /// <summary>How many times the file itself was fetched, as against merely asked about.</summary>
+        public int Reads { get; private set; }
 
         /// <summary>What the file holds, for a test that has to hand the same bytes back.</summary>
         public byte[] Contents => _contents;
+
+        private CloudStamp Stamp() => new(
+            _version.ToString(System.Globalization.CultureInfo.InvariantCulture),
+            DateTimeOffset.UnixEpoch,
+            _contents.Length);
 
         public string Name => "Somewhere";
 
@@ -63,18 +81,29 @@ public sealed class CloudConnectionTests
             Task.FromResult<IReadOnlyList<CloudFile>>([]);
 
         public Task<(byte[] Contents, CloudStamp Stamp)?> ReadAsync(
-            string id, CancellationToken cancellationToken = default) =>
-            Task.FromResult(Refuse || SignedOut
-                ? null
-                : ((byte[], CloudStamp)?)(_contents, new CloudStamp("1", DateTimeOffset.UnixEpoch, _contents.Length)));
+            string id, CancellationToken cancellationToken = default)
+        {
+            if (Refuse || SignedOut)
+            {
+                return Task.FromResult<(byte[], CloudStamp)?>(null);
+            }
+
+            Reads++;
+
+            return Task.FromResult<(byte[], CloudStamp)?>((_contents, Stamp()));
+        }
 
         public Task<(CloudWrite Outcome, CloudStamp? Stamp)> WriteAsync(
-            string id, byte[] contents, string? ifVersion, CancellationToken cancellationToken = default) =>
-            Task.FromResult<(CloudWrite, CloudStamp?)>(
-                (CloudWrite.Written, new CloudStamp("2", DateTimeOffset.UnixEpoch, contents.Length)));
+            string id, byte[] contents, string? ifVersion, CancellationToken cancellationToken = default)
+        {
+            _contents = contents;
+            _version++;
+
+            return Task.FromResult<(CloudWrite, CloudStamp?)>((CloudWrite.Written, Stamp()));
+        }
 
         public Task<CloudStamp?> StatAsync(string id, CancellationToken cancellationToken = default) =>
-            Task.FromResult<CloudStamp?>(new CloudStamp("1", DateTimeOffset.UnixEpoch, _contents.Length));
+            Task.FromResult<CloudStamp?>(Refuse || SignedOut ? null : Stamp());
 
         public Task<bool> WriteBesideAsync(
             CloudFile file, string name, byte[] contents, CancellationToken cancellationToken = default) =>
@@ -704,6 +733,97 @@ public sealed class CloudConnectionTests
 
         Assert.False(asked);
         Assert.Equal(["Shared", "Theirs"], Names(restored));
+    }
+
+    /// <summary>
+    /// A file nothing has written since is not fetched again, so an edit in progress survives.
+    /// </summary>
+    /// <remarks>
+    /// The reason this is asked by version rather than by comparing contents: contents can say the
+    /// two differ and cannot say which way round it happened. A file that has not moved since this
+    /// app last touched it has nothing to give back, and reading it would replace an unsaved edit
+    /// with the thing that edit started from.
+    /// </remarks>
+    [Fact]
+    public async Task AFileNothingHasWrittenSinceIsLeftAlone()
+    {
+        using var rig = new Rig();
+        rig.Provider.Holds("Shared", "Theirs");
+
+        await rig.OpenAsync();
+        Assert.True(await rig.Connection.UseAsync(TheFile(), autoSave: false));
+
+        // A second visit, carrying an edit made last time and never saved.
+        using var next = new Rig();
+        next.Provider.Holds("Shared", "Theirs");
+        next.Kept.Restore(rig.Kept.Kept!);
+        Carry(rig, next);
+
+        var restored = await next.OpenAsync();
+
+        restored.EditFile(file => file.Add("Half Finished"));
+
+        var asked = false;
+        var before = next.Provider.Reads;
+
+        Assert.True(await next.Connection.ResumeAsync((_, _) =>
+        {
+            asked = true;
+
+            return Task.FromResult<CloudArrival?>(CloudArrival.TakeTheirs);
+        }));
+
+        Assert.False(asked);
+        Assert.Equal(before, next.Provider.Reads);
+        Assert.Equal(["Shared", "Theirs", "Half Finished"], Names(restored));
+
+        // And the file is owed that edit, which nothing else would know: the flag saying so does
+        // not survive a reload, so it is worked out from the print of what was last written.
+        Assert.True(restored.HasUnwrittenFileChanges);
+        Assert.True(next.Connection.Connected);
+    }
+
+    /// <summary>
+    /// A file something else has written since is fetched, and asked about.
+    /// </summary>
+    [Fact]
+    public async Task AFileSomethingElseWroteIsFetchedAndAskedAbout()
+    {
+        using var rig = new Rig();
+        rig.Provider.Holds("Shared", "Theirs");
+
+        await rig.OpenAsync();
+        Assert.True(await rig.Connection.UseAsync(TheFile(), autoSave: false));
+
+        using var next = new Rig();
+        next.Kept.Restore(rig.Kept.Kept!);
+        Carry(rig, next);
+
+        // Somebody else's write: different empires, and a version that has moved on.
+        next.Provider.WrittenElsewhere("Shared", "Theirs", "Arrived Elsewhere");
+
+        var restored = await next.OpenAsync();
+        var asked = false;
+
+        Assert.True(await next.Connection.ResumeAsync((_, holds) =>
+        {
+            asked = true;
+            Assert.Equal(3, holds);
+
+            return Task.FromResult<CloudArrival?>(CloudArrival.TakeTheirs);
+        }));
+
+        Assert.True(asked);
+        Assert.Equal(["Shared", "Theirs", "Arrived Elsewhere"], Names(restored));
+    }
+
+    /// <summary>Carries what one visit remembered into the next, as the browser's store would.</summary>
+    private static void Carry(Rig from, Rig to)
+    {
+        foreach (var key in new[] { "cloud.file", "cloud.version", "cloud.print" })
+        {
+            to.Preferences.Set(key, from.Preferences.Get(key)!);
+        }
     }
 
     /// <summary>Disconnecting leaves the row saying what is true of it afterwards.</summary>

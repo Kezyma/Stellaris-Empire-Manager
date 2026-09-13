@@ -62,6 +62,20 @@ public sealed class CloudConnection : IDisposable
     /// </remarks>
     private const string ChosenKey = "cloud.file";
 
+    /// <summary>
+    /// The version of that file this app last read or wrote, and a print of what it held then.
+    /// </summary>
+    /// <remarks>
+    /// Together they answer the only two questions a reload has. The version says whether anything
+    /// else has written the file since - if nothing has, there is no reason to fetch it, and every
+    /// reason not to, because what is open may be an edit somebody is part-way through. The print
+    /// says whether what is open is still that file or has moved on from it, which is what decides
+    /// whether Save is owed anything.
+    /// </remarks>
+    private const string VersionKey = "cloud.version";
+
+    private const string PrintKey = "cloud.print";
+
     private readonly ICloudProvider _provider;
     private readonly OneDriveAuth _auth;
     private readonly FileExchangeRouter _router;
@@ -340,8 +354,18 @@ public sealed class CloudConnection : IDisposable
         }
 
         // Only now is anything changed, so a file that would not open leaves the session alone.
-        _connected?.Dispose();
+        // The version and the print are filed here rather than from the read that fetched them,
+        // because until this line it was still possible to stop - and stopping must not overwrite
+        // what is remembered about a file this one was never connected in place of.
+        Let(_connected);
         _connected = exchange;
+
+        if (exchange.Version is { Length: > 0 } stamped)
+        {
+            Remember(stamped, read.Contents);
+        }
+
+        exchange.Settled += Remember;
         _router.SwitchTo(exchange);
 
         if (_host.Current is { } session)
@@ -397,6 +421,63 @@ public sealed class CloudConnection : IDisposable
         return true;
     }
 
+    /// <summary>What the file is now, or null where the provider could not say.</summary>
+    private async Task<CloudStamp?> StampAsync(CloudFile file)
+    {
+        try
+        {
+            return await _provider.StatAsync(file.Id).ConfigureAwait(false);
+        }
+        catch (Exception ex) when (ex is HttpRequestException or InvalidOperationException)
+        {
+            return null;
+        }
+    }
+
+    /// <summary>Files the version now at the provider, and a print of what it holds.</summary>
+    private void Remember(string version, byte[] contents)
+    {
+        _preferences.Set(VersionKey, version);
+        _preferences.Set(PrintKey, Print(contents));
+    }
+
+    /// <summary>
+    /// A short, stable stand-in for a file's contents.
+    /// </summary>
+    /// <remarks>
+    /// Kept rather than the file itself, because the browser is already holding one copy of these
+    /// empires and a second would be the same bytes again for no reason. Nothing here is a secret,
+    /// so the hash is doing no security work - it only has to be the same for the same file.
+    /// </remarks>
+    private static string Print(byte[] contents) =>
+        Convert.ToBase64String(System.Security.Cryptography.SHA256.HashData(contents));
+
+    /// <summary>Puts this exchange in place without reading anything through it.</summary>
+    private async Task AttachAsync(CloudFileExchange exchange)
+    {
+        Let(_connected);
+        _connected = exchange;
+        exchange.Settled += Remember;
+
+        _router.SwitchTo(exchange);
+        Note = null;
+        SessionEnded = false;
+
+        await _sync.SetAsync(_preferences.SyncsWithFile).ConfigureAwait(false);
+    }
+
+    /// <summary>Lets go of an exchange, and of the notifications it was sending.</summary>
+    private void Let(CloudFileExchange? exchange)
+    {
+        if (exchange is null)
+        {
+            return;
+        }
+
+        exchange.Settled -= Remember;
+        exchange.Dispose();
+    }
+
     /// <summary>
     /// Whether what is open would write back as exactly the bytes that were just read.
     /// </summary>
@@ -438,9 +519,53 @@ public sealed class CloudConnection : IDisposable
             return false;
         }
 
-        return await UseAsync(
-            new CloudFile(parts[0], parts[1], parts.Length > 2 ? parts[2] : string.Empty), ask: ask)
-            .ConfigureAwait(false);
+        var file = new CloudFile(parts[0], parts[1], parts.Length > 2 ? parts[2] : string.Empty);
+
+        // Ask what the file is before asking for it. Where nothing has written it since this app
+        // last did, there is nothing to fetch and a good reason not to: what is open may be an
+        // edit in progress, and reading over it would throw that away to replace it with something
+        // already known to be identical to where the edit started.
+        if (_preferences.Get(VersionKey) is { Length: > 0 } seen)
+        {
+            var now = await StampAsync(file).ConfigureAwait(false);
+
+            if (now is null)
+            {
+                // Could not be asked at all, which is the case the caller has to offer a way out
+                // of rather than one to carry on quietly from.
+                SessionEnded = !await _provider.SignedInAsync().ConfigureAwait(false);
+
+                Note = SessionEnded
+                    ? $"Your {_provider.Name} sign-in has ended, so {file.Name} could not be opened."
+                    : $"{file.Name} could not be reached at {_provider.Name}.";
+
+                Changed?.Invoke();
+
+                return false;
+            }
+
+            if (string.Equals(now.Version, seen, StringComparison.Ordinal))
+            {
+                await AttachAsync(new CloudFileExchange(_provider, file, _browser, seen))
+                    .ConfigureAwait(false);
+
+                // What is open is either that file or an edit standing on top of it. The print
+                // tells the two apart, and the second owes the file a save - which nothing else
+                // would know, because the flag saying so does not survive a reload.
+                if (_host.Current is { File: { } mine }
+                    && _preferences.Get(PrintKey) is { Length: > 0 } print
+                    && !string.Equals(Print(mine.Save()), print, StringComparison.Ordinal))
+                {
+                    _host.Current.MarkFileUnwritten();
+                }
+
+                Changed?.Invoke();
+
+                return true;
+            }
+        }
+
+        return await UseAsync(file, ask: ask).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -456,7 +581,7 @@ public sealed class CloudConnection : IDisposable
         await _sync.SetAsync(false).ConfigureAwait(false);
 
         _router.SwitchTo(_browser);
-        _connected?.Dispose();
+        Let(_connected);
         _connected = null;
 
         // Settled rather than left to the change notification that keeps the browser's copy in
@@ -464,7 +589,12 @@ public sealed class CloudConnection : IDisposable
         // will fire. A tab closed straight after disconnecting would otherwise be racing it.
         await _host.RememberAsync().ConfigureAwait(false);
 
+        // The file, and what was known about it. Left behind, a later connection to a different
+        // file would be measured against a version and a print belonging to this one.
         _preferences.Set(ChosenKey, string.Empty);
+        _preferences.Set(VersionKey, string.Empty);
+        _preferences.Set(PrintKey, string.Empty);
+
         await _auth.SignOutAsync().ConfigureAwait(false);
 
         // The answer about writing by itself goes with the file it was about. Left set, a later
@@ -485,7 +615,7 @@ public sealed class CloudConnection : IDisposable
     /// <summary>Drops the exchange, which stops it asking the provider anything further.</summary>
     public void Dispose()
     {
-        _connected?.Dispose();
+        Let(_connected);
         _connected = null;
     }
 }

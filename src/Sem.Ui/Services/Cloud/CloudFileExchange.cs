@@ -38,13 +38,38 @@ public sealed class CloudFileExchange : IFileExchange, IDisposable
     /// <summary>The version last read or written, which is what a write promises not to overwrite.</summary>
     private string? _version;
 
-    /// <summary>Takes a provider ready to act, the file chosen at it, and the browser underneath.</summary>
-    public CloudFileExchange(ICloudProvider provider, CloudFile file, IFileExchange browser)
+    /// <summary>
+    /// Takes a provider ready to act, the file chosen at it, and the browser underneath.
+    /// </summary>
+    /// <param name="provider">Where the file is kept.</param>
+    /// <param name="file">Which file there.</param>
+    /// <param name="browser">What answers everything that is not about the designs file.</param>
+    /// <param name="version">
+    /// The version already known to be there, where a previous visit read or wrote it and nothing
+    /// has changed it since. Picking up from a stamp rather than from a read is what lets a reload
+    /// leave an edit in progress alone: there is no reason to fetch a file that has not moved.
+    /// </param>
+    public CloudFileExchange(
+        ICloudProvider provider, CloudFile file, IFileExchange browser, string? version = null)
     {
         _provider = provider ?? throw new ArgumentNullException(nameof(provider));
         File = file ?? throw new ArgumentNullException(nameof(file));
         _browser = browser ?? throw new ArgumentNullException(nameof(browser));
+        _version = version;
     }
+
+    /// <summary>
+    /// Raised with the version now at the provider and the bytes that go with it.
+    /// </summary>
+    /// <remarks>
+    /// Every read and every write moves this file on, and both happen down here where the thing
+    /// that remembers choices cannot see them. Saying so as it happens is what lets the next visit
+    /// ask "has it changed since we last touched it" and get a true answer.
+    /// </remarks>
+    public event Action<string, byte[]>? Settled;
+
+    /// <summary>The version last read or written, or null where neither has happened.</summary>
+    public string? Version => _version;
 
     /// <summary>The file this is pointed at.</summary>
     public CloudFile File { get; }
@@ -73,6 +98,7 @@ public sealed class CloudFileExchange : IFileExchange, IDisposable
         }
 
         _version = read.Stamp.Version;
+        Settled?.Invoke(_version, read.Contents);
 
         return (File.Name, read.Contents);
     }
@@ -105,6 +131,13 @@ public sealed class CloudFileExchange : IFileExchange, IDisposable
         if (outcome is CloudWrite.Written)
         {
             _version = stamp?.Version ?? _version;
+
+            // What was written is now what is there, so the next visit has both halves of the
+            // answer without fetching anything.
+            if (_version is { Length: > 0 } settled)
+            {
+                Settled?.Invoke(settled, contents);
+            }
 
             return SaveOutcome.Saved;
         }
