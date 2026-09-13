@@ -119,6 +119,17 @@ public sealed class CloudConnection : IDisposable
     public bool AutoSaveRemembered => _preferences.SyncsWithFile;
 
     /// <summary>
+    /// Whether a file was chosen on an earlier visit, whether or not it has been reached yet.
+    /// </summary>
+    /// <remarks>
+    /// Asked before the fetch rather than after it, because it decides whether there is anything to
+    /// wait for. A load that is going to open a file at a provider must not hand over an editor
+    /// first: whatever is in the browser's copy is only what was there last time, and an edit made
+    /// against it in those few seconds would be an edit to something about to be replaced.
+    /// </remarks>
+    public bool Remembers => _preferences.Get(ChosenKey) is { Length: > 0 };
+
+    /// <summary>
     /// The file's whole path at the provider, which is the only form that identifies it.
     /// </summary>
     /// <remarks>

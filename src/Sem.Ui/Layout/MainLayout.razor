@@ -302,6 +302,39 @@
         connection that is in step is not a question. Nothing here writes: every answer decides what
         is in front of you, and the file at the provider changes only when something saves.
     *@
+    @*
+        The wait while a remembered file is fetched. On screen rather than silent because it is the
+        one moment the app is deliberately not ready: what is behind this is last visit's copy, and
+        the file about to replace it is still on its way.
+    *@
+    @if (_opening)
+    {
+        <div class="sem-modal">
+            <div class="sheet" role="dialog" aria-modal="true" aria-live="polite">
+                <h2>Opening your file in @(_cloud?.ProviderName ?? "the cloud")</h2>
+                <p>Reading your empires from the file you connected to. This takes a moment.</p>
+            </div>
+        </div>
+    }
+
+    @*
+        And the answer when it could not be fetched at all - offline, or a sign-in that lapsed while
+        the tab was shut. Asked rather than assumed: carrying on quietly would put somebody to work
+        on a copy that is not the file they think they are editing, and refusing to open anything
+        would hold their empires hostage to a network.
+    *@
+    @if (_stranded)
+    {
+        <ConfirmDialog Title="@($"Your file in {_cloud?.ProviderName ?? "the cloud"} could not be opened.")"
+                       Message="@("This browser still has the copy it kept last time. You can connect "
+                                 + "again to work on the file itself, or carry on with that copy - "
+                                 + "which Export hands back, and which you can put into the file later.")"
+                       OnDismiss="() => _stranded = false">
+            <button type="button" @onclick="() => _stranded = false">Use this browser's copy</button>
+            <button type="button" @onclick="Reconnect">Connect again</button>
+        </ConfirmDialog>
+    }
+
     @if (_arriving is { } arrival)
     {
         <ConfirmDialog Title="@($"You already have {Count(arrival.Mine)} open.")"
@@ -523,6 +556,21 @@
     /// <summary>Whether the connect-to-a-provider sheet is on screen.</summary>
     private bool _connecting;
 
+    /// <summary>Whether a file chosen on an earlier visit is still being fetched.</summary>
+    private bool _opening;
+
+    /// <summary>
+    /// Whether a file was wanted, could not be had, and somebody has to say what to do about it.
+    /// </summary>
+    private bool _stranded;
+
+    /// <summary>Takes the question down and goes to the provider to try again.</summary>
+    private void Reconnect()
+    {
+        _stranded = false;
+        _connecting = true;
+    }
+
     /// <summary>
     /// The provider the app can be pointed at, where this host has one.
     /// </summary>
@@ -614,12 +662,25 @@
                     // with no way through is worst.
                     _connecting = true;
                 }
-                else
+                else if (_cloud.Remembers)
                 {
-                    // An ordinary load. A session kept in this browser survives a reload, so the
-                    // file chosen before is picked up again - asking, where what it holds and what
-                    // was restored from the last visit have gone different ways.
-                    await _cloud.ResumeAsync(AskAboutArrival);
+                    // An ordinary load onto a file chosen before. The file is the copy that counts,
+                    // so it is fetched before anything may be edited: the browser's copy is only
+                    // what was here last time, and an edit made against it while this is in flight
+                    // would be an edit to something about to be replaced.
+                    _opening = true;
+                    StateHasChanged();
+
+                    try
+                    {
+                        // False here is a file that could not be opened rather than one that was
+                        // not wanted, because Remembers has already said there is one.
+                        _stranded = !await _cloud.ResumeAsync(AskAboutArrival) && !_cloud.Connected;
+                    }
+                    finally
+                    {
+                        _opening = false;
+                    }
                 }
             }
         }
