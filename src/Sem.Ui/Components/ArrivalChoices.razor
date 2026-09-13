@@ -1,0 +1,81 @@
+@*
+    The four answers to "a file has arrived and you already have empires".
+
+    One row, everywhere the question is asked - importing from disk, connecting to a file at a
+    provider, and coming back to one that moved. The question is the same each time, so the answers
+    are too: somebody who learns this row once should never meet a different version of it.
+
+    They run in increasing order of consequence, which is the convention every other dialog in this
+    app follows, and here that order is also the whole meaning. Left to right: keep all of mine,
+    keep both favouring mine, keep both favouring theirs, take all of theirs. The two in the middle
+    carry an arrow rather than a sentence, because the row already says which side is which - the
+    arrow points at the end of the row whose copy survives.
+
+    There is no cancel among them. For an import and for a file that moved underneath, "Keep
+    Current" is what cancel would do, and offering both would be two buttons for one answer. Where
+    backing out is genuinely a different thing - connecting, where keeping your own still points
+    Save at the file - it is the dialog's own dismissal: Escape, or the backdrop.
+*@
+
+<button type="button" title="@KeepHint" aria-label="@KeepHint"
+        @onclick="() => Chose(Arrival.KeepMine)">
+    Keep Current
+</button>
+
+<button type="button" title="@MineHint" aria-label="@MineHint"
+        @onclick="() => Chose(Arrival.MineWin)">
+    <span aria-hidden="true">&#8592;</span> Merge
+</button>
+
+<button type="button" title="@TheirsHint" aria-label="@TheirsHint"
+        @onclick="() => Chose(Arrival.TheirsWin)">
+    Merge <span aria-hidden="true">&#8594;</span>
+</button>
+
+@*
+    The only one that loses something, so the only one marked as such - and last, so it is never
+    where a harmless answer was a moment ago.
+*@
+<button type="button" class="danger" title="@TakeHint" aria-label="@TakeHint"
+        @onclick="() => Chose(Arrival.TakeTheirs)">
+    @Take
+</button>
+
+@code {
+    /// <summary>What to call the arriving file in the tooltips: "the file", "OneDrive".</summary>
+    /// <remarks>
+    /// Short enough to sit inside a sentence. The whole name or path belongs in the question above,
+    /// where there is room for it.
+    /// </remarks>
+    [Parameter, EditorRequired]
+    public required string Theirs { get; set; }
+
+    /// <summary>The last button's words: "Take File", "Take Cloud".</summary>
+    [Parameter, EditorRequired]
+    public required string Take { get; set; }
+
+    /// <summary>Called with whichever answer was pressed.</summary>
+    [Parameter, EditorRequired]
+    public required EventCallback<Arrival> OnChosen { get; set; }
+
+    /// <summary>
+    /// What each answer does, in a sentence.
+    /// </summary>
+    /// <remarks>
+    /// The arrows are quick to read and impossible to be sure of, which is exactly what a tooltip
+    /// is for. They are the accessible name as well, since an arrow has none of its own.
+    /// </remarks>
+    private string KeepHint =>
+        $"Keep the empires you have open now, and leave {Theirs} as it is.";
+
+    private string MineHint =>
+        $"Keep both. Where the same empire is in both, the one you have open is the one kept.";
+
+    private string TheirsHint =>
+        $"Keep both. Where the same empire is in both, the copy in {Theirs} is the one kept.";
+
+    private string TakeHint =>
+        $"Replace the empires you have open with the ones in {Theirs}.";
+
+    private Task Chose(Arrival choice) => OnChosen.InvokeAsync(choice);
+}

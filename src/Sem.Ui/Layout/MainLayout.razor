@@ -321,25 +321,12 @@
     @if (_arriving is { } arrival)
     {
         <ConfirmDialog Title="@($"You already have {Count(arrival.Mine)} open.")"
-                       Message="@($"{arrival.Name} holds {Count(arrival.Theirs)}. Merging keeps your "
+                       Message="@($"{arrival.Name} holds {Count(arrival.Holds)}. Merging keeps your "
                                  + "order and adds theirs to it; the choice is only which copy of an "
-                                 + "empire you both have is the one kept."
-                                 + (arrival.CanKeep
-                                     ? " Nothing is written to the file until you save."
-                                     : " Your own file on disk is not touched either way."))"
+                                 + $"empire you both have is the one kept. {arrival.Note}")"
                        OnDismiss="() => Arrived(null)">
-            <button type="button" @onclick="() => Arrived(null)">Cancel</button>
-            <button type="button" @onclick="() => Arrived(Arrival.MineWin)">Merge, mine win</button>
-            <button type="button" @onclick="() => Arrived(Arrival.TheirsWin)">Merge, theirs win</button>
-
-            @if (arrival.CanKeep)
-            {
-                <button type="button" @onclick="() => Arrived(Arrival.KeepMine)">Keep mine</button>
-            }
-
-            <button type="button" class="danger" @onclick="() => Arrived(Arrival.TakeTheirs)">
-                @(arrival.CanKeep ? "Take the file" : "Replace mine")
-            </button>
+            <ArrivalChoices Theirs="@arrival.Theirs" Take="@arrival.Take"
+                            OnChosen="(Arrival choice) => Arrived(choice)" />
         </ConfirmDialog>
     }
 
@@ -469,28 +456,51 @@
     /// and the answer is what it does next. Import does not need this - it has already finished by
     /// the time it asks - which is why that one is a plain field and this one carries a promise.
     /// </remarks>
-    private (int Mine, int Theirs, string Name, bool CanKeep, TaskCompletionSource<Arrival?> Answer)? _arriving;
+    private Arriving? _arriving;
 
     /// <summary>
-    /// Connecting to a file, where keeping your own empires is an answer with a consequence.
+    /// A file that has arrived, and the promise waiting on what to do about it.
+    /// </summary>
+    /// <param name="Mine">How many empires are open now, for the question to weigh against.</param>
+    /// <param name="Holds">How many the arriving file holds.</param>
+    /// <param name="Name">What to call it in the question - a file name, or a whole path.</param>
+    /// <param name="Theirs">The short form, for a sentence: "the file", "OneDrive".</param>
+    /// <param name="Take">The last button's words: "Take File", "Take Cloud".</param>
+    /// <param name="Note">What is and is not written, which differs by where the file came from.</param>
+    /// <param name="Answer">Completed by whichever answer is pressed, or by dismissal.</param>
+    private sealed record Arriving(
+        int Mine,
+        int Holds,
+        string Name,
+        string Theirs,
+        string Take,
+        string Note,
+        TaskCompletionSource<Arrival?> Answer);
+
+    /// <summary>
+    /// Connecting to a file at a provider, where keeping your own still points Save at it.
     /// </summary>
     /// <remarks>
     /// Shaped to <see cref="ArrivalQuestion"/> exactly, since it is handed over as one.
     /// </remarks>
-    private Task<Arrival?> AskAboutArrival(string name, int holds) => Asking(name, holds, canKeep: true);
+    private Task<Arrival?> AskAboutArrival(string name, int holds) =>
+        Asking(name, holds, _cloud?.ProviderName ?? "the cloud", "Take Cloud",
+            "Nothing is written to it until you save.");
 
-    /// <summary>
-    /// Importing one, where keeping your own would only be a second way of saying cancel.
-    /// </summary>
-    private Task<Arrival?> AskAboutImport(string name, int holds) => Asking(name, holds, canKeep: false);
+    /// <summary>Importing one from disk, which writes nothing anywhere whatever the answer.</summary>
+    private Task<Arrival?> AskAboutImport(string name, int holds) =>
+        Asking(name, holds, "the file", "Take File",
+            "Your own file on disk is not touched either way.");
 
     /// <summary>Puts the question up, and answers whoever asked once something is pressed.</summary>
-    private Task<Arrival?> Asking(string name, int holds, bool canKeep)
+    private Task<Arrival?> Asking(string name, int holds, string theirs, string take, string note)
     {
         var answer = new TaskCompletionSource<Arrival?>(
             TaskCreationOptions.RunContinuationsAsynchronously);
 
-        _arriving = (_session?.File?.Designs.Count ?? 0, holds, name, canKeep, answer);
+        _arriving = new Arriving(
+            _session?.File?.Designs.Count ?? 0, holds, name, theirs, take, note, answer);
+
         StateHasChanged();
 
         return answer.Task;
@@ -837,9 +847,11 @@
                 return;
             }
 
-            // Keeping your own is offered where connecting offers it and not here, because there
-            // it points Save at the file and here it would be a second way of saying cancel.
-            if (await AskAboutImport(name, incoming.Designs.Count) is not { } answered)
+            // Dismissed, or answered "keep what I have" - which for an import are the same thing.
+            // Connecting is the only place those two part company, because there keeping your own
+            // still leaves Save pointed at the file.
+            if (await AskAboutImport(name, incoming.Designs.Count) is not { } answered
+                || answered is Arrival.KeepMine)
             {
                 return;
             }
