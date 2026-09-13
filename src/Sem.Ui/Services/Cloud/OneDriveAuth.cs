@@ -101,8 +101,15 @@ public sealed class OneDriveAuth
         var verifier = Random(64);
         var state = Random(16);
 
+        // Both places, and the return leg prefers this tab's. Safari on a phone discards a tab it
+        // decides it needs the memory for, and a sign-in is exactly when that happens: the app is
+        // in the background while somebody types a password at Microsoft. A discarded tab comes
+        // back with its own storage emptied, and a handshake kept only there could never be
+        // finished. The shared copy is the fallback for that, and nothing more - see CompleteAsync.
         await _session.WriteForTabAsync(VerifierKey, verifier).ConfigureAwait(false);
         await _session.WriteForTabAsync(StateKey, state).ConfigureAwait(false);
+        await _session.WriteAsync(VerifierKey, verifier).ConfigureAwait(false);
+        await _session.WriteAsync(StateKey, state).ConfigureAwait(false);
 
         var query = new Dictionary<string, string>(StringComparer.Ordinal)
         {
@@ -239,11 +246,25 @@ public sealed class OneDriveAuth
             return false;
         }
 
-        var expected = await _session.ReadForTabAsync(StateKey).ConfigureAwait(false);
-        await _session.WriteForTabAsync(StateKey, null).ConfigureAwait(false);
+        // This tab's copy first, and the shared one only if this tab has none.
+        //
+        // The order is the whole of it. Preferring this tab's is what stops a second tab that began
+        // its own sign-in from answering for this one - that was the bug, and localStorage being
+        // shared by every tab on the origin was the cause. Falling back to the shared copy is for
+        // the tab that came back with nothing, which on a phone means it was discarded while the
+        // password was being typed. Where both exist they agree unless another tab has been signing
+        // in, and in that case this tab's is the right one by construction.
+        var expected = await _session.ReadForTabAsync(StateKey).ConfigureAwait(false)
+            ?? await _session.ReadAsync(StateKey).ConfigureAwait(false);
 
-        var verifier = await _session.ReadForTabAsync(VerifierKey).ConfigureAwait(false);
+        var verifier = await _session.ReadForTabAsync(VerifierKey).ConfigureAwait(false)
+            ?? await _session.ReadAsync(VerifierKey).ConfigureAwait(false);
+
+        // Spent, wherever they were found. Both copies go, so neither can answer anything again.
+        await _session.WriteForTabAsync(StateKey, null).ConfigureAwait(false);
         await _session.WriteForTabAsync(VerifierKey, null).ConfigureAwait(false);
+        await _session.WriteAsync(StateKey, null).ConfigureAwait(false);
+        await _session.WriteAsync(VerifierKey, null).ConfigureAwait(false);
 
         var keptState = expected is { Length: > 0 };
         var keptVerifier = verifier is { Length: > 0 };
@@ -281,6 +302,16 @@ public sealed class OneDriveAuth
             // the first, or a code arriving that nobody here asked for. Not spent either way.
             Trouble = "The answer that came back was for a different sign-in, so it was not used. "
                 + "Connect again.";
+
+            // Written where a developer can read it, because the sentence above is all the person
+            // in front of it can use and it is not enough to tell two causes apart: a second tab
+            // that overwrote this one's half of the handshake, and a provider that answered with no
+            // state at all. Neither value is a secret - the state is a nonce, it travels in the
+            // address bar, and it has just been spent.
+            Console.WriteLine(
+                "Sem: sign-in refused. Expected state '{0}', the address carried '{1}'.",
+                expected,
+                query.TryGetValue("state", out var arrived) ? arrived : "(none)");
 
             return false;
         }
@@ -348,6 +379,13 @@ public sealed class OneDriveAuth
         await _session.WriteAsync(RefreshKey, null).ConfigureAwait(false);
         await _session.WriteForTabAsync(VerifierKey, null).ConfigureAwait(false);
         await _session.WriteForTabAsync(StateKey, null).ConfigureAwait(false);
+
+        // And where these two used to be kept, which is not where they are put any more. A browser
+        // that ran the older build still has a pair sitting in the shared store, and nothing else
+        // will ever come back for them - so disconnecting, which is the one thing that promises to
+        // leave nothing behind, takes them too.
+        await _session.WriteAsync(VerifierKey, null).ConfigureAwait(false);
+        await _session.WriteAsync(StateKey, null).ConfigureAwait(false);
     }
 
     private async Task<bool> RedeemAsync(Dictionary<string, string> form)

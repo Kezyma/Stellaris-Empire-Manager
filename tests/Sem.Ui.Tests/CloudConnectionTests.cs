@@ -745,10 +745,11 @@ public sealed class CloudConnectionTests
         Assert.False(await nothing.Connection.CompleteSignInAsync("https://example.invalid/?code=abc&state=xyz"));
         Assert.Contains("did not keep the sign-in", nothing.Connection.Note, StringComparison.Ordinal);
 
-        // Half of it - the verifier survived and the state did not.
+        // Half of it - the verifier survived and the state did not, in either place it is kept.
         using var half = new Rig();
         await half.Connection.BeginSignInAsync();
         await half.Store.WriteForTabAsync("sem.cloud.state", null);
+        await half.Store.WriteAsync("sem.cloud.state", null);
 
         Assert.False(await half.Connection.CompleteSignInAsync("https://example.invalid/?code=abc&state=xyz"));
         Assert.Contains("Only part of the sign-in", half.Connection.Note, StringComparison.Ordinal);

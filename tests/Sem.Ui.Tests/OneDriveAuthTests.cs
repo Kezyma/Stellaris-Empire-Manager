@@ -126,6 +126,86 @@ public sealed class OneDriveAuthTests
     }
 
     /// <summary>
+    /// One browser: every tab shares the lasting half, and each keeps its own of the other.
+    /// </summary>
+    /// <remarks>
+    /// Two separate stores would not model this at all - they would share nothing, and a test of
+    /// two tabs interfering could not fail however wrong the code was.
+    /// </remarks>
+    private sealed class Browser
+    {
+        private readonly Dictionary<string, string> _shared = new(StringComparer.Ordinal);
+
+        public OneTab Tab() => new(_shared);
+
+        public sealed class OneTab(Dictionary<string, string> shared) : ITokenStore
+        {
+            private readonly Dictionary<string, string> _thisTab = new(StringComparer.Ordinal);
+
+            public Task<string?> ReadAsync(string key) => Task.FromResult(shared.GetValueOrDefault(key));
+
+            public Task WriteAsync(string key, string? value) => Put(shared, key, value);
+
+            public Task<string?> ReadForTabAsync(string key) =>
+                Task.FromResult(_thisTab.GetValueOrDefault(key));
+
+            public Task WriteForTabAsync(string key, string? value) => Put(_thisTab, key, value);
+
+            /// <summary>Empties this tab's half, which is what a discarded tab comes back as.</summary>
+            public void Discarded() => _thisTab.Clear();
+
+            private static Task Put(Dictionary<string, string> into, string key, string? value)
+            {
+                if (value is null)
+                {
+                    into.Remove(key);
+                }
+                else
+                {
+                    into[key] = value;
+                }
+
+                return Task.CompletedTask;
+            }
+        }
+    }
+
+    /// <summary>
+    /// A tab that came back with its own storage emptied can still finish its sign-in.
+    /// </summary>
+    /// <remarks>
+    /// Safari on a phone discards a tab when it wants the memory, and a sign-in is exactly when it
+    /// gets the chance: the app is in the background while a password is typed somewhere else. Kept
+    /// only in the tab, that handshake could never be finished - so it is kept in both places, and
+    /// the shared copy is consulted only when the tab has nothing.
+    /// </remarks>
+    [Fact]
+    public async Task ATabThatWasDiscardedCanStillFinish()
+    {
+        var browser = new Browser();
+        var tab = browser.Tab();
+        var auth = new OneDriveAuth(
+            new HttpClient(new Handler((_, _) => Granting("token-1", "refresh-1"))),
+            tab, ClientId, Redirect);
+
+        await auth.BeginAsync();
+
+        var began = await tab.ReadForTabAsync("sem.cloud.state");
+        Assert.NotNull(began);
+
+        // The phone took the memory back while the password was being typed.
+        tab.Discarded();
+
+        Assert.Null(await tab.ReadForTabAsync("sem.cloud.state"));
+        Assert.True(await auth.CompleteAsync(
+            $"{Redirect}?code=the-code&state={Uri.EscapeDataString(began!)}"));
+
+        // And it is spent in both places, so neither can answer anything a second time.
+        Assert.Null(await tab.ReadAsync("sem.cloud.state"));
+        Assert.Null(await tab.ReadAsync("sem.cloud.verifier"));
+    }
+
+    /// <summary>
     /// A second tab signing in does not spoil the first tab's sign-in.
     /// </summary>
     /// <remarks>
@@ -140,10 +220,13 @@ public sealed class OneDriveAuthTests
     [Fact]
     public async Task ASecondTabSigningInDoesNotSpoilTheFirst()
     {
-        // One browser: the lasting half is shared, and each tab has its own of the other half.
+        // One browser, two tabs: the lasting half is genuinely shared between them, which is what
+        // makes this test able to fail. Two unrelated stores would share nothing and pass whatever
+        // the code did.
         var handler = new Handler((_, _) => Granting("token-1", "refresh-1"));
-        var firstTab = new NoTokenStore();
-        var secondTab = new NoTokenStore();
+        var browser = new Browser();
+        var firstTab = browser.Tab();
+        var secondTab = browser.Tab();
 
         var first = new OneDriveAuth(new HttpClient(handler), firstTab, ClientId, Redirect);
         var second = new OneDriveAuth(new HttpClient(handler), secondTab, ClientId, Redirect);
@@ -177,10 +260,12 @@ public sealed class OneDriveAuthTests
 
         await auth.BeginAsync();
 
+        // Kept in both, and the tab's is the one that answers - which is what the two-tab test
+        // above pins. The shared copy exists for a tab that comes back with nothing.
         Assert.NotNull(await session.ReadForTabAsync("sem.cloud.verifier"));
         Assert.NotNull(await session.ReadForTabAsync("sem.cloud.state"));
-        Assert.Null(await session.ReadAsync("sem.cloud.verifier"));
-        Assert.Null(await session.ReadAsync("sem.cloud.state"));
+        Assert.NotNull(await session.ReadAsync("sem.cloud.verifier"));
+        Assert.NotNull(await session.ReadAsync("sem.cloud.state"));
 
         await auth.CompleteAsync($"{Redirect}?code=c&state={Uri.EscapeDataString(
             (await session.ReadForTabAsync("sem.cloud.state"))!)}");
