@@ -320,19 +320,14 @@ public sealed class OneDriveAuth
         {
             // An answer to a question this tab is no longer asking: a second sign-in started over
             // the first, or a code arriving that nobody here asked for. Not spent either way.
-            // Shown, not merely logged. A phone has no console to open, and without this the
-            // sentence above cannot tell apart the three things that produce it: a second context
-            // that overwrote this one's half of the handshake, a stale value left somewhere by an
-            // older build, and a provider that answered with no state at all. Short prefixes are
-            // enough to compare two values by eye, and none of this is a secret - the state is a
-            // nonce, it travelled in the address bar, and it has just been spent.
-            // Whole values and their lengths. Eight characters were not enough: the first report
-            // of this showed two prefixes that matched and a comparison that failed anyway, which
-            // says the difference is in a tail - and a length says so at a glance.
+            //
+            // The two states used to be printed here, whole, with their lengths. That was put in
+            // to find one bug on a phone, which has no console to open, and it found it: a stray
+            // character on the end of a state that made two identical-looking values compare
+            // unequal. The trim above is the fix, and the diagnostic has gone with the bug - a
+            // sentence carrying two nonces is not one anybody should have to read.
             Trouble = "The answer that came back was for a different sign-in, so it was not used. "
-                + $"Connect again. (This {(kept is not null ? "tab" : "browser")} was waiting for "
-                + $"'{expected}' [{expected.Length}]; what came back was "
-                + $"'{carried ?? "nothing"}' [{carried?.Length ?? 0}].)";
+                + "Connect again.";
 
             return false;
         }

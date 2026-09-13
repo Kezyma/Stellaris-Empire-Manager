@@ -80,6 +80,53 @@ switch does anything. Connecting swaps what the router forwards to and raises an
 else is rebuilt. See [cloud-setup.md](cloud-setup.md) for the registration a provider needs, and
 why a public client can commit its client id.
 
+## Keeping a file and an app in step
+
+Both hosts make the same promise about somebody's designs file, by different means:
+
+> **Nothing is written over a change this app has not seen.**
+
+What enforces it is a **baseline** - what the file held the last time this app read or wrote it -
+and the rule that only a read or a write may move it. Merely *noticing* that the file moved does
+not: a change that was seen and then never dealt with must not license the next write to go
+straight over it.
+
+|  | `Sem.Desktop` | The cloud exchange |
+|---|---|---|
+| The baseline | The bytes themselves | The provider's version stamp |
+| Noticing a change | A folder watcher | Polling, paced by whether anybody is looking |
+| Refusing a write | Reads the file back and compares before replacing it | Hands the stamp over as `If-Match` and lets the provider refuse |
+
+The mechanisms differ; the answer does not. Either way the write comes back
+`SaveOutcome.Conflicted`, which is **not a failure to save** - it is a refusal to overwrite
+somebody, and the thing to do about it is look at what arrived.
+
+### The one question, asked in one voice
+
+Four answers, everywhere the two sides can disagree - importing a file, connecting to one, resuming
+a connection, the watcher noticing one change, and a save that was refused:
+
+- **Keep Current** - your empires stand; what arrived becomes the thing they will be written over.
+- **← Merge** / **Merge →** - both, differing only in which copy of an empire you both have is kept.
+- **Take File** / **Take Cloud** - theirs, and your unsaved edits go with it.
+
+`Arrival` and `ArrivalQuestion` are the vocabulary and `ArrivalChoices` is the row of buttons, so
+the question reads the same wherever it is met. **Every answer moves the baseline**, including the
+ones that keep your own - that is what stops the same change being asked about twice, and what makes
+each answer go on meaning what it said.
+
+### Where a refusal goes
+
+`DesignSync.ReconcileAsync` is what a refused write ends in. It reads the file *directly* rather
+than through `LoadFromDiskAsync`, which returns at a guard when writing-as-you-go is switched off -
+so the question is asked whether or not the switch is on. Reading is also what lifts the refusal,
+since a read is exactly what the baseline records: by the time an answer is pressed the write is
+allowed again, and the write that follows the answer is the save that was asked for.
+
+`SessionHost.Reconcile` is the hook that reaches it, and `SessionHost.Deferred` is how a caller
+tells "saved" from "waiting on an answer" - both look like the absence of an error message
+otherwise, and one caller closes the editor on it.
+
 ## Why the extracted data is committed
 
 `src/Sem.Web/wwwroot/gamedata` is 218 MB of extracted database, text and artwork, and it is in the
