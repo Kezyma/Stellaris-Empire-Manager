@@ -137,10 +137,26 @@
 
                     @if (Sync.Available)
                     {
+                        @*
+                            The icon rather than the word. "Auto" had to be read to mean anything,
+                            and read next to a verb it looked like a second verb; two arrows round a
+                            circle is what every app means by this and is understood without being
+                            read at all. The name stays for anything that cannot see it.
+                        *@
                         <label class="sem-auto" title="@SyncExplained">
                             <input type="checkbox" checked="@Sync.Enabled"
                                    @onchange="e => Sync.SetAsync(e.Value is true)" />
-                            <span>Auto</span>
+
+                            <svg viewBox="0 0 24 24" width="0.85em" height="0.85em" fill="none"
+                                 stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                 stroke-linejoin="round" aria-hidden="true" focusable="false">
+                                <path d="M21 10a9 9 0 0 0-15.5-5.5L1 9" />
+                                <path d="M1 4v5h5" />
+                                <path d="M3 14a9 9 0 0 0 15.5 5.5L23 15" />
+                                <path d="M23 20v-5h-5" />
+                            </svg>
+
+                            <span class="sem-visually-hidden">Keep my designs file in step</span>
                         </label>
                     }
                 </div>

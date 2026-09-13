@@ -1003,13 +1003,17 @@ button.sem-tab:disabled:hover { background: none; }
    ground, same border - rather than a tab, which is a thing to press. The checkbox stays visible
    instead of being replaced by a tick or an icon: it is the control, and hiding it would leave the
    only way of telling on from off as a colour.
+
+   Sized to the word beside it rather than to itself. A chip is a note on the verb it qualifies, and
+   one standing taller than the verb reads as the louder of the two - so the padding is a hairline,
+   the box is shrunk to match, and the whole thing comes out at the height of the text in Save.
 */
 .sem-save > .sem-auto {
     display: inline-flex;
     align-items: center;
     gap: var(--space-2xs);
     margin-right: var(--space-sm);
-    padding: var(--space-2xs) var(--space-sm) var(--space-2xs) var(--space-xs);
+    padding: var(--space-2xs) var(--space-xs);
     background: var(--bg-raised);
     border: 1px solid var(--border);
     border-radius: var(--radius-pill);
@@ -1031,9 +1035,23 @@ button.sem-tab:disabled:hover { background: none; }
     color: var(--accent);
 }
 
+/*
+   Shrunk with the chip. A checkbox draws at whatever size the platform likes, which here is taller
+   than the chip it sits in - so it is given one, and the accent colour so that on and off differ by
+   more than a tick nobody looks closely enough to see.
+*/
 .sem-save > .sem-auto input {
+    width: 0.8em;
+    height: 0.8em;
     margin: 0;
+    accent-color: var(--accent);
     cursor: pointer;
+}
+
+/* The icon takes the chip's colour, so it dims and lights with the state rather than beside it. */
+.sem-save > .sem-auto svg {
+    display: block;
+    flex: none;
 }
 
 
