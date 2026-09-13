@@ -160,8 +160,25 @@ public sealed class CloudConnection : IDisposable
         return signedIn;
     }
 
-    /// <summary>Where to send the browser to sign in.</summary>
-    public Task<string> BeginSignInAsync() => _auth.BeginAsync();
+    /// <summary>
+    /// Where to send the browser to sign in.
+    /// </summary>
+    /// <param name="afresh">
+    /// Whether to insist on the provider drawing its sign-in page rather than sending the browser
+    /// straight back. Worth doing after one has failed: an instant round trip is the harder thing
+    /// for a browser to carry a handshake through, and it is also the only way to reach a different
+    /// account once one has been remembered.
+    /// </param>
+    public Task<string> BeginSignInAsync(bool afresh = false) => _auth.BeginAsync(afresh);
+
+    /// <summary>
+    /// Whether the last attempt to come back from the provider came to nothing.
+    /// </summary>
+    /// <remarks>
+    /// So the next one can ask for the page rather than the shortcut, and so the dialog can say
+    /// that is what it is about to do rather than appearing to repeat something that just failed.
+    /// </remarks>
+    public bool LastSignInFailed { get; private set; }
 
     /// <summary>
     /// Finishes a sign-in the browser has come back from, and picks up where it left off.
@@ -201,11 +218,14 @@ public sealed class CloudConnection : IDisposable
                         + " empires, so export anything here you want to keep.";
                 }
 
+                LastSignInFailed = true;
                 Changed?.Invoke();
             }
 
             return false;
         }
+
+        LastSignInFailed = false;
 
         await ResumeAsync(ask).ConfigureAwait(false);
         Changed?.Invoke();
@@ -555,14 +575,28 @@ public sealed class CloudConnection : IDisposable
     }
 
     /// <summary>
-    /// Stops working on the provider's file, and forgets the session at it.
+    /// Stops working on the provider's file, and optionally forgets the session at it too.
     /// </summary>
+    /// <param name="signOut">
+    /// Whether to throw the session away as well. False for letting go of a file, which is what
+    /// somebody almost always means; true for signing out, which is a different intention and
+    /// deserves to be asked for by name.
+    /// </param>
     /// <remarks>
+    /// <para>
     /// The empires stay where they are - what was read is still open, and is now an ordinary
     /// browser session of it. Keeping the file in step is turned off first, because the thing it is
     /// watching is the exchange being taken away.
+    /// </para>
+    /// <para>
+    /// These used to be one act, and it made letting go of a file expensive: reconnecting meant the
+    /// whole redirect out to the provider and back, for a session that had never stopped being
+    /// valid. Worse where that trip is the fragile part - a phone, an app added to a home screen -
+    /// since it turned "I have finished with this file" into "prove who you are again", which is
+    /// the step most likely to fail.
+    /// </para>
     /// </remarks>
-    public async Task DisconnectAsync()
+    public async Task DisconnectAsync(bool signOut = false)
     {
         await _sync.SetAsync(false).ConfigureAwait(false);
 
@@ -581,7 +615,10 @@ public sealed class CloudConnection : IDisposable
         _preferences.Set(VersionKey, string.Empty);
         _preferences.Set(PrintKey, string.Empty);
 
-        await _auth.SignOutAsync().ConfigureAwait(false);
+        if (signOut)
+        {
+            await _auth.SignOutAsync().ConfigureAwait(false);
+        }
 
         // The answer about writing by itself goes with the file it was about. Left set, a later
         // connection to a different file would start writing it without anybody having said so.

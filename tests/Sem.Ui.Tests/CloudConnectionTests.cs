@@ -462,8 +462,26 @@ public sealed class CloudConnectionTests
         Assert.Null(rig.Connection.Where);
         Assert.False(rig.Preferences.SyncsWithFile);
         Assert.Equal(string.Empty, rig.Preferences.Get("cloud.file"));
-        Assert.False(rig.Store.Holds("sem.cloud.refresh"));
         Assert.False(rig.Router.SavesInPlace);
+
+        // And the session is kept, because letting go of a file is not signing out. It used to be
+        // both, which made choosing a different file cost a whole trip out to the provider and
+        // back - the step most likely to fail, on the devices where it fails.
+        Assert.True(rig.Store.Holds("sem.cloud.refresh"));
+    }
+
+    /// <summary>Signing out is the other intention, and does throw the session away.</summary>
+    [Fact]
+    public async Task SigningOutForgetsTheSessionAsWell()
+    {
+        using var rig = new Rig();
+        Assert.True(await rig.Connection.UseAsync(TheFile(), autoSave: true));
+
+        await rig.Connection.DisconnectAsync(signOut: true);
+
+        Assert.False(rig.Connection.Connected);
+        Assert.False(rig.Store.Holds("sem.cloud.refresh"));
+        Assert.Equal(string.Empty, rig.Preferences.Get("cloud.file"));
     }
 
     private static IReadOnlyList<string> Names(DesignSession session) =>
@@ -982,9 +1000,9 @@ public sealed class CloudConnectionTests
         Assert.False(rig.Preferences.SyncsWithFile);
     }
 
-    /// <summary>Disconnecting leaves the row saying what is true of it afterwards.</summary>
+    /// <summary>The row says what is true of the session, which outlives letting go of a file.</summary>
     [Fact]
-    public async Task DisconnectingStopsTheRowSayingSignedIn()
+    public async Task TheRowKeepsSayingSignedInUntilYouSignOut()
     {
         using var rig = new Rig();
 
@@ -993,6 +1011,11 @@ public sealed class CloudConnectionTests
 
         Assert.True(await rig.Connection.UseAsync(TheFile()));
         await rig.Connection.DisconnectAsync();
+
+        // Still signed in, so what comes next is a file picker and not a sign-in.
+        Assert.Equal("Signed in", Assert.Single(rig.Connection.Providers).Why);
+
+        await rig.Connection.DisconnectAsync(signOut: true);
 
         Assert.Null(Assert.Single(rig.Connection.Providers).Why);
     }

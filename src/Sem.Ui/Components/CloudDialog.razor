@@ -37,8 +37,8 @@
 
             @*
                 Being connected used to be the end of the road: the only way to a different file was
-                Disconnect, which signs out of the provider as well, so changing your mind about
-                which file cost a whole sign-in.
+                Disconnect, which signed out of the provider as well, so changing your mind about
+                which file cost a whole trip out and back.
             *@
             <button type="button" class="sem-inline" @onclick="Choose" disabled="@_busy">
                 Choose a different file
@@ -174,6 +174,16 @@
 
         <div class="choices">
             <button type="button" @onclick="Close">Close</button>
+
+            @*
+                Two things, not one. Letting go of a file is what somebody almost always means, and
+                it now keeps the session - so connecting again is a file picker rather than a trip
+                out to the provider and back. Signing out is the other intention and says so.
+            *@
+            @if (_signedIn)
+            {
+                <button type="button" @onclick="SignOut" disabled="@_busy">Sign out</button>
+            }
 
             @if (Cloud.Connected)
             {
@@ -343,7 +353,9 @@
 
         _busy = true;
 
-        var address = await Cloud.BeginSignInAsync();
+        // After one that came to nothing, ask the provider to draw its page rather than send the
+        // browser straight back. Repeating the exact thing that just failed is not a retry.
+        var address = await Cloud.BeginSignInAsync(afresh: Cloud.LastSignInFailed);
 
         Navigation.NavigateTo(address, forceLoad: true);
     }
@@ -399,6 +411,31 @@
         try
         {
             await Cloud.DisconnectAsync();
+            _choosing = false;
+            _found = null;
+            _searching = false;
+            _path.RemoveRange(1, _path.Count - 1);
+
+            // Still signed in, so what follows is the file picker rather than the provider row -
+            // and it should be looking at something. Letting go of a file and choosing another is
+            // now one dialog and no trip out to the provider at all.
+            _here = null;
+            await Open();
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
+
+    /// <summary>Lets go of the file and of the session at the provider both.</summary>
+    private async Task SignOut()
+    {
+        _busy = true;
+
+        try
+        {
+            await Cloud.DisconnectAsync(signOut: true);
             _signedIn = false;
             _choosing = false;
             _found = null;

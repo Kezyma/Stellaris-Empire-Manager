@@ -96,7 +96,7 @@ public sealed class OneDriveAuth
     /// that it never does. What goes out is its hash, and Microsoft will not exchange the code it
     /// returns for a token unless it is handed back the original.
     /// </remarks>
-    public async Task<string> BeginAsync()
+    public async Task<string> BeginAsync(bool afresh = false)
     {
         var verifier = Random(64);
         var state = Random(16);
@@ -122,6 +122,19 @@ public sealed class OneDriveAuth
             ["code_challenge"] = Challenge(verifier),
             ["code_challenge_method"] = "S256",
         };
+
+        // Asked for by name when the last attempt came to nothing.
+        //
+        // Somebody who ticked "keep me signed in" is sent straight back by Microsoft without a page
+        // being drawn, and an instant round trip is a harder thing for a browser to carry a handshake
+        // through than one with a person typing in the middle of it. select_account puts the page
+        // back: the session at Microsoft is untouched, they pick the same account, and the trip takes
+        // long enough to be an ordinary navigation again. It also gives somebody a way to reach a
+        // different account, which was not otherwise possible once one was remembered.
+        if (afresh)
+        {
+            query["prompt"] = "select_account";
+        }
 
         return $"{Authority}/authorize?" + string.Join(
             '&',
