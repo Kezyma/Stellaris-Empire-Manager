@@ -84,12 +84,32 @@ public sealed class GameDataCache
             }
 
             // A game patch changes what the designer must offer, so the data is rebuilt with it.
+            // A cache from before this was written down cannot say, and is old enough to rebuild.
             var installed = ReadInstalledVersion();
-            if (root.TryGetProperty("gameVersion", out var cached) &&
-                installed is not null &&
+            if (!root.TryGetProperty("gameVersion", out var cached))
+            {
+                reason = "built before the game version was written down";
+                return false;
+            }
+
+            if (installed is not null &&
                 !string.Equals(cached.GetString(), installed, StringComparison.Ordinal))
             {
                 reason = $"the game was updated to {installed}";
+                return false;
+            }
+
+            // And the files themselves, which move for things a version string never mentions: a
+            // hotfix that did not bump it, a repaired install, a hand-edited define. Absent means
+            // a cache from before this was recorded, which is not a reason to throw it away - the
+            // version above has been agreeing with it all along, and it will be written on the
+            // next rebuild whenever one is wanted for some other reason.
+            if (root.TryGetProperty("installFingerprint", out var printed) &&
+                printed.GetString() is { Length: > 0 } print &&
+                InstallFingerprint.Of(_installRoot) is { Length: > 0 } now &&
+                !string.Equals(print, now, StringComparison.Ordinal))
+            {
+                reason = "the game files changed";
                 return false;
             }
         }

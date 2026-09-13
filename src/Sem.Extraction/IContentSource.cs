@@ -29,6 +29,17 @@ public interface IContentSource
 
     /// <summary>Whether a directory exists in this layer.</summary>
     bool ContainsDirectory(string relativeDirectory);
+
+    /// <summary>
+    /// Where this layer lives on disk, or null for one that does not.
+    /// </summary>
+    /// <remarks>
+    /// Only for noticing that the files behind a layer have changed since they were last read. A
+    /// layer with nothing on disk - one built in memory, or a test's - has nothing that can change
+    /// underneath it and says so. Answering here rather than at the stack means a mod layer, when
+    /// there is one, is covered by having been added and by nothing else.
+    /// </remarks>
+    string? Root => null;
 }
 
 /// <summary>A content layer backed by a directory on disk, such as a game installation.</summary>

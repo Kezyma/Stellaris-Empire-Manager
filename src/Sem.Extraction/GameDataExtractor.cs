@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Security.Cryptography;
 using System.Text.Json;
 using Sem.Extraction.Extractors;
 using Sem.GameData;
@@ -22,19 +23,58 @@ public sealed class GameDataExtractor(LayeredContent content)
     public const int SchemaVersion = GameDatabase.CurrentSchemaVersion;
 
     /// <summary>
-    /// Which build of this app the extraction came from.
+    /// Which build of the code that produces this data the extraction came from.
     /// </summary>
     /// <remarks>
-    /// Stamped into every database and, for a long time, read by nothing. The schema version only
-    /// changes when the <em>shape</em> of the data does, so every change to what extraction
-    /// <em>produces</em> - new artwork, new text kept, a field read that was not read before - left
-    /// an existing cache looking perfectly valid. The desktop went on serving data from an older
-    /// build with no way to notice.
+    /// <para>
+    /// The schema version only changes when the <em>shape</em> of the data does, so every change to
+    /// what extraction <em>produces</em> - new artwork, new text kept, a field read that was not
+    /// read before - left an existing cache looking perfectly valid, and the desktop went on
+    /// serving data from an older build with no way to notice. This is what notices.
+    /// </para>
+    /// <para>
+    /// It used to be the informational version, which the SDK quietly suffixes with the git commit
+    /// because SourceLink is on by default. That answered a much bigger question than the one being
+    /// asked - "has anything at all changed anywhere in this repository" - so a commit to a razor
+    /// file threw away 223MB of artwork and re-rendered nine thousand portraits.
+    /// </para>
+    /// <para>
+    /// The question is what extraction is, so what is measured is the code that does it: the module
+    /// identity of this assembly and of the four it produces its output with - parsing, the shape
+    /// it fills in, the image decoder and the mesh renderer. Those identities are a function of the
+    /// compilation, and compilation here is deterministic, so building the same source twice gives
+    /// the same answer and changing any of that code gives a different one.
+    /// </para>
     /// </remarks>
-    public static string ExtractorVersion { get; } =
-        typeof(GameDataExtractor).Assembly
+    public static string ExtractorVersion { get; } = BuiltFrom(
+        typeof(GameDataExtractor).Assembly,
+        typeof(GameDatabase).Assembly,
+        typeof(Sem.Clausewitz.CwDocument).Assembly,
+        typeof(Sem.Assets.DdsImage).Assembly,
+        typeof(Sem.MeshBake.ModelRenderer).Assembly);
+
+    /// <summary>The product version, and a short print of the code that produced the data.</summary>
+    /// <remarks>
+    /// The version is carried along for the sake of whoever ends up reading one of these files: on
+    /// its own the print says only whether two databases came from the same build, which is all the
+    /// cache check needs and not much help to a person.
+    /// </remarks>
+    private static string BuiltFrom(params Assembly[] assemblies)
+    {
+        var identities = assemblies
+            .Select(assembly => assembly.ManifestModule.ModuleVersionId)
+            .OrderBy(id => id)
+            .SelectMany(id => id.ToByteArray())
+            .ToArray();
+
+        var version = typeof(GameDataExtractor).Assembly
             .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
-        ?? "0.0.0";
+            ?? "0.0.0";
+
+        var print = Convert.ToHexString(SHA256.HashData(identities))[..12];
+
+        return $"{version}+{print.ToLowerInvariant()}";
+    }
 
     private readonly LayeredContent _content = content ?? throw new ArgumentNullException(nameof(content));
 
@@ -177,6 +217,11 @@ public sealed class GameDataExtractor(LayeredContent content)
             SchemaVersion = SchemaVersion,
             GameVersion = ReadGameVersion() ?? "unknown",
             ExtractorVersion = ExtractorVersion,
+
+            // Taken from the layers rather than from a path handed in, so that a mod stack, when
+            // there is one, is covered by having been stacked and by nothing else.
+            InstallFingerprint = Sem.Io.InstallFingerprint.Of(
+                [.. _content.Layers.Select(layer => layer.Root).OfType<string>()]),
             Defines = defines,
             Dlc = dlc,
             Archetypes = archetypes,

@@ -1,7 +1,8 @@
 {
   "schemaVersion": 17,
   "gameVersion": "v4.5.0",
-  "extractorVersion": "0.1.0\u002B444d7c84b1a6c20a3187994a55334b8268980181",
+  "extractorVersion": "0.1.0\u002B182a7781016f",
+  "installFingerprint": "4c524a20ddb52a8f",
   "defines": {
     "ethicsPoints": 3,
     "civicPoints": 2,

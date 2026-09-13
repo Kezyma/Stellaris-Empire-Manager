@@ -26,6 +26,19 @@
     <Copyright>Copyright (c) Alex Ashmore</Copyright>
     <Version>0.1.0</Version>
     <RepositoryUrl>https://github.com/Kezyma/Stellaris-Empire-Manager</RepositoryUrl>
+
+    <!--
+      Without this the SDK appends "+<git SHA>" to the informational version, because SourceLink is
+      on by default. Nothing asked for that and one thing read it: the desktop stamps the
+      informational version into its extracted game data and rebuilds the cache when it changes. So
+      every commit threw away 223MB of artwork and re-rendered nine thousand portraits, for a change
+      that may not have touched extraction at all - and rewrote the committed web data as well,
+      which made a one-line diff out of every build.
+
+      What extraction produces is described by what extraction is, and that is measured properly
+      now: see GameDataExtractor.ExtractorVersion.
+    -->
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 
   <!--

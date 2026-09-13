@@ -30,6 +30,15 @@ public sealed partial record GameDatabase
     /// <summary>The extractor build that produced it.</summary>
     public required string ExtractorVersion { get; init; }
 
+    /// <summary>
+    /// A print of the game files it was read from, or null where they could not be walked.
+    /// </summary>
+    /// <remarks>
+    /// Not required, so a database written before this existed still loads - it simply cannot say
+    /// what it was built from, and a host that wants to know has the game version to fall back on.
+    /// </remarks>
+    public string? InstallFingerprint { get; init; }
+
     /// <summary>Values from the game's defines that constrain empire creation.</summary>
     public required GameDefines Defines { get; init; }
 
