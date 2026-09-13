@@ -640,26 +640,27 @@ public sealed class CloudConnectionTests
         Assert.Equal(expected, CloudConnection.IsSignInReturn(address));
 
     /// <summary>
-    /// A sign-in that did not finish says so, rather than leaving the page looking untouched.
+    /// A load that was never a return from the provider reports nothing at all.
     /// </summary>
+    /// <remarks>
+    /// Every load goes through this, so the quiet case is the common one - and a page that
+    /// announced a failed sign-in on an ordinary visit would be crying wolf on every visit.
+    /// </remarks>
     [Fact]
-    public async Task ASignInThatDidNotFinishSaysSo()
+    public async Task AnOrdinaryLoadIsNotAFailedSignIn()
     {
-        using var rig = new Rig();
-
-        // Something was asked for, so the leg that left is remembered - and what came back does
-        // not match it, which is a code for somebody else's sign-in rather than a lost one.
-        await rig.Connection.BeginSignInAsync();
-
-        Assert.False(await rig.Connection.CompleteSignInAsync("https://example.invalid/?code=abc&state=nope"));
-        Assert.NotNull(rig.Connection.Note);
-        Assert.Contains("did not finish", rig.Connection.Note, StringComparison.Ordinal);
-
-        // An ordinary load is not a failed anything, and has nothing to report.
+        // An ordinary load is not a failed anything, and has nothing to report. The ways a genuine
+        // return can fail each say which they were, and are covered on their own below.
         using var plain = new Rig();
 
         Assert.False(await plain.Connection.CompleteSignInAsync("https://example.invalid/"));
         Assert.Null(plain.Connection.Note);
+
+        // Nor is one carrying something that is not an answer from the provider at all.
+        using var stray = new Rig();
+
+        Assert.False(await stray.Connection.CompleteSignInAsync("https://example.invalid/?d=shared-empire"));
+        Assert.Null(stray.Connection.Note);
     }
 
     /// <summary>
@@ -705,6 +706,40 @@ public sealed class CloudConnectionTests
         Assert.NotNull(rig.Connection.Note);
         Assert.Contains("did not keep the sign-in", rig.Connection.Note, StringComparison.Ordinal);
         Assert.DoesNotContain("would not sign you in", rig.Connection.Note, StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// Each way a return can fail says which way it was.
+    /// </summary>
+    /// <remarks>
+    /// They shared one sentence, and a sentence covering four unrelated faults is no use to the
+    /// person reading it and none to whoever they report it to. The distinctions are real: storage
+    /// dropping everything, storage dropping half, an answer meant for a different sign-in, and
+    /// never reaching Microsoft at all each want a different thing done about them.
+    /// </remarks>
+    [Fact]
+    public async Task EachWayTheReturnCanFailSaysWhichItWas()
+    {
+        // Nothing kept at all.
+        using var nothing = new Rig();
+
+        Assert.False(await nothing.Connection.CompleteSignInAsync("https://example.invalid/?code=abc&state=xyz"));
+        Assert.Contains("did not keep the sign-in", nothing.Connection.Note, StringComparison.Ordinal);
+
+        // Half of it - the verifier survived and the state did not.
+        using var half = new Rig();
+        await half.Connection.BeginSignInAsync();
+        await half.Store.WriteAsync("sem.cloud.state", null);
+
+        Assert.False(await half.Connection.CompleteSignInAsync("https://example.invalid/?code=abc&state=xyz"));
+        Assert.Contains("Only part of the sign-in", half.Connection.Note, StringComparison.Ordinal);
+
+        // Both kept, and the answer belongs to a different one.
+        using var other = new Rig();
+        await other.Connection.BeginSignInAsync();
+
+        Assert.False(await other.Connection.CompleteSignInAsync("https://example.invalid/?code=abc&state=not-the-one"));
+        Assert.Contains("for a different sign-in", other.Connection.Note, StringComparison.Ordinal);
     }
 
     /// <summary>And one with no description at all is named by its code.</summary>

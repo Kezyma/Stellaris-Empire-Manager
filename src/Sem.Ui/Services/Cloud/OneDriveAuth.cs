@@ -239,37 +239,63 @@ public sealed class OneDriveAuth
         var verifier = await _session.ReadAsync(VerifierKey).ConfigureAwait(false);
         await _session.WriteAsync(VerifierKey, null).ConfigureAwait(false);
 
-        // Neither kept, with a code in hand, means the leg that left here stored nothing - the
-        // browser refusing to keep site data, or a different browser finishing what this one
-        // started. Worth its own sentence: the sign-in itself went through, and nothing the
-        // provider did is wrong.
-        if (expected is not { Length: > 0 } && verifier is not { Length: > 0 })
+        var keptState = expected is { Length: > 0 };
+        var keptVerifier = verifier is { Length: > 0 };
+
+        // Every way this can fail says which one it was. They used to share a sentence, and a
+        // sentence that covers four unrelated faults tells the person reading it nothing they can
+        // act on and tells whoever they report it to even less.
+        if (!keptState && !keptVerifier)
         {
+            // Nothing at all from the leg that left here: a browser refusing to keep site data, or
+            // a different browser finishing what this one started. The sign-in itself went through,
+            // and nothing the provider did is wrong.
             Trouble = "This browser did not keep the sign-in it started, so it could not be "
                 + "finished. Allow site data for this page, then connect again.";
 
             return false;
         }
 
-        if (expected is not { Length: > 0 }
-            || !query.TryGetValue("state", out var state)
+        // Written as the patterns rather than the flags so that what survives is known to be there
+        // from here down, which is what the request below is built out of.
+        if (expected is not { Length: > 0 } || verifier is not { Length: > 0 })
+        {
+            // Half of it. Both are written one after the other before anything leaves, so this is
+            // storage dropping one of them rather than anything about the flow.
+            Trouble = "Only part of the sign-in this browser started was still here when it came "
+                + "back, so it could not be finished. Connect again.";
+
+            return false;
+        }
+
+        if (!query.TryGetValue("state", out var state)
             || !string.Equals(state, expected, StringComparison.Ordinal))
         {
+            // An answer to a question this tab is no longer asking: a second sign-in started over
+            // the first, or a code arriving that nobody here asked for. Not spent either way.
+            Trouble = "The answer that came back was for a different sign-in, so it was not used. "
+                + "Connect again.";
+
             return false;
         }
 
-        if (verifier is not { Length: > 0 })
-        {
-            return false;
-        }
-
-        return await RedeemAsync(new Dictionary<string, string>(StringComparer.Ordinal)
+        var redeemed = await RedeemAsync(new Dictionary<string, string>(StringComparer.Ordinal)
         {
             ["grant_type"] = "authorization_code",
             ["code"] = code,
             ["redirect_uri"] = _redirectUri,
             ["code_verifier"] = verifier,
         }).ConfigureAwait(false);
+
+        // A refusal has already said why in its own words. Anything else that got this far and came
+        // back false never reached Microsoft at all.
+        if (!redeemed && Refusal is null)
+        {
+            Trouble = "Microsoft could not be reached to finish signing in. Check your connection, "
+                + "then connect again.";
+        }
+
+        return redeemed;
     }
 
     /// <summary>

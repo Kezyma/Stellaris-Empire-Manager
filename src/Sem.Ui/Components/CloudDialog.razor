@@ -331,6 +331,16 @@
     /// </remarks>
     private async Task SignIn()
     {
+        // Guarded here and not only by the button being disabled, because the button is disabled by
+        // a render and a second press can land before one happens. Two sign-ins started a moment
+        // apart each write a verifier and a state over the last, and whichever of the two the
+        // browser actually followed comes back to find the other one's state waiting - which is
+        // refused, correctly, and looks from the outside exactly like a sign-in that did nothing.
+        if (_busy)
+        {
+            return;
+        }
+
         _busy = true;
 
         var address = await Cloud.BeginSignInAsync();
