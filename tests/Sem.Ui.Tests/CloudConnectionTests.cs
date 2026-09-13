@@ -28,6 +28,11 @@ public sealed class CloudConnectionTests
         public void Holds(params string[] empires) => _contents = FileOf(empires);
 
         /// <summary>
+        /// The same, with every empire marked so its copy can be told from the other side's.
+        /// </summary>
+        public void Marked(string mark, params string[] empires) => _contents = FileOf(mark, empires);
+
+        /// <summary>
         /// Writes it the way something else would: new contents, and a version that moves.
         /// </summary>
         public void WrittenElsewhere(params string[] empires)
@@ -60,13 +65,27 @@ public sealed class CloudConnectionTests
         /// <summary>Leaves something in the file that is not a designs file.</summary>
         public void HoldsSomethingElse() => _contents = Encoding.UTF8.GetBytes("}}} not a designs file");
 
-        private static byte[] FileOf(params string[] empires)
+        private static byte[] FileOf(params string[] empires) => FileOf(null, empires);
+
+        /// <summary>
+        /// A file of these empires, each carrying the mark so two copies can be told apart.
+        /// </summary>
+        /// <remarks>
+        /// Authority is used because it is one settable string and nothing here cares what a
+        /// government is. What matters is only that the two sides write something different.
+        /// </remarks>
+        private static byte[] FileOf(string? mark, string[] empires)
         {
             var file = EmpireDesignsFile.CreateEmpty();
 
             foreach (var name in empires)
             {
-                file.Add(name);
+                var design = file.Add(name);
+
+                if (mark is not null)
+                {
+                    design.Authority = mark;
+                }
             }
 
             return file.Save();
@@ -238,7 +257,10 @@ public sealed class CloudConnectionTests
         public CloudConnection Connection { get; }
 
         /// <summary>Opens a session holding these empires, so there is something to lose.</summary>
-        public async Task<DesignSession> OpenAsync(params string[] mine)
+        public Task<DesignSession> OpenAsync(params string[] mine) => OpenMarkedAsync(null, mine);
+
+        /// <summary>The same, with every empire marked so its copy can be told from the file's.</summary>
+        public async Task<DesignSession> OpenMarkedAsync(string? mark, params string[] mine)
         {
             var session = await Host.GetAsync() ?? throw new InvalidOperationException("no session");
 
@@ -248,7 +270,12 @@ public sealed class CloudConnectionTests
 
                 foreach (var name in mine)
                 {
-                    file.Add(name);
+                    var design = file.Add(name);
+
+                    if (mark is not null)
+                    {
+                        design.Authority = mark;
+                    }
                 }
 
                 session.Open(file, "mine.txt");
@@ -449,24 +476,54 @@ public sealed class CloudConnectionTests
     /// afternoon's work threw the afternoon away with no question and no way back.
     /// </remarks>
     [Theory]
-    [InlineData(CloudArrival.TakeTheirs, new[] { "Shared", "Theirs" })]
-    [InlineData(CloudArrival.KeepMine, new[] { "Mine", "Shared" })]
-    [InlineData(CloudArrival.TheirsWin, new[] { "Mine", "Shared", "Theirs" })]
-    [InlineData(CloudArrival.MineWin, new[] { "Shared", "Theirs", "Mine" })]
-    public async Task EachAnswerKeepsWhatItSaysItKeeps(CloudArrival answer, string[] expected)
+    [InlineData(Arrival.TakeTheirs, new[] { "Shared", "Theirs" }, "theirs")]
+    [InlineData(Arrival.KeepMine, new[] { "Mine", "Shared" }, "mine")]
+    [InlineData(Arrival.TheirsWin, new[] { "Mine", "Shared", "Theirs" }, "theirs")]
+    [InlineData(Arrival.MineWin, new[] { "Mine", "Shared", "Theirs" }, "mine")]
+    public async Task EachAnswerKeepsWhatItSaysItKeeps(Arrival answer, string[] expected, string shared)
     {
         using var rig = new Rig();
-        rig.Provider.Holds("Shared", "Theirs");
+        rig.Provider.Marked("theirs", "Shared", "Theirs");
 
-        var session = await rig.OpenAsync("Mine", "Shared");
+        var session = await rig.OpenMarkedAsync("mine", "Mine", "Shared");
 
         Assert.True(await rig.Connection.UseAsync(
-            TheFile(), autoSave: false, (_, _) => Task.FromResult<CloudArrival?>(answer)));
+            TheFile(), autoSave: false, (_, _) => Task.FromResult<Arrival?>(answer)));
 
         Assert.Equal(expected, Names(session));
 
+        // Which copy of the empire both sides hold survived, which is the half of the answer the
+        // names cannot show - and, for the two merges, the only difference between them.
+        Assert.Equal(shared, session.File!.Find("Shared")!.Authority);
+
         // Whatever was asked for is now the file's name, because that is where a save goes.
         Assert.Equal("user_empire_designs_v3.4.txt", session.FileName);
+    }
+
+    /// <summary>
+    /// Both merges keep the order of what is already open, whichever side wins the names.
+    /// </summary>
+    /// <remarks>
+    /// The two used to be built by opening a different file first, so the same two sets of empires
+    /// came back in two different orders depending on an answer that was only ever about which
+    /// copy of a name to keep. A list rearranging itself as a side effect of that is the sort of
+    /// thing somebody notices and cannot explain.
+    /// </remarks>
+    [Fact]
+    public async Task MergingNeverRearrangesTheList()
+    {
+        foreach (var answer in new[] { Arrival.TheirsWin, Arrival.MineWin })
+        {
+            using var rig = new Rig();
+            rig.Provider.Marked("theirs", "Shared", "Last");
+
+            var session = await rig.OpenMarkedAsync("mine", "First", "Shared");
+
+            Assert.True(await rig.Connection.UseAsync(
+                TheFile(), autoSave: false, (_, _) => Task.FromResult<Arrival?>(answer)));
+
+            Assert.Equal(["First", "Shared", "Last"], Names(session));
+        }
     }
 
     /// <summary>
@@ -478,11 +535,11 @@ public sealed class CloudConnectionTests
     /// something else, which is the quiet version of losing it.
     /// </remarks>
     [Theory]
-    [InlineData(CloudArrival.TakeTheirs, false)]
-    [InlineData(CloudArrival.KeepMine, true)]
-    [InlineData(CloudArrival.TheirsWin, true)]
-    [InlineData(CloudArrival.MineWin, true)]
-    public async Task OnlyTakingTheFileLeavesNothingOwedToIt(CloudArrival answer, bool owed)
+    [InlineData(Arrival.TakeTheirs, false)]
+    [InlineData(Arrival.KeepMine, true)]
+    [InlineData(Arrival.TheirsWin, true)]
+    [InlineData(Arrival.MineWin, true)]
+    public async Task OnlyTakingTheFileLeavesNothingOwedToIt(Arrival answer, bool owed)
     {
         using var rig = new Rig();
         rig.Provider.Holds("Shared", "Theirs");
@@ -490,7 +547,7 @@ public sealed class CloudConnectionTests
         var session = await rig.OpenAsync("Mine", "Shared");
 
         Assert.True(await rig.Connection.UseAsync(
-            TheFile(), autoSave: false, (_, _) => Task.FromResult<CloudArrival?>(answer)));
+            TheFile(), autoSave: false, (_, _) => Task.FromResult<Arrival?>(answer)));
 
         Assert.Equal(owed, session.HasUnwrittenFileChanges);
     }
@@ -505,7 +562,7 @@ public sealed class CloudConnectionTests
         var session = await rig.OpenAsync("Mine");
 
         Assert.False(await rig.Connection.UseAsync(
-            TheFile(), autoSave: false, (_, _) => Task.FromResult<CloudArrival?>(null)));
+            TheFile(), autoSave: false, (_, _) => Task.FromResult<Arrival?>(null)));
 
         Assert.Equal(["Mine"], Names(session));
         Assert.False(rig.Connection.Connected);
@@ -562,7 +619,7 @@ public sealed class CloudConnectionTests
         Assert.True(await same.Connection.UseAsync(TheFile(), autoSave: false, Counting()));
         Assert.False(asked);
 
-        ArrivalQuestion Counting() => (_, _) => { asked = true; return Task.FromResult<CloudArrival?>(CloudArrival.TakeTheirs); };
+        ArrivalQuestion Counting() => (_, _) => { asked = true; return Task.FromResult<Arrival?>(Arrival.TakeTheirs); };
     }
 
     /// <summary>
@@ -683,15 +740,15 @@ public sealed class CloudConnectionTests
         Assert.Equal(["Mine", "Shared"], Names(rig.Kept));
 
         Assert.True(await rig.Connection.UseAsync(
-            TheFile(), autoSave: false, (_, _) => Task.FromResult<CloudArrival?>(CloudArrival.MineWin)));
+            TheFile(), autoSave: false, (_, _) => Task.FromResult<Arrival?>(Arrival.MineWin)));
 
         // Kept while connected, so a reload finds the merge rather than what preceded it.
-        Assert.Equal(["Shared", "Theirs", "Mine"], Names(rig.Kept));
+        Assert.Equal(["Mine", "Shared", "Theirs"], Names(rig.Kept));
 
         await rig.Connection.DisconnectAsync();
 
-        Assert.Equal(["Shared", "Theirs", "Mine"], Names(rig.Kept));
-        Assert.Equal(["Shared", "Theirs", "Mine"], Names(session));
+        Assert.Equal(["Mine", "Shared", "Theirs"], Names(rig.Kept));
+        Assert.Equal(["Mine", "Shared", "Theirs"], Names(session));
     }
 
     /// <summary>
@@ -711,7 +768,7 @@ public sealed class CloudConnectionTests
         await rig.OpenAsync("Mine", "Shared");
 
         Assert.True(await rig.Connection.UseAsync(
-            TheFile(), autoSave: false, (_, _) => Task.FromResult<CloudArrival?>(CloudArrival.TakeTheirs)));
+            TheFile(), autoSave: false, (_, _) => Task.FromResult<Arrival?>(Arrival.TakeTheirs)));
 
         Assert.Equal(["Shared", "Theirs"], Names(rig.Kept));
 
@@ -728,7 +785,7 @@ public sealed class CloudConnectionTests
         {
             asked = true;
 
-            return Task.FromResult<CloudArrival?>(CloudArrival.TakeTheirs);
+            return Task.FromResult<Arrival?>(Arrival.TakeTheirs);
         }));
 
         Assert.False(asked);
@@ -770,7 +827,7 @@ public sealed class CloudConnectionTests
         {
             asked = true;
 
-            return Task.FromResult<CloudArrival?>(CloudArrival.TakeTheirs);
+            return Task.FromResult<Arrival?>(Arrival.TakeTheirs);
         }));
 
         Assert.False(asked);
@@ -810,7 +867,7 @@ public sealed class CloudConnectionTests
             asked = true;
             Assert.Equal(3, holds);
 
-            return Task.FromResult<CloudArrival?>(CloudArrival.TakeTheirs);
+            return Task.FromResult<Arrival?>(Arrival.TakeTheirs);
         }));
 
         Assert.True(asked);

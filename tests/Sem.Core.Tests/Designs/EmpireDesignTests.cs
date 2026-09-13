@@ -1101,6 +1101,32 @@ public sealed class EmpireDesignTests
             EmpireDesignsFile.LoadText(text).Designs.Select(d => d.Key));
     }
 
+    /// <summary>
+    /// A merge keeps one side's copy of a shared name, and this file's order either way.
+    /// </summary>
+    /// <remarks>
+    /// The order is the part worth pinning. Which copy survives is the whole question being asked,
+    /// and a list that also rearranged itself depending on the answer would be doing something
+    /// nobody asked for and nobody could predict.
+    /// </remarks>
+    [Theory]
+    [InlineData(true, "auth_imperial")]
+    [InlineData(false, "auth_democratic")]
+    public void AMergeKeepsTheAnsweredCopyAndThisFilesOrder(bool replacingMatches, string expected)
+    {
+        var file = EmpireDesignsFile.LoadText(FileOf(("Alpha", "auth_democratic"), ("Beta", null)));
+        var other = EmpireDesignsFile.LoadText(FileOf(("Alpha", "auth_imperial"), ("Gamma", null)));
+
+        file.Merge(other, replacingMatches);
+
+        Assert.Equal(["Alpha", "Beta", "Gamma"], file.Designs.Select(d => d.Key));
+        Assert.Equal(expected, file.Find("Alpha")!.Authority);
+
+        // And the file it was handed is untouched, whichever way the answer went.
+        Assert.Equal(["Alpha", "Gamma"], other.Designs.Select(d => d.Key));
+        Assert.Equal("auth_imperial", other.Find("Alpha")!.Authority);
+    }
+
     /// <summary>A designs file holding the named empires, each with an optional authority.</summary>
     private static string FileOf(params (string Key, string? Authority)[] empires) =>
         string.Concat(empires.Select(e =>

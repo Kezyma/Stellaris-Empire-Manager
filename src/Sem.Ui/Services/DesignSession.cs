@@ -336,13 +336,18 @@ public sealed partial class DesignSession
     /// <summary>
     /// Folds another file's empires into the one that is open.
     /// </summary>
+    /// <param name="other">The file to fold in, which is left as it was.</param>
+    /// <param name="replacingMatches">
+    /// Which copy of an empire held by both files to keep: the incoming one, or the one already
+    /// open. The open file's order survives either way.
+    /// </param>
     /// <remarks>
     /// An empire whose name is already here takes its place, in its place; everything else is
     /// appended. The selection has to be looked at afterwards because a replaced empire is a
     /// different object from the one it replaced, and Current would otherwise go on pointing at a
     /// design the file no longer holds - the same care a delete takes.
     /// </remarks>
-    public void Merge(EmpireDesignsFile other)
+    public void Merge(EmpireDesignsFile other, bool replacingMatches = true)
     {
         ArgumentNullException.ThrowIfNull(other);
 
@@ -358,7 +363,7 @@ public sealed partial class DesignSession
         // predate this as the ones already here.
         EditFile(file =>
         {
-            file.Merge(other);
+            file.Merge(other, replacingMatches);
             DeriveAll(file);
         });
 

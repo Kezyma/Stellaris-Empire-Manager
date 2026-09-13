@@ -3,37 +3,6 @@ using Sem.Designs;
 
 namespace Sem.Ui.Services.Cloud;
 
-/// <summary>
-/// What to do with the empires already open when a file is connected to that holds its own.
-/// </summary>
-/// <remarks>
-/// Connecting used to mean the file wins, which is right the first time and wrong every time after:
-/// picking a file after an afternoon's work threw the afternoon away, and so did coming back to a
-/// connection that had lapsed. None of these writes anything - the choice decides what is in front
-/// of you, and the file at the provider is only changed by a save.
-/// </remarks>
-public enum CloudArrival
-{
-    /// <summary>The file as it stands. What was open is let go of.</summary>
-    TakeTheirs,
-
-    /// <summary>What is open, now pointed at this file, which a save would write over.</summary>
-    KeepMine,
-
-    /// <summary>Both, and where one empire is in both, the file's copy is the one kept.</summary>
-    TheirsWin,
-
-    /// <summary>Both, and where one empire is in both, the open copy is the one kept.</summary>
-    MineWin,
-}
-
-/// <summary>
-/// Asks what to do when a file arrives holding empires and there are already empires open.
-/// </summary>
-/// <param name="name">The file being opened, so the question can name it.</param>
-/// <param name="holds">How many empires it holds, which is half of what the question weighs.</param>
-/// <returns>What to do, or null to stop and leave everything exactly as it was.</returns>
-public delegate Task<CloudArrival?> ArrivalQuestion(string name, int holds);
 
 /// <summary>
 /// Which file at a provider the app is working on, and how it got there.
@@ -328,7 +297,7 @@ public sealed class CloudConnection : IDisposable
         // the answer rather than a question with one real option. Both sides holding empires is
         // the case worth asking about, and the only one that is asked.
         var mine = _host.Current?.File;
-        var arrival = CloudArrival.TakeTheirs;
+        var arrival = Arrival.TakeTheirs;
 
         // A file that already matches what is open is not a decision, and asking about it would
         // put a question in front of every ordinary reload of a connection that is in step.
@@ -336,7 +305,7 @@ public sealed class CloudConnection : IDisposable
         {
             if (parsed.Designs.Count == 0)
             {
-                arrival = CloudArrival.KeepMine;
+                arrival = Arrival.KeepMine;
             }
             else if (ask is not null)
             {
@@ -373,27 +342,25 @@ public sealed class CloudConnection : IDisposable
             switch (arrival)
             {
                 // The one answer that leaves nothing owed: what is open is what the file holds.
-                case CloudArrival.TakeTheirs:
+                case Arrival.TakeTheirs:
                     session.Open(parsed, read.Name);
                     break;
 
                 // Opened under the file's name so that Save goes there, and immediately owed to
                 // it, because the file still holds something else until a save says otherwise.
-                case CloudArrival.KeepMine:
+                case Arrival.KeepMine:
                     session.Open(mine!, read.Name);
                     session.MarkFileUnwritten();
                     break;
 
-                // Merge already means "the one handed in wins", so which of the two is opened
-                // first is the entire difference between these. Both come out owing the file.
-                case CloudArrival.TheirsWin:
-                    session.Open(mine!, read.Name);
-                    session.Merge(parsed);
-                    break;
-
+                // Both merges start from what is open and fold the file into it, so the list keeps
+                // its own order whichever way the answer went and the choice decides one thing
+                // only: which copy of an empire that is in both is the one kept. Opening the file
+                // first for one of them and not the other made the same two empires come back in
+                // two different orders, which is a strange thing for a question about names to do.
                 default:
-                    session.Open(parsed, read.Name);
-                    session.Merge(mine!);
+                    session.Open(mine!, read.Name);
+                    session.Merge(parsed, replacingMatches: arrival is Arrival.TheirsWin);
                     break;
             }
         }

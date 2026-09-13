@@ -233,6 +233,16 @@ public sealed class SessionHost(
                 {
                     return "Your empires were not written to their file.";
                 }
+
+                // And the browser's own copy, where there is one. It is not what was written - the
+                // file is - but it is what the next load holds before it has fetched anything, and
+                // this is the one moment the two are known to agree. Unreported on purpose: the
+                // empires are in the file, so a browser that will not keep a second copy has cost
+                // nothing worth interrupting somebody over.
+                if (_store.Keeps)
+                {
+                    await _store.WriteAsync(Kept.Encode(contents)).ConfigureAwait(false);
+                }
             }
             else if (!await _store.WriteAsync(Kept.Encode(contents)).ConfigureAwait(false))
             {

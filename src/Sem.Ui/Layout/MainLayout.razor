@@ -252,23 +252,6 @@
     }
 
     @*
-        Asked only when there is something to lose. Importing used to replace the open file without
-        saying so, which is right when the file is empty and is throwing your empires away when it
-        is not - and there was no way at all to bring one empire across from another file.
-    *@
-    @if (_importing is { } incoming)
-    {
-        <ConfirmDialog Title="@($"You already have {Count(Empires)} open.")"
-                       Message="@($"{incoming.Name} holds {Count(incoming.File.Designs.Count)}. "
-                                 + "Merging keeps yours and adds these, overwriting any of the same name.")"
-                       OnDismiss="() => _importing = null">
-            <button type="button" @onclick="() => _importing = null">Cancel</button>
-            <button type="button" @onclick="Merge">Merge them in</button>
-            <button type="button" class="danger" @onclick="Replace">Replace mine</button>
-        </ConfirmDialog>
-    }
-
-    @*
         Asked only where it cannot be decided: the file changed underneath an empire carrying edits
         nobody has saved, and taking the file would take those with it. Everywhere else the file is
         simply loaded, which is the whole point of the thing being on.
@@ -338,15 +321,24 @@
     @if (_arriving is { } arrival)
     {
         <ConfirmDialog Title="@($"You already have {Count(arrival.Mine)} open.")"
-                       Message="@($"{arrival.Name} holds {Count(arrival.Theirs)}. Nothing is written "
-                                 + "to it until you save, so you can keep either side or both.")"
+                       Message="@($"{arrival.Name} holds {Count(arrival.Theirs)}. Merging keeps your "
+                                 + "order and adds theirs to it; the choice is only which copy of an "
+                                 + "empire you both have is the one kept."
+                                 + (arrival.CanKeep
+                                     ? " Nothing is written to the file until you save."
+                                     : " Your own file on disk is not touched either way."))"
                        OnDismiss="() => Arrived(null)">
             <button type="button" @onclick="() => Arrived(null)">Cancel</button>
-            <button type="button" @onclick="() => Arrived(CloudArrival.MineWin)">Merge, mine win</button>
-            <button type="button" @onclick="() => Arrived(CloudArrival.TheirsWin)">Merge, theirs win</button>
-            <button type="button" @onclick="() => Arrived(CloudArrival.KeepMine)">Keep mine</button>
-            <button type="button" class="danger" @onclick="() => Arrived(CloudArrival.TakeTheirs)">
-                Take the file
+            <button type="button" @onclick="() => Arrived(Arrival.MineWin)">Merge, mine win</button>
+            <button type="button" @onclick="() => Arrived(Arrival.TheirsWin)">Merge, theirs win</button>
+
+            @if (arrival.CanKeep)
+            {
+                <button type="button" @onclick="() => Arrived(Arrival.KeepMine)">Keep mine</button>
+            }
+
+            <button type="button" class="danger" @onclick="() => Arrived(Arrival.TakeTheirs)">
+                @(arrival.CanKeep ? "Take the file" : "Replace mine")
             </button>
         </ConfirmDialog>
     }
@@ -468,9 +460,6 @@
         _session?.Preferences.SetKeepsBackup(_backUp);
     }
 
-    /// <summary>A file that has been read and parsed, waiting to hear what to do with it.</summary>
-    private (string Name, EmpireDesignsFile File)? _importing;
-
     /// <summary>
     /// A connected file's empires, waiting to hear what to do with the ones already open.
     /// </summary>
@@ -480,22 +469,35 @@
     /// and the answer is what it does next. Import does not need this - it has already finished by
     /// the time it asks - which is why that one is a plain field and this one carries a promise.
     /// </remarks>
-    private (int Mine, int Theirs, string Name, TaskCompletionSource<CloudArrival?> Answer)? _arriving;
+    private (int Mine, int Theirs, string Name, bool CanKeep, TaskCompletionSource<Arrival?> Answer)? _arriving;
 
-    /// <summary>Puts the question up, and answers the connection once something is pressed.</summary>
-    private Task<CloudArrival?> AskAboutArrival(string name, int holds)
+    /// <summary>
+    /// Connecting to a file, where keeping your own empires is an answer with a consequence.
+    /// </summary>
+    /// <remarks>
+    /// Shaped to <see cref="ArrivalQuestion"/> exactly, since it is handed over as one.
+    /// </remarks>
+    private Task<Arrival?> AskAboutArrival(string name, int holds) => Asking(name, holds, canKeep: true);
+
+    /// <summary>
+    /// Importing one, where keeping your own would only be a second way of saying cancel.
+    /// </summary>
+    private Task<Arrival?> AskAboutImport(string name, int holds) => Asking(name, holds, canKeep: false);
+
+    /// <summary>Puts the question up, and answers whoever asked once something is pressed.</summary>
+    private Task<Arrival?> Asking(string name, int holds, bool canKeep)
     {
-        var answer = new TaskCompletionSource<CloudArrival?>(
+        var answer = new TaskCompletionSource<Arrival?>(
             TaskCreationOptions.RunContinuationsAsynchronously);
 
-        _arriving = (_session?.File?.Designs.Count ?? 0, holds, name, answer);
+        _arriving = (_session?.File?.Designs.Count ?? 0, holds, name, canKeep, answer);
         StateHasChanged();
 
         return answer.Task;
     }
 
     /// <summary>Takes the question down and lets the connection carry on, or stop.</summary>
-    private void Arrived(CloudArrival? choice)
+    private void Arrived(Arrival? choice)
     {
         var waiting = _arriving?.Answer;
 
@@ -521,7 +523,11 @@
     private string ResetWarning =>
         $"All {Empires} empires you have made here are removed and the file is closed, leaving the "
         + "app as it was on your first visit. Your Stellaris designs file is not touched - nothing "
-        + "on disk changes unless you export. There is no undo.";
+        + "on disk changes unless you export."
+        + (_cloud is { Connected: true } cloud
+            ? $" You are let go of {cloud.Where}, which is left exactly as it is."
+            : string.Empty)
+        + " There is no undo.";
 
     /// <summary>
     /// Whether this browser can be asked to show a file picker.
@@ -768,7 +774,7 @@
             using var buffer = new MemoryStream();
             await stream.CopyToAsync(buffer);
 
-            Load(e.File.Name, buffer.ToArray());
+            await Load(e.File.Name, buffer.ToArray());
         }
         catch (Exception ex) when (ex is Sem.Clausewitz.CwSyntaxException or IOException)
         {
@@ -803,7 +809,7 @@
 
         try
         {
-            Load(chosen.Name, chosen.Contents);
+            await Load(chosen.Name, chosen.Contents);
         }
         catch (Exception ex) when (ex is Sem.Clausewitz.CwSyntaxException or IOException)
         {
@@ -812,48 +818,52 @@
     }
 
     /// <summary>Opens a designs file, asking first where there is unsaved work to weigh against it.</summary>
-    private void Load(string name, byte[] contents)
+    private async Task Load(string name, byte[] contents)
     {
         // Parsed here rather than after the question, so a file that will not parse is refused with
         // the reason - the callers' catch is what turns that into a message.
         var incoming = EmpireDesignsFile.Load(contents);
+        var arrival = Arrival.TakeTheirs;
 
-        // Nothing to weigh up: an empty file has nothing to lose, and neither has an empty import.
-        if (_session!.File is not { Designs.Count: > 0 } || incoming.Designs.Count == 0)
+        // The same three rules connecting to a file at a provider follows, because it is the same
+        // question. Nothing open means nothing to lose. A file holding nothing is the one that used
+        // to go wrong here: it was treated as having nothing to lose either, and opened - which
+        // emptied the list, without asking, to gain nothing at all.
+        if (_session!.File is { Designs.Count: > 0 })
         {
-            Editor.IsOpen = false;
-            _session.Open(incoming, name);
-            return;
+            if (incoming.Designs.Count == 0)
+            {
+                _message = ($"{name} holds no empires, so nothing was imported.", false);
+                return;
+            }
+
+            // Keeping your own is offered where connecting offers it and not here, because there
+            // it points Save at the file and here it would be a second way of saying cancel.
+            if (await AskAboutImport(name, incoming.Designs.Count) is not { } answered)
+            {
+                return;
+            }
+
+            arrival = answered;
         }
 
-        _importing = (name, incoming);
+        // Closed either way. Merging can replace the very empire the editor is holding, and taking
+        // the file throws away the one it came from - and an editor left open over a file that has
+        // just changed underneath it is showing something nobody asked to see.
+        Editor.IsOpen = false;
+
+        if (arrival is Arrival.TakeTheirs)
+        {
+            _session.Open(incoming, name);
+        }
+        else
+        {
+            _session.Merge(incoming, replacingMatches: arrival is Arrival.TheirsWin);
+        }
     }
 
     /// <summary>Adds the imported empires to the ones already open, name for name.</summary>
-    private void Merge()
-    {
-        if (_importing is { } incoming)
-        {
-            // Closed either way. Merging can replace the very empire the editor is holding, and
-            // replacing throws away the file it came from - and an editor left open over a file
-            // that has just changed underneath it is showing something nobody asked to see.
-            Editor.IsOpen = false;
-            _session!.Merge(incoming.File);
-            _importing = null;
-        }
-    }
-
     /// <summary>Throws the open file away and keeps the imported one, which is what import did.</summary>
-    private void Replace()
-    {
-        if (_importing is { } incoming)
-        {
-            Editor.IsOpen = false;
-            _session!.Open(incoming.File, incoming.Name);
-            _importing = null;
-        }
-    }
-
     /// <summary>A number of empires, said the way a sentence would say it.</summary>
     private static string Count(int empires) => empires == 1 ? "one empire" : $"{empires} empires";
 
@@ -951,10 +961,20 @@
     /// host mirrors the empty file to browser storage on its own, and the player's real file is
     /// only ever reached through Export.
     /// </remarks>
-    private void ClearEverything()
+    private async Task ClearEverything()
     {
         _resetting = false;
         _message = null;
+
+        // The file at the provider is let go of first. Reset means the app as it was on a first
+        // visit, and there is no first visit that is connected to anything - staying would leave
+        // Save pointed at a file holding empires the list no longer shows, which is the most
+        // confusing of the three states this could end in.
+        if (_cloud is { Connected: true })
+        {
+            await _cloud.DisconnectAsync();
+        }
+
         _session!.StartEmptyFile();
 
         // Back to the list, with nothing open over it. The editor would otherwise be left holding

@@ -130,6 +130,12 @@ public sealed class EmpireDesignsFile
     /// <summary>
     /// Brings every empire from another file into this one.
     /// </summary>
+    /// <param name="other">The file to fold in. It is left exactly as it was.</param>
+    /// <param name="replacingMatches">
+    /// What to do where both files hold an empire of the same name: true takes the incoming one,
+    /// false keeps the one already here. Either way this file's own order is what survives, so the
+    /// answer decides which version of an empire is kept and never where anything sits.
+    /// </param>
     /// <remarks>
     /// <para>
     /// One that shares a key with an empire already here takes its place, in its place: the
@@ -148,7 +154,7 @@ public sealed class EmpireDesignsFile
     /// one.
     /// </para>
     /// </remarks>
-    public void Merge(EmpireDesignsFile other)
+    public void Merge(EmpireDesignsFile other, bool replacingMatches = true)
     {
         ArgumentNullException.ThrowIfNull(other);
 
@@ -163,6 +169,14 @@ public sealed class EmpireDesignsFile
 
             if (Find(incoming.Key) is { } existing)
             {
+                // The one already here stays, and the incoming copy is dropped rather than put
+                // anywhere else: two empires of one name is not a file this app can write, and
+                // the caller has said which of the two it wants.
+                if (!replacingMatches)
+                {
+                    continue;
+                }
+
                 var at = Document.Nodes.ToList().IndexOf(existing.Node);
                 var slot = _designs.IndexOf(existing);
 
