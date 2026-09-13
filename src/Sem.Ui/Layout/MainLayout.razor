@@ -259,11 +259,14 @@
     @if (Sync.Asking)
     {
         <ConfirmDialog Title="Your designs file changed while you were editing."
-                       Message="@($"Something else has written {FileTitle}. Loading it replaces the "
-                                 + $"changes you have not saved{Editing}.")"
+                       Message="@($"Something else has written {FileTitle}"
+                                 + (Sync.Arrived is { } arrived
+                                     ? $", and it now holds {Count(arrived.Holds)}"
+                                     : string.Empty)
+                                 + $". Taking it replaces the changes you have not saved{Editing}.")"
                        OnDismiss="Sync.Decline">
-            <button type="button" @onclick="Sync.Decline">Keep my changes</button>
-            <button type="button" class="danger" @onclick="Sync.AcceptAsync">Load the file</button>
+            <ArrivalChoices Theirs="the file" Take="Take File"
+                            OnChosen="(Arrival choice) => Sync.ResolveAsync(choice)" />
         </ConfirmDialog>
     }
 

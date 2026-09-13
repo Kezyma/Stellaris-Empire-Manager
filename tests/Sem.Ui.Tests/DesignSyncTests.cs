@@ -299,11 +299,84 @@ public sealed class DesignSyncTests
 
         disk.WrittenElsewhere("Built in the game");
         await sync.RefreshAsync();
-        sync.Decline();
+        await sync.Decline();
 
         Assert.False(sync.Asking);
         Assert.Equal(["First"], Names(session));
         Assert.Equal("Renamed, not saved", session.Current!.Name.Key);
+
+        // Keeping the edit means the file is now the thing being written over, so it is written:
+        // the two disagreed, and the sync is what settles a disagreement in the app's favour.
+        Assert.Equal(["First"], Names(EmpireDesignsFile.Load(disk.Contents)));
+    }
+
+    /// <summary>
+    /// Merging keeps both sides, and puts the result back where the two disagreed.
+    /// </summary>
+    /// <remarks>
+    /// The answer that did not exist here. A file written by the game while somebody was editing
+    /// left two choices, both of which threw one side's work away - and the game writing that file
+    /// as it exits is the commonest way this question ever gets asked.
+    /// </remarks>
+    [Theory]
+    [InlineData(Arrival.TheirsWin)]
+    [InlineData(Arrival.MineWin)]
+    public async Task MergingKeepsBothSidesOfAChangeUnderneath(Arrival answer)
+    {
+        var disk = new Disk("First");
+        var (sync, _, session) = await OpenAsync(disk);
+
+        await sync.SetAsync(true);
+        session.Select(session.File!.Designs[0]);
+        session.Edit(design => design.Name.Key = "Renamed, not saved");
+
+        disk.WrittenElsewhere("First", "Built in the game");
+        await sync.RefreshAsync();
+
+        Assert.True(sync.Asking);
+
+        await sync.ResolveAsync(answer);
+
+        Assert.False(sync.Asking);
+        Assert.Equal(["First", "Built in the game"], Names(session));
+
+        // And the file holds what was decided, rather than either half of it.
+        Assert.Equal(
+            ["First", "Built in the game"],
+            Names(EmpireDesignsFile.Load(disk.Contents)));
+    }
+
+    /// <summary>
+    /// Whatever the answer, the same change is not asked about twice.
+    /// </summary>
+    /// <remarks>
+    /// Every answer moves the baseline to what the file held when it was asked. Without that, the
+    /// next look at an unchanged file finds it still differing from a stale baseline and asks
+    /// again - which is a dialog somebody cannot get rid of by answering it.
+    /// </remarks>
+    [Theory]
+    [InlineData(Arrival.TheirsWin)]
+    [InlineData(Arrival.MineWin)]
+    [InlineData(Arrival.KeepMine)]
+    [InlineData(Arrival.TakeTheirs)]
+    public async Task AnAnsweredChangeIsNotAskedAboutAgain(Arrival answer)
+    {
+        var disk = new Disk("First");
+        var (sync, _, session) = await OpenAsync(disk);
+
+        await sync.SetAsync(true);
+        session.Select(session.File!.Designs[0]);
+        session.Edit(design => design.Name.Key = "Renamed, not saved");
+
+        disk.WrittenElsewhere("First", "Built in the game");
+        await sync.RefreshAsync();
+        await sync.ResolveAsync(answer);
+
+        Assert.False(sync.Asking);
+
+        await sync.RefreshAsync();
+
+        Assert.False(sync.Asking);
     }
 
     /// <summary>And taking the file is the other answer, edit and all.</summary>

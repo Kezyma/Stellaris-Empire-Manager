@@ -162,7 +162,25 @@ public sealed class DesignSync : IDisposable
         Enabled ? LoadFromDiskAsync() : Task.CompletedTask;
 
     /// <summary>Takes the file that was waiting, losing the edits it replaces.</summary>
-    public async Task AcceptAsync()
+    public async Task AcceptAsync() => await ResolveAsync(Arrival.TakeTheirs).ConfigureAwait(false);
+
+    /// <summary>
+    /// Settles the question the watcher asked, whichever way it was answered.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Every answer moves the baseline to what the file now holds, including the ones that keep
+    /// your own empires. That is what stops the same change being asked about again on the next
+    /// touch of the file, and it is also what makes each answer mean one thing and go on meaning
+    /// it: having said you are keeping yours, the next write puts yours over what arrived, on
+    /// purpose rather than by accident.
+    /// </para>
+    /// <para>
+    /// And whatever comes out of it is written back where it differs from the file, because this
+    /// only runs with the sync on and that is what the sync is.
+    /// </para>
+    /// </remarks>
+    public async Task ResolveAsync(Arrival answer)
     {
         if (_waiting is not { } held)
         {
@@ -171,7 +189,14 @@ public sealed class DesignSync : IDisposable
 
         _waiting = null;
 
-        if (Apply(held.File, held.Contents, held.Name))
+        var owed = answer switch
+        {
+            Arrival.TakeTheirs => Apply(held.File, held.Contents, held.Name),
+            Arrival.KeepMine => Settled(held.Contents),
+            _ => Fold(held.File, held.Contents, replacingMatches: answer is Arrival.TheirsWin),
+        };
+
+        if (owed)
         {
             await WriteAsync().ConfigureAwait(false);
         }
@@ -179,18 +204,57 @@ public sealed class DesignSync : IDisposable
         Changed?.Invoke();
     }
 
+    /// <summary>Keeps what is open, and takes the arriving file as the thing written over.</summary>
+    private bool Settled(byte[] contents)
+    {
+        _onDisk = contents;
+        Note = null;
+
+        return _session is { } session && !Same(session.Save(), contents);
+    }
+
+    /// <summary>Folds the arriving file into what is open, the way the answer said.</summary>
+    private bool Fold(EmpireDesignsFile file, byte[] contents, bool replacingMatches)
+    {
+        if (_session is not { } session)
+        {
+            return false;
+        }
+
+        // Held down for the same reason Apply holds it: merging announces itself, and the
+        // announcement is the thing this class answers by writing.
+        var already = _busy;
+        var owed = _missed;
+        _busy = true;
+
+        try
+        {
+            session.Merge(file, replacingMatches);
+
+            return Settled(contents);
+        }
+        finally
+        {
+            _busy = already;
+            _missed = owed;
+        }
+    }
+
     /// <summary>
-    /// Keeps the edits and drops the file that was waiting.
+    /// Keeps the edits, and takes the arriving file as the thing they will be written over.
     /// </summary>
     /// <remarks>
-    /// Which means the app and the file now disagree, and the next save settles it in the app's
-    /// favour. That is what keeping the edits means, and there is no third answer that keeps both.
+    /// Which means the app and the file now disagree and the next write settles it in the app's
+    /// favour - deliberately, because that is what keeping the edits means. There used to be no
+    /// answer that kept both; there are two now, and this is the one that keeps neither of theirs.
     /// </remarks>
-    public void Decline()
-    {
-        _waiting = null;
-        Changed?.Invoke();
-    }
+    public Task Decline() => ResolveAsync(Arrival.KeepMine);
+
+    /// <summary>
+    /// What the file that changed holds, for the question to weigh against what is open.
+    /// </summary>
+    public (string Name, int Holds)? Arrived =>
+        _waiting is { } held ? (held.Name, held.File.Designs.Count) : null;
 
     /// <summary>Stops watching and forgets what was waiting, leaving the file exactly as it is.</summary>
     public void Dispose()
