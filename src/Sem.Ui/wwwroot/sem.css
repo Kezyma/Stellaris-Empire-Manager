@@ -7167,13 +7167,31 @@ button.icon .sem-action-icon { display: block; }
     gap: var(--space-md);
 }
 
-.sem-modal .choices > button {
+/*
+   And an anchor among them, where the answer is a file rather than a decision. It wears the same
+   costume as the buttons beside it and has to line up with them: inline by default, it sat on the
+   text baseline with its padding hanging below the row.
+*/
+.sem-modal .choices > button,
+.sem-modal .choices > .sem-button {
     flex: 0 1 auto;
 }
 
+.sem-modal .choices > a.sem-button {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+}
+
 @media (max-width: 420px) {
-    .sem-modal .choices > button {
+    .sem-modal .choices > button,
+    .sem-modal .choices > .sem-button {
         flex: 1 1 100%;
+    }
+
+    /* A row of one is centred rather than left where the flex put it. */
+    .sem-modal .choices > a.sem-button {
+        justify-content: center;
     }
 }
 

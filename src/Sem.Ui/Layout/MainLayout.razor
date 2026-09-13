@@ -115,6 +115,21 @@
                 }
 
                 @*
+                    And the same app with a real file behind it, for anyone who would rather have
+                    that. Beside Cloud because they answer the same question - where your empires
+                    actually live - and drawn only where this is not already the answer: offering
+                    somebody a download of what they are running is an app that was not looking.
+                *@
+                @if (_releases is not null)
+                {
+                    <button type="button" class="sem-tab"
+                            title="Get the Windows app, which opens your designs file itself"
+                            @onclick="OfferTheDesktop">
+                        Desktop
+                    </button>
+                }
+
+                @*
                     Save, and the answer to whether saving is something you ask for at all.
 
                     Together, because they are one decision read left to right - the word, then
@@ -334,6 +349,32 @@
                        OnDismiss="() => _stranded = false">
             <button type="button" @onclick="() => _stranded = false">Use this browser's copy</button>
             <button type="button" @onclick="Reconnect">Connect again</button>
+        </ConfirmDialog>
+    }
+
+    @*
+        What the Desktop button opens: what the download is, how big, and how old, before anybody
+        spends seventy megabytes finding out. Where it cannot be said - nothing published yet, a
+        refused request, GitHub rationing an address it shares with a whole network - the sentence
+        says which and the button becomes the releases page, which answers all of them.
+    *@
+    @if (_offering)
+    {
+        <ConfirmDialog Title="The Windows app" Message="@DesktopOffer"
+                       OnDismiss="() => _offering = false">
+            @if (_build is { } build)
+            {
+                @* An anchor, not a button: what it does is fetch a file, which is what a link is. *@
+                <a class="sem-button" href="@build.Address">Download @build.Size</a>
+            }
+            else if (_releases is { Asking: false })
+            {
+                <a class="sem-button" href="@Releases.Page" target="_blank" rel="noopener">
+                    Open the releases page
+                </a>
+            }
+
+            <button type="button" @onclick="() => _offering = false">Close</button>
         </ConfirmDialog>
     }
 
@@ -593,6 +634,53 @@
     private bool _connecting;
 
     /// <summary>Whether a file chosen on an earlier visit is still being fetched.</summary>
+    /// <summary>What the releases page is offering, where anything here can ask. Null on the desktop.</summary>
+    private Releases? _releases;
+
+    /// <summary>Whether the sheet about the desktop app is up.</summary>
+    private bool _offering;
+
+    /// <summary>The build it found, once it has found one.</summary>
+    private DesktopBuild? _build;
+
+    /// <summary>
+    /// What the sheet says: the wait, the offer, or the reason there is not one.
+    /// </summary>
+    /// <remarks>
+    /// The size and the date are the offer. There is one version of this app to have - the download
+    /// is replaced every time the code changes - so "how new is it" is the only question a number
+    /// answers here, and "how big" is the one most likely to change somebody's mind.
+    /// </remarks>
+    private string DesktopOffer =>
+        _releases is { Asking: true }
+            ? "Asking GitHub what the newest build is."
+            : _build is { } build
+                ? "The same designer in a window, with your designs file already open in it - Save "
+                    + "writes the file the game reads, in place, and keeps a dated copy beside it. "
+                    + $"Windows 10 or 11, 64-bit. {build.Size}, built "
+                    + $"{build.Built.ToLocalTime():d MMMM yyyy}."
+                : _releases?.Trouble ?? "There is nothing to download just now.";
+
+    /// <summary>Opens the sheet, then fills it in when GitHub answers.</summary>
+    /// <remarks>
+    /// The sheet first, so the press does something immediately and the wait happens where it can
+    /// be seen. Asked rather than assumed to still be true: a visit can outlast a build.
+    /// </remarks>
+    private async Task OfferTheDesktop()
+    {
+        _offering = true;
+        _build = null;
+
+        if (_releases is not { } releases)
+        {
+            return;
+        }
+
+        StateHasChanged();
+
+        _build = await releases.NewestAsync();
+    }
+
     private bool _opening;
 
     /// <summary>
@@ -637,6 +725,10 @@
     protected override async Task OnInitializedAsync()
     {
         _windows = Services.GetService(typeof(IWindowControls)) as IWindowControls;
+
+        // Registered in the browser and nowhere else, which is what decides whether the button
+        // that offers the desktop app is drawn at all.
+        _releases = Services.GetService(typeof(Releases)) as Releases;
 
         // Started before anything that watches a file, so the first answer about whether anybody is
         // looking is the truth rather than an assumption that happens to be right most of the time.

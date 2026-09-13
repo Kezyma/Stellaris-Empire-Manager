@@ -66,6 +66,11 @@ builder.Services.AddScoped(s => new CloudConnection(
     // come back to asks at once rather than waiting out the rest of an interval.
     s.GetRequiredService<PageAttention>()));
 
+// What the Desktop button offers, registered here and not in the desktop shell - which is the
+// thing being offered, and should not be handing out downloads of itself. Its own client, because
+// the site's carries the site's base address and GitHub's is somewhere else entirely.
+builder.Services.AddScoped(_ => new Releases(new HttpClient()));
+
 // Every content pack is assumed here: the installation the data was read from is not the player's,
 // and a designer that hides half the game until a setting is found is worse than one that offers
 // too much.

@@ -17,6 +17,10 @@
         and OneDrive is the first - graph.microsoft.com for the file, login.microsoftonline.com for
         the sign-in.
 
+        api.github.com is there for one question and carries nothing: the Desktop button asks it
+        what the newest build is, and the download itself is an ordinary link to github.com, which
+        is navigation and governed by none of this.
+
         The two wildcards after those are not by choice. Asking Graph for a file's contents hands
         back a redirect to whichever content host that account lives on - my.microsoftpersonalcontent.com
         for this one - and the name varies per account, so there is nothing exact to name. A policy
@@ -48,7 +52,8 @@
         img-src 'self' data: blob:;
         font-src 'self';
         connect-src 'self' https://graph.microsoft.com https://login.microsoftonline.com
-            https://*.microsoftpersonalcontent.com https://*.files.1drv.com;
+            https://*.microsoftpersonalcontent.com https://*.files.1drv.com
+            https://api.github.com;
         object-src 'none';
         base-uri 'self';
         form-action 'none'
