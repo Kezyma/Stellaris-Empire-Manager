@@ -22,11 +22,16 @@ on:
 permissions:
   contents: write
 
-# Never two at once. A newer build wins rather than queueing behind an older one, which for a
-# rolling release is the only order that makes sense - the older one would overwrite the newer.
+# Never two at once, and never cancelled to make room for the next.
+#
+# Cancelling looked right - for a rolling release the newer build is the one anybody wants - and it
+# cost us the release. Two pushes close together cancelled the first run partway through the step
+# that replaces the release, between taking the old one down and putting the new one up, and the
+# repository sat with no download at all until the next run finished. The step below no longer has
+# that window, and this no longer opens one: runs queue, and the last to finish is the newest.
 concurrency:
   group: release
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   # The same gate Pages uses. Nothing people download should come from a commit whose tests did not
@@ -96,33 +101,51 @@ jobs:
 
           Set-Content release-notes.md -Value $notes -Encoding utf8
 
-      # Deleted and remade rather than edited, so the tag follows main instead of staying on
-      # whatever commit first created it. Not finding one is the ordinary case on the first run and
-      # is not a failure.
+      # Nothing is taken down to put something up.
+      #
+      # The tag moves first, and a release is bound to its tag's name - so the release that already
+      # exists follows the tag to this commit without being touched. Then the asset is replaced in
+      # place and the notes rewritten. What this replaces deleted the release and made a new one,
+      # which is two steps with no release in between, and a run cancelled in that gap left the
+      # repository with nothing to download.
       #
       # It must not be flagged a pre-release. /releases/latest skips pre-releases entirely, so the
-      # download address above would answer 404 against a release plainly visible on the page.
-      - name: Replace the rolling release
+      # download address at the top of this file would answer 404 against a release plainly visible
+      # on the page.
+      - name: Put up the rolling release
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          # Not finding a release to delete is the ordinary case on the first run. Actions runs
-          # this with the error preference set to stop, and PowerShell 7.4 turned that into "a
-          # native command exiting non-zero throws" - so without this the first run would fail on
-          # the one command that is expected to.
-          #
-          # A delete that failed for a real reason is not lost by it: the create below then
-          # refuses, and that one is checked.
+          # Asking whether a release exists is a question whose answer is often "no", and Actions
+          # runs this with the error preference set to stop - which PowerShell 7.4 extended to
+          # native commands exiting non-zero. Every command below is checked on its own instead.
           $PSNativeCommandUseErrorActionPreference = $false
 
-          gh release delete latest --cleanup-tag --yes
+          git tag --force latest
+          git push --force origin latest
 
-          gh release create latest `
-            artifacts/StellarisEmpireManager-win-x64.zip `
-            --target $env:GITHUB_SHA `
-            --title 'Latest build' `
-            --notes-file release-notes.md `
-            --latest
+          if ($LASTEXITCODE -ne 0) { throw 'The tag could not be moved.' }
 
-          if ($LASTEXITCODE -ne 0) { throw 'The release could not be created.' }
+          $zip = 'artifacts/StellarisEmpireManager-win-x64.zip'
+
+          gh release view latest --json tagName | Out-Null
+
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload latest $zip --clobber
+
+            if ($LASTEXITCODE -ne 0) { throw 'The build could not be attached to the release.' }
+
+            gh release edit latest --title 'Latest build' --notes-file release-notes.md --latest
+
+            if ($LASTEXITCODE -ne 0) { throw 'The release could not be brought up to date.' }
+          }
+          else {
+            gh release create latest $zip `
+              --target $env:GITHUB_SHA `
+              --title 'Latest build' `
+              --notes-file release-notes.md `
+              --latest
+
+            if ($LASTEXITCODE -ne 0) { throw 'The release could not be created.' }
+          }
