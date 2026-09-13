@@ -4,6 +4,38 @@ using Sem.Designs;
 namespace Sem.Ui.Services.Cloud;
 
 /// <summary>
+/// What to do with the empires already open when a file is connected to that holds its own.
+/// </summary>
+/// <remarks>
+/// Connecting used to mean the file wins, which is right the first time and wrong every time after:
+/// picking a file after an afternoon's work threw the afternoon away, and so did coming back to a
+/// connection that had lapsed. None of these writes anything - the choice decides what is in front
+/// of you, and the file at the provider is only changed by a save.
+/// </remarks>
+public enum CloudArrival
+{
+    /// <summary>The file as it stands. What was open is let go of.</summary>
+    TakeTheirs,
+
+    /// <summary>What is open, now pointed at this file, which a save would write over.</summary>
+    KeepMine,
+
+    /// <summary>Both, and where one empire is in both, the file's copy is the one kept.</summary>
+    TheirsWin,
+
+    /// <summary>Both, and where one empire is in both, the open copy is the one kept.</summary>
+    MineWin,
+}
+
+/// <summary>
+/// Asks what to do when a file arrives holding empires and there are already empires open.
+/// </summary>
+/// <param name="name">The file being opened, so the question can name it.</param>
+/// <param name="holds">How many empires it holds, which is half of what the question weighs.</param>
+/// <returns>What to do, or null to stop and leave everything exactly as it was.</returns>
+public delegate Task<CloudArrival?> ArrivalQuestion(string name, int holds);
+
+/// <summary>
 /// Which file at a provider the app is working on, and how it got there.
 /// </summary>
 /// <remarks>
@@ -141,18 +173,37 @@ public sealed class CloudConnection : IDisposable
     /// The file chosen before is reconnected to without asking again, because choosing it was the
     /// answer to that question and signing in was only the way back to it.
     /// </remarks>
-    public async Task<bool> CompleteSignInAsync(string address)
+    public async Task<bool> CompleteSignInAsync(string address, ArrivalQuestion? ask = null)
     {
         if (!await _auth.CompleteAsync(address).ConfigureAwait(false))
         {
+            // Only worth saying where this load was meant to be the way back. An ordinary load
+            // reaches here too, and has nothing to report.
+            if (OneDriveAuth.IsReturn(address))
+            {
+                Note = $"Signing in to {_provider.Name} did not finish. Try connecting again.";
+                Changed?.Invoke();
+            }
+
             return false;
         }
 
-        await ResumeAsync().ConfigureAwait(false);
+        await ResumeAsync(ask).ConfigureAwait(false);
         Changed?.Invoke();
 
         return true;
     }
+
+    /// <summary>
+    /// Whether this address is the provider handing an answer back, of either kind.
+    /// </summary>
+    /// <remarks>
+    /// Asked apart from whether the answer was any good, because the two want different things.
+    /// A return that failed still has to have the code taken out of the address and still has to
+    /// put the picker up - otherwise pressing the provider again fetches another code onto a page
+    /// that will not spend it either, which is a loop with no way out of it and no message.
+    /// </remarks>
+    public static bool IsSignInReturn(string address) => OneDriveAuth.IsReturn(address);
 
     /// <summary>What is in a folder at the provider, for finding a file by looking.</summary>
     public Task<IReadOnlyList<CloudEntry>> ListAsync(string? folderId) =>
@@ -190,7 +241,7 @@ public sealed class CloudConnection : IDisposable
     /// Works on this file from now on, opening what it holds.
     /// </summary>
     /// <returns>True when the file was opened and Save now goes to it.</returns>
-    public async Task<bool> UseAsync(CloudFile file, bool? autoSave = null)
+    public async Task<bool> UseAsync(CloudFile file, bool? autoSave = null, ArrivalQuestion? ask = null)
     {
         ArgumentNullException.ThrowIfNull(file);
 
@@ -234,11 +285,73 @@ public sealed class CloudConnection : IDisposable
             return false;
         }
 
+        // Asked before anything is touched, and only where there is a real decision to make.
+        //
+        // Nothing open means nothing to lose, so the file is simply taken. A file holding nothing
+        // is the mirror of that and matters more: taking it would empty the list, and the three
+        // answers that are not "take it" all come to the same thing, so keeping what is open is
+        // the answer rather than a question with one real option. Both sides holding empires is
+        // the case worth asking about, and the only one that is asked.
+        var mine = _host.Current?.File;
+        var arrival = CloudArrival.TakeTheirs;
+
+        // A file that already matches what is open is not a decision, and asking about it would
+        // put a question in front of every ordinary reload of a connection that is in step.
+        if (mine is { Designs.Count: > 0 } && !Matches(mine, read.Contents))
+        {
+            if (parsed.Designs.Count == 0)
+            {
+                arrival = CloudArrival.KeepMine;
+            }
+            else if (ask is not null)
+            {
+                if (await ask(file.Name, parsed.Designs.Count).ConfigureAwait(false) is not { } answered)
+                {
+                    // Stopped rather than refused. Nothing has been changed at this point, so
+                    // leaving quietly is the whole of it - no note, because nothing went wrong.
+                    exchange.Dispose();
+
+                    return false;
+                }
+
+                arrival = answered;
+            }
+        }
+
         // Only now is anything changed, so a file that would not open leaves the session alone.
         _connected?.Dispose();
         _connected = exchange;
         _router.SwitchTo(exchange);
-        _host.Current?.Open(parsed, read.Name);
+
+        if (_host.Current is { } session)
+        {
+            switch (arrival)
+            {
+                // The one answer that leaves nothing owed: what is open is what the file holds.
+                case CloudArrival.TakeTheirs:
+                    session.Open(parsed, read.Name);
+                    break;
+
+                // Opened under the file's name so that Save goes there, and immediately owed to
+                // it, because the file still holds something else until a save says otherwise.
+                case CloudArrival.KeepMine:
+                    session.Open(mine!, read.Name);
+                    session.MarkFileUnwritten();
+                    break;
+
+                // Merge already means "the one handed in wins", so which of the two is opened
+                // first is the entire difference between these. Both come out owing the file.
+                case CloudArrival.TheirsWin:
+                    session.Open(mine!, read.Name);
+                    session.Merge(parsed);
+                    break;
+
+                default:
+                    session.Open(parsed, read.Name);
+                    session.Merge(mine!);
+                    break;
+            }
+        }
 
         // The folder goes in too. Without it a reload knows which file to reopen and cannot say
         // where it is, so the sheet would name the file and leave the one useful half out.
@@ -264,9 +377,31 @@ public sealed class CloudConnection : IDisposable
     }
 
     /// <summary>
+    /// Whether what is open would write back as exactly the bytes that were just read.
+    /// </summary>
+    /// <remarks>
+    /// Written out and compared rather than counted or matched name by name, because the question
+    /// it answers is "would saving change this file", and only the bytes answer that.
+    /// </remarks>
+    private static bool Matches(EmpireDesignsFile mine, byte[] theirs)
+    {
+        try
+        {
+            return mine.Save().AsSpan().SequenceEqual(theirs);
+        }
+        catch (Exception ex) when (ex is InvalidOperationException or FormatException)
+        {
+            // Unable to say they are the same, so say they are not: the cost of asking a question
+            // that was not needed is a question, and the cost of skipping one that was is an
+            // afternoon's work.
+            return false;
+        }
+    }
+
+    /// <summary>
     /// Reconnects to the file chosen last time, where there is one and the session allows.
     /// </summary>
-    public async Task<bool> ResumeAsync()
+    public async Task<bool> ResumeAsync(ArrivalQuestion? ask = null)
     {
         if (Connected || _preferences.Get(ChosenKey) is not { Length: > 0 } kept)
         {
@@ -283,7 +418,7 @@ public sealed class CloudConnection : IDisposable
         }
 
         return await UseAsync(
-            new CloudFile(parts[0], parts[1], parts.Length > 2 ? parts[2] : string.Empty))
+            new CloudFile(parts[0], parts[1], parts.Length > 2 ? parts[2] : string.Empty), ask: ask)
             .ConfigureAwait(false);
     }
 
@@ -303,6 +438,13 @@ public sealed class CloudConnection : IDisposable
         _connected?.Dispose();
         _connected = null;
 
+        // What is open belonged to the file while the connection lasted, and belongs to nobody the
+        // moment it ends. The browser keeps no copy of a file for a host that saves in place, so
+        // everything done since connecting - including whichever way the arrival question was
+        // answered - would go with the next reload. Written back now that the browser is holding it
+        // again, and after the router has been switched, because that is what decides where it goes.
+        await _host.RememberAsync().ConfigureAwait(false);
+
         _preferences.Set(ChosenKey, string.Empty);
         await _auth.SignOutAsync().ConfigureAwait(false);
 
@@ -312,6 +454,12 @@ public sealed class CloudConnection : IDisposable
 
         Note = null;
         SessionEnded = false;
+
+        // Rebuilt rather than left as it was. The list carries whether each provider is already
+        // signed in, and having just signed out of one, a row still saying so is both wrong and
+        // the thing somebody reads to decide whether pressing it will ask them for anything.
+        await SignedInAsync().ConfigureAwait(false);
+
         Changed?.Invoke();
     }
 

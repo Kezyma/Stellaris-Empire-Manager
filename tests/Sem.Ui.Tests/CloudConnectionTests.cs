@@ -23,6 +23,12 @@ public sealed class CloudConnectionTests
     {
         private byte[] _contents = FileOf("First", "Second");
 
+        /// <summary>Puts a chosen set of empires in the file, for the merges to be read off.</summary>
+        public void Holds(params string[] empires) => _contents = FileOf(empires);
+
+        /// <summary>What the file holds, for a test that has to hand the same bytes back.</summary>
+        public byte[] Contents => _contents;
+
         public string Name => "Somewhere";
 
         /// <summary>Set when the file cannot be fetched at all.</summary>
@@ -124,6 +130,21 @@ public sealed class CloudConnectionTests
             throw new InvalidOperationException($"nothing should have called {identifier}");
     }
 
+    /// <summary>The browser's own copy, so that what it is handed can be read back.</summary>
+    private sealed class Store : IDesignStore
+    {
+        public string? Kept { get; private set; }
+
+        public Task<string?> ReadAsync() => Task.FromResult(Kept);
+
+        public Task<bool> WriteAsync(string contents)
+        {
+            Kept = contents;
+
+            return Task.FromResult(true);
+        }
+    }
+
     private sealed class Source : IGameDataSource
     {
         public Task<Sem.Ui.Services.GameData> LoadAsync(CancellationToken cancellationToken = default) =>
@@ -152,20 +173,23 @@ public sealed class CloudConnectionTests
             Router = new FileExchangeRouter(Browser);
             Preferences = new Preferences();
 
-            var host = new SessionHost(new Source(), Router, preferences: Preferences);
-            var sync = new DesignSync(host, Router, Preferences);
+            Host = new SessionHost(new Source(), Router, Kept, preferences: Preferences);
+
+            var sync = new DesignSync(Host, Router, Preferences);
 
             Connection = new CloudConnection(
                 Provider,
                 new OneDriveAuth(new HttpClient(), Store, "client-id", "https://example.invalid/"),
                 Router,
                 Browser,
-                host,
+                Host,
                 Preferences,
                 sync);
         }
 
         public Provider Provider { get; } = new();
+
+        public Store Kept { get; } = new();
 
         public Tokens Store { get; }
 
@@ -175,9 +199,35 @@ public sealed class CloudConnectionTests
 
         public Preferences Preferences { get; }
 
+        public SessionHost Host { get; }
+
         public CloudConnection Connection { get; }
 
-        public void Dispose() => Connection.Dispose();
+        /// <summary>Opens a session holding these empires, so there is something to lose.</summary>
+        public async Task<DesignSession> OpenAsync(params string[] mine)
+        {
+            var session = await Host.GetAsync() ?? throw new InvalidOperationException("no session");
+
+            if (mine.Length > 0)
+            {
+                var file = EmpireDesignsFile.CreateEmpty();
+
+                foreach (var name in mine)
+                {
+                    file.Add(name);
+                }
+
+                session.Open(file, "mine.txt");
+            }
+
+            return session;
+        }
+
+        public void Dispose()
+        {
+            Connection.Dispose();
+            Host.Dispose();
+        }
     }
 
     private static CloudFile TheFile(string folder = "/KEZYMA-DT/Documents/Paradox Interactive/Stellaris") =>
@@ -334,6 +384,235 @@ public sealed class CloudConnectionTests
         Assert.Equal(string.Empty, rig.Preferences.Get("cloud.file"));
         Assert.False(rig.Store.Holds("sem.cloud.refresh"));
         Assert.False(rig.Router.SavesInPlace);
+    }
+
+    private static IReadOnlyList<string> Names(DesignSession session) =>
+        [.. session.File!.Designs.Select(d => d.Key)];
+
+    /// <summary>
+    /// What the browser's own copy holds.
+    /// </summary>
+    /// <remarks>
+    /// The store takes text, so a file goes into it base64 behind a prefix that cannot begin a
+    /// designs file. Unpicked here rather than through the app's own encoder, because a test that
+    /// used the same code to write and to read would pass whatever that code happened to do.
+    /// </remarks>
+    private static IReadOnlyList<string> Names(Store store)
+    {
+        Assert.NotNull(store.Kept);
+        Assert.StartsWith("{sem/b64}", store.Kept, StringComparison.Ordinal);
+
+        var bytes = Convert.FromBase64String(store.Kept!["{sem/b64}".Length..]);
+
+        return [.. EmpireDesignsFile.Load(bytes).Designs.Select(d => d.Key)];
+    }
+
+    /// <summary>
+    /// Each answer keeps exactly what it says it keeps.
+    /// </summary>
+    /// <remarks>
+    /// The whole point of asking. Connecting used to mean the file wins, so choosing one after an
+    /// afternoon's work threw the afternoon away with no question and no way back.
+    /// </remarks>
+    [Theory]
+    [InlineData(CloudArrival.TakeTheirs, new[] { "Shared", "Theirs" })]
+    [InlineData(CloudArrival.KeepMine, new[] { "Mine", "Shared" })]
+    [InlineData(CloudArrival.TheirsWin, new[] { "Mine", "Shared", "Theirs" })]
+    [InlineData(CloudArrival.MineWin, new[] { "Shared", "Theirs", "Mine" })]
+    public async Task EachAnswerKeepsWhatItSaysItKeeps(CloudArrival answer, string[] expected)
+    {
+        using var rig = new Rig();
+        rig.Provider.Holds("Shared", "Theirs");
+
+        var session = await rig.OpenAsync("Mine", "Shared");
+
+        Assert.True(await rig.Connection.UseAsync(
+            TheFile(), autoSave: false, (_, _) => Task.FromResult<CloudArrival?>(answer)));
+
+        Assert.Equal(expected, Names(session));
+
+        // Whatever was asked for is now the file's name, because that is where a save goes.
+        Assert.Equal("user_empire_designs_v3.4.txt", session.FileName);
+    }
+
+    /// <summary>
+    /// Anything but taking the file outright leaves the file owed something.
+    /// </summary>
+    /// <remarks>
+    /// The flag is what lights Save and what draws "not yet written back". Without it the three
+    /// answers that keep any of your own work would look settled while the file still held
+    /// something else, which is the quiet version of losing it.
+    /// </remarks>
+    [Theory]
+    [InlineData(CloudArrival.TakeTheirs, false)]
+    [InlineData(CloudArrival.KeepMine, true)]
+    [InlineData(CloudArrival.TheirsWin, true)]
+    [InlineData(CloudArrival.MineWin, true)]
+    public async Task OnlyTakingTheFileLeavesNothingOwedToIt(CloudArrival answer, bool owed)
+    {
+        using var rig = new Rig();
+        rig.Provider.Holds("Shared", "Theirs");
+
+        var session = await rig.OpenAsync("Mine", "Shared");
+
+        Assert.True(await rig.Connection.UseAsync(
+            TheFile(), autoSave: false, (_, _) => Task.FromResult<CloudArrival?>(answer)));
+
+        Assert.Equal(owed, session.HasUnwrittenFileChanges);
+    }
+
+    /// <summary>Stopping at the question leaves everything exactly as it was.</summary>
+    [Fact]
+    public async Task StoppingAtTheQuestionChangesNothing()
+    {
+        using var rig = new Rig();
+        rig.Provider.Holds("Theirs");
+
+        var session = await rig.OpenAsync("Mine");
+
+        Assert.False(await rig.Connection.UseAsync(
+            TheFile(), autoSave: false, (_, _) => Task.FromResult<CloudArrival?>(null)));
+
+        Assert.Equal(["Mine"], Names(session));
+        Assert.False(rig.Connection.Connected);
+        Assert.False(rig.Router.SavesInPlace);
+        Assert.Null(rig.Preferences.Get("cloud.file"));
+
+        // Stopped, not failed. A note here would be the app reporting a decision back as a problem.
+        Assert.Null(rig.Connection.Note);
+    }
+
+    /// <summary>
+    /// The question is asked only where there is really a decision to make.
+    /// </summary>
+    /// <remarks>
+    /// Three of these would be a question with one useful answer, and the last would be a question
+    /// on every ordinary reload of a connection that is already in step - which is how a safeguard
+    /// turns into something people click past without reading.
+    /// </remarks>
+    [Fact]
+    public async Task NothingWorthAskingAboutIsNotAsked()
+    {
+        // Nothing open: there is nothing that taking the file could cost.
+        using var empty = new Rig();
+        empty.Provider.Holds("Theirs");
+        var emptySession = await empty.OpenAsync();
+        var asked = false;
+
+        Assert.True(await empty.Connection.UseAsync(TheFile(), autoSave: false, Counting()));
+        Assert.False(asked);
+        Assert.Equal(["Theirs"], Names(emptySession));
+
+        // A file holding nothing: taking it would empty the list, and the other answers all agree.
+        using var hollow = new Rig();
+        hollow.Provider.Holds();
+        var hollowSession = await hollow.OpenAsync("Mine");
+        asked = false;
+
+        Assert.True(await hollow.Connection.UseAsync(TheFile(), autoSave: false, Counting()));
+        Assert.False(asked);
+        Assert.Equal(["Mine"], Names(hollowSession));
+        Assert.True(hollowSession.HasUnwrittenFileChanges);
+
+        // And a file that already says what is open says nothing new.
+        using var same = new Rig();
+        same.Provider.Holds("Mine", "Shared");
+        var sameSession = await same.OpenAsync();
+        asked = false;
+
+        Assert.True(await same.Connection.UseAsync(TheFile(), autoSave: false, Counting()));
+        Assert.False(asked);
+
+        // Opened once, so what is in hand is now exactly the file - and reconnecting to it asks
+        // nothing, which is the case that would otherwise nag on every reload.
+        Assert.True(await same.Connection.UseAsync(TheFile(), autoSave: false, Counting()));
+        Assert.False(asked);
+
+        ArrivalQuestion Counting() => (_, _) => { asked = true; return Task.FromResult<CloudArrival?>(CloudArrival.TakeTheirs); };
+    }
+
+    /// <summary>
+    /// An answer from the provider is recognised as one whether it was yes or no.
+    /// </summary>
+    /// <remarks>
+    /// What the loop was made of. A refusal that is not recognised as a return stays in the address
+    /// and puts nothing on screen, so pressing the provider again fetches another answer onto a page
+    /// that will not read that one either.
+    /// </remarks>
+    [Theory]
+    [InlineData("https://example.invalid/?code=abc&state=xyz", true)]
+    [InlineData("https://example.invalid/?error=access_denied", true)]
+    [InlineData("https://example.invalid/?error=access_denied&error_description=no", true)]
+    [InlineData("https://example.invalid/", false)]
+    [InlineData("https://example.invalid/?something=else", false)]
+    public void AnAnswerFromTheProviderIsRecognisedEitherWay(string address, bool expected) =>
+        Assert.Equal(expected, CloudConnection.IsSignInReturn(address));
+
+    /// <summary>
+    /// A sign-in that did not finish says so, rather than leaving the page looking untouched.
+    /// </summary>
+    [Fact]
+    public async Task ASignInThatDidNotFinishSaysSo()
+    {
+        using var rig = new Rig();
+
+        // A return carrying a code this tab never asked for, which is dropped rather than spent.
+        Assert.False(await rig.Connection.CompleteSignInAsync("https://example.invalid/?code=abc&state=nope"));
+        Assert.NotNull(rig.Connection.Note);
+        Assert.Contains("did not finish", rig.Connection.Note, StringComparison.Ordinal);
+
+        // An ordinary load is not a failed anything, and has nothing to report.
+        using var plain = new Rig();
+
+        Assert.False(await plain.Connection.CompleteSignInAsync("https://example.invalid/"));
+        Assert.Null(plain.Connection.Note);
+    }
+
+    /// <summary>
+    /// Disconnecting hands what is open back to the browser rather than dropping it.
+    /// </summary>
+    /// <remarks>
+    /// Nothing mirrors a file to the browser's own copy while a host that saves in place is
+    /// connected, which is right - the file is the copy that counts. The moment that ends, though,
+    /// nothing is holding the work at all, and everything done since connecting was going with the
+    /// next reload: the merge that had just been chosen included.
+    /// </remarks>
+    [Fact]
+    public async Task DisconnectingHandsTheWorkBackToTheBrowser()
+    {
+        using var rig = new Rig();
+        rig.Provider.Holds("Shared", "Theirs");
+
+        var session = await rig.OpenAsync("Mine", "Shared");
+
+        Assert.True(await rig.Connection.UseAsync(
+            TheFile(), autoSave: false, (_, _) => Task.FromResult<CloudArrival?>(CloudArrival.MineWin)));
+
+        // The browser's copy is whatever it was before connecting: nothing mirrors to it while a
+        // host that saves in place is the one being saved to, so the merge has not reached it.
+        Assert.Equal(["Mine", "Shared"], Names(rig.Kept));
+
+        await rig.Connection.DisconnectAsync();
+
+        // And now it holds what the merge produced, so a reload finds it rather than the file
+        // that was open before any of this.
+        Assert.Equal(["Shared", "Theirs", "Mine"], Names(rig.Kept));
+        Assert.Equal(["Shared", "Theirs", "Mine"], Names(session));
+    }
+
+    /// <summary>Disconnecting leaves the row saying what is true of it afterwards.</summary>
+    [Fact]
+    public async Task DisconnectingStopsTheRowSayingSignedIn()
+    {
+        using var rig = new Rig();
+
+        Assert.True(await rig.Connection.SignedInAsync());
+        Assert.Equal("Signed in", Assert.Single(rig.Connection.Providers).Why);
+
+        Assert.True(await rig.Connection.UseAsync(TheFile()));
+        await rig.Connection.DisconnectAsync();
+
+        Assert.Null(Assert.Single(rig.Connection.Providers).Why);
     }
 
     /// <summary>The row says whether there is already a session at that provider.</summary>

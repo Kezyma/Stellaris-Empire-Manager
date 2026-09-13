@@ -291,7 +291,31 @@
     *@
     @if (_connecting)
     {
-        <CloudDialog OnClose="() => _connecting = false" ConfirmFirst="Guard.ConfirmAsync" />
+        <CloudDialog OnClose="() => _connecting = false" ConfirmFirst="Guard.ConfirmAsync"
+                     Decide="AskAboutArrival" />
+    }
+
+    @*
+        What to do with the empires already open when a connected file turns out to hold its own.
+
+        Asked only where both sides hold something and they differ, so an ordinary reload of a
+        connection that is in step is not a question. Nothing here writes: every answer decides what
+        is in front of you, and the file at the provider changes only when something saves.
+    *@
+    @if (_arriving is { } arrival)
+    {
+        <ConfirmDialog Title="@($"You already have {Count(arrival.Mine)} open.")"
+                       Message="@($"{arrival.Name} holds {Count(arrival.Theirs)}. Nothing is written "
+                                 + "to it until you save, so you can keep either side or both.")"
+                       OnDismiss="() => Arrived(null)">
+            <button type="button" @onclick="() => Arrived(null)">Cancel</button>
+            <button type="button" @onclick="() => Arrived(CloudArrival.MineWin)">Merge, mine win</button>
+            <button type="button" @onclick="() => Arrived(CloudArrival.TheirsWin)">Merge, theirs win</button>
+            <button type="button" @onclick="() => Arrived(CloudArrival.KeepMine)">Keep mine</button>
+            <button type="button" class="danger" @onclick="() => Arrived(CloudArrival.TakeTheirs)">
+                Take the file
+            </button>
+        </ConfirmDialog>
     }
 
     @if (_message is { } note)
@@ -413,6 +437,38 @@
 
     /// <summary>A file that has been read and parsed, waiting to hear what to do with it.</summary>
     private (string Name, EmpireDesignsFile File)? _importing;
+
+    /// <summary>
+    /// A connected file's empires, waiting to hear what to do with the ones already open.
+    /// </summary>
+    /// <remarks>
+    /// The answer is awaited rather than acted on afterwards, because the connection is part-way
+    /// through when it asks: it has read the file and has deliberately not touched the session yet,
+    /// and the answer is what it does next. Import does not need this - it has already finished by
+    /// the time it asks - which is why that one is a plain field and this one carries a promise.
+    /// </remarks>
+    private (int Mine, int Theirs, string Name, TaskCompletionSource<CloudArrival?> Answer)? _arriving;
+
+    /// <summary>Puts the question up, and answers the connection once something is pressed.</summary>
+    private Task<CloudArrival?> AskAboutArrival(string name, int holds)
+    {
+        var answer = new TaskCompletionSource<CloudArrival?>(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+
+        _arriving = (_session?.File?.Designs.Count ?? 0, holds, name, answer);
+        StateHasChanged();
+
+        return answer.Task;
+    }
+
+    /// <summary>Takes the question down and lets the connection carry on, or stop.</summary>
+    private void Arrived(CloudArrival? choice)
+    {
+        var waiting = _arriving?.Answer;
+
+        _arriving = null;
+        waiting?.TrySetResult(choice);
+    }
 
     /// <summary>Whether there is a file with anything in it for the whole-file buttons to act on.</summary>
     private bool Nothing => _session?.File is null || _session.File.Designs.Count == 0;
@@ -536,23 +592,34 @@
             {
                 _cloud.Changed += OnChanged;
 
-                // This load may be the way back from the provider's sign-in page. If it is, the
-                // code in the address is spent here and taken back out of it, so that a reload -
-                // or a link somebody copies out of the bar - does not carry it around.
-                if (await _cloud.CompleteSignInAsync(Navigation.Uri))
+                // Whether this load is the way back from the provider is asked separately from
+                // whether the sign-in worked, because what follows has to happen either way. Asking
+                // the one question and reading it as both is what made pressing the provider loop:
+                // a return that failed left the code in the address and put nothing on screen, so
+                // the next press fetched another code onto a page that would not spend that either.
+                var returning = CloudConnection.IsSignInReturn(Navigation.Uri);
+
+                await _cloud.CompleteSignInAsync(Navigation.Uri, AskAboutArrival);
+
+                if (returning)
                 {
+                    // Out of the address whatever came of it, so that a reload - or a link somebody
+                    // copies out of the bar - is not carrying an answer that has been spent.
                     Navigation.NavigateTo(Navigation.BaseUri, replace: true);
 
-                    // Signing in was never the errand; opening a file was. So unless coming back
-                    // reconnected to the file chosen before, the picker is put straight back up
-                    // rather than leaving somebody to find their way to it a second time.
-                    _connecting = !_cloud.Connected;
+                    // And the picker goes up, every time. Signing in was never the errand: somebody
+                    // who pressed the provider was on their way to choosing a file, and the two
+                    // endings that used to skip this - a remembered file quietly reopening, and a
+                    // sign-in that did not finish - are the two where being left on the empty page
+                    // with no way through is worst.
+                    _connecting = true;
                 }
                 else
                 {
-                    // An ordinary load. A session kept in this tab survives a reload, so the file
-                    // chosen before is picked up again without anybody being asked anything.
-                    await _cloud.ResumeAsync();
+                    // An ordinary load. A session kept in this browser survives a reload, so the
+                    // file chosen before is picked up again - asking, where what it holds and what
+                    // was restored from the last visit have gone different ways.
+                    await _cloud.ResumeAsync(AskAboutArrival);
                 }
             }
         }

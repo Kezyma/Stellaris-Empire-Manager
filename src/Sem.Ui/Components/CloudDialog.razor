@@ -17,12 +17,12 @@
          @onclick:stopPropagation="true">
 
         <h2 id="@_titleId">
-            @(Cloud.Connected ? $"Saving to {Cloud.ProviderName}"
+            @(Showing ? $"Saving to {Cloud.ProviderName}"
                 : _signedIn ? "Which file holds your empires?"
                 : "Where do you keep your empires?")
         </h2>
 
-        @if (Cloud.Connected && Cloud.Where is { } path)
+        @if (Showing && Cloud.Where is { } path)
         {
             <p>Save writes to this file in your @Cloud.ProviderName:</p>
 
@@ -34,6 +34,15 @@
                     ? "Your changes are written to it as you go, and changes made to it elsewhere are loaded back."
                     : "Changes made to it elsewhere are loaded when you come back to the list.")
             </p>
+
+            @*
+                Being connected used to be the end of the road: the only way to a different file was
+                Disconnect, which signs out of the provider as well, so changing your mind about
+                which file cost a whole sign-in.
+            *@
+            <button type="button" class="sem-inline" @onclick="Choose" disabled="@_busy">
+                Choose a different file
+            </button>
         }
         else if (!_signedIn)
         {
@@ -185,6 +194,12 @@
     private bool _searching;
     private string _query = string.Empty;
 
+    /// <summary>Whether the file browser is wanted even though a file is already connected to.</summary>
+    private bool _choosing;
+
+    /// <summary>Whether to show what is connected rather than the way to connect something.</summary>
+    private bool Showing => Cloud.Connected && !_choosing;
+
     /// <summary>Whether the file being chosen should write itself, seeded from last time.</summary>
     private bool _autoSave;
     private IReadOnlyList<CloudFile>? _found;
@@ -209,16 +224,34 @@
     [Parameter]
     public Func<Task<bool>>? ConfirmFirst { get; set; }
 
+    /// <summary>
+    /// Asked when the file being opened holds empires and there are already empires open.
+    /// </summary>
+    /// <remarks>
+    /// Handed in for the same reason as the question above: it is about the work, and the work
+    /// belongs to whatever is holding it rather than to a dialog about cloud storage.
+    /// </remarks>
+    [Parameter]
+    public ArrivalQuestion? Decide { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         Cloud.Changed += OnChanged;
         _autoSave = Cloud.AutoSaveRemembered;
         _signedIn = await Cloud.SignedInAsync();
 
-        if (_signedIn && !Cloud.Connected)
+        if (_signedIn && !Showing)
         {
             await Open();
         }
+    }
+
+    /// <summary>Goes to the file browser from the view of what is already connected.</summary>
+    private async Task Choose()
+    {
+        _choosing = true;
+
+        await Open();
     }
 
     /// <summary>Lists whatever folder the path now ends at.</summary>
@@ -338,7 +371,7 @@
 
         try
         {
-            if (await Cloud.UseAsync(file, _autoSave))
+            if (await Cloud.UseAsync(file, _autoSave, Decide))
             {
                 await Close();
             }
@@ -357,6 +390,7 @@
         {
             await Cloud.DisconnectAsync();
             _signedIn = false;
+            _choosing = false;
             _found = null;
             _here = null;
             _searching = false;

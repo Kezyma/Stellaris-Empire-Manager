@@ -371,6 +371,26 @@ public sealed partial class DesignSession
                                       : File.Designs.FirstOrDefault());
     }
 
+    /// <summary>
+    /// Says the open file no longer matches the one it came from, without changing it.
+    /// </summary>
+    /// <remarks>
+    /// For work that is owed to a file by a decision rather than by an edit. Keeping your own
+    /// empires over the ones a newly connected file holds leaves the two different, and the
+    /// difference is owed whether or not a single design was touched - so Save has to stay lit and
+    /// the list has to go on saying the file has not been written.
+    /// </remarks>
+    public void MarkFileUnwritten()
+    {
+        if (File is null)
+        {
+            return;
+        }
+
+        HasUnwrittenFileChanges = true;
+        Changed?.Invoke();
+    }
+
     /// <summary>Opens a designs file already in hand as text.</summary>
     public void LoadText(string contents, string fileName)
     {

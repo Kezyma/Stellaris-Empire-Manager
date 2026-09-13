@@ -115,6 +115,21 @@ public sealed class OneDriveAuth
     }
 
     /// <summary>
+    /// Whether this address is the provider answering, whether it said yes or no.
+    /// </summary>
+    /// <param name="address">The address the app was loaded at, query and all.</param>
+    /// <returns>True when the provider put an answer of either kind in the address.</returns>
+    /// <remarks>
+    /// Both halves count. A refusal comes back as <c>error</c> rather than <c>code</c>, and a page
+    /// that only recognises the happy one leaves the refusal sitting in the address to be handed
+    /// to the next load.
+    /// </remarks>
+    public static bool IsReturn(string address) =>
+        !string.IsNullOrWhiteSpace(address)
+        && Parsed(address) is { } query
+        && (query.ContainsKey("code") || query.ContainsKey("error"));
+
+    /// <summary>
     /// Finishes a sign-in the player has come back from, if this is that return.
     /// </summary>
     /// <param name="address">The address the app was loaded at, query and all.</param>
