@@ -760,6 +760,27 @@ export function stopWatchingAttention() {
     attentive = null;
 }
 
+/**
+ * Whether the app was launched from the home screen rather than opened in a browser.
+ *
+ * It matters for one thing and matters a great deal for it: a home-screen app on iOS keeps its own
+ * storage, separate from the browser's, and hands a navigation to another origin off to the browser
+ * rather than following it itself. A sign-in that leaves for the provider therefore comes back to
+ * the browser and not to here, where a different store is waiting with a different answer in it.
+ *
+ * navigator.standalone is iOS's own flag and the display-mode query is everyone else's.
+ *
+ * @returns {boolean} whether this is running as an installed app
+ */
+export function isStandalone() {
+    try {
+        return window.navigator.standalone === true
+            || window.matchMedia('(display-mode: standalone)').matches;
+    } catch {
+        return false;
+    }
+}
+
 function onVisibilityChanged() {
     // Caught, and not merely for tidiness: these outlive whatever set them up, so once .NET has
     // let the reference go every call rejects, and an uncaught rejection per event is a console

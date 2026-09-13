@@ -35,6 +35,19 @@ public sealed class PageAttention(IJSRuntime? js = null) : IAsyncDisposable
     public bool Attended { get; private set; } = true;
 
     /// <summary>
+    /// Whether it was launched from the home screen rather than opened in a browser.
+    /// </summary>
+    /// <remarks>
+    /// Here because it is the same kind of fact as the one above - something true of the page
+    /// rather than of anything in it - and because one thing needs it. A home-screen app on iOS
+    /// keeps its own storage and sends a navigation to another origin off to the browser instead of
+    /// following it, so a sign-in that leaves comes back somewhere else entirely. Nothing can be
+    /// done about that from here; what can be done is saying so when it happens, rather than
+    /// leaving somebody to conclude the app is simply broken.
+    /// </remarks>
+    public bool Standalone { get; private set; }
+
+    /// <summary>
     /// Raised when it comes back to the front, or the network does.
     /// </summary>
     /// <remarks>
@@ -63,6 +76,8 @@ public sealed class PageAttention(IJSRuntime? js = null) : IAsyncDisposable
             Attended = await module
                 .InvokeAsync<bool>("watchAttention", _self)
                 .ConfigureAwait(false);
+
+            Standalone = await module.InvokeAsync<bool>("isStandalone").ConfigureAwait(false);
         }
         catch (Exception ex) when (ex is JSException or JSDisconnectedException)
         {
