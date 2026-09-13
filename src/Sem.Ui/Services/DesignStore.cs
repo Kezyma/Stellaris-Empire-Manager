@@ -13,6 +13,18 @@ namespace Sem.Ui.Services;
 /// </remarks>
 public interface IDesignStore
 {
+    /// <summary>
+    /// Whether this store keeps anything, so that nothing is serialised for one that does not.
+    /// </summary>
+    /// <remarks>
+    /// Asked instead of asking where saves go, which is a different question that happened to have
+    /// the same answer while there were only two hosts. A browser connected to a file at a cloud
+    /// provider saves in place and still needs its own copy: that copy is what a reload restores
+    /// before anything has been fetched, and leaving it behind meant the reload brought back the
+    /// empires from before the connection and asked about them all over again.
+    /// </remarks>
+    bool Keeps => false;
+
     /// <summary>The designs file kept from a previous visit, if there is one.</summary>
     Task<string?> ReadAsync() => Task.FromResult<string?>(null);
 
@@ -41,6 +53,9 @@ public sealed class BrowserDesignStore(IJSRuntime js) : IDesignStore, IAsyncDisp
 
     private readonly IJSRuntime _js = js ?? throw new ArgumentNullException(nameof(js));
     private Task<IJSObjectReference>? _module;
+
+    /// <inheritdoc />
+    public bool Keeps => true;
 
     /// <inheritdoc />
     public async Task<string?> ReadAsync()

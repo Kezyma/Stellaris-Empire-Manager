@@ -135,6 +135,11 @@ public sealed class CloudConnectionTests
     {
         public string? Kept { get; private set; }
 
+        public bool Keeps => true;
+
+        /// <summary>Starts this one holding what another visit left, for a test of a second load.</summary>
+        public void Restore(string kept) => Kept = kept;
+
         public Task<string?> ReadAsync() => Task.FromResult(Kept);
 
         public Task<bool> WriteAsync(string contents)
@@ -629,35 +634,76 @@ public sealed class CloudConnectionTests
     }
 
     /// <summary>
-    /// Disconnecting hands what is open back to the browser rather than dropping it.
+    /// The browser's own copy follows what is open, connected or not.
     /// </summary>
     /// <remarks>
-    /// Nothing mirrors a file to the browser's own copy while a host that saves in place is
-    /// connected, which is right - the file is the copy that counts. The moment that ends, though,
-    /// nothing is holding the work at all, and everything done since connecting was going with the
-    /// next reload: the merge that had just been chosen included.
+    /// It used to stop the moment a file at a provider was connected, on the grounds that the file
+    /// is the copy that counts. That is true of the desktop and false here: the browser's copy is
+    /// what the next reload has in hand before anything has been fetched, so leaving it behind
+    /// meant a reload brought back the empires from before the connection - and, now that arriving
+    /// is a question, asked about them all over again on every single load.
     /// </remarks>
     [Fact]
-    public async Task DisconnectingHandsTheWorkBackToTheBrowser()
+    public async Task TheBrowsersCopyFollowsWhatIsOpenEvenWhileConnected()
     {
         using var rig = new Rig();
         rig.Provider.Holds("Shared", "Theirs");
 
         var session = await rig.OpenAsync("Mine", "Shared");
 
+        Assert.Equal(["Mine", "Shared"], Names(rig.Kept));
+
         Assert.True(await rig.Connection.UseAsync(
             TheFile(), autoSave: false, (_, _) => Task.FromResult<CloudArrival?>(CloudArrival.MineWin)));
 
-        // The browser's copy is whatever it was before connecting: nothing mirrors to it while a
-        // host that saves in place is the one being saved to, so the merge has not reached it.
-        Assert.Equal(["Mine", "Shared"], Names(rig.Kept));
+        // Kept while connected, so a reload finds the merge rather than what preceded it.
+        Assert.Equal(["Shared", "Theirs", "Mine"], Names(rig.Kept));
 
         await rig.Connection.DisconnectAsync();
 
-        // And now it holds what the merge produced, so a reload finds it rather than the file
-        // that was open before any of this.
         Assert.Equal(["Shared", "Theirs", "Mine"], Names(rig.Kept));
         Assert.Equal(["Shared", "Theirs", "Mine"], Names(session));
+    }
+
+    /// <summary>
+    /// Taking the file sticks, so the next load does not undo it and ask again.
+    /// </summary>
+    /// <remarks>
+    /// The whole round trip of the bug this fixes: take the file, reload, and what came back was
+    /// the empires from before with the question on top of them - because the browser's copy had
+    /// never been told, so the reload restored it and then found it differed from the file.
+    /// </remarks>
+    [Fact]
+    public async Task TakingTheFileSurvivesTheNextLoad()
+    {
+        using var rig = new Rig();
+        rig.Provider.Holds("Shared", "Theirs");
+
+        await rig.OpenAsync("Mine", "Shared");
+
+        Assert.True(await rig.Connection.UseAsync(
+            TheFile(), autoSave: false, (_, _) => Task.FromResult<CloudArrival?>(CloudArrival.TakeTheirs)));
+
+        Assert.Equal(["Shared", "Theirs"], Names(rig.Kept));
+
+        // A second visit: a new session restored from that copy, reconnecting to the same file.
+        using var next = new Rig();
+        next.Provider.Holds("Shared", "Theirs");
+        next.Kept.Restore(rig.Kept.Kept!);
+        next.Preferences.Set("cloud.file", rig.Preferences.Get("cloud.file")!);
+
+        var restored = await next.OpenAsync();
+        var asked = false;
+
+        Assert.True(await next.Connection.ResumeAsync((_, _) =>
+        {
+            asked = true;
+
+            return Task.FromResult<CloudArrival?>(CloudArrival.TakeTheirs);
+        }));
+
+        Assert.False(asked);
+        Assert.Equal(["Shared", "Theirs"], Names(restored));
     }
 
     /// <summary>Disconnecting leaves the row saying what is true of it afterwards.</summary>

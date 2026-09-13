@@ -448,11 +448,9 @@ public sealed class CloudConnection : IDisposable
         _connected?.Dispose();
         _connected = null;
 
-        // What is open belonged to the file while the connection lasted, and belongs to nobody the
-        // moment it ends. The browser keeps no copy of a file for a host that saves in place, so
-        // everything done since connecting - including whichever way the arrival question was
-        // answered - would go with the next reload. Written back now that the browser is holding it
-        // again, and after the router has been switched, because that is what decides where it goes.
+        // Settled rather than left to the change notification that keeps the browser's copy in
+        // step, because that one is deliberately not awaited and this is the last moment anything
+        // will fire. A tab closed straight after disconnecting would otherwise be racing it.
         await _host.RememberAsync().ConfigureAwait(false);
 
         _preferences.Set(ChosenKey, string.Empty);

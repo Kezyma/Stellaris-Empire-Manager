@@ -82,6 +82,8 @@ public sealed class SessionHostTests
 
         public sealed class Store(Browser owner) : IDesignStore
         {
+            public bool Keeps => true;
+
             public Task<string?> ReadAsync() => Task.FromResult<string?>(null);
 
             public Task<bool> WriteAsync(string contents)
@@ -122,6 +124,8 @@ public sealed class SessionHostTests
     /// <summary>A store that already holds a file, and says whether anything wrote over it.</summary>
     private sealed class Holding(string contents) : IDesignStore
     {
+        public bool Keeps => true;
+
         public string Contents { get; private set; } = contents;
 
         public int Writes { get; private set; }
@@ -139,6 +143,8 @@ public sealed class SessionHostTests
     /// <summary>A store holding nothing, which is what a browser that has not been used yet is.</summary>
     private sealed class Empty : IDesignStore
     {
+        public bool Keeps => true;
+
         public int Writes { get; private set; }
 
         public Task<string?> ReadAsync() => Task.FromResult<string?>(null);

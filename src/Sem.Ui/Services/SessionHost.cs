@@ -161,12 +161,16 @@ public sealed class SessionHost(
     ///
     /// Not awaited: this runs from a change notification during a render, and a save that takes a
     /// moment must not hold one up. Failures are the store's own business — nobody asked for this
-    /// one, so nobody is waiting to be told. The desktop keeps nothing here, since the player's real
-    /// file is the one copy and it is written when they say so.
+    /// one, so nobody is waiting to be told.
+    ///
+    /// Whether to keep anything is the store's to answer. The desktop registers none, because the
+    /// player's real file is the one copy and a second would be a second source of truth; a browser
+    /// keeps one whether it is saving into local storage or into a file at a provider, because
+    /// either way that copy is what the next reload has before it has fetched anything.
     /// </remarks>
     private void Keep(DesignSession session)
     {
-        if (!_files.SavesInPlace && session.Save() is { } bytes)
+        if (_store.Keeps && session.Save() is { } bytes)
         {
             _ = _store.WriteAsync(Kept.Encode(bytes));
         }
@@ -264,7 +268,9 @@ public sealed class SessionHost(
             return "There is nothing open to keep.";
         }
 
-        if (_files.SavesInPlace)
+        // The store's question, not the exchange's, for the reason Keep gives: a browser saving to
+        // a file at a provider still wants its own copy of what it just wrote.
+        if (!_store.Keeps)
         {
             return null;
         }
