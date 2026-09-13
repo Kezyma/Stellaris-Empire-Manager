@@ -7,9 +7,14 @@ for what every choice does.
 
 ## Your file stays yours
 
-Nothing is uploaded. Your designs file is read inside the browser tab and never leaves it; Export
-hands it back to you as a download. The site has no account, no server and nowhere to put your
-empires other than your own machine.
+There is no account to make here and no server of ours behind it. By default nothing is uploaded at
+all: your designs file is read inside the browser tab and never leaves it, and Export hands it back
+to you as a download.
+
+The one exception is yours to switch on. If you keep your designs file in OneDrive, **Cloud** can
+open it where it already sits, and then the site reads and writes that one file in your own
+storage - see [Working from OneDrive](#working-from-onedrive). Nothing is sent anywhere until you
+sign in and pick a file, and disconnecting ends it.
 
 Your file lives here:
 
@@ -75,6 +80,29 @@ need nothing.
 Keep a copy of anything you would be sorry to lose. The site writes only the file you pick in that
 dialog and nothing else, but it cannot keep the old version aside for you the way a desktop program
 would.
+
+## Working from OneDrive
+
+Windows redirects Documents into OneDrive on a great many machines, which means the designs file is
+often already there. Where it is, **Cloud** in the header opens it in place and Export becomes
+**Save**: no dialog, no download, no moving a file out of Downloads afterwards.
+
+Press **Cloud**, sign in to OneDrive, and browse to your file - it will be under
+`Documents\Paradox Interactive\Stellaris` inside whichever folder OneDrive keeps for your PC. Tick
+**Write my changes to it as I go** if you want saving to happen by itself. The site remembers the
+file, so the next visit opens it without asking.
+
+Two things worth knowing before you do:
+
+- **OneDrive cannot grant access to one file.** Its permission screen asks for your files in
+  general, because Microsoft offers nothing narrower to a personal account. This site only ever
+  touches the file you pick; the grant is simply wider than the use. **Disconnect** ends it.
+- **The desktop sees your changes when OneDrive brings them down**, which is seconds to minutes,
+  not instantly. Editing the same file in two places at once is how you get the conflict copies
+  OneDrive names after your PC.
+
+If the file changes somewhere else while you are editing, nothing is written over it - the site says
+so and leaves your work in hand.
 
 ## Sharing an empire
 

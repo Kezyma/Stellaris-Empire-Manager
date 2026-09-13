@@ -189,11 +189,23 @@ public sealed class OneDriveAuth
     }
 
     /// <summary>Forgets the session, here and in the tab. Microsoft is not told, and need not be.</summary>
+    /// <remarks>
+    /// The half-finished sign-in goes too. A player who leaves for the provider and comes back by
+    /// the back button leaves a verifier and a state behind them, and nothing clears those but the
+    /// return leg that never ran - so they sat in storage until the next sign-in replaced them.
+    /// Neither is much use to anyone on its own, since redeeming a code needs the code as well and
+    /// those are short-lived and single-use. But "disconnect" should mean there is nothing left,
+    /// and a stored value that outlives what it was for is the kind of thing that is only ever
+    /// found later.
+    /// </remarks>
     public async Task SignOutAsync()
     {
         _token = null;
         _expires = default;
+
         await _session.WriteAsync(RefreshKey, null).ConfigureAwait(false);
+        await _session.WriteAsync(VerifierKey, null).ConfigureAwait(false);
+        await _session.WriteAsync(StateKey, null).ConfigureAwait(false);
     }
 
     private async Task<bool> RedeemAsync(Dictionary<string, string> form)

@@ -99,6 +99,32 @@ public sealed class OneDriveAuthTests
         Assert.Contains("code_challenge_method=S256", address, StringComparison.Ordinal);
     }
 
+    /// <summary>
+    /// Signing out leaves nothing behind, including from a sign-in that never finished.
+    /// </summary>
+    /// <remarks>
+    /// The abandoned one is the case worth pinning. Leaving for the provider and coming back by the
+    /// back button skips the only code that clears the verifier and the state, so before this they
+    /// outlived the session they belonged to and sat in storage until the next sign-in.
+    /// </remarks>
+    [Fact]
+    public async Task SigningOutLeavesNothingBehindEvenFromASignInThatNeverFinished()
+    {
+        var (auth, _, session) = Built();
+
+        await auth.BeginAsync();
+
+        Assert.NotNull(await session.ReadAsync("sem.cloud.verifier"));
+        Assert.NotNull(await session.ReadAsync("sem.cloud.state"));
+
+        await auth.SignOutAsync();
+
+        Assert.Null(await session.ReadAsync("sem.cloud.verifier"));
+        Assert.Null(await session.ReadAsync("sem.cloud.state"));
+        Assert.Null(await session.ReadAsync("sem.cloud.refresh"));
+        Assert.False(await auth.SignedInAsync());
+    }
+
     /// <summary>And the rest of what a sign-in needs, in the address rather than anywhere else.</summary>
     [Fact]
     public async Task TheAddressSaysWhoIsAskingAndWhereToComeBack()

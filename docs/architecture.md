@@ -15,9 +15,9 @@ project is for, which way the arrows point, and why three decisions that look od
 | `Sem.Assets` | 600 | Decoding the game's textures and writing PNGs. |
 | `Sem.MeshBake` | 1,491 | Turning the game's meshes into flat pictures. |
 | `Sem.Extraction` | 9,541 | Reading an installation and producing the database, the text and the artwork. |
-| `Sem.Ui` | 23,720 | The designer itself: every component, and the services behind them. |
+| `Sem.Ui` | 26,888 | The designer itself: every component, and the services behind them. |
 | `Sem.Cli` | 936 | The extractor as a command, which is how the committed data is made. |
-| `Sem.Web` | 37 | The browser host. A `Program.cs` and nothing else. |
+| `Sem.Web` | 79 | The browser host. A `Program.cs` and nothing else. |
 | `Sem.Desktop` | 890 | The WPF host: finds the game, extracts if it must, and shows the same designer in an embedded browser. |
 
 ## The one rule
@@ -59,8 +59,8 @@ the rest for both.
 |---|---|---|
 | Game data | Fetched over HTTP from the published site | Read off disk, from a cache it extracted itself |
 | Images | Fetched from the site | Served through a WebView2 virtual host |
-| The designs file | A save dialog; the player chooses | The player's real file, replaced in place after a question |
-| Between visits | Kept in browser storage | Not kept - the player's file is the copy that counts |
+| The designs file | A save dialog; the player chooses. Or one file at OneDrive, once connected to | The player's real file, replaced in place after a question |
+| Between visits | Kept in browser storage, and the cloud file reopened where one was chosen | Not kept - the player's file is the copy that counts |
 | Content packs | All of them assumed | Only the ones actually installed |
 
 Two consequences worth knowing before changing either.
@@ -70,8 +70,15 @@ Two consequences worth knowing before changing either.
 renderer makes. A managed `HttpClient` in the host process never goes near it. Data is read from
 disk; only images, which the *page* fetches, go through the mapping.
 
-**The web cannot write anywhere but a dialog.** Everything else is the same designer, so a change
-that assumes a file system will compile and then fail in a tab.
+**The web cannot write anywhere but a dialog, or a file it has been connected to.** Everything else
+is the same designer, so a change that assumes a file system will compile and then fail in a tab.
+
+Where a save goes is therefore no longer fixed for the visit. `Sem.Web` registers a
+`FileExchangeRouter` as its one `IFileExchange` and everything downstream keys off that interface -
+whether Save is called Save or Export, whether replacing the file asks first, whether the sync
+switch does anything. Connecting swaps what the router forwards to and raises an event; nothing
+else is rebuilt. See [cloud-setup.md](cloud-setup.md) for the registration a provider needs, and
+why a public client can commit its client id.
 
 ## Why the extracted data is committed
 
@@ -96,6 +103,8 @@ exactly one extra folder, the one its designs file is in, and nothing else. See
 
 ## The other pages here
 
+- [cloud-setup.md](cloud-setup.md) - registering the app with a provider, and why the identifier it
+  commits is not a credential.
 - [empire-flags.md](empire-flags.md) - the two unrelated things the game calls a flag.
 - [flag-colours.md](flag-colours.md) - what each of the six colour slots actually paints.
 - [hidden-content.md](hidden-content.md) - what the game defines but never offers.

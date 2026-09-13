@@ -882,9 +882,26 @@
                     _message = null;
                     break;
 
+                // Two quite different things, told apart by whether this host writes the file
+                // itself. A browser that would not open its save dialog has still handed the work
+                // over, so there is a file and the sentence says where it went. A host that writes
+                // in place has not: nothing was downloaded and nothing was written, and telling
+                // somebody their file had arrived would be a plain untruth about work still at
+                // risk - which is why the second of these is a problem and the first is not.
                 case SaveOutcome.Refused:
-                    _message = ($"This browser would not open a save dialog, so {name} was downloaded "
-                        + "instead. Move it into your Stellaris folder for the game to find it.", false);
+                    _message = Files.SavesInPlace
+                        ? ($"{name} could not be written, and nothing was downloaded instead. "
+                            + "Your empires are still here - export them to a file to be sure of them.", true)
+                        : ($"This browser would not open a save dialog, so {name} was downloaded "
+                            + "instead. Move it into your Stellaris folder for the game to find it.", false);
+                    break;
+
+                // The one failure with a button behind it, so it says which button. Worded as the
+                // sync says it, because they are the same event reached two ways and somebody who
+                // meets both should not have to work out that they mean the same thing.
+                case SaveOutcome.SignedOut:
+                    _message = ("Your cloud sign-in has ended, so nothing was written. "
+                        + "Connect again to carry on saving there.", true);
                     break;
 
                 // Not a failure to save: the file moved on since it was read, and writing would
