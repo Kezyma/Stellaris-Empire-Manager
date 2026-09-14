@@ -1,7 +1,7 @@
 {
   "schemaVersion": 17,
   "gameVersion": "v4.5.0",
-  "extractorVersion": "0.1.0\u002Bc4d3475232b9",
+  "extractorVersion": "0.1.0\u002B42b41976ecc8",
   "installFingerprint": "4c524a20ddb52a8f",
   "defines": {
     "ethicsPoints": 3,
@@ -164248,7 +164248,7 @@
       "fallback": "mammalian_01",
       "hasCityArt": false,
       "cityLayers": [],
-      "shipPreview": "ships/mammalian_01/corvette.png",
+      "shipPreview": "ships/pirate_01/pirate_corvette.png",
       "nameKey": "PIRATE_01",
       "descriptionKey": "pirate_01_shipset_desc"
     },
@@ -164292,7 +164292,7 @@
           "maxPop": 4
         }
       ],
-      "shipPreview": "ships/mammalian_01/corvette.png",
+      "shipPreview": "ships/ai_01/large_ship_ai.png",
       "nameKey": "AI_01",
       "descriptionKey": "ai_01_shipset_desc"
     },
@@ -164355,7 +164355,7 @@
         }
       ],
       "shipCategory": "default_ship",
-      "shipPreview": "ships/mammalian_01/corvette.png",
+      "shipPreview": "ships/fallen_empire_01/massive_ship_fallen_empire.png",
       "nameKey": "FALLEN_EMPIRE_01",
       "descriptionKey": "fallen_empire_01_shipset_desc"
     },
@@ -164555,7 +164555,7 @@
         }
       ],
       "shipCategory": "default_ship",
-      "shipPreview": "ships/mammalian_01/corvette.png",
+      "shipPreview": "ships/fallen_machine_empire_01/massive_ship_fallen_empire.png",
       "nameKey": "FALLEN_MACHINE_EMPIRE_01",
       "descriptionKey": "fallen_machine_empire_01_shipset_desc"
     },
@@ -164582,7 +164582,7 @@
       "fallback": "mammalian_01",
       "hasCityArt": false,
       "cityLayers": [],
-      "shipPreview": "ships/mammalian_01/corvette.png",
+      "shipPreview": "ships/swarm_01/large_ship_swarm.png",
       "nameKey": "SWARM_01",
       "descriptionKey": "swarm_01_shipset_desc"
     },
@@ -164595,7 +164595,7 @@
       "fallback": "mammalian_01",
       "hasCityArt": false,
       "cityLayers": [],
-      "shipPreview": "ships/mammalian_01/corvette.png",
+      "shipPreview": "ships/extra_dimensional_01/dimensional_portal_ed.png",
       "nameKey": "EXTRA_DIMENSIONAL_01",
       "descriptionKey": "extra_dimensional_01_shipset_desc"
     },
@@ -165239,7 +165239,7 @@
         }
       ],
       "shipCategory": "bio_ship",
-      "shipPreview": "ships/mammalian_01/corvette.png",
+      "shipPreview": "ships/biogenesis_02/mauler_stage_1.png",
       "nameKey": "BIOGENESIS_02",
       "descriptionKey": "biogenesis_02_shipset_desc"
     },
@@ -165289,7 +165289,7 @@
         }
       ],
       "shipCategory": "bio_ship",
-      "shipPreview": "ships/mammalian_01/corvette.png",
+      "shipPreview": "ships/biogenesis_01/mauler_stage_1.png",
       "nameKey": "BIOGENESIS_01",
       "descriptionKey": "biogenesis_01_shipset_desc"
     },

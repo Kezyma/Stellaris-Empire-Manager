@@ -7366,6 +7366,41 @@ button.icon.ended {
 .sem-wiki-step + .sem-wiki-step { padding-top: var(--space-sm); }
 
 /*
+   A ship, which is not a scene and must not be framed like one.
+
+   .sem-detail-picture is the game's own origin frame - 216 by 115, cropped to fill, pinned to the top
+   left - because that is what the game does with origin art and what the designer's panel is sized
+   around. A ship render is 320 by 200 on a transparent ground, so that frame took fifteen per cent
+   off the bottom of every hull. Contained rather than cropped, at the render's own shape: the ground
+   is transparent, so there are no bars to show.
+*/
+.sem-detail-picture.ship {
+    aspect-ratio: 320 / 200;
+    object-fit: contain;
+    object-position: center;
+}
+
+/*
+   And a tile wide enough to hold one.
+
+   The 52-pixel square is the portrait picker's, which is right for a face and took a fifth off each
+   end of a ship - its nose and its engines, which are most of what tells one set from another.
+
+   Through the button, because the panel behind each tile holds the same picture again and is inside
+   the same gallery. Written as ".sem-wiki-gallery.ship img" this reached that one too, and being a
+   class more specific than .sem-portrait-detail img it won - so every popover opened at thumbnail
+   size. The rule it sits beside gets away with naming img alone only because it ties on specificity
+   and loses on order.
+*/
+.sem-wiki-gallery.ship { grid-template-columns: repeat(auto-fill, 84px); }
+
+.sem-wiki-gallery.ship button > img {
+    width: 84px;
+    height: 52px;
+    object-fit: contain;
+}
+
+/*
    Copy a link to this one entry.
 
    Quiet until it is wanted. It sits on every card and every row of a three-hundred-row table, so at

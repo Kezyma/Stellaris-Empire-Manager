@@ -153,7 +153,7 @@ else
         else if (_listView)
         {
             <WikiTable Rows="@Narrowed" All="@Rows" Noun="@Noun" Kind="@Kind"
-                       Picture="@_shelf!.Picture" Icons="@_icons"
+                       Picture="@_shelf!.Picture" Icons="@_icons" Shape="@_shelf!.Shape"
                        Chosen="@_chosen" OnChoose="Choose" />
         }
         else
@@ -162,7 +162,8 @@ else
                 @foreach (var row in Narrowed)
                 {
                     <WikiCard Row="@row" Chosen="@(row.Steps.Any(s => s.Key == _chosen))"
-                              Icons="@_icons" Link="@WikiLinks.Entry(Kind, row.Key)"
+                              Icons="@_icons" Shape="@_shelf!.Shape"
+                              Link="@WikiLinks.Entry(Kind, row.Key)"
                               OnChoose="() => Choose(row)" />
                 }
             </div>

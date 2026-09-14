@@ -61,6 +61,9 @@ public sealed class ShipBaker(LayeredContent content, SafeFile file)
     /// <summary>And where it states the pieces each of the sectioned ones is made of.</summary>
     private const string SectionRoot = "common/section_templates";
 
+    /// <summary>The suffix every entity name carries.</summary>
+    private const string EntitySuffix = "_entity";
+
     private readonly LayeredContent _content = content ?? throw new ArgumentNullException(nameof(content));
     private readonly SafeFile _file = file ?? throw new ArgumentNullException(nameof(file));
     private readonly ModelRenderer _renderer = new();
@@ -110,18 +113,39 @@ public sealed class ShipBaker(LayeredContent content, SafeFile file)
         {
             var flown = new List<ShipRender>();
 
-            foreach (var ship in classes)
+            // Its own classes first, then the ones anybody builds - because whether it has a fleet of
+            // its own decides whether it may borrow for the rest.
+            var mine = classes.Where(c => c.Cultures.Contains(set.Key)).ToList();
+
+            // Under its own name first. A class drawn by another's entity is that other class under a
+            // second name - a bio titan is the titan - and whichever is reached first is the one the
+            // gallery is labelled with, so the canonical one has to be reached first. Read in file
+            // order, 00_biogenesis came before 00_ship_sizes and every set called its titan a bio
+            // titan.
+            var anyone = classes
+                .Where(c => c.Cultures.Count == 0)
+                .OrderBy(c => string.Equals(c.Key, c.Stem, StringComparison.Ordinal) ? 0 : 1);
+
+            var owns = mine.Any(c => Modelled(set.Key, c, sections).Count > 0);
+
+            // What this set has already been drawn flying, so a class that is another class under a
+            // second name is not drawn twice: a bio titan is the titan's entity exactly, and the
+            // game shows both in its browser.
+            var already = new HashSet<string>(StringComparer.Ordinal);
+
+            foreach (var ship in mine.Concat(anyone))
             {
-                if (HullOf(set, ship, sections, byKey) is not { } hull)
+                if (HullOf(set, ship, sections, byKey, borrows: !owns) is not { } hull ||
+                    !already.Add(string.Join('|', hull.Meshes)))
                 {
                     continue;
                 }
 
                 var destination = $"ships/{hull.Owner}/{ship.Key}.png";
 
-                if (drawn.TryGetValue(destination, out var already))
+                if (drawn.TryGetValue(destination, out var done))
                 {
-                    if (already.Length > 0)
+                    if (done.Length > 0)
                     {
                         flown.Add(new ShipRender(hull.Owner, ship.Key, destination));
                     }
@@ -175,20 +199,45 @@ public sealed class ShipBaker(LayeredContent content, SafeFile file)
     }
 
     /// <summary>
-    /// A ship class the game's own browser shows, and the sections it is built from.
+    /// A ship class worth drawing, and how the game puts one together.
     /// </summary>
     /// <param name="Key">The ship size's key, such as <c>battleship</c>.</param>
     /// <param name="Slots">Which slots it has, in the order the game lists them.</param>
-    private sealed record ShipClassShape(string Key, IReadOnlyList<string> Slots);
+    /// <param name="Stem">
+    /// What its entity is called, before the set's name is put in front of it. Its own key for almost
+    /// every class; three say otherwise - a frigate is drawn by the corvette's entity, a bio titan by
+    /// the titan's, a habitat by <c>habitat_phase_03</c> - and assuming the key found none of them.
+    /// </param>
+    /// <param name="Cultures">
+    /// The sets this class belongs to, or none where it belongs to all of them. The game states this
+    /// itself, and it is the difference between a class every empire builds and one the Unbidden
+    /// build: <c>large_ship_ed</c> names the three extradimensional cultures and nobody else.
+    /// </param>
+    private sealed record ShipClassShape(
+        string Key,
+        IReadOnlyList<string> Slots,
+        string Stem,
+        IReadOnlySet<string> Cultures);
 
     /// <summary>
-    /// Which ships to draw, which is the ones the game shows in its own browser.
+    /// Which ships to draw.
     /// </summary>
     /// <remarks>
-    /// <c>enable_3dview_in_ship_browser</c> is the flag the picker's spinner reads, and eighteen
-    /// sizes carry it. Read rather than listed here, so a patch that adds a class adds it to the
-    /// page - and because the same block states the slots, which is how the sectioned ones are
-    /// found.
+    /// <para>
+    /// Two kinds, and the game tells them apart itself. The ones anybody builds are the ones its own
+    /// picker spins - <c>enable_3dview_in_ship_browser</c> is the flag its spinner reads, and
+    /// eighteen sizes carry it. The rest belong to particular sets, which they say by naming them in
+    /// <c>graphical_culture</c>: a hundred and eighty-three sizes across twenty-six sets, which is
+    /// the Unbidden, the Contingency, the swarm, the fallen empires, the pirates and the guardians.
+    /// </para>
+    /// <para>
+    /// Reading only the browser's flag drew the Unbidden as mammalians - a set whose own ships are
+    /// an Escort, a Cruiser, a Battleship, a Void Shaper and a Dimensional Portal, shown flying a
+    /// corvette it has never built.
+    /// </para>
+    /// <para>
+    /// A size with no slots is not drawable and is left out either way.
+    /// </para>
     /// </remarks>
     /// <returns>The classes, in the order the game declares them.</returns>
     private IReadOnlyList<ShipClassShape> ShipClasses()
@@ -201,9 +250,7 @@ public sealed class ShipBaker(LayeredContent content, SafeFile file)
 
             foreach (var size in document.Nodes)
             {
-                if (size.Key is not { Length: > 0 } key ||
-                    size.Block is not { } body ||
-                    !body.GetBool("enable_3dview_in_ship_browser"))
+                if (size.Key is not { Length: > 0 } key || size.Block is not { } body)
                 {
                     continue;
                 }
@@ -213,11 +260,64 @@ public sealed class ShipBaker(LayeredContent content, SafeFile file)
                     .Where(k => k.Length > 0)
                     .ToList() ?? [];
 
-                classes.Add(new ShipClassShape(key, slots));
+                var cultures = body.GetList("graphical_culture")
+                    .Select(v => v.Trim('"'))
+                    .Where(v => v.Length > 0)
+                    .ToHashSet(StringComparer.Ordinal);
+
+                if (slots.Count == 0 ||
+                    (cultures.Count == 0 && !body.GetBool("enable_3dview_in_ship_browser")))
+                {
+                    continue;
+                }
+
+                var stem = body.GetString("entity") is { Length: > 0 } entity
+                    ? Stem(entity)
+                    : key;
+
+                classes.Add(new ShipClassShape(key, slots, stem, cultures));
             }
         }
 
         return classes;
+    }
+
+    /// <summary>
+    /// What one of a class's sections is drawn by, under either spelling the game uses.
+    /// </summary>
+    /// <remarks>
+    /// A section template almost always names its entity without the set in front of it -
+    /// <c>battleship_bow_XL1_entity</c> - and the game puts the set there, which is what lets one
+    /// template serve fifty-two sets. The handful written for one set only are spelt out in full
+    /// instead: the Unbidden's warships are <c>extra_dimensional_01_warship_small_entity</c>, and
+    /// prefixing that gave the set's name twice and found nothing, so they were drawn as mammalians.
+    /// </remarks>
+    /// <param name="flown">What this set's entities draw.</param>
+    /// <param name="key">The set.</param>
+    /// <param name="entity">The entity the template names.</param>
+    /// <returns>The mesh, or null where neither spelling is one of this set's.</returns>
+    private static string? Section(
+        IReadOnlyDictionary<string, string> flown,
+        string key,
+        string entity)
+    {
+        var stem = Stem(entity);
+
+        return flown.GetValueOrDefault($"{key}_{stem}{EntitySuffix}") is { Length: > 0 } prefixed
+            ? prefixed
+            : flown.GetValueOrDefault($"{stem}{EntitySuffix}");
+    }
+
+    /// <summary>The name an entity is known by, without the suffix every one of them carries.</summary>
+    /// <param name="entity">The entity name, quoted or not.</param>
+    /// <returns>The stem.</returns>
+    private static string Stem(string entity)
+    {
+        var trimmed = entity.Trim('"');
+
+        return trimmed.EndsWith(EntitySuffix, StringComparison.Ordinal)
+            ? trimmed[..^EntitySuffix.Length]
+            : trimmed;
     }
 
     /// <summary>
@@ -239,20 +339,29 @@ public sealed class ShipBaker(LayeredContent content, SafeFile file)
 
             foreach (var template in document.Nodes.Where(n => n.Key == "ship_section_template"))
             {
+                // Every value of both, not the first. A template may fit several sizes and several
+                // slots and says so by repeating the key, and every starbase module does: each lists
+                // starbase_outpost and slot "1" first, so reading one value filed all of them under
+                // that pair and left the citadel's other six slots with nothing in them at all.
                 if (template.Block is not { } body ||
-                    body.GetString("ship_size") is not { Length: > 0 } size ||
-                    body.GetString("fits_on_slot") is not { Length: > 0 } slot ||
                     body.GetString("entity") is not { Length: > 0 } entity)
                 {
                     continue;
                 }
 
-                if (!found.TryGetValue((size, slot), out var list))
+                foreach (var size in body.GetStrings("ship_size").Where(v => v.Length > 0))
                 {
-                    found[(size, slot)] = list = [];
-                }
+                    foreach (var slot in body.GetStrings("fits_on_slot").Select(v => v.Trim('"'))
+                                 .Where(v => v.Length > 0))
+                    {
+                        if (!found.TryGetValue((size, slot), out var list))
+                        {
+                            found[(size, slot)] = list = [];
+                        }
 
-                list.Add(entity);
+                        list.Add(entity);
+                    }
+                }
             }
         }
 
@@ -270,15 +379,30 @@ public sealed class ShipBaker(LayeredContent content, SafeFile file)
     /// What to draw for one class of ship in one set, following the fallbacks until something has it.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// A set that models no ships at all flies its fallback's, which is what the game does and what
     /// the page says beside it. Walking the chain here rather than giving up means those sets have a
     /// gallery, and pointing at the owner's pictures means it costs nothing to draw.
+    /// </para>
+    /// <para>
+    /// A set with a fleet of its own does not borrow, which is what <paramref name="borrows"/> is
+    /// for. The Unbidden model an Escort, a Cruiser, a Battleship, a Void Shaper and a Dimensional
+    /// Portal, and they have never built a corvette - so filling the corvette from the fallback put
+    /// a mammalian hull on their page and called it theirs.
+    /// </para>
     /// </remarks>
+    /// <param name="set">The set to draw for.</param>
+    /// <param name="ship">The class.</param>
+    /// <param name="sections">What each class's slots are drawn by.</param>
+    /// <param name="sets">Every set, so the fallbacks can be followed.</param>
+    /// <param name="borrows">Whether this set may fly somebody else's ships.</param>
+    /// <returns>The meshes and who owns them, or nothing.</returns>
     private ShipHull? HullOf(
         GraphicalCultureDefinition set,
         ShipClassShape ship,
         IReadOnlyDictionary<(string Size, string Slot), IReadOnlyList<string>> sections,
-        IReadOnlyDictionary<string, GraphicalCultureDefinition> sets)
+        IReadOnlyDictionary<string, GraphicalCultureDefinition> sets,
+        bool borrows = true)
     {
         var seen = new HashSet<string>(StringComparer.Ordinal);
 
@@ -289,7 +413,9 @@ public sealed class ShipBaker(LayeredContent content, SafeFile file)
                 return new ShipHull(current.Key, meshes);
             }
 
-            current = current.Fallback is { Length: > 0 } next ? sets.GetValueOrDefault(next) : null;
+            current = borrows && current.Fallback is { Length: > 0 } next
+                ? sets.GetValueOrDefault(next)
+                : null;
         }
 
         return null;
@@ -317,6 +443,18 @@ public sealed class ShipBaker(LayeredContent content, SafeFile file)
     /// <c>molluscoid_01_corvette_frame_mesh</c> - so treating a one-slot ship as its entity's mesh
     /// drew nothing at all for four classes across every set.
     /// </para>
+    /// <para>
+    /// Not every slot is structure, and the game says which by what it calls them. A slot with a name
+    /// - bow, mid, stern, core, ship, part1 - is part of the hull and is modelled in place. A slot
+    /// called <c>"1"</c> through <c>"6"</c> is a hardpoint a player hangs a module on, modelled about
+    /// its own origin: drawing a citadel's six gave a heap of turrets stacked on one another rather
+    /// than a starbase. So numbered slots are left out.
+    /// </para>
+    /// <para>
+    /// Of the rest, the first is what must resolve and the others are taken where they do - and where
+    /// none does, the game's other convention answers: the drawable beside a frame is the same name
+    /// with <c>_section</c> on it, which is how a habitat is found.
+    /// </para>
     /// </remarks>
     private IReadOnlyList<string> Modelled(
         string key,
@@ -325,25 +463,20 @@ public sealed class ShipBaker(LayeredContent content, SafeFile file)
     {
         var flown = InService(key);
 
-        if (flown.Count == 0)
-        {
-            return [];
-        }
-
         // A class this set has no entity for is a class it does not fly.
-        if (!flown.ContainsKey($"{key}_{ship.Key}_entity"))
+        if (flown.Count == 0 || !flown.ContainsKey($"{key}_{ship.Stem}{EntitySuffix}"))
         {
             return [];
         }
 
         var meshes = new List<string>(ship.Slots.Count);
 
-        foreach (var slot in ship.Slots)
+        foreach (var slot in ship.Slots.Where(slot => !slot.All(char.IsAsciiDigit)))
         {
-            var wanted = sections.GetValueOrDefault((ship.Key, slot)) ?? [];
-
-            var mesh = wanted
-                .Select(entity => flown.GetValueOrDefault($"{key}_{entity}"))
+            // The last by name, since the files are ordered and the later ones carry the heavier
+            // guns - a battleship's bow comes out as the one with the extra-large turret on it.
+            var mesh = (sections.GetValueOrDefault((ship.Key, slot)) ?? [])
+                .Select(entity => Section(flown, key, entity))
                 .LastOrDefault(found => found is { Length: > 0 });
 
             if (mesh is { Length: > 0 })
@@ -352,8 +485,17 @@ public sealed class ShipBaker(LayeredContent content, SafeFile file)
             }
         }
 
-        // A bow with no stern is half a ship, and half a ship drawn is worse than none.
-        return meshes.Count == ship.Slots.Count ? meshes : [];
+        if (meshes.Count > 0)
+        {
+            return meshes;
+        }
+
+        // Nothing the templates named could be drawn. The habitat is the case: its one slot holds a
+        // weapon mount declared globally rather than per set, and the station itself is the frame's
+        // own section.
+        return Section(flown, key, $"{ship.Stem}_section") is { Length: > 0 } own
+            ? [own]
+            : [];
     }
 
     /// <summary>
@@ -442,8 +584,6 @@ public sealed class ShipBaker(LayeredContent content, SafeFile file)
             return null;
         }
 
-        const string EntitySuffix = "_entity";
-
         var stem = entity.EndsWith(EntitySuffix, StringComparison.Ordinal)
             ? entity[..^EntitySuffix.Length]
             : entity;
@@ -473,9 +613,13 @@ public sealed class ShipBaker(LayeredContent content, SafeFile file)
 
         var sections = Sections();
 
-        // A corvette where there is one, and otherwise whatever the set flies smallest - which is
-        // the same choice Bake makes, and is made here so a test can ask what would be drawn.
-        foreach (var ship in ShipClasses().OrderBy(c => c.Key == "corvette" ? 0 : 1))
+        // Its own classes first and a corvette ahead of the rest, which is the same choice Bake
+        // makes, made here so a test can ask what would be drawn without drawing it.
+        var classes = ShipClasses()
+            .OrderBy(c => c.Cultures.Contains(set.Key) ? 0 : 1)
+            .ThenBy(c => c.Key == "corvette" ? 0 : 1);
+
+        foreach (var ship in classes)
         {
             if (HullOf(set, ship, sections, sets) is { } hull)
             {
@@ -512,19 +656,23 @@ public sealed class ShipBaker(LayeredContent content, SafeFile file)
 
         var flown = new Dictionary<string, string>(StringComparer.Ordinal);
 
-        foreach (var directory in Folders(key))
+        foreach (var (directory, shared) in Folders(key))
         {
-            Read(directory);
+            Read(directory, shared);
         }
 
         _inService[key] = flown;
         return flown;
 
-        void Read(string directory)
+        void Read(string directory, bool shared)
         {
             var files = MeshFiles(directory);
 
-            foreach (var asset in _content.EnumerateFiles(directory, "*_entities.asset"))
+            // Every .asset in the folder, not the ones ending _entities. A colossus is declared in
+            // <set>_colossus.asset and a juggernaut in <set>_juggernaut.asset, so the narrower glob
+            // read neither - twenty-five sets with a colossus and twenty-one with a juggernaut had
+            // both silently missing, and two sets lost their titan the same way.
+            foreach (var asset in _content.EnumerateFiles(directory, "*.asset"))
             {
                 var document = CwDocument.Parse(_content.Read(asset), CwParseOptions.Lenient);
 
@@ -540,7 +688,7 @@ public sealed class ShipBaker(LayeredContent content, SafeFile file)
                     // likes; the content index does not care, and neither should matching it.
                     var mesh = entity.Block.GetString("pdxmesh") is { Length: > 0 } declared &&
                         files.GetValueOrDefault(declared) is { Length: > 0 } file &&
-                        Path.GetFileName(file).StartsWith(key, StringComparison.Ordinal) &&
+                        Owns(key, file, shared) &&
                         _content.Contains(file)
                             ? file
                             : string.Empty;
@@ -554,34 +702,79 @@ public sealed class ShipBaker(LayeredContent content, SafeFile file)
     }
 
     /// <summary>
+    /// Whether a mesh belongs to the set whose folder it was found in.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// In a folder of the set's own, being there is the answer. This used to be read off the file
+    /// name and that is not the same thing: the Unbidden keep ten meshes in
+    /// <c>extra_dimensional_01</c> and every one is named <c>extra_dimensional_*</c>, so all ten were
+    /// thrown away and the set was drawn with mammalian hulls. Six folders have no mesh carrying
+    /// their own name and nine more are partly unmatched.
+    /// </para>
+    /// <para>
+    /// The starbases are the other way round. Every set's citadel is declared in one flat folder they
+    /// all share, so being there says nothing and the name is what tells them apart.
+    /// </para>
+    /// </remarks>
+    /// <param name="key">The set.</param>
+    /// <param name="file">The mesh file the entity names.</param>
+    /// <param name="shared">Whether the folder it was found in belongs to every set.</param>
+    /// <returns>True where the mesh is this set's own.</returns>
+    private static bool Owns(string key, string file, bool shared) =>
+        !shared || Path.GetFileName(file).StartsWith(key, StringComparison.Ordinal);
+
+    /// <summary>
     /// Every folder a set keeps models in, which is not always the one named after it.
     /// </summary>
     /// <remarks>
-    /// Three classes are kept apart from the rest, a folder of sets each: <c>titans</c>,
-    /// <c>colossus</c> and <c>juggernauts</c>. Looking only in <c>ships/&lt;set&gt;</c> found the
-    /// fleet and none of the three, so a page of ships had no titan in it - and the game builds one
-    /// for twenty of the sets.
+    /// <para>
+    /// Four classes are kept apart from the rest of a set's models. Three have a folder of sets each
+    /// - <c>titans</c>, <c>colossus</c>, <c>juggernauts</c> - and looking only in
+    /// <c>ships/&lt;set&gt;</c> found the fleet and none of them.
+    /// </para>
+    /// <para>
+    /// The starbases are the fourth and are arranged differently again: one flat folder holding every
+    /// set's, with twenty-seven of them declaring a citadel in a single file. It is shared, so what
+    /// is found there is owned by name rather than by place - see <see cref="Owns"/>.
+    /// </para>
+    /// <para>
+    /// One folder is misspelt in the game: <c>juggernauts/aquatics_01</c>, plural, against a culture
+    /// called <c>aquatic_01</c> - and everything inside it is named <c>aquatic_01_*</c>. Matched
+    /// rather than corrected, since correcting it would mean keeping a list of the game's typos.
+    /// </para>
     /// </remarks>
     /// <param name="key">The set.</param>
-    /// <returns>The directories, nearest first.</returns>
-    private IEnumerable<string> Folders(string key)
+    /// <returns>The directories and whether each is shared with other sets, nearest first.</returns>
+    private IEnumerable<(string Directory, bool Shared)> Folders(string key)
     {
         if (_content.ContainsDirectory($"{ModelRoot}/{key}"))
         {
-            yield return $"{ModelRoot}/{key}";
+            yield return ($"{ModelRoot}/{key}", false);
         }
 
         foreach (var apart in ShipsKeptApart)
         {
-            if (_content.ContainsDirectory($"{ModelRoot}/{apart}/{key}"))
+            foreach (var spelling in new[] { key, $"{key}s" })
             {
-                yield return $"{ModelRoot}/{apart}/{key}";
+                if (_content.ContainsDirectory($"{ModelRoot}/{apart}/{spelling}"))
+                {
+                    yield return ($"{ModelRoot}/{apart}/{spelling}", false);
+                }
             }
+        }
+
+        if (_content.ContainsDirectory(SharedStarbases))
+        {
+            yield return (SharedStarbases, true);
         }
     }
 
     /// <summary>The classes the game files away from the rest of a set's models, a folder each.</summary>
     private static readonly string[] ShipsKeptApart = ["titans", "colossus", "juggernauts"];
+
+    /// <summary>And the one it files away into a folder every set shares.</summary>
+    private const string SharedStarbases = $"{ModelRoot}/starbases";
 
     /// <summary>
     /// Which file each of a set's declared meshes is, by the name entities refer to it by.
@@ -691,7 +884,7 @@ public sealed class ShipBaker(LayeredContent content, SafeFile file)
         }
 
         return owner is { Length: > 0 }
-            ? Folders(owner).Select(f => $"{f}/{texture}").FirstOrDefault(_content.Contains)
+            ? Folders(owner).Select(f => $"{f.Directory}/{texture}").FirstOrDefault(_content.Contains)
             : null;
     }
 

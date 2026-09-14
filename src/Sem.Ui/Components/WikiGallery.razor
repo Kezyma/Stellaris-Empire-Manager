@@ -13,7 +13,7 @@
     chips use: the browser puts it in the top layer, so it is not cut off by the table it is inside.
 *@
 
-<div class="sem-wiki-gallery">
+<div class="sem-wiki-gallery @Shape">
     @for (var index = 0; index < Faces.Count; index++)
     {
         var face = Faces[index];
@@ -49,6 +49,17 @@
     /// <summary>The faces, each of which is known to have a picture.</summary>
     [Parameter, EditorRequired]
     public required IReadOnlyList<EmpireChoice> Faces { get; set; }
+
+    /// <summary>
+    /// What shape the pictures are, which decides the tile.
+    /// </summary>
+    /// <remarks>
+    /// A face is taller than it is wide and a square tile crops it about as well as anything can. A
+    /// ship is the other way round, and the same square took a fifth off each end - the nose and the
+    /// engines, which are most of what tells one set's ships from another's.
+    /// </remarks>
+    [Parameter]
+    public string Shape { get; set; } = "scene";
 
     /// <summary>
     /// What this gallery's panels are named after, so that no two on a page collide.

@@ -22,7 +22,8 @@
     *@
     @if (Row.Picture is { Length: > 0 } picture)
     {
-        <img class="sem-detail-picture" src="@Session.Data.AssetUrl(picture)" alt="" loading="lazy">
+        <img class="sem-detail-picture @Shape" src="@Session.Data.AssetUrl(picture)"
+             alt="" loading="lazy">
     }
 
     <header>
@@ -125,7 +126,7 @@
 
     @if (Row.Gallery.Count > 0)
     {
-        <WikiGallery Faces="@Row.Gallery" />
+        <WikiGallery Faces="@Row.Gallery" Shape="@Shape" />
     }
 
     @*
@@ -218,6 +219,10 @@
     /// <summary>Whether this shelf has icons, and so whether to keep room for one in the header.</summary>
     [Parameter]
     public bool Icons { get; set; } = true;
+
+    /// <summary>What shape this shelf's pictures are, which decides how they are framed.</summary>
+    [Parameter]
+    public string Shape { get; set; } = "scene";
 
     /// <summary>Raised when the reader presses it, so the page can put it in the address.</summary>
     [Parameter]

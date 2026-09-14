@@ -115,7 +115,7 @@
                         <td class="scene" rowspan="@span">
                             @if (row.Picture is { Length: > 0 } picture)
                             {
-                                <img class="sem-detail-picture" src="@Session.Data.AssetUrl(picture)"
+                                <img class="sem-detail-picture @Shape" src="@Session.Data.AssetUrl(picture)"
                                      alt="" loading="lazy">
                             }
                         </td>
@@ -250,7 +250,7 @@
                 {
                     <tr class="gallery @Marks(row)" data-entry="@row.Key" @onclick="() => Press(row)">
                         <td colspan="@_columns">
-                            <WikiGallery Faces="@row.Gallery" />
+                            <WikiGallery Faces="@row.Gallery" Shape="@Shape" />
                         </td>
                     </tr>
                 }
@@ -293,6 +293,10 @@
     /// <summary>Whether this shelf has icons, and so whether to keep room for one on every row.</summary>
     [Parameter]
     public bool Icons { get; set; } = true;
+
+    /// <summary>What shape this shelf's pictures are, which decides how they are framed.</summary>
+    [Parameter]
+    public string Shape { get; set; } = "scene";
 
     /// <summary>Which shelf this is, which is half of what an entry's address is made of.</summary>
     [Parameter, EditorRequired]

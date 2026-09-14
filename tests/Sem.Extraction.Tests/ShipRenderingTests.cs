@@ -123,13 +123,53 @@ public sealed class ShipRenderingTests
             var (drawn, report) = new ShipBaker(content, new SafeFile(WritePolicy.ForApplication()))
                 .Bake(sets, output.FullName);
 
-            Assert.Empty(report.Failures);
+            // The Unbidden's whole fleet, which the game ships no paint for. Their hulls are drawn by
+            // PdxMeshExtraDimensionalShip and their mesh settings declare that shader and nothing
+            // else - there is no diffuse texture for any of them anywhere in the installation, only
+            // for their anchor station and their portal. A renderer that paints triangles cannot draw
+            // one.
+            //
+            // They are still resolved rather than skipped, because resolving them is what stops the
+            // set borrowing a mammalian corvette it has never built. An empty gallery is true; that
+            // one was not.
+            //
+            // Named rather than tolerated by count, so the next one that will not draw is noticed.
+            string[] unpaintable =
+            [
+                "extra_dimensional_01 small_ship_ed",
+                "extra_dimensional_01 medium_ship_ed",
+                "extra_dimensional_01 large_ship_ed",
+                "extra_dimensional_01 construction_ship_ed",
+            ];
+
+            var unexpected = report.Failures
+                .Where(f => !unpaintable.Any(known => f.StartsWith(known, StringComparison.Ordinal)))
+                .ToList();
+
+            Assert.True(
+                unexpected.Count == 0,
+                string.Join(
+                    Environment.NewLine + "  ",
+                    unexpected.Prepend("Ships that would not draw:")));
 
             // Every set a player is offered flies something, whether its own or its fallback's.
             var offered = drawn.Where(s => s.Selectable is not AlwaysRequirement { Value: false }).ToList();
 
             Assert.All(offered, set =>
                 Assert.False(string.IsNullOrEmpty(set.ShipPreview), $"{set.Key} has no ship."));
+
+            // And every picture drawn is a picture of something. Slots were relaxed so that a
+            // starbase's module hardpoints could be left out without losing the starbase, which means
+            // a ship missing its stern would now draw rather than being refused - so the whole fleet
+            // is measured, not the preview alone.
+            Assert.All(report.Fleet.DistinctBy(f => f.Image), ship =>
+            {
+                var file = Path.Combine(output.FullName, ship.Image.Replace('/', Path.DirectorySeparatorChar));
+
+                Assert.True(
+                    new FileInfo(file).Length > 2_000,
+                    $"{ship.Set} {ship.ShipClass} drew only {new FileInfo(file).Length} bytes.");
+            });
 
             Assert.All(
                 offered,
@@ -138,6 +178,39 @@ public sealed class ShipRenderingTests
                     $"{set.Key} claims a picture that was not written."));
 
             Assert.True(offered.Count >= 20, $"Only {offered.Count} sets are offered.");
+
+            var fleets = report.Fleet
+                .GroupBy(f => f.Set, StringComparer.Ordinal)
+                .ToDictionary(g => g.Key, g => g.ToList(), StringComparer.Ordinal);
+
+            // The four classes the game files away from the rest of a set's models: three in a folder
+            // of their own and the starbases in one flat folder every set shares. All four were
+            // missing, from an asset glob that wanted *_entities.asset and a folder list that did not
+            // know about ships/starbases.
+            Assert.All(
+                new[] { "colossus", "juggernaut", "starbase_citadel", "habitat_central_complex" },
+                wanted => Assert.Contains(
+                    fleets["humanoid_01"],
+                    ship => string.Equals(ship.ShipClass, wanted, StringComparison.Ordinal)));
+
+            // And the canonical name wins where two classes are one ship. A bio titan is drawn by the
+            // titan's own entity, and read in file order every set called its titan a bio titan.
+            Assert.Contains(fleets["humanoid_01"], s => s.ShipClass == "titan");
+            Assert.DoesNotContain(fleets["humanoid_01"], s => s.ShipClass == "bio_titan");
+
+            // A set with a fleet of its own flies it, and does not borrow. The Contingency models a
+            // Warform and a Seeker; it has never built a corvette, and its meshes carry no prefix so
+            // a name test threw every one of them away.
+            Assert.All(
+                fleets["ai_01"],
+                ship => Assert.Equal("ai_01", ship.Image.Split('/')[1]));
+
+            Assert.Contains(fleets["ai_01"], s => s.ShipClass == "large_ship_ai");
+
+            // While a set that models nothing at all still shows what it flies in game.
+            Assert.All(
+                fleets["ai_02"],
+                ship => Assert.Equal("mammalian_01", ship.Image.Split('/')[1]));
         }
         finally
         {

@@ -1,6 +1,6 @@
 {
   "stamp": {
-    "extractorVersion": "0.1.0\u002Bc4d3475232b9",
+    "extractorVersion": "0.1.0\u002B42b41976ecc8",
     "schemaVersion": 1
   },
   "fleets": [
@@ -38,6 +38,26 @@
         {
           "shipClass": "science",
           "image": "ships/humanoid_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/humanoid_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/humanoid_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/humanoid_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/humanoid_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/humanoid_01/habitat_central_complex.png"
         }
       ]
     },
@@ -75,6 +95,26 @@
         {
           "shipClass": "science",
           "image": "ships/plantoid_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/plantoid_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/plantoid_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/plantoid_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/plantoid_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/plantoid_01/habitat_central_complex.png"
         }
       ]
     },
@@ -112,6 +152,26 @@
         {
           "shipClass": "science",
           "image": "ships/mammalian_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/mammalian_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/mammalian_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/mammalian_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/mammalian_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/mammalian_01/habitat_central_complex.png"
         }
       ]
     },
@@ -149,6 +209,26 @@
         {
           "shipClass": "science",
           "image": "ships/reptilian_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/reptilian_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/reptilian_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/reptilian_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/reptilian_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/reptilian_01/habitat_central_complex.png"
         }
       ]
     },
@@ -186,6 +266,26 @@
         {
           "shipClass": "science",
           "image": "ships/avian_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/avian_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/avian_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/avian_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/avian_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/avian_01/habitat_central_complex.png"
         }
       ]
     },
@@ -223,6 +323,26 @@
         {
           "shipClass": "science",
           "image": "ships/molluscoid_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/molluscoid_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/molluscoid_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/molluscoid_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/molluscoid_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/molluscoid_01/habitat_central_complex.png"
         }
       ]
     },
@@ -260,6 +380,26 @@
         {
           "shipClass": "science",
           "image": "ships/fungoid_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/fungoid_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/fungoid_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/fungoid_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/fungoid_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/fungoid_01/habitat_central_complex.png"
         }
       ]
     },
@@ -297,6 +437,26 @@
         {
           "shipClass": "science",
           "image": "ships/arthropoid_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/arthropoid_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/arthropoid_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/arthropoid_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/arthropoid_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/arthropoid_01/habitat_central_complex.png"
         }
       ]
     },
@@ -304,36 +464,20 @@
       "set": "pirate_01",
       "ships": [
         {
-          "shipClass": "corvette",
-          "image": "ships/mammalian_01/corvette.png"
+          "shipClass": "pirate_corvette",
+          "image": "ships/pirate_01/pirate_corvette.png"
         },
         {
-          "shipClass": "destroyer",
-          "image": "ships/mammalian_01/destroyer.png"
+          "shipClass": "pirate_destroyer",
+          "image": "ships/pirate_01/pirate_destroyer.png"
         },
         {
-          "shipClass": "cruiser",
-          "image": "ships/mammalian_01/cruiser.png"
+          "shipClass": "pirate_cruiser",
+          "image": "ships/pirate_01/pirate_cruiser.png"
         },
         {
-          "shipClass": "battleship",
-          "image": "ships/mammalian_01/battleship.png"
-        },
-        {
-          "shipClass": "titan",
-          "image": "ships/mammalian_01/titan.png"
-        },
-        {
-          "shipClass": "constructor",
-          "image": "ships/mammalian_01/constructor.png"
-        },
-        {
-          "shipClass": "colonizer",
-          "image": "ships/mammalian_01/colonizer.png"
-        },
-        {
-          "shipClass": "science",
-          "image": "ships/mammalian_01/science.png"
+          "shipClass": "pirate_station",
+          "image": "ships/pirate_01/pirate_station.png"
         }
       ]
     },
@@ -341,36 +485,28 @@
       "set": "ai_01",
       "ships": [
         {
-          "shipClass": "corvette",
-          "image": "ships/mammalian_01/corvette.png"
+          "shipClass": "large_ship_ai",
+          "image": "ships/ai_01/large_ship_ai.png"
         },
         {
-          "shipClass": "destroyer",
-          "image": "ships/mammalian_01/destroyer.png"
+          "shipClass": "small_ship_ai",
+          "image": "ships/ai_01/small_ship_ai.png"
         },
         {
-          "shipClass": "cruiser",
-          "image": "ships/mammalian_01/cruiser.png"
+          "shipClass": "military_station_large_ai",
+          "image": "ships/ai_01/military_station_large_ai.png"
         },
         {
-          "shipClass": "battleship",
-          "image": "ships/mammalian_01/battleship.png"
+          "shipClass": "military_station_small_ai",
+          "image": "ships/ai_01/military_station_small_ai.png"
         },
         {
-          "shipClass": "titan",
-          "image": "ships/mammalian_01/titan.png"
+          "shipClass": "core_ai",
+          "image": "ships/ai_01/core_ai.png"
         },
         {
-          "shipClass": "constructor",
-          "image": "ships/mammalian_01/constructor.png"
-        },
-        {
-          "shipClass": "colonizer",
-          "image": "ships/mammalian_01/colonizer.png"
-        },
-        {
-          "shipClass": "science",
-          "image": "ships/ai_01/science.png"
+          "shipClass": "construction_ship_ai",
+          "image": "ships/ai_01/construction_ship_ai.png"
         }
       ]
     },
@@ -408,6 +544,26 @@
         {
           "shipClass": "science",
           "image": "ships/mammalian_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/mammalian_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/mammalian_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/mammalian_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/mammalian_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/mammalian_01/habitat_central_complex.png"
         }
       ]
     },
@@ -415,36 +571,28 @@
       "set": "fallen_empire_01",
       "ships": [
         {
-          "shipClass": "corvette",
-          "image": "ships/mammalian_01/corvette.png"
+          "shipClass": "massive_ship_fallen_empire",
+          "image": "ships/fallen_empire_01/massive_ship_fallen_empire.png"
         },
         {
-          "shipClass": "destroyer",
-          "image": "ships/mammalian_01/destroyer.png"
+          "shipClass": "large_ship_fallen_empire",
+          "image": "ships/fallen_empire_01/large_ship_fallen_empire.png"
         },
         {
-          "shipClass": "cruiser",
-          "image": "ships/mammalian_01/cruiser.png"
-        },
-        {
-          "shipClass": "battleship",
-          "image": "ships/mammalian_01/battleship.png"
-        },
-        {
-          "shipClass": "titan",
-          "image": "ships/mammalian_01/titan.png"
+          "shipClass": "small_ship_fallen_empire",
+          "image": "ships/fallen_empire_01/small_ship_fallen_empire.png"
         },
         {
           "shipClass": "constructor",
-          "image": "ships/mammalian_01/constructor.png"
+          "image": "ships/fallen_empire_01/constructor.png"
         },
         {
-          "shipClass": "colonizer",
-          "image": "ships/mammalian_01/colonizer.png"
+          "shipClass": "starbase_citadel",
+          "image": "ships/fallen_empire_01/starbase_citadel.png"
         },
         {
-          "shipClass": "science",
-          "image": "ships/mammalian_01/science.png"
+          "shipClass": "colossus",
+          "image": "ships/fallen_empire_01/colossus.png"
         }
       ]
     },
@@ -452,6 +600,18 @@
       "set": "fallen_empire_02",
       "ships": [
         {
+          "shipClass": "massive_ship_fallen_empire",
+          "image": "ships/fallen_empire_01/massive_ship_fallen_empire.png"
+        },
+        {
+          "shipClass": "large_ship_fallen_empire",
+          "image": "ships/fallen_empire_01/large_ship_fallen_empire.png"
+        },
+        {
+          "shipClass": "small_ship_fallen_empire",
+          "image": "ships/fallen_empire_01/small_ship_fallen_empire.png"
+        },
+        {
           "shipClass": "corvette",
           "image": "ships/mammalian_01/corvette.png"
         },
@@ -473,15 +633,27 @@
         },
         {
           "shipClass": "constructor",
-          "image": "ships/mammalian_01/constructor.png"
+          "image": "ships/fallen_empire_01/constructor.png"
         },
         {
-          "shipClass": "colonizer",
-          "image": "ships/mammalian_01/colonizer.png"
+          "shipClass": "starbase_citadel",
+          "image": "ships/fallen_empire_01/starbase_citadel.png"
         },
         {
-          "shipClass": "science",
-          "image": "ships/mammalian_01/science.png"
+          "shipClass": "colossus",
+          "image": "ships/fallen_empire_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/mammalian_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/mammalian_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/mammalian_01/habitat_central_complex.png"
         }
       ]
     },
@@ -489,6 +661,18 @@
       "set": "fallen_empire_03",
       "ships": [
         {
+          "shipClass": "massive_ship_fallen_empire",
+          "image": "ships/fallen_empire_01/massive_ship_fallen_empire.png"
+        },
+        {
+          "shipClass": "large_ship_fallen_empire",
+          "image": "ships/fallen_empire_01/large_ship_fallen_empire.png"
+        },
+        {
+          "shipClass": "small_ship_fallen_empire",
+          "image": "ships/fallen_empire_01/small_ship_fallen_empire.png"
+        },
+        {
           "shipClass": "corvette",
           "image": "ships/mammalian_01/corvette.png"
         },
@@ -510,15 +694,27 @@
         },
         {
           "shipClass": "constructor",
-          "image": "ships/mammalian_01/constructor.png"
+          "image": "ships/fallen_empire_01/constructor.png"
         },
         {
-          "shipClass": "colonizer",
-          "image": "ships/mammalian_01/colonizer.png"
+          "shipClass": "starbase_citadel",
+          "image": "ships/fallen_empire_01/starbase_citadel.png"
         },
         {
-          "shipClass": "science",
-          "image": "ships/mammalian_01/science.png"
+          "shipClass": "colossus",
+          "image": "ships/fallen_empire_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/mammalian_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/mammalian_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/mammalian_01/habitat_central_complex.png"
         }
       ]
     },
@@ -526,6 +722,18 @@
       "set": "fallen_empire_04",
       "ships": [
         {
+          "shipClass": "massive_ship_fallen_empire",
+          "image": "ships/fallen_empire_01/massive_ship_fallen_empire.png"
+        },
+        {
+          "shipClass": "large_ship_fallen_empire",
+          "image": "ships/fallen_empire_01/large_ship_fallen_empire.png"
+        },
+        {
+          "shipClass": "small_ship_fallen_empire",
+          "image": "ships/fallen_empire_01/small_ship_fallen_empire.png"
+        },
+        {
           "shipClass": "corvette",
           "image": "ships/mammalian_01/corvette.png"
         },
@@ -547,15 +755,27 @@
         },
         {
           "shipClass": "constructor",
-          "image": "ships/mammalian_01/constructor.png"
+          "image": "ships/fallen_empire_01/constructor.png"
         },
         {
-          "shipClass": "colonizer",
-          "image": "ships/mammalian_01/colonizer.png"
+          "shipClass": "starbase_citadel",
+          "image": "ships/fallen_empire_01/starbase_citadel.png"
         },
         {
-          "shipClass": "science",
-          "image": "ships/mammalian_01/science.png"
+          "shipClass": "colossus",
+          "image": "ships/fallen_empire_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/mammalian_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/mammalian_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/mammalian_01/habitat_central_complex.png"
         }
       ]
     },
@@ -563,36 +783,20 @@
       "set": "fallen_machine_empire_01",
       "ships": [
         {
-          "shipClass": "corvette",
-          "image": "ships/mammalian_01/corvette.png"
+          "shipClass": "massive_ship_fallen_empire",
+          "image": "ships/fallen_machine_empire_01/massive_ship_fallen_empire.png"
         },
         {
-          "shipClass": "destroyer",
-          "image": "ships/mammalian_01/destroyer.png"
+          "shipClass": "large_ship_fallen_empire",
+          "image": "ships/fallen_machine_empire_01/large_ship_fallen_empire.png"
         },
         {
-          "shipClass": "cruiser",
-          "image": "ships/mammalian_01/cruiser.png"
-        },
-        {
-          "shipClass": "battleship",
-          "image": "ships/mammalian_01/battleship.png"
-        },
-        {
-          "shipClass": "titan",
-          "image": "ships/mammalian_01/titan.png"
+          "shipClass": "small_ship_fallen_empire",
+          "image": "ships/fallen_machine_empire_01/small_ship_fallen_empire.png"
         },
         {
           "shipClass": "constructor",
-          "image": "ships/mammalian_01/constructor.png"
-        },
-        {
-          "shipClass": "colonizer",
-          "image": "ships/mammalian_01/colonizer.png"
-        },
-        {
-          "shipClass": "science",
-          "image": "ships/mammalian_01/science.png"
+          "image": "ships/fallen_machine_empire_01/constructor.png"
         }
       ]
     },
@@ -621,15 +825,31 @@
         },
         {
           "shipClass": "constructor",
-          "image": "ships/mammalian_01/constructor.png"
-        },
-        {
-          "shipClass": "colonizer",
-          "image": "ships/mammalian_01/colonizer.png"
+          "image": "ships/fallen_empire_01/constructor.png"
         },
         {
           "shipClass": "science",
-          "image": "ships/mammalian_01/science.png"
+          "image": "ships/fallen_empire_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/fallen_empire_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/fallen_empire_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/mammalian_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/mammalian_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/mammalian_01/habitat_central_complex.png"
         }
       ]
     },
@@ -637,36 +857,12 @@
       "set": "swarm_01",
       "ships": [
         {
-          "shipClass": "corvette",
-          "image": "ships/mammalian_01/corvette.png"
+          "shipClass": "large_ship_swarm",
+          "image": "ships/swarm_01/large_ship_swarm.png"
         },
         {
-          "shipClass": "destroyer",
-          "image": "ships/mammalian_01/destroyer.png"
-        },
-        {
-          "shipClass": "cruiser",
-          "image": "ships/mammalian_01/cruiser.png"
-        },
-        {
-          "shipClass": "battleship",
-          "image": "ships/mammalian_01/battleship.png"
-        },
-        {
-          "shipClass": "titan",
-          "image": "ships/mammalian_01/titan.png"
-        },
-        {
-          "shipClass": "constructor",
-          "image": "ships/mammalian_01/constructor.png"
-        },
-        {
-          "shipClass": "colonizer",
-          "image": "ships/mammalian_01/colonizer.png"
-        },
-        {
-          "shipClass": "science",
-          "image": "ships/swarm_01/science.png"
+          "shipClass": "small_ship_swarm",
+          "image": "ships/swarm_01/small_ship_swarm.png"
         }
       ]
     },
@@ -674,36 +870,8 @@
       "set": "extra_dimensional_01",
       "ships": [
         {
-          "shipClass": "corvette",
-          "image": "ships/mammalian_01/corvette.png"
-        },
-        {
-          "shipClass": "destroyer",
-          "image": "ships/mammalian_01/destroyer.png"
-        },
-        {
-          "shipClass": "cruiser",
-          "image": "ships/mammalian_01/cruiser.png"
-        },
-        {
-          "shipClass": "battleship",
-          "image": "ships/mammalian_01/battleship.png"
-        },
-        {
-          "shipClass": "titan",
-          "image": "ships/mammalian_01/titan.png"
-        },
-        {
-          "shipClass": "constructor",
-          "image": "ships/mammalian_01/constructor.png"
-        },
-        {
-          "shipClass": "colonizer",
-          "image": "ships/mammalian_01/colonizer.png"
-        },
-        {
-          "shipClass": "science",
-          "image": "ships/mammalian_01/science.png"
+          "shipClass": "dimensional_portal_ed",
+          "image": "ships/extra_dimensional_01/dimensional_portal_ed.png"
         }
       ]
     },
@@ -741,6 +909,26 @@
         {
           "shipClass": "science",
           "image": "ships/mammalian_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/mammalian_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/mammalian_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/mammalian_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/mammalian_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/mammalian_01/habitat_central_complex.png"
         }
       ]
     },
@@ -778,6 +966,26 @@
         {
           "shipClass": "science",
           "image": "ships/mammalian_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/mammalian_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/mammalian_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/mammalian_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/mammalian_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/mammalian_01/habitat_central_complex.png"
         }
       ]
     },
@@ -815,6 +1023,26 @@
         {
           "shipClass": "science",
           "image": "ships/mammalian_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/mammalian_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/mammalian_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/mammalian_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/mammalian_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/mammalian_01/habitat_central_complex.png"
         }
       ]
     },
@@ -852,6 +1080,26 @@
         {
           "shipClass": "science",
           "image": "ships/mammalian_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/mammalian_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/mammalian_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/mammalian_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/mammalian_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/mammalian_01/habitat_central_complex.png"
         }
       ]
     },
@@ -889,6 +1137,26 @@
         {
           "shipClass": "science",
           "image": "ships/mammalian_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/mammalian_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/mammalian_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/mammalian_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/mammalian_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/mammalian_01/habitat_central_complex.png"
         }
       ]
     },
@@ -926,6 +1194,26 @@
         {
           "shipClass": "science",
           "image": "ships/mammalian_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/mammalian_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/mammalian_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/mammalian_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/mammalian_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/mammalian_01/habitat_central_complex.png"
         }
       ]
     },
@@ -963,6 +1251,26 @@
         {
           "shipClass": "science",
           "image": "ships/mammalian_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/mammalian_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/mammalian_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/mammalian_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/mammalian_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/mammalian_01/habitat_central_complex.png"
         }
       ]
     },
@@ -1000,6 +1308,26 @@
         {
           "shipClass": "science",
           "image": "ships/mammalian_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/mammalian_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/mammalian_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/mammalian_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/mammalian_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/mammalian_01/habitat_central_complex.png"
         }
       ]
     },
@@ -1037,6 +1365,26 @@
         {
           "shipClass": "science",
           "image": "ships/mammalian_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/mammalian_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/mammalian_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/mammalian_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/mammalian_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/mammalian_01/habitat_central_complex.png"
         }
       ]
     },
@@ -1074,6 +1422,26 @@
         {
           "shipClass": "science",
           "image": "ships/mammalian_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/mammalian_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/mammalian_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/mammalian_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/mammalian_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/mammalian_01/habitat_central_complex.png"
         }
       ]
     },
@@ -1111,6 +1479,26 @@
         {
           "shipClass": "science",
           "image": "ships/mammalian_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/mammalian_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/mammalian_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/mammalian_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/mammalian_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/mammalian_01/habitat_central_complex.png"
         }
       ]
     },
@@ -1148,6 +1536,26 @@
         {
           "shipClass": "science",
           "image": "ships/lithoid_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/lithoid_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/lithoid_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/lithoid_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/lithoid_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/lithoid_01/habitat_central_complex.png"
         }
       ]
     },
@@ -1185,6 +1593,26 @@
         {
           "shipClass": "science",
           "image": "ships/necroid_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/necroid_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/necroid_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/necroid_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/necroid_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/necroid_01/habitat_central_complex.png"
         }
       ]
     },
@@ -1222,6 +1650,26 @@
         {
           "shipClass": "science",
           "image": "ships/nemesis_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/nemesis_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/nemesis_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/nemesis_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/nemesis_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/nemesis_01/habitat_central_complex.png"
         }
       ]
     },
@@ -1259,6 +1707,26 @@
         {
           "shipClass": "science",
           "image": "ships/reptilian_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/reptilian_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/reptilian_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/reptilian_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/reptilian_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/reptilian_01/habitat_central_complex.png"
         }
       ]
     },
@@ -1296,6 +1764,26 @@
         {
           "shipClass": "science",
           "image": "ships/aquatic_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/aquatic_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/aquatic_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/mammalian_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/aquatic_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/aquatic_01/habitat_central_complex.png"
         }
       ]
     },
@@ -1333,6 +1821,26 @@
         {
           "shipClass": "science",
           "image": "ships/toxoid_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/toxoid_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/toxoid_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/toxoid_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/toxoid_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/toxoid_01/habitat_central_complex.png"
         }
       ]
     },
@@ -1370,6 +1878,26 @@
         {
           "shipClass": "science",
           "image": "ships/mammalian_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/mammalian_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/mammalian_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/mammalian_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/mammalian_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/mammalian_01/habitat_central_complex.png"
         }
       ]
     },
@@ -1407,6 +1935,26 @@
         {
           "shipClass": "science",
           "image": "ships/fungoid_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/fungoid_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/fungoid_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/fungoid_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/fungoid_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/fungoid_01/habitat_central_complex.png"
         }
       ]
     },
@@ -1444,6 +1992,26 @@
         {
           "shipClass": "science",
           "image": "ships/cybernetics_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/cybernetics_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/cybernetics_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/cybernetics_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/cybernetics_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/cybernetics_01/habitat_central_complex.png"
         }
       ]
     },
@@ -1481,6 +2049,26 @@
         {
           "shipClass": "science",
           "image": "ships/synthetics_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/synthetics_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/synthetics_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/synthetics_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/synthetics_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/synthetics_01/habitat_central_complex.png"
         }
       ]
     },
@@ -1488,36 +2076,52 @@
       "set": "biogenesis_02",
       "ships": [
         {
+          "shipClass": "mauler_stage_1",
+          "image": "ships/biogenesis_02/mauler_stage_1.png"
+        },
+        {
           "shipClass": "mauler_stage_2",
           "image": "ships/biogenesis_02/mauler_stage_2.png"
+        },
+        {
+          "shipClass": "mauler_stage_3",
+          "image": "ships/biogenesis_02/mauler_stage_3.png"
+        },
+        {
+          "shipClass": "weaver_stage_1",
+          "image": "ships/biogenesis_02/weaver_stage_1.png"
         },
         {
           "shipClass": "weaver_stage_2",
           "image": "ships/biogenesis_02/weaver_stage_2.png"
         },
         {
+          "shipClass": "weaver_stage_3",
+          "image": "ships/biogenesis_02/weaver_stage_3.png"
+        },
+        {
+          "shipClass": "harbinger_stage_1",
+          "image": "ships/biogenesis_02/harbinger_stage_1.png"
+        },
+        {
           "shipClass": "harbinger_stage_2",
           "image": "ships/biogenesis_02/harbinger_stage_2.png"
+        },
+        {
+          "shipClass": "harbinger_stage_3",
+          "image": "ships/biogenesis_02/harbinger_stage_3.png"
+        },
+        {
+          "shipClass": "stinger_stage_1",
+          "image": "ships/biogenesis_02/stinger_stage_1.png"
         },
         {
           "shipClass": "stinger_stage_2",
           "image": "ships/biogenesis_02/stinger_stage_2.png"
         },
         {
-          "shipClass": "corvette",
-          "image": "ships/mammalian_01/corvette.png"
-        },
-        {
-          "shipClass": "destroyer",
-          "image": "ships/mammalian_01/destroyer.png"
-        },
-        {
-          "shipClass": "cruiser",
-          "image": "ships/mammalian_01/cruiser.png"
-        },
-        {
-          "shipClass": "battleship",
-          "image": "ships/mammalian_01/battleship.png"
+          "shipClass": "stinger_stage_3",
+          "image": "ships/biogenesis_02/stinger_stage_3.png"
         },
         {
           "shipClass": "titan",
@@ -1534,6 +2138,22 @@
         {
           "shipClass": "science",
           "image": "ships/biogenesis_02/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/biogenesis_02/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/biogenesis_02/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/biogenesis_02/juggernaut.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/biogenesis_02/habitat_central_complex.png"
         }
       ]
     },
@@ -1541,44 +2161,60 @@
       "set": "biogenesis_01",
       "ships": [
         {
+          "shipClass": "mauler_stage_1",
+          "image": "ships/biogenesis_01/mauler_stage_1.png"
+        },
+        {
           "shipClass": "mauler_stage_2",
           "image": "ships/biogenesis_01/mauler_stage_2.png"
+        },
+        {
+          "shipClass": "mauler_stage_3",
+          "image": "ships/biogenesis_01/mauler_stage_3.png"
+        },
+        {
+          "shipClass": "weaver_stage_1",
+          "image": "ships/biogenesis_01/weaver_stage_1.png"
         },
         {
           "shipClass": "weaver_stage_2",
           "image": "ships/biogenesis_01/weaver_stage_2.png"
         },
         {
+          "shipClass": "weaver_stage_3",
+          "image": "ships/biogenesis_01/weaver_stage_3.png"
+        },
+        {
+          "shipClass": "harbinger_stage_1",
+          "image": "ships/biogenesis_01/harbinger_stage_1.png"
+        },
+        {
           "shipClass": "harbinger_stage_2",
           "image": "ships/biogenesis_01/harbinger_stage_2.png"
+        },
+        {
+          "shipClass": "harbinger_stage_3",
+          "image": "ships/biogenesis_01/harbinger_stage_3.png"
+        },
+        {
+          "shipClass": "stinger_stage_1",
+          "image": "ships/biogenesis_01/stinger_stage_1.png"
         },
         {
           "shipClass": "stinger_stage_2",
           "image": "ships/biogenesis_01/stinger_stage_2.png"
         },
         {
-          "shipClass": "corvette",
-          "image": "ships/mammalian_01/corvette.png"
-        },
-        {
-          "shipClass": "destroyer",
-          "image": "ships/mammalian_01/destroyer.png"
-        },
-        {
-          "shipClass": "cruiser",
-          "image": "ships/mammalian_01/cruiser.png"
-        },
-        {
-          "shipClass": "battleship",
-          "image": "ships/mammalian_01/battleship.png"
+          "shipClass": "stinger_stage_3",
+          "image": "ships/biogenesis_01/stinger_stage_3.png"
         },
         {
           "shipClass": "titan",
-          "image": "ships/mammalian_01/titan.png"
+          "image": "ships/biogenesis_01/titan.png"
         },
         {
           "shipClass": "constructor",
-          "image": "ships/mammalian_01/constructor.png"
+          "image": "ships/biogenesis_01/constructor.png"
         },
         {
           "shipClass": "colonizer",
@@ -1587,6 +2223,22 @@
         {
           "shipClass": "science",
           "image": "ships/biogenesis_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/biogenesis_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/biogenesis_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/biogenesis_01/juggernaut.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/biogenesis_01/habitat_central_complex.png"
         }
       ]
     },
@@ -1594,22 +2246,6 @@
       "set": "wilderness_01",
       "ships": [
         {
-          "shipClass": "mauler_stage_2",
-          "image": "ships/biogenesis_01/mauler_stage_2.png"
-        },
-        {
-          "shipClass": "weaver_stage_2",
-          "image": "ships/biogenesis_01/weaver_stage_2.png"
-        },
-        {
-          "shipClass": "harbinger_stage_2",
-          "image": "ships/biogenesis_01/harbinger_stage_2.png"
-        },
-        {
-          "shipClass": "stinger_stage_2",
-          "image": "ships/biogenesis_01/stinger_stage_2.png"
-        },
-        {
           "shipClass": "corvette",
           "image": "ships/mammalian_01/corvette.png"
         },
@@ -1627,11 +2263,11 @@
         },
         {
           "shipClass": "titan",
-          "image": "ships/mammalian_01/titan.png"
+          "image": "ships/biogenesis_01/titan.png"
         },
         {
           "shipClass": "constructor",
-          "image": "ships/mammalian_01/constructor.png"
+          "image": "ships/biogenesis_01/constructor.png"
         },
         {
           "shipClass": "colonizer",
@@ -1640,6 +2276,26 @@
         {
           "shipClass": "science",
           "image": "ships/biogenesis_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/biogenesis_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/biogenesis_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/biogenesis_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/mammalian_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/biogenesis_01/habitat_central_complex.png"
         }
       ]
     },
@@ -1677,6 +2333,26 @@
         {
           "shipClass": "science",
           "image": "ships/mammalian_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/mammalian_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/mammalian_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/mammalian_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/mammalian_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/mammalian_01/habitat_central_complex.png"
         }
       ]
     },
@@ -1714,6 +2390,26 @@
         {
           "shipClass": "science",
           "image": "ships/avian_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/avian_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/avian_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/avian_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/avian_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/avian_01/habitat_central_complex.png"
         }
       ]
     },
@@ -1751,6 +2447,26 @@
         {
           "shipClass": "science",
           "image": "ships/psionic_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/psionic_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/psionic_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/psionic_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/psionic_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/psionic_01/habitat_central_complex.png"
         }
       ]
     },
@@ -1788,6 +2504,26 @@
         {
           "shipClass": "science",
           "image": "ships/mindwarden_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/mindwarden_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/mindwarden_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/mindwarden_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/mindwarden_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/mindwarden_01/habitat_central_complex.png"
         }
       ]
     },
@@ -1812,7 +2548,7 @@
         },
         {
           "shipClass": "titan",
-          "image": "ships/mammalian_01/titan.png"
+          "image": "ships/infernal_01/titan.png"
         },
         {
           "shipClass": "constructor",
@@ -1825,6 +2561,26 @@
         {
           "shipClass": "science",
           "image": "ships/infernal_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/infernal_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/infernal_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/infernal_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/infernal_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/infernal_01/habitat_central_complex.png"
         }
       ]
     },
@@ -1862,6 +2618,26 @@
         {
           "shipClass": "science",
           "image": "ships/avian_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/avian_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/avian_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/avian_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/avian_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/avian_01/habitat_central_complex.png"
         }
       ]
     },
@@ -1899,6 +2675,26 @@
         {
           "shipClass": "science",
           "image": "ships/avian_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/avian_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/avian_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/avian_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/avian_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/avian_01/habitat_central_complex.png"
         }
       ]
     },
@@ -1936,6 +2732,26 @@
         {
           "shipClass": "science",
           "image": "ships/avian_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/avian_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/avian_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/avian_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/avian_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/avian_01/habitat_central_complex.png"
         }
       ]
     },
@@ -1973,6 +2789,26 @@
         {
           "shipClass": "science",
           "image": "ships/mammalian_01/science.png"
+        },
+        {
+          "shipClass": "starbase_citadel",
+          "image": "ships/mammalian_01/starbase_citadel.png"
+        },
+        {
+          "shipClass": "colossus",
+          "image": "ships/mammalian_01/colossus.png"
+        },
+        {
+          "shipClass": "juggernaut",
+          "image": "ships/mammalian_01/juggernaut.png"
+        },
+        {
+          "shipClass": "frigate",
+          "image": "ships/mammalian_01/frigate.png"
+        },
+        {
+          "shipClass": "habitat_central_complex",
+          "image": "ships/mammalian_01/habitat_central_complex.png"
         }
       ]
     }
@@ -1986,12 +2822,43 @@
     "constructor": "Construction Ship",
     "colonizer": "Colony Ship",
     "science": "Science Ship",
+    "starbase_citadel": "Citadel",
+    "colossus": "Colossus",
+    "juggernaut": "Juggernaut",
+    "frigate": "Frigate",
+    "habitat_central_complex": "Habitat Central Complex",
+    "pirate_corvette": "Raider",
+    "pirate_destroyer": "Frigate",
+    "pirate_cruiser": "Pirate Cruiser",
+    "pirate_station": "Asteroid Outpost",
+    "large_ship_ai": "Warform",
+    "small_ship_ai": "Seeker",
+    "military_station_large_ai": "Nexus",
+    "military_station_small_ai": "Defensive",
+    "core_ai": "Core",
+    "construction_ship_ai": "Construction Ship",
+    "massive_ship_fallen_empire": "Titan",
+    "large_ship_fallen_empire": "Battlecruiser",
+    "small_ship_fallen_empire": "Escort",
+    "large_ship_swarm": "Warrior",
+    "small_ship_swarm": "Swarmling",
+    "dimensional_portal_ed": "Dimensional Portal",
+    "mauler_stage_1": "$ship_growth_stage_1$ $mauler_class_cap$",
     "mauler_stage_2": "$ship_growth_stage_2$ $mauler_class_cap$",
+    "mauler_stage_3": "$ship_growth_stage_3$ $mauler_class_cap$",
+    "weaver_stage_1": "$ship_growth_stage_1$ $weaver_class_cap$",
     "weaver_stage_2": "$ship_growth_stage_2$ $weaver_class_cap$",
+    "weaver_stage_3": "$ship_growth_stage_3$ $weaver_class_cap$",
+    "harbinger_stage_1": "$ship_growth_stage_1$ $harbinger_class_cap$",
     "harbinger_stage_2": "$ship_growth_stage_2$ $harbinger_class_cap$",
+    "harbinger_stage_3": "$ship_growth_stage_3$ $harbinger_class_cap$",
+    "stinger_stage_1": "$ship_growth_stage_1$ $stinger_class_cap$",
     "stinger_stage_2": "$ship_growth_stage_2$ $stinger_class_cap$",
-    "ship_growth_stage_2": "Mature",
+    "stinger_stage_3": "$ship_growth_stage_3$ $stinger_class_cap$",
+    "ship_growth_stage_1": "Juvenile",
     "mauler_class_cap": "Mauler",
+    "ship_growth_stage_2": "Mature",
+    "ship_growth_stage_3": "Elder",
     "weaver_class_cap": "Weaver",
     "harbinger_class_cap": "Harbinger",
     "stinger_class_cap": "Stinger"

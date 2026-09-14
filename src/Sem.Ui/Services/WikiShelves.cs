@@ -95,6 +95,17 @@ public sealed record WikiShelf(
     /// and calling either a scene is the column heading lying about what is under it.
     /// </remarks>
     public string Picture { get; init; } = "Scene";
+
+    /// <summary>
+    /// What shape those pictures are, which decides how they are framed.
+    /// </summary>
+    /// <remarks>
+    /// A scene is the game's own origin art and is meant to be cropped to the frame the game crops it
+    /// to - so that is the default and every shelf but one keeps it. A ship is a render of ours,
+    /// three hundred and twenty by two hundred on a transparent ground, and cropping one to an
+    /// origin's frame cut fifteen per cent off the bottom of every hull and both ends of every tile.
+    /// </remarks>
+    public string Shape { get; init; } = "scene";
 }
 
 /// <summary>
@@ -710,6 +721,7 @@ public sealed class WikiShelves(DesignSession session)
         new("Shipsets", "shipsets", "shipset", ShipsetRows(pack), WikiFacet.Shipsets)
         {
             Picture = "Ship",
+            Shape = "ship",
             Reader = pack is null ? null : Reading(pack.Text),
         };
 
