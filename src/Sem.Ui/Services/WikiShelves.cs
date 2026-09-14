@@ -1059,9 +1059,29 @@ public sealed class WikiShelves(DesignSession session)
     private IReadOnlyList<EmpireChoice> Civics(params IEnumerable<string?> keys) =>
         [.. Real(keys).Select(k => Chip(k, Database.Civic(k)?.Icon, Database.Civic(k)?.Effects))];
 
-    /// <summary>Archetypes, which wear the trait every species of them carries.</summary>
+    /// <summary>
+    /// Archetypes, which wear the trait every species of them carries.
+    /// </summary>
+    /// <remarks>
+    /// And speak with its voice too, for the reason <see cref="Worlds"/> gives: the game writes no
+    /// description for an archetype - there is no <c>BIOLOGICAL_desc</c> - so the picture was
+    /// borrowed and the words were not, and every Archetype chip opened a panel reading "Biological.
+    /// No effects." The trait is not a stand-in here either: every species of the archetype carries
+    /// it, so what it says and what it does are true of all of them.
+    /// </remarks>
     private IReadOnlyList<EmpireChoice> Archetypes(params IEnumerable<string?> keys) =>
-        [.. Real(keys).Select(k => Chip(k, ArchetypeMarks.Of(Database, k)))];
+    [
+        .. Real(keys).Select(k =>
+        {
+            var mark = ArchetypeMarks.Trait(Database, k);
+
+            return Chip(
+                k,
+                Database.Trait(mark)?.Icon,
+                Database.Trait(mark)?.Effects,
+                mark is { Length: > 0 } trait ? $"{trait}_desc" : null);
+        }),
+    ];
 
     /// <summary>Species classes, which wear one of their own faces.</summary>
     private IReadOnlyList<EmpireChoice> Classes(params IEnumerable<string?> keys) =>

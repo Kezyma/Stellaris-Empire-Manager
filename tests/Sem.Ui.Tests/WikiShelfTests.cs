@@ -746,6 +746,70 @@ public sealed class WikiShelfTests
         Assert.Null(chip.Description);
     }
 
+    /// <summary>
+    /// An archetype chip borrows the words of the trait whose picture it already wears.
+    /// </summary>
+    /// <remarks>
+    /// The game writes no description for an archetype either - there is no <c>BIOLOGICAL_desc</c> -
+    /// so the picture was borrowed and the words were not, and a Biological chip opened a panel
+    /// reading "Biological. No effects." Every species of the archetype carries the trait, so what it
+    /// says and what it does are true of all of them.
+    /// </remarks>
+    [Fact]
+    public void AnArchetypeChipBorrowsTheWordsOfTheTraitItWears()
+    {
+        var chip = Assert.Single(Archetypes().Fact("Archetype")!.Chips);
+
+        Assert.Equal("BIOLOGICAL", chip.Key);
+        Assert.Equal("icons/traits/organic.png", chip.Icon);
+        Assert.Equal("trait_organic_desc", chip.Description);
+        Assert.NotNull(chip.Effects);
+    }
+
+    /// <summary>One trait limited to an archetype whose classes all force the same trait.</summary>
+    private static WikiRow Archetypes()
+    {
+        var session = new DesignSession(
+            new Sem.Ui.Services.GameData(
+                new GameDatabase
+                {
+                    SchemaVersion = GameDatabase.CurrentSchemaVersion,
+                    GameVersion = "test",
+                    ExtractorVersion = "test",
+                    Defines = new GameDefines { EthicsPoints = 3, CivicPoints = 2, CityPopLevel = 4 },
+                    Archetypes = [new ArchetypeDefinition("BIOLOGICAL", 2, 5, false)],
+                    SpeciesClasses =
+                    [
+                        new SpeciesClassDefinition("MAM", "BIOLOGICAL") { ForcedTrait = "trait_organic" },
+                    ],
+                    Traits =
+                    [
+                        new TraitDefinition("trait_intelligent", TraitKind.Species)
+                        {
+                            AllowedArchetypes = ["BIOLOGICAL"],
+                        },
+                        new TraitDefinition("trait_organic", TraitKind.Species)
+                        {
+                            Icon = "icons/traits/organic.png",
+                            Effects = new EffectSet
+                            {
+                                Modifiers = new Dictionary<string, double>(StringComparer.Ordinal)
+                                {
+                                    ["pop_food_upkeep_mult"] = 0.1,
+                                },
+                            },
+                        },
+                    ],
+                },
+                new Dictionary<string, string>(StringComparer.Ordinal),
+                "assets"));
+
+        session.StartEmptyFile();
+
+        return new WikiShelves(session).Of(WikiKind.SpeciesTraits).Rows
+            .First(r => r.Key == "trait_intelligent");
+    }
+
     /// <summary>One trait limited to a world, with or without a preference trait to borrow from.</summary>
     private static WikiRow Worlds(bool preference = true)
     {
