@@ -60,18 +60,51 @@ that overwrites real files.
 
 ## Writing to real files
 
-Three paths deliberately reach the player's real designs file, and all three are opt-in:
+Four paths deliberately reach the player's real designs file, and all four are opt-in:
 
 1. **The shipped desktop application.** It runs under `WritePolicy.ForApplication()` and adds the
    designs file's directory only once the user has chosen it. Every save then goes through
-   `SafeFile.ReplaceAtomically`: content is staged beside the target, verified, swapped in with
-   `File.Replace`, and the previous version is kept as a backup.
+   `SafeFile.ReplaceAtomically`: content is staged beside the target, verified, and swapped in with
+   `File.Replace`. Two copies of what it replaced are kept - see below.
 2. **The `deploy-design` CLI command** used for in-game verification, which archives the existing
    file before copying an export over it.
-3. **The web app's Export, through the browser's save dialog.** The weakest of the three, and
+3. **A file at a cloud provider, once connected to one.** See below; it is not the browser's Export
+   and its guarantees are different.
+4. **The web app's Export, through the browser's save dialog.** The weakest of the four, and
    deliberately the narrowest.
 
 Neither of the first two is reachable from the development policy.
+
+### The two copies the desktop keeps, and when there is only one
+
+`SafeFile.DatedBackupPath` puts a copy beside the designs file, named after it and stamped with the
+moment; `FileArchive` puts one in the app's own folder under `%LocalAppData%`, keeping the newest
+twenty. Both hold **what the save replaced**, not what it wrote.
+
+That last sentence is worth its emphasis, because for a long time the archive held the other side:
+`Archive(contents)` was handed the incoming bytes, so the folder recorded what each save created and
+never what it destroyed. `FileArchive` reads the file itself now rather than being told what is in
+it, which is why there is no longer a wrong thing to pass, and `tests/Sem.Core.Tests/Io/` covers it.
+
+**The dated sibling is suppressed while write-as-you-go is on.** Saving then happens several times a
+minute and one dated file per save would bury the folder the game keeps its saves in, so
+`SessionHost.KeepsBackup` turns it off and the archive is the whole of the way back. That is the
+arrangement the bug above made worthless, and the reason it mattered more than it looked.
+
+### What a cloud save is, and is not
+
+Connecting to a file at a provider points Save at that file, and it is the player's real designs file
+- usually the same one, reached through the folder Windows redirects into OneDrive. `Sem.Ui` cannot
+use `SafeFile` or `WritePolicy` here and would gain nothing if it could: the write is an HTTP request
+to somebody else's storage, not a path on a disk. What it does have instead:
+
+- **A dated copy beside it**, written before the save (`CloudFileExchange`), which is the provider's
+  equivalent of the sibling backup.
+- **A refusal to write over a change it has not seen.** The version stamp the file had when this app
+  last read or wrote it is sent as `If-Match`; the provider rejects the write if the file has moved
+  since, and the app asks what to do rather than overwriting. The same promise the desktop makes by
+  reading the file back and comparing.
+- **No archive of the last twenty**, and no atomic swap - the provider's own write is what it is.
 
 ### What the browser's write is, and is not
 
@@ -81,14 +114,15 @@ project's code. Export asks every time: no file handle is kept between saves, so
 standing permission to write anything, and dismissing the dialog writes nothing and leaves the work
 marked unsaved.
 
-**None of the guarantees above apply to it.** There is no dated sibling backup, no archive of the
-last twenty, no `SafeFile` and no `WritePolicy` — `Sem.Ui` does not reference `Sem.Io` and a
-WebAssembly build could not use it if it did. What the browser does provide is that the write is
-staged and committed when the stream closes, so a tab that dies mid-save leaves the file as it was.
+**None of the guarantees above apply to it** — not the desktop's, and not the cloud path's either.
+There is no dated sibling backup, no archive of the last twenty, no conflict check, no `SafeFile` and
+no `WritePolicy`: `Sem.Ui` does not reference `Sem.Io` and a WebAssembly build could not use it if it
+did. What the browser does provide is that the write is staged and committed when the stream closes,
+so a tab that dies mid-save leaves the file as it was.
 
 That is worth stating plainly rather than leaving implied: the desktop app is still the safe way to
-write this file, and the web app's Export is a convenience that trades those protections for not
-having to find the folder by hand. Anyone who would be sorry to lose a designs file should keep a
+write this file, a cloud file is the careful way to do it from a tab, and the web app's Export is a
+convenience that trades those protections for not having to find the folder by hand. Anyone who would be sorry to lose a designs file should keep a
 copy of their own, which is what the site's own README says.
 
 ## Tests
@@ -96,4 +130,6 @@ copy of their own, which is what the site's own README says.
 `tests/Sem.Core.Tests/Io/` covers the guard directly, including the sibling-prefix trap
 (`data` must not appear to contain `data-backup`), relative traversal out of an allowed root, and
 a real-data test asserting that the actual installation and game data folder on this machine are
-unwritable. Tests tagged `Category=RealData` skip cleanly when Stellaris is not installed.
+unwritable. `FileArchiveTests` covers the copies: that what is kept is what was replaced and not
+what replaced it, that twenty survive and the oldest goes, and that an archive which cannot be
+written does not stop the save. Tests tagged `Category=RealData` skip cleanly when Stellaris is not installed.

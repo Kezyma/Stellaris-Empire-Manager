@@ -1,12 +1,15 @@
 name: CI
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 
-  # Called by the Pages workflow, so publishing waits for this to pass rather than racing it.
+  # Called by the Main workflow, so nothing is deployed until this has passed.
+  #
+  # No push trigger. This used to have one as well, and with two workflows each calling it as their
+  # own gate that meant the same build and the same tests three times per push to main - about seven
+  # and a half minutes of a thirteen-minute total. A push to main runs this once, through Main; a
+  # pull request, which has no deployment behind it, runs it here.
   workflow_call:
 
 jobs:

@@ -1,47 +1,95 @@
-# Builds the Windows desktop app and publishes it as a download, on every push to main.
+# Everything a push to main does: check it, publish the site, and put up the desktop build.
 #
-# One release, tagged `latest`, replaced each time. That is deliberate: there are no versioned
-# releases to choose between, so the only question a visitor has is "where is the newest one", and a
-# fixed tag answers it with an address that never changes -
-# /releases/latest/download/StellarisEmpireManager-win-x64.zip.
+# One workflow because there was one check being run three times. ci.yml triggered on the push, and
+# the site and the release each called it again as their own gate - so every push spent about
+# thirteen minutes of runner time, seven and a half of it the same build and the same tests over
+# again. Here the gate runs once and both deployments hang off it, in parallel.
 #
-# Windows only, and a Windows runner, because the shell is WPF. Other platforms are not being built:
-# the web app already runs everywhere, and a second desktop shell would be a second host to keep the
-# file promises on. See the README.
+# The cost is that the two deployments share a run: a failed release is reported beside the site
+# publish rather than apart from it. That is the trade, and it is worth it at five minutes a push.
+#
+# ci.yml still runs on its own for a pull request, which is the case with no deployment behind it.
+# It no longer triggers on a push to main, because this is that.
 
-name: Release
+name: Main
 
 on:
   push:
     branches: [main]
 
-  # So a release can be rebuilt without a commit.
+  # Republishes the site and rebuilds the release without a commit - after changing a Pages setting,
+  # say. Both, because each is a replacement of something that already exists and neither costs
+  # anything to redo.
   workflow_dispatch:
 
-# Creating and deleting the release, and moving its tag.
-permissions:
-  contents: write
-
-# Never two at once, and never cancelled to make room for the next.
-#
-# Cancelling looked right - for a rolling release the newer build is the one anybody wants - and it
-# cost us the release. Two pushes close together cancelled the first run partway through the step
-# that replaces the release, between taking the old one down and putting the new one up, and the
-# repository sat with no download at all until the next run finished. The step below no longer has
-# that window, and this no longer opens one: runs queue, and the last to finish is the newest.
-concurrency:
-  group: release
-  cancel-in-progress: false
-
 jobs:
-  # The same gate Pages uses. Nothing people download should come from a commit whose tests did not
-  # pass, and a publish that merely compiles is not that check: the build here would succeed over a
-  # failing test without noticing.
+  # Nothing is deployed from a commit whose tests did not pass, and "it compiled" is not that check:
+  # both jobs below would build happily over a failing test.
   check:
     uses: ./.github/workflows/ci.yml
 
+  publish:
+    needs: check
+
+    # Scoped to the job now that two of them share a workflow, rather than granted to both.
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    # Never two at once, and a newer publish wins rather than queueing behind an older one.
+    concurrency:
+      group: pages
+      cancel-in-progress: true
+
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      # The base path has to match where the site is served from, or every asset resolves against
+      # the domain root and the page comes up blank. The project defaults to the repository's name;
+      # a custom domain would want "/" passed here instead.
+      - name: Publish
+        run: dotnet publish src/Sem.Web --configuration Release --output artifacts/pages
+
+      # Without this GitHub Pages runs the output through Jekyll, which drops every folder whose
+      # name begins with an underscore — _framework among them, which is the whole application.
+      - name: Check the site will not be run through Jekyll
+        run: test -f artifacts/pages/wwwroot/.nojekyll || { echo "::error::No .nojekyll in the published site; Pages would drop _framework."; exit 1; }
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: artifacts/pages/wwwroot
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
   release:
     needs: check
+
+    # Creating and deleting the release, and moving its tag.
+    permissions:
+      contents: write
+
+    # Never two at once, and never cancelled to make room for the next. Cancelling looked right -
+    # for a rolling release the newer build is the one anybody wants - and it cost us the release:
+    # a run cancelled partway through replacing it left the repository with no download at all. The
+    # step below no longer has that window, and this no longer opens one.
+    concurrency:
+      group: release
+      cancel-in-progress: false
+
 
     # WPF, so this cannot be built anywhere else.
     runs-on: windows-latest
