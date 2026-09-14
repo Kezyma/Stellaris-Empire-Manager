@@ -205,7 +205,7 @@
     /// button beside the search rather than a dropdown behind a fold - but it stays a heading, so
     /// the narrowing itself is unchanged and every row still answers it.
     /// </remarks>
-    private static bool Shown(EmpireFacet facet) => facet.Key != "preset";
+    private static bool Shown(Facet<EmpireRow> facet) => facet.Key != "preset";
 
     /// <summary>What the editor would offer under each heading, worked out once and held.</summary>
     private EmpireOptions? _options;
@@ -266,13 +266,13 @@
     public void Dispose() => Session.Changed -= Forget;
 
     /// <summary>What the any-or-all switch is doing, said the same way in the label and the tip.</summary>
-    private string Switching(EmpireFacet facet) =>
+    private string Switching(Facet<EmpireRow> facet) =>
         Filter.RequiresAll(facet.Key)
             ? $"Asking for empires with every one of the {facet.Label.ToLowerInvariant()} ticked"
             : $"Asking for empires with any of the {facet.Label.ToLowerInvariant()} ticked";
 
     /// <summary>Everything the rows hold under one heading, once each, in the order it reads in.</summary>
-    private IReadOnlyList<EmpireChoice> Offered(EmpireFacet facet)
+    private IReadOnlyList<EmpireChoice> Offered(Facet<EmpireRow> facet)
     {
         if (_offered.TryGetValue(facet.Key, out var known))
         {
@@ -297,7 +297,7 @@
     }
 
     /// <summary>Which of the three a yes-or-no heading is set to, as the dropdown spells it.</summary>
-    private string Answer(EmpireFacet facet)
+    private string Answer(Facet<EmpireRow> facet)
     {
         var keys = Filter.Keys(facet.Key);
 
@@ -311,7 +311,7 @@
     /// Written into the same set every other heading uses, so the matching does not have to know
     /// that these two are drawn differently from the rest.
     /// </remarks>
-    private async Task Answering(EmpireFacet facet, string? answer)
+    private async Task Answering(Facet<EmpireRow> facet, string? answer)
     {
         var keys = Filter.Keys(facet.Key);
         keys.Clear();

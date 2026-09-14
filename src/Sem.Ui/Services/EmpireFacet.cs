@@ -1,63 +1,16 @@
-using Sem.Designs;
-using Sem.GameData;
-using Sem.Rules;
 using Sem.Ui.Components;
 
 namespace Sem.Ui.Services;
 
 /// <summary>
-/// One heading the lists can be narrowed by: what it is called, and what an empire holds under it.
+/// The headings the empire lists can be narrowed by.
 /// </summary>
 /// <remarks>
-/// A table rather than a control per heading, because there are thirteen of them and every one is
+/// A table rather than a control per heading, because there are thirty-odd of them and every one is
 /// the same control asking the same question of a different field. Adding one is a line here.
 /// </remarks>
-public sealed record EmpireFacet
+public static class EmpireFacet
 {
-    /// <summary>
-    /// Private, so a heading can only be declared through one of the three below.
-    /// </summary>
-    /// <remarks>
-    /// Which is the whole guarantee. Left public, a heading could be written out by hand with
-    /// neither arity set and nothing would say so - and that omission is exactly the mistake this
-    /// arrangement exists to prevent, twice made. Choosing a factory is choosing an answer.
-    /// </remarks>
-    private EmpireFacet(
-        string key,
-        string label,
-        Func<EmpireRow, IReadOnlyList<EmpireChoice>> values,
-        Func<EmpireOptions, IReadOnlyList<EmpireChoice>>? fixedOptions,
-        string group)
-    {
-        Key = key;
-        Label = label;
-        Values = values;
-        Fixed = fixedOptions;
-        Group = group;
-    }
-
-    /// <summary>What the choice is remembered under, and what the column shares with it.</summary>
-    public string Key { get; }
-
-    /// <summary>What the heading is called in the filter card.</summary>
-    public string Label { get; }
-
-    /// <summary>What an empire holds under it, which may be none, one or several.</summary>
-    public Func<EmpireRow, IReadOnlyList<EmpireChoice>> Values { get; }
-
-    /// <summary>
-    /// Every option there is, for a heading whose options are a setting rather than a shelf of game
-    /// data - and nothing for the rest, which are offered whatever the empires in front of the
-    /// reader actually hold.
-    /// </summary>
-    public Func<EmpireOptions, IReadOnlyList<EmpireChoice>>? Fixed { get; }
-
-    /// <summary>
-    /// Which tab of the filter card it sits on. Twenty-eight controls in one grid is a wall to read
-    /// rather than a card to use, and the four groups are the four things an empire is made of.
-    /// </summary>
-    public string Group { get; }
-
     /// <summary>Headings about the empire itself.</summary>
     public const string Empire = "Empire";
 
@@ -91,7 +44,7 @@ public sealed record EmpireFacet
     public const string Plan = "Plan";
 
     /// <summary>Every heading with a list behind it, which is everything that is picked rather than typed.</summary>
-    public static IReadOnlyList<EmpireFacet> All { get; } =
+    public static IReadOnlyList<Facet<EmpireRow>> All { get; } =
     [
         Asked("preset", "Preset", r => r.Preset is not null),
 
@@ -163,88 +116,35 @@ public sealed record EmpireFacet
         [.. All.Select(f => f.Group).Distinct(StringComparer.Ordinal)];
 
     /// <summary>
-    /// Whether the heading has two answers and wants a dropdown rather than a list of ticks.
-    /// </summary>
-    /// <remarks>
-    /// Yes, no, or neither. Ticking both is the same as ticking neither, which is a thing a set of
-    /// tick boxes lets you do and a reader has to work out for themselves - so these say All, Yes
-    /// and No and only one at a time.
-    /// </remarks>
-    public bool YesNo { get; private init; }
-
-    /// <summary>Whether more than one can be held at once, which is what makes "all" worth offering.</summary>
-    /// <remarks>
-    /// <para>
-    /// An empire has one authority and any number of civics. Asking for all of two authorities is a
-    /// question with no answer, so the headings that can only hold one are not offered the choice.
-    /// </para>
-    /// <para>
-    /// Declared by the heading rather than matched against a list of keys, which is what this and
-    /// <see cref="YesNo"/> both used to be. A written-out list has to be revisited whenever a
-    /// heading is added and twice it was not: second species traits went without the choice for as
-    /// long as they existed, and so did all three of the plan's headings when they arrived. Worse,
-    /// the tests that look like they guard it cannot - every one of them reads the same property
-    /// under test, so a heading left out of a list is a heading they all agree about.
-    /// </para>
-    /// <para>
-    /// So the arity moves into the declaration, through <see cref="One"/>, <see cref="Many"/> and
-    /// <see cref="Asked"/>. Adding a heading means choosing one of the three, which is the decision
-    /// that was being forgotten, and there is no longer a second place that can disagree. The same
-    /// move <see cref="EmpireColumn"/> already made for its own keys.
-    /// </para>
-    /// </remarks>
-    public bool Several { get; private init; }
-
-    /// <summary>
     /// A heading an empire holds exactly one of, or none.
     /// </summary>
-    /// <param name="key">What the choice is remembered under.</param>
-    /// <param name="label">What it is called in the filter card.</param>
-    /// <param name="value">The one it holds, where it holds one.</param>
-    /// <param name="fixedOptions">Every option there is, for a heading whose options are a setting.</param>
-    /// <param name="group">Which tab it sits on.</param>
-    private static EmpireFacet One(
+    /// <remarks>
+    /// These three forward to <see cref="Facet{TRow}"/>'s own, and exist for the defaults: without
+    /// them every one of the lines above would have to name its tab and say it has no fixed shelf,
+    /// which is four dozen lines of saying nothing.
+    /// </remarks>
+    private static Facet<EmpireRow> One(
         string key,
         string label,
         Func<EmpireRow, EmpireChoice?> value,
         Func<EmpireOptions, IReadOnlyList<EmpireChoice>>? fixedOptions = null,
         string group = Empire) =>
-        new(key, label, row => Some(value(row)), fixedOptions, group);
+        Facet<EmpireRow>.One(key, label, value, fixedOptions, group);
 
     /// <summary>A heading an empire may hold any number of.</summary>
-    private static EmpireFacet Many(
+    private static Facet<EmpireRow> Many(
         string key,
         string label,
         Func<EmpireRow, IReadOnlyList<EmpireChoice>> values,
         Func<EmpireOptions, IReadOnlyList<EmpireChoice>>? fixedOptions = null,
         string group = Empire) =>
-        new(key, label, values, fixedOptions, group) { Several = true };
+        Facet<EmpireRow>.Many(key, label, values, fixedOptions, group);
 
     /// <summary>A heading whose answer is yes or no.</summary>
-    private static EmpireFacet Asked(
+    private static Facet<EmpireRow> Asked(
         string key,
         string label,
         Func<EmpireRow, bool> held,
         string group = Empire) =>
-        new(key, label, row => YesOrNo(held(row)), fixedOptions: null, group) { YesNo = true };
-
-    internal static IReadOnlyList<EmpireChoice> Some(EmpireChoice? choice) =>
-        choice is null ? [] : [choice];
-
-
-    /// <summary>
-    /// A heading whose answer is yes or no, as the one choice an empire holds under it.
-    /// </summary>
-    /// <remarks>
-    /// Which makes it the same kind of heading as every other: ticking Yes asks for the empires that
-    /// are, ticking No for the ones that are not, and ticking neither - or both - asks for all of
-    /// them. Three answers out of the control the other eleven already use, rather than a twelfth
-    /// kind of control that only these two would want.
-    /// </remarks>
-    private static IReadOnlyList<EmpireChoice> YesOrNo(bool held) =>
-        [held ? Yes : No];
-
-    private static readonly EmpireChoice Yes = new("yes", "Yes", null, null);
-
-    private static readonly EmpireChoice No = new("no", "No", null, null);
+        Facet<EmpireRow>.Asked(key, label, held, group);
 }
