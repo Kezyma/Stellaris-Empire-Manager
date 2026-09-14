@@ -105,36 +105,21 @@ public sealed class ModifierFormatter(Localizer localizer, GameDatabase database
     }
 
     /// <summary>
-    /// How a shroud patron's own key is dressed up into an attunement modifier's key.
-    /// </summary>
-    /// <remarks>
-    /// Three shapes, all of which read as the same anonymous line and all of which name the patron
-    /// in the key: <c>mod_add_attunement_the_eater_of_worlds</c> is "Add Attunement with […]",
-    /// <c>mod_the_eater_of_worlds_attunement_mult</c> is "Attunement with […]", and
-    /// <c>mod_eater_of_worlds_monthly_attunement_add</c> is "Monthly Attunement with […]". Only the
-    /// first was handled, so an empire could show one named row and two anonymous ones for the same
-    /// patron.
-    /// </remarks>
-    private static readonly (string Prefix, string Suffix)[] AttunementShapes =
-    [
-        ("add_attunement_", ""),
-        ("", "_attunement_mult"),
-        ("", "_monthly_attunement_add"),
-    ];
-
-    /// <summary>
     /// Puts the entity's name into a label the game leaves anonymous.
     /// </summary>
     /// <remarks>
     /// The shroud patrons are labelled <c>Add Attunement with [This.GetEaterColor]</c>, and that
-    /// scripted value answers <c>UNDISCOVERED_PATRON_ARTICLE</c> — "an Unknown Entity" — until a game
+    /// scripted value answers <c>UNDISCOVERED_PATRON_ARTICLE</c> - "an Unknown Entity" - until a game
     /// has met the patron. Faithful, and useless in a designer: five separate modifiers all read as
     /// the same anonymous line.
     ///
-    /// The key says which one it is. Strip the affixes from
-    /// <c>add_attunement_the_eater_of_worlds</c> and <c>the_eater_of_worlds</c> is itself an entry,
-    /// resolving through <c>$name_eater$</c> to "Eater of Worlds". Both halves of the swap are read
-    /// out of the localisation rather than written here, so this holds in any language.
+    /// The key says which one it is, and <see cref="ModifierSubject"/> says how to read it - which
+    /// is in <c>Sem.GameData</c> because the extractor has to agree about it. It did not: the entry
+    /// this looks up was being pruned out of the shipped text, so the substitution below found
+    /// nothing and every one of these read as "an Unknown Entity" anyway.
+    ///
+    /// Both halves of the swap are read out of the localisation rather than written here, so this
+    /// holds in any language.
     /// </remarks>
     private string Named(string key, string label, bool html = true)
     {
@@ -157,41 +142,9 @@ public sealed class ModifierFormatter(Localizer localizer, GameDatabase database
             : label;
     }
 
-    /// <summary>
-    /// The patron a modifier's key names, where it names one.
-    /// </summary>
-    /// <remarks>
-    /// The monthly modifiers drop the article — <c>eater_of_worlds_monthly_attunement_add</c> against
-    /// the entry <c>the_eater_of_worlds</c> — so the stem is tried both ways. Anything that is not a
-    /// patron simply fails to be an entry and is left alone, and even a false match would be
-    /// harmless: the swap only touches a label that already says "an Unknown Entity".
-    /// </remarks>
-    private string? Patron(string key)
-    {
-        foreach (var (prefix, suffix) in AttunementShapes)
-        {
-            if (!key.StartsWith(prefix, StringComparison.Ordinal) ||
-                !key.EndsWith(suffix, StringComparison.Ordinal) ||
-                key.Length <= prefix.Length + suffix.Length)
-            {
-                continue;
-            }
-
-            var stem = key[prefix.Length..^suffix.Length];
-
-            if (_localizer.Has(stem))
-            {
-                return stem;
-            }
-
-            if (_localizer.Has($"the_{stem}"))
-            {
-                return $"the_{stem}";
-            }
-        }
-
-        return null;
-    }
+    /// <summary>The patron a modifier's key names, where the text shipped has a name for it.</summary>
+    private string? Patron(string key) =>
+        ModifierSubject.Candidates(key).FirstOrDefault(_localizer.Has);
 
     private static IEnumerable<string> Candidates(string key)
     {
