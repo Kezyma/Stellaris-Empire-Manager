@@ -72,32 +72,35 @@
             step's own name where the game gave it one, its prose where it differs from the step
             before, what it does, and the tier it is.
         *@
-        <ol class="sem-wiki-steps">
-            @foreach (var step in Row.Tiers)
-            {
-                @* Each step answers to its own key, so a link naming a later tier can be scrolled to. *@
-                <li data-entry="@step.Key">
+        @foreach (var step in Row.Tiers)
+        {
+            @* Each step answers to its own key, so a link naming a later tier can be scrolled to. *@
+            <div class="sem-wiki-step" data-entry="@step.Key">
+                @{ var tier = step.Fact("Tier")?.Text; }
+
+                @if (Heads(step))
+                {
                     <div class="heading">
                         <GameIcon Path="@step.Icon" Alt="@step.Name" />
                         <span class="title">@step.Name</span>
 
-                        @if (step.Fact("Tier") is { Text: { Length: > 0 } tier })
+                        @if (tier is { Length: > 0 })
                         {
                             <span class="tier">@tier</span>
                         }
                     </div>
+                }
 
-                    @if (step.Description is { Length: > 0 } && Told.Add(step.Description))
-                    {
-                        <p class="sem-wiki-prose">
-                            @((MarkupString)Wording.Html(step.DescriptionKey, string.Empty))
-                        </p>
-                    }
+                @if (step.Description is { Length: > 0 } && Told.Add(step.Description))
+                {
+                    <p class="sem-wiki-prose">
+                        @((MarkupString)Wording.Html(step.DescriptionKey, string.Empty))
+                    </p>
+                }
 
-                    <EffectsList Effects="@step.Effects" />
-                </li>
-            }
-        </ol>
+                <EffectsList Effects="@step.Effects" />
+            </div>
+        }
     }
 
     @*
@@ -182,6 +185,23 @@
     private HashSet<string> Told { get; } = new(StringComparer.Ordinal);
 
     protected override void OnParametersSet() => Told.Clear();
+
+    /// <summary>
+    /// Whether a step of an upgrade path draws a heading of its own.
+    /// </summary>
+    /// <remarks>
+    /// Every step but the base of the path. The card's header is already that step's name and its
+    /// picture, and a numeral saying "1" under both was the card introducing itself three times
+    /// before saying anything. Later steps keep all three, because there the name, the picture and
+    /// the numeral are the whole answer to which step this is. One chain - Strand Afflicted - has no
+    /// tier on its base at all, so position answers for it where the number cannot.
+    /// </remarks>
+    /// <param name="step">The step.</param>
+    /// <returns>True where it draws a name, an icon and a numeral.</returns>
+    private bool Heads(WikiRow step) =>
+        step.Fact("Tier")?.Text is { Length: > 0 } tier
+            ? !string.Equals(tier, "1", StringComparison.Ordinal)
+            : !string.Equals(step.Key, Row.Tiers[0].Key, StringComparison.Ordinal);
 
     /// <summary>The entry to draw.</summary>
     [Parameter, EditorRequired]

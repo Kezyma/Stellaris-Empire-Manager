@@ -7329,38 +7329,29 @@ button.icon.ended {
 }
 
 /*
-   The steps of an upgrade path on a card.
+   One step of an upgrade path on a card.
 
-   A rule down the left rather than a box each: they are one thing read downwards, and three boxes
-   inside a box is three cards pretending not to be. The numeral sits at the end of each step's own
-   line, which is where the eye is already looking to tell them apart.
+   No box, no rule, no list: the card is already the box, and a path is the ordinary content of it
+   read downwards. It was a bordered list, which made three steps look like three cards inside a
+   card. What tells the steps apart is a name, a picture and a numeral on each - all but the first,
+   which is the card's own heading and draws none of the three.
 */
-.sem-wiki-steps {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-md);
-    margin: 0;
-    padding: 0 0 0 var(--space-md);
-    list-style: none;
-    border-left: 2px solid var(--border-strong);
-}
-
-.sem-wiki-steps > li {
+.sem-wiki-step {
     display: flex;
     flex-direction: column;
     gap: var(--space-sm);
 }
 
-.sem-wiki-steps .heading {
+.sem-wiki-step .heading {
     display: flex;
     align-items: center;
     gap: var(--space-sm);
 }
 
-.sem-wiki-steps .title { font-weight: 600; }
+.sem-wiki-step .title { font-weight: 600; }
 
 /* The tier, as a numeral at the end of the line, in the shape every other small count here has. */
-.sem-wiki-steps .tier {
+.sem-wiki-step .tier {
     margin-left: auto;
     padding: 1px var(--space-sm);
     background: var(--bg-raised);
@@ -7370,6 +7361,9 @@ button.icon.ended {
     font-size: var(--text-sm);
     font-variant-numeric: tabular-nums;
 }
+
+/* A little more air where one step follows another, since no rule divides them any more. */
+.sem-wiki-step + .sem-wiki-step { padding-top: var(--space-sm); }
 
 /*
    Copy a link to this one entry.
@@ -7741,16 +7735,14 @@ button.icon.ended {
 }
 
 /*
-   And the whole path lights together under the pointer. Hovering a row is a row's own business, so
-   without this a path of three would light one line at a time and read as three rows again at the
-   one moment a reader is asking which it is.
-*/
-.sem-wiki-table tbody tr.entry:hover > *,
-.sem-wiki-table tbody tr.entry:hover ~ tr.step > * {
-    background: var(--bg-hover);
-}
+   And the whole path lights together under the pointer.
 
-.sem-wiki-table tbody tr.step:hover > * { background: var(--bg-hover); }
+   Through the entry's own tbody, because that is the only thing in the markup that means "these
+   rows are one entry". Written as a following-sibling rule first - tr.entry:hover ~ tr.step - which
+   is not that at all: it matches every later step in the table, so hovering anything lit the
+   sub-rows of everything below it.
+*/
+.sem-wiki-table tbody:hover > tr > * { background: var(--bg-hover); }
 
 /*
    The gallery's own row, which carries no rule above it: it belongs to the row over it rather than

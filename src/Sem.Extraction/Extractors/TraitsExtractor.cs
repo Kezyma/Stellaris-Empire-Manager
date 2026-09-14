@@ -159,10 +159,12 @@ internal static class TraitsExtractor
             Opposites = body.GetList("opposites"),
             RequiredDlc = body.GetString("host_has_dlc"),
 
-            // Left as the game states them rather than hidden, unlike the species traits above. A
-            // leader trait says almost everything through a triggered block - whether it is on the
-            // council, which subclass it belongs to - and hiding those leaves the page blank.
-            Effects = EffectsReader.Read(body, loader, requirements, tagsKey: "localized_tags"),
+            // Read as a leader's rather than as a species trait's. The two state their effects in
+            // different words - a leader says what it does while not on the council, or while
+            // governing a planet - and read the other way round a hundred and thirteen of them had
+            // nothing to show at all.
+            Effects = EffectsReader.Read(
+                body, loader, requirements, tagsKey: "localized_tags", forLeader: true),
 
             Icon = TraitIconComposer.Compose(body, key, loader, assets, colors)
                 ?? assets.RegisterFirst(

@@ -601,8 +601,41 @@ public sealed class WikiShelfTests
         Assert.Equal("Utopia", Assert.Single(row.Packs).Name);
     }
 
+    /// <summary>
+    /// A class with no faces anywhere is not a choice either, whatever its own file says.
+    /// </summary>
+    /// <remarks>
+    /// Seven of the game's classes have no portrait at all and none of them says
+    /// <c>playable = { always = no }</c>, so reading refusal alone called all seven playable. The
+    /// designer offers none of them: a species has to look like something.
+    /// </remarks>
+    [Fact]
+    public void ASpeciesClassWithNoFacesIsNotAChoice()
+    {
+        var row = Species(new SpeciesClassDefinition("SOLARPUNK", "BIOLOGICAL"), faces: false);
+
+        Assert.False(row.Playable);
+        Assert.Equal("No portraits", row.ClosedShort);
+    }
+
+    /// <summary>And a class the game gives no archetype is artwork rather than a species.</summary>
+    [Fact]
+    public void AnAppearanceOnlySpeciesClassIsNotAChoice()
+    {
+        var row = Species(new SpeciesClassDefinition("PSIONIC", null));
+
+        Assert.False(row.Playable);
+        Assert.Equal("Appearance only", row.ClosedShort);
+    }
+
     /// <summary>One species class, read as the wiki reads it.</summary>
-    private static WikiRow Species(SpeciesClassDefinition species)
+    /// <param name="species">The class.</param>
+    /// <param name="faces">
+    /// Whether the game gives it a portrait. True for almost every class, and the default here, so
+    /// that a test about packs or refusal is not quietly answering a different question.
+    /// </param>
+    /// <returns>Its row.</returns>
+    private static WikiRow Species(SpeciesClassDefinition species, bool faces = true)
     {
         var session = new DesignSession(
             new Sem.Ui.Services.GameData(
@@ -613,6 +646,15 @@ public sealed class WikiShelfTests
                     ExtractorVersion = "test",
                     Defines = new GameDefines { EthicsPoints = 3, CivicPoints = 2, CityPopLevel = 4 },
                     SpeciesClasses = [species],
+                    PortraitSets = faces
+                        ?
+                        [
+                            new PortraitSetDefinition("set", species.Key)
+                            {
+                                Portraits = [new PortraitEntry("face", new AlwaysRequirement(true))],
+                            },
+                        ]
+                        : [],
                     Dlc = [new DlcDefinition("utopia", "Utopia", null, null, true)],
                 },
                 new Dictionary<string, string>(StringComparer.Ordinal),

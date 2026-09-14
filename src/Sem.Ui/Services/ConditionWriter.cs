@@ -69,8 +69,11 @@ public sealed class ConditionWriter(Localizer localizer)
                 : Words(predicate.Name),
 
             // Something only a game in progress could answer. Saying so is more use than saying
-            // nothing, because it tells the player this is not a bonus they start with.
-            UnknownRequirement unknown => Words(unknown.Name),
+            // nothing, because it tells the player this is not a bonus they start with. Negated the
+            // same way every other arm is: this one alone dropped the "not", so a leader trait that
+            // pays out while off the council was headed "When councilor" - the opposite of the truth,
+            // printed directly under the game's own sentence saying so.
+            UnknownRequirement unknown => negated ? $"not {Words(unknown.Name)}" : Words(unknown.Name),
 
             _ => null,
         };

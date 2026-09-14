@@ -30,6 +30,22 @@ public static class EffectsReader
     ];
 
     /// <summary>
+    /// The triggered blocks a leader trait states its effects through.
+    /// </summary>
+    /// <remarks>
+    /// A different vocabulary from a species trait's, and the game does display these: a leader
+    /// trait says what it does while not on the council, or while governing a planet, and the
+    /// condition is half the answer. Read as a species trait's the numbers vanish - a hundred and
+    /// thirteen of the seven hundred and sixty-three had nothing at all to show, and Adventurous
+    /// Spirit's own page named a condition with no effects under it.
+    /// </remarks>
+    private static readonly string[] LeaderTriggeredBlocks =
+    [
+        "triggered_self_modifier",
+        "triggered_planet_modifier",
+    ];
+
+    /// <summary>
     /// The triggered block the game shows for everything except a trait.
     /// </summary>
     /// <remarks>
@@ -76,6 +92,10 @@ public static class EffectsReader
     /// Whether to read <c>on_enabled</c>, which is where an ascension perk states what taking it
     /// unlocks. Nothing else in the game writes one.
     /// </param>
+    /// <param name="forLeader">
+    /// Whether this is a leader trait, which states its conditional effects in words of its own -
+    /// what it does while not on the council, or while governing a planet.
+    /// </param>
     /// <remarks>
     /// True only for traits, whose own documentation says which triggered blocks are displayed and
     /// expects the rest to describe themselves in a tooltip. That rule used to be applied to
@@ -90,7 +110,8 @@ public static class EffectsReader
         RequirementCompiler requirements,
         string? tagsKey = null,
         bool hidesTriggeredBlocks = false,
-        bool readsScriptedUnlocks = false)
+        bool readsScriptedUnlocks = false,
+        bool forLeader = false)
     {
         ArgumentNullException.ThrowIfNull(body);
 
@@ -127,6 +148,7 @@ public static class EffectsReader
                 }
             }
             else if (ShownTriggeredBlocks.Contains(key, StringComparer.Ordinal) ||
+                     (forLeader && LeaderTriggeredBlocks.Contains(key, StringComparer.Ordinal)) ||
                      (key == PlainTriggeredBlock && !hidesTriggeredBlocks))
             {
                 var values = new Dictionary<string, double>(StringComparer.Ordinal);

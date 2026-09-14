@@ -81,9 +81,16 @@
             </tr>
         </thead>
 
-        <tbody>
-            @foreach (var row in Sorted)
-            {
+        @*
+            A tbody per entry rather than one for the whole table.
+
+            Valid, and the only way to say "this entry" in CSS: an upgrade path is several rows, and
+            a selector for the rows that belong to one has nothing to hold on to otherwise. Written
+            as a following-sibling rule first, which lit every later step in the table at once.
+        *@
+        @foreach (var row in Sorted)
+        {
+            <tbody>
                 @*
                     Pressing a row picks it out and puts it in the address, the same as pressing a
                     card does, so a reader who found the thing they came for can send somebody to it.
@@ -237,8 +244,8 @@
                         </td>
                     </tr>
                 }
-            }
-        </tbody>
+            </tbody>
+        }
     </table>
 </div>
 

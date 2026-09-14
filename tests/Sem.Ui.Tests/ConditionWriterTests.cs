@@ -143,6 +143,21 @@ public sealed class ConditionWriterTests
             new UnknownRequirement("has_encountered_a_crisis")));
     }
 
+    /// <summary>
+    /// And it is negated like everything else, rather than stating the opposite of the truth.
+    /// </summary>
+    /// <remarks>
+    /// This arm alone ignored the negation, so a leader trait whose bonus applies while NOT on the
+    /// council was headed "When councilor", immediately under the game's own sentence saying the
+    /// reverse.
+    /// </remarks>
+    [Fact]
+    public void AndSomethingOnlyAGameCouldAnswerIsNegatedTheSameWay()
+    {
+        Assert.Equal("not councilor", Writer().Describe(
+            new NotRequirement(new UnknownRequirement("is_councilor"))));
+    }
+
     /// <summary>A condition that is always true has nothing to say, and says nothing.</summary>
     /// <remarks>
     /// Null rather than an empty string, because the caller draws nothing at all for null and would

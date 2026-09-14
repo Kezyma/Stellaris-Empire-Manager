@@ -370,6 +370,9 @@ public sealed class WikiShelves(DesignSession session)
     /// naming one in the game and finding the empire missing from its list. So the two agree.
     /// </para>
     /// <para>
+    /// Refusal is not the only door though, and <see cref="Closed"/> holds the other two.
+    /// </para>
+    /// <para>
     /// The pack is not read here. <see cref="Row"/> is handed the same tree and works the packs out
     /// of it, which is how Toxoid comes to carry a Toxoids chip without this method mentioning one.
     /// </para>
@@ -377,18 +380,15 @@ public sealed class WikiShelves(DesignSession session)
     private WikiRow SpeciesClass(SpeciesClassDefinition species)
     {
         var faces = SpeciesFaces.All(Database, species.Key);
-        var shut = Refused(species.Playable);
+        var (shut, why) = Closed(species, faces);
 
         return Row(
             species.Key,
             EffectSet.None,
             species.Playable,
-            !shut,
-            shut ? "Unplayable" : null,
-            shut
-                ? "The game's own designer does not offer this class, and an empire naming one does "
-                    + "not appear in its list."
-                : null,
+            shut is null,
+            shut,
+            why,
             [new WikiCondition("Requirements", _reader.Read(species.Possible), "Any empire")],
             SpeciesFacts(species, faces),
             Wants(species.Possible)) with
@@ -408,6 +408,49 @@ public sealed class WikiShelves(DesignSession session)
     /// </remarks>
     private static bool Refused(Requirement? playable) =>
         playable is AlwaysRequirement { Value: false };
+
+    /// <summary>
+    /// Why a species class cannot be chosen, where it cannot, in two words and then in full.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The same three tests the designer's own picker applies, in the same order, because a page
+    /// saying a class is playable while the picker never offers it is worse than saying nothing.
+    /// Only the first was read here, so seven classes with no faces at all were called playable.
+    /// </para>
+    /// <para>
+    /// Refused outright is the game saying <c>always = no</c>, which nineteen carry. Appearance only
+    /// is a class with no archetype - artwork a species can wear rather than something a species can
+    /// be made of. And a class with no portraits is not a choice either: a species has to look like
+    /// something, and Spinovore and Solarpunk have an archetype and no faces anywhere.
+    /// </para>
+    /// </remarks>
+    /// <param name="species">The class.</param>
+    /// <param name="faces">The portraits it can wear, which may be none.</param>
+    /// <returns>The badge and the sentence, or a pair of nulls where it can be chosen.</returns>
+    private static (string? Badge, string? Why) Closed(
+        SpeciesClassDefinition species,
+        IReadOnlyList<string> faces)
+    {
+        if (Refused(species.Playable))
+        {
+            return ("Unplayable", "The game's own designer does not offer this class, and an empire "
+                + "naming one does not appear in its list.");
+        }
+
+        if (species.IsAppearanceOnly)
+        {
+            return ("Appearance only", "The game gives this class no archetype, so nothing can be "
+                + "made of it. It is artwork another species wears - a set of ships, a look for a "
+                + "city - rather than a species in its own right.");
+        }
+
+        return faces.Count == 0
+            ? ("No portraits", "The game defines the class but gives it no faces anywhere, and a "
+                + "species with no possible likeness is not a choice. The designer leaves it out "
+                + "for the same reason.")
+            : (null, null);
+    }
 
     /// <summary>
     /// What is worth saying about a species class beyond the faces.

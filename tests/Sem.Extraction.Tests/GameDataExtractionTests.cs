@@ -147,13 +147,28 @@ public sealed class GameDataExtractionTests
             "owner?",
             "fleet.solar_system",
             "planet.solar_system?",
+
+            // And the ten that arrived with a leader trait's own triggered blocks, which are read
+            // now rather than skipped - without them a hundred and thirteen traits had nothing at
+            // all to show. Same kind again: a policy in force, a relic held, a dig in progress, an
+            // heir, a scope the design has not got. None of it exists before the game starts.
+            "from?",
+            "has_policy_flag",
+            "planet",
+            "is_immortal",
+            "any_archaeological_site",
+            "has_leader_flag",
+            "has_relic",
+            "is_heir",
+            "has_edict",
+            "colony.ship?",
         ];
 
         var unexpected = database.UnrecognisedEffectConditions.Keys.Except(known, StringComparer.Ordinal);
 
         Assert.True(
             !unexpected.Any(),
-            "Conditions on modifiers that the compiler did not recognise, beyond the known five:\r\n" +
+            "Conditions on modifiers that the compiler did not recognise, beyond the known ones:\r\n" +
             string.Join(
                 "\r\n",
                 database.UnrecognisedEffectConditions
