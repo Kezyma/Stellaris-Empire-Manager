@@ -40,8 +40,20 @@ public sealed record DesktopBuild(string Name, string Address, long Bytes, DateT
 /// </remarks>
 public sealed class Releases(HttpClient http)
 {
-    /// <summary>The releases page, which is where a reader goes when this cannot answer.</summary>
+    /// <summary>The releases page, which is where a reader goes when there is nothing to offer.</summary>
     public const string Page = "https://github.com/Kezyma/Stellaris-Empire-Manager/releases";
+
+    /// <summary>
+    /// Where the newest build is, which is a fixed address and not a thing to look up.
+    /// </summary>
+    /// <remarks>
+    /// The whole point of the rolling release: one tag, one asset name, one address that answers
+    /// with whatever was built last. Nothing below is needed to hand somebody this - the asking is
+    /// only for the size and the date, which are worth knowing before spending seventy-seven
+    /// megabytes and are not worth failing over.
+    /// </remarks>
+    public const string Download = "https://github.com/Kezyma/Stellaris-Empire-Manager/releases"
+        + "/latest/download/StellarisEmpireManager-win-x64.zip";
 
     private const string Newest =
         "https://api.github.com/repos/Kezyma/Stellaris-Empire-Manager/releases/latest";
@@ -50,17 +62,29 @@ public sealed class Releases(HttpClient http)
 
     private DesktopBuild? _found;
 
-    /// <summary>Why there is nothing to offer, where there is nothing.</summary>
+    /// <summary>What could not be found out, where something could not.</summary>
     /// <remarks>
-    /// One line, and every way of failing ends in one: no release yet, a refused request, a rate
-    /// limit, a shape that will not parse. They differ only in what a reader could do about them,
-    /// which is nothing - so they differ in wording and not in what is offered next, which is the
-    /// releases page itself.
+    /// One line each. Most of them are about the size and the date rather than about the download,
+    /// which is still there and still the newest one - so they say so, rather than reading as a
+    /// refusal to hand anything over.
     /// </remarks>
     public string? Trouble { get; private set; }
 
     /// <summary>Whether the answer is still on its way.</summary>
     public bool Asking { get; private set; }
+
+    /// <summary>
+    /// Whether there is a build to hand over at all.
+    /// </summary>
+    /// <remarks>
+    /// True until something says otherwise, because the address above is fixed and the ordinary
+    /// state of this repository is that it answers. Only two things turn it off, and both are
+    /// GitHub saying plainly that there is nothing there: no release, or a release with no file
+    /// attached. A rate limit is not one of them - it says nothing about whether a build exists,
+    /// and taking the download away over it is how sixty requests an hour, shared with everything
+    /// else on somebody's network, turns into an app that appears to have lost its own installer.
+    /// </remarks>
+    public bool Offered { get; private set; } = true;
 
     /// <summary>
     /// The newest build, asked once and remembered.
@@ -89,21 +113,24 @@ public sealed class Releases(HttpClient http)
 
             using var answer = await _http.SendAsync(asking).ConfigureAwait(false);
 
-            // Nothing published. True before the first build finishes, and after a release is taken
-            // down, and it is not a fault on either side - so it says so plainly.
+            // Nothing published. The one answer that means the download is not there either, so it
+            // is the one that takes it away. True before the first build finishes and after a
+            // release is taken down, and a fault on nobody's part.
             if (answer.StatusCode is HttpStatusCode.NotFound)
             {
+                Offered = false;
                 Trouble = "There is no download yet.";
 
                 return null;
             }
 
-            // Nearly always the rate limit, which is per address and shared with everything else on
-            // the same network. Named rather than guessed at: this app cannot tell the difference
-            // between being rationed and being refused, and saying "try again shortly" covers both.
+            // Nearly always the rate limit, which is sixty an hour per address and shared with
+            // everything else on the same network. It says nothing at all about whether a build
+            // exists, so the download stays and only the size goes.
             if (!answer.IsSuccessStatusCode)
             {
-                Trouble = "GitHub would not say what the newest build is. Try again shortly.";
+                Trouble = "GitHub would not say how big it is just now, but the download below is "
+                    + "still the newest build.";
 
                 return null;
             }
@@ -116,8 +143,11 @@ public sealed class Releases(HttpClient http)
                 asset.Name is { Length: > 0 } name
                 && name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase));
 
+            // A release with no file in it. GitHub is answering, and what it says is that there is
+            // nothing there - so this takes the download away for the same reason the 404 does.
             if (built is not { Name: { Length: > 0 } named, Address: { Length: > 0 } address })
             {
+                Offered = false;
                 Trouble = "The newest build has nothing attached to it to download.";
 
                 return null;
@@ -131,7 +161,10 @@ public sealed class Releases(HttpClient http)
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or JsonException)
         {
-            Trouble = "The newest build could not be looked up.";
+            // Offline, blocked, or an answer in a shape this does not read. None of them say the
+            // build is missing, so none of them take it away.
+            Trouble = "GitHub could not be reached to say how big it is, but the download below is "
+                + "still the newest build.";
 
             return null;
         }

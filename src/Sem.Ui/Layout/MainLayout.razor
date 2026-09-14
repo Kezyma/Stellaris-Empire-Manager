@@ -353,21 +353,28 @@
     }
 
     @*
-        What the Desktop button opens: what the download is, how big, and how old, before anybody
-        spends seventy megabytes finding out. Where it cannot be said - nothing published yet, a
-        refused request, GitHub rationing an address it shares with a whole network - the sentence
-        says which and the button becomes the releases page, which answers all of them.
+        What the Desktop button opens.
+
+        The download is offered from the first frame, because its address is fixed and asking GitHub
+        anything is only how the size and the date are found out. That was the wrong way round: a
+        rationed address - sixty requests an hour, shared with everything else on somebody's network
+        - took the installer away with it, and the app looked like it had lost its own download.
+
+        Only GitHub saying there is nothing there takes it away now, and then the button becomes the
+        releases page.
     *@
     @if (_offering)
     {
         <ConfirmDialog Title="The Windows app" Message="@DesktopOffer"
                        OnDismiss="() => _offering = false">
-            @if (_build is { } build)
+            @if (_releases is { Offered: true })
             {
                 @* An anchor, not a button: what it does is fetch a file, which is what a link is. *@
-                <a class="sem-button" href="@build.Address">Download @build.Size</a>
+                <a class="sem-button" href="@(_build?.Address ?? Releases.Download)">
+                    Download@(_build is { } build ? $" {build.Size}" : string.Empty)
+                </a>
             }
-            else if (_releases is { Asking: false })
+            else
             {
                 <a class="sem-button" href="@Releases.Page" target="_blank" rel="noopener">
                     Open the releases page
@@ -652,14 +659,22 @@
     /// answers here, and "how big" is the one most likely to change somebody's mind.
     /// </remarks>
     private string DesktopOffer =>
-        _releases is { Asking: true }
-            ? "Asking GitHub what the newest build is."
-            : _build is { } build
-                ? "The same designer in a window, with your designs file already open in it - Save "
-                    + "writes the file the game reads, in place, and keeps a dated copy beside it. "
-                    + $"Windows 10 or 11, 64-bit. {build.Size}, built "
-                    + $"{build.Built.ToLocalTime():d MMMM yyyy}."
-                : _releases?.Trouble ?? "There is nothing to download just now.";
+        _releases is { Offered: false } missing
+            ? missing.Trouble ?? "There is nothing to download just now."
+            : What + _releases switch
+            {
+                { Asking: true } => " Asking GitHub how big it is.",
+                _ when _build is { } build =>
+                    $" {build.Size}, built {build.Built.ToLocalTime():d MMMM yyyy}.",
+                { Trouble: { Length: > 0 } why } => $" {why}",
+                _ => string.Empty,
+            };
+
+    /// <summary>The half of it that is true whatever GitHub has to say.</summary>
+    private const string What =
+        "The same designer in a window, with your designs file already open in it - Save writes the "
+        + "file the game reads, in place, and keeps a dated copy beside it. Windows 10 or 11, "
+        + "64-bit.";
 
     /// <summary>Opens the sheet, then fills it in when GitHub answers.</summary>
     /// <remarks>
