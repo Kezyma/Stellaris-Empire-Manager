@@ -44,10 +44,13 @@ public sealed class PageAttention(IJSRuntime? js = null) : IAsyncDisposable
     /// </remarks>
     public event Action? Returned;
 
+    /// <summary>Whether listening was tried and did not work, so it is not tried again.</summary>
+    private bool _failed;
+
     /// <summary>Starts listening. Asked more than once, does nothing further.</summary>
     public async Task StartAsync()
     {
-        if (_js is null || _module is not null)
+        if (_js is null || _module is not null || _failed)
         {
             return;
         }
@@ -68,7 +71,13 @@ public sealed class PageAttention(IJSRuntime? js = null) : IAsyncDisposable
         {
             // Nothing to listen with. Everything that asks carries on at its own pace, which is
             // what it did before any of this existed.
-            _module = null;
+            //
+            // The module reference is kept rather than dropped. Failing here does not mean the
+            // import failed - watchAttention itself can throw, against an older cached script or a
+            // fault inside it - and nulling the field made the successfully imported module
+            // unreachable, so disposal skipped it. It also re-opened the guard above, letting a
+            // second call create a second .NET reference without releasing the first.
+            _failed = true;
         }
     }
 

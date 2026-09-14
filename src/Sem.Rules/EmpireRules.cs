@@ -286,8 +286,7 @@ public sealed partial class EmpireRules(GameDatabase database)
     /// <summary>The world a nomadic empire begins on, which is its ship.</summary>
     private const string Arkship = "pc_ark";
 
-    private bool HasPlanetClass(string key) =>
-        _database.PlanetClasses.Any(p => string.Equals(p.Key, key, StringComparison.Ordinal));
+    private bool HasPlanetClass(string key) => _database.PlanetClass(key) is not null;
 
     /// <summary>
     /// The homeworld types this empire may start on.
@@ -1019,7 +1018,7 @@ public sealed partial class EmpireRules(GameDatabase database)
         ArgumentException.ThrowIfNullOrEmpty(perk);
 
         return DesignPredicates.TreesGrantedByPerk.TryGetValue(perk, out var granted)
-            ? [.. granted.Where(t => _database.TraditionTrees.Any(x => x.Key == t))]
+            ? [.. granted.Where(t => _database.TraditionTree(t) is not null)]
             : [];
     }
 

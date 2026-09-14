@@ -14,6 +14,24 @@ public sealed class UnavailableFileExchange : IFileExchange
     /// <inheritdoc />
     public string SaveVerb => "Save";
 
+    /// <summary>Whether the editor is holding work nobody has saved.</summary>
+    /// <remarks>
+    /// Kept here as well as on the real exchange, because the window asks whichever one is in place
+    /// before it closes. It used to ask only the real one by type, so a player who had installed
+    /// Stellaris but never launched it - no designs folder, so this stand-in is what is registered -
+    /// could build an empire and close the window on it without being asked anything. They can still
+    /// reach that work through Export, which makes it real rather than theoretical.
+    /// </remarks>
+    public bool HasUnsavedWork { get; private set; }
+
+    /// <inheritdoc />
+    public Task WarnBeforeLeavingAsync(bool unsaved)
+    {
+        HasUnsavedWork = unsaved;
+
+        return Task.CompletedTask;
+    }
+
     /// <summary>
     /// Where a shared link has to point, which is a question about the host and not about the file.
     /// </summary>

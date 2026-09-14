@@ -63,7 +63,17 @@ public partial class MainWindow : Window
     /// </remarks>
     private void AskBeforeClosing(object? sender, System.ComponentModel.CancelEventArgs e)
     {
-        if (_files is not DesktopFileExchange { HasUnsavedWork: true })
+        // Either exchange. Asked of the real one by type, this said nothing at all when no designs
+        // file had been found and the stand-in was in place - which is a player who has installed
+        // the game but never launched it, building an empire and closing the window on it.
+        var unsaved = _files switch
+        {
+            DesktopFileExchange desktop => desktop.HasUnsavedWork,
+            UnavailableFileExchange stood => stood.HasUnsavedWork,
+            _ => false,
+        };
+
+        if (!unsaved)
         {
             return;
         }

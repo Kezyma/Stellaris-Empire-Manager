@@ -9,7 +9,19 @@ public enum CwTokenKind
     /// <summary>A double-quoted string, including its quotes.</summary>
     QuotedString,
 
-    /// <summary>An assignment or comparison operator: <c>=</c>, <c>==</c>, <c>!=</c>, <c>&gt;</c>, <c>&lt;</c>, <c>&gt;=</c>, <c>&lt;=</c>, <c>?=</c>.</summary>
+    /// <summary>
+    /// An assignment or comparison operator: <c>=</c>, <c>==</c>, <c>!=</c>, <c>&gt;</c>,
+    /// <c>&lt;</c>, <c>&gt;=</c>, <c>&lt;=</c>.
+    /// </summary>
+    /// <remarks>
+    /// Not <c>?=</c>, which this used to list and the lexer has never produced: a question mark is
+    /// deliberately not an operator start, so it stays part of the identifier before it and
+    /// <c>owner?=</c> lexes as the bare token <c>owner?</c> followed by <c>=</c>. That is the form
+    /// the game writes. Spaced as <c>owner ?= x</c> it would lex as three tokens and the parser
+    /// would key the assignment on the question mark, which nothing looks up - so the condition
+    /// would be dropped rather than reported. No such spacing appears in 4.5, and the database's
+    /// unrecognised-trigger list is empty, so this is a gap rather than a live defect.
+    /// </remarks>
     Operator,
 
     /// <summary><c>{</c></summary>

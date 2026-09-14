@@ -62,6 +62,12 @@ public sealed class Preferences(IJSRuntime? js = null) : IAsyncDisposable
         {
             // Storage can be switched off. Starting with the defaults is the whole cost.
         }
+        catch (JSDisconnectedException)
+        {
+            // The page went away while this was reading, which SaveAsync below has always caught
+            // and this did not - so it escaped into the session host's own catch and came out as a
+            // message about the designs file being unreadable, which had nothing to do with it.
+        }
     }
 
     /// <summary>What is remembered for a setting, or null when nothing is.</summary>

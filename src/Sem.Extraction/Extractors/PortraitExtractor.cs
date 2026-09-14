@@ -142,13 +142,18 @@ internal static class PortraitExtractor
                                 attachmentLabels[key] = label;
                             }
 
+                            // The entry is made once, in the position of the first declaration, and
+                            // its fields are filled from the last - which is how the rest of this
+                            // project resolves an override and how the game does. It used to freeze
+                            // whatever was current when the key was first seen, so a portrait a pack
+                            // redeclares kept the base game's texture count while taking the pack's
+                            // evolution stages: three fields of one portrait, two different rules.
+                            //
+                            // The count matters most of the three. It bounds the skin variant a
+                            // design may store, so too low a one hides variants the game accepts.
                             if (seen.Add(key))
                             {
-                                results.Add(new PortraitDefinition(key)
-                                {
-                                    TextureCount = textures,
-                                    AttachmentLabelKey = attachmentLabels.GetValueOrDefault(key),
-                                });
+                                results.Add(new PortraitDefinition(key));
                             }
                         }
 
@@ -187,11 +192,6 @@ internal static class PortraitExtractor
                     ResolvesTo = fallback,
                     Members = members,
                     Phenotypes = phenotypes,
-                    TextureCount = textureCounts.GetValueOrDefault(fallback),
-
-                    // A group is what a design stores, and it is the group's control the player
-                    // uses, so it takes the word its default likeness uses.
-                    AttachmentLabelKey = attachmentLabels.GetValueOrDefault(fallback),
                 });
             }
         }
@@ -200,10 +200,20 @@ internal static class PortraitExtractor
         // after them. A group takes its default likeness's stages for the same reason it takes that
         // likeness's word for an attachment: the group is what the design stores, but the artwork
         // being evolved is the face underneath.
+        // Every field filled here, from the dictionaries the loop above kept as last-wins. The
+        // evolution stages were already read this way and the other two were frozen at the moment
+        // the key was first seen, so a portrait a pack redeclares could take its stages from the
+        // pack and its texture count from the base game.
+        //
+        // A group reads its default likeness's answers, for the reason above: the group is what a
+        // design stores, and the artwork underneath is that likeness's.
         return
         [
             .. results.Select(portrait => portrait with
             {
+                TextureCount = textureCounts.GetValueOrDefault(portrait.ResolvesTo ?? portrait.Key),
+                AttachmentLabelKey = attachmentLabels.GetValueOrDefault(
+                    portrait.ResolvesTo ?? portrait.Key),
                 EvolutionStages = evolutions.GetValueOrDefault(
                     portrait.ResolvesTo ?? portrait.Key,
                     defaultStages),

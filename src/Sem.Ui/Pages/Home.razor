@@ -257,6 +257,7 @@ else
                                   InDialog="true" OnBack="Close" OnDeleted="Finished">
                         <Body Context="actions">
                             <LiteShell Session="_session" Actions="@actions" Lore="@PresetLore"
+                                       IsPreset="@ShowingAPreset"
                                        OnPartClosed="() => _focused = false" />
                         </Body>
                         <Across>
@@ -562,6 +563,15 @@ else
     /// out - and it reads as Storm Chasers, the origin it is built around, rather than as nothing.
     /// </para>
     /// </remarks>
+    /// <summary>
+    /// Whether what is open is one of the game's own rather than the player's.
+    /// </summary>
+    /// <remarks>
+    /// The question itself, rather than "is there lore to show", which is what the answer was being
+    /// inferred from. They agree for every empire the game ships and are not the same question.
+    /// </remarks>
+    private bool ShowingAPreset => _opened is not null && _session?.IsHeldOut is true;
+
     private string? PresetLore
     {
         get

@@ -23,11 +23,15 @@ public sealed class EmpireColumnTests
 
         Assert.NotEmpty(columns);
 
+        // Which columns are written from a facet is the thing worth stating, and the initialiser
+        // has already refused any that names one that does not exist. What used to be here filtered
+        // the list by "has a facet" and then asserted that each one had a facet, which cannot fail.
         var facets = EmpireFacet.All.Select(f => f.Key).ToHashSet(StringComparer.Ordinal);
-        var picked = columns.Where(c => facets.Contains(c.Key)).ToList();
+        var free = columns.Where(c => !facets.Contains(c.Key)).Select(c => c.Key).Order();
 
-        Assert.NotEmpty(picked);
-        Assert.All(picked, column => Assert.Contains(column.Key, facets));
+        // Four, and each is something an empire has rather than something it is given: a typed
+        // name, not a choice off a list.
+        Assert.Equal(["planet", "prefix", "ruler", "speciesname"], free);
     }
 
     [Fact]

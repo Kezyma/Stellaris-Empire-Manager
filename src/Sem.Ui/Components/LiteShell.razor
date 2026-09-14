@@ -28,7 +28,7 @@
     else
     {
         <LiteCard Design="Session.Current" Baseline="@Session.SavedContext" OnEdit="Open"
-                  IsPreset="@(Lore is { Length: > 0 })"
+                  IsPreset="@IsPreset"
                   Actions="@Actions" Lore="@Lore" />
 
         @if (_editing is { } part)
@@ -59,6 +59,20 @@
     /// </remarks>
     [Parameter]
     public string? Lore { get; set; }
+
+    /// <summary>
+    /// Whether what is open is one of the game's own rather than the player's.
+    /// </summary>
+    /// <remarks>
+    /// Asked for rather than worked out from there being lore, which is what this used to do and
+    /// what the card it passes to says at length not to. The two travel together for all fifty-two
+    /// shipped empires, because a preset with no paragraph falls back to its origin's - so the
+    /// guard existed, was documented, and was wired so it could never fire. A preset without an
+    /// origin, or one whose text a localisation misses, would have been handed a plan panel it
+    /// cannot carry.
+    /// </remarks>
+    [Parameter]
+    public bool IsPreset { get; set; }
 
     /// <summary>
     /// Raised when the editor for a part closes, so whatever is underneath can take the keyboard.

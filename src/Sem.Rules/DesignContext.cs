@@ -200,8 +200,7 @@ public sealed class DesignContext
     /// extractor already carries. The key was written out here as well, so the same literal sat on
     /// both sides of the wire with nothing keeping them in step.
     /// </remarks>
-    public bool IsGestalt => Ethics.Any(
-        e => Database.Ethics.Any(x => x.IsGestalt && string.Equals(x.Key, e, StringComparison.Ordinal)));
+    public bool IsGestalt => Ethics.Any(e => Database.Ethic(e) is { IsGestalt: true });
 
     /// <summary>True when the empire is a hive mind.</summary>
     public bool IsHiveEmpire => Authority == "auth_hive_mind";
@@ -220,9 +219,7 @@ public sealed class DesignContext
     /// that flag all along without anything reading it. Two archetype names were listed here
     /// instead, which is the same answer today and the wrong one the moment a pack adds a third.
     /// </remarks>
-    public bool IsRobotEmpire =>
-        SpeciesArchetype is { } archetype &&
-        Database.Archetypes.Any(a => a.IsRobotic && string.Equals(a.Key, archetype, StringComparison.Ordinal));
+    public bool IsRobotEmpire => Database.Archetype(SpeciesArchetype) is { IsRobotic: true };
 
     /// <summary>True when the empire is a megacorporation.</summary>
     public bool IsMegacorp => Authority == "auth_corporate";
@@ -387,7 +384,7 @@ public sealed class DesignContext
         // name - so counting the set would say a plan had opened three times as many trees as it
         // had, and "a tree slot must still be free" would run out after two.
         SelectionCategory.TraditionTree =>
-            TraditionTrees.Count(k => Database.TraditionTrees.Any(t => t.Key == k)),
+            TraditionTrees.Count(k => Database.TraditionTree(k) is not null),
 
         _ => 0,
     };
