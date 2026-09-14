@@ -222,6 +222,51 @@ public sealed class ImagePipelineTests
         Assert.Equal((10, 20, 30, 255), (red, green, blue, alpha));
     }
 
+    /// <summary>
+    /// A half-transparent layer keeps its colour rather than being darkened towards black.
+    /// </summary>
+    /// <remarks>
+    /// The case the two tests above cannot see. Both build their lower layer fully opaque, which is
+    /// the one arrangement where premultiplying the result cancels out - so the blend spent a long
+    /// time weighting the destination by one minus the source alpha and dividing by 255, which left
+    /// white at a quarter alpha reading as dark grey at a quarter alpha. Every anti-aliased edge of
+    /// a bottom layer was darkened in proportion to its own alpha.
+    /// </remarks>
+    [Theory]
+    [InlineData(64)]
+    [InlineData(128)]
+    [InlineData(200)]
+    public void ATranslucentLayerOverNothingKeepsItsColour(byte alpha)
+    {
+        var stacked = DdsImageOps.Over(
+            Solid(2, 2, 255, 255, 255, alpha),
+            Solid(2, 2, 0, 0, 0, 0));
+
+        var (blue, green, red, settled) = stacked[0, 0];
+
+        // White is white at any alpha. Premultiplied it came back as the alpha itself.
+        Assert.Equal((255, 255, 255, alpha), (red, green, blue, settled));
+    }
+
+    /// <summary>And stacking onto it does not compound the error either.</summary>
+    /// <remarks>
+    /// Half-covering a half-transparent white with opaque red: the result is opaque where the red
+    /// is, and the white underneath is still white where it is not.
+    /// </remarks>
+    [Fact]
+    public void ATranslucentLowerLayerSurvivesSomethingDrawnOnIt()
+    {
+        var stacked = DdsImageOps.Over(
+            Solid(4, 4, 255, 255, 255, 128),
+            Solid(2, 2, 255, 0, 0, 255));
+
+        var (_, _, middleRed, middleAlpha) = stacked[1, 1];
+        var (cornerBlue, cornerGreen, cornerRed, cornerAlpha) = stacked[0, 0];
+
+        Assert.Equal((255, 255), (middleRed, middleAlpha));
+        Assert.Equal((255, 255, 255, 128), (cornerRed, cornerGreen, cornerBlue, cornerAlpha));
+    }
+
     /// <summary>A picture of one colour, for testing the operations rather than the decoder.</summary>
     private static DdsImage Solid(int width, int height, byte r, byte g, byte b, byte a)
     {

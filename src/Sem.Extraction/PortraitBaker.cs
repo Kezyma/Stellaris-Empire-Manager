@@ -97,7 +97,14 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
                 bytes += png.Length;
                 results.Add(portrait with { Thumbnail = destination });
             }
-            catch (Exception ex) when (ex is InvalidDataException or NotSupportedException or IOException)
+            catch (Exception ex)
+                when (ex is InvalidDataException or NotSupportedException or IOException
+
+                    // Skia answers a bitmap it will not encode by returning null, and the writer
+                    // turns that into this - so every bake path could throw one, and none of them
+                    // caught it. One icon that would not encode cost the player every other one,
+                    // which is the opposite of what the sentence below says happens.
+                    or InvalidOperationException)
             {
                 // One portrait that will not draw must not cost the player all the others.
                 failures.Add($"{portrait.Key}: {ex.Message}");
@@ -177,7 +184,9 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
                     (float)((bottom - origin) / PerUnit),
                     top <= 0 || bottom >= settings.Height - 1));
             }
-            catch (Exception ex) when (ex is InvalidDataException or NotSupportedException or IOException)
+            catch (Exception ex)
+                when (ex is InvalidDataException or NotSupportedException or IOException
+                    or InvalidOperationException)
             {
                 // A model that will not read cannot say how tall it is; the rest still can.
             }
@@ -410,7 +419,9 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
                     });
                 }
             }
-            catch (Exception ex) when (ex is InvalidDataException or NotSupportedException or IOException)
+            catch (Exception ex)
+                when (ex is InvalidDataException or NotSupportedException or IOException
+                    or InvalidOperationException)
             {
                 failures.Add($"{portrait.Key}: {ex.Message}");
             }
@@ -750,7 +761,9 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
             {
                 image = DdsReader.Read(_content.Read(path));
             }
-            catch (Exception ex) when (ex is InvalidDataException or NotSupportedException or IOException)
+            catch (Exception ex)
+                when (ex is InvalidDataException or NotSupportedException or IOException
+                    or InvalidOperationException)
             {
                 image = null;
             }

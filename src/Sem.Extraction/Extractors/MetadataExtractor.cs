@@ -289,8 +289,19 @@ internal static class MetadataExtractor
         return packs;
     }
 
+    /// <summary>
+    /// The value a define ends up with, out of every section that sets it.
+    /// </summary>
+    /// <remarks>
+    /// The last one, because the sections arrive in load order and that is how the game resolves a
+    /// key set twice - and how everything else in this project resolves one: ScriptLoader's
+    /// definitions, the sprite catalog, the database's own lookup all say "last declaration wins"
+    /// and mean it. This took the first, so a mod raising the civic points or the ethos budget in a
+    /// file that sorts after the base game's was read straight past, and the designer offered a
+    /// budget that installation does not have.
+    /// </remarks>
     private static string? Find(List<CwBlock> sections, string key) =>
-        sections.Select(s => s.FindNestedString(key)).FirstOrDefault(v => v is not null);
+        sections.Select(s => s.FindNestedString(key)).LastOrDefault(v => v is not null);
 
     private static int? FindInt(List<CwBlock> sections, string key) =>
         int.TryParse(Find(sections, key), System.Globalization.CultureInfo.InvariantCulture, out var value) ? value : null;

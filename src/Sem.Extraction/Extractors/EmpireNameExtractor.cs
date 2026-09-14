@@ -44,7 +44,7 @@ internal static class EmpireNameExtractor
                 continue;
             }
 
-            results.Add(new EmpireNamePartsList(key, [.. Words(parts)]));
+            results.Add(new EmpireNamePartsList(key, [.. Words(loader, parts)]));
         }
 
         return results;
@@ -89,11 +89,15 @@ internal static class EmpireNameExtractor
     /// still one token, but a few are quoted where they contain an apostrophe, and the parser has
     /// already taken the quotes off by the time this reads them.
     /// </remarks>
-    private static IEnumerable<EmpireNamePart> Words(CwBlock parts)
+    private static IEnumerable<EmpireNamePart> Words(ScriptLoader loader, CwBlock parts)
     {
         foreach (var node in parts.Nodes)
         {
-            if (node.Key is { Length: > 0 } word && int.TryParse(node.ScalarValue, System.Globalization.CultureInfo.InvariantCulture, out var weight))
+            // Through the resolver, like every other number in this extractor. Parsed directly, a
+            // weight written as an @variable - which the format allows and the game follows - did
+            // not parse, and the guard below took the whole word out of the list with it. A word
+            // list quietly one word shorter is not a failure anything would ever report.
+            if (node.Key is { Length: > 0 } word && loader.ResolveInt(node.ScalarValue) is { } weight)
             {
                 yield return new EmpireNamePart(word, weight);
             }

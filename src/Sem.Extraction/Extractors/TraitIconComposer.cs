@@ -147,7 +147,20 @@ internal static class TraitIconComposer
 
         var text = Substitute(Encoding.UTF8.GetString(loader.Content.Read(path)), variables);
 
-        return CwDocument.Parse(Encoding.UTF8.GetBytes(text), CwParseOptions.Lenient);
+        try
+        {
+            return CwDocument.Parse(Encoding.UTF8.GetBytes(text), CwParseOptions.Lenient);
+        }
+        catch (Exception ex) when (ex is CwSyntaxException or IOException)
+        {
+            // Recorded and skipped, which is what the loader does with the very same files when it
+            // reads them the other way. Bare, one malformed icon script ended the whole extraction
+            // where the identical file reached through ScriptLoader.Fragment is a line in the
+            // failures list and nothing more.
+            loader.RecordFailure(path, ex.Message);
+
+            return null;
+        }
     }
 
     /// <summary>Fills in every <c>$NAME$</c> an answer was given for.</summary>

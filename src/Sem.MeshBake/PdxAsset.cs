@@ -166,8 +166,26 @@ public static class PdxAssetReader
         position += nameLength;
 
         var type = bytes[position++];
-        var count = (int)BinaryPrimitives.ReadUInt32LittleEndian(bytes[position..]);
+        var counted = BinaryPrimitives.ReadUInt32LittleEndian(bytes[position..]);
         position += 4;
+
+        // Bounded against what is actually left in the file before anything is allocated for it.
+        // Read as a raw uint and cast, a corrupt or mod-written count of 0x40000000 asked for a four
+        // gigabyte array and 0xFFFFFFFF asked for one of minus one - an OutOfMemoryException and an
+        // OverflowException, neither of which the bakers catch, so a single damaged mesh anywhere in
+        // the installation ended the run. A count that cannot fit is the file being wrong about
+        // itself, which is what InvalidDataException says and what they do catch.
+        //
+        // Four bytes to an int or a float; a string count is bytes. One byte each is the floor, so
+        // this rejects only what could not possibly be there.
+        if (counted > (uint)(bytes.Length - position))
+        {
+            throw new InvalidDataException(
+                $"Asset property '{name}' says it holds {counted} values, and "
+                + $"{bytes.Length - position} bytes are left in the file.");
+        }
+
+        var count = (int)counted;
 
         switch (type)
         {

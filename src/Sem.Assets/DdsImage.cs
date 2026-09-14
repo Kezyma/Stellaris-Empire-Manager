@@ -108,6 +108,24 @@ public static class DdsReader
             _ => throw new NotSupportedException($"Unsupported DDS compression '{FourCcName(fourCc)}'."),
         };
 
+        // Checked before it is handed over, the way the uncompressed path below checks its own.
+        // Without this a truncated texture reached the decoder and came back as whatever that
+        // library throws - an ArgumentException, or an index out of range - which is not in the set
+        // the bakers catch, so one damaged file in a thirty-five-thousand-file installation ended
+        // the whole run instead of being recorded and skipped.
+        //
+        // Four by four pixels to a block, and eight bytes to a block for DXT1, sixteen for the
+        // other two.
+        var blocks = (long)((width + 3) / 4) * ((height + 3) / 4);
+        var required = blocks * (format == BCnEncoder.Shared.CompressionFormat.Bc1WithAlpha ? 8 : 16);
+
+        if (data.Length < required)
+        {
+            throw new InvalidDataException(
+                $"DDS is truncated: {data.Length} bytes of {FourCcName(fourCc)} data for a "
+                + $"{width} by {height} image, which needs {required}.");
+        }
+
         var decoder = new BCnEncoder.Decoder.BcDecoder();
         var colors = decoder.DecodeRaw(data.ToArray(), width, height, format);
 

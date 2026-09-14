@@ -53,3 +53,7 @@ coverage/
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# Visual Studio publish profiles. A local artefact of pressing Publish in the IDE; the release
+# workflow passes its own flags and never reads one.
+PublishProfiles/

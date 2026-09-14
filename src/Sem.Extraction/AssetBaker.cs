@@ -85,7 +85,14 @@ public sealed class AssetBaker(LayeredContent content, SafeFile file)
                 var current = folders.GetValueOrDefault(folder);
                 folders[folder] = (current.Files + 1, current.Bytes + png.Length);
             }
-            catch (Exception ex) when (ex is InvalidDataException or NotSupportedException or IOException)
+            catch (Exception ex)
+                when (ex is InvalidDataException or NotSupportedException or IOException
+
+                    // Skia answers a bitmap it will not encode by returning null, and the writer
+                    // turns that into this - so every bake path could throw one, and none of them
+                    // caught it. One icon that would not encode cost the player every other one,
+                    // which is the opposite of what the sentence below says happens.
+                    or InvalidOperationException)
             {
                 failures.Add($"{request.Source}: {ex.Message}");
             }
@@ -136,7 +143,9 @@ public sealed class AssetBaker(LayeredContent content, SafeFile file)
                 var current = folders.GetValueOrDefault(folder);
                 folders[folder] = (current.Files + 1, current.Bytes + png.Length);
             }
-            catch (Exception ex) when (ex is InvalidDataException or NotSupportedException or IOException)
+            catch (Exception ex)
+                when (ex is InvalidDataException or NotSupportedException or IOException
+                    or InvalidOperationException)
             {
                 failures.Add($"{request.Destination}: {ex.Message}");
             }

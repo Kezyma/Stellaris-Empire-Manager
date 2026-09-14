@@ -150,6 +150,15 @@ public sealed class ScriptLoader(LayeredContent content)
             return;
         }
 
+        // How many substitutions have happened in a row at this one position without producing
+        // anything but another call. The depth above counts nesting into blocks, which is not the
+        // same thing and not the case the constant describes: a fragment is spliced into this very
+        // list and re-read at the same index and the same depth, so a fragment whose first node
+        // calls another was followed without any limit at all. A file naming itself, or any A-to-B
+        // -to-A a mod can write in two lines, looped here for ever - memory flat, nothing thrown,
+        // an extraction that simply never finished.
+        var chained = 0;
+
         for (var at = 0; at < body.Nodes.Count; at++)
         {
             var node = body.Nodes[at];
@@ -160,6 +169,9 @@ public sealed class ScriptLoader(LayeredContent content)
                 {
                     Inline(nested, depth + 1);
                 }
+
+                // Real content, so whatever chain led here has ended.
+                chained = 0;
 
                 continue;
             }
@@ -179,6 +191,21 @@ public sealed class ScriptLoader(LayeredContent content)
                 continue;
             }
 
+            if (chained >= MaxInlineDepth)
+            {
+                // Left where it is rather than followed again, and said out loud: an extraction
+                // that quietly dropped part of a definition is the thing this class exists not to
+                // do. The call stays in the tree, which nothing downstream reads as a field.
+                RecordFailure(
+                    script,
+                    $"an inline script that calls another more than {MaxInlineDepth} deep, "
+                    + "which usually means two of them name each other");
+
+                chained = 0;
+
+                continue;
+            }
+
             body.RemoveAt(at);
 
             var written = 0;
@@ -190,7 +217,9 @@ public sealed class ScriptLoader(LayeredContent content)
             }
 
             // Back over what was just written, so a fragment that calls another is read too, and
-            // so the loop does not step past the first node of what it inserted.
+            // so the loop does not step past the first node of what it inserted. Counted, because
+            // that is the step the depth above never sees.
+            chained++;
             at--;
         }
     }

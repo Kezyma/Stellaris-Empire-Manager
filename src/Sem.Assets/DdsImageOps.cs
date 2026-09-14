@@ -117,10 +117,21 @@ public static class DdsImageOps
     /// Draws one picture over another, centred, keeping whatever shows through.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// The layers of an icon are authored at their own sizes and the game centres them on each
     /// other — a trait's background is 29 across, its councillor badge 32 — so a stack is as wide as
     /// its widest layer rather than as its first. Ordinary source-over compositing, with the result
     /// left unmultiplied so it can be stacked again.
+    /// </para>
+    /// <para>
+    /// Unmultiplied is the part that was only claimed. The blend used to weight the destination by
+    /// one minus the source alpha and divide by 255, which leaves the answer multiplied by the
+    /// alpha it accumulated: white at a quarter alpha drawn into an empty buffer came out as dark
+    /// grey at a quarter alpha. Opaque layers are unaffected, which is why nothing noticed - and
+    /// both of the tests built their lower layer fully opaque, the one case where the error
+    /// cancels. What it cost was a dark fringe along every anti-aliased edge of a bottom layer,
+    /// compounding with each further layer stacked on it.
+    /// </para>
     /// </remarks>
     public static DdsImage Over(DdsImage under, DdsImage over)
     {
@@ -155,14 +166,22 @@ public static class DdsImageOps
 
                     var target = (((y + offsetY) * width) + x + offsetX) * 4;
 
+                    // How much of what is already there still shows once this layer covers it,
+                    // and what the two come to together. Both are needed before the colours are
+                    // touched: the weight below is the destination's own alpha, not one minus the
+                    // source's, and dividing by the total is what leaves the result unmultiplied.
+                    var kept = pixels[target + 3] * (255 - alpha) / 255;
+                    var settled = alpha + kept;
+
                     for (var channel = 0; channel < 3; channel++)
                     {
                         pixels[target + channel] = (byte)(
-                            ((layer.Pixels[source + channel] * alpha) + (pixels[target + channel] * (255 - alpha)))
-                            / 255);
+                            ((layer.Pixels[source + channel] * alpha) + (pixels[target + channel] * kept))
+                            / settled);
                     }
 
-                    pixels[target + 3] = (byte)(alpha + (pixels[target + 3] * (255 - alpha) / 255));
+                    // After the colours, which were blended against the alpha it replaces.
+                    pixels[target + 3] = (byte)settled;
                 }
             }
         }

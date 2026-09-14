@@ -228,7 +228,10 @@ public sealed class ModelRenderer(ModelSettings? settings = null)
             var b = part.Triangles[i + 1];
             var c = part.Triangles[i + 2];
 
-            if (a >= part.Positions.Length || b >= part.Positions.Length || c >= part.Positions.Length)
+            // Both ends. Only the upper one was checked, so a negative index out of a corrupt
+            // triangle list walked straight past the guard and threw on the lookup below.
+            if (a < 0 || b < 0 || c < 0
+                || a >= part.Positions.Length || b >= part.Positions.Length || c >= part.Positions.Length)
             {
                 continue;
             }
