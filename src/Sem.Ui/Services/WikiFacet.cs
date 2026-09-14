@@ -118,6 +118,45 @@ public static class WikiFacet
     ];
 
     /// <summary>
+    /// The species traits, narrowed by what they cost and who may take them.
+    /// </summary>
+    /// <remarks>
+    /// Cost is a heading here rather than only a column because it is the question a reader arrives
+    /// with: the whole of picking traits is spending a budget, so "what can I get for two points"
+    /// is the search, and "which of these give points back" is the other half of it.
+    /// </remarks>
+    public static IReadOnlyList<Facet<WikiRow>> SpeciesTraits { get; } =
+    [
+        .. Both,
+        Many("cost", "Cost", r => Fact(r, "Cost")),
+        Many("archetype", "Archetype", r => Fact(r, "Archetype")),
+        Many("class", "Only for", r => Fact(r, "Only for")),
+        Many("origin", "Origin", r => Fact(r, "Origin")),
+        Many("homeworld", "Homeworld", r => Fact(r, "Homeworld")),
+        Many("pack", "Content pack", r => r.PackChoices),
+        Many("bonus", "Bonus", r => r.Bonuses, Effects),
+    ];
+
+    /// <summary>
+    /// The leader traits, narrowed by who may hold them and what sort they are.
+    /// </summary>
+    /// <remarks>
+    /// No reach heading, unlike every other shelf. None of these is out of reach - a leader trait is
+    /// earned in a game rather than offered in a list, so "can a player take this" is a question
+    /// about the wrong thing - and a toggle whose answer is Yes seven hundred times is a control
+    /// that takes width to say nothing.
+    /// </remarks>
+    public static IReadOnlyList<Facet<WikiRow>> LeaderTraits { get; } =
+    [
+        Many("class", "Class", r => Fact(r, "Class")),
+        Many("sort", "Sort", r => Fact(r, "Sort")),
+        Many("rarity", "Rarity", r => Fact(r, "Rarity")),
+        Many("tier", "Tier", r => Fact(r, "Tier")),
+        Many("pack", "Content pack", r => r.PackChoices),
+        Many("bonus", "Bonus", r => r.Bonuses, Effects),
+    ];
+
+    /// <summary>
     /// One of a row's own facts, as the choices a heading offers.
     /// </summary>
     /// <remarks>

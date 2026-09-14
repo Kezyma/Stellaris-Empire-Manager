@@ -160,31 +160,65 @@ The consequence is that re-extracting is a commit, not a build step. `build-site
 that does it properly: extract, build, test, and rehearse the real Pages publish including the
 `.nojekyll` check.
 
-## The wiki, and why it needed no new data
+## The wiki, and where its data comes from
 
-`/wiki/civics`, `/wiki/origins`, `/wiki/ethics` and `/wiki/authorities` show every one of those the
-game defines, including the ones no player can ever take. That needed nothing extracted.
+`/wiki/civics`, `/wiki/origins`, `/wiki/ethics`, `/wiki/authorities`, `/wiki/species`,
+`/wiki/species-traits` and `/wiki/leader-traits` show every one of those the game defines, including
+the ones no player can ever take.
 
-The four shelves are one component and one row type. They are very different records and a reader
-asks the same things of each - what is it, what does it do, who may have it, what does it cost in
-packs - so `WikiRow` carries that much and `WikiRow.Facts` carries whatever a kind has that the
-others do not: an ethic's cost and opposite, an authority's elections and heir. A field per kind
-would leave every row three-quarters empty and give each page a reason to know about the others.
+The shelves are one component and one row type. They are very different records and a reader asks
+the same things of each - what is it, what does it do, who may have it, what does it cost in packs -
+so `WikiRow` carries that much and `WikiRow.Facts` carries whatever a kind has that the others do
+not: an ethic's cost and opposite, an authority's elections and heir, a leader trait's tier. A field
+per kind would leave every row three-quarters empty and give each page a reason to know about the
+others.
 
 A column is drawn only where the rows fill it. The ethics are why: the game gates them on nothing at
 all, so Playable would say Yes seventeen times and Pack would be blank, and both would take width
 from the columns that do say something.
 
-`gamedb.json` already carries all 358 of them, unfiltered - `EmpireOptions` narrows them at the point
-of use, not at extraction - so the three things the pages need beyond the records themselves are
-worked out at runtime in `Sem.Ui/Services`: `CivicReach` says whether a player could ever be offered
-one, `ContentPacks` says which packs gate it, and the description is the `_desc` convention every
-option chip already reads by.
+Six of the seven need nothing extracted. `gamedb.json` already carries all 358 civics and all 364
+species traits, unfiltered - `EmpireOptions` narrows them at the point of use, not at extraction - so
+what those pages need beyond the records is worked out at runtime in `Sem.Ui/Services`: `CivicReach`
+says whether a player could ever be offered one, `ContentPacks` says which packs gate it, and the
+description is the `_desc` convention every option chip already reads by.
 
 The alternative was a property or two on `CivicDefinition`, which reads better and costs a schema
 bump - and a schema bump sends every desktop player back through thirty-five thousand files to learn
-something the file they already have could have told them. Anything the database can answer should be
-asked of it rather than added to it.
+something the file they already have could have told them. **Anything the database can answer should
+be asked of it rather than added to it.**
+
+### When the database cannot answer: wiki packs
+
+The leader traits are the first thing the wiki wants that an empire designer has no use for. There
+are 728 of them, nothing in an empire can hold one, and they were deliberately discarded at
+extraction for years on exactly the reasoning above.
+
+So they are not in the database. They are in `gamedata/wiki/leader-traits.json`, written by
+`GameDataWriter` beside `gamedb.json`, and fetched through `IGameDataSource.LoadWikiPackAsync` the
+first time somebody opens the page. `gamedb.json` does not grow, its schema does not move, and a
+visitor who never opens that page never fetches it.
+
+This is `wardrobe.json` generalised. That file has worked this way since the ruler got a figure, for
+the same reason stated on the same interface: kept apart and fetched only when something asks. What
+is new is that there will be a great many - planets, shipsets, AI personalities, traditions,
+ascension perks, anomalies, archaeology sites, astral rifts, buildings, research, edicts, policies,
+systems, events, situations, enclaves, empires - so the loader is keyed by domain rather than a
+field and a gate per file.
+
+Two things about a pack that are not obvious:
+
+- **It carries its own text.** `loc/en.json` is pruned to what the database reaches, and a pack is by
+  definition about things the database does not carry - so its names are pruned away and always
+  would be. Not one leader trait has a name in that file. `LocalisationPruner.Slice` gives a pack the
+  slice it needs, expanded through the same `$key$` following, and the shelf reads it through a
+  `Localizer` of its own so a name written as `$leader_trait_archaeologist$ II` resolves.
+- **It states the shape it is in**, refused on a mismatch the way a stale `gamedb.json` already is. A
+  schema number per domain, so a change to one does not re-version the rest.
+
+On the desktop the same files are written into the cache directory, and `GameDataCache.IsUsable`
+checks each one exists - a cache built before a domain existed passes every other test and would
+never be rebuilt, leaving that page permanently empty on the machine with nothing to say why.
 
 The filter machinery is shared rather than copied. `Facet<TRow>` and `Sifter<TRow>` are what the
 empire list's own headings and narrowing are built from, and `FilterCard`, `SearchBox` and

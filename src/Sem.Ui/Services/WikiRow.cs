@@ -190,10 +190,15 @@ public sealed record WikiFact(string Heading, IReadOnlyList<EmpireChoice> Chips,
     public static WikiFact Of(string heading, IReadOnlyList<EmpireChoice> chips) => new(heading, chips, null);
 
     /// <summary>A fact that says a word.</summary>
+    /// <remarks>
+    /// Null is allowed and means the same as empty: a shelf where only some rows answer a heading
+    /// would otherwise have to decide between saying nothing and saying so in the caller, and
+    /// <see cref="Any"/> already drops an empty one.
+    /// </remarks>
     /// <param name="heading">What it answers.</param>
-    /// <param name="text">The word.</param>
+    /// <param name="text">The word, or null where there is none.</param>
     /// <returns>The fact.</returns>
-    public static WikiFact Said(string heading, string text) => new(heading, [], text);
+    public static WikiFact Said(string heading, string? text) => new(heading, [], text);
 
     /// <summary>Whether it says anything at all, so an empty one can be left undrawn.</summary>
     public bool Any => Chips.Count > 0 || Text is { Length: > 0 };

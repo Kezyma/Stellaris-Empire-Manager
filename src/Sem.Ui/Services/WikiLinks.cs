@@ -13,9 +13,9 @@ namespace Sem.Ui.Services;
 /// </para>
 /// <para>
 /// One method and one lookup per kind, in the order a key is likeliest to be found. A key that
-/// belongs to nothing comes back as nothing, and the chip is drawn as it always was: not every chip
-/// on a wiki page is something the wiki has a page for - a trait, a planet class and an ascension
-/// perk are all things a civic can ask for and none of them has a shelf yet.
+/// belongs to nothing comes back as nothing, and the chip is drawn as it always was: not every
+/// chip on a wiki page is something the wiki has a page for - a planet class and an ascension
+/// perk are both things a civic can ask for and neither has a shelf yet.
 /// </para>
 /// </remarks>
 /// <param name="database">The extracted game.</param>
@@ -36,6 +36,8 @@ public sealed class WikiLinks(GameDatabase database)
         WikiKind.Ethics => $"{Root}/ethics",
         WikiKind.Authorities => $"{Root}/authorities",
         WikiKind.Species => $"{Root}/species",
+        WikiKind.SpeciesTraits => $"{Root}/species-traits",
+        WikiKind.LeaderTraits => $"{Root}/leader-traits",
         _ => $"{Root}/civics",
     };
 
@@ -50,8 +52,8 @@ public sealed class WikiLinks(GameDatabase database)
     /// </summary>
     /// <remarks>
     /// Civics before origins because they are the same collection and told apart by a flag, and
-    /// species classes last because their keys are the only ones that look nothing like the others -
-    /// <c>HUM</c> and <c>TOX</c> rather than <c>civic_</c> and <c>ethic_</c>.
+    /// species classes before the traits because their keys are the only ones that look nothing
+    /// like the others - <c>HUM</c> and <c>TOX</c> rather than <c>civic_</c> and <c>ethic_</c>.
     /// </remarks>
     /// <param name="key">What a chip carries.</param>
     /// <returns>The shelf, or null.</returns>
@@ -77,7 +79,15 @@ public sealed class WikiLinks(GameDatabase database)
             return WikiKind.Authorities;
         }
 
-        return _database.SpeciesClass(key) is not null ? WikiKind.Species : null;
+        if (_database.SpeciesClass(key) is not null)
+        {
+            return WikiKind.Species;
+        }
+
+        // The species traits only. A leader trait is not in the database at all - it lives in the
+        // wiki's own file - so a chip naming one is not a link, which is the right answer: nothing
+        // outside that page has any reason to name one.
+        return _database.Trait(key) is { Kind: TraitKind.Species } ? WikiKind.SpeciesTraits : null;
     }
 
     /// <summary>The address of whatever a key names, or nothing where the wiki has no page for it.</summary>

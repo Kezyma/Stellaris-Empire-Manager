@@ -40,6 +40,7 @@ public sealed class WikiLinkTests
     [InlineData("ethic_militarist", "wiki/ethics/ethic_militarist")]
     [InlineData("auth_democratic", "wiki/authorities/auth_democratic")]
     [InlineData("TOX", "wiki/species/TOX")]
+    [InlineData("trait_intelligent", "wiki/species-traits/trait_intelligent")]
     public void AKeyGoesToTheShelfItIsOn(string key, string route) =>
         Assert.Equal(route, Links.For(key));
 
@@ -47,12 +48,11 @@ public sealed class WikiLinkTests
     /// And a key the wiki has no page for is left alone.
     /// </summary>
     /// <remarks>
-    /// Most of what a requirement names is not a wiki entry. A trait, a planet class, an ascension
-    /// perk and a global flag are all things a civic can ask for, and drawing them as links would
-    /// promise a page behind every one of them.
+    /// Most of what a requirement names is still not a wiki entry. A planet class, an ascension perk
+    /// and a global flag are all things a civic can ask for, and drawing them as links would promise
+    /// a page behind every one of them.
     /// </remarks>
     [Theory]
-    [InlineData("trait_intelligent")]
     [InlineData("pc_ringworld_habitable")]
     [InlineData("")]
     [InlineData(null)]
@@ -70,6 +70,19 @@ public sealed class WikiLinkTests
         Assert.Equal(WikiKind.Origins, Links.Shelf("origin_shattered_ring"));
     }
 
+    /// <summary>
+    /// A leader trait is not a link, because it is not in the database to be found.
+    /// </summary>
+    /// <remarks>
+    /// Its page is built from a file of the wiki's own, fetched only when somebody opens it, and
+    /// nothing outside that page has any reason to name one - no empire can hold one. So a chip
+    /// carrying one of these keys would have nowhere to go, and asking the database is the same
+    /// answer as asking whether anything else can reach it.
+    /// </remarks>
+    [Fact]
+    public void ALeaderTraitIsNotALinkBecauseNothingElseNamesOne() =>
+        Assert.Null(Links.For("leader_trait_carefree"));
+
     /// <summary>A shelf's own address is the one its tab points at.</summary>
     [Fact]
     public void AShelfHasTheAddressItsTabPointsAt()
@@ -79,5 +92,7 @@ public sealed class WikiLinkTests
         Assert.Equal("wiki/ethics", WikiLinks.Section(WikiKind.Ethics));
         Assert.Equal("wiki/authorities", WikiLinks.Section(WikiKind.Authorities));
         Assert.Equal("wiki/species", WikiLinks.Section(WikiKind.Species));
+        Assert.Equal("wiki/species-traits", WikiLinks.Section(WikiKind.SpeciesTraits));
+        Assert.Equal("wiki/leader-traits", WikiLinks.Section(WikiKind.LeaderTraits));
     }
 }

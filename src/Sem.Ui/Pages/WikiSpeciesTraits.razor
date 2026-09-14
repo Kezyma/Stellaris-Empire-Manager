@@ -1,0 +1,28 @@
+@page "/wiki/species-traits"
+@page "/wiki/species-traits/{Key}"
+
+@*
+    What a founding species can be given, and what it costs to give.
+
+    Three hundred and sixty-four of them, and the reader's question is nearly always a budget one:
+    what can be had for two points, and which of these hand points back. So the cost is a column and
+    a heading rather than a line of prose inside the card.
+
+    A trait states its restrictions as flat lists rather than as conditions - there is no requirement
+    tree on one anywhere - so the requirement columns stay empty and what it may be taken with is
+    said as facts instead.
+
+    The second address is one entry of the shelf. It shows the same page and picks that one out, so a
+    reader who found the thing they came for can send somebody straight to it rather than to a list
+    with an instruction to scroll.
+*@
+
+<PageTitle>Species Traits - Stellaris Empire Manager</PageTitle>
+
+<WikiSection Kind="WikiKind.SpeciesTraits" Focus="@Key" />
+
+@code {
+    /// <summary>The entry the address names, where it named one.</summary>
+    [Parameter]
+    public string? Key { get; set; }
+}

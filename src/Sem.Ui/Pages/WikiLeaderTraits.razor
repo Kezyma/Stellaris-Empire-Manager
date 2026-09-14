@@ -1,0 +1,29 @@
+@page "/wiki/leader-traits"
+@page "/wiki/leader-traits/{Key}"
+
+@*
+    What a leader can hold, which is the first page built from a file of the wiki's own.
+
+    Seven hundred and twenty-eight records, and nothing in an empire can hold one - the ruler's
+    picker asks for the starting traits and no empire in anybody's files carries a leader's. So they
+    are kept out of the data every visitor fetches to draw a designer, and fetched here instead, the
+    first time somebody opens this page.
+
+    Two hundred and thirty-four of them have no name in any language the game ships, being the tiers
+    a leader earns while a game is running. Those take the name of the trait they replace, with the
+    tier said beside it.
+
+    The second address is one entry of the shelf. It shows the same page and picks that one out, so a
+    reader who found the thing they came for can send somebody straight to it rather than to a list
+    with an instruction to scroll.
+*@
+
+<PageTitle>Leader Traits - Stellaris Empire Manager</PageTitle>
+
+<WikiSection Kind="WikiKind.LeaderTraits" Focus="@Key" />
+
+@code {
+    /// <summary>The entry the address names, where it named one.</summary>
+    [Parameter]
+    public string? Key { get; set; }
+}

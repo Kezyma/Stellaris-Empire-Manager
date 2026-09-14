@@ -1,5 +1,6 @@
 @implements IAsyncDisposable
 @inject SessionHost Host
+@inject IGameDataSource Source
 @inject IJSRuntime Js
 @inject AddressBar Address
 
@@ -29,8 +30,10 @@
     <NavLink href="wiki/authorities" class="sem-tab">Authorities</NavLink>
     <NavLink href="wiki/civics" class="sem-tab">Civics</NavLink>
     <NavLink href="wiki/ethics" class="sem-tab">Ethics</NavLink>
+    <NavLink href="wiki/leader-traits" class="sem-tab">Leader Traits</NavLink>
     <NavLink href="wiki/origins" class="sem-tab">Origins</NavLink>
     <NavLink href="wiki/species" class="sem-tab">Species</NavLink>
+    <NavLink href="wiki/species-traits" class="sem-tab">Species Traits</NavLink>
 </nav>
 
 @if (_session is null || _shelf is null || _filter is null)
@@ -164,6 +167,17 @@ else
     [Parameter]
     public string? Focus { get; set; }
 
+    /// <summary>Which shelf is on screen, so a move between them is noticed once.</summary>
+    private WikiKind? _opened;
+
+    /// <summary>Opens a shelf and redraws, for the callers that cannot wait for it.</summary>
+    /// <returns>A task that completes once it is open.</returns>
+    private async Task Reopen()
+    {
+        await Open().ConfigureAwait(true);
+        StateHasChanged();
+    }
+
     /// <summary>Which entry is picked out, whether by the address or by a press.</summary>
     private string? _chosen;
 
@@ -241,7 +255,8 @@ else
         _session.Changed += Forget;
         _links = new WikiLinks(_session.Data.Database);
         _shelves = new WikiShelves(_session);
-        Open();
+        _opened = Kind;
+        await Open().ConfigureAwait(true);
         _listView = _session.Preferences.Get(ViewSetting) == ListView;
     }
 
@@ -256,8 +271,7 @@ else
     private void Forget()
     {
         _shelves = _session is null ? null : new WikiShelves(_session);
-        Open();
-        StateHasChanged();
+        _ = Reopen();
     }
 
     /// <summary>
@@ -268,9 +282,21 @@ else
     /// civic has none, and one filter carried between them would hold ticks under a heading the page
     /// in front of the reader does not draw.
     /// </remarks>
-    private void Open()
+    private async Task Open()
     {
-        _shelf = _shelves?.Of(Kind);
+        _shelf = _shelves is not { } shelves
+            ? null
+            : Kind switch
+            {
+                // The one shelf that is not in the empire designer's data. Fetched once and held by
+                // the source from then on, so moving away and back does not ask again.
+                WikiKind.LeaderTraits => shelves.LeaderTraits(await Source
+                    .LoadWikiPackAsync(LeaderTraitPack.Domain, GameDataJsonContext.Default.LeaderTraitPack)
+                    .ConfigureAwait(true)),
+
+                _ => shelves.Of(Kind),
+            };
+
         _narrowed = null;
 
         if (_shelf is { } shelf)
@@ -289,9 +315,13 @@ else
     /// </remarks>
     protected override void OnParametersSet()
     {
-        if (_shelves is not null && _shelf?.Title != _shelves.Of(Kind).Title)
+        // Compared against the kind rather than against the shelf's own title, which is what it was:
+        // a pack-backed shelf is built from a file that may not have arrived, and asking Of(Kind)
+        // for its title would build the wrong shelf to find out whether to build the right one.
+        if (_shelves is not null && _opened != Kind)
         {
-            Open();
+            _opened = Kind;
+            _ = Reopen();
         }
 
         // Against the last value taken from the address, not against the selection. The two part

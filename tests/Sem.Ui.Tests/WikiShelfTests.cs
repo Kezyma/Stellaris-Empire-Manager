@@ -622,6 +622,85 @@ public sealed class WikiShelfTests
         return Assert.Single(new WikiShelves(session).Of(WikiKind.Species).Rows);
     }
 
+    /// <summary>A species trait says what it costs and who may take it.</summary>
+    [Fact]
+    public void ASpeciesTraitSaysItsCostAndItsRestrictions()
+    {
+        var row = Trait(new TraitDefinition("trait_intelligent", TraitKind.Species)
+        {
+            Cost = 2,
+            AllowedArchetypes = ["BIOLOGICAL", "LITHOID"],
+            Opposites = ["trait_nerve_stapled"],
+        });
+
+        Assert.Equal("2", row.Fact("Cost")!.Text);
+        Assert.Equal(["BIOLOGICAL", "LITHOID"], row.Fact("Archetype")!.Chips.Select(c => c.Key));
+        Assert.Equal(["trait_nerve_stapled"], row.Fact("Rules out")!.Chips.Select(c => c.Key));
+    }
+
+    /// <summary>
+    /// Hidden is out of reach; not being initial is not.
+    /// </summary>
+    /// <remarks>
+    /// The twenty-four non-initial traits are gated on an origin, and the game offers them once that
+    /// origin is picked - which is what this app does too, so calling them unplayable would be a
+    /// plain untruth about traits a player can have.
+    /// </remarks>
+    [Fact]
+    public void OnlyAHiddenSpeciesTraitIsOutOfReach()
+    {
+        Assert.False(Trait(new TraitDefinition("trait_secret", TraitKind.Species) { Hidden = true }).Playable);
+        Assert.True(Trait(new TraitDefinition("trait_late", TraitKind.Species) { Initial = false }).Playable);
+    }
+
+    /// <summary>A trait behind a pack carries it, though the game states it as a name not a condition.</summary>
+    [Fact]
+    public void ASpeciesTraitBehindAPackCarriesIt()
+    {
+        var row = Trait(new TraitDefinition("trait_toxic", TraitKind.Species) { RequiredDlc = "Utopia" });
+
+        Assert.Equal("Utopia", Assert.Single(row.Packs).Name);
+        Assert.True(row.Owned);
+    }
+
+    /// <summary>Only the species traits are on that shelf; the ruler's are their own question.</summary>
+    [Fact]
+    public void TheRulerTraitsAreNotOnTheSpeciesShelf()
+    {
+        var shelves = Shelves(
+            [new TraitDefinition("trait_intelligent", TraitKind.Species),
+             new TraitDefinition("trait_ruler_charismatic", TraitKind.StartingRuler)]);
+
+        Assert.Equal(
+            ["trait_intelligent"],
+            shelves.Of(WikiKind.SpeciesTraits).Rows.Select(r => r.Key));
+    }
+
+    /// <summary>One species trait, read as the wiki reads it.</summary>
+    private static WikiRow Trait(TraitDefinition trait) =>
+        Assert.Single(Shelves([trait]).Of(WikiKind.SpeciesTraits).Rows);
+
+    /// <summary>A session holding nothing but some traits.</summary>
+    private static WikiShelves Shelves(TraitDefinition[] traits)
+    {
+        var session = new DesignSession(
+            new Sem.Ui.Services.GameData(
+                new GameDatabase
+                {
+                    SchemaVersion = GameDatabase.CurrentSchemaVersion,
+                    GameVersion = "test",
+                    ExtractorVersion = "test",
+                    Defines = new GameDefines { EthicsPoints = 3, CivicPoints = 2, CityPopLevel = 4 },
+                    Traits = traits,
+                    Dlc = [new DlcDefinition("utopia", "Utopia", null, null, true)],
+                },
+                new Dictionary<string, string>(StringComparer.Ordinal),
+                "assets"));
+
+        session.StartEmptyFile();
+        return new WikiShelves(session);
+    }
+
     /// <summary>The first of some ethics, read as the wiki reads them.</summary>
     private static WikiRow Ethic(params EthicDefinition[] ethics) =>
         Shelves([], ethics).Of(WikiKind.Ethics).Rows.First(r => r.Key == ethics[0].Key);

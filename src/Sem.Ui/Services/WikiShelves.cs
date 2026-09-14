@@ -19,6 +19,19 @@ public enum WikiKind
 
     /// <summary>The species classes, which are a set of faces rather than one.</summary>
     Species,
+
+    /// <summary>The traits a founding species can be given.</summary>
+    SpeciesTraits,
+
+    /// <summary>
+    /// The traits a leader can hold, which the database does not carry.
+    /// </summary>
+    /// <remarks>
+    /// The first shelf built from a file of the wiki's own rather than from the empire designer's
+    /// data. Seven hundred records nothing in an empire can hold, fetched when somebody opens the
+    /// page and not before.
+    /// </remarks>
+    LeaderTraits,
 }
 
 /// <summary>
@@ -89,6 +102,10 @@ public sealed class WikiShelves(DesignSession session)
 
         WikiKind.Species => new WikiShelf(
             "Species", "species classes", "species class", Species(), WikiFacet.Species),
+
+        WikiKind.SpeciesTraits => new WikiShelf(
+            "Species Traits", "species traits", "species trait",
+            SpeciesTraits(), WikiFacet.SpeciesTraits),
 
         _ => new WikiShelf("Civics", "civics", "civic", Civics(origins: false), WikiFacet.Civics),
     };
@@ -566,6 +583,231 @@ public sealed class WikiShelves(DesignSession session)
             .Distinct(StringComparer.Ordinal)
             .Select(key => new EmpireChoice(key, session.Modifiers.Label(key), null, null))
             .OrderBy(c => c.Name, StringComparer.CurrentCulture),
+    ];
+
+    /// <summary>
+    /// Every trait a founding species can be given, whether or not a player is offered it.
+    /// </summary>
+    /// <remarks>
+    /// Read from the database, which already carries all three hundred and sixty-four: the
+    /// designer's own picker needs them, so unlike the leader traits there is nothing to fetch.
+    /// </remarks>
+    private IReadOnlyList<WikiRow> SpeciesTraits() =>
+    [
+        .. Database.Traits
+            .Where(t => t.Kind == TraitKind.Species)
+            .Select(SpeciesTrait)
+            .OrderBy(r => r.Name, StringComparer.CurrentCulture),
+    ];
+
+    /// <summary>
+    /// One species trait.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A trait states its restrictions as flat lists rather than as a condition tree - there is no
+    /// <c>Requirement</c> on one anywhere - so there is nothing for the condition reader to read and
+    /// the requirement columns stay undrawn. What it may be taken with goes in the facts instead,
+    /// as chips, which is the same answer read differently.
+    /// </para>
+    /// <para>
+    /// Hidden is the honest "no player can take this"; not being initial is not. The twenty-four
+    /// non-initial ones are gated on an origin and the game offers them once that origin is picked,
+    /// which is what this app does too.
+    /// </para>
+    /// </remarks>
+    private WikiRow SpeciesTrait(TraitDefinition trait) =>
+        Row(
+            trait.Key,
+            trait.Effects,
+
+            // Synthesised, because a trait states its pack as a name rather than as a condition.
+            // Handing it over as one is what earns the pack chip and the owned mark for free.
+            trait.RequiredDlc is { Length: > 0 } dlc ? new DlcRequirement(dlc) : null,
+            !trait.Hidden,
+            trait.Hidden ? "Unplayable" : null,
+            trait.Hidden
+                ? "The game keeps this one to itself. It is given out by an event or an origin and "
+                    + "never offered in a list."
+                : null,
+            [],
+            SpeciesTraitFacts(trait),
+            null) with
+        {
+            Icon = trait.Icon,
+        };
+
+    /// <summary>
+    /// The leader traits, from the file the wiki fetched for itself.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The one shelf not read from the database. Handed in rather than looked up, because it
+    /// arrives over the network some time after the page does - and where it could not be fetched
+    /// at all the shelf is empty rather than absent, so the page says "nothing here" rather than
+    /// spinning for ever.
+    /// </para>
+    /// <para>
+    /// The text comes with it. A leader trait's name is not in the app's own localisation and never
+    /// will be: that file is pruned to what the database reaches, and these are not in the database.
+    /// </para>
+    /// </remarks>
+    /// <param name="pack">What was fetched, or null where nothing was.</param>
+    /// <returns>The shelf, ready to draw.</returns>
+    public WikiShelf LeaderTraits(LeaderTraitPack? pack)
+    {
+        var traits = pack?.Traits ?? [];
+
+        // Read through a reader of its own rather than out of the pack's dictionary, because these
+        // names are not plain words. The game writes a second tier as "$leader_trait_archaeologist$
+        // II" - the name of the tier below, then a numeral - and it writes five of them as bracketed
+        // commands only a running game can answer. Resolving all of that is what the localiser does,
+        // and the pack's text is simply more entries for it to resolve against.
+        var text = new Dictionary<string, string>(session.Data.Localisation, StringComparer.Ordinal);
+
+        foreach (var (key, value) in pack?.Text ?? new Dictionary<string, string>(StringComparer.Ordinal))
+        {
+            text[key] = value;
+        }
+
+        var reader = new Localizer(
+            text,
+            Database.TextIcons,
+            session.Data.AssetUrl,
+            Database.ScriptedValues,
+            Database.ScriptedText);
+
+        return new WikiShelf(
+            "Leader Traits", "leader traits", "leader trait",
+            [
+                .. traits
+                    .Select(t => LeaderTrait(t, traits, reader))
+                    .OrderBy(r => r.Name, StringComparer.CurrentCulture),
+            ],
+            WikiFacet.LeaderTraits);
+    }
+
+    /// <summary>
+    /// One leader trait.
+    /// </summary>
+    /// <remarks>
+    /// Named through its own chain where it has no name of its own. Two hundred and thirty-four of
+    /// these are the second and third tiers a leader earns while a game is running, and the game
+    /// ships no text for them in any language - so the heading comes from the tier they replace,
+    /// with the tier said beside it.
+    /// </remarks>
+    private WikiRow LeaderTrait(
+        LeaderTraitDefinition trait,
+        IReadOnlyList<LeaderTraitDefinition> all,
+        Localizer reader)
+    {
+        var named = Chained(trait, all, reader);
+        var described = reader.Text(trait.DescriptionKey, string.Empty);
+
+        return Row(
+            trait.Key,
+            trait.Effects,
+            trait.RequiredDlc is { Length: > 0 } dlc ? new DlcRequirement(dlc) : null,
+            reachable: true,
+            null,
+            null,
+            [],
+            LeaderTraitFacts(trait),
+            null) with
+        {
+            Icon = trait.Icon,
+            Name = named,
+            Description = described,
+            Text = $"{named} {described} {trait.Key}",
+        };
+    }
+
+    /// <summary>
+    /// What to call a trait, following what it replaces where it has no name of its own.
+    /// </summary>
+    /// <remarks>
+    /// The pack's own text first, then the app's - a handful of these chains end at a ruler trait,
+    /// which is in the database and so is named in the ordinary localisation. Failing both, the key
+    /// prettified, which reads as a name and is at least not a blank cell.
+    /// </remarks>
+    private string Chained(
+        LeaderTraitDefinition trait,
+        IReadOnlyList<LeaderTraitDefinition> all,
+        Localizer reader,
+        int depth = 0)
+    {
+        if (Plain(reader.Text(trait.NameKey, string.Empty)) is { } own)
+        {
+            return own;
+        }
+
+        // Four deep is more than any chain the game ships, and stops a pair that replace each other
+        // from going round for ever.
+        if (depth < 4)
+        {
+            foreach (var earlier in trait.Replaces)
+            {
+                if (all.FirstOrDefault(t => t.Key == earlier) is { } below &&
+                    Chained(below, all, reader, depth + 1) is { Length: > 0 } inherited &&
+                    inherited != Localizer.Prettify(below.Key))
+                {
+                    return inherited;
+                }
+
+                if (Plain(reader.Text(earlier, string.Empty)) is { } elsewhere)
+                {
+                    return elsewhere;
+                }
+            }
+        }
+
+        return Localizer.Prettify(trait.Key);
+    }
+
+    /// <summary>
+    /// A name the app can actually show, or nothing.
+    /// </summary>
+    /// <remarks>
+    /// Five of the game's leader traits are named by a bracketed command rather than by a word -
+    /// <c>[GetChosenName]</c>, <c>[owner.GetRulerTitle]</c> - because what they are called depends
+    /// on the leader holding them, which only a running game knows. Drawn as they stand they are
+    /// not names, and being punctuation they sort to the very top of the page. Treated as absent,
+    /// the tier chain and then the prettified key answer instead.
+    /// </remarks>
+    /// <param name="text">What the game says.</param>
+    /// <returns>The name, or null where it is not one.</returns>
+    private static string? Plain(string? text) =>
+        text is { Length: > 0 } said && !said.TrimStart().StartsWith('[') ? said : null;
+
+    /// <summary>What is worth saying about a leader trait beyond what it does.</summary>
+    private IReadOnlyList<WikiFact> LeaderTraitFacts(LeaderTraitDefinition trait) =>
+    [
+        WikiFact.Of("Class", Named(trait.LeaderClasses)),
+        WikiFact.Said("Sort", trait.Sort is { Length: > 0 } sort ? Localizer.Prettify(sort) : null),
+        WikiFact.Said("Rarity", trait.Rarity is { Length: > 0 } rare ? Localizer.Prettify(rare) : null),
+
+        // Said only where the game says it. A tier of zero is a trait that is not part of a chain
+        // at all, and "0" in a column of 1s and 2s reads as a rank rather than as an absence.
+        WikiFact.Said(
+            "Tier",
+            trait.Tier > 0 ? trait.Tier.ToString(System.Globalization.CultureInfo.CurrentCulture) : null),
+        WikiFact.Of("Replaces", Named(trait.Replaces)),
+        WikiFact.Of("Rules out", Named(trait.Opposites)),
+    ];
+
+    /// <summary>What is worth saying about a species trait beyond what it does.</summary>
+    private IReadOnlyList<WikiFact> SpeciesTraitFacts(TraitDefinition trait) =>
+    [
+        // Said as a number rather than as chips, and sortable, because the whole of picking traits
+        // is spending a budget: two points for Intelligent, and a drawback to pay for it.
+        WikiFact.Said("Cost", trait.Cost.ToString(System.Globalization.CultureInfo.CurrentCulture)),
+        WikiFact.Of("Archetype", Named(trait.AllowedArchetypes)),
+        WikiFact.Of("Only for", Named(trait.AllowedSpeciesClasses)),
+        WikiFact.Of("Rules out", Named(trait.Opposites)),
+        WikiFact.Of("Homeworld", Named(trait.AllowedPlanetClasses)),
+        WikiFact.Of("Origin", Named(trait.AllowedOrigins)),
+        WikiFact.Of("Not with", Named(trait.ForbiddenEthics)),
+        WikiFact.Of("Needs civic", Named(trait.AllowedCivics)),
     ];
 
     /// <summary>
