@@ -24,7 +24,7 @@ public static class CivicFacet
     /// this; these ask what having it does, and a reader looking for unity is not narrowing by the
     /// same thing as a reader looking for something a hive mind can take.
     /// </remarks>
-    public const string Effects = "What it does";
+    public const string Effects = "Effects";
 
     /// <summary>Every heading, including the two asked outside the card.</summary>
     public static IReadOnlyList<Facet<CivicRow>> All { get; } =

@@ -1,5 +1,6 @@
-@implements IDisposable
+@implements IAsyncDisposable
 @inject SessionHost Host
+@inject IJSRuntime Js
 
 @*
     A shelf of the game, to read rather than to pick from.
@@ -49,6 +50,13 @@ else
         missing session and say nothing about why.
     *@
     <CascadingValue Value="_session">
+      @*
+        One box around both views, because the popovers are bound to it rather than to each chip.
+        A civics page draws several hundred of them and binding each one costs a round trip into
+        JavaScript before anybody has hovered anything; bindPopoversWhenPointed puts one listener
+        here instead and binds a chip the first moment a pointer reaches it.
+      *@
+      <div @ref="_body">
         <div class="sem-list-head">
             @*
                 The same two words the empire list uses, because it is the same choice: a card
@@ -81,15 +89,15 @@ else
                        Label="@($"Search {Noun}")" OnChanged="Narrow" />
 
             <AskedToggle TRow="CivicRow" Filter="@_filter" Key="reach"
-                         All="@(new ToggleWording("Everything", $"Showing every {One} the game defines. Press to show only the ones a player can take."))"
+                         All="@(new ToggleWording("All", $"Showing every {One} the game defines. Press to show only the ones a player can take."))"
                          Yes="@(new ToggleWording("Playable", $"Showing the {Noun} a player can take. Press to show the ones nobody can."))"
-                         No="@(new ToggleWording("Out of reach", $"Showing the {Noun} no player can take. Press to show everything."))"
+                         No="@(new ToggleWording("Unplayable", $"Showing the {Noun} no player can take. Press to show all of them."))"
                          OnChanged="Narrow" />
 
             <AskedToggle TRow="CivicRow" Filter="@_filter" Key="owned"
-                         All="@(new ToggleWording("Any pack", "Showing whatever the packs require. Press to show only what you own."))"
-                         Yes="@(new ToggleWording("Your packs", $"Showing the {Noun} your packs allow. Press to show the ones they do not."))"
-                         No="@(new ToggleWording("Not owned", $"Showing the {Noun} you would need another pack for. Press to show everything."))"
+                         All="@(new ToggleWording("All packs", "Showing whatever the packs require. Press to show only what your packs allow."))"
+                         Yes="@(new ToggleWording("Owned", $"Showing the {Noun} your packs allow. Press to show the ones they do not."))"
+                         No="@(new ToggleWording("Not owned", $"Showing the {Noun} your packs rule out. Press to show all of them."))"
                          OnChanged="Narrow" />
         </div>
 
@@ -114,6 +122,7 @@ else
                 }
             </div>
         }
+      </div>
     </CascadingValue>
 }
 
@@ -204,11 +213,60 @@ else
         StateHasChanged();
     }
 
-    public void Dispose()
+    /// <summary>The box the popovers are bound through.</summary>
+    private ElementReference _body;
+
+    /// <summary>
+    /// Held as the task rather than its result, for the reason the empire table gives: written as
+    /// <c>_module ??= await Import()</c> two renders can both find it null and both import.
+    /// </summary>
+    private Task<IJSObjectReference>? _module;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_session is null)
+        {
+            return;
+        }
+
+        try
+        {
+            var module = await (_module ??= Js.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/Sem.Ui/sem.js").AsTask()).ConfigureAwait(true);
+
+            // Every render, and cheap: the binder marks the box it was given and returns at once if
+            // it is asked again. Switching between cards and list builds a new box, which needs it.
+            await module.InvokeVoidAsync("bindPopoversWhenPointed", _body).ConfigureAwait(true);
+        }
+        catch (JSDisconnectedException)
+        {
+            // The page went away mid-render. Nothing to bind and nobody to tell.
+        }
+    }
+
+    public async ValueTask DisposeAsync()
     {
         if (_session is not null)
         {
             _session.Changed -= Forget;
+        }
+
+        if (_module is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await (await _module.ConfigureAwait(false)).DisposeAsync().ConfigureAwait(false);
+        }
+        catch (JSDisconnectedException)
+        {
+            // The page went away first; there is nothing left to release.
+        }
+        catch (JSException)
+        {
+            // The import never succeeded, so it left nothing to release.
         }
     }
 

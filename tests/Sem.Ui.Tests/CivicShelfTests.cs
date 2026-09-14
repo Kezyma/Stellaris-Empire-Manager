@@ -25,6 +25,7 @@ public sealed class CivicShelfTests
                     ExtractorVersion = "test",
                     Defines = new GameDefines { EthicsPoints = 3, CivicPoints = 2, CityPopLevel = 4 },
                     Civics = civics,
+                    Ethics = [new EthicDefinition("ethic_militarist", 1, "militarist") { Icon = "icons/militarist.png" }],
                     Dlc =
                     [
                         new DlcDefinition("utopia", "Utopia", null, null, true),
@@ -34,6 +35,7 @@ public sealed class CivicShelfTests
                 new Dictionary<string, string>(StringComparer.Ordinal)
                 {
                     ["civic_named"] = "Beacon of Liberty",
+                    ["ethic_militarist"] = "Militarist",
                     ["civic_named_desc"] = "A shining example.",
                 },
                 "assets"));
@@ -89,38 +91,76 @@ public sealed class CivicShelfTests
         Assert.Contains("shining", row.Text, StringComparison.Ordinal);
     }
 
-    /// <summary>All five conditions are there, in the game's own order, whether stated or not.</summary>
+    /// <summary>
+    /// The two conditions about the empire are there, in the game's own order.
+    /// </summary>
     /// <remarks>
-    /// The game means something different by each and keeps them apart, so a card that dropped the
-    /// silent ones would leave a reader unable to tell "adds nothing" from "not shown".
+    /// Two of the five. Potential decides whether the option is drawn and Possible whether it may
+    /// then be taken, and a reader asking why an empire cannot have something wants to know which
+    /// of the two refused.
     /// </remarks>
     [Fact]
-    public void AllFiveConditionsAreThere()
+    public void TheTwoConditionsAboutTheEmpireAreThere()
     {
         var row = Row(new CivicDefinition("civic_named", IsOrigin: false));
 
-        Assert.Equal(
-            ["Needs", "Offered to", "Allowed when", "Added by reform", "Dropped by reform"],
-            row.Conditions.Select(c => c.Heading));
-
+        Assert.Equal(["Offered to", "Allowed when"], row.Conditions.Select(c => c.Heading));
         Assert.All(row.Conditions, c => Assert.False(c.Stated));
     }
 
     /// <summary>
-    /// Each silent condition gets words of its own rather than one word used five times.
+    /// What you must own is not among them, because the pack chips already say it.
     /// </summary>
     /// <remarks>
-    /// "Needs: Always" says the opposite of what it means. The five ask different questions, so
-    /// what stands in for silence has to differ with them.
+    /// Playable is a content pack check and nothing else - all two hundred and one of them, with
+    /// not one appearing in either of the other two trees - so a bullet for it would read "needs
+    /// Utopia" beside a badge already saying so.
+    /// </remarks>
+    [Fact]
+    public void WhatYouMustOwnIsLeftToThePackChips()
+    {
+        var row = Row(new CivicDefinition("civic_named", IsOrigin: false)
+        {
+            Playable = new DlcRequirement("Utopia"),
+        });
+
+        Assert.DoesNotContain("Needs", row.Conditions.Select(c => c.Heading));
+        Assert.Equal("Utopia", Assert.Single(row.Packs).Name);
+    }
+
+    /// <summary>
+    /// Nor is whether a reform could add or drop it later.
+    /// </summary>
+    /// <remarks>
+    /// True, and about a game in progress rather than about designing an empire. On most civics the
+    /// two say nothing at all, so they cost every card two rows of "Always" to tell a reader nothing
+    /// they came for.
+    /// </remarks>
+    [Fact]
+    public void NorIsWhatAReformCouldDoLater()
+    {
+        var row = Row(new CivicDefinition("civic_named", IsOrigin: false)
+        {
+            CanAddLater = new AlwaysRequirement(false),
+            CanRemoveLater = new AlwaysRequirement(false),
+        });
+
+        Assert.Equal(2, row.Conditions.Count);
+    }
+
+    /// <summary>
+    /// Each silent condition gets words of its own rather than one word used twice.
+    /// </summary>
+    /// <remarks>
+    /// "Offered to: Always" says something subtly different from what it means. The two ask
+    /// different questions, so what stands in for silence has to differ with them.
     /// </remarks>
     [Fact]
     public void EachSilentConditionGetsItsOwnWords()
     {
         var row = Row(new CivicDefinition("civic_named", IsOrigin: false));
 
-        Assert.Equal(
-            ["Nothing", "Any empire", "Always", "Always", "Always"],
-            row.Conditions.Select(c => c.Otherwise));
+        Assert.Equal(["Any empire", "Always"], row.Conditions.Select(c => c.Otherwise));
     }
 
     /// <summary>A condition the game does state comes back as something to indent.</summary>
@@ -129,14 +169,37 @@ public sealed class CivicShelfTests
     {
         var row = Row(new CivicDefinition("civic_named", IsOrigin: false)
         {
-            Playable = new DlcRequirement("Utopia"),
+            Potential = new SelectionRequirement(SelectionCategory.Ethics, "ethic_militarist"),
         });
 
-        var needs = row.Conditions[0];
+        var offered = row.Conditions[0];
 
-        Assert.True(needs.Stated);
-        Assert.Equal("Utopia", needs.Outline!.Chip!.Name);
-        Assert.True(needs.Outline.Wanted);
+        Assert.True(offered.Stated);
+        Assert.Equal("Militarist", offered.Outline!.Chip!.Name);
+        Assert.True(offered.Outline.Wanted);
+    }
+
+    /// <summary>
+    /// A heading's choices wear the artwork the bullets wear.
+    /// </summary>
+    /// <remarks>
+    /// Written out separately they were names and nothing else, which in a dropdown of seventeen
+    /// ethics is the difference between recognising one and reading the list. One lookup feeds both
+    /// now, so a filter and a requirement cannot disagree about what an ethic looks like.
+    /// </remarks>
+    [Fact]
+    public void AHeadingsChoicesWearTheSameArtworkAsTheBullets()
+    {
+        var row = Row(new CivicDefinition("civic_named", IsOrigin: false)
+        {
+            Potential = new SelectionRequirement(SelectionCategory.Ethics, "ethic_militarist"),
+        });
+
+        var choice = Assert.Single(row.Wanting(SelectionCategory.Ethics));
+
+        Assert.Equal("Militarist", choice.Name);
+        Assert.Equal("icons/militarist.png", choice.Icon);
+        Assert.Equal(row.Conditions[0].Outline!.Chip!.Icon, choice.Icon);
     }
 
     /// <summary>A pack the reader has and one they do not are told apart.</summary>

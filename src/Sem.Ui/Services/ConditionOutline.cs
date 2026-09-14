@@ -118,6 +118,18 @@ public sealed class ConditionReader(Localizer localizer, GameDatabase database)
             case DlcRequirement dlc:
                 return new ConditionOutline(ConditionJoin.Leaf, wanted) { Chip = Pack(dlc.Name) };
 
+            // A plain field, and in this corpus only ever is_nomadic. The value decides the mark as
+            // much as the polarity does: "is_nomadic = no", asked for, is a cross against being
+            // nomadic. Drawn as its own words it read "Is Nomadic is No", which is a sentence in
+            // the middle of a column of chips and one negation harder to read than it needs to be.
+            case FieldRequirement field when Field(field) is { } chip:
+                return new ConditionOutline(
+                    ConditionJoin.Leaf,
+                    wanted == field.Value.Equals("yes", StringComparison.OrdinalIgnoreCase))
+                {
+                    Chip = chip,
+                };
+
             default:
                 return new ConditionOutline(ConditionJoin.Leaf, wanted) { Text = Words(requirement) };
         }
@@ -169,24 +181,51 @@ public sealed class ConditionReader(Localizer localizer, GameDatabase database)
     /// what makes it a chip is being a named thing rather than a phrase, and a country type with no
     /// icon is still Fallen Empire rather than a sentence about country types.
     /// </remarks>
-    private EmpireChoice Chip(SelectionRequirement selection)
+    public EmpireChoice Chip(SelectionRequirement selection)
     {
+        ArgumentNullException.ThrowIfNull(selection);
+
         var key = selection.Key;
 
-        var icon = selection.Category switch
+        // The artwork and what the thing does, together, because the chip this feeds opens a panel
+        // on hover and a chip with neither opens an empty one. Four of the ten categories the game
+        // asks about carry no artwork at all - a species class, an archetype, a graphical culture
+        // and a country type are script rather than content - and they still get a chip, because
+        // what makes it a chip is being a named thing rather than a phrase.
+        var (icon, effects) = selection.Category switch
         {
-            SelectionCategory.Ethics => _database.Ethic(key)?.Icon,
-            SelectionCategory.Authority => _database.Authority(key)?.Icon,
-            SelectionCategory.Civics or SelectionCategory.Origin => _database.Civic(key)?.Icon,
-            SelectionCategory.Traits => _database.Trait(key)?.Icon,
-            SelectionCategory.PreferredPlanetClass => _database.PlanetClass(key)?.Icon,
-            SelectionCategory.AscensionPerk => _database.AscensionPerk(key)?.Icon,
-            SelectionCategory.TraditionTree => _database.TraditionTree(key)?.Icon,
-            _ => null,
+            SelectionCategory.Ethics => (_database.Ethic(key)?.Icon, _database.Ethic(key)?.Effects),
+            SelectionCategory.Authority => (_database.Authority(key)?.Icon, _database.Authority(key)?.Effects),
+            SelectionCategory.Civics or SelectionCategory.Origin =>
+                (_database.Civic(key)?.Icon, _database.Civic(key)?.Effects),
+            SelectionCategory.Traits => (_database.Trait(key)?.Icon, _database.Trait(key)?.Effects),
+            SelectionCategory.PreferredPlanetClass => (_database.PlanetClass(key)?.Icon, null),
+            SelectionCategory.AscensionPerk =>
+                (_database.AscensionPerk(key)?.Icon, _database.AscensionPerk(key)?.Effects),
+            SelectionCategory.TraditionTree => (_database.TraditionTree(key)?.Icon, null),
+            _ => (null, null),
         };
 
-        return new EmpireChoice(key, Named(selection), icon, null);
+        return new EmpireChoice(key, Named(selection), icon, effects);
     }
+
+    /// <summary>
+    /// The chip for a plain field, where the game has artwork for one.
+    /// </summary>
+    /// <remarks>
+    /// One field in the whole corpus: <c>is_nomadic</c>, on eighty-six civics. The game draws it as
+    /// a toggle beside the authorities wearing <c>GFX_toggle_nomad</c>, so that is what it wears
+    /// here. Anything else falls back to words, which is right - a field this does not know is a
+    /// field with nothing to draw.
+    /// </remarks>
+    private EmpireChoice? Field(FieldRequirement field) =>
+        string.Equals(field.Field, "is_nomadic", StringComparison.Ordinal)
+            ? new EmpireChoice(
+                field.Field,
+                _localizer.Text("IS_NOMADIC", "Nomadic"),
+                _database.Icons.GetValueOrDefault("GFX_toggle_nomad"),
+                null)
+            : null;
 
     /// <summary>
     /// What a selection is called.
@@ -204,7 +243,7 @@ public sealed class ConditionReader(Localizer localizer, GameDatabase database)
             : Localizer.Prettify(selection.Key);
 
     /// <summary>A content pack, wearing the badge the pack bar already wears.</summary>
-    private EmpireChoice Pack(string name)
+    public EmpireChoice Pack(string name)
     {
         var pack = _database.Dlc.FirstOrDefault(d => string.Equals(d.Name, name, StringComparison.Ordinal));
 

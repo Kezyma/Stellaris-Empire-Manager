@@ -88,13 +88,26 @@ public sealed record CivicRow
     public required IReadOnlyList<EmpireChoice> PackChoices { get; init; }
 
     /// <summary>
-    /// The five conditions the game states about it, each said in a sentence.
+    /// What an empire has to be for this, in the two senses the game distinguishes.
     /// </summary>
     /// <remarks>
-    /// All five rather than the two that gate picking it. They answer different questions and the
-    /// game keeps them apart: what you must own, what your empire must already be for it to appear,
-    /// what makes it legal once it does, and whether a government reform can add it or take it away.
-    /// A reader mid-game asking "can I still get this" is asking about the fourth.
+    /// <para>
+    /// The game states five conditions and only these two are about the empire. <c>Potential</c>
+    /// decides whether the option is drawn at all and <c>Possible</c> whether it may then be taken -
+    /// hidden against shown but blocked - and they are kept apart because a reader asking "why can
+    /// this empire not have it" wants to know which of the two refused.
+    /// </para>
+    /// <para>
+    /// <c>Playable</c> is not here. It is a content pack check and nothing else - all two hundred
+    /// and one of them, with not one appearing in either of the other trees - so it is the pack
+    /// chips, and a bullet repeating them would say "needs Utopia" beside a badge already saying so.
+    /// </para>
+    /// <para>
+    /// Nor are the two halves of <c>can_add_later</c>, which say whether a government reform could
+    /// add or drop this during a game. True, and about a game in progress rather than about
+    /// designing an empire, which is what this app is for - and on most civics they say nothing, so
+    /// they cost every card two rows of "Always" to tell a reader nothing they came for.
+    /// </para>
     /// </remarks>
     public required IReadOnlyList<CivicCondition> Conditions { get; init; }
 
@@ -291,11 +304,8 @@ public sealed class CivicShelf(DesignSession session)
     /// </remarks>
     private IReadOnlyList<CivicCondition> Conditions(CivicDefinition civic) =>
     [
-        new("Needs", _reader.Read(civic.Playable), "Nothing"),
         new("Offered to", _reader.Read(civic.Potential), "Any empire"),
         new("Allowed when", _reader.Read(civic.Possible), "Always"),
-        new("Added by reform", _reader.Read(civic.CanAddLater), "Always"),
-        new("Dropped by reform", _reader.Read(civic.CanRemoveLater), "Always"),
     ];
 
     private readonly ConditionReader _reader =
@@ -319,8 +329,11 @@ public sealed class CivicShelf(DesignSession session)
                 g => g.Key,
                 IReadOnlyList<EmpireChoice> (g) =>
                 [
-                    .. g.Select(s => new EmpireChoice(s.Key, Named(s), null, null))
-                        .OrderBy(c => c.Name, StringComparer.CurrentCulture),
+                    // The same chip the bullets draw, so an ethic in a filter and the same ethic in
+                    // a requirement are recognisably one thing. Written out here instead, they were
+                    // names with no artwork at all - which in a dropdown of seventeen ethics is the
+                    // difference between recognising one and reading the list.
+                    .. g.Select(_reader.Chip).OrderBy(c => c.Name, StringComparer.CurrentCulture),
                 ]);
 
     /// <summary>
@@ -338,9 +351,6 @@ public sealed class CivicShelf(DesignSession session)
         SelectionCategory.SpeciesArchetype,
         SelectionCategory.Civics,
     };
-
-    private string Named(SelectionRequirement selection) =>
-        session.Localizer.Text(selection.Key, Localizer.Prettify(selection.Key));
 
     /// <summary>
     /// Every modifier it touches, conditional ones included, named the way the effects list names

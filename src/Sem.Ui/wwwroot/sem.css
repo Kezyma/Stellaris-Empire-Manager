@@ -7418,7 +7418,7 @@ button.icon .sem-action-icon { display: block; }
    description and the conditions carry the most words, the name and the pack the fewest.
 */
 .sem-wiki-table tbody th.name { min-width: 18rem; }
-.sem-wiki-table .conditions { min-width: 15rem; }
+.sem-wiki-table .conditions { min-width: 13rem; }
 .sem-wiki-table .effects { min-width: 12rem; }
 .sem-wiki-table .playable { min-width: 5rem; }
 .sem-wiki-table .packs { min-width: 9rem; }
@@ -7447,18 +7447,6 @@ button.icon .sem-action-icon { display: block; }
     font-size: var(--text-sm);
 }
 
-/* One heading per condition the game states, and the bullets under it. */
-.sem-wiki-table .conditions .one + .one {
-    margin-top: var(--space-md);
-}
-
-.sem-wiki-table .conditions .heading {
-    color: var(--text-faint);
-    font-size: var(--text-xs);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-}
-
 .sem-wiki-table .playable .yes { color: var(--good); }
 .sem-wiki-table .playable .no { color: var(--bad); }
 
@@ -7478,9 +7466,16 @@ button.icon .sem-action-icon { display: block; }
     font-size: var(--text-sm);
 }
 
+/*
+   Centred, not on the baseline.
+
+   A chip is a bordered pill with its own padding, so its text baseline sits several pixels below
+   the bare tick beside it - and by how many depends on whether the chip has an icon in it. The
+   marks wandered up and down the column against chips that were all the same height.
+*/
 .sem-conditions li {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: var(--space-md);
     padding: 1px 0;
 }
@@ -7535,28 +7530,40 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
-   A pack, wearing its own badge and saying which way the gate runs.
+   A pack gate: a mark, then the pack's own chip.
+
+   The mark is outside the chip, where the conditions put theirs. Inside, it read as a mark on the
+   pack rather than on the requirement, and it was the one control on the page whose parts were
+   arranged differently from every other.
 
    The cross is the case this exists for: Corporate Dominion requires you not to own Megacorp, and
    a chip that simply said "Megacorp" told the reader to buy the pack that takes the civic away.
 */
-.sem-pack-chip .mark {
-    font-weight: 600;
-    color: var(--good);
+.sem-pack-gate {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-md);
 }
 
-.sem-pack-chip:has(.mark):not(.unmet) { border-color: var(--accent-dim); }
+.sem-pack-gate .mark {
+    flex: none;
+    width: 0.9rem;
+    text-align: center;
+    font-weight: 600;
+}
+
+.sem-pack-gate .mark.wants { color: var(--good); }
+
+.sem-pack-gate .mark.refuses { color: var(--bad); }
 
 /*
    One whose gate your packs do not satisfy. Bordered rather than dimmed: it is not less important
    than the others, it is the one that decides whether you can have the civic at all.
 */
-.sem-pack-chip.unmet {
+.sem-pack-gate.unmet .sem-cell-chip {
     border-color: var(--warn);
     color: var(--warn);
 }
-
-.sem-pack-chip.unmet .mark { color: var(--warn); }
 
 /*
    Several packs stack rather than running on. The cell is narrow, a chip will not break, and two
@@ -7566,7 +7573,7 @@ button.icon .sem-action-icon { display: block; }
    cell at all, and the browser wraps it in an anonymous one that aligns on the baseline - which is
    how a row of otherwise top-aligned cells ends up with one of them floating.
 */
-.sem-wiki-table .packs .sem-pack-chip {
+.sem-wiki-table .packs .sem-pack-gate {
     display: flex;
     width: fit-content;
     margin: 0 0 var(--space-sm) 0;

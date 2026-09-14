@@ -7,6 +7,10 @@
     Xenophobe or Fanatic Xenophobe" - four levels of nesting flattened into a word order that does
     not carry it, and no way for a reader to tell which "and" binds tighter.
 
+    The things themselves are OptionChip, the same chip the empire list draws, so hovering one opens
+    the panel saying what that ethic or civic actually does. A bare span was quicker to write and
+    made the page the one place in the app where a chip is not worth hovering.
+
     Recursive, because the shape is. A group draws a heading and a list of itself; a leaf draws a
     mark and a chip. There is no depth limit: the deepest condition in the game is four, the
     outline drops the levels that say nothing, and a limit would silently hide the one bullet that
@@ -32,14 +36,14 @@
 
         @if (Node.Chip is { } chip)
         {
-            <span class="sem-cell-chip" title="@chip.Name">
-                @if (chip.Icon is { Length: > 0 })
-                {
-                    <GameIcon Path="@chip.Icon" Alt="" />
-                }
-
-                <span>@chip.Name</span>
-            </span>
+            @*
+                Deferred, as the empire table's chips are. A civics page draws four hundred of these
+                and binding a popover to each one up front is four hundred round trips into
+                JavaScript before the reader has hovered anything.
+            *@
+            <OptionChip Key="@chip.Key" Name="@chip.Name" Icon="@chip.Icon"
+                        DescriptionKey="@chip.Description" Effects="@chip.Effects"
+                        Deferred="true" />
         }
         else
         {

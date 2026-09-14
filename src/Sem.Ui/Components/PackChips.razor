@@ -3,25 +3,35 @@
 
     A tick or a cross rather than a colour, and for the same reason the conditions carry them: the
     game writes both directions and one of them is easy to read backwards. Corporate Dominion needs
-    you to NOT have Megacorp - it is the civic for an oligarchy that cannot be one - and a plain
-    badge saying "Megacorp" told a reader to go and buy the pack that takes it away.
+    you to NOT have Megacorp - it is the civic for an oligarchy that cannot be one - and a chip that
+    simply said "Megacorp" told the reader to buy the pack that takes it away.
 
-    The mark says which way the gate runs; whether it is satisfied is said by the colour and by the
-    tip. Those are two different facts and both are worth having: a pack you do not own is something
-    you could buy, and a pack you own that rules a civic out is not a problem to solve at all.
+    The mark sits outside the chip, where the conditions put theirs. Inside, it was a mark on the
+    pack rather than a mark on the requirement, and the one control on the page whose parts were
+    arranged differently from every other.
+
+    Whether the gate is satisfied is said by the colour and by the tip. That is a different fact
+    from which way the gate runs, and both are worth having: a pack you do not own is something you
+    could buy, and a pack you own that rules a civic out is not a problem to solve at all.
 *@
 
 @foreach (var pack in Packs)
 {
-    <span class="sem-cell-chip sem-pack-chip @(pack.Satisfied ? null : "unmet")" title="@Told(pack)">
-        <span class="mark" aria-hidden="true">@(pack.Wanted ? "✓" : "✗")</span>
+    <span class="sem-pack-gate @(pack.Satisfied ? null : "unmet")" title="@Told(pack)">
+        <span class="mark @(pack.Wanted ? "wants" : "refuses")" aria-hidden="true">
+            @(pack.Wanted ? "✓" : "✗")
+        </span>
 
-        @if (pack.Icon is { Length: > 0 })
-        {
-            <GameIcon Path="@pack.Icon" Alt="" />
-        }
+        <span class="sem-visually-hidden">@(pack.Wanted ? "Needs" : "Must not have")</span>
 
-        <span>@pack.Name</span>
+        <span class="sem-cell-chip">
+            @if (pack.Icon is { Length: > 0 })
+            {
+                <GameIcon Path="@pack.Icon" Alt="" />
+            }
+
+            <span>@pack.Name</span>
+        </span>
     </span>
 }
 

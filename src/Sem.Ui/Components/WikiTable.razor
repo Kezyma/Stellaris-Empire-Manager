@@ -15,6 +15,9 @@
     of the table's width to leave empty and cost the longer one the room - and they are read
     together anyway, the name being what the description is about.
 
+    The two conditions get a column each for the opposite reason: they are different questions, and
+    a table is for putting the same question of every row under itself.
+
     Not EmpireTable. That one is built around an empire's columns, sorts and moves rows, and its
     cells are single-line chips - none of which is what this is. Sharing it would have meant making
     it generic in the row and then teaching it a second idea of what a cell is.
@@ -28,7 +31,8 @@
             <tr>
                 <th scope="col">Name</th>
                 <th scope="col">Effects</th>
-                <th scope="col">Requirements</th>
+                <th scope="col">Offered to</th>
+                <th scope="col">Allowed when</th>
                 <th scope="col">Playable</th>
                 <th scope="col">Pack</th>
             </tr>
@@ -57,27 +61,25 @@
                     </td>
 
                     @*
-                        The conditions the game actually states. All five are on the card, where
-                        there is room to say that four of them ask nothing; a column of "Always"
-                        repeated three hundred times is a column that says nothing at all.
+                        A column each, rather than both under one heading with the headings repeated
+                        down the rows. They are different questions - what has to be true for this to
+                        be drawn at all, and what has to be true for it then to be legal - and a
+                        table exists to put the same question of every row under itself.
+
+                        Empty where the game asks nothing, which is most rows for the second of them.
+                        A column of "Always" three hundred times is a column saying nothing.
                     *@
-                    <td class="conditions">
-                        @foreach (var condition in row.Conditions)
-                        {
-                            if (condition.Outline is not { } outline)
+                    @foreach (var condition in row.Conditions)
+                    {
+                        <td class="conditions">
+                            @if (condition.Outline is { } outline)
                             {
-                                continue;
-                            }
-
-                            <div class="one">
-                                <div class="heading">@condition.Heading</div>
-
                                 <ul class="sem-conditions">
                                     <ConditionBullets Node="@outline" />
                                 </ul>
-                            </div>
-                        }
-                    </td>
+                            }
+                        </td>
+                    }
 
                     @*
                         Yes or no and nothing beside it. What is behind the no - a kind of empire

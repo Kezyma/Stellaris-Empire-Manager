@@ -31,6 +31,7 @@ public sealed class ConditionReaderTests
                 ["ethic_pacifist"] = "Pacifist",
                 ["auth_corporate"] = "Corporate",
                 ["civic_meritocracy"] = "Meritocracy",
+                ["IS_NOMADIC"] = "Is a Nomadic Empire",
             }),
             new GameDatabase
             {
@@ -40,6 +41,10 @@ public sealed class ConditionReaderTests
                 Defines = new GameDefines { EthicsPoints = 3, CivicPoints = 2, CityPopLevel = 4 },
                 Ethics = [new EthicDefinition("ethic_militarist", 1, "militarist") { Icon = "icons/militarist.png" }],
                 Dlc = [new DlcDefinition("utopia", "Utopia", null, null, true) { Icon = "icons/utopia.png" }],
+                Icons = new Dictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["GFX_toggle_nomad"] = "icons/nomad.png",
+                },
             });
 
     private static Requirement Ethic(string key) =>
@@ -239,6 +244,65 @@ public sealed class ConditionReaderTests
         // Neither mark. It is a statement about the condition, not a thing to hold, and drawn like
         // the others it read "must not have: never".
         Assert.True(node.Plain);
+    }
+
+    /// <summary>
+    /// Being nomadic is a chip with the game's own toggle artwork, not a sentence.
+    /// </summary>
+    /// <remarks>
+    /// The one plain field in the whole corpus, on eighty-six civics. Drawn as words it read "Is
+    /// Nomadic is No" - a sentence in the middle of a column of chips, and one negation harder to
+    /// read than it needs to be.
+    /// </remarks>
+    [Fact]
+    public void BeingNomadicIsAChipWithTheGamesOwnArtwork()
+    {
+        var node = Reader().Read(new FieldRequirement("is_nomadic", "yes"))!;
+
+        Assert.Equal("Is a Nomadic Empire", node.Chip!.Name);
+        Assert.Equal("icons/nomad.png", node.Chip.Icon);
+        Assert.True(node.Wanted);
+    }
+
+    /// <summary>
+    /// And the field's own value decides the mark, not only the nesting around it.
+    /// </summary>
+    /// <remarks>
+    /// <c>is_nomadic = no</c> asked for is a cross against being nomadic, and asked against is a
+    /// tick for it. Reading the polarity of the tree alone gets both backwards.
+    /// </remarks>
+    [Fact]
+    public void TheFieldsOwnValueDecidesTheMark()
+    {
+        Assert.False(Reader().Read(new FieldRequirement("is_nomadic", "no"))!.Wanted);
+
+        Assert.True(Reader().Read(
+            new NotRequirement(new FieldRequirement("is_nomadic", "no")))!.Wanted);
+    }
+
+    /// <summary>A field nothing has artwork for is still said, in words.</summary>
+    [Fact]
+    public void AFieldWithNoArtworkIsStillSaid()
+    {
+        var node = Reader().Read(new FieldRequirement("election_type", "oligarchic"))!;
+
+        Assert.Null(node.Chip);
+        Assert.Equal("Election Type is Oligarchic", node.Text);
+    }
+
+    /// <summary>
+    /// A chip carries what the thing does, so hovering it has something to show.
+    /// </summary>
+    /// <remarks>
+    /// These are drawn as OptionChip, the same chip the empire list draws, and a chip with neither
+    /// prose nor numbers opens an empty panel. The effects come from the same lookup as the icon.
+    /// </remarks>
+    [Fact]
+    public void AChipCarriesWhatTheThingDoes()
+    {
+        var node = Reader().Read(Ethic("ethic_militarist"))!;
+
+        Assert.NotNull(node.Chip!.Effects);
     }
 
     /// <summary>A key the shipped text has no words for is made readable rather than shown raw.</summary>
