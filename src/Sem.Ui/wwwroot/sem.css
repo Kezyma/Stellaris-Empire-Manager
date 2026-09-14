@@ -5683,6 +5683,13 @@ button.icon .sem-action-icon { display: block; }
     */
     .sem-view-toggle button { padding: 10px 14px; }
 
+    /*
+        And the three-answer toggles beside a search box, for the same reason and one more: they
+        state a height in --control-h, which is 29 and which the padding rule above cannot reach
+        past. There are three of them on a wiki page and one on the empire list.
+    */
+    .sem-preset-toggle { height: 40px; }
+
     button.icon,
     .sem-randomise,
     .sem-gender,

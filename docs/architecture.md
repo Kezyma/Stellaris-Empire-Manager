@@ -7,18 +7,18 @@ project is for, which way the arrows point, and why three decisions that look od
 
 | Project | Lines | What it is |
 |---|---:|---|
-| `Sem.Clausewitz` | 1,070 | A parser and writer for Paradox's own file format. Knows nothing about Stellaris. |
-| `Sem.GameData` | 3,149 | The shape of an extracted installation: `GameDatabase` and the forty-seven kinds of thing it holds. |
-| `Sem.Designs` | 2,466 | An empire design as the game stores it - views over a parsed block, so a field this app does not know about survives a round trip. |
-| `Sem.Rules` | 3,999 | What the game allows. What may be chosen, what it costs, why something is unavailable, and what a finished design gets wrong. |
-| `Sem.Io` | 815 | Every write in the app goes through here, against a policy that names the folders it may touch. |
-| `Sem.Assets` | 600 | Decoding the game's textures and writing PNGs. |
-| `Sem.MeshBake` | 1,491 | Turning the game's meshes into flat pictures. |
-| `Sem.Extraction` | 9,541 | Reading an installation and producing the database, the text and the artwork. |
-| `Sem.Ui` | 26,888 | The designer itself: every component, and the services behind them. |
-| `Sem.Cli` | 936 | The extractor as a command, which is how the committed data is made. |
-| `Sem.Web` | 79 | The browser host. A `Program.cs` and nothing else. |
-| `Sem.Desktop` | 890 | The WPF host: finds the game, extracts if it must, and shows the same designer in an embedded browser. |
+| `Sem.Clausewitz` | 1,082 | A parser and writer for Paradox's own file format. Knows nothing about Stellaris. |
+| `Sem.GameData` | 3,168 | The shape of an extracted installation: `GameDatabase` and the forty-seven kinds of thing it holds. |
+| `Sem.Designs` | 2,510 | An empire design as the game stores it - views over a parsed block, so a field this app does not know about survives a round trip. |
+| `Sem.Rules` | 4,094 | What the game allows. What may be chosen, what it costs, why something is unavailable, and what a finished design gets wrong. |
+| `Sem.Io` | 1,141 | Every write in the app goes through here, against a policy that names the folders it may touch. |
+| `Sem.Assets` | 637 | Decoding the game's textures and writing PNGs. |
+| `Sem.MeshBake` | 1,512 | Turning the game's meshes into flat pictures. |
+| `Sem.Extraction` | 9,753 | Reading an installation and producing the database, the text and the artwork. |
+| `Sem.Ui` | 30,518 | The designer and the wiki: every component, and the services behind them. |
+| `Sem.Cli` | 919 | The extractor as a command, which is how the committed data is made. |
+| `Sem.Web` | 88 | The browser host. A `Program.cs` and nothing else. |
+| `Sem.Desktop` | 1,421 | The WPF host: finds the game, extracts if it must, and shows the same designer in an embedded browser. |
 
 ## The one rule
 
@@ -140,6 +140,26 @@ an installation, so it extracts for itself and never reads the committed copy.
 The consequence is that re-extracting is a commit, not a build step. `build-site.cmd` is the routine
 that does it properly: extract, build, test, and rehearse the real Pages publish including the
 `.nojekyll` check.
+
+## The wiki, and why it needed no new data
+
+`/wiki/civics` and `/wiki/origins` show every civic and origin the game defines, including the ones
+no player can ever take. That needed nothing extracted.
+
+`gamedb.json` already carries all 358 of them, unfiltered - `EmpireOptions` narrows them at the point
+of use, not at extraction - so the three things the pages need beyond the records themselves are
+worked out at runtime in `Sem.Ui/Services`: `CivicReach` says whether a player could ever be offered
+one, `ContentPacks` says which packs gate it, and the description is the `_desc` convention every
+option chip already reads by.
+
+The alternative was a property or two on `CivicDefinition`, which reads better and costs a schema
+bump - and a schema bump sends every desktop player back through thirty-five thousand files to learn
+something the file they already have could have told them. Anything the database can answer should be
+asked of it rather than added to it.
+
+The filter machinery is shared rather than copied. `Facet<TRow>` and `Sifter<TRow>` are what the
+empire list's own headings and narrowing are built from, and `FilterCard`, `SearchBox` and
+`AskedToggle` are generic in the row for the same reason.
 
 ## Where the safety rules live
 
