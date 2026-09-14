@@ -120,12 +120,12 @@ public sealed class CivicShelfTests
 
         Assert.Equal(
             ["Nothing", "Any empire", "Always", "Always", "Always"],
-            row.Conditions.Select(c => c.Sentence));
+            row.Conditions.Select(c => c.Otherwise));
     }
 
-    /// <summary>A condition the game does state is written out and marked as stated.</summary>
+    /// <summary>A condition the game does state comes back as something to indent.</summary>
     [Fact]
-    public void AStatedConditionIsWrittenOutAndMarked()
+    public void AStatedConditionComesBackAsAnOutline()
     {
         var row = Row(new CivicDefinition("civic_named", IsOrigin: false)
         {
@@ -135,7 +135,8 @@ public sealed class CivicShelfTests
         var needs = row.Conditions[0];
 
         Assert.True(needs.Stated);
-        Assert.Equal("With Utopia", needs.Sentence);
+        Assert.Equal("Utopia", needs.Outline!.Chip!.Name);
+        Assert.True(needs.Outline.Wanted);
     }
 
     /// <summary>A pack the reader has and one they do not are told apart.</summary>
@@ -151,6 +152,46 @@ public sealed class CivicShelfTests
         {
             Playable = new DlcRequirement("Overlord"),
         }).Owned);
+    }
+
+    /// <summary>
+    /// A pack that rules a civic out is carried as that, not as one it needs.
+    /// </summary>
+    /// <remarks>
+    /// Corporate Dominion in miniature. Its whole condition is <c>NOT = { has_dlc = Megacorp }</c> -
+    /// it is the civic for an oligarchy that cannot be a megacorp - and read without the polarity it
+    /// wore a badge telling the reader to buy the one pack that takes it away from them. Owning the
+    /// pack has to read as the gate being unmet, which is the opposite of what it means for every
+    /// other pack on the page.
+    /// </remarks>
+    [Fact]
+    public void APackThatRulesACivicOutIsNotOneItNeeds()
+    {
+        var row = Row(new CivicDefinition("civic_named", IsOrigin: false)
+        {
+            Playable = new NotRequirement(new DlcRequirement("Utopia")),
+        });
+
+        var pack = Assert.Single(row.Packs);
+
+        Assert.Equal("Utopia", pack.Name);
+        Assert.False(pack.Wanted);
+        Assert.True(pack.Held);
+        Assert.False(pack.Satisfied);
+        Assert.False(row.Owned);
+    }
+
+    /// <summary>And not owning that one is what makes the civic available.</summary>
+    [Fact]
+    public void NotOwningAPackThatRulesACivicOutSuitsIt()
+    {
+        var row = Row(new CivicDefinition("civic_named", IsOrigin: false)
+        {
+            Playable = new NotRequirement(new DlcRequirement("Overlord")),
+        });
+
+        Assert.True(row.Owned);
+        Assert.True(Assert.Single(row.Packs).Satisfied);
     }
 
     /// <summary>One behind no pack at all is owned, rather than being neither.</summary>

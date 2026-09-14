@@ -18,21 +18,16 @@
 
             <div class="sem-wiki-badges">
                 @*
-                    Two different kinds of "you cannot have this", and they are worth telling apart.
-                    A pack is something you could buy; a fallen empire's civic is not for sale.
+                    Only the ones that cannot be read off the packs beside them. A civic no player
+                    can ever take says so; a civic behind a pack says so through the chip, which
+                    carries the direction of the gate as well as the name.
                 *@
                 @if (Row.ClosedShort is { } closed)
                 {
                     <span class="sem-badge closed" title="@Row.ClosedWhy">@closed</span>
                 }
 
-                @foreach (var pack in Row.Packs)
-                {
-                    <span class="sem-badge @(Row.Owned ? "pack" : "pack missing")"
-                          title="@(Row.Owned ? $"Needs {pack.Name}, which you have" : $"Needs {pack.Name}, which you do not have")">
-                        @pack.Name
-                    </span>
-                }
+                <PackChips Packs="@Row.Packs" />
             </div>
         </div>
     </header>
@@ -56,7 +51,19 @@
         {
             <div class="@(condition.Stated ? "stated" : null)">
                 <dt>@condition.Heading</dt>
-                <dd>@condition.Sentence</dd>
+
+                <dd>
+                    @if (condition.Outline is { } outline)
+                    {
+                        <ul class="sem-conditions">
+                            <ConditionBullets Node="@outline" />
+                        </ul>
+                    }
+                    else
+                    {
+                        @condition.Otherwise
+                    }
+                </dd>
             </div>
         }
     </dl>

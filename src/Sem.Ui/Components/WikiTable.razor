@@ -10,6 +10,11 @@
     would mean truncating the only thing the column is for. So the cells wrap and the rows are as
     tall as they need to be, with each one ruled off from the next.
 
+    The name shares a column with the description rather than having one of its own. A name is two
+    or three words and a description is forty, so a column each gave the shorter one a whole track
+    of the table's width to leave empty and cost the longer one the room - and they are read
+    together anyway, the name being what the description is about.
+
     Not EmpireTable. That one is built around an empire's columns, sorts and moves rows, and its
     cells are single-line chips - none of which is what this is. Sharing it would have meant making
     it generic in the row and then teaching it a second idea of what a cell is.
@@ -22,7 +27,6 @@
         <thead>
             <tr>
                 <th scope="col">Name</th>
-                <th scope="col">Description</th>
                 <th scope="col">Effects</th>
                 <th scope="col">Requirements</th>
                 <th scope="col">Playable</th>
@@ -37,16 +41,16 @@
                     <th scope="row" class="name">
                         <span class="inner">
                             <GameIcon Path="@row.Icon" Alt="@row.Name" />
-                            <span>@row.Name</span>
+                            <span class="title">@row.Name</span>
                         </span>
-                    </th>
 
-                    <td class="prose">
                         @if (row.Description is { Length: > 0 })
                         {
-                            @((MarkupString)Session.Localizer.Html($"{row.Key}_desc", string.Empty))
+                            <span class="prose">
+                                @((MarkupString)Session.Localizer.Html($"{row.Key}_desc", string.Empty))
+                            </span>
                         }
-                    </td>
+                    </th>
 
                     <td class="effects">
                         <EffectsList Effects="@row.Effects" />
@@ -58,15 +62,28 @@
                         repeated three hundred times is a column that says nothing at all.
                     *@
                     <td class="conditions">
-                        <dl>
-                            @foreach (var condition in row.Conditions.Where(c => c.Stated))
+                        @foreach (var condition in row.Conditions)
+                        {
+                            if (condition.Outline is not { } outline)
                             {
-                                <dt>@condition.Heading</dt>
-                                <dd>@condition.Sentence</dd>
+                                continue;
                             }
-                        </dl>
+
+                            <div class="one">
+                                <div class="heading">@condition.Heading</div>
+
+                                <ul class="sem-conditions">
+                                    <ConditionBullets Node="@outline" />
+                                </ul>
+                            </div>
+                        }
                     </td>
 
+                    @*
+                        Yes or no and nothing beside it. What is behind the no - a kind of empire
+                        nobody can be, or an event - is already a bullet in the column to the left,
+                        and saying it twice on one row made the narrower column repeat the wider one.
+                    *@
                     <td class="playable">
                         @if (row.Reach.EverOffered)
                         {
@@ -75,16 +92,11 @@
                         else
                         {
                             <span class="no" title="@row.ClosedWhy">No</span>
-
-                            <span class="why" title="@row.ClosedWhy">@row.ClosedShort</span>
                         }
                     </td>
 
                     <td class="packs">
-                        @foreach (var pack in row.Packs)
-                        {
-                            <span class="sem-badge @(row.Owned ? "pack" : "pack missing")">@pack.Name</span>
-                        }
+                        <PackChips Packs="@row.Packs" />
                     </td>
                 </tr>
             }

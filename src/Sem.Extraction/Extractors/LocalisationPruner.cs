@@ -76,6 +76,12 @@ internal static partial class LocalisationPruner
         "EMPIRE_SPAWN_ALLOWED", "EMPIRE_SPAWN_ALLOWED_DESC",
         "EMPIRE_SPAWN_DISALLOWED", "EMPIRE_SPAWN_DISALLOWED_DESC",
         "EMPIRE_SPAWN_ALWAYS", "EMPIRE_SPAWN_ALWAYS_DESC",
+
+        // "an Unknown Entity", which is what a shroud patron's modifier says about itself until a
+        // game has met the patron. Named here because it is what the reader searches its labels for
+        // in order to put the real name back, and because it survives today only by happening to be
+        // referenced from one of them - which is not a thing to rely on.
+        "UNDISCOVERED_PATRON_ARTICLE",
     ];
 
     /// <summary>Keeps only the entries the database can reach, following references between them.</summary>
@@ -416,6 +422,18 @@ internal static partial class LocalisationPruner
                 Add($"MOD_{key.ToUpperInvariant()}_DESC");
                 Add(key);
                 Add($"{key}_tt");
+
+                // And whatever the key names that its own label will not. A shroud patron's
+                // modifier is labelled "Add Attunement with [This.GetEaterColor]", which resolves
+                // to "an Unknown Entity" until a game has met the patron - so the reader puts the
+                // name back from the key, out of the entry the_eater_of_worlds. Nothing else here
+                // asked for that entry, so it was pruned, so the substitution silently did nothing
+                // and five different modifiers all read as the same anonymous line. The article
+                // itself has to survive too: it is what the swap looks for in the label.
+                foreach (var subject in ModifierSubject.Candidates(key))
+                {
+                    Add(subject);
+                }
             }
         }
 

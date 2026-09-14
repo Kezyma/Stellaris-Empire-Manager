@@ -41,7 +41,7 @@ public static class CivicFacet
         Many("ethic", "Ethics", r => r.Wanting(SelectionCategory.Ethics)),
         Many("archetype", "Species", r => r.Wanting(SelectionCategory.SpeciesArchetype)),
         Many("needs", "Other civics", r => r.Wanting(SelectionCategory.Civics)),
-        Many("pack", "Content pack", r => r.Packs),
+        Many("pack", "Content pack", r => r.PackChoices),
 
         Many("bonus", "Bonus", r => r.Bonuses, Effects),
     ];

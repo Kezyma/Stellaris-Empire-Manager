@@ -1,0 +1,51 @@
+@*
+    What a civic costs in content packs, and whether what you own suits.
+
+    A tick or a cross rather than a colour, and for the same reason the conditions carry them: the
+    game writes both directions and one of them is easy to read backwards. Corporate Dominion needs
+    you to NOT have Megacorp - it is the civic for an oligarchy that cannot be one - and a plain
+    badge saying "Megacorp" told a reader to go and buy the pack that takes it away.
+
+    The mark says which way the gate runs; whether it is satisfied is said by the colour and by the
+    tip. Those are two different facts and both are worth having: a pack you do not own is something
+    you could buy, and a pack you own that rules a civic out is not a problem to solve at all.
+*@
+
+@foreach (var pack in Packs)
+{
+    <span class="sem-cell-chip sem-pack-chip @(pack.Satisfied ? null : "unmet")" title="@Told(pack)">
+        <span class="mark" aria-hidden="true">@(pack.Wanted ? "✓" : "✗")</span>
+
+        @if (pack.Icon is { Length: > 0 })
+        {
+            <GameIcon Path="@pack.Icon" Alt="" />
+        }
+
+        <span>@pack.Name</span>
+    </span>
+}
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>The packs this civic depends on, in either direction.</summary>
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<CivicPack> Packs { get; set; }
+
+    /// <summary>
+    /// The whole of what one chip means, which is more than two words can carry.
+    /// </summary>
+    /// <remarks>
+    /// Four sentences for four states, because every pair of them differs in something a reader
+    /// would act on. Needing a pack you lack is a thing to buy; being ruled out by one you own is a
+    /// thing to know and nothing to do about.
+    /// </remarks>
+    private static string Told(CivicPack pack) => (pack.Wanted, pack.Held) switch
+    {
+        (true, true) => $"Needs {pack.Name}, which you have.",
+        (true, false) => $"Needs {pack.Name}, which you do not have.",
+        (false, false) => $"Only without {pack.Name}, which you do not have.",
+        _ => $"Only without {pack.Name}, and you have it.",
+    };
+}
