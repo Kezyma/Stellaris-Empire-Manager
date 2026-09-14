@@ -73,7 +73,15 @@
     }
     else if (Showing == View.Changes)
     {
-        @if (Changes.Count == 0)
+        @*
+            Read once. Each read runs two whole effect combinations - the baseline's and this
+            empire's - and the two below asked for it twice, so choosing this view cost four of
+            them on a panel that redraws on every keystroke. Every comparable property in this app
+            is held once with a note saying exactly this; this one was the outlier.
+        *@
+        var changes = Changes;
+
+        @if (changes.Count == 0)
         {
             <p class="sem-hint">Nothing has changed since you saved.</p>
         }
@@ -84,7 +92,7 @@
                 what it moved from, and the whole point of the view is comparing the two.
             *@
             <ul class="sem-modifiers changes">
-                @foreach (var change in Changes)
+                @foreach (var change in changes)
                 {
                     var was = Session.Modifiers.Format(change.Key, change.Before);
                     var now = Session.Modifiers.Format(change.Key, change.After);

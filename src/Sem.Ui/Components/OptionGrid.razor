@@ -69,7 +69,7 @@
                             }
                             else
                             {
-                                <span class="initials">@Initials(option.Name)</span>
+                                <span class="initials">@Initials.Of(option.Name)</span>
                             }
 
                             @if (option.Cost is { } cost && cost != 0)
@@ -331,19 +331,6 @@
                 <span class="cost @(cost < 0 ? "gain" : string.Empty)">@(cost > 0 ? "+" : string.Empty)@cost</span>
             }
         </button>;
-
-    /// <summary>A stand-in for an option the installation has no picture for.</summary>
-    private static string Initials(string name)
-    {
-        var words = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-        return words.Length switch
-        {
-            0 => "?",
-            1 => words[0][..Math.Min(2, words[0].Length)].ToUpperInvariant(),
-            _ => $"{words[0][0]}{words[1][0]}".ToUpperInvariant(),
-        };
-    }
 
     /// <summary>One choice in a grid.</summary>
     /// <param name="Key">Its key, returned when it is clicked.</param>

@@ -544,18 +544,6 @@
     private bool AnyFree => CanCarry(PlanHome.Species) || CanCarry(PlanHome.Ruler);
 
     /// <summary>
-    /// The biography a new plan goes into, which is the species' where there is a choice.
-    /// </summary>
-    /// <remarks>
-    /// The species' first because it is the longer of the two in the game's own presets and reads as
-    /// the empire's story rather than one person's, which is nearer to what a plan is.
-    /// </remarks>
-    private PlanHome? FirstFree =>
-        CanCarry(PlanHome.Species) ? PlanHome.Species
-        : CanCarry(PlanHome.Ruler) ? PlanHome.Ruler
-        : null;
-
-    /// <summary>
     /// Moves the plan to the other biography, taking it out of the one it was in.
     /// </summary>
     /// <remarks>

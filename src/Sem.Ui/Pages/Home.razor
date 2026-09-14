@@ -815,14 +815,7 @@ else
         // even deliberately.
         _session.CreateEmpire(file =>
         {
-            var key = design.Key;
-
-            for (var attempt = 2; file.Find(key) is not null; attempt++)
-            {
-                key = $"{design.Key} {attempt}";
-            }
-
-            return file.AddCopy(design, key);
+            return file.AddCopy(design, file.AvailableKey(design.Key));
         });
     }
 
@@ -1349,20 +1342,6 @@ else
     }
 
     /// <summary>A name nothing in the file has yet.</summary>
-    private string Available(string wanted)
-    {
-        if (_session?.File?.Find(wanted) is null)
-        {
-            return wanted;
-        }
-
-        for (var i = 2; ; i++)
-        {
-            var candidate = $"{wanted} {i}";
-            if (_session.File.Find(candidate) is null)
-            {
-                return candidate;
-            }
-        }
-    }
+    private string Available(string wanted) =>
+        _session?.File?.AvailableKey(wanted) ?? wanted;
 }

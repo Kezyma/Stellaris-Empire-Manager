@@ -1188,4 +1188,37 @@ public sealed class EmpireDesignTests
         Assert.False(file.Move(file.Designs[0], 0));
         Assert.Equal(before, file.Document.ToText());
     }
+
+    /// <summary>
+    /// A free key is the one asked for; a taken one is numbered from two.
+    /// </summary>
+    /// <remarks>
+    /// The rule was written out three times in the interface - twice identically and once in a
+    /// different shape - so it was three answers to one question that happened to agree.
+    /// </remarks>
+    [Fact]
+    public void AnAvailableKeyIsTheOneAskedForWhereNothingHasIt()
+    {
+        var file = EmpireDesignsFile.CreateEmpty();
+
+        Assert.Equal("New Empire", file.AvailableKey("New Empire"));
+
+        file.Add("New Empire");
+        Assert.Equal("New Empire 2", file.AvailableKey("New Empire"));
+
+        file.Add("New Empire 2");
+        Assert.Equal("New Empire 3", file.AvailableKey("New Empire"));
+    }
+
+    /// <summary>A gap is filled rather than skipped past.</summary>
+    [Fact]
+    public void AnAvailableKeyTakesTheFirstFreeNumber()
+    {
+        var file = EmpireDesignsFile.CreateEmpty();
+
+        file.Add("Empire");
+        file.Add("Empire 3");
+
+        Assert.Equal("Empire 2", file.AvailableKey("Empire"));
+    }
 }

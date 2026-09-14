@@ -300,7 +300,12 @@ public sealed class RequirementEvaluator
             return Verdict.Pass;
         }
 
-        var reasons = new List<string>();
+        // Not built until something has failed, the way the method above does it. Most of these
+        // pass on their first child and return without ever looking at the list - and there are a
+        // great many of them: walking what the three hundred and fifty-eight civics require reaches
+        // four and a half thousand nodes, of which four hundred and thirty are an any. That was
+        // four hundred and thirty throwaway lists on every render of the civics picker.
+        List<string>? reasons = null;
         var unsure = false;
 
         foreach (var item in any.Items)
@@ -318,9 +323,10 @@ public sealed class RequirementEvaluator
                 return Verdict.Pass;
             }
 
+            reasons ??= [];
             reasons.AddRange(verdict.Reasons);
         }
 
-        return unsure ? Verdict.Maybe : new Verdict(false, reasons);
+        return unsure ? Verdict.Maybe : new Verdict(false, reasons ?? []);
     }
 }

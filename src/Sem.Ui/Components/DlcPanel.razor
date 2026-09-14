@@ -46,7 +46,7 @@
             }
             else
             {
-                <span class="initials">@Initials(Name(pack))</span>
+                <span class="initials">@Initials.Of(Name(pack))</span>
             }
         </button>
     }
@@ -128,19 +128,6 @@
                 : $"{read} {unread} condition(s) were not understood; options relying on them are " +
                   "offered rather than hidden.";
         }
-    }
-
-    /// <summary>A stand-in for a pack the installation has no picture for.</summary>
-    private static string Initials(string name)
-    {
-        var words = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-        return words.Length switch
-        {
-            0 => "?",
-            1 => words[0][..Math.Min(2, words[0].Length)].ToUpperInvariant(),
-            _ => $"{words[0][0]}{words[1][0]}".ToUpperInvariant(),
-        };
     }
 
     private void SelectAll() => Session.SetOwnedDlc(Session.Data.Database.Dlc.Select(d => d.Name));

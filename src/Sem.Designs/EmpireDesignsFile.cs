@@ -62,6 +62,36 @@ public sealed class EmpireDesignsFile
     public EmpireDesign? Find(string key) =>
         _designs.FirstOrDefault(d => string.Equals(d.Key, key, StringComparison.Ordinal));
 
+    /// <summary>
+    /// The wanted key, or the first numbered variation of it nothing here has yet.
+    /// </summary>
+    /// <remarks>
+    /// Written out three times in the interface before it lived here - twice character for character
+    /// and once in a different shape that suffixed as it searched - so "New Empire 2" was three
+    /// answers to one question and only coincidentally the same answer. It belongs to the file,
+    /// which is the thing that knows what is taken.
+    /// </remarks>
+    /// <param name="wanted">The key to use if it is free.</param>
+    public string AvailableKey(string wanted)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(wanted);
+
+        if (Find(wanted) is null)
+        {
+            return wanted;
+        }
+
+        for (var attempt = 2; ; attempt++)
+        {
+            var candidate = $"{wanted} {attempt}";
+
+            if (Find(candidate) is null)
+            {
+                return candidate;
+            }
+        }
+    }
+
     /// <summary>Adds a new, empty empire under the given key.</summary>
     public EmpireDesign Add(string key)
     {
