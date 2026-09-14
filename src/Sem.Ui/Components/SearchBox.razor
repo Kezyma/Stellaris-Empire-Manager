@@ -1,21 +1,23 @@
+@typeparam TRow where TRow : class
 @implements IDisposable
 
 @*
-    One box for everything somebody typed - the empire's name, its species, its world, its ruler,
-    the prefix on its ships, and the biographies. Which field a word came from is rarely the
-    question; the question is which empire it was.
+    One box for everything somebody typed - for an empire that is its name, its species, its world,
+    its ruler, the prefix on its ships and the biographies. Which field a word came from is rarely
+    the question; the question is which one it was.
+
+    What a word is matched against is the row's own business, which is why this is generic: the box
+    asks the filter, and the filter was handed the answer when it was built.
 
     It stands where the table's heading was, rather than in the filter card. The card is shut when
     the page opens, and a word the reader already has in mind is the first thing they want to type,
     not something to go looking for behind a fold. The heading it replaced said "Empires" over a
     table of empires, which was the least any part of that row was doing.
 
-    No label. The box is the first thing on the list it narrows and there is nothing else it could
-    be for, so the name it needs is the one nobody has to look at.
 *@
 
-<input id="empire-search" class="sem-search" type="text" value="@Filter.Search"
-       aria-label="Search empires" @oninput="e => Run(e.Value?.ToString())" />
+<input id="@Id" class="sem-search" type="text" value="@Filter.Search"
+       aria-label="@Label" @oninput="e => Run(e.Value?.ToString())" />
 
 @code {
     /// <summary>
@@ -27,7 +29,22 @@
     /// two stop agreeing about which empires are being shown.
     /// </remarks>
     [Parameter, EditorRequired]
-    public required EmpireFilter Filter { get; set; }
+    public required Sifter<TRow> Filter { get; set; }
+
+    /// <summary>
+    /// What a reader is told the box is for, which nobody sees.
+    /// </summary>
+    /// <remarks>
+    /// No visible label. The box is the first thing on the list it narrows and there is nothing else
+    /// it could be for, so the name it needs is the one nobody has to look at - but it still needs
+    /// one, and "Search" alone says nothing to somebody hearing the page read out.
+    /// </remarks>
+    [Parameter, EditorRequired]
+    public required string Label { get; set; }
+
+    /// <summary>What the box is called in the markup, so a label elsewhere could point at it.</summary>
+    [Parameter]
+    public string Id { get; set; } = "search";
 
     /// <summary>Raised once the typing stops, so whoever owns the list can redraw it.</summary>
     [Parameter]

@@ -104,13 +104,18 @@ public sealed record CivicReach(bool EverOffered, IReadOnlyList<string> CountryT
             return new CivicReach(false, []);
         }
 
-        List<string> wanted = [];
-        Demanded(civic.Potential, positive: true, wanted);
-        Demanded(civic.Playable, positive: true, wanted);
-        Demanded(civic.Possible, positive: true, wanted);
-
-        return new CivicReach(false, [.. wanted.Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal)]);
+        return new CivicReach(false, [.. Wanted(civic)]);
     }
+
+    /// <summary>The kinds of country it asks for, once each, in a settled order.</summary>
+    private static IEnumerable<string> Wanted(CivicDefinition civic) =>
+        new[] { civic.Potential, civic.Playable, civic.Possible }
+            .SelectMany(Selections.Required)
+            .Where(s => s.Category == SelectionCategory.CountryType)
+            .Select(s => s.Key)
+            .Where(key => !string.Equals(key, Player, StringComparison.Ordinal))
+            .Distinct(StringComparer.Ordinal)
+            .Order(StringComparer.Ordinal);
 
     /// <summary>
     /// Whether any of the three gates that decide whether an option is drawn turns a player away.
@@ -184,47 +189,4 @@ public sealed record CivicReach(bool EverOffered, IReadOnlyList<string> CountryT
             // Everything else is a question about choices nobody has made yet.
             _ => null,
         };
-
-    /// <summary>
-    /// Collects the country types a condition asks for, ignoring the ones it asks against.
-    /// </summary>
-    /// <remarks>
-    /// For the sentence the card shows, so it can say which kind of empire a civic belongs to rather
-    /// than only that it is out of reach. Polarity is tracked for the same reason the evaluation
-    /// tracks it: a condition saying a player is <em>not</em> a primitive names a country type
-    /// without asking for it, and printing that would say the opposite of what it means.
-    /// </remarks>
-    private static void Demanded(Requirement? requirement, bool positive, List<string> into)
-    {
-        switch (requirement)
-        {
-            case SelectionRequirement { Category: SelectionCategory.CountryType } country
-                when positive && !string.Equals(country.Key, Player, StringComparison.Ordinal):
-                into.Add(country.Key);
-                break;
-
-            case NotRequirement not:
-                Demanded(not.Item, !positive, into);
-                break;
-
-            case AllRequirement all:
-                foreach (var item in all.Items)
-                {
-                    Demanded(item, positive, into);
-                }
-
-                break;
-
-            case AnyRequirement any:
-                foreach (var item in any.Items)
-                {
-                    Demanded(item, positive, into);
-                }
-
-                break;
-
-            default:
-                break;
-        }
-    }
 }

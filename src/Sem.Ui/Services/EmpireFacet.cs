@@ -105,6 +105,17 @@ public static class EmpireFacet
     ];
 
     /// <summary>
+    /// The headings the filter card leaves to somebody else.
+    /// </summary>
+    /// <remarks>
+    /// Only the preset one, which is the question a reader asks first and most often - mine or the
+    /// shelf - so <c>AskedToggle</c> asks it beside the search rather than behind the card's fold.
+    /// It stays a heading, and every row still answers it; only where it is asked has changed.
+    /// </remarks>
+    public static IReadOnlySet<string> AskedElsewhere { get; } =
+        new HashSet<string>(StringComparer.Ordinal) { "preset" };
+
+    /// <summary>
     /// The tabs, in the order they are drawn, which is the order the headings declare.
     /// </summary>
     /// <remarks>

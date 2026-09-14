@@ -1,0 +1,105 @@
+@typeparam TRow where TRow : class
+
+@*
+    One of the yes-or-no headings, asked beside the search rather than behind the filter card's fold.
+
+    The shape the game itself draws for a question with three answers: one button that cycles rather
+    than three things to choose between, with the answer it is on written on it. Whose empires the
+    list is showing, whether a civic is one anybody can reach - the reader asks these first and most
+    often, and the card is shut when the page opens.
+
+    No label. It stands next to the box it narrows with, it says what it is showing, and a word in
+    front of it would only repeat the button.
+
+    It writes to the same heading the card would have drawn, so the narrowing is unchanged: only
+    where the question is asked has moved.
+*@
+
+<button type="button" class="sem-preset-toggle @(Showing is null ? "all" : null)"
+        title="@Word.Told" aria-label="@Word.Told" @onclick="Cycle">
+    @Word.Name
+</button>
+
+@code {
+    /// <summary>
+    /// What the page is narrowing by, written to in place.
+    /// </summary>
+    /// <remarks>
+    /// The filter itself and not a copy, for the reason the search box gives: the list and the card
+    /// of headings read the same one, and handing each a copy is how they stop agreeing.
+    /// </remarks>
+    [Parameter, EditorRequired]
+    public required Sifter<TRow> Filter { get; set; }
+
+    /// <summary>Which heading it asks about.</summary>
+    [Parameter, EditorRequired]
+    public required string Key { get; set; }
+
+    /// <summary>What it says while it is showing everything.</summary>
+    [Parameter, EditorRequired]
+    public required ToggleWording All { get; set; }
+
+    /// <summary>What it says while it is showing only the rows that answer yes.</summary>
+    [Parameter, EditorRequired]
+    public required ToggleWording Yes { get; set; }
+
+    /// <summary>What it says while it is showing only the rows that answer no.</summary>
+    [Parameter, EditorRequired]
+    public required ToggleWording No { get; set; }
+
+    /// <summary>
+    /// Whether the first press asks for yes rather than for no.
+    /// </summary>
+    /// <remarks>
+    /// Which way round is a question about the heading, not about the control. A reader pressing
+    /// the preset button first wants their own empires, and the game's are the second press; a
+    /// reader pressing a playability button first wants the things they can actually have.
+    /// </remarks>
+    [Parameter]
+    public bool YesFirst { get; set; } = true;
+
+    /// <summary>Raised when the answer changes, so whoever owns the list can draw it again.</summary>
+    [Parameter]
+    public EventCallback OnChanged { get; set; }
+
+    /// <summary>Which of the three it is on: true for yes, false for no, null for both.</summary>
+    private bool? Showing =>
+        Filter.Keys(Key).Contains("yes") ? true
+        : Filter.Keys(Key).Contains("no") ? false
+        : null;
+
+    private ToggleWording Word => Showing switch
+    {
+        true => Yes,
+        false => No,
+        _ => All,
+    };
+
+    /// <summary>
+    /// All, then one answer, then the other, then round again.
+    /// </summary>
+    /// <remarks>
+    /// Starting on all, because a reader who has not asked the question wants the whole list - and
+    /// ending back there, so the way out is always one more press rather than a control to hunt for.
+    /// </remarks>
+    private async Task Cycle()
+    {
+        var keys = Filter.Keys(Key);
+
+        var next = Showing switch
+        {
+            null => YesFirst ? "yes" : "no",
+            true => YesFirst ? "no" : null,
+            _ => YesFirst ? null : "yes",
+        };
+
+        keys.Clear();
+
+        if (next is { Length: > 0 })
+        {
+            keys.Add(next);
+        }
+
+        await OnChanged.InvokeAsync();
+    }
+}
