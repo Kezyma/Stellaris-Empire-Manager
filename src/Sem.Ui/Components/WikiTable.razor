@@ -54,7 +54,10 @@
                     <th scope="col">@Header(FactPrefix + heading, heading)</th>
                 }
 
-                <th scope="col"><span class="plain">Effects</span></th>
+                @if (_effects)
+                {
+                    <th scope="col"><span class="plain">Effects</span></th>
+                }
 
                 @foreach (var heading in _conditions)
                 {
@@ -117,9 +120,12 @@
                         </td>
                     }
 
-                    <td class="effects">
-                        <EffectsList Effects="@row.Effects" />
-                    </td>
+                    @if (_effects)
+                    {
+                        <td class="effects">
+                            <EffectsList Effects="@row.Effects" />
+                        </td>
+                    }
 
                     @*
                         A column each, rather than both under one heading with the headings repeated
@@ -168,6 +174,23 @@
                         </td>
                     }
                 </tr>
+
+                @*
+                    A second row under the first, spanning every column.
+
+                    Thirty faces will not fit in a cell of a table that already has six columns of
+                    prose, and squeezed into one they would be too small to tell apart - which is the
+                    one thing a gallery is for. Given the width of the table they are the size the
+                    portrait picker draws them at.
+                *@
+                @if (row.Gallery.Count > 0)
+                {
+                    <tr class="gallery @(row.Playable ? null : "unreachable")">
+                        <td colspan="@_columns">
+                            <WikiGallery Faces="@row.Gallery" />
+                        </td>
+                    </tr>
+                }
             }
         </tbody>
     </table>
@@ -210,11 +233,31 @@
     /// <summary>Whether any of them is behind a pack.</summary>
     private bool _packs;
 
+    /// <summary>
+    /// Whether any of them does anything, which the species classes do not.
+    /// </summary>
+    /// <remarks>
+    /// A class is what a species is made of rather than something it gains, and the game says so in
+    /// its own words on every one of them: "Species Class has no effect on your Empire". So the
+    /// column was forty-two blanks under a heading.
+    /// </remarks>
+    private bool _effects;
+
     /// <summary>The fact headings this shelf has, in the order its rows state them.</summary>
     private IReadOnlyList<string> _facts = [];
 
     /// <summary>And the condition headings, likewise.</summary>
     private IReadOnlyList<string> _conditions = [];
+
+    /// <summary>
+    /// How many columns were drawn, which is what a gallery row has to span.
+    /// </summary>
+    /// <remarks>
+    /// Counted rather than stated, because which columns appear is decided from the rows: a span
+    /// written out by hand would be right for the civics and wrong for every other shelf, and wrong
+    /// silently - the row would simply stop short of the table's edge.
+    /// </remarks>
+    private int _columns;
 
     /// <summary>
     /// Which columns this shelf wants, asked of the rows rather than told by the page.
@@ -229,6 +272,7 @@
         _pictures = All.Any(r => r.Picture is { Length: > 0 });
         _playable = All.Any(r => !r.Playable);
         _packs = All.Any(r => r.Packs.Count > 0);
+        _effects = All.Any(r => !r.Effects.IsEmpty);
 
         _facts = [.. All.SelectMany(r => r.Facts).Select(f => f.Heading).Distinct(StringComparer.Ordinal)];
 
@@ -239,6 +283,15 @@
                 .Select(c => c.Heading)
                 .Distinct(StringComparer.Ordinal),
         ];
+
+        _columns =
+            (_pictures ? 1 : 0)
+            + 1
+            + _facts.Count
+            + (_effects ? 1 : 0)
+            + _conditions.Count
+            + (_playable ? 1 : 0)
+            + (_packs ? 1 : 0);
     }
 
     private const string NameColumn = "name";

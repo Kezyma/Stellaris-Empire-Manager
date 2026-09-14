@@ -63,6 +63,11 @@
 
     <EffectsList Effects="@Row.Effects" />
 
+    @if (Row.Gallery.Count > 0)
+    {
+        <WikiGallery Faces="@Row.Gallery" />
+    }
+
     @*
         Whatever conditions this kind of entry states, each under its own heading. A civic keeps two
         apart - what makes it appear at all against what then makes it legal - an authority states

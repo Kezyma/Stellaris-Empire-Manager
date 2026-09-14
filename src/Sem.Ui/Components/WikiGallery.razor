@@ -1,0 +1,26 @@
+@*
+    Every face a species class can wear.
+
+    A row of pictures rather than chips, because what a reader came to a species page for is what the
+    thing looks like - and a name beside each of thirty faces is thirty names to read past. The name
+    is in the tip, where it is there when it is wanted.
+
+    Fixed-size tiles in an auto-filling grid, which is how every other grid of faces in the app is
+    laid out: a portrait picker draws a hundred of these and they do not stretch.
+*@
+
+<div class="sem-wiki-gallery">
+    @foreach (var face in Faces)
+    {
+        <img src="@Session.Data.AssetUrl(face.Icon!)" alt="@face.Name" title="@face.Name" loading="lazy">
+    }
+</div>
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>The faces, each of which is known to have a picture.</summary>
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<EmpireChoice> Faces { get; set; }
+}

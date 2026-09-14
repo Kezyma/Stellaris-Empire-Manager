@@ -182,9 +182,9 @@ public sealed class ConditionReader(Localizer localizer, GameDatabase database)
     /// </summary>
     /// <remarks>
     /// Every category the game can ask about, because an unhandled one falls through to its own key
-    /// prettified - which reads as a name and is not one. The ones with no artwork still get a chip:
-    /// what makes it a chip is being a named thing rather than a phrase, and a country type with no
-    /// icon is still Fallen Empire rather than a sentence about country types.
+    /// prettified - which reads as a name and is not one. The two left without a picture are an
+    /// archetype and a country type, which are script rather than content; they still get a chip,
+    /// because what makes it a chip is being a named thing rather than a phrase.
     /// </remarks>
     public EmpireChoice Chip(SelectionRequirement selection)
     {
@@ -208,6 +208,14 @@ public sealed class ConditionReader(Localizer localizer, GameDatabase database)
             SelectionCategory.AscensionPerk =>
                 (_database.AscensionPerk(key)?.Icon, _database.AscensionPerk(key)?.Effects),
             SelectionCategory.TraditionTree => (_database.TraditionTree(key)?.Icon, null),
+
+            // Neither of these has an icon in the game, and both have something better. A species
+            // class wears one of its own faces - the first the game lists, which is the one its
+            // picker opens on - and a shipset wears the render of its own ships that the designer
+            // already shows beside it.
+            SelectionCategory.SpeciesClass => (SpeciesFaces.Of(_database, key), null),
+            SelectionCategory.GraphicalCulture => (_database.GraphicalCulture(key)?.ShipPreview, null),
+
             _ => (null, null),
         };
 

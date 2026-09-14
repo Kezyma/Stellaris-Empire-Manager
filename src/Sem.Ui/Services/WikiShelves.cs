@@ -16,6 +16,9 @@ public enum WikiKind
 
     /// <summary>The authorities, which say how an empire is governed.</summary>
     Authorities,
+
+    /// <summary>The species classes, which are a set of faces rather than one.</summary>
+    Species,
 }
 
 /// <summary>
@@ -83,6 +86,9 @@ public sealed class WikiShelves(DesignSession session)
 
         WikiKind.Authorities => new WikiShelf(
             "Authorities", "authorities", "authority", Authorities(), WikiFacet.Authorities),
+
+        WikiKind.Species => new WikiShelf(
+            "Species", "species classes", "species class", Species(), WikiFacet.Species),
 
         _ => new WikiShelf("Civics", "civics", "civic", Civics(origins: false), WikiFacet.Civics),
     };
@@ -292,6 +298,85 @@ public sealed class WikiShelves(DesignSession session)
         WikiFact.Said("Heir", authority.HasHeir ? "Yes" : "No"),
         WikiFact.Of("Forces", Named(authority.ForcedTraits)),
     ];
+
+    /// <summary>
+    /// The species classes, which are the one shelf whose entries are a set of pictures.
+    /// </summary>
+    /// <remarks>
+    /// Forty-two of them, twenty marked unplayable outright - <c>docs/hidden-content.md</c> has the
+    /// count and the test that found it, an empire naming one simply not appearing in the game's
+    /// list. They carry no effects and no packs; what a reader wants is the archetype, the trait
+    /// every member is born with, and the faces.
+    /// </remarks>
+    private IReadOnlyList<WikiRow> Species() =>
+    [
+        .. Database.SpeciesClasses
+            .Select(SpeciesClass)
+            .OrderBy(r => r.Name, StringComparer.CurrentCulture),
+    ];
+
+    private WikiRow SpeciesClass(SpeciesClassDefinition species)
+    {
+        var faces = SpeciesFaces.All(Database, species.Key);
+        var playable = _reader.Read(species.Playable) is null;
+
+        return Row(
+            species.Key,
+            EffectSet.None,
+            playable: null,
+            playable,
+            playable ? null : "Unplayable",
+            playable
+                ? null
+                : "The game's own designer does not offer this class, and an empire naming one does "
+                    + "not appear in its list.",
+            [new WikiCondition("Requirements", _reader.Read(species.Possible), "Any empire")],
+            SpeciesFacts(species, faces),
+            Wants(species.Possible)) with
+        {
+            Icon = SpeciesFaces.Of(Database, species.Key),
+            Gallery = [.. faces.Select(Face).OfType<EmpireChoice>()],
+        };
+    }
+
+    /// <summary>
+    /// What is worth saying about a species class beyond the faces.
+    /// </summary>
+    /// <remarks>
+    /// The archetype decides what the species is made of and half of what it may take; the forced
+    /// trait is on every member of the class whatever else was chosen for them, which is a real cost
+    /// and one the game states nowhere a player would look. The count of faces is a number worth
+    /// sorting by: thirty for the humanoids and two for a pre-sapient.
+    /// </remarks>
+    private IReadOnlyList<WikiFact> SpeciesFacts(SpeciesClassDefinition species, IReadOnlyList<string> faces) =>
+    [
+        WikiFact.Of("Archetype", Named(species.Archetype)),
+        WikiFact.Of("Always has", Named(species.ForcedTrait)),
+        WikiFact.Said("Portraits", faces.Count.ToString(System.Globalization.CultureInfo.CurrentCulture)),
+    ];
+
+    /// <summary>One face, where the game has a picture of it.</summary>
+    /// <remarks>
+    /// A portrait with no picture is a group standing for others, and the others are in the list
+    /// beside it - so drawing the group as well would be an empty tile among the faces it names.
+    /// </remarks>
+    private EmpireChoice? Face(string key)
+    {
+        var image = PortraitArtwork.For(Database, key, gender: null);
+
+        if (image is not { Length: > 0 })
+        {
+            return null;
+        }
+
+        var portrait = Database.Portrait(key);
+
+        return new EmpireChoice(
+            key,
+            session.Localizer.Text(portrait?.NameKey ?? key, Localizer.Prettify(key)),
+            image,
+            null);
+    }
 
     /// <summary>
     /// The shared three-quarters: the name, the prose, the packs, the modifiers and the search text.

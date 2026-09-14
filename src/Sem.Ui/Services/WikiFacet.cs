@@ -109,6 +109,14 @@ public static class WikiFacet
         Many("bonus", "Bonus", r => r.Bonuses, Effects),
     ];
 
+    /// <summary>The species classes, which carry no effects and so have no bonus heading.</summary>
+    public static IReadOnlyList<Facet<WikiRow>> Species { get; } =
+    [
+        .. Both,
+        Many("archetype", "Archetype", r => Fact(r, "Archetype")),
+        Many("trait", "Always has", r => Fact(r, "Always has")),
+    ];
+
     /// <summary>
     /// One of a row's own facts, as the choices a heading offers.
     /// </summary>

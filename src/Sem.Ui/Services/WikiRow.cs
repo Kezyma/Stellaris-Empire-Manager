@@ -111,6 +111,16 @@ public sealed record WikiRow
     public required IReadOnlyList<EmpireChoice> Bonuses { get; init; }
 
     /// <summary>
+    /// Every picture belonging to this one, where it has a set of them rather than a single icon.
+    /// </summary>
+    /// <remarks>
+    /// The species classes, and so far only those. A class is thirty faces rather than one, and the
+    /// thing a reader came to a species page for is which faces it can wear - so they get a row of
+    /// their own under the row, full width, instead of being squeezed into a cell.
+    /// </remarks>
+    public IReadOnlyList<EmpireChoice> Gallery { get; init; } = [];
+
+    /// <summary>
     /// Everything about it a typed word should match.
     /// </summary>
     /// <remarks>
