@@ -3,16 +3,42 @@
 
     A row of pictures rather than chips, because what a reader came to a species page for is what the
     thing looks like - and a name beside each of thirty faces is thirty names to read past. The name
-    is in the tip, where it is there when it is wanted.
+    is in the panel, where it is there when it is wanted.
 
     Fixed-size tiles in an auto-filling grid, which is how every other grid of faces in the app is
     laid out: a portrait picker draws a hundred of these and they do not stretch.
+
+    Each tile is a square crop of a picture that is not square, so at this size a face is often most
+    of what is missing from it. Pointing at one shows the whole thing, through the same popover the
+    chips use: the browser puts it in the top layer, so it is not cut off by the table it is inside.
 *@
 
 <div class="sem-wiki-gallery">
-    @foreach (var face in Faces)
+    @for (var index = 0; index < Faces.Count; index++)
     {
-        <img src="@Session.Data.AssetUrl(face.Icon!)" alt="@face.Name" title="@face.Name" loading="lazy">
+        var face = Faces[index];
+        var id = $"{_scope}-{index}";
+        var url = Session.Data.AssetUrl(face.Icon!);
+
+        @*
+            A button rather than the picture alone. A pointer is not the only way to reach this:
+            popovertarget gives a tap its panel, which is the whole of how a phone reads one, and a
+            button is the thing a keyboard can arrive at.
+
+            The press is stopped, because the row underneath picks the entry out and pointing at a
+            face is not choosing anything.
+        *@
+        <span class="sem-wiki-face">
+            <button type="button" popovertarget="@id" aria-describedby="@id" title="@face.Name"
+                    @onclick:stopPropagation="true">
+                <img src="@url" alt="@face.Name" loading="lazy">
+            </button>
+
+            <div id="@id" popover="auto" role="tooltip" class="sem-portrait-detail">
+                <img src="@url" alt="" loading="lazy">
+                <span>@face.Name</span>
+            </div>
+        </span>
     }
 </div>
 
@@ -23,4 +49,14 @@
     /// <summary>The faces, each of which is known to have a picture.</summary>
     [Parameter, EditorRequired]
     public required IReadOnlyList<EmpireChoice> Faces { get; set; }
+
+    /// <summary>
+    /// What this gallery's panels are named after, so that no two on a page collide.
+    /// </summary>
+    /// <remarks>
+    /// Not the face's own key. The species page draws three hundred and sixty-nine of these across
+    /// forty-two galleries and a portrait may be worn by more than one class - two panels under one
+    /// id, and <c>getElementById</c> hands both anchors the first of them.
+    /// </remarks>
+    private readonly string _scope = $"face-{Guid.NewGuid():N}";
 }

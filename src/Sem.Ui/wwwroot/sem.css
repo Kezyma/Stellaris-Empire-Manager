@@ -7633,6 +7633,21 @@ button.icon .sem-action-icon { display: block; }
     gap: var(--space-sm);
 }
 
+/*
+   The tile is the button, so the button gets out of the way: no padding, no ground of its own, and
+   no line height, which on an inline-block wrapping an image is four pixels of descender space
+   under every one of three hundred and sixty-nine of them.
+*/
+.sem-wiki-gallery button {
+    display: block;
+    padding: 0;
+    line-height: 0;
+    background: none;
+    border: 0;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+
 .sem-wiki-gallery img {
     width: 52px;
     height: 52px;
@@ -7640,6 +7655,52 @@ button.icon .sem-action-icon { display: block; }
     border-radius: var(--radius-sm);
     background: var(--bg);
     border: 1px solid var(--border);
+}
+
+.sem-wiki-gallery button:hover img,
+.sem-wiki-gallery button:focus-visible img {
+    border-color: var(--accent);
+}
+
+/*
+   The whole picture, which the tile is a square crop of.
+
+   Its own panel rather than the chip's, because there is nothing to read here: a portrait and the
+   name under it, at the size the game draws it, with the padding only around the name so the
+   picture reaches the panel's own edges.
+*/
+.sem-portrait-detail {
+    position: fixed;
+    margin: 0;
+    inset: auto;
+    padding: 0;
+    width: max-content;
+    max-width: calc(100vw - 2rem);
+    background: var(--bg-panel);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    color: var(--text);
+    overflow: hidden;
+}
+
+.sem-portrait-detail img {
+    display: block;
+    width: min(332px, calc(100vw - 2rem));
+    height: auto;
+}
+
+.sem-portrait-detail > span {
+    display: block;
+    padding: var(--space-sm) var(--space-md);
+    border-top: 1px solid var(--border);
+    font-size: var(--text-sm);
+
+    /*
+        Said here for the reason the chip's panel says it: the panel is drawn in the top layer but
+        still inherits from where it was written, and it is written inside a table cell that has
+        been told not to wrap.
+    */
+    white-space: normal;
 }
 
 /*
