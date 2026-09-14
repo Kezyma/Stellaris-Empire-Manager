@@ -84,7 +84,14 @@
         <tbody>
             @foreach (var row in Sorted)
             {
-                <tr class="@(row.Playable ? null : "unreachable")">
+                @*
+                    Pressing a row picks it out and puts it in the address, the same as pressing a
+                    card does, so a reader who found the thing they came for can send somebody to it.
+
+                    On the row rather than on a control inside it: the whole row is the entry, and
+                    the chips it holds are already buttons which stop the press before it gets here.
+                *@
+                <tr class="@Marks(row)" data-entry="@row.Key" @onclick="() => Press(row)">
                     @if (_pictures)
                     {
                         <td class="scene">
@@ -100,6 +107,9 @@
                         <span class="inner">
                             <GameIcon Path="@row.Icon" Alt="@row.Name" />
                             <span class="title">@row.Name</span>
+
+                            @* The link to this one entry, at the end of the line it names. *@
+                            <WikiLinkButton Link="@WikiLinks.Entry(Kind, row.Key)" Name="@row.Name" />
                         </span>
 
                         @if (row.Description is { Length: > 0 })
@@ -185,7 +195,7 @@
                 *@
                 @if (row.Gallery.Count > 0)
                 {
-                    <tr class="gallery @(row.Playable ? null : "unreachable")">
+                    <tr class="gallery @Marks(row)" data-entry="@row.Key" @onclick="() => Press(row)">
                         <td colspan="@_columns">
                             <WikiGallery Faces="@row.Gallery" />
                         </td>
@@ -207,6 +217,39 @@
     /// <summary>What the rows are, for the caption a screen reader meets before the table.</summary>
     [Parameter, EditorRequired]
     public required string Noun { get; set; }
+
+    /// <summary>Which shelf this is, which is half of what an entry's address is made of.</summary>
+    [Parameter, EditorRequired]
+    public required WikiKind Kind { get; set; }
+
+    /// <summary>The key of the entry the address names, where it names one.</summary>
+    [Parameter]
+    public string? Chosen { get; set; }
+
+    /// <summary>Raised when a row is pressed, so the page can put that entry in the address.</summary>
+    [Parameter]
+    public EventCallback<WikiRow> OnChoose { get; set; }
+
+    /// <summary>
+    /// What a row is marked as: out of reach, picked out, or neither.
+    /// </summary>
+    /// <remarks>
+    /// One method because a species row is two <c>tr</c> elements - the columns and then the gallery
+    /// under them - and they have to agree, or selecting one highlights half of it.
+    /// </remarks>
+    /// <param name="row">The entry.</param>
+    /// <returns>The classes, which may be empty.</returns>
+    private string Marks(WikiRow row) =>
+        string.Join(' ', new[]
+        {
+            row.Playable ? null : "unreachable",
+            row.Key == Chosen ? "chosen" : null,
+        }.OfType<string>());
+
+    /// <summary>Passes a press on to the page.</summary>
+    /// <param name="row">The entry pressed.</param>
+    /// <returns>A task that completes when the page has dealt with it.</returns>
+    private Task Press(WikiRow row) => OnChoose.InvokeAsync(row);
 
     /// <summary>
     /// The whole shelf, which is what the columns are decided from.

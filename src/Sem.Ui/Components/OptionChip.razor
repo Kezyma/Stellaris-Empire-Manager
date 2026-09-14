@@ -13,6 +13,7 @@
 *@
 
 @inject IJSRuntime Js
+@inject NavigationManager Navigation
 @implements IAsyncDisposable
 
 <span class="sem-chip">
@@ -32,9 +33,9 @@
         where there is no hover, pressing the chip is how its panel is opened at all - so a tap
         meant to read what a civic does was opening the editor instead.
     *@
-    <button type="button" @ref="_anchor" aria-describedby="@_id" title="@Name"
-            class="@(Dim ? "dim" : null)"
-            popovertarget="@(Opens ? null : _id)" @onclick="OnSelect"
+    <button type="button" @ref="_anchor" aria-describedby="@_id" title="@Title"
+            class="@(Dim ? "dim" : null) @(Route is null ? null : "sem-chip-link")"
+            popovertarget="@(Opens ? null : _id)" @onclick="Press"
             @onclick:stopPropagation="true"
             @onmouseover="Reveal" @onfocus="Reveal">
         @*
@@ -92,6 +93,17 @@
 @code {
     [CascadingParameter]
     public required DesignSession Session { get; set; }
+
+    /// <summary>
+    /// Where each key is written about, where anything is - which is the wiki and nowhere else.
+    /// </summary>
+    /// <remarks>
+    /// Cascaded rather than injected, so that its absence is what says "not a wiki page". Every
+    /// other use of this chip - the empire list, the designer, the front page - finds nothing here
+    /// and the chip stays a description, which is what it has always been.
+    /// </remarks>
+    [CascadingParameter]
+    public WikiLinks? Wiki { get; set; }
 
     /// <summary>The option's key, which is also where its description is found.</summary>
     [Parameter, EditorRequired]
@@ -177,8 +189,41 @@
     [Parameter]
     public bool Deferred { get; set; }
 
+    /// <summary>
+    /// Where in the wiki this chip's thing is written about, when a wiki page is drawing it.
+    /// </summary>
+    /// <remarks>
+    /// Null everywhere else, and null here for the chips the wiki has no page for - a trait, a
+    /// planet class, an ascension perk. Those stay descriptions, which is what they were.
+    /// </remarks>
+    private string? Route => Wiki?.For(Key);
+
     /// <summary>Whether pressing this chip opens something.</summary>
-    private bool Opens => OnSelect.HasDelegate;
+    private bool Opens => OnSelect.HasDelegate || Route is not null;
+
+    /// <summary>What the chip says it is, and where it says it goes.</summary>
+    private string Title => Route is null ? Name : $"{Name} - press to read about it";
+
+    /// <summary>
+    /// Does whatever pressing it does.
+    /// </summary>
+    /// <remarks>
+    /// The caller's own handler first where there is one. A chip in the lite card opens the editor
+    /// that chose it, and a wiki that could reach that card would be taking the reader out of their
+    /// empire to read about the thing they had just pressed to change.
+    /// </remarks>
+    /// <returns>A task that completes when it has.</returns>
+    private async Task Press()
+    {
+        if (OnSelect.HasDelegate)
+        {
+            await OnSelect.InvokeAsync().ConfigureAwait(true);
+        }
+        else if (Route is { } route)
+        {
+            Navigation.NavigateTo(route);
+        }
+    }
 
     /// <summary>What the game says about it, from wherever it says it.</summary>
     private string Lore =>

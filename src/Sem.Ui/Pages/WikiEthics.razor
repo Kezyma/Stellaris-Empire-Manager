@@ -1,4 +1,5 @@
 @page "/wiki/ethics"
+@page "/wiki/ethics/{Key}"
 
 @*
     The ethics, which are three points spent on what an empire believes.
@@ -7,8 +8,18 @@
     groups, each an opposing pair but one, and each pair in an ordinary and a fanatic strength. The
     game gates none of them - no pack, no condition - so the page draws neither of those columns and
     spends the width on what an ethic costs and what it rules out instead.
+
+    The second address is one entry of the shelf. It shows the same page and picks that one out, so a
+    reader who found the thing they came for can send somebody straight to it rather than to a list
+    with an instruction to scroll.
 *@
 
 <PageTitle>Ethics - Stellaris Empire Manager</PageTitle>
 
-<WikiSection Kind="WikiKind.Ethics" />
+<WikiSection Kind="WikiKind.Ethics" Focus="@Key" />
+
+@code {
+    /// <summary>The entry the address names, where it names one.</summary>
+    [Parameter]
+    public string? Key { get; set; }
+}

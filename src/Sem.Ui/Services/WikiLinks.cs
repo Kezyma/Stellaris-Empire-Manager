@@ -1,0 +1,88 @@
+using Sem.GameData;
+
+namespace Sem.Ui.Services;
+
+/// <summary>
+/// Where in the wiki a thing lives, and what its address is.
+/// </summary>
+/// <remarks>
+/// <para>
+/// A chip knows its key and nothing else. Pressing one should go and read about that thing, and what
+/// stands between the two is which shelf it is on - so this asks the game rather than threading a
+/// second field through every chip, every fact and every pack in the app.
+/// </para>
+/// <para>
+/// One method and one lookup per kind, in the order a key is likeliest to be found. A key that
+/// belongs to nothing comes back as nothing, and the chip is drawn as it always was: not every chip
+/// on a wiki page is something the wiki has a page for - a trait, a planet class and an ascension
+/// perk are all things a civic can ask for and none of them has a shelf yet.
+/// </para>
+/// </remarks>
+/// <param name="database">The extracted game.</param>
+public sealed class WikiLinks(GameDatabase database)
+{
+    private readonly GameDatabase _database =
+        database ?? throw new ArgumentNullException(nameof(database));
+
+    /// <summary>Where the wiki lives, so one place decides it.</summary>
+    public const string Root = "wiki";
+
+    /// <summary>The address of the shelf one kind is on.</summary>
+    /// <param name="kind">The shelf.</param>
+    /// <returns>The route, without a leading slash.</returns>
+    public static string Section(WikiKind kind) => kind switch
+    {
+        WikiKind.Origins => $"{Root}/origins",
+        WikiKind.Ethics => $"{Root}/ethics",
+        WikiKind.Authorities => $"{Root}/authorities",
+        WikiKind.Species => $"{Root}/species",
+        _ => $"{Root}/civics",
+    };
+
+    /// <summary>The address of one entry, which is its shelf and its key.</summary>
+    /// <param name="kind">The shelf.</param>
+    /// <param name="key">The entry.</param>
+    /// <returns>The route, without a leading slash.</returns>
+    public static string Entry(WikiKind kind, string key) => $"{Section(kind)}/{key}";
+
+    /// <summary>
+    /// The shelf a key belongs to, or nothing where the wiki has no page for it.
+    /// </summary>
+    /// <remarks>
+    /// Civics before origins because they are the same collection and told apart by a flag, and
+    /// species classes last because their keys are the only ones that look nothing like the others -
+    /// <c>HUM</c> and <c>TOX</c> rather than <c>civic_</c> and <c>ethic_</c>.
+    /// </remarks>
+    /// <param name="key">What a chip carries.</param>
+    /// <returns>The shelf, or null.</returns>
+    public WikiKind? Shelf(string? key)
+    {
+        if (key is not { Length: > 0 })
+        {
+            return null;
+        }
+
+        if (_database.Civic(key) is { } civic)
+        {
+            return civic.IsOrigin ? WikiKind.Origins : WikiKind.Civics;
+        }
+
+        if (_database.Ethic(key) is not null)
+        {
+            return WikiKind.Ethics;
+        }
+
+        if (_database.Authority(key) is not null)
+        {
+            return WikiKind.Authorities;
+        }
+
+        return _database.SpeciesClass(key) is not null ? WikiKind.Species : null;
+    }
+
+    /// <summary>The address of whatever a key names, or nothing where the wiki has no page for it.</summary>
+    /// <param name="key">What a chip carries.</param>
+    /// <returns>The route, or null.</returns>
+    public string? For(string? key) =>
+        Shelf(key) is { } kind && key is { Length: > 0 } ? Entry(kind, key) : null;
+}

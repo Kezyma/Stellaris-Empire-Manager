@@ -1,0 +1,77 @@
+@*
+    The button that puts a link to one entry on the clipboard.
+
+    Its own component because the card and the table both need it, and what it does is fiddly enough
+    to be worth having in one place: the route has to be made absolute, the clipboard can refuse, and
+    the press has to be stopped from reaching whatever is underneath it.
+
+    That last one is the reason it takes the stopping on itself rather than leaving it to the caller.
+    Both places it is used sit inside something that selects on click, and copying a link should not
+    also select - the two do different things and the reader asked for one of them.
+*@
+
+<button type="button" class="icon sem-wiki-link" title="@Title" aria-label="@Title"
+        @onclick="Copy" @onclick:stopPropagation="true"
+        @onpointerleave="() => _copied = false" @onblur="() => _copied = false">
+    <ActionIcon Name="@(_copied ? "apply" : "share")" />
+</button>
+
+@code {
+    [Inject]
+    private IJSRuntime Js { get; set; } = default!;
+
+    [Inject]
+    private NavigationManager Navigation { get; set; } = default!;
+
+    /// <summary>
+    /// The entry's own route, which the page knows and this does not.
+    /// </summary>
+    /// <remarks>
+    /// Handed down rather than read back out of the address bar, because copying a link has to work
+    /// on an entry nobody has pressed - and until it is pressed the address is the whole shelf's.
+    /// </remarks>
+    [Parameter, EditorRequired]
+    public required string Link { get; set; }
+
+    /// <summary>What the link is to, for the tooltip and for a screen reader.</summary>
+    [Parameter, EditorRequired]
+    public required string Name { get; set; }
+
+    /// <summary>
+    /// Whether the last press worked, which is the only thing the reader can be told.
+    /// </summary>
+    /// <remarks>
+    /// A clipboard write is silent and instant, so without this the button looks broken: press it,
+    /// nothing happens, press it again. The tick stays until the pointer leaves rather than timing
+    /// out, so it is still there when the reader looks back at what they pressed.
+    /// </remarks>
+    private bool _copied;
+
+    /// <summary>What the button says it does, or says it did.</summary>
+    private string Title => _copied ? $"Link to {Name} copied" : $"Copy a link to {Name}";
+
+    /// <summary>
+    /// Puts the link on the clipboard.
+    /// </summary>
+    /// <remarks>
+    /// The whole address rather than the route, because what a reader wants is something they can
+    /// paste into a message. Through <c>ToAbsoluteUri</c> so it is right on both hosts and under the
+    /// site's own sub-path on Pages.
+    /// </remarks>
+    private async Task Copy()
+    {
+        var link = Navigation.ToAbsoluteUri(Link).ToString();
+
+        try
+        {
+            await Js.InvokeVoidAsync("navigator.clipboard.writeText", link).ConfigureAwait(true);
+            _copied = true;
+        }
+        catch (JSException)
+        {
+            // A browser that refuses the clipboard - which is any of them served over plain http to
+            // something that is not localhost. Nothing to say about it: the address bar is the other
+            // way to get the same link, and pressing the entry has already put it there.
+        }
+    }
+}

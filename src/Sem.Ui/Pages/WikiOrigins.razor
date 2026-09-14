@@ -1,4 +1,5 @@
 @page "/wiki/origins"
+@page "/wiki/origins/{Key}"
 
 @*
     The origins, which are the same records as the civics with a flag set and a very different job.
@@ -8,8 +9,18 @@
     two pages rather than one list with a switch: a reader looking for an origin is asking a
     different question from one looking for a civic, even though the answer comes out of the same
     three hundred and fifty-eight entries.
+
+    The second address is one entry of the shelf. It shows the same page and picks that one out, so a
+    reader who found the thing they came for can send somebody straight to it rather than to a list
+    with an instruction to scroll.
 *@
 
 <PageTitle>Origins - Stellaris Empire Manager</PageTitle>
 
-<WikiSection Kind="WikiKind.Origins" />
+<WikiSection Kind="WikiKind.Origins" Focus="@Key" />
+
+@code {
+    /// <summary>The entry the address names, where it names one.</summary>
+    [Parameter]
+    public string? Key { get; set; }
+}

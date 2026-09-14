@@ -1,4 +1,5 @@
 @page "/wiki/authorities"
+@page "/wiki/authorities/{Key}"
 
 @*
     The authorities, which say who rules and how they are replaced.
@@ -7,8 +8,18 @@
     their prose: whether there are elections, whether there is an heir, and what an authority forces
     onto the founding species. A hive mind's founders are hive-minded whatever else was wanted for
     them, which is a cost worth seeing before it is paid.
+
+    The second address is one entry of the shelf. It shows the same page and picks that one out, so a
+    reader who found the thing they came for can send somebody straight to it rather than to a list
+    with an instruction to scroll.
 *@
 
 <PageTitle>Authorities - Stellaris Empire Manager</PageTitle>
 
-<WikiSection Kind="WikiKind.Authorities" />
+<WikiSection Kind="WikiKind.Authorities" Focus="@Key" />
+
+@code {
+    /// <summary>The entry the address names, where it names one.</summary>
+    [Parameter]
+    public string? Key { get; set; }
+}

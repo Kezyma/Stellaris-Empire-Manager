@@ -567,6 +567,61 @@ public sealed class WikiShelfTests
         Assert.True(row.Owned);
     }
 
+    /// <summary>
+    /// A class the game refuses outright is the only kind that is out of reach.
+    /// </summary>
+    /// <remarks>
+    /// The rule was "unplayable unless the condition says nothing", which marked thirty-three of the
+    /// game's forty-two classes shut when nineteen are: everything behind a species pack - Toxoid,
+    /// Necroid, Lithoid, Plantoid, Aquatic - was being reported as something no player can ever be.
+    /// A pack is a thing to buy, not a door that is closed.
+    /// </remarks>
+    [Fact]
+    public void OnlyASpeciesClassTheGameRefusesIsOutOfReach()
+    {
+        Assert.False(Species(new SpeciesClassDefinition("PRE_MAM", "ART")
+        {
+            Playable = new AlwaysRequirement(false),
+        }).Playable);
+
+        Assert.True(Species(new SpeciesClassDefinition("TOX", "ART")).Playable);
+    }
+
+    /// <summary>And one behind a pack is playable, and says which pack.</summary>
+    [Fact]
+    public void ASpeciesClassBehindAPackCarriesItRatherThanBeingShut()
+    {
+        var row = Species(new SpeciesClassDefinition("TOX", "ART")
+        {
+            Playable = new DlcRequirement("Utopia"),
+        });
+
+        Assert.True(row.Playable);
+        Assert.Null(row.ClosedShort);
+        Assert.Equal("Utopia", Assert.Single(row.Packs).Name);
+    }
+
+    /// <summary>One species class, read as the wiki reads it.</summary>
+    private static WikiRow Species(SpeciesClassDefinition species)
+    {
+        var session = new DesignSession(
+            new Sem.Ui.Services.GameData(
+                new GameDatabase
+                {
+                    SchemaVersion = GameDatabase.CurrentSchemaVersion,
+                    GameVersion = "test",
+                    ExtractorVersion = "test",
+                    Defines = new GameDefines { EthicsPoints = 3, CivicPoints = 2, CityPopLevel = 4 },
+                    SpeciesClasses = [species],
+                    Dlc = [new DlcDefinition("utopia", "Utopia", null, null, true)],
+                },
+                new Dictionary<string, string>(StringComparer.Ordinal),
+                "assets"));
+
+        session.StartEmptyFile();
+        return Assert.Single(new WikiShelves(session).Of(WikiKind.Species).Rows);
+    }
+
     /// <summary>The first of some ethics, read as the wiki reads them.</summary>
     private static WikiRow Ethic(params EthicDefinition[] ethics) =>
         Shelves([], ethics).Of(WikiKind.Ethics).Rows.First(r => r.Key == ethics[0].Key);

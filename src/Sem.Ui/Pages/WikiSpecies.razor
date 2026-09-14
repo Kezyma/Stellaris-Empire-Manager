@@ -1,4 +1,5 @@
 @page "/wiki/species"
+@page "/wiki/species/{Key}"
 
 @*
     The species classes: what a founding species can be made of, and what it can look like.
@@ -6,8 +7,18 @@
     The one shelf whose entries are a set of pictures rather than a single icon. A class is thirty
     faces or two, and which faces it can wear is most of what a reader came for - so they run full
     width under each row rather than being squeezed into a cell of it.
+
+    The second address is one entry of the shelf. It shows the same page and picks that one out, so a
+    reader who found the thing they came for can send somebody straight to it rather than to a list
+    with an instruction to scroll.
 *@
 
 <PageTitle>Species - Stellaris Empire Manager</PageTitle>
 
-<WikiSection Kind="WikiKind.Species" />
+<WikiSection Kind="WikiKind.Species" Focus="@Key" />
+
+@code {
+    /// <summary>The entry the address names, where it names one.</summary>
+    [Parameter]
+    public string? Key { get; set; }
+}

@@ -1,6 +1,7 @@
 @implements IAsyncDisposable
 @inject SessionHost Host
 @inject IJSRuntime Js
+@inject NavigationManager Navigation
 
 @*
     A shelf of the game, to read rather than to pick from.
@@ -58,6 +59,17 @@ else
         missing session and say nothing about why.
     *@
     <CascadingValue Value="_session">
+     @*
+        What makes a chip a link, and only here.
+
+        A chip knows its key and not which shelf that key is on, so the map is handed down rather
+        than worked out at each of the several hundred of them. Cascaded rather than injected
+        because it needs the extracted game, which arrives some time after the page does - and
+        because its absence is the signal: the same chip in the empire editor finds nothing here and
+        stays what it was, which is what should happen. Pressing a civic while designing an empire
+        should not walk out of the designer.
+     *@
+     <CascadingValue Value="_links">
       @*
         One box around both views, because the popovers are bound to it rather than to each chip.
         A civics page draws several hundred of them and binding each one costs a round trip into
@@ -117,18 +129,21 @@ else
         }
         else if (_listView)
         {
-            <WikiTable Rows="@Narrowed" All="@Rows" Noun="@Noun" />
+            <WikiTable Rows="@Narrowed" All="@Rows" Noun="@Noun" Kind="@Kind"
+                       Chosen="@_chosen" OnChoose="Choose" />
         }
         else
         {
             <div class="sem-wiki-cards">
                 @foreach (var row in Narrowed)
                 {
-                    <WikiCard Row="@row" />
+                    <WikiCard Row="@row" Chosen="@(row.Key == _chosen)" Link="@WikiLinks.Entry(Kind, row.Key)"
+                              OnChoose="() => Choose(row)" />
                 }
             </div>
         }
       </div>
+     </CascadingValue>
     </CascadingValue>
 }
 
@@ -136,6 +151,24 @@ else
     /// <summary>Which shelf of the game this page shows.</summary>
     [Parameter, EditorRequired]
     public required WikiKind Kind { get; set; }
+
+    /// <summary>
+    /// The entry the address named, where it named one.
+    /// </summary>
+    /// <remarks>
+    /// From the route, so a link somebody was sent opens on the thing it was about. Held separately
+    /// from <c>_chosen</c> because the two part company the moment the reader presses something
+    /// else: the address follows them, but arriving is a one-off and re-scrolling on every render
+    /// would fight anybody trying to read down the page.
+    /// </remarks>
+    [Parameter]
+    public string? Focus { get; set; }
+
+    /// <summary>Which entry is picked out, whether by the address or by a press.</summary>
+    private string? _chosen;
+
+    /// <summary>The key still waiting to be scrolled to, cleared once it has been.</summary>
+    private string? _pending;
 
     /// <summary>What the page is called, in the heading and in the filter card.</summary>
     private string Title => _shelf?.Title ?? string.Empty;
@@ -149,6 +182,9 @@ else
     private DesignSession? _session;
 
     private WikiShelves? _shelves;
+
+    /// <summary>Where each key lives, for the chips to link through.</summary>
+    private WikiLinks? _links;
 
     private WikiShelf? _shelf;
 
@@ -200,6 +236,7 @@ else
         }
 
         _session.Changed += Forget;
+        _links = new WikiLinks(_session.Data.Database);
         _shelves = new WikiShelves(_session);
         Open();
         _listView = _session.Preferences.Get(ViewSetting) == ListView;
@@ -253,6 +290,44 @@ else
         {
             Open();
         }
+
+        // The address decides which entry is picked out, so the page is the same thing to everybody
+        // who opens it. A press writes it there rather than here; this reads it back - including
+        // when the press was on a chip naming something on the page already in front of the reader.
+        if (Focus == _chosen)
+        {
+            return;
+        }
+
+        _chosen = Focus;
+        _pending = Focus;
+
+        // Somebody sent here to read about one entry should be shown it, whatever was being asked
+        // of the shelf beforehand. Without this a chip pressed with a word still in the search box
+        // scrolls to a row that was filtered out, which is to say it does nothing at all.
+        if (Focus is { Length: > 0 } wanted && _filter is { Any: true } &&
+            !Narrowed.Any(row => row.Key == wanted))
+        {
+            _filter.Clear();
+            Narrow();
+        }
+    }
+
+    /// <summary>
+    /// Picks an entry out, and puts it in the address so the page can be shared as it stands.
+    /// </summary>
+    /// <remarks>
+    /// Replacing rather than pushing. Reading down a list and pressing four things is one visit, not
+    /// four, and a Back button that walks a reader back through their own browsing of one page is a
+    /// Back button that does not go back.
+    /// </remarks>
+    private void Choose(WikiRow row)
+    {
+        _chosen = _chosen == row.Key ? null : row.Key;
+
+        Navigation.NavigateTo(
+            _chosen is { Length: > 0 } key ? WikiLinks.Entry(Kind, key) : WikiLinks.Section(Kind),
+            replace: true);
     }
 
     /// <summary>The box the popovers are bound through.</summary>
@@ -279,6 +354,16 @@ else
             // Every render, and cheap: the binder marks the box it was given and returns at once if
             // it is asked again. Switching between cards and list builds a new box, which needs it.
             await module.InvokeVoidAsync("bindPopoversWhenPointed", _body).ConfigureAwait(true);
+
+            // Once, when an address named something. Scrolling on every render would take the page
+            // away from anybody reading down it, and the entry is already picked out either way.
+            if (_pending is { Length: > 0 } key)
+            {
+                _pending = null;
+
+                await module.InvokeVoidAsync(
+                    "scrollToEntry", _body, $"[data-entry='{key}']").ConfigureAwait(true);
+            }
         }
         catch (JSDisconnectedException)
         {

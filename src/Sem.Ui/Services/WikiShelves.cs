@@ -315,21 +315,40 @@ public sealed class WikiShelves(DesignSession session)
             .OrderBy(r => r.Name, StringComparer.CurrentCulture),
     ];
 
+    /// <summary>
+    /// One species class, with its faces and what the game asks of an empire wearing them.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Unplayable means refused, not conditional. Read as "unplayable unless the condition says
+    /// nothing", this marked thirty-three of the forty-two shut when nineteen are: Toxoid, Necroid,
+    /// Aquatic, Lithoid, Plantoid, Thermophile, Mindwarden and Solarpunk are behind a content pack,
+    /// which is a thing you can buy rather than a door that is closed.
+    /// </para>
+    /// <para>
+    /// Nineteen is also the number <c>docs/hidden-content.md</c> records, reached by putting a design
+    /// naming one in the game and finding the empire missing from its list. So the two agree.
+    /// </para>
+    /// <para>
+    /// The pack is not read here. <see cref="Row"/> is handed the same tree and works the packs out
+    /// of it, which is how Toxoid comes to carry a Toxoids chip without this method mentioning one.
+    /// </para>
+    /// </remarks>
     private WikiRow SpeciesClass(SpeciesClassDefinition species)
     {
         var faces = SpeciesFaces.All(Database, species.Key);
-        var playable = _reader.Read(species.Playable) is null;
+        var shut = Refused(species.Playable);
 
         return Row(
             species.Key,
             EffectSet.None,
-            playable: null,
-            playable,
-            playable ? null : "Unplayable",
-            playable
-                ? null
-                : "The game's own designer does not offer this class, and an empire naming one does "
-                    + "not appear in its list.",
+            species.Playable,
+            !shut,
+            shut ? "Unplayable" : null,
+            shut
+                ? "The game's own designer does not offer this class, and an empire naming one does "
+                    + "not appear in its list."
+                : null,
             [new WikiCondition("Requirements", _reader.Read(species.Possible), "Any empire")],
             SpeciesFacts(species, faces),
             Wants(species.Possible)) with
@@ -338,6 +357,17 @@ public sealed class WikiShelves(DesignSession session)
             Gallery = [.. faces.Select(Face).OfType<EmpireChoice>()],
         };
     }
+
+    /// <summary>
+    /// Whether a condition turns every player away, whatever they own or choose.
+    /// </summary>
+    /// <remarks>
+    /// Only an outright refusal counts. A content pack is a fact about the person rather than about
+    /// the game, and every other kind of condition is a choice nobody has made yet - so the one
+    /// thing that shuts a door is the game saying so.
+    /// </remarks>
+    private static bool Refused(Requirement? playable) =>
+        playable is AlwaysRequirement { Value: false };
 
     /// <summary>
     /// What is worth saying about a species class beyond the faces.

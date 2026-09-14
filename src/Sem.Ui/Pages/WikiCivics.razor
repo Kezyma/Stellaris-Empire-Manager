@@ -1,5 +1,6 @@
 @page "/wiki"
 @page "/wiki/civics"
+@page "/wiki/civics/{Key}"
 
 @*
     The civics, as a page to read.
@@ -11,8 +12,18 @@
     The page itself is a title and a shelf. Everything else is in WikiShelf, which the origins page
     is the same call to with a different word - they are the same record in the data, and the only
     reason they are two pages is that they are two different things to a player.
+
+    The second address is one entry of the shelf. It shows the same page and picks that one out, so a
+    reader who found the thing they came for can send somebody straight to it rather than to a list
+    with an instruction to scroll.
 *@
 
 <PageTitle>Civics - Stellaris Empire Manager</PageTitle>
 
-<WikiSection Kind="WikiKind.Civics" />
+<WikiSection Kind="WikiKind.Civics" Focus="@Key" />
+
+@code {
+    /// <summary>The entry the address names, where it names one.</summary>
+    [Parameter]
+    public string? Key { get; set; }
+}

@@ -5,11 +5,13 @@
     the name and the icon say which one it is, and everything under them is the answer to a question
     somebody came here with. What it does, who may have it, and what it costs in packs.
 
-    Not a button. Nothing on this page is selectable - pressing a civic in a wiki should do nothing,
-    and a tile that looks pressable and is not is worse than one that does not.
+    Pressing it picks it out and puts it in the address, so the page can be sent to somebody as it
+    stands. The card is not a button though - it holds chips that are, and a button inside a button
+    is markup no browser agrees about. The press is on the article and the chips stop it.
 *@
 
-<article class="sem-wiki-card @(Row.Playable ? null : "unreachable")">
+<article class="sem-wiki-card @(Row.Playable ? null : "unreachable") @(Chosen ? "chosen" : null)"
+         data-entry="@Row.Key" @onclick="OnChoose">
     @*
         The scene the empire wakes up on, above the words - which is where the designer's own picker
         puts it, and for the reason stated there: it is what the option looks like, and reading about
@@ -43,6 +45,14 @@
                 <PackChips Packs="@Row.Packs" />
             </div>
         </div>
+
+        @*
+            The link to this one entry, in the corner.
+
+            Inside the header rather than over the card, so the scene on an origin pushes it down by
+            itself: the art runs edge to edge and a button on top of it would sit on somebody's face.
+        *@
+        <WikiLinkButton Link="@Link" Name="@Row.Name" />
     </header>
 
     @if (Row.Description is { Length: > 0 })
@@ -98,7 +108,25 @@
     [CascadingParameter]
     public required DesignSession Session { get; set; }
 
-    /// <summary>The civic or origin to draw.</summary>
+    /// <summary>The entry to draw.</summary>
     [Parameter, EditorRequired]
     public required WikiRow Row { get; set; }
+
+    /// <summary>Whether this is the one the address names.</summary>
+    [Parameter]
+    public bool Chosen { get; set; }
+
+    /// <summary>Raised when the reader presses it, so the page can put it in the address.</summary>
+    [Parameter]
+    public EventCallback OnChoose { get; set; }
+
+    /// <summary>
+    /// This entry's own route, which the page knows and the card does not.
+    /// </summary>
+    /// <remarks>
+    /// Handed down rather than worked out here, because the card knows which entry it is and not
+    /// which shelf it is on - the page is the only thing that knows both.
+    /// </remarks>
+    [Parameter, EditorRequired]
+    public required string Link { get; set; }
 }

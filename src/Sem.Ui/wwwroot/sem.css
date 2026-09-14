@@ -7260,6 +7260,22 @@ button.icon .sem-action-icon { display: block; }
     background: var(--bg-panel);
     border: 1px solid var(--border);
     border-radius: var(--radius);
+    cursor: pointer;
+}
+
+/*
+   The one the address names.
+
+   A ring rather than a fill. The card is already a wall of coloured chips - packs, conditions,
+   modifiers - and tinting the ground behind them changed what every one of those colours read as.
+   The border it replaces is the same width, so nothing moves when a card is picked.
+
+   Its own variable, because the row in the table wants the same colour and neither should be able
+   to drift from the other.
+*/
+.sem-wiki-card.chosen {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
 }
 
 /*
@@ -7290,6 +7306,11 @@ button.icon .sem-action-icon { display: block; }
 .sem-wiki-card.unreachable {
     border-style: dashed;
     border-color: var(--border-strong);
+}
+
+/* Picked and out of reach at once: the accent says which, the dashes still say what. */
+.sem-wiki-card.unreachable.chosen {
+    border-color: var(--accent);
 }
 
 .sem-wiki-card.unreachable > header,
@@ -7326,6 +7347,51 @@ button.icon .sem-action-icon { display: block; }
     flex-wrap: wrap;
     gap: var(--space-sm);
 }
+
+/*
+   Copy a link to this one entry.
+
+   Quiet until it is wanted. It sits on every card and every row of a three-hundred-row table, so at
+   full strength it would be the most repeated mark on the page and the first thing the eye went to -
+   which is the opposite of what it is for. Faint at rest, ordinary on hover, and always visible to
+   the keyboard.
+
+   Pushed to the end of the line it shares rather than positioned over the card, so the scene on an
+   origin moves it down by itself.
+*/
+.sem-wiki-link {
+    flex: none;
+    margin-left: auto;
+    padding: var(--space-sm);
+    line-height: 0;
+    color: var(--text-faint);
+    background: none;
+    border-color: transparent;
+    opacity: 0.55;
+    transition: opacity 0.12s, color 0.12s;
+}
+
+.sem-wiki-card:hover .sem-wiki-link,
+.sem-wiki-table tbody tr:hover .sem-wiki-link,
+.sem-wiki-link:hover,
+.sem-wiki-link:focus-visible {
+    opacity: 1;
+}
+
+.sem-wiki-link:hover:not(:disabled) {
+    color: var(--text);
+    border-color: var(--accent-dim);
+}
+
+/*
+   A chip the wiki has a page for, which is most of them on these pages and none of them anywhere
+   else. Underlined on hover rather than coloured at rest: several hundred of these sit inside the
+   requirement bullets, and an accent on every one would make the bullets unreadable while saying
+   the same thing about all of them.
+*/
+.sem-chip .sem-chip-link { cursor: pointer; }
+
+.sem-chip .sem-chip-link:hover:not(:disabled) > span { text-decoration: underline; }
 
 /*
    What a row costs you, in one of three colours.
@@ -7471,6 +7537,27 @@ button.icon .sem-action-icon { display: block; }
 
 .sem-wiki-table tbody tr.unreachable {
     color: var(--text-faint);
+}
+
+.sem-wiki-table tbody tr { cursor: pointer; }
+
+/*
+   The row the address names, and the gallery under it where there is one.
+
+   A wash and a rail down the left, not a fill. The row is thirty chips wide - packs, ethics,
+   conditions, modifiers, each carrying its own colour - and the accent at full strength behind
+   them changed what every one of those colours read as. Mixed into the panel instead, it says the
+   same thing without repainting the row.
+
+   On the cells rather than on the row, because a `tr` takes no background of its own once its
+   cells have one - which they do, from the table's striping.
+*/
+.sem-wiki-table tbody tr.chosen > * {
+    background: color-mix(in srgb, var(--accent-dim) 30%, var(--bg-panel));
+}
+
+.sem-wiki-table tbody tr.chosen > *:first-child {
+    box-shadow: inset 2px 0 0 0 var(--accent);
 }
 
 /*

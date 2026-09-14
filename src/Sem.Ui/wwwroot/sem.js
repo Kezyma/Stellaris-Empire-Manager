@@ -286,6 +286,44 @@ export function revealSelected(list, selector) {
 }
 
 /**
+ * Brings a linked entry into view on the page.
+ *
+ * Unlike revealSelected above, which scrolls a box and deliberately leaves the page alone, this is
+ * for arriving from a shared address: the whole point is that the page moves to the thing the link
+ * named. Nothing else on screen is worth keeping still, because the reader has not seen it yet.
+ *
+ * scrollIntoView on its own puts the entry under the header, which is sticky and fifty pixels tall.
+ * The offset is read from the stylesheet rather than written here, so the two cannot disagree the
+ * next time the header changes height.
+ *
+ * Returns whether it found anything, so the caller can tell "scrolled" from "that key is not on this
+ * page" without a second round trip.
+ *
+ * @param {HTMLElement} root what holds the entries
+ * @param {string} selector what marks the one to show
+ * @returns {boolean} whether it was found
+ */
+export function scrollToEntry(root, selector) {
+    const found = root?.querySelector(selector);
+
+    if (!found) {
+        return false;
+    }
+
+    const styles = getComputedStyle(document.documentElement);
+    const sticky = parseInt(styles.getPropertyValue('--sticky-top'), 10);
+    const margin = Number.isFinite(sticky) ? sticky : 60;
+
+    const top = found.getBoundingClientRect().top + window.scrollY - margin;
+
+    // Instant rather than smooth. A page that is still gliding when the reader starts reading is a
+    // page they have to wait for, and a link they followed deliberately is not a transition.
+    window.scrollTo({ top: Math.max(0, top), behavior: 'instant' });
+
+    return true;
+}
+
+/**
  * Ties up a whole page of popovers at once, each one the first time it is pointed at.
  *
  * bindPopover costs a call into managed code per chip. One panel beside an empire is nothing; a
@@ -319,7 +357,11 @@ export function bindPopoversWhenPointed(root) {
             return;
         }
 
-        bindPopover(anchor, panel);
+        // A chip that does something of its own on a press must not also pin its panel open. The
+        // attribute that makes the browser toggle a popover is left off exactly those chips - the
+        // ones that open an editor, and the ones on a wiki page that go and read about themselves -
+        // so its absence is the ask.
+        bindPopover(anchor, panel, anchor.hasAttribute('popovertarget'));
 
         // The hover that did the binding happened before there was anything listening for it.
         anchor.dispatchEvent(new MouseEvent('mouseenter'));
