@@ -7263,6 +7263,24 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
+   The scene across the whole card, which is how the game presents an origin.
+
+   The art is only 220 pixels wide, so a card track wider than that upscales it. That is a real cost
+   and it is the right trade here: the picture is the thing a reader recognises an origin by, and
+   the app's own origin picker already draws it upscaled in a panel half again as wide.
+
+   The card lays its parts out with a gap, so the shared rule's own bottom margin would be counted
+   twice and set the scene further from its name than anything else on the card. It also sits
+   outside the card's padding, edge to edge, because a scene inset by ten pixels reads as an
+   illustration rather than as the card's own face.
+*/
+.sem-wiki-card > .sem-detail-picture {
+    width: calc(100% + var(--space-lg) * 2);
+    margin: calc(var(--space-lg) * -1) calc(var(--space-lg) * -1) 0;
+    border-radius: var(--radius) var(--radius) 0 0;
+}
+
+/*
    One nobody can take, dimmed rather than hidden.
 
    Hiding them is what the toggle above is for, and it is the reader's decision. Dimming says the
@@ -7398,6 +7416,24 @@ button.icon .sem-action-icon { display: block; }
    class and two elements - so `.sem-wiki-table th` loses to it and only the td cells changed. The
    name column kept its icon and its title floating at the vertical middle of a row eight lines tall.
 */
+/*
+   The table scrolls inside its box, and the page does not scroll with it.
+
+   The box already says overflow-x: auto and already scrolls - but a table wider than its scroller
+   still counts towards the root's scrollable width in Chrome, so the whole page could be dragged two
+   hundred pixels sideways onto nothing. Nothing was ever painted out there: measured, every element
+   outside the box ended at the viewport, and only the document disagreed.
+
+   contain: paint is the fix and it is a true statement rather than a patch: a scroller paints
+   nothing outside its own box. The chips' panels are unaffected, because a popover is in the top
+   layer and the top layer is not clipped by an ancestor - which is the same reason OptionChip gives
+   for using one.
+
+   Scoped to this table. The empire list never meets it: fitTableToWidth shrinks that one until it
+   fits, so it has nothing to overflow with.
+*/
+.sem-table-wrap:has(.sem-wiki-table) { contain: paint; }
+
 .sem-wiki-table td,
 .sem-wiki-table tbody th {
     vertical-align: top;
@@ -7406,6 +7442,31 @@ button.icon .sem-action-icon { display: block; }
 
 .sem-wiki-table tbody tr + tr > * {
     border-top: 1px solid var(--border);
+}
+
+/*
+   Lines down the columns as well as across the rows.
+
+   The empire table needs none: its cells are one line each, so the rows themselves are the grid.
+   Here every cell is a paragraph of its own height, and without a rule between them a reader
+   scanning across a row has nothing saying where one answer stops and the next begins.
+
+   Not on the last, which would draw a line down the outside of the table.
+*/
+.sem-wiki-table tbody td:not(:last-child),
+.sem-wiki-table tbody th:not(:last-child),
+.sem-wiki-table thead th:not(:last-child) {
+    border-right: 1px solid var(--border);
+}
+
+/*
+   The headings that are not buttons still need the padding a button brings with it. The shared rule
+   zeroes the cell's own padding because .sem-sort carries it, so a plain word in a heading sat hard
+   against the column line beside it - which is how "Scene" and "Name" came to read as one word.
+*/
+.sem-wiki-table thead th > .plain {
+    display: block;
+    padding: var(--space-sm) var(--space-md);
 }
 
 .sem-wiki-table tbody tr.unreachable {
@@ -7417,6 +7478,27 @@ button.icon .sem-action-icon { display: block; }
    there is, so the question is not how wide each should be but which should give way first: the
    description and the conditions carry the most words, the name and the pack the fewest.
 */
+/*
+   The scene, at a size a column can spare.
+
+   The art is 220 wide and the shared rule draws it at whatever width it is given, so the cell says
+   the width and the picture keeps its own shape. Narrower than its natural size on purpose: eleven
+   columns of prose beside it all want room, and at a glance the scene is recognised rather than
+   read.
+*/
+.sem-wiki-table .scene {
+    width: 13rem;
+
+    /*
+       And a floor, not only a preference. Every other column here states a min-width, so under a
+       table too wide for the page this was the one that could give - and give it did, all the way
+       to eighteen pixels, with the heading squeezed into the one beside it.
+    */
+    min-width: 13rem;
+}
+
+.sem-wiki-table .scene .sem-detail-picture { margin-bottom: 0; }
+
 .sem-wiki-table tbody th.name { min-width: 18rem; }
 .sem-wiki-table .conditions { min-width: 13rem; }
 .sem-wiki-table .effects { min-width: 12rem; }

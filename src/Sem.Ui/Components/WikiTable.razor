@@ -18,6 +18,9 @@
     The two conditions get a column each for the opposite reason: they are different questions, and
     a table is for putting the same question of every row under itself.
 
+    The scene leads, on the pages that have one. It is the most recognisable thing about an origin
+    and the thing a reader scans down the column for.
+
     Not EmpireTable. That one is built around an empire's columns, sorts and moves rows, and its
     cells are single-line chips - none of which is what this is. Sharing it would have meant making
     it generic in the row and then teaching it a second idea of what a cell is.
@@ -29,19 +32,41 @@
 
         <thead>
             <tr>
-                <th scope="col">Name</th>
-                <th scope="col">Effects</th>
-                <th scope="col">Offered to</th>
-                <th scope="col">Allowed when</th>
-                <th scope="col">Playable</th>
-                <th scope="col">Pack</th>
+                @*
+                    Drawn only where something has one, which in practice means the origins. A
+                    column of blanks three hundred rows deep is a column that costs width to say
+                    nothing - and asking the rows rather than the page means it follows the data if
+                    the game ever gives a civic a scene of its own.
+                *@
+                @if (_pictures)
+                {
+                    <th scope="col"><span class="plain">Scene</span></th>
+                }
+
+                <th scope="col">@Header(NameColumn, "Name")</th>
+                <th scope="col"><span class="plain">Effects</span></th>
+                <th scope="col"><span class="plain">Offered to</span></th>
+                <th scope="col"><span class="plain">Allowed when</span></th>
+                <th scope="col">@Header(PlayableColumn, "Playable")</th>
+                <th scope="col">@Header(PackColumn, "Pack")</th>
             </tr>
         </thead>
 
         <tbody>
-            @foreach (var row in Rows)
+            @foreach (var row in Sorted)
             {
                 <tr class="@(row.Reach.EverOffered ? null : "unreachable")">
+                    @if (_pictures)
+                    {
+                        <td class="scene">
+                            @if (row.Picture is { Length: > 0 } picture)
+                            {
+                                <img class="sem-detail-picture" src="@Session.Data.AssetUrl(picture)"
+                                     alt="" loading="lazy">
+                            }
+                        </td>
+                    }
+
                     <th scope="row" class="name">
                         <span class="inner">
                             <GameIcon Path="@row.Icon" Alt="@row.Name" />
@@ -74,9 +99,7 @@
                         <td class="conditions">
                             @if (condition.Outline is { } outline)
                             {
-                                <ul class="sem-conditions">
-                                    <ConditionBullets Node="@outline" />
-                                </ul>
+                                <ConditionList Node="@outline" />
                             }
                         </td>
                     }
@@ -117,4 +140,133 @@
     /// <summary>What the rows are, for the caption a screen reader meets before the table.</summary>
     [Parameter, EditorRequired]
     public required string Noun { get; set; }
+
+    /// <summary>Whether anything here carries a picture, and so whether that column is drawn.</summary>
+    /// <remarks>
+    /// Worked out when the rows change rather than in the markup, where it would be a pass over
+    /// every row for the heading and another for each row drawn under it.
+    /// </remarks>
+    private bool _pictures;
+
+    protected override void OnParametersSet() =>
+        _pictures = Rows.Any(r => r.Picture is { Length: > 0 });
+
+    private const string NameColumn = "name";
+
+    private const string PlayableColumn = "playable";
+
+    private const string PackColumn = "pack";
+
+    /// <summary>
+    /// Which column the rows are in the order of, which to begin with is the name.
+    /// </summary>
+    /// <remarks>
+    /// The shelf hands them over in name order already, so this starts agreeing with what arrives
+    /// rather than re-sorting it - and the header says so from the first draw, instead of the reader
+    /// having to press a column to find out what the list is already sorted by.
+    /// </remarks>
+    private string _sort = NameColumn;
+
+    private bool _descending;
+
+    /// <summary>One sortable heading, drawn the way the empire table draws its own.</summary>
+    private RenderFragment Header(string key, string label) => @<text>
+        <button type="button" class="sem-sort @(_sort == key ? "sorted" : null)"
+                aria-label="@($"Sort by {label}")"
+                @onclick="() => SortBy(key)">
+            @label
+            <span class="arrow" aria-hidden="true">@(_sort == key ? (_descending ? "▾" : "▴") : string.Empty)</span>
+        </button>
+    </text>;
+
+    /// <summary>Sorts by a column, or turns it round when it is already the one being sorted by.</summary>
+    private void SortBy(string key)
+    {
+        if (_sort == key)
+        {
+            _descending = !_descending;
+        }
+        else
+        {
+            _sort = key;
+            _descending = false;
+        }
+    }
+
+    /// <summary>
+    /// The rows in the order the header asked for, worked out once per question.
+    /// </summary>
+    /// <remarks>
+    /// Held against the list it was made from as well as against the sort, which is what the empire
+    /// table learned: this runs on every render, and a search box that narrows the list on each
+    /// keystroke would otherwise sort three hundred rows for every letter typed twice over.
+    /// </remarks>
+    private IReadOnlyList<CivicRow> Sorted
+    {
+        get
+        {
+            if (_ordered is { } held
+                && ReferenceEquals(Rows, _orderedFor)
+                && _orderedBy == _sort
+                && _orderedDown == _descending)
+            {
+                return held;
+            }
+
+            _orderedFor = Rows;
+            _orderedBy = _sort;
+            _orderedDown = _descending;
+
+            return _ordered = [.. Ordering];
+        }
+    }
+
+    private IReadOnlyList<CivicRow>? _ordered;
+    private IReadOnlyList<CivicRow>? _orderedFor;
+    private string? _orderedBy;
+    private bool _orderedDown;
+
+    /// <summary>
+    /// The rows in the order the header asked for, with the name always breaking the tie.
+    /// </summary>
+    /// <remarks>
+    /// Two of the three sort by something with very few values - playable has two and most civics
+    /// share a pack with dozens of others - so without the name settling it the same list sorted the
+    /// same way would read differently depending on what it was sorted by before.
+    /// </remarks>
+    private IEnumerable<CivicRow> Ordering
+    {
+        get
+        {
+            if (_sort == NameColumn)
+            {
+                return _descending
+                    ? Rows.OrderByDescending(r => r.Name, StringComparer.CurrentCulture)
+                    : Rows.OrderBy(r => r.Name, StringComparer.CurrentCulture);
+            }
+
+            // Playable first on the way up, which is the wrong way round for a boolean and the right
+            // way round for a reader: the first press of a column should show the thing somebody
+            // pressed it looking for.
+            var ordered = _sort == PlayableColumn
+                ? Key(r => r.Reach.EverOffered ? 0 : 1)
+                : Key(r => r.Packs.Count == 0 ? 1 : 0).ThenBy(Pack, StringComparer.CurrentCulture);
+
+            return ordered.ThenBy(r => r.Name, StringComparer.CurrentCulture);
+        }
+    }
+
+    /// <summary>
+    /// What a civic sorts under in the pack column, which is the pack that introduced it.
+    /// </summary>
+    /// <remarks>
+    /// The first, not the alphabetically least. A civic behind two packs almost always names the one
+    /// that brought it in first, and that is the one a reader looking down the column expects to
+    /// find it under.
+    /// </remarks>
+    private static string Pack(CivicRow row) =>
+        row.Packs.Count == 0 ? string.Empty : row.Packs[0].Name;
+
+    private IOrderedEnumerable<CivicRow> Key(Func<CivicRow, int> of) =>
+        _descending ? Rows.OrderByDescending(of) : Rows.OrderBy(of);
 }

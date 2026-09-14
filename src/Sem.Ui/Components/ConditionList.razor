@@ -1,0 +1,31 @@
+@*
+    A whole condition, as the list a reader meets under a heading.
+
+    The outermost "All of" is not drawn. A heading already says what the list is - "Offered to", and
+    then everything under it - so a first line saying "ALL OF" over that is the page telling you the
+    default twice, on almost every civic in the game, before anything it actually says.
+
+    Only the outermost, and only when it is an "all". A nested group is a real narrowing of the one
+    above it and has to say which kind it is; and an "Any of" at the top is not the default, so
+    dropping its word would turn a list of alternatives into a list of requirements.
+*@
+
+<ul class="sem-conditions">
+    @foreach (var part in Top)
+    {
+        <ConditionBullets Node="@part" />
+    }
+</ul>
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>The condition to draw.</summary>
+    [Parameter, EditorRequired]
+    public required ConditionOutline Node { get; set; }
+
+    /// <summary>The bullets to draw at the top, which is the condition itself unless it is an "all".</summary>
+    private IReadOnlyList<ConditionOutline> Top =>
+        Node.Join is ConditionJoin.All ? Node.Parts : [Node];
+}

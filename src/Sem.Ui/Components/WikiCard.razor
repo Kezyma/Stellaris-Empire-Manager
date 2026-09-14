@@ -10,6 +10,19 @@
 *@
 
 <article class="sem-wiki-card @(Row.Reach.EverOffered ? null : "unreachable")">
+    @*
+        The scene the empire wakes up on, above the words - which is where the designer's own picker
+        puts it, and for the reason stated there: it is what the option looks like, and reading about
+        it before seeing it loses the thing being read about.
+
+        Origins only. Every one of the game's civics has an icon and none has a picture, so the card
+        simply does without rather than reserving a space that would be blank three hundred times.
+    *@
+    @if (Row.Picture is { Length: > 0 } picture)
+    {
+        <img class="sem-detail-picture" src="@Session.Data.AssetUrl(picture)" alt="" loading="lazy">
+    }
+
     <header>
         <GameIcon Path="@Row.Icon" Alt="@Row.Name" />
 
@@ -55,9 +68,7 @@
                 <dd>
                     @if (condition.Outline is { } outline)
                     {
-                        <ul class="sem-conditions">
-                            <ConditionBullets Node="@outline" />
-                        </ul>
+                        <ConditionList Node="@outline" />
                     }
                     else
                     {
