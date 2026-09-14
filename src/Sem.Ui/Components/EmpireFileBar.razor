@@ -82,7 +82,7 @@
             title, which is where a button with no words says what it is about.
         *@
         <button type="button"
-                class="icon @(cloud.Connected ? "on" : null) @(cloud.SessionEnded ? "danger" : null)"
+                class="icon @(cloud.Connected ? "on" : null) @(cloud.SessionEnded ? "ended" : null)"
                 title="@(cloud.Where is { } path
                     ? $"Saving to {path} in your {cloud.ProviderName}"
                     : "Open a designs file you keep in the cloud")"

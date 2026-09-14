@@ -497,16 +497,6 @@ code {
         width: 100%;
         text-align: left;
     }
-
-    /*
-       Save is wrapped now, so the rule above reaches the wrapper and stops one short of the button
-       inside it. Both are given the width, which leaves this column exactly as it was - and the
-       chip is never here anyway, since only a host with a file to keep in step draws one.
-    */
-    .sem-save > button.sem-tab {
-        width: 100%;
-        padding-right: var(--space-xl);
-    }
 }
 
 /*
@@ -983,77 +973,6 @@ button.sem-tab:disabled:hover { background: none; }
     color: var(--accent);
     border-bottom-color: var(--accent);
 }
-
-/*
-   Save, and the switch that says whether saving is something you ask for.
-
-   One group, read left to right, so the word and the state that changes what it means are not
-   separated by the row's own gap. The button gives up its right-hand padding to the chip, which is
-   the whole trick: without that the two sit a tab's width apart and read as unrelated.
-*/
-.sem-save {
-    display: inline-flex;
-    align-items: center;
-}
-
-.sem-save > button.sem-tab { padding-right: var(--space-sm); }
-
-/*
-   A chip, because that is what this app calls a state a thing is in - same pill, same raised
-   ground, same border - rather than a tab, which is a thing to press. The checkbox stays visible
-   instead of being replaced by a tick or an icon: it is the control, and hiding it would leave the
-   only way of telling on from off as a colour.
-
-   Sized to the word beside it rather than to itself. A chip is a note on the verb it qualifies, and
-   one standing taller than the verb reads as the louder of the two - so the padding is a hairline,
-   the box is shrunk to match, and the whole thing comes out at the height of the text in Save.
-*/
-.sem-save > .sem-auto {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-2xs);
-    margin-right: var(--space-sm);
-    padding: var(--space-2xs) var(--space-xs);
-    background: var(--bg-raised);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-pill);
-    color: var(--text-dim);
-    font-size: var(--text-sm);
-    line-height: 1;
-    white-space: nowrap;
-    cursor: pointer;
-}
-
-.sem-save > .sem-auto:hover {
-    background: var(--bg-hover);
-    color: var(--text);
-}
-
-/* On, it is a mode the file is in rather than a button that was pressed, and it should read as one. */
-.sem-save > .sem-auto:has(input:checked) {
-    border-color: var(--accent-dim);
-    color: var(--accent);
-}
-
-/*
-   Shrunk with the chip. A checkbox draws at whatever size the platform likes, which here is taller
-   than the chip it sits in - so it is given one, and the accent colour so that on and off differ by
-   more than a tick nobody looks closely enough to see.
-*/
-.sem-save > .sem-auto input {
-    width: 0.8em;
-    height: 0.8em;
-    margin: 0;
-    accent-color: var(--accent);
-    cursor: pointer;
-}
-
-/* The icon takes the chip's colour, so it dims and lights with the state rather than beside it. */
-.sem-save > .sem-auto svg {
-    display: block;
-    flex: none;
-}
-
 
 /* ---------------------------------------------------------------- options */
 
@@ -4105,6 +4024,18 @@ button.icon.on:hover:not(:disabled) {
     color: var(--bg);
 }
 
+/*
+   A sign-in that has lapsed. Its own mark rather than the danger one, which everywhere else in this
+   app means "pressing this destroys something": this button destroys nothing, it has simply stopped
+   working - and a save that will not work is worth knowing about before Save is pressed rather than
+   after. Drawn over the lit state where both apply, which is the case worth telling apart: still
+   pointed at a file, and no longer able to reach it.
+*/
+button.icon.ended {
+    border-color: var(--bad);
+    color: var(--bad);
+}
+
 .sem-columns {
     display: flex;
     align-items: center;
@@ -5884,16 +5815,6 @@ button.icon.on:hover:not(:disabled) {
    names are long and whose folders are longer.
 */
 .sem-modal > .sheet.sem-cloud { width: min(36rem, 100%); }
-
-/*
-   The cloud button keeps its one word and says the rest on hover; the path itself is shown in the
-   sheet, where it has room to be read. Marked when the sign-in has lapsed, because a save that
-   will not work is worth knowing about before pressing Save rather than after.
-*/
-.sem-tab.sem-cloud-tab.ended {
-    color: var(--bad);
-    border-bottom-color: var(--bad);
-}
 
 /*
    The way down from the top of the drive, every step of it clickable.
