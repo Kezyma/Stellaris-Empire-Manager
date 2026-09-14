@@ -1,3 +1,4 @@
+using Microsoft.JSInterop;
 using Sem.Ui.Services;
 
 namespace Sem.Ui.Tests;
@@ -98,5 +99,96 @@ public sealed class PageAttentionTests
 
         Assert.False(attention.Attended);
         Assert.Equal(2, returned);
+    }
+
+    /// <summary>
+    /// Listening that fails keeps hold of the module it imported, and is not tried again.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Failing here does not mean the import failed - watchAttention itself can throw, against an
+    /// older cached script or a fault inside it. Dropping the field made the successfully imported
+    /// module unreachable, so disposal skipped it, and it re-opened the guard so a second call
+    /// created a second .NET reference without releasing the first.
+    /// </para>
+    /// <para>
+    /// Both halves are pinned here: the module is still released on disposal, and a second start
+    /// does not ask again.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public async Task ListeningThatFailsIsNotRetriedAndStillReleasesTheModule()
+    {
+        var js = new Refusing();
+        var attention = new PageAttention(js);
+
+        await attention.StartAsync();
+        await attention.StartAsync();
+
+        // Imported once, asked once - the second start found the flag and stopped.
+        Assert.Equal(1, js.Imports);
+        Assert.Equal(1, js.Module!.Watches);
+
+        // And the safe default survives a failure, which is what every watch in the app reads.
+        Assert.True(attention.Attended);
+
+        await attention.DisposeAsync();
+
+        Assert.Equal(1, js.Module.Disposals);
+    }
+
+    /// <summary>A runtime whose module imports cleanly and then refuses to listen.</summary>
+    private sealed class Refusing : IJSRuntime
+    {
+        public int Imports { get; private set; }
+
+        public RefusingModule? Module { get; private set; }
+
+        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, object?[]? args) =>
+            InvokeAsync<TValue>(identifier, CancellationToken.None, args);
+
+        public ValueTask<TValue> InvokeAsync<TValue>(
+            string identifier, CancellationToken cancellationToken, object?[]? args)
+        {
+            if (identifier != "import")
+            {
+                return ValueTask.FromResult<TValue>(default!);
+            }
+
+            Imports++;
+            Module ??= new RefusingModule();
+
+            return ValueTask.FromResult((TValue)(object)Module);
+        }
+    }
+
+    /// <summary>A module that throws when asked to watch, and counts what it was asked.</summary>
+    private sealed class RefusingModule : IJSObjectReference
+    {
+        public int Watches { get; private set; }
+
+        public int Disposals { get; private set; }
+
+        public ValueTask<TValue> InvokeAsync<TValue>(string identifier, object?[]? args) =>
+            InvokeAsync<TValue>(identifier, CancellationToken.None, args);
+
+        public ValueTask<TValue> InvokeAsync<TValue>(
+            string identifier, CancellationToken cancellationToken, object?[]? args)
+        {
+            if (identifier == "watchAttention")
+            {
+                Watches++;
+                throw new JSException("this build of the script has no such export");
+            }
+
+            return ValueTask.FromResult<TValue>(default!);
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            Disposals++;
+
+            return ValueTask.CompletedTask;
+        }
     }
 }
