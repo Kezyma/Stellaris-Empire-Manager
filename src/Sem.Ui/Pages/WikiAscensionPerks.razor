@@ -1,0 +1,22 @@
+@page "/wiki/ascension-perks"
+@page "/wiki/ascension-perks/{Key}"
+
+@*
+    The ascension perks, which are what an empire spends its ascension on.
+
+    Forty-nine of them in a handful of paths, and the paths are the point: taking the first perk of
+    one mostly settles the rest. The two conditions the game states are read as one list, for the
+    reason the civics give - hiding a perk and blocking it are two ways of refusing the same reader.
+
+    The second address is one entry of the shelf, as on every other page here.
+*@
+
+<PageTitle>Ascension Perks - Stellaris Empire Manager</PageTitle>
+
+<WikiSection Kind="WikiKind.AscensionPerks" Focus="@Key" />
+
+@code {
+    /// <summary>The entry the address names, where it names one.</summary>
+    [Parameter]
+    public string? Key { get; set; }
+}

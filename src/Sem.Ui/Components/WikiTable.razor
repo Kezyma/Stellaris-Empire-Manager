@@ -40,7 +40,7 @@
                 *@
                 @if (_pictures)
                 {
-                    <th scope="col"><span class="plain">Scene</span></th>
+                    <th scope="col"><span class="plain">@Picture</span></th>
                 }
 
                 <th scope="col">@Header(NameColumn, "Name")</th>
@@ -123,7 +123,17 @@
 
                     <th scope="row" class="name">
                         <span class="inner">
-                            <GameIcon Path="@step.Icon" Alt="@step.Name" />
+                            @*
+                                Only where this shelf has pictures at all. The placeholder exists so
+                                that titles line up on a shelf where some entries have an icon and
+                                some do not; on a shelf where none does - the governments, the
+                                personalities, the shipsets - it is an empty box beside every name,
+                                a hundred and seventy times, aligning nothing with nothing.
+                            *@
+                            @if (Icons)
+                            {
+                                <GameIcon Path="@step.Icon" Alt="@step.Name" />
+                            }
                             <span class="title">@step.Name</span>
 
                             @* The link to this one entry, at the end of the line it names. *@
@@ -275,6 +285,14 @@
     /// <summary>What the rows are, for the caption a screen reader meets before the table.</summary>
     [Parameter, EditorRequired]
     public required string Noun { get; set; }
+
+    /// <summary>What the pictures are of, for the column they are drawn in.</summary>
+    [Parameter]
+    public string Picture { get; set; } = "Scene";
+
+    /// <summary>Whether this shelf has icons, and so whether to keep room for one on every row.</summary>
+    [Parameter]
+    public bool Icons { get; set; } = true;
 
     /// <summary>Which shelf this is, which is half of what an entry's address is made of.</summary>
     [Parameter, EditorRequired]

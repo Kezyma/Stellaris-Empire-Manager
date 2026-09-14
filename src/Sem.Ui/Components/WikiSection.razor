@@ -27,11 +27,16 @@
     time one arrived.
 *@
 <nav class="sem-wiki-nav" aria-label="Wiki sections">
+    <NavLink href="wiki/personalities" class="sem-tab">AI Personalities</NavLink>
+    <NavLink href="wiki/ascension-perks" class="sem-tab">Ascension Perks</NavLink>
     <NavLink href="wiki/authorities" class="sem-tab">Authorities</NavLink>
     <NavLink href="wiki/civics" class="sem-tab">Civics</NavLink>
     <NavLink href="wiki/ethics" class="sem-tab">Ethics</NavLink>
+    <NavLink href="wiki/governments" class="sem-tab">Governments</NavLink>
     <NavLink href="wiki/leader-traits" class="sem-tab">Leader Traits</NavLink>
     <NavLink href="wiki/origins" class="sem-tab">Origins</NavLink>
+    <NavLink href="wiki/planets" class="sem-tab">Planets</NavLink>
+    <NavLink href="wiki/shipsets" class="sem-tab">Shipsets</NavLink>
     <NavLink href="wiki/species" class="sem-tab">Species</NavLink>
     <NavLink href="wiki/species-traits" class="sem-tab">Species Traits</NavLink>
 </nav>
@@ -148,6 +153,7 @@ else
         else if (_listView)
         {
             <WikiTable Rows="@Narrowed" All="@Rows" Noun="@Noun" Kind="@Kind"
+                       Picture="@_shelf!.Picture" Icons="@_icons"
                        Chosen="@_chosen" OnChoose="Choose" />
         }
         else
@@ -156,7 +162,7 @@ else
                 @foreach (var row in Narrowed)
                 {
                     <WikiCard Row="@row" Chosen="@(row.Steps.Any(s => s.Key == _chosen))"
-                              Link="@WikiLinks.Entry(Kind, row.Key)"
+                              Icons="@_icons" Link="@WikiLinks.Entry(Kind, row.Key)"
                               OnChoose="() => Choose(row)" />
                 }
             </div>
@@ -318,6 +324,11 @@ else
 
         if (_shelf is { } shelf)
         {
+            // Once per shelf rather than per card. Three of the twelve shelves have no icons at all
+            // and the placeholder that keeps titles aligned aligns nothing there, so both views are
+            // told - and asking in the markup would be a pass over every row for every row drawn.
+            _icons = shelf.Rows.Any(r => r.Steps.Any(s => s.Icon is { Length: > 0 }));
+
             _filter = new Sifter<WikiRow>(shelf.Facets, row => row.Text);
 
             // Rebuilt with the shelf rather than once at startup, because a shelf read from one of
@@ -403,6 +414,9 @@ else
             ? WikiLinks.Entry(Kind, key)
             : WikiLinks.Section(Kind)).ConfigureAwait(true);
     }
+
+    /// <summary>Whether this shelf has any icons, which decides whether room is kept for one.</summary>
+    private bool _icons = true;
 
     /// <summary>The box the popovers are bound through.</summary>
     private ElementReference _body;

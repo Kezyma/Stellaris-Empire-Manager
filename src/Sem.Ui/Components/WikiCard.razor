@@ -26,7 +26,11 @@
     }
 
     <header>
-        <GameIcon Path="@Row.Icon" Alt="@Row.Name" />
+        @* Only where this shelf has pictures at all - see the same gate on the table. *@
+        @if (Icons)
+        {
+            <GameIcon Path="@Row.Icon" Alt="@Row.Name" />
+        }
 
         <div class="title">
             <h2>@Row.Name</h2>
@@ -210,6 +214,10 @@
     /// <summary>Whether this is the one the address names.</summary>
     [Parameter]
     public bool Chosen { get; set; }
+
+    /// <summary>Whether this shelf has icons, and so whether to keep room for one in the header.</summary>
+    [Parameter]
+    public bool Icons { get; set; } = true;
 
     /// <summary>Raised when the reader presses it, so the page can put it in the address.</summary>
     [Parameter]

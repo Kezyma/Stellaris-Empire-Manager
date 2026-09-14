@@ -1,0 +1,23 @@
+@page "/wiki/governments"
+@page "/wiki/governments/{Key}"
+
+@*
+    The governments, which are what an empire ends up called.
+
+    Nobody picks one of these either. The game takes the highest-weighted government whose
+    conditions the design meets, which is how an empire becomes a Divine Empire rather than a
+    Despotic Hegemony - so the weight is half of every answer, and the conditions are the other
+    half. What each one calls its ruler and its heir is the reason to come looking.
+
+    The second address is one entry of the shelf, as on every other page here.
+*@
+
+<PageTitle>Governments - Stellaris Empire Manager</PageTitle>
+
+<WikiSection Kind="WikiKind.Governments" Focus="@Key" />
+
+@code {
+    /// <summary>The entry the address names, where it names one.</summary>
+    [Parameter]
+    public string? Key { get; set; }
+}

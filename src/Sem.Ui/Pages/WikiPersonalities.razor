@@ -1,0 +1,23 @@
+@page "/wiki/personalities"
+@page "/wiki/personalities/{Key}"
+
+@*
+    The personalities, which are not a thing anybody picks.
+
+    An empire that turns up in somebody else's galaxy is handed one, drawn from every personality
+    its shape allows - so the question a reader has is which empires can be played as this, and the
+    condition is the whole of the answer. The weight is the other half: the draw is weighted, and
+    the additions on top of it are conditional.
+
+    The second address is one entry of the shelf, as on every other page here.
+*@
+
+<PageTitle>AI Personalities - Stellaris Empire Manager</PageTitle>
+
+<WikiSection Kind="WikiKind.Personalities" Focus="@Key" />
+
+@code {
+    /// <summary>The entry the address names, where it names one.</summary>
+    [Parameter]
+    public string? Key { get; set; }
+}

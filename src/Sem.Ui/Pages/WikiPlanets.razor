@@ -1,0 +1,24 @@
+@page "/wiki/planets"
+@page "/wiki/planets/{Key}"
+
+@*
+    The worlds, which are the one shelf where the artwork is the entry.
+
+    Sixty-nine of them and not one description: the game writes no pc_ocean_desc anywhere, so what a
+    world has to say is said by the habitability trait an empire evolving there would carry. That is
+    borrowed here, exactly as the designer's own picker borrows it.
+
+    The second address is one entry of the shelf. It shows the same page and picks that one out, so a
+    reader who found the thing they came for can send somebody straight to it rather than to a list
+    with an instruction to scroll.
+*@
+
+<PageTitle>Planets - Stellaris Empire Manager</PageTitle>
+
+<WikiSection Kind="WikiKind.Planets" Focus="@Key" />
+
+@code {
+    /// <summary>The entry the address names, where it names one.</summary>
+    [Parameter]
+    public string? Key { get; set; }
+}

@@ -207,6 +207,11 @@ internal static partial class LocalisationPruner
             Add(perk.DescriptionKey);
             AddVariants(perk.Variants);
 
+            // The path it belongs to, which the game names - "Ascensions", "Ambitions" - and which
+            // nothing read until the wiki drew a column of them. Unkept, the column said
+            // "Ap Category Ascensions".
+            Add(perk.Category);
+
             // The sentences behind a blocked perk, which are the game's own words for why.
             AddRequirement(perk.Potential);
             AddRequirement(perk.Possible);

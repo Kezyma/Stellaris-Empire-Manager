@@ -14,8 +14,8 @@ namespace Sem.Ui.Services;
 /// <para>
 /// One method and one lookup per kind, in the order a key is likeliest to be found. A key that
 /// belongs to nothing comes back as nothing, and the chip is drawn as it always was: not every
-/// chip on a wiki page is something the wiki has a page for - a planet class and an ascension
-/// perk are both things a civic can ask for and neither has a shelf yet.
+/// chip on a wiki page is something the wiki has a page for - a tradition and a name list are both
+/// things a design names and neither has a shelf yet.
 /// </para>
 /// </remarks>
 /// <param name="database">The extracted game.</param>
@@ -42,6 +42,11 @@ public sealed class WikiLinks(GameDatabase database, (WikiKind Kind, IReadOnlySe
         WikiKind.Species => $"{Root}/species",
         WikiKind.SpeciesTraits => $"{Root}/species-traits",
         WikiKind.LeaderTraits => $"{Root}/leader-traits",
+        WikiKind.Planets => $"{Root}/planets",
+        WikiKind.Shipsets => $"{Root}/shipsets",
+        WikiKind.Personalities => $"{Root}/personalities",
+        WikiKind.Governments => $"{Root}/governments",
+        WikiKind.AscensionPerks => $"{Root}/ascension-perks",
         _ => $"{Root}/civics",
     };
 
@@ -93,6 +98,34 @@ public sealed class WikiLinks(GameDatabase database, (WikiKind Kind, IReadOnlySe
         if (_database.SpeciesClass(key) is not null)
         {
             return WikiKind.Species;
+        }
+
+        // The five shelves whose keys nothing else looks like. A planet class and an ascension perk
+        // are both things a civic asks for, and both were chips that went nowhere before these
+        // pages existed - which is what the comment at the top of this file used to say.
+        if (_database.PlanetClass(key) is not null)
+        {
+            return WikiKind.Planets;
+        }
+
+        if (_database.AscensionPerk(key) is not null)
+        {
+            return WikiKind.AscensionPerks;
+        }
+
+        if (_database.GovernmentType(key) is not null)
+        {
+            return WikiKind.Governments;
+        }
+
+        if (_database.Personality(key) is not null)
+        {
+            return WikiKind.Personalities;
+        }
+
+        if (_database.GraphicalCulture(key) is not null)
+        {
+            return WikiKind.Shipsets;
         }
 
         // The species traits only. A leader trait is not in the database at all - it lives in the

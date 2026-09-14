@@ -138,6 +138,82 @@ public static class WikiFacet
     ];
 
     /// <summary>
+    /// The worlds, narrowed by the two things that decide whether one is any use.
+    /// </summary>
+    /// <remarks>
+    /// The preference is not a heading. It names a different trait on every world, so a heading of
+    /// sixty-nine ticks each matching one row is a list of the rows with extra steps.
+    /// </remarks>
+    public static IReadOnlyList<Facet<WikiRow>> Planets { get; } =
+    [
+        .. Both,
+        Many("climate", "Climate", r => Fact(r, "Climate")),
+        Many("start", "Start here", r => Fact(r, "Start here")),
+        Many("opened", "Opened by", r => Fact(r, "Opened by")),
+        Many("cities", "Cities", r => Fact(r, "Cities")),
+        Many("pack", "Content pack", r => r.PackChoices),
+        Many("bonus", "Bonus", r => r.Bonuses, Effects),
+    ];
+
+    /// <summary>
+    /// The shipsets, which do nothing and so have no bonus heading.
+    /// </summary>
+    /// <remarks>
+    /// Whether a set flies ships of its own is the division worth offering: a reader looking for a
+    /// fleet is not served by the two sets that dress cities and borrow somebody else's ships.
+    /// </remarks>
+    public static IReadOnlyList<Facet<WikiRow>> Shipsets { get; } =
+    [
+        .. Both,
+        Many("fleet", "Fleet", r => Fact(r, "Fleet")),
+        Many("cities", "Cities", r => Fact(r, "Cities")),
+        Many("pack", "Content pack", r => r.PackChoices),
+    ];
+
+    /// <summary>
+    /// The personalities, narrowed by the empire that would be played as one.
+    /// </summary>
+    /// <remarks>
+    /// Almost every one of these is gated on ethics and nothing else, which makes the ethics heading
+    /// the whole of the page: "which of these is my militarist neighbour likely to be" is the
+    /// question a reader arrives with.
+    /// </remarks>
+    public static IReadOnlyList<Facet<WikiRow>> Personalities { get; } =
+    [
+        .. Both,
+        Many("ethic", "Ethics", r => r.Wanting(SelectionCategory.Ethics)),
+        Many("authority", "Authority", r => r.Wanting(SelectionCategory.Authority)),
+        Many("civic", "Civics", r => r.Wanting(SelectionCategory.Civics)),
+    ];
+
+    /// <summary>
+    /// The governments, narrowed by what a design has to be to be called one.
+    /// </summary>
+    /// <remarks>
+    /// The titles are not headings. A hundred and seventy governments name a hundred and seventy
+    /// rulers between them, so a Ruler heading is the list again; the search box is what finds a
+    /// reader the government that calls its ruler an Archon.
+    /// </remarks>
+    public static IReadOnlyList<Facet<WikiRow>> Governments { get; } =
+    [
+        .. Both,
+        Many("authority", "Authority", r => r.Wanting(SelectionCategory.Authority)),
+        Many("ethic", "Ethics", r => r.Wanting(SelectionCategory.Ethics)),
+        Many("civic", "Civics", r => r.Wanting(SelectionCategory.Civics)),
+    ];
+
+    /// <summary>The ascension perks, narrowed by the path they belong to.</summary>
+    public static IReadOnlyList<Facet<WikiRow>> AscensionPerks { get; } =
+    [
+        .. Both,
+        Many("path", "Path", r => Fact(r, "Path")),
+        Many("ethic", "Ethics", r => r.Wanting(SelectionCategory.Ethics)),
+        Many("civic", "Civics", r => r.Wanting(SelectionCategory.Civics)),
+        Many("pack", "Content pack", r => r.PackChoices),
+        Many("bonus", "Bonus", r => r.Bonuses, Effects),
+    ];
+
+    /// <summary>
     /// The leader traits, narrowed by who may hold them and what sort they are.
     /// </summary>
     /// <remarks>

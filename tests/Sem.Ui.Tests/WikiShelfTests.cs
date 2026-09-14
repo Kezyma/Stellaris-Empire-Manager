@@ -851,6 +851,236 @@ public sealed class WikiShelfTests
         Assert.Single(Shelves([trait]).Of(WikiKind.SpeciesTraits).Rows);
 
     /// <summary>A session holding nothing but some traits.</summary>
+    /// <summary>
+    /// A world a civic adds is offered, even though its own file does not mark it a starting world.
+    /// </summary>
+    /// <remarks>
+    /// Nine worlds carry the flag and exactly one more is reachable: the volcanic world, which seven
+    /// civics and origins and the Infernal species class each add. Reading the flag alone called it
+    /// unreachable - the same untruth the species classes told, a page saying no while the designer
+    /// says yes.
+    /// </remarks>
+    [Fact]
+    public void AWorldACivicAddsIsStillAHomeworld()
+    {
+        var rows = PlanetShelf().Of(WikiKind.Planets).Rows;
+
+        var volcanic = rows.First(r => r.Key == "pc_volcanic");
+        Assert.True(volcanic.Playable);
+        Assert.Equal("With a civic", volcanic.Fact("Start here")!.Text);
+        Assert.Equal(["civic_world_forgers"], volcanic.Fact("Opened by")!.Chips.Select(c => c.Key));
+
+        // And one nothing offers stays out of reach, with the badge saying which door is shut.
+        var frozen = rows.First(r => r.Key == "pc_frozen");
+        Assert.False(frozen.Playable);
+        Assert.Equal("Not a homeworld", frozen.ClosedShort);
+    }
+
+    /// <summary>A world with no climate says so rather than leaving the column to wander.</summary>
+    /// <remarks>
+    /// Thirty-eight of the sixty-nine are outside the climate system. A fact nobody states on the
+    /// first row is a column drawn last, and the order of the columns is not the first row's to set.
+    /// </remarks>
+    [Fact]
+    public void AWorldOutsideTheClimateSystemSaysNone()
+    {
+        var rows = PlanetShelf().Of(WikiKind.Planets).Rows;
+
+        Assert.Equal("None", rows.First(r => r.Key == "pc_habitat").Fact("Climate")!.Text);
+        Assert.Equal("Wet", rows.First(r => r.Key == "pc_ocean").Fact("Climate")!.Text);
+    }
+
+    /// <summary>A shipset is named under its key shouted, and says what the game says about it.</summary>
+    /// <remarks>
+    /// The one shelf whose names are not under the entry's own key. Only two of the game's
+    /// fifty-two sets are named at all, so the rest fall back - and the fallback has to be the key
+    /// made readable rather than the key shouted, or the page reads "HUMANOID 01".
+    /// </remarks>
+    [Fact]
+    public void AShipsetIsNamedUnderItsKeyShoutedAndFallsBackToItReadable()
+    {
+        var rows = Shipsets().Of(WikiKind.Shipsets).Rows;
+
+        var named = rows.First(r => r.Key == "biogenesis_01");
+        Assert.Equal("Spinovore", named.Name);
+        Assert.Equal("Born as much as built.", named.Description);
+
+        Assert.Equal("Humanoid 01", rows.First(r => r.Key == "humanoid_01").Name);
+    }
+
+    /// <summary>And a set that flies nothing of its own says so rather than saying nothing.</summary>
+    [Fact]
+    public void AShipsetWithNoShipsOfItsOwnSaysSo()
+    {
+        var rows = Shipsets().Of(WikiKind.Shipsets).Rows;
+
+        Assert.Equal("Grown", rows.First(r => r.Key == "biogenesis_01").Fact("Fleet")!.Text);
+        Assert.Equal("Built", rows.First(r => r.Key == "humanoid_01").Fact("Fleet")!.Text);
+        Assert.Equal("None of its own", rows.First(r => r.Key == "solarpunk_01").Fact("Fleet")!.Text);
+    }
+
+    /// <summary>
+    /// A personality is named under the prefix the game keeps them under.
+    /// </summary>
+    /// <remarks>
+    /// Fifty of the fifty-one are written as <c>personality_&lt;key&gt;</c> with a description
+    /// beside them, which is the one thing about these that is not the usual convention.
+    /// </remarks>
+    [Fact]
+    public void APersonalityIsNamedUnderItsPrefix()
+    {
+        var row = Assert.Single(Personalities().Of(WikiKind.Personalities).Rows);
+
+        Assert.Equal("Honourbound Warriors", row.Name);
+        Assert.Equal("They fight fairly.", row.Description);
+        Assert.Equal("50", row.Fact("Weight")!.Text);
+    }
+
+    /// <summary>A government says what it calls whoever is in charge, in both forms.</summary>
+    [Fact]
+    public void AGovernmentSaysBothFormsOfBothTitles()
+    {
+        var row = Assert.Single(Governments().Of(WikiKind.Governments).Rows);
+
+        Assert.Equal("Emperor", row.Fact("Ruler")!.Text);
+        Assert.Equal("Empress", row.Fact("Ruler (female)")!.Text);
+        Assert.Equal("Heir Apparent", row.Fact("Heir")!.Text);
+        Assert.Equal("100", row.Fact("Weight")!.Text);
+    }
+
+    /// <summary>An ascension perk reads the name of its path rather than prettifying the key.</summary>
+    /// <remarks>
+    /// The game names these - "Ascensions", "Ambitions" - and nothing asked for the key until the
+    /// column existed, so the pruner had thrown the words away and the column read
+    /// "Ap Category Ascensions".
+    /// </remarks>
+    [Fact]
+    public void AnAscensionPerkNamesItsPath()
+    {
+        var row = Assert.Single(AscensionPerks().Of(WikiKind.AscensionPerks).Rows);
+
+        Assert.Equal("Ascensions", row.Fact("Path")!.Text);
+    }
+
+    /// <summary>Four worlds and a civic that opens one of them.</summary>
+    private static WikiShelves PlanetShelf() =>
+        Shelves(new GameDatabase
+        {
+            SchemaVersion = GameDatabase.CurrentSchemaVersion,
+            GameVersion = "test",
+            ExtractorVersion = "test",
+            Defines = new GameDefines { EthicsPoints = 3, CivicPoints = 2, CityPopLevel = 4 },
+            PlanetClasses =
+            [
+                new PlanetClassDefinition("pc_ocean") { Climate = "wet", IsStartingWorld = true },
+                new PlanetClassDefinition("pc_volcanic") { Climate = "dry" },
+                new PlanetClassDefinition("pc_frozen") { Climate = "cold" },
+                new PlanetClassDefinition("pc_habitat") { ShowsCity = false },
+            ],
+            Civics =
+            [
+                new CivicDefinition("civic_world_forgers", false)
+                {
+                    AddedPlanetClasses = ["pc_volcanic"],
+                },
+            ],
+        });
+
+    /// <summary>Three sets: one named and grown, one built, one that flies nothing of its own.</summary>
+    private static WikiShelves Shipsets() =>
+        Shelves(
+            new GameDatabase
+            {
+                SchemaVersion = GameDatabase.CurrentSchemaVersion,
+                GameVersion = "test",
+                ExtractorVersion = "test",
+                Defines = new GameDefines { EthicsPoints = 3, CivicPoints = 2, CityPopLevel = 4 },
+                GraphicalCultures =
+                [
+                    new GraphicalCultureDefinition("biogenesis_01") { ShipCategory = "bio_ship" },
+                    new GraphicalCultureDefinition("humanoid_01") { ShipCategory = "default_ship" },
+                    new GraphicalCultureDefinition("solarpunk_01"),
+                ],
+            },
+            ("BIOGENESIS_01", "Spinovore"),
+            ("biogenesis_01_shipset_desc", "Born as much as built."));
+
+    /// <summary>One personality, named the way the game names them.</summary>
+    private static WikiShelves Personalities() =>
+        Shelves(
+            new GameDatabase
+            {
+                SchemaVersion = GameDatabase.CurrentSchemaVersion,
+                GameVersion = "test",
+                ExtractorVersion = "test",
+                Defines = new GameDefines { EthicsPoints = 3, CivicPoints = 2, CityPopLevel = 4 },
+                Personalities = [new PersonalityDefinition("honorbound_warriors", 50, 0)],
+            },
+            ("personality_honorbound_warriors", "Honourbound Warriors"),
+            ("personality_honorbound_warriors_desc", "They fight fairly."));
+
+    /// <summary>One government, with both forms of both titles.</summary>
+    private static WikiShelves Governments() =>
+        Shelves(
+            new GameDatabase
+            {
+                SchemaVersion = GameDatabase.CurrentSchemaVersion,
+                GameVersion = "test",
+                ExtractorVersion = "test",
+                Defines = new GameDefines { EthicsPoints = 3, CivicPoints = 2, CityPopLevel = 4 },
+                GovernmentTypes =
+                [
+                    new GovernmentTypeDefinition("gov_imperial", 100, 0)
+                    {
+                        RulerTitleKey = "title_emperor",
+                        RulerTitleFemaleKey = "title_empress",
+                        HeirTitleKey = "title_heir",
+                    },
+                ],
+            },
+            ("gov_imperial", "Imperial"),
+            ("title_emperor", "Emperor"),
+            ("title_empress", "Empress"),
+            ("title_heir", "Heir Apparent"));
+
+    /// <summary>One perk, in a path the game has a name for.</summary>
+    private static WikiShelves AscensionPerks() =>
+        Shelves(
+            new GameDatabase
+            {
+                SchemaVersion = GameDatabase.CurrentSchemaVersion,
+                GameVersion = "test",
+                ExtractorVersion = "test",
+                Defines = new GameDefines { EthicsPoints = 3, CivicPoints = 2, CityPopLevel = 4 },
+                AscensionPerks =
+                [
+                    new AscensionPerkDefinition("ap_engineered_evolution")
+                    {
+                        Category = "ap_category_ascensions",
+                    },
+                ],
+            },
+            ("ap_engineered_evolution", "Engineered Evolution"),
+            ("ap_category_ascensions", "Ascensions"));
+
+    /// <summary>A session holding one database and whatever text the test needs.</summary>
+    /// <param name="database">The game.</param>
+    /// <param name="text">The localisation entries, as key and value.</param>
+    /// <returns>The shelves.</returns>
+    private static WikiShelves Shelves(
+        GameDatabase database,
+        params (string Key, string Value)[] text)
+    {
+        var session = new DesignSession(
+            new Sem.Ui.Services.GameData(
+                database,
+                text.ToDictionary(t => t.Key, t => t.Value, StringComparer.Ordinal),
+                "assets"));
+
+        session.StartEmptyFile();
+        return new WikiShelves(session);
+    }
+
     private static WikiShelves Shelves(TraitDefinition[] traits)
     {
         var session = new DesignSession(

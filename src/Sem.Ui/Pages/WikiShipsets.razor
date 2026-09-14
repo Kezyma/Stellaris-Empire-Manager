@@ -1,0 +1,23 @@
+@page "/wiki/shipsets"
+@page "/wiki/shipsets/{Key}"
+
+@*
+    The shipsets, which the game names by showing you one.
+
+    Fifty-two sets and two names between them - Spinovore and Shellcraft - because the game's own
+    picker spins the model and never writes a name down. So the picture is the entry here, drawn
+    during extraction rather than copied out of the installation, and the rest read as their key
+    made readable.
+
+    The second address is one entry of the shelf, as on every other page here.
+*@
+
+<PageTitle>Shipsets - Stellaris Empire Manager</PageTitle>
+
+<WikiSection Kind="WikiKind.Shipsets" Focus="@Key" />
+
+@code {
+    /// <summary>The entry the address names, where it names one.</summary>
+    [Parameter]
+    public string? Key { get; set; }
+}

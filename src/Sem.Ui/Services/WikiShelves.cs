@@ -23,6 +23,21 @@ public enum WikiKind
     /// <summary>The traits a founding species can be given.</summary>
     SpeciesTraits,
 
+    /// <summary>The worlds an empire can wake up on, and the rest it will find.</summary>
+    Planets,
+
+    /// <summary>The ships and cities an empire is drawn with.</summary>
+    Shipsets,
+
+    /// <summary>What the game plays an empire as when it is somebody else's neighbour.</summary>
+    Personalities,
+
+    /// <summary>What an empire ends up called, and what it calls whoever rules it.</summary>
+    Governments,
+
+    /// <summary>The perks an empire spends its ascension on.</summary>
+    AscensionPerks,
+
     /// <summary>
     /// The traits a leader can hold, which the database does not carry.
     /// </summary>
@@ -70,6 +85,16 @@ public sealed record WikiShelf(
     /// wiki page that were not links.
     /// </remarks>
     public IReadOnlySet<string> Entries { get; init; } = new HashSet<string>(StringComparer.Ordinal);
+
+    /// <summary>
+    /// What the pictures on this shelf are of, for the column they are drawn in.
+    /// </summary>
+    /// <remarks>
+    /// An origin carries a scene of the world its empire wakes up on, which is where the word came
+    /// from and is still the default. A world's is its own sky and a shipset's is one of its ships,
+    /// and calling either a scene is the column heading lying about what is under it.
+    /// </remarks>
+    public string Picture { get; init; } = "Scene";
 }
 
 /// <summary>
@@ -129,6 +154,23 @@ public sealed class WikiShelves(DesignSession session)
         WikiKind.SpeciesTraits => new WikiShelf(
             "Species Traits", "species traits", "species trait",
             SpeciesTraits(), WikiFacet.SpeciesTraits),
+
+        WikiKind.Planets => new WikiShelf(
+            "Planets", "planets", "planet", Planets(), WikiFacet.Planets) { Picture = "Sky" },
+
+        WikiKind.Shipsets => new WikiShelf(
+            "Shipsets", "shipsets", "shipset", Shipsets(), WikiFacet.Shipsets) { Picture = "Ship" },
+
+        WikiKind.Personalities => new WikiShelf(
+            "AI Personalities", "personalities", "personality",
+            Personalities(), WikiFacet.Personalities),
+
+        WikiKind.Governments => new WikiShelf(
+            "Governments", "governments", "government", Governments(), WikiFacet.Governments),
+
+        WikiKind.AscensionPerks => new WikiShelf(
+            "Ascension Perks", "ascension perks", "ascension perk",
+            AscensionPerks(), WikiFacet.AscensionPerks),
 
         _ => new WikiShelf("Civics", "civics", "civic", Civics(origins: false), WikiFacet.Civics),
     };
@@ -491,6 +533,352 @@ public sealed class WikiShelves(DesignSession session)
             null);
     }
 
+    // -------------------------------------------------------------------------------------------
+    // The shelves the empire designer's own data already holds
+    // -------------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// The worlds, which say nothing about themselves.
+    /// </summary>
+    /// <remarks>
+    /// Sixty-nine planet classes and not one description among them - there is no
+    /// <c>pc_ocean_desc</c> anywhere. A chip borrows the habitability trait's prose, which is the
+    /// right answer for one chip; a row does not, because the game writes fifteen distinct
+    /// sentences across forty-eight preference traits and they all say climate preference is
+    /// decided by evolution. Sixty-nine rows of the same paragraph is not prose, it is wallpaper.
+    /// What a world actually has to say is in the numbers beside it.
+    /// </remarks>
+    private IReadOnlyList<WikiRow> Planets() =>
+    [
+        .. Database.PlanetClasses
+            .Select(Planet)
+            .OrderBy(r => r.Name, StringComparer.CurrentCulture),
+    ];
+
+    /// <summary>
+    /// One world, with the trait it grants standing in for its own prose and numbers.
+    /// </summary>
+    /// <remarks>
+    /// Playable here means the game offers it to start on. Most of these are places an empire finds
+    /// rather than places it wakes up on, and saying so is the whole difference between the two
+    /// dozen a reader can pick from and the rest of the galaxy.
+    /// </remarks>
+    /// <param name="world">The planet class.</param>
+    /// <returns>Its row.</returns>
+    private WikiRow Planet(PlanetClassDefinition world)
+    {
+        var preference = session.Rules.HabitabilityTraitFor(world.Key);
+        var opened = OpenedBy(world.Key);
+        var offered = world.IsStartingWorld || opened.Count > 0;
+
+        return Row(
+            world.Key,
+            Database.Trait(preference)?.Effects ?? EffectSet.None,
+            world.Potential,
+            offered,
+            offered ? null : "Not a homeworld",
+            offered
+                ? null
+                : "Nothing offers this world to start on. An empire finds it during a game rather "
+                    + "than waking up on it.",
+            [new WikiCondition("Requirements", _reader.Read(world.Potential), "Any empire")],
+            PlanetFacts(world, preference, opened),
+            Wants(world.Potential)) with
+        {
+            Icon = world.Icon,
+            Picture = world.Sky,
+        };
+    }
+
+    /// <summary>
+    /// What puts a world in the homeworld picker that would not otherwise be in it.
+    /// </summary>
+    /// <remarks>
+    /// Nine worlds are starting worlds in the game's own files, and exactly one more is reachable:
+    /// the volcanic world, which seven civics and origins and the Infernal species class each add.
+    /// Reading only the flag called that world unreachable, which is the same mistake the species
+    /// classes made - saying a thing is out of reach while the designer offers it.
+    /// </remarks>
+    /// <param name="world">The planet class.</param>
+    /// <returns>The civics, origins and species classes that add it, which is usually none.</returns>
+    private IReadOnlyList<EmpireChoice> OpenedBy(string world) =>
+    [
+        .. Civics(Database.Civics
+            .Where(c => c.AddedPlanetClasses.Contains(world, StringComparer.Ordinal))
+            .Select(c => c.Key)),
+
+        .. Classes(Database.SpeciesClasses
+            .Where(c => c.AddedPlanetClasses.Contains(world, StringComparer.Ordinal))
+            .Select(c => c.Key)),
+    ];
+
+    /// <summary>
+    /// What is worth saying about a world beyond the trait it grants.
+    /// </summary>
+    /// <remarks>
+    /// The climate is the one that decides things: habitability is worked out within a climate
+    /// group, so two wet worlds are close to each other and a long way from a dry one. Whether an
+    /// empire builds a city on it tells the already-built worlds - habitats, hives, machine worlds -
+    /// from the ones with ground to stand on.
+    /// </remarks>
+    /// <param name="world">The planet class.</param>
+    /// <param name="preference">The habitability trait it grants, where it grants one.</param>
+    /// <param name="opened">What adds it to the picker, where anything does.</param>
+    /// <returns>Its facts.</returns>
+    private IReadOnlyList<WikiFact> PlanetFacts(
+        PlanetClassDefinition world,
+        string? preference,
+        IReadOnlyList<EmpireChoice> opened) =>
+    [
+        // "None" rather than nothing for the thirty-eight outside the climate system, because a
+        // fact nobody states on the first row is a column that ends up drawn last. It is also true:
+        // a habitat has no climate, and habitability there is not worked out from one.
+        WikiFact.Said(
+            "Climate",
+            world.Climate is { Length: > 0 } climate ? Localizer.Prettify(climate) : "None"),
+
+        WikiFact.Said(
+            "Start here",
+            world.IsStartingWorld ? "Yes" : opened.Count > 0 ? "With a civic" : "No"),
+
+        WikiFact.Of("Opened by", opened),
+        WikiFact.Of("Preference", Traits(preference)),
+        WikiFact.Said("Cities", world.ShowsCity ? "Built on it" : "Already one"),
+    ];
+
+    /// <summary>
+    /// The shipsets, which the game names by showing you one.
+    /// </summary>
+    /// <remarks>
+    /// Fifty-two sets and two names: <c>BIOGENESIS_01</c> is Spinovore and <c>BIOGENESIS_02</c> is
+    /// Shellcraft, and every other set has no entry under any spelling. That is the game's own
+    /// doing rather than a gap here - its picker spins the model and never writes the name - so the
+    /// rest read as their key made readable, and the picture is the answer.
+    /// </remarks>
+    private IReadOnlyList<WikiRow> Shipsets() =>
+    [
+        .. Database.GraphicalCultures
+            .Select(Shipset)
+            .OrderBy(r => r.Name, StringComparer.CurrentCulture),
+    ];
+
+    /// <summary>One shipset, with a ship of its own drawn during extraction.</summary>
+    /// <param name="culture">The graphical culture.</param>
+    /// <returns>Its row.</returns>
+    private WikiRow Shipset(GraphicalCultureDefinition culture)
+    {
+        var offered = culture.Selectable is not AlwaysRequirement { Value: false };
+
+        return Row(
+            culture.Key,
+            EffectSet.None,
+            culture.Selectable,
+            offered,
+            offered ? null : "Unplayable",
+            offered
+                ? null
+                : "The game keeps this set for its own empires and does not offer it in the designer.",
+            [new WikiCondition("Requirements", _reader.Read(culture.Selectable), "Any empire")],
+            ShipsetFacts(culture),
+            Wants(culture.Selectable),
+            nameKey: culture.NameKey,
+            proseKey: culture.DescriptionKey) with
+        {
+            Picture = culture.ShipPreview,
+        };
+    }
+
+    /// <summary>
+    /// What tells one set from another besides the look of it.
+    /// </summary>
+    /// <remarks>
+    /// Whether it flies ships of its own is the real division, and it is not the one a reader would
+    /// guess: Solarpunk and Wilderness dress cities and declare no ships at all, so the game flies
+    /// them in whatever their fallback builds. Which is why the fallback is named beside it.
+    /// </remarks>
+    /// <param name="culture">The graphical culture.</param>
+    /// <returns>Its facts.</returns>
+    private IReadOnlyList<WikiFact> ShipsetFacts(GraphicalCultureDefinition culture) =>
+    [
+        // "Fleet" rather than "Ships", which would sit beside the Ship column and mean something
+        // else - that column is a picture of one, this is what the set flies. And the game's two
+        // words read as what they are: default_ship is a fleet that is built, bio_ship one grown.
+        WikiFact.Said("Fleet", culture.ShipCategory switch
+        {
+            "bio_ship" => "Grown",
+            { Length: > 0 } => "Built",
+            _ => "None of its own",
+        }),
+        WikiFact.Said("Cities", culture.HasCityArt ? "Yes" : "No"),
+        WikiFact.Said(
+            "Falls back to",
+            culture.Fallback is { Length: > 0 } back ? Localizer.Prettify(back) : string.Empty),
+    ];
+
+    /// <summary>
+    /// The personalities, which are what the game plays an empire as rather than what it is.
+    /// </summary>
+    /// <remarks>
+    /// Nobody picks one. An empire that turns up in somebody else's galaxy is handed one, drawn
+    /// from every personality its shape allows - so the question a reader has is which empires can
+    /// be played as this, and the condition is the whole of the answer.
+    /// </remarks>
+    private IReadOnlyList<WikiRow> Personalities() =>
+    [
+        .. Database.Personalities
+            .Select(Personality)
+            .OrderBy(r => r.Name, StringComparer.CurrentCulture),
+    ];
+
+    /// <summary>One personality, named under the prefix the game keeps them under.</summary>
+    /// <param name="personality">The personality.</param>
+    /// <returns>Its row.</returns>
+    private WikiRow Personality(PersonalityDefinition personality) =>
+        Row(
+            personality.Key,
+            EffectSet.None,
+            playable: null,
+            reachable: personality.Allow is not AlwaysRequirement { Value: false },
+            personality.Allow is AlwaysRequirement { Value: false } ? "Never drawn" : null,
+            personality.Allow is AlwaysRequirement { Value: false }
+                ? "The game refuses this one outright, so no empire is ever played as it."
+                : null,
+            [new WikiCondition("Played by", _reader.Read(personality.Allow), "Any empire")],
+            PersonalityFacts(personality),
+            Wants(personality.Allow),
+            nameKey: personality.NameKey,
+            proseKey: personality.DescriptionKey);
+
+    /// <summary>
+    /// How likely the draw is to land on this one.
+    /// </summary>
+    /// <remarks>
+    /// Weight is additive here, which the game says itself at the top of its own file, and the
+    /// additions on top of it are conditional - so this is what the personality starts with rather
+    /// than what it ends at. Said as a number because a reader comparing two of them is comparing
+    /// two numbers. How many additions there are is not a second fact: a column reading "3" says
+    /// nothing a reader can do anything with.
+    /// </remarks>
+    /// <param name="personality">The personality.</param>
+    /// <returns>Its facts.</returns>
+    private static IReadOnlyList<WikiFact> PersonalityFacts(PersonalityDefinition personality) =>
+        [WikiFact.Said("Weight", Number(personality.Weight))];
+
+    /// <summary>
+    /// The governments, which are what an empire ends up called.
+    /// </summary>
+    /// <remarks>
+    /// A hundred and seventy of them and nobody picks one either: the game takes the
+    /// highest-weighted whose conditions the design meets, which is how an empire becomes a Divine
+    /// Empire rather than a Despotic Hegemony. The weight is therefore the second half of every
+    /// answer and is a column rather than a footnote.
+    /// </remarks>
+    private IReadOnlyList<WikiRow> Governments() =>
+    [
+        .. Database.GovernmentTypes
+            .Select(Government)
+            .OrderBy(r => r.Name, StringComparer.CurrentCulture),
+    ];
+
+    /// <summary>One government, with the titles it hands out.</summary>
+    /// <param name="government">The government type.</param>
+    /// <returns>Its row.</returns>
+    private WikiRow Government(GovernmentTypeDefinition government)
+    {
+        var refused = government.Possible is AlwaysRequirement { Value: false };
+
+        return Row(
+            government.Key,
+            EffectSet.None,
+            playable: null,
+            reachable: !refused,
+            refused ? "Never used" : null,
+            refused
+                ? "The game refuses this one outright, so no design is ever called it."
+                : null,
+            [new WikiCondition("Requirements", _reader.Read(government.Possible), "Any empire")],
+            GovernmentFacts(government),
+            Wants(government.Possible));
+    }
+
+    /// <summary>
+    /// What a government calls the people in charge.
+    /// </summary>
+    /// <remarks>
+    /// Both forms of both titles, because the game writes both and they are not always a pair:
+    /// Empress for Emperor and Matriarch for Patriarch are the same word changed, but a hundred and
+    /// twenty-eight governments name a female ruler and only twenty-seven a female heir.
+    /// </remarks>
+    /// <param name="government">The government type.</param>
+    /// <returns>Its facts.</returns>
+    private IReadOnlyList<WikiFact> GovernmentFacts(GovernmentTypeDefinition government) =>
+    [
+        WikiFact.Said("Ruler", Title(government.RulerTitleKey)),
+        WikiFact.Said("Ruler (female)", Title(government.RulerTitleFemaleKey)),
+        WikiFact.Said("Heir", Title(government.HeirTitleKey)),
+        WikiFact.Said("Heir (female)", Title(government.HeirTitleFemaleKey)),
+        WikiFact.Said("Weight", Number(government.Weight)),
+    ];
+
+    /// <summary>One title as the game writes it, or nothing where it names none.</summary>
+    /// <param name="key">The localisation key.</param>
+    /// <returns>The title, or an empty string.</returns>
+    private string Title(string? key) =>
+        key is { Length: > 0 } ? session.Localizer.Text(key, Localizer.Prettify(key)) : string.Empty;
+
+    /// <summary>
+    /// A weight, written the way somebody comparing two of them would want to read it.
+    /// </summary>
+    /// <remarks>
+    /// Whole numbers throughout - the game writes these as integers, and one government carries a
+    /// hundred thousand to make sure it wins - so a decimal point here would be noise on every row.
+    /// </remarks>
+    /// <param name="weight">The weight.</param>
+    /// <returns>The number.</returns>
+    private static string Number(double weight) =>
+        weight.ToString("0.##", System.Globalization.CultureInfo.CurrentCulture);
+
+    /// <summary>
+    /// The ascension perks, which are the one shelf here that states two conditions.
+    /// </summary>
+    /// <remarks>
+    /// Read as one list, for the reason the civics give: the game hides a perk failing
+    /// <c>potential</c> and blocks one failing <c>possible</c>, which is a distinction about how it
+    /// refuses you rather than about whether it does.
+    /// </remarks>
+    private IReadOnlyList<WikiRow> AscensionPerks() =>
+    [
+        .. Database.AscensionPerks
+            .Select(AscensionPerk)
+            .OrderBy(r => r.Name, StringComparer.CurrentCulture),
+    ];
+
+    /// <summary>One perk, with the path it belongs to.</summary>
+    /// <param name="perk">The ascension perk.</param>
+    /// <returns>Its row.</returns>
+    private WikiRow AscensionPerk(AscensionPerkDefinition perk) =>
+        Row(
+            perk.Key,
+            perk.Effects,
+            perk.Potential,
+            reachable: true,
+            null,
+            null,
+            [
+                new WikiCondition(
+                    "Requirements",
+                    _reader.Read(new AllRequirement([perk.Potential, perk.Possible])),
+                    "Any empire"),
+            ],
+            // The path read rather than prettified. The game names these - "Ascensions",
+            // "Ambitions" - and nothing asked for the key until this column existed, so the pruner
+            // had thrown the words away and the column said "Ap Category Ascensions".
+            [WikiFact.Said("Path", Title(perk.Category))],
+            Wants(perk.Potential, perk.Possible)) with
+        {
+            Icon = perk.Icon,
+        };
+
     /// <summary>
     /// The shared three-quarters: the name, the prose, the packs, the modifiers and the search text.
     /// </summary>
@@ -503,6 +891,8 @@ public sealed class WikiShelves(DesignSession session)
     /// <param name="conditions">What the game says an empire must be.</param>
     /// <param name="facts">What is true of its kind and not of the others.</param>
     /// <param name="wants">What its conditions ask for, or nothing where it states none.</param>
+    /// <param name="nameKey">Where its name is written, where that is not its own key.</param>
+    /// <param name="proseKey">Where its prose is written, where that is not its key and _desc.</param>
     /// <returns>The row, less the artwork its kind supplies.</returns>
     private WikiRow Row(
         string key,
@@ -513,19 +903,25 @@ public sealed class WikiShelves(DesignSession session)
         string? closedWhy,
         IReadOnlyList<WikiCondition> conditions,
         IReadOnlyList<WikiFact> facts,
-        IReadOnlyDictionary<SelectionCategory, IReadOnlyList<EmpireChoice>>? wants)
+        IReadOnlyDictionary<SelectionCategory, IReadOnlyList<EmpireChoice>>? wants,
+        string? nameKey = null,
+        string? proseKey = null)
     {
         // The fallback is asked for twice on purpose. Text falls back when the key is missing, and
         // one civic's key is present and empty: the game ships civic_caravaneer_caravansary with a
         // blank name. Unnamed, it sorted to the front of the list and drew a card with an icon, a
         // badge and no title at all.
-        var named = session.Localizer.Text(key, Localizer.Prettify(key));
+        //
+        // The fallback is always the key prettified, whatever was asked for: a shipset's name lives
+        // under its key shouted, and falling back to that would print "HUMANOID 01".
+        var named = session.Localizer.Text(nameKey ?? key, Localizer.Prettify(key));
         var name = named is { Length: > 0 } ? named : Localizer.Prettify(key);
 
-        // The convention every option chip already reads by, and every entry in the game is under
+        // The convention every option chip already reads by, and most entries in the game are under
         // it. Not a property on the definition: adding one would be tidier and would cost a schema
-        // bump, which every desktop player pays for by re-reading the game.
-        var descriptionKey = $"{key}_desc";
+        // bump, which every desktop player pays for by re-reading the game. The ones that keep their
+        // prose elsewhere - a personality under a prefix, a world under the trait it grants - say so.
+        var descriptionKey = proseKey ?? $"{key}_desc";
         var description = session.Localizer.Text(descriptionKey, string.Empty);
 
         var gates = ContentPacks.Gating(playable);
