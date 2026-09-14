@@ -708,8 +708,8 @@ public sealed class WikiShelves(DesignSession session)
         return new WikiShelf(
             "Leader Traits", "leader traits", "leader trait",
             [
-                .. traits
-                    .Select(t => LeaderTrait(t, known, reader))
+                .. Chains(traits, known.Keys.ToHashSet(StringComparer.Ordinal))
+                    .Select(chain => Grouped([.. chain.Select(t => LeaderTrait(t, known, reader))]))
                     .OrderBy(r => r.Name, StringComparer.CurrentCulture),
             ],
             WikiFacet.LeaderTraits)
@@ -718,6 +718,120 @@ public sealed class WikiShelves(DesignSession session)
             Entries = known.Keys.ToHashSet(StringComparer.Ordinal),
         };
     }
+
+    /// <summary>
+    /// The traits gathered into upgrade paths, each in the order a leader earns them.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The game states the path from the top down - a second tier names the first it replaces - so
+    /// the chain is walked by joining every trait to what it replaces and reading each group back in
+    /// tier order. Seven hundred and sixty-three traits come to four hundred and sixty-four paths,
+    /// of which two hundred and fifty-nine are a single trait standing alone.
+    /// </para>
+    /// <para>
+    /// Ordered within a path by the tier the game states, with the key as the tie-break so that two
+    /// traits claiming the same tier do not swap places between renders.
+    /// </para>
+    /// </remarks>
+    /// <param name="traits">Every trait the file carries.</param>
+    /// <param name="carried">Their keys, so a replaced trait outside the file is not joined to.</param>
+    /// <returns>The paths.</returns>
+    private static IEnumerable<IReadOnlyList<LeaderTraitDefinition>> Chains(
+        IReadOnlyList<LeaderTraitDefinition> traits,
+        IReadOnlySet<string> carried)
+    {
+        // Whichever trait each one has been joined to so far, followed up to its own root. Plain
+        // union-find: a path is at most three long and there are seven hundred of them, so the
+        // clever forms of this would cost more to read than they save.
+        var root = traits.ToDictionary(t => t.Key, t => t.Key, StringComparer.Ordinal);
+
+        string Find(string key)
+        {
+            while (root[key] != key)
+            {
+                key = root[key] = root[root[key]];
+            }
+
+            return key;
+        }
+
+        foreach (var trait in traits)
+        {
+            foreach (var replaced in trait.Replaces.Where(carried.Contains))
+            {
+                var above = Find(trait.Key);
+                var below = Find(replaced);
+
+                if (above != below)
+                {
+                    root[above] = below;
+                }
+            }
+        }
+
+        return traits
+            .GroupBy(t => Find(t.Key), StringComparer.Ordinal)
+            .Select(chain => (IReadOnlyList<LeaderTraitDefinition>)
+                [.. chain.OrderBy(t => t.Tier).ThenBy(t => t.Key, StringComparer.Ordinal)]);
+    }
+
+    /// <summary>
+    /// One entry standing for a whole upgrade path.
+    /// </summary>
+    /// <remarks>
+    /// The first step's row, carrying the rest. Its facts, packs and search text are the union of
+    /// every step's, because that is what a filter and a search are asked of: ticking "Tier 3" must
+    /// find a path that has one, and typing a third tier's name must find the path it is a step of.
+    /// A path of one is left exactly as it was, which is more than half of them.
+    /// </remarks>
+    /// <param name="steps">The path, in tier order.</param>
+    /// <returns>The entry.</returns>
+    private static WikiRow Grouped(IReadOnlyList<WikiRow> steps)
+    {
+        if (steps.Count == 1)
+        {
+            return steps[0];
+        }
+
+        return steps[0] with
+        {
+            Tiers = steps,
+
+            // Under a separator no query can hold, so that a search cannot match across the join
+            // between one step's text and the next's.
+            Text = string.Join('\n', steps.Select(s => s.Text)),
+            Facts = [.. Merged(steps.SelectMany(s => s.Facts))],
+            Packs = [.. steps.SelectMany(s => s.Packs).DistinctBy(p => p.Key, StringComparer.Ordinal)],
+            PackChoices =
+                [.. steps.SelectMany(s => s.PackChoices).DistinctBy(c => c.Key, StringComparer.Ordinal)],
+            Bonuses = [.. steps.SelectMany(s => s.Bonuses).DistinctBy(c => c.Key, StringComparer.Ordinal)],
+            Owned = steps.All(s => s.Owned),
+        };
+    }
+
+    /// <summary>
+    /// One fact per heading, holding everything every step said under it.
+    /// </summary>
+    /// <remarks>
+    /// A heading is asked once of an entry - by the filter, and by the table deciding its columns -
+    /// so several steps answering it have to come back as one answer. Words are gathered in the
+    /// order the steps state them, which for Tier is "1, 2, 3".
+    /// </remarks>
+    /// <param name="facts">Every step's facts.</param>
+    /// <returns>One per heading.</returns>
+    private static IEnumerable<WikiFact> Merged(IEnumerable<WikiFact> facts) =>
+        facts
+            .GroupBy(f => f.Heading, StringComparer.Ordinal)
+            .Select(group => group.Any(f => f.Chips.Count > 0)
+                ? WikiFact.Of(
+                    group.Key,
+                    [.. group.SelectMany(f => f.Chips).DistinctBy(c => c.Key, StringComparer.Ordinal)])
+                : WikiFact.Said(
+                    group.Key,
+                    string.Join(
+                        ", ",
+                        group.Select(f => f.Text).OfType<string>().Distinct(StringComparer.Ordinal))));
 
     /// <summary>
     /// One leader trait.
@@ -834,7 +948,9 @@ public sealed class WikiShelves(DesignSession session)
         WikiFact.Said(
             "Tier",
             trait.Tier > 0 ? trait.Tier.ToString(System.Globalization.CultureInfo.CurrentCulture) : null),
-        WikiFact.Of("Replaces", LeaderTraitChips(known, reader, trait.Replaces)),
+        // No Replaces. It is what the grouping is: every chain the game states is whole in this
+        // file, so a trait that replaces another is drawn as a later step of the same entry, and a
+        // column repeating that beside it said the same thing twice.
         WikiFact.Of("Rules out", LeaderTraitChips(known, reader, trait.Opposites)),
     ];
 

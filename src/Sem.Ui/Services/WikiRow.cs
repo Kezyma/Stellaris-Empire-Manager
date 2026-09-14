@@ -121,6 +121,27 @@ public sealed record WikiRow
     public IReadOnlyList<EmpireChoice> Gallery { get; init; } = [];
 
     /// <summary>
+    /// The steps of an upgrade path, where this entry is one.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Empty for almost everything, and for every shelf but one. A leader trait is often the first
+    /// of two or three that replace each other as a leader earns them, and the game writes each as
+    /// its own record - so the page showed "Adventurous Spirit" three times over, once per tier,
+    /// with the same class and the same rarity written out on each.
+    /// </para>
+    /// <para>
+    /// They are one entry here, and the views draw a line per step. What every step agrees about is
+    /// drawn once; what changes is drawn per step. The row's own fields are the first step's, so a
+    /// shelf that never groups anything and a view that has never heard of this both go on working.
+    /// </para>
+    /// </remarks>
+    public IReadOnlyList<WikiRow> Tiers { get; init; } = [];
+
+    /// <summary>This entry and every step of it, which is just this entry where there are no steps.</summary>
+    public IReadOnlyList<WikiRow> Steps => Tiers.Count > 0 ? Tiers : [this];
+
+    /// <summary>
     /// Everything about it a typed word should match.
     /// </summary>
     /// <remarks>

@@ -18,14 +18,14 @@
 else
 {
     <div class="sem-effects">
-        @if (Effects.DescriptionKey is { Length: > 0 } description)
+        @if (Said(Effects.DescriptionKey) is { } description)
         {
-            <div class="sem-effects-text">@((MarkupString)Session.Localizer.Html(description))</div>
+            <div class="sem-effects-text">@((MarkupString)description)</div>
         }
 
-        @if (Effects.TooltipKey is { Length: > 0 } tooltip)
+        @if (Said(Effects.TooltipKey) is { } tooltip)
         {
-            <div class="sem-effects-text">@((MarkupString)Session.Localizer.Html(tooltip))</div>
+            <div class="sem-effects-text">@((MarkupString)tooltip)</div>
         }
 
         @if (Modifiers.Count > 0)
@@ -43,7 +43,10 @@ else
 
         @foreach (var tag in Effects.TagKeys)
         {
-            <div class="sem-effects-text">@((MarkupString)Session.Localizer.Html(tag))</div>
+            @if (Said(tag) is { } words)
+            {
+                <div class="sem-effects-text">@((MarkupString)words)</div>
+            }
         }
 
         @foreach (var conditional in Effects.Conditional)
@@ -74,12 +77,18 @@ else
 
                 @if (conditional.TooltipKey is { Length: > 0 } said)
                 {
-                    <div class="sem-effects-text">@((MarkupString)Session.Localizer.Html(said))</div>
+                    @if (Said(said) is { } words)
+                    {
+                        <div class="sem-effects-text">@((MarkupString)words)</div>
+                    }
                 }
 
                 @foreach (var tag in conditional.TagKeys)
                 {
-                    <div class="sem-effects-text">@((MarkupString)Session.Localizer.Html(tag))</div>
+                    @if (Said(tag) is { } words)
+                    {
+                        <div class="sem-effects-text">@((MarkupString)words)</div>
+                    }
                 }
             </div>
         }
@@ -88,13 +97,55 @@ else
         {
             <div class="sem-effects-penalty">
                 <div class="heading">Penalties</div>
-                <div class="sem-effects-text">@((MarkupString)Session.Localizer.Html(penalty))</div>
+                @if (Said(penalty) is { } words)
+                {
+                    <div class="sem-effects-text">@((MarkupString)words)</div>
+                }
             </div>
         }
     </div>
 }
 
 @code {
+    /// <summary>
+    /// The text these effects are written in, where a page carries its own.
+    /// </summary>
+    /// <remarks>
+    /// Absent everywhere but a wiki page built from one of the wiki's own files. A leader trait says
+    /// most of what it does through a tooltip rather than through numbers, and that sentence is in
+    /// the file rather than in the app's own localisation - so read from the session it came back as
+    /// the key prettified: "Leader Trait Adventurous Spirit Effect".
+    /// </remarks>
+    [CascadingParameter(Name = "WikiText")]
+    public Localizer? Reader { get; set; }
+
+    /// <summary>Whichever reader answers here.</summary>
+    private Localizer Wording => Reader ?? Session.Localizer;
+
+    /// <summary>
+    /// What a key says, or nothing where it says something only a running game could finish.
+    /// </summary>
+    /// <remarks>
+    /// The game answers some of these with a bracketed command rather than a sentence -
+    /// <c>[GetAdventurousSpiritEffect]</c> - because what it says depends on the leader holding the
+    /// trait. Drawn as it stands it is not a description of anything, and read from a file that does
+    /// not carry it at all it comes back as the key prettified, which is worse. Either way the
+    /// modifiers beside it are the real answer, so the line is left out.
+    /// </remarks>
+    /// <param name="key">What to say.</param>
+    /// <returns>The words, or null.</returns>
+    private string? Said(string? key)
+    {
+        if (key is not { Length: > 0 })
+        {
+            return null;
+        }
+
+        var words = Wording.Html(key, string.Empty);
+
+        return words is { Length: > 0 } && !words.TrimStart().StartsWith('[') ? words : null;
+    }
+
     [CascadingParameter]
     public required DesignSession Session { get; set; }
 

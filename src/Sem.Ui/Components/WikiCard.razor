@@ -55,23 +55,66 @@
         <WikiLinkButton Link="@Link" Name="@Row.Name" />
     </header>
 
-    @if (Row.Description is { Length: > 0 })
+    @if (Row.Tiers.Count == 0)
     {
-        <p class="sem-wiki-prose">@((MarkupString)Wording.Html(Row.DescriptionKey, string.Empty))</p>
+        @if (Row.Description is { Length: > 0 })
+        {
+            <p class="sem-wiki-prose">@((MarkupString)Wording.Html(Row.DescriptionKey, string.Empty))</p>
+        }
+    }
+    else
+    {
+        @*
+            An upgrade path, a block per step.
+
+            What every step agrees about stays where it was - the header above, the facts and the
+            packs below - so a path says its class and its rarity once. What changes is here: the
+            step's own name where the game gave it one, its prose where it differs from the step
+            before, what it does, and the tier it is.
+        *@
+        <ol class="sem-wiki-steps">
+            @foreach (var step in Row.Tiers)
+            {
+                @* Each step answers to its own key, so a link naming a later tier can be scrolled to. *@
+                <li data-entry="@step.Key">
+                    <div class="heading">
+                        <GameIcon Path="@step.Icon" Alt="@step.Name" />
+                        <span class="title">@step.Name</span>
+
+                        @if (step.Fact("Tier") is { Text: { Length: > 0 } tier })
+                        {
+                            <span class="tier">@tier</span>
+                        }
+                    </div>
+
+                    @if (step.Description is { Length: > 0 } && Told.Add(step.Description))
+                    {
+                        <p class="sem-wiki-prose">
+                            @((MarkupString)Wording.Html(step.DescriptionKey, string.Empty))
+                        </p>
+                    }
+
+                    <EffectsList Effects="@step.Effects" />
+                </li>
+            }
+        </ol>
     }
 
     @*
         What is true of this kind and not of the others, above what it does. An ethic's cost decides
         whether a reader can afford it at all, which is a question they ask before what it grants.
     *@
-    @if (Row.Facts.Count > 0)
+    @if (Shared.Count > 0)
     {
         <div class="sem-wiki-facts">
-            <WikiFacts Facts="@Row.Facts" />
+            <WikiFacts Facts="@Shared" />
         </div>
     }
 
-    <EffectsList Effects="@Row.Effects" />
+    @if (Row.Tiers.Count == 0)
+    {
+        <EffectsList Effects="@Row.Effects" />
+    }
 
     @if (Row.Gallery.Count > 0)
     {
@@ -114,6 +157,31 @@
 
     /// <summary>Whichever reader answers for this shelf.</summary>
     private Localizer Wording => Reader ?? Session.Localizer;
+
+    /// <summary>
+    /// The facts that belong to the whole entry rather than to one step of it.
+    /// </summary>
+    /// <remarks>
+    /// Everything, for an entry that is one thing. For an upgrade path, everything but the tier -
+    /// which is the one fact that is always about a single step, and is drawn beside that step's
+    /// own name instead.
+    /// </remarks>
+    private IReadOnlyList<WikiFact> Shared =>
+        Row.Tiers.Count == 0
+            ? Row.Facts
+            : [.. Row.Facts.Where(f => !string.Equals(f.Heading, "Tier", StringComparison.Ordinal))];
+
+    /// <summary>
+    /// The prose already printed on this card, so a path does not say the same thing three times.
+    /// </summary>
+    /// <remarks>
+    /// The game writes a second tier's description as a reference to the first's, so the steps of a
+    /// path very often read identically. Rebuilt on every render because the card is drawn afresh
+    /// each time and a set kept between renders would suppress everything after the first.
+    /// </remarks>
+    private HashSet<string> Told { get; } = new(StringComparer.Ordinal);
+
+    protected override void OnParametersSet() => Told.Clear();
 
     /// <summary>The entry to draw.</summary>
     [Parameter, EditorRequired]

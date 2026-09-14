@@ -78,27 +78,77 @@ public sealed class LeaderTraitShelfTests
     [Fact]
     public void ANamelessTierTakesTheNameOfWhatItReplaces()
     {
-        var rows = Shelves()
-            .LeaderTraits(Pack(
-                [
-                    new LeaderTraitDefinition("leader_trait_wrecker") { Tier = 1 },
-                    new LeaderTraitDefinition("leader_trait_wrecker_2")
-                    {
-                        Tier = 2,
-                        Replaces = ["leader_trait_wrecker"],
-                    },
-                    new LeaderTraitDefinition("leader_trait_wrecker_3")
-                    {
-                        Tier = 3,
-                        Replaces = ["leader_trait_wrecker_2"],
-                    },
-                ],
-                ("leader_trait_wrecker", "Wrecker")))
-            .Rows;
+        var row = Assert.Single(Shelves().LeaderTraits(Wrecker()).Rows);
 
-        Assert.All(rows, r => Assert.Equal("Wrecker", r.Name));
-        Assert.Equal(["1", "2", "3"], rows.Select(r => r.Fact("Tier")!.Text));
+        Assert.All(row.Steps, s => Assert.Equal("Wrecker", s.Name));
+        Assert.Equal(["1", "2", "3"], row.Steps.Select(s => s.Fact("Tier")!.Text));
     }
+
+    /// <summary>
+    /// An upgrade path is one entry, with a line for each step.
+    /// </summary>
+    /// <remarks>
+    /// The game writes each tier as its own record, so the page showed the same name three times
+    /// over with the same class and rarity written out on each. Seven hundred and sixty-three traits
+    /// are four hundred and sixty-four paths.
+    /// </remarks>
+    [Fact]
+    public void AnUpgradePathIsOneEntry()
+    {
+        var row = Assert.Single(Shelves().LeaderTraits(Wrecker()).Rows);
+
+        Assert.Equal("leader_trait_wrecker", row.Key);
+        Assert.Equal(
+            ["leader_trait_wrecker", "leader_trait_wrecker_2", "leader_trait_wrecker_3"],
+            row.Steps.Select(s => s.Key));
+    }
+
+    /// <summary>
+    /// And its search text and headings hold every step's, so a later tier can still be found.
+    /// </summary>
+    /// <remarks>
+    /// The filter and the search are asked of the entry, not of a step, so an entry that answered
+    /// only for its first tier would be missed by a search for its third and by a tick on Tier 3.
+    /// </remarks>
+    [Fact]
+    public void AnUpgradePathAnswersForEveryStep()
+    {
+        var row = Assert.Single(Shelves().LeaderTraits(Wrecker()).Rows);
+
+        Assert.Contains("leader_trait_wrecker_3", row.Text, StringComparison.Ordinal);
+        Assert.Equal("1, 2, 3", row.Fact("Tier")!.Text);
+    }
+
+    /// <summary>A trait standing alone is left exactly as it was, which is most of them.</summary>
+    [Fact]
+    public void ATraitOutsideAnyPathIsNotGrouped()
+    {
+        var row = Assert.Single(Shelves()
+            .LeaderTraits(Pack(
+                [new LeaderTraitDefinition("leader_trait_loose")],
+                ("leader_trait_loose", "Loose")))
+            .Rows);
+
+        Assert.Empty(row.Tiers);
+        Assert.Equal([row], row.Steps);
+    }
+
+    /// <summary>Three tiers of one trait, the shape the game ships them in.</summary>
+    private static LeaderTraitPack Wrecker() => Pack(
+        [
+            new LeaderTraitDefinition("leader_trait_wrecker") { Tier = 1 },
+            new LeaderTraitDefinition("leader_trait_wrecker_2")
+            {
+                Tier = 2,
+                Replaces = ["leader_trait_wrecker"],
+            },
+            new LeaderTraitDefinition("leader_trait_wrecker_3")
+            {
+                Tier = 3,
+                Replaces = ["leader_trait_wrecker_2"],
+            },
+        ],
+        ("leader_trait_wrecker", "Wrecker"));
 
     /// <summary>
     /// A chain that ends outside the pack is followed into the app's own text.
@@ -134,16 +184,16 @@ public sealed class LeaderTraitShelfTests
     [Fact]
     public void ACycleInTheChainStops()
     {
-        var rows = Shelves()
+        var row = Assert.Single(Shelves()
             .LeaderTraits(Pack(
                 [
                     new LeaderTraitDefinition("leader_trait_a") { Replaces = ["leader_trait_b"] },
                     new LeaderTraitDefinition("leader_trait_b") { Replaces = ["leader_trait_a"] },
                 ]))
-            .Rows;
+            .Rows);
 
-        Assert.Equal(2, rows.Count);
-        Assert.All(rows, r => Assert.False(string.IsNullOrWhiteSpace(r.Name)));
+        Assert.Equal(2, row.Steps.Count);
+        Assert.All(row.Steps, s => Assert.False(string.IsNullOrWhiteSpace(s.Name)));
     }
 
     /// <summary>What a leader trait says about itself beyond what it does.</summary>
@@ -210,7 +260,7 @@ public sealed class LeaderTraitShelfTests
     /// <remarks>
     /// These keys are in the wiki's own file and in no collection the database has, so a chip built
     /// the ordinary way found nothing: no picture, an empty panel, and the key prettified for a name
-    /// - "Leader Trait Adventurous Spirit 2" sitting beside a row headed "Adventurous Spirit".
+    /// - "Leader Trait Wrecker 2" sitting beside an entry headed "Wrecker".
     /// </remarks>
     [Fact]
     public void AChipNamingAnotherTraitIsDrawnAsThatTraitIs()
@@ -231,26 +281,36 @@ public sealed class LeaderTraitShelfTests
                     },
                     new LeaderTraitDefinition("leader_trait_rival")
                     {
-                        Opposites = ["leader_trait_wrecker_2"],
+                        Opposites = ["leader_trait_wrecker", "leader_trait_wrecker_2"],
                     },
                 ],
                 ("leader_trait_wrecker", "Wrecker"),
                 ("leader_trait_rival", "Rival")))
             .Rows;
 
-        // The tier that replaces one: its chip names the tier below, which the game did name.
-        var replaces = Assert.Single(
-            rows.First(r => r.Key == "leader_trait_wrecker_2").Fact("Replaces")!.Chips);
+        var chips = rows.First(r => r.Key == "leader_trait_rival").Fact("Rules out")!.Chips;
 
-        Assert.Equal("Wrecker", replaces.Name);
-        Assert.Equal("icons/traits/wrecker.png", replaces.Icon);
+        // The tier the game named, and the one it did not: both are drawn as their own entry is,
+        // rather than as the key prettified.
+        Assert.Equal(["Wrecker", "Wrecker"], chips.Select(c => c.Name));
+        Assert.Equal(
+            ["icons/traits/wrecker.png", "icons/traits/wrecker_2.png"],
+            chips.Select(c => c.Icon));
+    }
 
-        // And one ruling out a tier the game never named takes the name of what that tier replaces,
-        // rather than the key prettified.
-        var rules = Assert.Single(rows.First(r => r.Key == "leader_trait_rival").Fact("Rules out")!.Chips);
+    /// <summary>
+    /// Nothing says "replaces" any more, because the grouping is what that said.
+    /// </summary>
+    /// <remarks>
+    /// Every chain the game states is whole in the file, so a trait that replaces another is drawn
+    /// as a later step of the same entry. A column repeating that beside it said it twice.
+    /// </remarks>
+    [Fact]
+    public void AnUpgradePathDoesNotAlsoSayWhatItReplaces()
+    {
+        var row = Assert.Single(Shelves().LeaderTraits(Wrecker()).Rows);
 
-        Assert.Equal("Wrecker", rules.Name);
-        Assert.Equal("icons/traits/wrecker_2.png", rules.Icon);
+        Assert.All(row.Steps, s => Assert.Null(s.Fact("Replaces")));
     }
 
     /// <summary>The shelf says which keys it answers for, so those chips can be links.</summary>

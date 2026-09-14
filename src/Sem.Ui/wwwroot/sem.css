@@ -7329,6 +7329,49 @@ button.icon.ended {
 }
 
 /*
+   The steps of an upgrade path on a card.
+
+   A rule down the left rather than a box each: they are one thing read downwards, and three boxes
+   inside a box is three cards pretending not to be. The numeral sits at the end of each step's own
+   line, which is where the eye is already looking to tell them apart.
+*/
+.sem-wiki-steps {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    margin: 0;
+    padding: 0 0 0 var(--space-md);
+    list-style: none;
+    border-left: 2px solid var(--border-strong);
+}
+
+.sem-wiki-steps > li {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.sem-wiki-steps .heading {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.sem-wiki-steps .title { font-weight: 600; }
+
+/* The tier, as a numeral at the end of the line, in the shape every other small count here has. */
+.sem-wiki-steps .tier {
+    margin-left: auto;
+    padding: 1px var(--space-sm);
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    color: var(--text-dim);
+    font-size: var(--text-sm);
+    font-variant-numeric: tabular-nums;
+}
+
+/*
    Copy a link to this one entry.
 
    Quiet until it is wanted. It sits on every card and every row of a three-hundred-row table, so at
@@ -7683,6 +7726,31 @@ button.icon.ended {
     */
     white-space: normal;
 }
+
+/*
+   A later step of an upgrade path, which carries no rule above it for the same reason the gallery
+   below does not: it belongs to the line over it rather than standing beside it, and a line between
+   the two would make one entry read as three.
+
+   The column rules are left alone and do the opposite work - they run straight down through every
+   step, which is what puts a tier's effects under the tier before it rather than merely near it.
+*/
+.sem-wiki-table tbody tr.step > * {
+    border-top: 0;
+    padding-top: 0;
+}
+
+/*
+   And the whole path lights together under the pointer. Hovering a row is a row's own business, so
+   without this a path of three would light one line at a time and read as three rows again at the
+   one moment a reader is asking which it is.
+*/
+.sem-wiki-table tbody tr.entry:hover > *,
+.sem-wiki-table tbody tr.entry:hover ~ tr.step > * {
+    background: var(--bg-hover);
+}
+
+.sem-wiki-table tbody tr.step:hover > * { background: var(--bg-hover); }
 
 /*
    The gallery's own row, which carries no rule above it: it belongs to the row over it rather than

@@ -177,7 +177,7 @@ public static class GameDataWriter
                 GameDataExtractor.ExtractorVersion, LeaderTraitPack.CurrentSchemaVersion),
             Traits = leaders,
             Text = LocalisationPruner.Slice(
-                leaders.SelectMany(t => new[] { t.NameKey, t.DescriptionKey }),
+                leaders.SelectMany(Spoken),
                 all,
                 database.ScriptedText),
         };
@@ -188,6 +188,62 @@ public static class GameDataWriter
             Path.Combine(outputDirectory, WikiPackFileName(LeaderTraitPack.Domain)), json);
 
         return [(LeaderTraitPack.Domain, leaders.Count, json.Length)];
+    }
+
+    /// <summary>
+    /// Every key one leader trait is written in.
+    /// </summary>
+    /// <remarks>
+    /// Its name and its prose, and then everything its effects name. A leader trait says most of
+    /// what it does through a tooltip rather than through plain numbers - Galactic Paragons writes
+    /// "custom_tooltip_with_modifiers = leader_trait_adventurous_spirit_effect" and leaves the
+    /// sentence to localisation - so seeding from the name alone left the effects column reading
+    /// the key back prettified.
+    /// </remarks>
+    /// <param name="trait">The trait.</param>
+    /// <returns>The keys, some of which the game may not define.</returns>
+    private static IEnumerable<string> Spoken(LeaderTraitDefinition trait)
+    {
+        yield return trait.NameKey;
+        yield return trait.DescriptionKey;
+
+        foreach (var key in Said(trait.Effects))
+        {
+            yield return key;
+        }
+    }
+
+    /// <summary>The keys one set of effects names, its conditional parts included.</summary>
+    private static IEnumerable<string> Said(EffectSet effects)
+    {
+        foreach (var key in new[] { effects.DescriptionKey, effects.TooltipKey, effects.PenaltyKey })
+        {
+            if (key is { Length: > 0 })
+            {
+                yield return key;
+            }
+        }
+
+        foreach (var tag in effects.TagKeys)
+        {
+            yield return tag;
+        }
+
+        foreach (var part in effects.Conditional)
+        {
+            foreach (var key in new[] { part.TooltipKey })
+            {
+                if (key is { Length: > 0 })
+                {
+                    yield return key;
+                }
+            }
+
+            foreach (var tag in part.TagKeys)
+            {
+                yield return tag;
+            }
+        }
     }
 
     /// <summary>

@@ -91,10 +91,21 @@
                     On the row rather than on a control inside it: the whole row is the entry, and
                     the chips it holds are already buttons which stop the press before it gets here.
                 *@
-                <tr class="@Marks(row)" data-entry="@row.Key" @onclick="() => Press(row)">
-                    @if (_pictures)
+                @*
+                    A line per step of an upgrade path, and one line for everything else.
+
+                    A column every step agrees about is written once and spans them, which is what
+                    makes a path read as one entry rather than as three that happen to sit together:
+                    the class and the rarity are stated once beside three tiers, and the column rules
+                    run straight down through all of them.
+                *@
+                @foreach (var (step, first, span) in Lines(row))
+                {
+                <tr class="@Marks(row) @(first ? "entry" : "step")"
+                    data-entry="@step.Key" @onclick="() => Press(row)">
+                    @if (_pictures && first)
                     {
-                        <td class="scene">
+                        <td class="scene" rowspan="@span">
                             @if (row.Picture is { Length: > 0 } picture)
                             {
                                 <img class="sem-detail-picture" src="@Session.Data.AssetUrl(picture)"
@@ -105,35 +116,58 @@
 
                     <th scope="row" class="name">
                         <span class="inner">
-                            <GameIcon Path="@row.Icon" Alt="@row.Name" />
-                            <span class="title">@row.Name</span>
+                            <GameIcon Path="@step.Icon" Alt="@step.Name" />
+                            <span class="title">@step.Name</span>
 
                             @* The link to this one entry, at the end of the line it names. *@
-                            <WikiLinkButton Link="@WikiLinks.Entry(Kind, row.Key)" Name="@row.Name" />
+                            @if (first)
+                            {
+                                <WikiLinkButton Link="@WikiLinks.Entry(Kind, row.Key)" Name="@row.Name" />
+                            }
                         </span>
 
-                        @if (row.Description is { Length: > 0 })
+                        @*
+                            Said once where the steps of a path share it, which they often do: the
+                            game writes a second tier's prose as a reference to the first's, so the
+                            same sentence would otherwise be printed three times over.
+                        *@
+                        @if (step.Description is { Length: > 0 } && (first || !SameProse(row)))
                         {
                             <span class="prose">
-                                @((MarkupString)Wording.Html(row.DescriptionKey, string.Empty))
+                                @((MarkupString)Wording.Html(step.DescriptionKey, string.Empty))
                             </span>
                         }
                     </th>
 
                     @foreach (var heading in _facts)
                     {
-                        <td class="fact">
-                            @if (row.Fact(heading) is { } fact)
+                        @if (Agreed(row, heading))
+                        {
+                            @if (first)
                             {
-                                <WikiFacts Facts="@(new[] { fact })" />
+                                <td class="fact" rowspan="@span">
+                                    @if (row.Fact(heading) is { } shared)
+                                    {
+                                        <WikiFacts Facts="@(new[] { shared })" />
+                                    }
+                                </td>
                             }
-                        </td>
+                        }
+                        else
+                        {
+                            <td class="fact">
+                                @if (step.Fact(heading) is { } fact)
+                                {
+                                    <WikiFacts Facts="@(new[] { fact })" />
+                                }
+                            </td>
+                        }
                     }
 
                     @if (_effects)
                     {
                         <td class="effects">
-                            <EffectsList Effects="@row.Effects" />
+                            <EffectsList Effects="@step.Effects" />
                         </td>
                     }
 
@@ -150,7 +184,8 @@
                     {
                         var stated = row.Conditions.FirstOrDefault(c => c.Heading == heading);
 
-                        <td class="conditions">
+                        <td class="conditions" rowspan="@(first ? span : 1)"
+                            hidden="@(!first && span > 1)">
                             @if (stated?.Outline is { } outline)
                             {
                                 <ConditionList Node="@outline" />
@@ -163,9 +198,9 @@
                         nobody can be, or an event - is already a bullet in the column to the left,
                         and saying it twice on one row made the narrower column repeat the wider one.
                     *@
-                    @if (_playable)
+                    @if (_playable && first)
                     {
-                        <td class="playable">
+                        <td class="playable" rowspan="@span">
                             @if (row.Playable)
                             {
                                 <span class="yes">Yes</span>
@@ -177,13 +212,14 @@
                         </td>
                     }
 
-                    @if (_packs)
+                    @if (_packs && first)
                     {
-                        <td class="packs">
+                        <td class="packs" rowspan="@span">
                             <PackChips Packs="@row.Packs" />
                         </td>
                     }
                 </tr>
+                }
 
                 @*
                     A second row under the first, spanning every column.
@@ -258,8 +294,56 @@
         string.Join(' ', new[]
         {
             row.Playable ? null : "unreachable",
-            row.Key == Chosen ? "chosen" : null,
+
+            // Any step of it, because a link may name a second tier and the whole entry is what is
+            // picked out - the alternative highlights one line of a path and leaves the rest pale.
+            row.Steps.Any(s => s.Key == Chosen) ? "chosen" : null,
         }.OfType<string>());
+
+    /// <summary>
+    /// The lines one entry is drawn as, each with whether it is the first and how many there are.
+    /// </summary>
+    /// <remarks>
+    /// One line for almost everything. An upgrade path is drawn as a line per step, and the span is
+    /// what a column the steps agree about is written across.
+    /// </remarks>
+    /// <param name="row">The entry.</param>
+    /// <returns>Its lines.</returns>
+    private static IEnumerable<(WikiRow Step, bool First, int Span)> Lines(WikiRow row)
+    {
+        var steps = row.Steps;
+
+        return steps.Select((step, index) => (step, index == 0, steps.Count));
+    }
+
+    /// <summary>
+    /// Whether every step of an entry says the same thing under a heading.
+    /// </summary>
+    /// <remarks>
+    /// Compared by what the fact holds rather than by how it would be drawn, and the chips are
+    /// sorted first: the game writes a trait's leader classes in whatever order it likes, so the
+    /// same three classes appear as five different orderings across the file and comparing them as
+    /// stated would call them different.
+    /// </remarks>
+    /// <param name="row">The entry.</param>
+    /// <param name="heading">The column.</param>
+    /// <returns>Whether it can be written once.</returns>
+    private static bool Agreed(WikiRow row, string heading) =>
+        row.Tiers.Count <= 1
+        || row.Tiers.Select(t => Signature(t.Fact(heading))).Distinct(StringComparer.Ordinal).Count() == 1;
+
+    /// <summary>What a fact holds, as one comparable string.</summary>
+    private static string Signature(WikiFact? fact) =>
+        fact is null
+            ? string.Empty
+            : fact.Text is { Length: > 0 } said
+                ? said
+                : string.Join('|', fact.Chips.Select(c => c.Key).Order(StringComparer.Ordinal));
+
+    /// <summary>Whether every step of an entry is described in the same words.</summary>
+    private static bool SameProse(WikiRow row) =>
+        row.Tiers.Select(t => t.DescriptionKey).Distinct(StringComparer.Ordinal).Count() == 1
+        || row.Tiers.Select(t => t.Description).Distinct(StringComparer.Ordinal).Count() == 1;
 
     /// <summary>Passes a press on to the page.</summary>
     /// <param name="row">The entry pressed.</param>
@@ -332,7 +416,15 @@
         _packs = All.Any(r => r.Packs.Count > 0);
         _effects = All.Any(r => !r.Effects.IsEmpty);
 
-        _facts = [.. All.SelectMany(r => r.Facts).Select(f => f.Heading).Distinct(StringComparer.Ordinal)];
+        // Across the steps as well, so a column only a third tier fills is still drawn. An entry's
+        // own facts are the union of its steps' already, but a shelf that never groups anything has
+        // no steps to ask, and asking both costs one pass.
+        _facts =
+        [
+            .. All.SelectMany(r => r.Steps).SelectMany(r => r.Facts)
+                .Select(f => f.Heading)
+                .Distinct(StringComparer.Ordinal),
+        ];
 
         _conditions =
         [

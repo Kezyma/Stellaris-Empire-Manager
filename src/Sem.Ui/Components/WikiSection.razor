@@ -155,7 +155,8 @@ else
             <div class="sem-wiki-cards">
                 @foreach (var row in Narrowed)
                 {
-                    <WikiCard Row="@row" Chosen="@(row.Key == _chosen)" Link="@WikiLinks.Entry(Kind, row.Key)"
+                    <WikiCard Row="@row" Chosen="@(row.Steps.Any(s => s.Key == _chosen))"
+                              Link="@WikiLinks.Entry(Kind, row.Key)"
                               OnChoose="() => Choose(row)" />
                 }
             </div>
@@ -364,7 +365,7 @@ else
         // of the shelf beforehand. Without this a chip pressed with a word still in the search box
         // scrolls to a row that was filtered out, which is to say it does nothing at all.
         if (Focus is { Length: > 0 } wanted && _filter is { Any: true } &&
-            !Narrowed.Any(row => row.Key == wanted))
+            !Narrowed.Any(row => row.Steps.Any(s => s.Key == wanted)))
         {
             _filter.Clear();
             Narrow();
