@@ -1,5 +1,6 @@
 using System.IO;
 using System.Text.Json;
+using Sem.Extraction;
 using Sem.GameData;
 using Sem.Ui.Services;
 
@@ -34,6 +35,9 @@ public sealed class FileGameDataSource(string directory, string assetBaseUrl) : 
     private readonly string _assetBaseUrl = assetBaseUrl ?? throw new ArgumentNullException(nameof(assetBaseUrl));
     private readonly SemaphoreSlim _gate = new(1, 1);
     private readonly SemaphoreSlim _wardrobeGate = new(1, 1);
+
+    /// <summary>The wiki's files, by domain, held as the read rather than its result.</summary>
+    private readonly Dictionary<string, Task<object?>> _packs = new(StringComparer.Ordinal);
 
     private Sem.Ui.Services.GameData? _loaded;
     private IReadOnlyList<PortraitOutfit>? _wardrobe;
@@ -119,6 +123,46 @@ public sealed class FileGameDataSource(string directory, string assetBaseUrl) : 
     }
 
     /// <summary>Reads one file from the cache as JSON, or nothing where it is not there.</summary>
+    /// <inheritdoc />
+    public Task<TPack?> LoadWikiPackAsync<TPack>(
+        string domain,
+        System.Text.Json.Serialization.Metadata.JsonTypeInfo<TPack> shape,
+        CancellationToken cancellationToken = default)
+        where TPack : class, IWikiPack
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(domain);
+        ArgumentNullException.ThrowIfNull(shape);
+
+        Task<object?> fetch;
+
+        lock (_packs)
+        {
+            if (!_packs.TryGetValue(domain, out var held))
+            {
+                held = Read();
+                _packs[domain] = held;
+            }
+
+            fetch = held;
+        }
+
+        return Cast(fetch);
+
+        async Task<object?> Read()
+        {
+            // A cache built before this domain existed simply has no file, which ReadAsync answers
+            // with nothing rather than throwing. The page that wants it says so.
+            var pack = await ReadAsync(
+                Path.Combine(GameDataWriter.WikiDirectory, $"{domain}.json"), shape, cancellationToken)
+                .ConfigureAwait(false);
+
+            return pack is null || pack.Stamp.SchemaVersion != TPack.ExpectedSchemaVersion ? null : pack;
+        }
+
+        static async Task<TPack?> Cast(Task<object?> fetch) =>
+            await fetch.ConfigureAwait(false) as TPack;
+    }
+
     private async Task<T?> ReadAsync<T>(
         string relativePath,
         System.Text.Json.Serialization.Metadata.JsonTypeInfo<T> typeInfo,

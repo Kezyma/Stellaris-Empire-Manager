@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 using Sem.GameData;
 
 namespace Sem.Ui.Services;
@@ -33,6 +34,33 @@ public interface IGameDataSource
     /// never opens the ruler's appearance should pay for it.
     /// </remarks>
     Task<IReadOnlyList<PortraitOutfit>> LoadWardrobeAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Loads one of the wiki's own files, or nothing where this host publishes none.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The same arrangement as the wardrobe above, carried further. The wiki has a page for each of
+    /// a great many things the empire designer has no use for - the game's leader traits alone are
+    /// seven hundred records nothing in an empire can hold - so each domain gets a file of its own,
+    /// fetched the first time somebody opens the page about it.
+    /// </para>
+    /// <para>
+    /// Keyed rather than a method each, because there will be twenty of these and a field and a
+    /// gate per domain does not scale. The caller hands in the shape to read, since the source knows
+    /// how to fetch a file and nothing about what is in one.
+    /// </para>
+    /// </remarks>
+    /// <typeparam name="TPack">What the file holds.</typeparam>
+    /// <param name="domain">Which file, such as <c>leader-traits</c>.</param>
+    /// <param name="shape">How to read it.</param>
+    /// <param name="cancellationToken">Abandons the fetch.</param>
+    /// <returns>The pack, or null where it is absent or was built to another shape.</returns>
+    Task<TPack?> LoadWikiPackAsync<TPack>(
+        string domain,
+        JsonTypeInfo<TPack> shape,
+        CancellationToken cancellationToken = default)
+        where TPack : class, IWikiPack;
 }
 
 /// <summary>
@@ -49,6 +77,16 @@ public sealed class HttpGameDataSource(HttpClient client, string baseUrl = "game
     private readonly string _baseUrl = baseUrl.TrimEnd('/');
     private readonly SemaphoreSlim _gate = new(1, 1);
     private readonly SemaphoreSlim _wardrobeGate = new(1, 1);
+
+    /// <summary>
+    /// The wiki's files, by domain, held as the fetch rather than its result.
+    /// </summary>
+    /// <remarks>
+    /// The task and not the answer, so that two pages asking at once share one request: written as
+    /// a null check and then an assignment, both would find nothing and both would fetch. The lock
+    /// is only around the table, which is never held across the await.
+    /// </remarks>
+    private readonly Dictionary<string, Task<object?>> _packs = new(StringComparer.Ordinal);
 
     private GameData? _loaded;
     private IReadOnlyList<PortraitOutfit>? _wardrobe;
@@ -134,6 +172,57 @@ public sealed class HttpGameDataSource(HttpClient client, string baseUrl = "game
         {
             _wardrobeGate.Release();
         }
+    }
+
+    /// <inheritdoc />
+    public Task<TPack?> LoadWikiPackAsync<TPack>(
+        string domain,
+        JsonTypeInfo<TPack> shape,
+        CancellationToken cancellationToken = default)
+        where TPack : class, IWikiPack
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(domain);
+        ArgumentNullException.ThrowIfNull(shape);
+
+        Task<object?> fetch;
+
+        lock (_packs)
+        {
+            if (!_packs.TryGetValue(domain, out var held))
+            {
+                held = Fetch();
+                _packs[domain] = held;
+            }
+
+            fetch = held;
+        }
+
+        return Cast(fetch);
+
+        async Task<object?> Fetch()
+        {
+            try
+            {
+                var pack = await ReadAsync($"wiki/{domain}.json", shape, cancellationToken)
+                    .ConfigureAwait(false);
+
+                // Refused rather than read around, the way a stale database is above: a pack of an
+                // older shape deserialises without complaint and every field added since takes its
+                // default, so the page would draw rules it silently does not have.
+                return pack is null || pack.Stamp.SchemaVersion != TPack.ExpectedSchemaVersion
+                    ? null
+                    : pack;
+            }
+            catch (HttpRequestException)
+            {
+                // A host that did not publish one is not a fault, and neither is being offline. The
+                // page that wants it says so rather than failing.
+                return null;
+            }
+        }
+
+        static async Task<TPack?> Cast(Task<object?> fetch) =>
+            await fetch.ConfigureAwait(false) as TPack;
     }
 
     /// <summary>

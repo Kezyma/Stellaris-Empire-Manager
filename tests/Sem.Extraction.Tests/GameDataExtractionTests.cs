@@ -136,6 +136,17 @@ public sealed class GameDataExtractionTests
             "calc_true_if",
             "has_federation",
             "federation",
+
+            // And the six that arrived with the leader traits, which are read now that the wiki has
+            // a page about them. Every one is a question about a particular leader in a particular
+            // game - which class they are, whether they rule, whether they sit on the council, what
+            // system their fleet is in - and an empire being designed has no leaders at all.
+            "leader_class",
+            "is_ruler",
+            "is_councilor",
+            "owner?",
+            "fleet.solar_system",
+            "planet.solar_system?",
         ];
 
         var unexpected = database.UnrecognisedEffectConditions.Keys.Except(known, StringComparer.Ordinal);
@@ -307,16 +318,17 @@ public sealed class GameDataExtractionTests
             "gfx/interface/icons/traits/trait_adaptive.dds",
             sources["icons/traits/trait_adaptive.png"]);
 
-        // The species trait writes its artwork as a plain path, and that is honoured. Its leader
-        // twin used to be asserted beside it, for the opposite behaviour - Galactic Paragons stacks
-        // layers into an icon block and nothing here draws layers, so it fell back to the unknown
-        // badge. The leader traits are no longer carried at all, so there is nothing left to fall
-        // back: that whole family was a fifth of the download and no picker ever offered one.
+        // The species trait writes its artwork as a plain path, and that is honoured.
         Assert.Equal(
             "gfx/interface/icons/traits/trait_unplugged_positive_1.dds",
             sources["icons/traits/trait_unplugged_cybernetic_positives_1.png"]);
 
-        Assert.DoesNotContain("icons/traits/leader_trait_unplugged_cybernetic_positives_1.png", sources.Keys);
+        // And its leader twin is drawn beside it rather than borrowing it. The two are separate
+        // traits with separate keys, and a leader trait describes its icon rather than naming one -
+        // Galactic Paragons stacks a coloured ground, a glyph and a tier marker into a recipe - so
+        // it gets a composed picture of its own. They were not carried at all until the wiki wanted
+        // a page about them.
+        Assert.Contains("icons/traits/leader_trait_unplugged_cybernetic_positives_1.png", sources.Keys);
     }
 
     [SkippableFact]

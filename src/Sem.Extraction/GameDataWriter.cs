@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Sem.Extraction.Extractors;
 using Sem.GameData;
 using Sem.Io;
 
@@ -28,6 +29,9 @@ public sealed record ExtractionResult(
     /// <summary>What came of drawing the wardrobe, or nothing where it was not asked for.</summary>
     public PortraitBakeReport? Wardrobe { get; init; }
 
+    /// <summary>How many records each wiki pack came to, and how big each file is.</summary>
+    public IReadOnlyList<(string Domain, int Records, int Bytes)> WikiPacks { get; init; } = [];
+
     /// <summary>How many outfits it came to, across how many layers.</summary>
     public (int Outfits, int Layers) WardrobeSize { get; init; }
 }
@@ -47,6 +51,14 @@ public static class GameDataWriter
 
     /// <summary>The wardrobe file, relative to the output directory.</summary>
     public const string WardrobeFileName = "wardrobe.json";
+
+    /// <summary>Where the wiki's own files live, one per domain.</summary>
+    public const string WikiDirectory = "wiki";
+
+    /// <summary>The file one wiki domain is written to, relative to the output directory.</summary>
+    /// <param name="domain">Which domain, such as <c>leader-traits</c>.</param>
+    /// <returns>The relative path, with a forward slash, as both hosts ask for it.</returns>
+    public static string WikiPackFileName(string domain) => $"{WikiDirectory}/{domain}.json";
 
     /// <summary>Reads an installation and writes the database, its text and its images.</summary>
     /// <param name="installRoot">The game to read.</param>
@@ -112,6 +124,11 @@ public static class GameDataWriter
             ? WriteWardrobe(content, database, outputDirectory, file, progress)
             : ([], null);
 
+        // The wiki's own files, always written. They are small and cost nothing to build - no
+        // pictures are drawn for them beyond the icons already baked - and a host that skipped them
+        // would have a wiki page that could never fill itself.
+        var packs = WriteWikiPacks(extractor, database, outputDirectory, file, progress);
+
         return new ExtractionResult(
             database,
             localisation.Count,
@@ -130,7 +147,47 @@ public static class GameDataWriter
         {
             Wardrobe = wardrobeReport,
             WardrobeSize = (outfits.Count, outfits.Sum(o => o.Layers.Count)),
+            WikiPacks = packs,
         };
+    }
+
+    /// <summary>
+    /// Writes the files the wiki fetches for itself, one per domain.
+    /// </summary>
+    /// <remarks>
+    /// Each carries its records and the text they are written in, because <c>loc/en.json</c> cannot:
+    /// that file is pruned to what the database reaches, and a pack is by definition about things
+    /// the database does not carry. Not one of the seven hundred leader traits has a name in it.
+    /// </remarks>
+    private static List<(string Domain, int Records, int Bytes)> WriteWikiPacks(
+        GameDataExtractor extractor,
+        GameDatabase database,
+        string outputDirectory,
+        SafeFile file,
+        IProgress<string>? progress)
+    {
+        progress?.Report("Writing the wiki's own data");
+
+        var all = extractor.ExtractLocalisation();
+        var leaders = extractor.LeaderTraits;
+
+        var pack = new LeaderTraitPack
+        {
+            Stamp = new WikiPackStamp(
+                GameDataExtractor.ExtractorVersion, LeaderTraitPack.CurrentSchemaVersion),
+            Traits = leaders,
+            Text = LocalisationPruner.Slice(
+                leaders.SelectMany(t => new[] { t.NameKey, t.DescriptionKey }),
+                all,
+                database.ScriptedText),
+        };
+
+        var json = JsonSerializer.SerializeToUtf8Bytes(pack, GameDataJsonContext.Default.LeaderTraitPack);
+
+        file.WriteAllBytes(
+            Path.Combine(outputDirectory, WikiPackFileName(LeaderTraitPack.Domain)), json);
+
+        return [(LeaderTraitPack.Domain, leaders.Count, json.Length)];
     }
 
     /// <summary>

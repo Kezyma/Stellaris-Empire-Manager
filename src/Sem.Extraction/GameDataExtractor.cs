@@ -118,6 +118,17 @@ public sealed class GameDataExtractor(LayeredContent content)
     /// </remarks>
     public IReadOnlyList<string> ScriptFailures { get; private set; } = [];
 
+    /// <summary>
+    /// The game's leader traits, which are read but deliberately not carried in the database.
+    /// </summary>
+    /// <remarks>
+    /// Beside the assets and the script failures rather than inside <see cref="GameDatabase"/>, for
+    /// the same reason those are: they are a by-product of the read rather than part of what an
+    /// empire is designed from. Seven hundred records nothing in an empire can hold, written to a
+    /// file of the wiki's own and fetched only when somebody opens the page about them.
+    /// </remarks>
+    public IReadOnlyList<LeaderTraitDefinition> LeaderTraits { get; private set; } = [];
+
     /// <summary>Builds a database from an installation directory.</summary>
     public static GameDatabase ExtractFrom(string installRoot, IProgress<string>? progress = null) =>
         new GameDataExtractor(LayeredContent.ForInstall(installRoot)).Extract(progress);
@@ -159,7 +170,8 @@ public sealed class GameDataExtractor(LayeredContent content)
 
         Report("Reading ethics and traits");
         var ethics = EthicsExtractor.Extract(loader, requirements, assets);
-        var traits = TraitsExtractor.Extract(loader, requirements, assets);
+        var (traits, leaderTraits) = TraitsExtractor.Extract(loader, requirements, assets);
+        LeaderTraits = leaderTraits;
 
         Report("Reading governments");
         var authorities = GovernmentExtractor.ExtractAuthorities(loader, requirements, assets);

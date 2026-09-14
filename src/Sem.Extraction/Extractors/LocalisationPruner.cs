@@ -105,6 +105,47 @@ internal static partial class LocalisationPruner
             wanted.Add(key);
         }
 
+        return Expand(wanted, all, database.ScriptedText);
+    }
+
+    /// <summary>
+    /// The text a wiki pack needs, which the pruned file above cannot carry.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <see cref="Prune"/> keeps what the database reaches, and a wiki pack is by definition about
+    /// things the database does not carry - so its names are pruned away and always would be. The
+    /// game's leader traits are the first case: not one of the seven hundred has a name in
+    /// <c>loc/en.json</c>, and widening the pruner would put them in front of every visitor to pay
+    /// for rather than only a reader who opens the page.
+    /// </para>
+    /// <para>
+    /// Seeded from the pack's own keys and expanded the same way, so that a name written as
+    /// <c>$another_key$</c> arrives with whatever it points at.
+    /// </para>
+    /// </remarks>
+    /// <param name="seeds">The keys the pack's records name.</param>
+    /// <param name="all">Every entry the game ships.</param>
+    /// <param name="scriptedText">What a bracketed command in a string can expand to.</param>
+    /// <returns>Those of them that exist, and whatever they refer to.</returns>
+    public static Dictionary<string, string> Slice(
+        IEnumerable<string> seeds,
+        IReadOnlyDictionary<string, string> all,
+        IReadOnlyDictionary<string, string> scriptedText)
+    {
+        ArgumentNullException.ThrowIfNull(seeds);
+        ArgumentNullException.ThrowIfNull(all);
+        ArgumentNullException.ThrowIfNull(scriptedText);
+
+        return Expand(new HashSet<string>(seeds, StringComparer.Ordinal), all, scriptedText);
+    }
+
+    /// <summary>Takes a set of keys and everything they lead to, a few rounds deep.</summary>
+    private static Dictionary<string, string> Expand(
+        HashSet<string> wanted,
+        IReadOnlyDictionary<string, string> all,
+        IReadOnlyDictionary<string, string> scriptedText)
+    {
         var kept = new Dictionary<string, string>(StringComparer.Ordinal);
         var frontier = wanted;
 
@@ -121,7 +162,7 @@ internal static partial class LocalisationPruner
 
                 // A displayed string can name other entries, and those have to travel with it or
                 // the player sees a raw key where a word should be.
-                foreach (var referenced in FindReferences(value, database.ScriptedText))
+                foreach (var referenced in FindReferences(value, scriptedText))
                 {
                     if (!kept.ContainsKey(referenced))
                     {

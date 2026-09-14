@@ -21,12 +21,13 @@ internal static class TraitsExtractor
     /// directions and the designer has to block the pairing either way round.
     /// </para>
     /// </remarks>
-    public static List<TraitDefinition> Extract(
+    public static (List<TraitDefinition> Traits, List<LeaderTraitDefinition> Leaders) Extract(
         ScriptLoader loader,
         RequirementCompiler requirements,
         AssetCatalog assets)
     {
         var traits = new List<TraitDefinition>();
+        var leaders = new List<LeaderTraitDefinition>();
         var colors = TraitIconComposer.ReadNamedColors(loader);
 
         foreach (var entry in loader.LoadDefinitions("common/traits"))
@@ -34,16 +35,17 @@ internal static class TraitsExtractor
             var body = entry.Body;
             var kind = ClassifyTrait(body);
 
-            // The leader traits an empire cannot start with are not carried.
+            // The leader traits an empire cannot start with go into a file of their own.
             //
-            // Seven hundred and twenty-eight of them, a fifth of everything the app downloads, and
-            // nothing reads one: the ruler's picker asks for the starting traits, the validator asks
-            // the same, and no empire in the game's own or the player's files holds one. Two hundred
-            // and thirty-four have no name in any language, being the second and third tiers a
-            // leader earns while a game is running - which is the clearest statement that they are
-            // not part of designing an empire.
+            // Seven hundred and twenty-eight of them, and nothing an empire is designed with holds
+            // one: the ruler's picker asks for the starting traits, the validator asks the same, and
+            // no empire in the game's own or the player's files carries one. So they stay out of the
+            // database, which every visitor fetches before anything can be drawn - and out of its
+            // schema, which a desktop player pays for by re-reading the game. The wiki has a page
+            // about them and fetches them when somebody opens it.
             if (kind == TraitKind.Leader)
             {
+                leaders.Add(LeaderTrait(entry.Key, body, loader, requirements, assets, colors));
                 continue;
             }
 
@@ -94,8 +96,75 @@ internal static class TraitsExtractor
             });
         }
 
-        return ApplySymmetricOpposites(traits);
+        return (ApplySymmetricOpposites(traits), ApplySymmetricOpposites(leaders));
     }
+
+    /// <summary>
+    /// One leader trait, as a page about them needs it.
+    /// </summary>
+    /// <remarks>
+    /// The restrictions a species trait carries have no meaning here - a leader has no archetype and
+    /// no homeworld - so what is read is the handful that do, plus the four a species trait has no
+    /// notion of: which classes may hold it, what sort it is, where in its own chain it sits, and
+    /// what it replaces on the way up.
+    /// </remarks>
+    private static LeaderTraitDefinition LeaderTrait(
+        string key,
+        CwBlock body,
+        ScriptLoader loader,
+        RequirementCompiler requirements,
+        AssetCatalog assets,
+        IReadOnlyDictionary<string, (byte R, byte G, byte B, byte A)> colors)
+    {
+        // The same block the icon is drawn from carries the tier and the rarity, because both are
+        // arguments to the recipe that draws it.
+        var recipe = body.Nodes
+            .FirstOrDefault(n => n.Key == "inline_script" && n.Block?.GetString("ICON") is { Length: > 0 })
+            ?.Block;
+
+        return new LeaderTraitDefinition(key)
+        {
+            LeaderClasses = ReadLeaderClasses(body),
+            Sort = body.GetString("leader_trait_type"),
+            Rarity = recipe?.GetString("RARITY"),
+            Tier = int.TryParse(
+                recipe?.GetString("TIER"),
+                System.Globalization.CultureInfo.InvariantCulture,
+                out var tier)
+                ? tier
+                : 0,
+            Replaces = body.GetList("replace_traits"),
+            Opposites = body.GetList("opposites"),
+            RequiredDlc = body.GetString("host_has_dlc"),
+
+            // Left as the game states them rather than hidden, unlike the species traits above. A
+            // leader trait says almost everything through a triggered block - whether it is on the
+            // council, which subclass it belongs to - and hiding those leaves the page blank.
+            Effects = EffectsReader.Read(body, loader, requirements, tagsKey: "localized_tags"),
+
+            Icon = TraitIconComposer.Compose(body, key, loader, assets, colors)
+                ?? assets.RegisterFirst(
+                    [
+                        .. Declared(body),
+                        $"gfx/interface/icons/traits/{key}.dds",
+                        "gfx/interface/icons/traits/trait_unknown.dds",
+                    ],
+                    $"icons/traits/{key}.png"),
+        };
+    }
+
+    /// <summary>
+    /// Which leader classes a trait names, written either way round.
+    /// </summary>
+    /// <remarks>
+    /// A hundred and thirty-four of them write <c>leader_class = commander</c> as a bare word rather
+    /// than a list of one, which reading it as a list alone does not see. The same problem
+    /// <see cref="ReadSpeciesClasses"/> already solves for <c>species_class</c>.
+    /// </remarks>
+    private static IReadOnlyList<string> ReadLeaderClasses(CwBlock body) =>
+        body.GetList("leader_class") is { Count: > 0 } listed
+            ? listed
+            : body.GetString("leader_class") is { Length: > 0 } single ? [single] : [];
 
     private static TraitKind ClassifyTrait(CwBlock body)
     {
@@ -141,20 +210,48 @@ internal static class TraitsExtractor
     /// </summary>
     private static List<TraitDefinition> ApplySymmetricOpposites(List<TraitDefinition> traits)
     {
-        var closure = new Dictionary<string, SortedSet<string>>(StringComparer.Ordinal);
-
-        foreach (var trait in traits)
-        {
-            foreach (var opposite in trait.Opposites)
-            {
-                Pair(trait.Key, opposite);
-                Pair(opposite, trait.Key);
-            }
-        }
+        var closure = Mutual(traits.Select(t => (t.Key, t.Opposites)));
 
         return [.. traits.Select(t => closure.TryGetValue(t.Key, out var all)
             ? t with { Opposites = [.. all] }
             : t)];
+    }
+
+    /// <summary>
+    /// The same for the leader traits, which are their own set.
+    /// </summary>
+    /// <remarks>
+    /// Closed within the leaders rather than across both. The two never name each other - a species
+    /// trait's opposites are species traits - and running them together would let a key that happens
+    /// to appear in both sets carry an exclusion across.
+    /// </remarks>
+    private static List<LeaderTraitDefinition> ApplySymmetricOpposites(List<LeaderTraitDefinition> traits)
+    {
+        var closure = Mutual(traits.Select(t => (t.Key, t.Opposites)));
+
+        return [.. traits.Select(t => closure.TryGetValue(t.Key, out var all)
+            ? t with { Opposites = [.. all] }
+            : t)];
+    }
+
+    /// <summary>Every exclusion, stated from both ends.</summary>
+    /// <param name="traits">What each trait says it cannot be held with.</param>
+    /// <returns>The closure, by trait key.</returns>
+    private static Dictionary<string, SortedSet<string>> Mutual(
+        IEnumerable<(string Key, IReadOnlyList<string> Opposites)> traits)
+    {
+        var closure = new Dictionary<string, SortedSet<string>>(StringComparer.Ordinal);
+
+        foreach (var (key, opposites) in traits)
+        {
+            foreach (var opposite in opposites)
+            {
+                Pair(key, opposite);
+                Pair(opposite, key);
+            }
+        }
+
+        return closure;
 
         void Pair(string from, string to)
         {

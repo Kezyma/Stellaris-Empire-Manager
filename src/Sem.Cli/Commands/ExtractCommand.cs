@@ -93,6 +93,17 @@ public static class ExtractCommand
         Console.WriteLine();
         WriteSummary(result);
 
+        if (result.WikiPacks.Count > 0)
+        {
+            Console.WriteLine();
+            Console.WriteLine("The wiki's own data, fetched only when somebody opens the page:");
+
+            foreach (var (domain, records, bytes) in result.WikiPacks)
+            {
+                Console.WriteLine($"  {records,6:N0}  {bytes / 1024.0:N0} KB  {domain}");
+            }
+        }
+
         Console.WriteLine();
         Console.WriteLine(
             $"Images: {result.Images.Written:N0} written, {result.Images.Bytes / 1024.0 / 1024.0:F1} MB");

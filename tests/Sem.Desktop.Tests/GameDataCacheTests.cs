@@ -1,5 +1,6 @@
 using Sem.Core.Tests;
 using Sem.Extraction;
+using Sem.GameData;
 
 namespace Sem.Desktop.Tests;
 
@@ -33,6 +34,7 @@ public sealed class GameDataCacheTests
         string? gameVersion = "v4.5.0",
         string? fingerprint = null,
         bool wardrobe = true,
+        bool wiki = true,
         string? raw = null)
     {
         Directory.CreateDirectory(cache.Directory);
@@ -60,6 +62,35 @@ public sealed class GameDataCacheTests
             File.WriteAllText(
                 Path.Combine(cache.Directory, GameDataWriter.WardrobeFileName), "[]");
         }
+
+        if (wiki)
+        {
+            var pack = Path.Combine(
+                cache.Directory, GameDataWriter.WikiPackFileName(LeaderTraitPack.Domain));
+
+            Directory.CreateDirectory(Path.GetDirectoryName(pack)!);
+            File.WriteAllText(pack, "{}");
+        }
+    }
+
+    /// <summary>
+    /// A cache built before a wiki domain existed is rebuilt, the way one without a wardrobe is.
+    /// </summary>
+    /// <remarks>
+    /// Checked as a file rather than believed from the version, for the reason the wardrobe's own
+    /// check gives: such a cache passes every other test and would never be rebuilt, leaving the
+    /// page about that domain permanently empty on the machine and nothing to say why.
+    /// </remarks>
+    [Fact]
+    public void ACacheWithNoWikiDataIsRebuilt()
+    {
+        using var temp = new TempDirectory();
+        var cache = Cache(temp);
+
+        Extracted(cache, wiki: false);
+
+        Assert.False(cache.IsUsable(out var why));
+        Assert.Equal("built before the wiki had its own data", why);
     }
 
     /// <summary>Nothing extracted yet says so, rather than failing some later check.</summary>

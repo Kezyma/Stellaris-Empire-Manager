@@ -95,6 +95,16 @@ public sealed class GameDataCache
                 return false;
             }
 
+            // And the wiki's own files, for exactly the same reason: a cache from before a domain
+            // existed passes every other test and would never be rebuilt, leaving the page about it
+            // permanently empty on this machine with nothing anywhere to say why.
+            if (!File.Exists(Path.Combine(
+                Directory, GameDataWriter.WikiPackFileName(LeaderTraitPack.Domain))))
+            {
+                reason = "built before the wiki had its own data";
+                return false;
+            }
+
             // A game patch changes what the designer must offer, so the data is rebuilt with it.
             // A cache from before this was written down cannot say, and is old enough to rebuild.
             var installed = ReadInstalledVersion();

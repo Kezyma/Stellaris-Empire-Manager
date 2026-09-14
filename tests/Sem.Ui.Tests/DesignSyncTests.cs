@@ -33,6 +33,22 @@ public sealed class DesignSyncTests
 
         public Task<IReadOnlyList<PortraitOutfit>> LoadWardrobeAsync(CancellationToken cancellationToken = default) =>
             Task.FromResult<IReadOnlyList<PortraitOutfit>>([]);
+
+    /// <summary>
+    /// No wiki data here. The wiki fetches its own files and nothing in these tests opens a page
+    /// that wants one, so answering "this host publishes none" is the whole of what is needed.
+    /// </summary>
+    /// <typeparam name="TPack">What the file would hold.</typeparam>
+    /// <param name="domain">Which file.</param>
+    /// <param name="shape">How to read it.</param>
+    /// <param name="cancellationToken">Abandons the fetch.</param>
+    /// <returns>Nothing.</returns>
+    public Task<TPack?> LoadWikiPackAsync<TPack>(
+        string domain,
+        System.Text.Json.Serialization.Metadata.JsonTypeInfo<TPack> shape,
+        CancellationToken cancellationToken = default)
+        where TPack : class, IWikiPack => Task.FromResult<TPack?>(null);
+
     }
 
     /// <summary>A desktop: one file, in place, which anything else may also write.</summary>

@@ -26,4 +26,9 @@ namespace Sem.GameData;
 // The wardrobe is written beside the database rather than inside it: thousands of pictures serve a
 // leader designer, and the empire designer should not read them to show one face per portrait.
 [JsonSerializable(typeof(IReadOnlyList<PortraitOutfit>))]
+
+// And the wiki's own files, one per domain, for the same reason carried further: what the wiki shows
+// is mostly of no use to a designer, and a reader who never opens a page should not fetch it. One
+// line each as they arrive.
+[JsonSerializable(typeof(LeaderTraitPack))]
 public sealed partial class GameDataJsonContext : JsonSerializerContext;
