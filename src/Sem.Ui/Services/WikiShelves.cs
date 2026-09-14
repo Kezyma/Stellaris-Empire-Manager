@@ -194,7 +194,8 @@ public sealed class WikiShelves(DesignSession session)
     /// <remarks>
     /// <para>
     /// The cost first, because three points buy the whole of an empire's ethics and an ethic that
-    /// takes two of them is most of the decision.
+    /// takes two of them is most of the decision. The number alone: the budget is the same for
+    /// every row, so saying it on each of them is a column repeating itself seventeen times.
     /// </para>
     /// <para>
     /// Then the two relationships the game gives them. Every ethic but gestalt has another strength
@@ -205,7 +206,7 @@ public sealed class WikiShelves(DesignSession session)
     /// </remarks>
     private IReadOnlyList<WikiFact> EthicFacts(EthicDefinition ethic) =>
     [
-        WikiFact.Said("Cost", $"{ethic.Cost} of {Database.Defines.EthicsPoints}"),
+        WikiFact.Said("Cost", ethic.Cost.ToString(System.Globalization.CultureInfo.CurrentCulture)),
 
         WikiFact.Said(
             "Intensity",
@@ -266,7 +267,7 @@ public sealed class WikiShelves(DesignSession session)
             authority.Effects,
             authority.Playable,
             !authority.AiOnly,
-            authority.AiOnly ? "Not for players" : null,
+            authority.AiOnly ? "Unplayable" : null,
             authority.AiOnly
                 ? "The game keeps this for its own empires. Nothing in the empire designer offers it."
                 : null,
@@ -384,13 +385,13 @@ public sealed class WikiShelves(DesignSession session)
 
         if (reach.CountryTypes.Count == 0)
         {
-            return ("By event only",
+            return ("Event only",
                 "The game only ever grants this during a game. Nothing in the empire designer offers it.");
         }
 
         var kinds = string.Join(" or ", reach.CountryTypes.Select(Localizer.Prettify));
 
-        return ("Not for players", $"Only {kinds} is offered this, which a designed empire never is.");
+        return ("Unplayable", $"Only {kinds} is offered this, which a designed empire never is.");
     }
 
     /// <summary>

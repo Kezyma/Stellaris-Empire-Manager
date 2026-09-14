@@ -28,14 +28,20 @@ public static class WikiFacet
     public const string Effects = "Effects";
 
     /// <summary>
-    /// The two questions asked beside the search rather than behind the card's fold.
+    /// The one question asked beside the search rather than behind the card's fold.
     /// </summary>
     /// <remarks>
-    /// They are what a reader asks first - can I have this - and the card is shut when the page
-    /// opens. They stay headings, so the narrowing is unchanged; only where they are asked moved.
+    /// Whether a player can take it at all, which is what a reader asks first and the card is shut
+    /// when the page opens. It stays a heading, so the narrowing is unchanged; only where it is
+    /// asked moved.
+    ///
+    /// Ownership is not here any more. The content pack bar at the top of every page already says
+    /// which packs to judge by, and a second control saying the same thing differently was two
+    /// answers to one question - so the pack chips reflect that bar, and the heading is in the card
+    /// with the rest for anybody who wants to narrow by it.
     /// </remarks>
     public static IReadOnlySet<string> AskedElsewhere { get; } =
-        new HashSet<string>(StringComparer.Ordinal) { Reach, OwnedKey };
+        new HashSet<string>(StringComparer.Ordinal) { Reach };
 
     /// <summary>What the playability toggle writes to.</summary>
     public const string Reach = "reach";
@@ -44,14 +50,13 @@ public static class WikiFacet
     public const string OwnedKey = "owned";
 
     /// <summary>
-    /// The two headings every shelf has, which are also the two asked outside the card.
+    /// The two headings every shelf has.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Deliberately two controls rather than one. Whether any player can ever take a thing is a
-    /// fixed property of the game and reads the same for everybody; whether your packs allow it is
-    /// about your machine. One control for both would have the same page saying different things to
-    /// two people comparing notes.
+    /// Two headings and not one, because they are two questions. Whether any player can ever take a
+    /// thing is a fixed property of the game and reads the same for everybody; whether your packs
+    /// allow it is about your machine.
     /// </para>
     /// <para>
     /// Written above the three lists that spread it, and it has to be: a static field is filled in

@@ -19,11 +19,16 @@
 
 <h1>@Title</h1>
 
+@*
+    Alphabetical, and staying that way as sections are added. Any other order is one somebody has to
+    learn, and a wiki that grows to a dozen shelves would be reordering itself under the reader every
+    time one arrived.
+*@
 <nav class="sem-wiki-nav" aria-label="Wiki sections">
-    <NavLink href="wiki/civics" class="sem-tab">Civics</NavLink>
-    <NavLink href="wiki/origins" class="sem-tab">Origins</NavLink>
-    <NavLink href="wiki/ethics" class="sem-tab">Ethics</NavLink>
     <NavLink href="wiki/authorities" class="sem-tab">Authorities</NavLink>
+    <NavLink href="wiki/civics" class="sem-tab">Civics</NavLink>
+    <NavLink href="wiki/ethics" class="sem-tab">Ethics</NavLink>
+    <NavLink href="wiki/origins" class="sem-tab">Origins</NavLink>
 </nav>
 
 @if (_session is null || _shelf is null || _filter is null)
@@ -81,10 +86,13 @@ else
         </div>
 
         @*
-            The three broadest controls above the fold, where a reader who has a word in mind can
-            reach them without opening anything. The two toggles are separate questions on purpose:
-            one is a fixed property of the game and reads the same for everybody, the other is about
-            what this machine has installed.
+            The two broadest controls above the fold, where a reader who has a word in mind can
+            reach them without opening anything.
+
+            No content pack control here. The pack bar at the top of every page already decides which
+            packs to judge by, and a second one saying the same thing differently was two answers to
+            one question - so the chips follow that bar, and narrowing by ownership is a heading in
+            the filter card with the rest.
         *@
         <div class="sem-row sem-wiki-search">
             <SearchBox TRow="WikiRow" Filter="@_filter" Id="wiki-search"
@@ -96,11 +104,6 @@ else
                          No="@(new ToggleWording("Unplayable", $"Showing the {Noun} no player can take. Press to show all of them."))"
                          OnChanged="Narrow" />
 
-            <AskedToggle TRow="WikiRow" Filter="@_filter" Key="owned"
-                         All="@(new ToggleWording("All packs", "Showing whatever the packs require. Press to show only what your packs allow."))"
-                         Yes="@(new ToggleWording("Owned", $"Showing the {Noun} your packs allow. Press to show the ones they do not."))"
-                         No="@(new ToggleWording("Not owned", $"Showing the {Noun} your packs rule out. Press to show all of them."))"
-                         OnChanged="Narrow" />
         </div>
 
         <FilterCard TRow="WikiRow" Rows="@Rows" Filter="@_filter" Facets="@_shelf!.Facets"

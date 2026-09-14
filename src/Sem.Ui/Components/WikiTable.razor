@@ -51,7 +51,7 @@
                 *@
                 @foreach (var heading in _facts)
                 {
-                    <th scope="col"><span class="plain">@heading</span></th>
+                    <th scope="col">@Header(FactPrefix + heading, heading)</th>
                 }
 
                 <th scope="col"><span class="plain">Effects</span></th>
@@ -248,6 +248,15 @@
     private const string PackColumn = "pack";
 
     /// <summary>
+    /// What a fact column's sort key is prefixed with, so it cannot collide with the fixed ones.
+    /// </summary>
+    /// <remarks>
+    /// The headings come from the data, and one day a kind will have a fact called Pack. Without the
+    /// prefix that column and the pack column would be one sort under two headings.
+    /// </remarks>
+    private const string FactPrefix = "fact:";
+
+    /// <summary>
     /// Which column the rows are in the order of, which to begin with is the name.
     /// </summary>
     /// <remarks>
@@ -335,6 +344,11 @@
                     : Rows.OrderBy(r => r.Name, StringComparer.CurrentCulture);
             }
 
+            if (_sort.StartsWith(FactPrefix, StringComparison.Ordinal))
+            {
+                return Fact(_sort[FactPrefix.Length..]).ThenBy(r => r.Name, StringComparer.CurrentCulture);
+            }
+
             // Playable first on the way up, which is the wrong way round for a boolean and the right
             // way round for a reader: the first press of a column should show the thing somebody
             // pressed it looking for.
@@ -359,4 +373,49 @@
 
     private IOrderedEnumerable<WikiRow> Key(Func<WikiRow, int> of) =>
         _descending ? Rows.OrderByDescending(of) : Rows.OrderBy(of);
+
+    /// <summary>
+    /// The rows in the order of one of their own facts.
+    /// </summary>
+    /// <remarks>
+    /// By number where the fact is one, and by word otherwise. An ethic's cost is 1, 2 or 3 and
+    /// sorts the same either way today - but a fact is whatever a kind decides to state, and the
+    /// first two-digit one would put 10 between 1 and 2 with nothing to say why.
+    ///
+    /// A row with nothing to say under the heading sorts last on the way up rather than first,
+    /// because a column of blanks at the top of a list somebody sorted by it is the sort thrown
+    /// away.
+    /// </remarks>
+    private IOrderedEnumerable<WikiRow> Fact(string heading)
+    {
+        if (Rows.All(r => Number(r, heading) is not null))
+        {
+            return Key(r => Number(r, heading)!.Value);
+        }
+
+        // Anything with nothing to say under the heading goes last whichever way the column is
+        // turned. A run of blanks is not an answer, and putting it at whichever end happens to be
+        // first is the sort thrown away.
+        var placed = Rows.OrderBy(r => Said(r, heading).Length == 0 ? 1 : 0);
+
+        return _descending
+            ? placed.ThenByDescending(r => Said(r, heading), StringComparer.CurrentCulture)
+            : placed.ThenBy(r => Said(r, heading), StringComparer.CurrentCulture);
+    }
+
+    /// <summary>What a row says under a heading, as a number where it is one.</summary>
+    private static int? Number(WikiRow row, string heading) =>
+        row.Fact(heading)?.Text is { Length: > 0 } text
+        && int.TryParse(text, System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.CurrentCulture, out var value)
+            ? value
+            : null;
+
+    /// <summary>And as words, which for a fact that names things is the names run together.</summary>
+    private static string Said(WikiRow row, string heading) =>
+        row.Fact(heading) switch
+        {
+            { Text: { Length: > 0 } text } => text,
+            { Chips: { Count: > 0 } chips } => string.Join(", ", chips.Select(c => c.Name)),
+            _ => string.Empty,
+        };
 }

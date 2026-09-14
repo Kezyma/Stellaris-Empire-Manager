@@ -315,7 +315,7 @@ public sealed class WikiShelfTests
             Potential = new SelectionRequirement(SelectionCategory.CountryType, "fallen_empire"),
         });
 
-        Assert.Equal("Not for players", row.ClosedShort);
+        Assert.Equal("Unplayable", row.ClosedShort);
         Assert.Contains("Fallen Empire", row.ClosedWhy!, StringComparison.Ordinal);
         Assert.DoesNotContain("fallen_empire", row.ClosedWhy!, StringComparison.Ordinal);
     }
@@ -333,7 +333,7 @@ public sealed class WikiShelfTests
             Potential = new SelectionRequirement(SelectionCategory.Civics, "civic_named"),
         });
 
-        Assert.Equal("By event only", row.ClosedShort);
+        Assert.Equal("Event only", row.ClosedShort);
     }
 
     /// <summary>One anybody can take says nothing about being shut out.</summary>
@@ -449,15 +449,15 @@ public sealed class WikiShelfTests
         Assert.True(row.Owned);
     }
 
-    /// <summary>What an ethic costs is said against what an empire has to spend.</summary>
+    /// <summary>What an ethic costs is the number, and nothing else.</summary>
     /// <remarks>
-    /// Three points buy the whole of an empire's ethics, so an ethic taking two of them is most of
-    /// the decision - and "2" alone does not say that where "2 of 3" does.
+    /// The budget is three for every ethic in the game, so saying it on each row is a column
+    /// repeating itself seventeen times - and a number alone is what a column sorts by.
     /// </remarks>
     [Fact]
-    public void AnEthicSaysItsCostAgainstTheBudget()
+    public void AnEthicSaysItsCostAsANumber()
     {
-        Assert.Equal("2 of 3", Ethic(new EthicDefinition("ethic_militarist", 2, "mil")).Fact("Cost")!.Text);
+        Assert.Equal("2", Ethic(new EthicDefinition("ethic_militarist", 2, "mil")).Fact("Cost")!.Text);
     }
 
     /// <summary>
