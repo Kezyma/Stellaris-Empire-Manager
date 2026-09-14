@@ -35,17 +35,29 @@ internal static class TraitsExtractor
             var body = entry.Body;
             var kind = ClassifyTrait(body);
 
-            // The leader traits an empire cannot start with go into a file of their own.
+            // Every trait a leader can hold goes into the wiki's own file, including the
+            // thirty-four an empire may start with.
             //
-            // Seven hundred and twenty-eight of them, and nothing an empire is designed with holds
-            // one: the ruler's picker asks for the starting traits, the validator asks the same, and
-            // no empire in the game's own or the player's files carries one. So they stay out of the
-            // database, which every visitor fetches before anything can be drawn - and out of its
-            // schema, which a desktop player pays for by re-reading the game. The wiki has a page
-            // about them and fetches them when somebody opens it.
+            // Those thirty-four are not a separate kind of thing: every one of them declares a
+            // leader_class like any other leader trait, and carries starting_ruler_trait on top. The
+            // classifier below has to answer with one kind and answers with the more specific one,
+            // which is right for the database - but reading that as "not a leader trait" is what cut
+            // twenty-seven upgrade chains in half, leaving a second and third tier on the page with
+            // no first.
+            //
+            // So a starting trait is written to both: to the database, where the ruler's picker
+            // reads it, and to the pack, where the page about leader traits does. The pack is
+            // fetched only when somebody opens that page, so the seven hundred and twenty-eight that
+            // no empire can hold cost a visitor nothing.
+            if (kind is TraitKind.Leader or TraitKind.StartingRuler)
+            {
+                leaders.Add(LeaderTrait(
+                    entry.Key, body, loader, requirements, assets, colors,
+                    canStart: kind == TraitKind.StartingRuler));
+            }
+
             if (kind == TraitKind.Leader)
             {
-                leaders.Add(LeaderTrait(entry.Key, body, loader, requirements, assets, colors));
                 continue;
             }
 
@@ -108,13 +120,22 @@ internal static class TraitsExtractor
     /// notion of: which classes may hold it, what sort it is, where in its own chain it sits, and
     /// what it replaces on the way up.
     /// </remarks>
+    /// <param name="key">The trait's own key.</param>
+    /// <param name="body">What the game declares about it.</param>
+    /// <param name="loader">The script, for the values it names rather than writes.</param>
+    /// <param name="requirements">How a condition is compiled.</param>
+    /// <param name="assets">Where its picture is registered.</param>
+    /// <param name="colors">The named colours its icon recipe can call for.</param>
+    /// <param name="canStart">Whether an empire may be designed holding this one.</param>
+    /// <returns>The trait, as the wiki's own file carries it.</returns>
     private static LeaderTraitDefinition LeaderTrait(
         string key,
         CwBlock body,
         ScriptLoader loader,
         RequirementCompiler requirements,
         AssetCatalog assets,
-        IReadOnlyDictionary<string, (byte R, byte G, byte B, byte A)> colors)
+        IReadOnlyDictionary<string, (byte R, byte G, byte B, byte A)> colors,
+        bool canStart)
     {
         // The same block the icon is drawn from carries the tier and the rarity, because both are
         // arguments to the recipe that draws it.
@@ -124,6 +145,7 @@ internal static class TraitsExtractor
 
         return new LeaderTraitDefinition(key)
         {
+            CanStart = canStart,
             LeaderClasses = ReadLeaderClasses(body),
             Sort = body.GetString("leader_trait_type"),
             Rarity = recipe?.GetString("RARITY"),
@@ -174,7 +196,11 @@ internal static class TraitsExtractor
         }
 
         // Leader traits name the classes that can hold them; species traits name archetypes.
-        return body.GetBlock("leader_class") is not null || body.GetString("leader_trait_type") is not null
+        //
+        // Either way round, as ReadLeaderClasses reads it. Asking only for a block missed
+        // leader_trait_rift_warped, which writes "leader_class = all" as a bare word and has no
+        // leader_trait_type to fall back on - so one leader trait sat in the species list.
+        return ReadLeaderClasses(body).Count > 0 || body.GetString("leader_trait_type") is not null
             ? TraitKind.Leader
             : TraitKind.Species;
     }

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 17,
   "gameVersion": "v4.5.0",
-  "extractorVersion": "0.1.0\u002Bd592422e8f56",
+  "extractorVersion": "0.1.0\u002Bc9d9ef1d1f3c",
   "installFingerprint": "4c524a20ddb52a8f",
   "defines": {
     "ethicsPoints": 3,
@@ -16332,43 +16332,6 @@
       "icon": "icons/traits/trait_stargazer.png",
       "nameKey": "trait_stargazer",
       "descriptionKey": "trait_stargazer_desc"
-    },
-    {
-      "key": "leader_trait_rift_warped",
-      "kind": 0,
-      "cost": 0,
-      "allowedArchetypes": [],
-      "allowedSpeciesClasses": [],
-      "portraitOverride": [],
-      "opposites": [],
-      "allowedPlanetClasses": [],
-      "allowedOrigins": [],
-      "forbiddenOrigins": [],
-      "allowedEthics": [],
-      "forbiddenEthics": [],
-      "allowedCivics": [],
-      "allowedLeaderClasses": [],
-      "initial": false,
-      "hidden": false,
-      "effects": {
-        "modifiers": {
-          "leader_lifespan_add": 50,
-          "species_leader_exp_gain": 0.1
-        },
-        "conditional": [],
-        "tagKeys": [],
-        "tooltipKey": "leader_trait_ignore_leader_cap_tt",
-        "tooltipReplacesModifiers": false,
-        "hideModifiers": false,
-        "isEmpty": false,
-        "visibleModifiers": {
-          "leader_lifespan_add": 50,
-          "species_leader_exp_gain": 0.1
-        }
-      },
-      "icon": "icons/traits/leader_trait_rift_warped.png",
-      "nameKey": "leader_trait_rift_warped",
-      "descriptionKey": "leader_trait_rift_warped_desc"
     },
     {
       "key": "trait_plasmic",

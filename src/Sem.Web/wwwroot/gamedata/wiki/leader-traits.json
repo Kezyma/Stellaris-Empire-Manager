@@ -1,11 +1,12 @@
 {
   "stamp": {
-    "extractorVersion": "0.1.0\u002Bd592422e8f56",
-    "schemaVersion": 1
+    "extractorVersion": "0.1.0\u002Bc9d9ef1d1f3c",
+    "schemaVersion": 2
   },
   "traits": [
     {
       "key": "trait_ruler_corvette_focus",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -36,6 +37,7 @@
     },
     {
       "key": "trait_ruler_destroyer_focus",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -66,6 +68,7 @@
     },
     {
       "key": "trait_ruler_cruiser_focus",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -96,6 +99,7 @@
     },
     {
       "key": "trait_ruler_battleship_focus",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -126,6 +130,7 @@
     },
     {
       "key": "leader_trait_fleet_logistician",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -148,6 +153,7 @@
     },
     {
       "key": "leader_trait_skirmisher",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -176,6 +182,7 @@
     },
     {
       "key": "leader_trait_aggressive",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -206,6 +213,7 @@
     },
     {
       "key": "leader_trait_cautious",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -236,6 +244,7 @@
     },
     {
       "key": "leader_trait_unyielding",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -270,6 +279,7 @@
     },
     {
       "key": "leader_trait_engineer",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist"
@@ -307,6 +317,7 @@
     },
     {
       "key": "leader_trait_trickster",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -339,6 +350,7 @@
     },
     {
       "key": "leader_trait_wrecker",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -371,6 +383,7 @@
     },
     {
       "key": "leader_trait_wrecker_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -405,6 +418,7 @@
     },
     {
       "key": "leader_trait_annihilator",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -434,6 +448,7 @@
     },
     {
       "key": "leader_trait_annihilator_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -465,6 +480,7 @@
     },
     {
       "key": "leader_trait_artillerist",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -494,6 +510,7 @@
     },
     {
       "key": "leader_trait_artillerist_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -527,6 +544,7 @@
     },
     {
       "key": "leader_trait_commanding_presence",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -554,6 +572,7 @@
     },
     {
       "key": "leader_trait_commanding_presence_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -583,6 +602,7 @@
     },
     {
       "key": "leader_trait_corsair",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -607,6 +627,7 @@
     },
     {
       "key": "leader_trait_corsair_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -645,6 +666,7 @@
     },
     {
       "key": "leader_trait_demolisher",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -672,6 +694,7 @@
     },
     {
       "key": "leader_trait_demolisher_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -701,6 +724,7 @@
     },
     {
       "key": "leader_trait_shipbreaker",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -725,6 +749,7 @@
     },
     {
       "key": "leader_trait_shipbreaker_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -753,6 +778,7 @@
     },
     {
       "key": "leader_trait_archaeo_specialization",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -782,6 +808,7 @@
     },
     {
       "key": "leader_trait_archaeo_specialization_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -813,6 +840,7 @@
     },
     {
       "key": "leader_trait_artillery_specialization",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -843,6 +871,7 @@
     },
     {
       "key": "leader_trait_artillery_specialization_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -875,6 +904,7 @@
     },
     {
       "key": "leader_trait_carrier_specialization",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -907,6 +937,7 @@
     },
     {
       "key": "leader_trait_carrier_specialization_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -941,6 +972,7 @@
     },
     {
       "key": "leader_trait_rocketry_specialization",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -971,6 +1003,7 @@
     },
     {
       "key": "leader_trait_rocketry_specialization_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -1003,6 +1036,7 @@
     },
     {
       "key": "leader_trait_gunship_specialization",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -1037,6 +1071,7 @@
     },
     {
       "key": "leader_trait_gunship_specialization_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -1073,6 +1108,7 @@
     },
     {
       "key": "leader_trait_juryrigger",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -1104,6 +1140,7 @@
     },
     {
       "key": "leader_trait_juryrigger_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -1137,6 +1174,7 @@
     },
     {
       "key": "leader_trait_surgical_bombardment",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -1166,6 +1204,7 @@
     },
     {
       "key": "leader_trait_surgical_bombardment_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -1197,6 +1236,7 @@
     },
     {
       "key": "leader_trait_scout",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist"
@@ -1229,6 +1269,7 @@
     },
     {
       "key": "leader_trait_scout_2",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist"
@@ -1263,6 +1304,7 @@
     },
     {
       "key": "leader_trait_gale_speed",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -1293,6 +1335,7 @@
     },
     {
       "key": "leader_trait_gale_speed_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -1325,6 +1368,7 @@
     },
     {
       "key": "trait_ruler_fortifier",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -1358,6 +1402,7 @@
     },
     {
       "key": "trait_ruler_fortifier_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -1393,6 +1438,7 @@
     },
     {
       "key": "leader_trait_armada_logistician",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -1420,6 +1466,7 @@
     },
     {
       "key": "leader_trait_armada_logistician_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -1449,6 +1496,7 @@
     },
     {
       "key": "trait_ruler_military_pioneer",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -1478,6 +1526,7 @@
     },
     {
       "key": "trait_ruler_military_pioneer_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -1509,6 +1558,7 @@
     },
     {
       "key": "leader_trait_intimidator",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -1536,6 +1586,7 @@
     },
     {
       "key": "leader_trait_intimidator_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -1565,6 +1616,7 @@
     },
     {
       "key": "leader_trait_border_guard",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -1596,6 +1648,7 @@
     },
     {
       "key": "leader_trait_border_guard_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -1629,6 +1682,7 @@
     },
     {
       "key": "leader_trait_crew_trainer",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -1658,6 +1712,7 @@
     },
     {
       "key": "leader_trait_crew_trainer_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -1689,6 +1744,7 @@
     },
     {
       "key": "leader_trait_master_gunner",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -1720,6 +1776,7 @@
     },
     {
       "key": "leader_trait_military_overseer",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -1751,6 +1808,7 @@
     },
     {
       "key": "leader_trait_armorer",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -1784,6 +1842,7 @@
     },
     {
       "key": "leader_trait_destiny_engineer",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -1813,6 +1872,7 @@
     },
     {
       "key": "leader_trait_guerilla_tactics",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -1846,6 +1906,7 @@
     },
     {
       "key": "leader_trait_survivalist",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -1877,6 +1938,7 @@
     },
     {
       "key": "leader_trait_maven_of_war",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -1906,6 +1968,7 @@
     },
     {
       "key": "leader_trait_peacekeeper",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "official"
@@ -1938,6 +2001,7 @@
     },
     {
       "key": "leader_trait_nervous",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -1945,6 +2009,7 @@
       "tier": 1,
       "replaces": [],
       "opposites": [
+        "leader_trait_fleet_organizer",
         "leader_trait_fleet_organizer_2",
         "leader_trait_unyielding"
       ],
@@ -1969,6 +2034,7 @@
     },
     {
       "key": "leader_trait_nervous_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -1978,6 +2044,7 @@
         "leader_trait_nervous"
       ],
       "opposites": [
+        "leader_trait_fleet_organizer",
         "leader_trait_fleet_organizer_2",
         "leader_trait_unyielding"
       ],
@@ -2002,6 +2069,7 @@
     },
     {
       "key": "leader_trait_lethargic",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -2035,6 +2103,7 @@
     },
     {
       "key": "leader_trait_lethargic_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -2070,6 +2139,7 @@
     },
     {
       "key": "leader_trait_micromanager",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -2096,6 +2166,7 @@
     },
     {
       "key": "leader_trait_micromanager_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -2124,6 +2195,7 @@
     },
     {
       "key": "leader_trait_reckless",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -2152,6 +2224,7 @@
     },
     {
       "key": "leader_trait_reckless_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -2182,6 +2255,7 @@
     },
     {
       "key": "leader_trait_slipshod",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -2212,6 +2286,7 @@
     },
     {
       "key": "leader_trait_slipshod_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -2244,6 +2319,7 @@
     },
     {
       "key": "leader_trait_dragonslayer",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -2276,6 +2352,7 @@
     },
     {
       "key": "leader_trait_clone_army_commander",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -2304,6 +2381,7 @@
     },
     {
       "key": "leader_trait_clone_army_fertile_commander",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -2332,6 +2410,7 @@
     },
     {
       "key": "leader_trait_clone_army_full_commander",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -2360,6 +2439,7 @@
     },
     {
       "key": "leader_trait_tactical_algorithms",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -2384,6 +2464,7 @@
     },
     {
       "key": "leader_trait_shroudwalker",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -2412,6 +2493,7 @@
     },
     {
       "key": "leader_trait_master_salvager",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -2435,6 +2517,7 @@
     },
     {
       "key": "leader_trait_curator",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -2464,6 +2547,7 @@
     },
     {
       "key": "leader_trait_enclave_trader",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -2490,6 +2574,7 @@
     },
     {
       "key": "leader_trait_xuracorp_liaison",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -2518,6 +2603,7 @@
     },
     {
       "key": "leader_trait_riggan_liaison",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -2546,6 +2632,7 @@
     },
     {
       "key": "leader_trait_muutagan_liaison",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -2574,6 +2661,7 @@
     },
     {
       "key": "leader_trait_defence_engineer",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -2602,6 +2690,7 @@
     },
     {
       "key": "leader_trait_butcher",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -2634,6 +2723,7 @@
     },
     {
       "key": "leader_trait_restrained",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -2668,6 +2758,7 @@
     },
     {
       "key": "leader_trait_dreaded",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -2695,6 +2786,7 @@
     },
     {
       "key": "leader_trait_dreaded_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -2724,6 +2816,7 @@
     },
     {
       "key": "leader_trait_heavy_hitter",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -2751,6 +2844,7 @@
     },
     {
       "key": "leader_trait_heavy_hitter_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -2780,6 +2874,7 @@
     },
     {
       "key": "leader_trait_interrogator",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -2804,6 +2899,7 @@
     },
     {
       "key": "leader_trait_interrogator_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -2832,6 +2928,7 @@
     },
     {
       "key": "leader_trait_crusader",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -2856,6 +2953,7 @@
     },
     {
       "key": "leader_trait_crusader_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -2886,6 +2984,7 @@
     },
     {
       "key": "leader_trait_overseer",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -2913,6 +3012,7 @@
     },
     {
       "key": "leader_trait_overseer_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -2942,6 +3042,7 @@
     },
     {
       "key": "trait_ruler_from_the_ranks",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -2969,6 +3070,7 @@
     },
     {
       "key": "trait_ruler_from_the_ranks_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -2998,6 +3100,7 @@
     },
     {
       "key": "trait_ruler_recruiter",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -3027,6 +3130,7 @@
     },
     {
       "key": "trait_ruler_recruiter_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -3058,6 +3162,7 @@
     },
     {
       "key": "leader_trait_consul_general",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -3085,6 +3190,7 @@
     },
     {
       "key": "leader_trait_consul_general_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -3114,6 +3220,7 @@
     },
     {
       "key": "leader_trait_shadow_broker",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -3143,6 +3250,7 @@
     },
     {
       "key": "leader_trait_shadow_broker_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -3174,6 +3282,7 @@
     },
     {
       "key": "leader_trait_home_guard",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -3203,6 +3312,7 @@
     },
     {
       "key": "leader_trait_home_guard_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -3234,6 +3344,7 @@
     },
     {
       "key": "leader_trait_hardy",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -3264,6 +3375,7 @@
     },
     {
       "key": "leader_trait_hardy_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -3296,6 +3408,7 @@
     },
     {
       "key": "leader_trait_martinet",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -3324,6 +3437,7 @@
     },
     {
       "key": "leader_trait_martinet_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -3354,6 +3468,7 @@
     },
     {
       "key": "leader_trait_warden",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -3381,6 +3496,7 @@
     },
     {
       "key": "leader_trait_warden_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -3410,6 +3526,7 @@
     },
     {
       "key": "leader_trait_reinforcer",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -3439,6 +3556,7 @@
     },
     {
       "key": "leader_trait_reinforcer_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -3470,6 +3588,7 @@
     },
     {
       "key": "leader_trait_guardian",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -3499,6 +3618,7 @@
     },
     {
       "key": "leader_trait_guardian_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -3530,6 +3650,7 @@
     },
     {
       "key": "leader_trait_conscripter",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -3559,6 +3680,7 @@
     },
     {
       "key": "leader_trait_conscripter_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -3590,6 +3712,7 @@
     },
     {
       "key": "leader_trait_taskmaster",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -3617,6 +3740,7 @@
     },
     {
       "key": "leader_trait_fortress_cracker",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -3650,6 +3774,7 @@
     },
     {
       "key": "leader_trait_chainbreaker",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -3678,6 +3803,7 @@
     },
     {
       "key": "leader_trait_honored_warmaster",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -3707,6 +3833,7 @@
     },
     {
       "key": "leader_trait_academia_recruiter",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -3744,6 +3871,7 @@
     },
     {
       "key": "leader_trait_supreme_warrior",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -3775,6 +3903,7 @@
     },
     {
       "key": "leader_trait_spymaster",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -3806,6 +3935,7 @@
     },
     {
       "key": "leader_trait_totalitarian",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -3837,6 +3967,7 @@
     },
     {
       "key": "leader_trait_bellicose",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -3861,6 +3992,7 @@
     },
     {
       "key": "leader_trait_armchair_commander",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -3891,6 +4023,7 @@
     },
     {
       "key": "leader_trait_armchair_commander_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -3923,6 +4056,7 @@
     },
     {
       "key": "leader_trait_uninspiring",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -3949,6 +4083,7 @@
     },
     {
       "key": "leader_trait_uninspiring_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -3977,6 +4112,7 @@
     },
     {
       "key": "leader_trait_slothful",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -4006,6 +4142,7 @@
     },
     {
       "key": "leader_trait_slothful_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -4037,6 +4174,7 @@
     },
     {
       "key": "leader_trait_victory_or_death",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -4065,6 +4203,7 @@
     },
     {
       "key": "leader_trait_victory_or_death_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -4095,6 +4234,7 @@
     },
     {
       "key": "leader_trait_disorganized",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -4121,6 +4261,7 @@
     },
     {
       "key": "leader_trait_disorganized_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -4149,6 +4290,7 @@
     },
     {
       "key": "leader_trait_lawless",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "official",
@@ -4178,6 +4320,7 @@
     },
     {
       "key": "leader_trait_lawless_2",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "official",
@@ -4209,6 +4352,7 @@
     },
     {
       "key": "leader_trait_aturion_organizer",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -4240,6 +4384,7 @@
     },
     {
       "key": "leader_trait_tzrynn_tithe",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -4270,6 +4415,7 @@
     },
     {
       "key": "leader_trait_adventurous_spirit",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -4296,6 +4442,7 @@
     },
     {
       "key": "leader_trait_adventurous_spirit_2",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -4324,6 +4471,7 @@
     },
     {
       "key": "leader_trait_adventurous_spirit_3",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -4352,6 +4500,7 @@
     },
     {
       "key": "leader_trait_eager",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -4385,6 +4534,7 @@
     },
     {
       "key": "leader_trait_resilient",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -4409,6 +4559,7 @@
     },
     {
       "key": "leader_trait_adaptable",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -4440,6 +4591,7 @@
     },
     {
       "key": "leader_trait_politician",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -4468,6 +4620,7 @@
     },
     {
       "key": "leader_trait_capitalist",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -4507,6 +4660,7 @@
     },
     {
       "key": "leader_trait_capitalist_2",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -4543,6 +4697,7 @@
     },
     {
       "key": "leader_trait_private_mines",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -4582,6 +4737,7 @@
     },
     {
       "key": "leader_trait_private_mines_2",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -4618,6 +4774,7 @@
     },
     {
       "key": "leader_trait_homesteader",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -4657,6 +4814,7 @@
     },
     {
       "key": "leader_trait_homesteader_2",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -4693,6 +4851,7 @@
     },
     {
       "key": "trait_ruler_champion_of_the_people",
+      "canStart": false,
       "leaderClasses": [
         "scientist",
         "official",
@@ -4720,6 +4879,7 @@
     },
     {
       "key": "trait_ruler_champion_of_the_people_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist",
         "official",
@@ -4749,6 +4909,7 @@
     },
     {
       "key": "leader_trait_gifted",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -4777,6 +4938,7 @@
     },
     {
       "key": "leader_trait_gifted_2",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -4807,6 +4969,7 @@
     },
     {
       "key": "trait_imperial_heir",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -4832,6 +4995,7 @@
     },
     {
       "key": "leader_trait_scrapper",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -4871,6 +5035,7 @@
     },
     {
       "key": "leader_trait_scrapper_2",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -4907,6 +5072,7 @@
     },
     {
       "key": "leader_trait_entrepreneur",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -4946,6 +5112,7 @@
     },
     {
       "key": "leader_trait_entrepreneur_2",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -4982,6 +5149,7 @@
     },
     {
       "key": "leader_trait_venerated",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -5021,6 +5189,7 @@
     },
     {
       "key": "leader_trait_venerated_2",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -5057,6 +5226,7 @@
     },
     {
       "key": "leader_trait_emotional_support_pet",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -5087,6 +5257,7 @@
     },
     {
       "key": "leader_trait_educator",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -5116,6 +5287,7 @@
     },
     {
       "key": "leader_trait_master_bureaucrat",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -5149,6 +5321,7 @@
     },
     {
       "key": "leader_trait_fallible",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -5177,6 +5350,7 @@
     },
     {
       "key": "leader_trait_fallible_2",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -5207,6 +5381,7 @@
     },
     {
       "key": "leader_trait_substance_abuser",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -5235,6 +5410,7 @@
     },
     {
       "key": "leader_trait_substance_abuser_2",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -5265,6 +5441,7 @@
     },
     {
       "key": "leader_trait_stubborn",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -5295,6 +5472,7 @@
     },
     {
       "key": "leader_trait_stubborn_2",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -5329,6 +5507,7 @@
     },
     {
       "key": "leader_trait_melancholic",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -5357,6 +5536,7 @@
     },
     {
       "key": "leader_trait_melancholic_2",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -5387,6 +5567,7 @@
     },
     {
       "key": "leader_trait_lavish_lifestyle",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist",
@@ -5411,6 +5592,7 @@
     },
     {
       "key": "leader_trait_lavish_lifestyle_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist",
@@ -5437,6 +5619,7 @@
     },
     {
       "key": "leader_trait_excessive",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist",
@@ -5461,6 +5644,7 @@
     },
     {
       "key": "leader_trait_excessive_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist",
@@ -5487,6 +5671,7 @@
     },
     {
       "key": "leader_trait_arrested_development",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -5515,6 +5700,7 @@
     },
     {
       "key": "leader_trait_arrested_development_2",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -5545,6 +5731,7 @@
     },
     {
       "key": "leader_trait_reclusive",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist",
@@ -5575,6 +5762,7 @@
     },
     {
       "key": "leader_trait_reclusive_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist",
@@ -5607,6 +5795,7 @@
     },
     {
       "key": "leader_trait_embezzler",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist",
@@ -5635,6 +5824,7 @@
     },
     {
       "key": "leader_trait_embezzler_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist",
@@ -5665,6 +5855,7 @@
     },
     {
       "key": "leader_trait_intolerant",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist",
@@ -5697,6 +5888,7 @@
     },
     {
       "key": "leader_trait_intolerant_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist",
@@ -5731,6 +5923,7 @@
     },
     {
       "key": "leader_trait_gullible",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist",
@@ -5759,6 +5952,7 @@
     },
     {
       "key": "leader_trait_gullible_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist",
@@ -5789,6 +5983,7 @@
     },
     {
       "key": "leader_trait_volatile",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist",
@@ -5817,6 +6012,7 @@
     },
     {
       "key": "leader_trait_volatile_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist",
@@ -5847,6 +6043,7 @@
     },
     {
       "key": "leader_trait_passive",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist",
@@ -5875,6 +6072,7 @@
     },
     {
       "key": "leader_trait_passive_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist",
@@ -5905,6 +6103,7 @@
     },
     {
       "key": "leader_trait_tyrannical",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist",
@@ -5934,6 +6133,7 @@
     },
     {
       "key": "leader_trait_tyrannical_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist",
@@ -5965,6 +6165,7 @@
     },
     {
       "key": "leader_trait_bureaucratic",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist",
@@ -5993,6 +6194,7 @@
     },
     {
       "key": "leader_trait_bureaucratic_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist",
@@ -6023,6 +6225,7 @@
     },
     {
       "key": "leader_trait_intemporal",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -6047,6 +6250,7 @@
     },
     {
       "key": "trait_ruler_frontier_spirit",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -6069,6 +6273,7 @@
     },
     {
       "key": "leader_trait_intellectual",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -6099,6 +6304,7 @@
     },
     {
       "key": "leader_trait_bureaucrat",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -6127,6 +6333,7 @@
     },
     {
       "key": "leader_trait_army_veteran",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist"
@@ -6160,6 +6367,7 @@
     },
     {
       "key": "leader_trait_retired_fleet_officer",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist"
@@ -6191,6 +6399,7 @@
     },
     {
       "key": "leader_trait_agrarian_upbringing",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "official",
@@ -6219,6 +6428,7 @@
     },
     {
       "key": "trait_ruler_fertility_preacher",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -6241,6 +6451,7 @@
     },
     {
       "key": "leader_trait_righteous",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "official"
@@ -6271,6 +6482,7 @@
     },
     {
       "key": "leader_trait_righteous_2",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "official"
@@ -6303,6 +6515,7 @@
     },
     {
       "key": "leader_trait_iron_fist",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -6329,6 +6542,7 @@
     },
     {
       "key": "leader_trait_iron_fist_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -6357,6 +6571,7 @@
     },
     {
       "key": "leader_trait_environmental_engineer",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "official",
@@ -6387,6 +6602,7 @@
     },
     {
       "key": "leader_trait_enlister",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -6415,6 +6631,7 @@
     },
     {
       "key": "leader_trait_shipwright",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -6444,6 +6661,7 @@
     },
     {
       "key": "leader_trait_architectural_interest",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist"
@@ -6476,6 +6694,7 @@
     },
     {
       "key": "leader_trait_trade_focus",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -6505,6 +6724,7 @@
     },
     {
       "key": "leader_trait_trade_focus_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -6537,6 +6757,7 @@
     },
     {
       "key": "leader_trait_frontier_spirit",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -6560,6 +6781,7 @@
     },
     {
       "key": "leader_trait_frontier_spirit_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -6585,6 +6807,7 @@
     },
     {
       "key": "leader_trait_cultural_focus",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -6612,6 +6835,7 @@
     },
     {
       "key": "leader_trait_cultural_focus_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -6641,6 +6865,7 @@
     },
     {
       "key": "leader_trait_cultural_focus_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -6670,6 +6895,7 @@
     },
     {
       "key": "trait_ruler_investor",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -6696,6 +6922,7 @@
     },
     {
       "key": "trait_ruler_investor_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -6724,6 +6951,7 @@
     },
     {
       "key": "trait_ruler_investor_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -6752,6 +6980,7 @@
     },
     {
       "key": "trait_ruler_architectural_sense",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -6781,6 +7010,7 @@
     },
     {
       "key": "trait_ruler_architectural_sense_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -6814,6 +7044,7 @@
     },
     {
       "key": "trait_ruler_architectural_sense_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -6847,6 +7078,7 @@
     },
     {
       "key": "trait_ruler_deep_connections",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -6874,6 +7106,7 @@
     },
     {
       "key": "trait_ruler_deep_connections_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -6903,6 +7136,7 @@
     },
     {
       "key": "trait_ruler_deep_connections_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -6932,6 +7166,7 @@
     },
     {
       "key": "leader_trait_reformer",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -6961,6 +7196,7 @@
     },
     {
       "key": "leader_trait_reformer_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -6992,6 +7228,7 @@
     },
     {
       "key": "leader_trait_reformer_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -7023,6 +7260,7 @@
     },
     {
       "key": "leader_trait_courtroom_training",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -7053,6 +7291,7 @@
     },
     {
       "key": "leader_trait_courtroom_training_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -7085,6 +7324,7 @@
     },
     {
       "key": "leader_trait_courtroom_training_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -7117,6 +7357,7 @@
     },
     {
       "key": "leader_trait_mining_focus",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -7141,6 +7382,7 @@
     },
     {
       "key": "leader_trait_mining_focus_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -7167,6 +7409,7 @@
     },
     {
       "key": "leader_trait_mining_focus_3",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -7193,6 +7436,7 @@
     },
     {
       "key": "leader_trait_generator_focus",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -7221,6 +7465,7 @@
     },
     {
       "key": "leader_trait_generator_focus_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -7251,6 +7496,7 @@
     },
     {
       "key": "leader_trait_generator_focus_3",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -7281,6 +7527,7 @@
     },
     {
       "key": "leader_trait_farming_focus",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -7309,6 +7556,7 @@
     },
     {
       "key": "leader_trait_farming_focus_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -7339,6 +7587,7 @@
     },
     {
       "key": "leader_trait_farming_focus_3",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -7369,6 +7618,7 @@
     },
     {
       "key": "leader_trait_settler",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -7398,6 +7648,7 @@
     },
     {
       "key": "leader_trait_settler_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -7429,6 +7680,7 @@
     },
     {
       "key": "leader_trait_settler_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -7460,6 +7712,7 @@
     },
     {
       "key": "leader_trait_cartographer",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist"
@@ -7484,6 +7737,7 @@
     },
     {
       "key": "leader_trait_cartographer_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist"
@@ -7510,6 +7764,7 @@
     },
     {
       "key": "leader_trait_cartographer_3",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist"
@@ -7536,6 +7791,7 @@
     },
     {
       "key": "leader_trait_naturalist",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist"
@@ -7564,6 +7820,7 @@
     },
     {
       "key": "leader_trait_naturalist_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist"
@@ -7594,6 +7851,7 @@
     },
     {
       "key": "leader_trait_naturalist_3",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist"
@@ -7624,6 +7882,7 @@
     },
     {
       "key": "leader_trait_forge_focus",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -7652,6 +7911,7 @@
     },
     {
       "key": "leader_trait_forge_focus_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -7682,6 +7942,7 @@
     },
     {
       "key": "leader_trait_forge_focus_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -7712,6 +7973,7 @@
     },
     {
       "key": "leader_trait_industrial_focus",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -7740,6 +8002,7 @@
     },
     {
       "key": "leader_trait_industrial_focus_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -7770,6 +8033,7 @@
     },
     {
       "key": "leader_trait_industrial_focus_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -7800,6 +8064,7 @@
     },
     {
       "key": "leader_trait_refinement_focus",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -7832,6 +8097,7 @@
     },
     {
       "key": "leader_trait_refinement_focus_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -7866,6 +8132,7 @@
     },
     {
       "key": "leader_trait_refinement_focus_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -7900,6 +8167,7 @@
     },
     {
       "key": "leader_trait_urbanist",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -7929,6 +8197,7 @@
     },
     {
       "key": "leader_trait_assembler",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist"
@@ -7953,6 +8222,7 @@
     },
     {
       "key": "leader_trait_assembler_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist"
@@ -7979,6 +8249,7 @@
     },
     {
       "key": "leader_trait_assembler_3",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist"
@@ -8005,6 +8276,7 @@
     },
     {
       "key": "leader_trait_pop_focused",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -8032,6 +8304,7 @@
     },
     {
       "key": "leader_trait_pop_focused_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -8063,6 +8336,7 @@
     },
     {
       "key": "leader_trait_pop_focused_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -8094,6 +8368,7 @@
     },
     {
       "key": "leader_trait_distribution_lines",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -8121,6 +8396,7 @@
     },
     {
       "key": "leader_trait_distribution_lines_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -8150,6 +8426,7 @@
     },
     {
       "key": "leader_trait_distribution_lines_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -8179,6 +8456,7 @@
     },
     {
       "key": "leader_trait_efficient",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -8208,6 +8486,7 @@
     },
     {
       "key": "leader_trait_arbiter",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -8231,6 +8510,7 @@
     },
     {
       "key": "leader_trait_utopian_idealist",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -8254,6 +8534,7 @@
     },
     {
       "key": "leader_trait_mediator",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "official",
@@ -8280,6 +8561,7 @@
     },
     {
       "key": "leader_trait_shroud_preacher",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist",
@@ -8310,6 +8592,7 @@
     },
     {
       "key": "leader_trait_master_diplomat",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -8344,6 +8627,7 @@
     },
     {
       "key": "leader_trait_supreme_organizer",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -8375,6 +8659,7 @@
     },
     {
       "key": "leader_trait_galvanizer",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -8408,6 +8693,7 @@
     },
     {
       "key": "leader_trait_corrupt",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "official",
@@ -8437,6 +8723,7 @@
     },
     {
       "key": "leader_trait_corrupt_2",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "official",
@@ -8468,6 +8755,7 @@
     },
     {
       "key": "leader_trait_polluter",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "official",
@@ -8492,6 +8780,7 @@
     },
     {
       "key": "leader_trait_polluter_2",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "official",
@@ -8518,6 +8807,7 @@
     },
     {
       "key": "leader_trait_sadistic",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "official",
@@ -8549,6 +8839,7 @@
     },
     {
       "key": "leader_trait_sadistic_2",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "official",
@@ -8582,6 +8873,7 @@
     },
     {
       "key": "leader_trait_profligate",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "official",
@@ -8606,6 +8898,7 @@
     },
     {
       "key": "leader_trait_profligate_2",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "official",
@@ -8632,6 +8925,7 @@
     },
     {
       "key": "leader_trait_procrastinator",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "official",
@@ -8663,6 +8957,7 @@
     },
     {
       "key": "leader_trait_procrastinator_2",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "official",
@@ -8695,6 +8990,7 @@
     },
     {
       "key": "leader_trait_insider_trading",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "official",
@@ -8725,6 +9021,7 @@
     },
     {
       "key": "leader_trait_insider_trading_2",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "official",
@@ -8757,6 +9054,7 @@
     },
     {
       "key": "leader_trait_irenic",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -8787,6 +9085,7 @@
     },
     {
       "key": "leader_trait_irenic_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -8819,6 +9118,7 @@
     },
     {
       "key": "leader_trait_shroud_prophet",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -8851,6 +9151,7 @@
     },
     {
       "key": "leader_trait_foredoomed_to_a_rendezvous",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -8877,6 +9178,7 @@
     },
     {
       "key": "trait_ruler_space_miner",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -8905,6 +9207,7 @@
     },
     {
       "key": "trait_ruler_home_in_the_sky",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -8933,6 +9236,7 @@
     },
     {
       "key": "leader_trait_carefree",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -8964,6 +9268,7 @@
     },
     {
       "key": "leader_trait_carefree_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -8997,6 +9302,7 @@
     },
     {
       "key": "leader_trait_roamer",
+      "canStart": false,
       "leaderClasses": [
         "scientist",
         "commander"
@@ -9118,6 +9424,7 @@
     },
     {
       "key": "leader_trait_roamer_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist",
         "commander"
@@ -9241,6 +9548,7 @@
     },
     {
       "key": "leader_trait_archaeologist",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -9267,6 +9575,7 @@
     },
     {
       "key": "leader_trait_archaeologist_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -9295,6 +9604,7 @@
     },
     {
       "key": "leader_trait_meticulous",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -9324,6 +9634,7 @@
     },
     {
       "key": "leader_trait_meticulous_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -9355,6 +9666,7 @@
     },
     {
       "key": "leader_trait_custom_AI_assistant",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -9385,6 +9697,7 @@
     },
     {
       "key": "leader_trait_sapient_AI_assistant",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -9415,6 +9728,7 @@
     },
     {
       "key": "leader_trait_slippery",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -9446,6 +9760,7 @@
     },
     {
       "key": "leader_trait_slippery_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -9479,6 +9794,7 @@
     },
     {
       "key": "leader_trait_prospector",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -9506,6 +9822,7 @@
     },
     {
       "key": "leader_trait_prospector_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -9535,6 +9852,7 @@
     },
     {
       "key": "leader_trait_prospector_3",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -9564,6 +9882,7 @@
     },
     {
       "key": "leader_trait_observant",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist"
@@ -9596,6 +9915,7 @@
     },
     {
       "key": "leader_trait_observant_2",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist"
@@ -9630,6 +9950,7 @@
     },
     {
       "key": "leader_trait_academic_dig_site_expert",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -9657,6 +9978,7 @@
     },
     {
       "key": "leader_trait_academic_dig_site_expert_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -9686,6 +10008,7 @@
     },
     {
       "key": "leader_trait_academic_dig_site_expert_3",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -9715,6 +10038,7 @@
     },
     {
       "key": "leader_trait_academic_minor_artifacts_expert",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -9739,6 +10063,7 @@
     },
     {
       "key": "leader_trait_academic_minor_artifacts_expert_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -9765,6 +10090,7 @@
     },
     {
       "key": "leader_trait_academic_minor_artifacts_expert_3",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -9791,6 +10117,7 @@
     },
     {
       "key": "leader_trait_tuner",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -9818,6 +10145,7 @@
     },
     {
       "key": "leader_trait_tuner_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -9847,6 +10175,7 @@
     },
     {
       "key": "leader_trait_explorer_cloaking_focus",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -9874,6 +10203,7 @@
     },
     {
       "key": "leader_trait_explorer_cloaking_focus_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -9903,6 +10233,7 @@
     },
     {
       "key": "leader_trait_explorer_cloaking_focus_3",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -9933,6 +10264,7 @@
     },
     {
       "key": "leader_trait_collaborator",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -9967,6 +10299,7 @@
     },
     {
       "key": "leader_trait_collaborator_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -10003,6 +10336,7 @@
     },
     {
       "key": "leader_trait_collaborator_3",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -10039,6 +10373,7 @@
     },
     {
       "key": "leader_trait_manufacturer",
+      "canStart": false,
       "leaderClasses": [
         "scientist",
         "official"
@@ -10067,6 +10402,7 @@
     },
     {
       "key": "leader_trait_manufacturer_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist",
         "official"
@@ -10097,6 +10433,7 @@
     },
     {
       "key": "leader_trait_manufacturer_3",
+      "canStart": false,
       "leaderClasses": [
         "scientist",
         "official"
@@ -10127,6 +10464,7 @@
     },
     {
       "key": "leader_trait_salvager",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -10155,6 +10493,7 @@
     },
     {
       "key": "leader_trait_salvager_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -10185,6 +10524,7 @@
     },
     {
       "key": "leader_trait_salvager_3",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -10215,6 +10555,7 @@
     },
     {
       "key": "leader_trait_space_miner",
+      "canStart": false,
       "leaderClasses": [
         "scientist",
         "official",
@@ -10240,6 +10581,7 @@
     },
     {
       "key": "leader_trait_space_miner_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist",
         "official",
@@ -10267,6 +10609,7 @@
     },
     {
       "key": "leader_trait_space_miner_3",
+      "canStart": false,
       "leaderClasses": [
         "scientist",
         "official",
@@ -10294,6 +10637,7 @@
     },
     {
       "key": "leader_trait_inquisitive",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -10326,6 +10670,7 @@
     },
     {
       "key": "leader_trait_inquisitive_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -10360,6 +10705,7 @@
     },
     {
       "key": "leader_trait_inquisitive_3",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -10394,6 +10740,7 @@
     },
     {
       "key": "leader_trait_maniacal",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -10424,6 +10771,7 @@
     },
     {
       "key": "leader_trait_maniacal_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -10456,6 +10804,7 @@
     },
     {
       "key": "leader_trait_maniacal_3",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist"
@@ -10489,6 +10838,7 @@
     },
     {
       "key": "trait_ruler_expansionist",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -10512,6 +10862,7 @@
     },
     {
       "key": "trait_ruler_expansionist_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -10537,6 +10888,7 @@
     },
     {
       "key": "trait_ruler_expansionist_3",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -10562,6 +10914,7 @@
     },
     {
       "key": "leader_trait_science_communicator",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -10591,6 +10944,7 @@
     },
     {
       "key": "leader_trait_science_communicator_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -10622,6 +10976,7 @@
     },
     {
       "key": "leader_trait_science_communicator_3",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -10653,6 +11008,7 @@
     },
     {
       "key": "leader_trait_engineering_focus",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -10680,6 +11036,7 @@
     },
     {
       "key": "leader_trait_engineering_focus_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -10709,6 +11066,7 @@
     },
     {
       "key": "leader_trait_engineering_focus_3",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -10738,6 +11096,7 @@
     },
     {
       "key": "leader_trait_physics_focus",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -10765,6 +11124,7 @@
     },
     {
       "key": "leader_trait_physics_focus_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -10794,6 +11154,7 @@
     },
     {
       "key": "leader_trait_physics_focus_3",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -10823,6 +11184,7 @@
     },
     {
       "key": "leader_trait_society_focus",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -10850,6 +11212,7 @@
     },
     {
       "key": "leader_trait_society_focus_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -10879,6 +11242,7 @@
     },
     {
       "key": "leader_trait_society_focus_3",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -10908,6 +11272,7 @@
     },
     {
       "key": "leader_trait_expertise_materials",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -10937,6 +11302,7 @@
     },
     {
       "key": "leader_trait_expertise_materials_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -10968,6 +11334,7 @@
     },
     {
       "key": "leader_trait_expertise_materials_3",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -10999,6 +11366,7 @@
     },
     {
       "key": "leader_trait_expertise_propulsion",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11028,6 +11396,7 @@
     },
     {
       "key": "leader_trait_expertise_propulsion_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11059,6 +11428,7 @@
     },
     {
       "key": "leader_trait_expertise_propulsion_3",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11090,6 +11460,7 @@
     },
     {
       "key": "leader_trait_expertise_voidcraft",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11119,6 +11490,7 @@
     },
     {
       "key": "leader_trait_expertise_voidcraft_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11150,6 +11522,7 @@
     },
     {
       "key": "leader_trait_expertise_voidcraft_3",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11181,6 +11554,7 @@
     },
     {
       "key": "leader_trait_expertise_industry",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11210,6 +11584,7 @@
     },
     {
       "key": "leader_trait_expertise_industry_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11241,6 +11616,7 @@
     },
     {
       "key": "leader_trait_expertise_industry_3",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11272,6 +11648,7 @@
     },
     {
       "key": "leader_trait_expertise_field_manipulation",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11301,6 +11678,7 @@
     },
     {
       "key": "leader_trait_expertise_field_manipulation_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11332,6 +11710,7 @@
     },
     {
       "key": "leader_trait_expertise_field_manipulation_3",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11363,6 +11742,7 @@
     },
     {
       "key": "leader_trait_expertise_particles",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11392,6 +11772,7 @@
     },
     {
       "key": "leader_trait_expertise_particles_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11423,6 +11804,7 @@
     },
     {
       "key": "leader_trait_expertise_particles_3",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11454,6 +11836,7 @@
     },
     {
       "key": "leader_trait_expertise_computing",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11483,6 +11866,7 @@
     },
     {
       "key": "leader_trait_expertise_computing_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11514,6 +11898,7 @@
     },
     {
       "key": "leader_trait_expertise_computing_3",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11545,6 +11930,7 @@
     },
     {
       "key": "leader_trait_expertise_psionics",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11574,6 +11960,7 @@
     },
     {
       "key": "leader_trait_expertise_psionics_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11605,6 +11992,7 @@
     },
     {
       "key": "leader_trait_expertise_psionics_3",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11636,6 +12024,7 @@
     },
     {
       "key": "leader_trait_expertise_new_worlds",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11665,6 +12054,7 @@
     },
     {
       "key": "leader_trait_expertise_new_worlds_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11696,6 +12086,7 @@
     },
     {
       "key": "leader_trait_expertise_new_worlds_3",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11727,6 +12118,7 @@
     },
     {
       "key": "leader_trait_expertise_statecraft",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11756,6 +12148,7 @@
     },
     {
       "key": "leader_trait_expertise_statecraft_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11787,6 +12180,7 @@
     },
     {
       "key": "leader_trait_expertise_statecraft_3",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11818,6 +12212,7 @@
     },
     {
       "key": "leader_trait_expertise_biology",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11847,6 +12242,7 @@
     },
     {
       "key": "leader_trait_expertise_biology_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11878,6 +12274,7 @@
     },
     {
       "key": "leader_trait_expertise_biology_3",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11909,6 +12306,7 @@
     },
     {
       "key": "leader_trait_expertise_military_theory",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11938,6 +12336,7 @@
     },
     {
       "key": "leader_trait_expertise_military_theory_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -11969,6 +12368,7 @@
     },
     {
       "key": "leader_trait_expertise_military_theory_3",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -12000,6 +12400,7 @@
     },
     {
       "key": "leader_trait_expertise_archaeostudies",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -12031,6 +12432,7 @@
     },
     {
       "key": "leader_trait_expertise_archaeostudies_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -12064,6 +12466,7 @@
     },
     {
       "key": "leader_trait_expertise_archaeostudies_3",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -12097,6 +12500,7 @@
     },
     {
       "key": "leader_trait_surveyor",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist"
@@ -12129,6 +12533,7 @@
     },
     {
       "key": "leader_trait_midas_touch",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -12157,6 +12562,7 @@
     },
     {
       "key": "leader_trait_collective_wisdom",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -12184,6 +12590,7 @@
     },
     {
       "key": "leader_trait_knowledge_for_the_masses",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -12211,6 +12618,7 @@
     },
     {
       "key": "leader_trait_robotist",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist",
@@ -12246,6 +12654,7 @@
     },
     {
       "key": "leader_trait_great_researcher",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -12273,6 +12682,7 @@
     },
     {
       "key": "leader_trait_xeno_cataloger",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -12304,6 +12714,7 @@
     },
     {
       "key": "leader_trait_frontier_adventurer",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -12335,6 +12746,7 @@
     },
     {
       "key": "leader_trait_brilliant_shipwright",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -12366,6 +12778,7 @@
     },
     {
       "key": "leader_trait_truth_seeker",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -12397,6 +12810,7 @@
     },
     {
       "key": "leader_trait_paranoid",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -12429,6 +12843,7 @@
     },
     {
       "key": "leader_trait_paranoid_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -12463,6 +12878,7 @@
     },
     {
       "key": "leader_trait_narrow_minded",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -12493,6 +12909,7 @@
     },
     {
       "key": "leader_trait_narrow_minded_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -12527,6 +12944,7 @@
     },
     {
       "key": "leader_trait_neurotic",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -12560,6 +12978,7 @@
     },
     {
       "key": "leader_trait_neurotic_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -12595,6 +13014,7 @@
     },
     {
       "key": "leader_trait_opinionated",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -12629,6 +13049,7 @@
     },
     {
       "key": "leader_trait_opinionated_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -12665,6 +13086,7 @@
     },
     {
       "key": "leader_trait_destructive",
+      "canStart": false,
       "leaderClasses": [
         "scientist",
         "official",
@@ -12689,6 +13111,7 @@
     },
     {
       "key": "leader_trait_destructive_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist",
         "official",
@@ -12715,6 +13138,7 @@
     },
     {
       "key": "leader_trait_towel",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -12741,6 +13165,7 @@
     },
     {
       "key": "leader_trait_percussive_maintainer",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -12771,6 +13196,7 @@
     },
     {
       "key": "leader_trait_guided",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -12801,6 +13227,7 @@
     },
     {
       "key": "leader_trait_shroud_age",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -12829,6 +13256,7 @@
     },
     {
       "key": "leader_trait_erudite",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -12857,6 +13285,7 @@
     },
     {
       "key": "leader_trait_cyborg",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -12920,6 +13349,7 @@
     },
     {
       "key": "leader_trait_synthetic",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -13012,6 +13442,7 @@
     },
     {
       "key": "leader_trait_psionic",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -13140,6 +13571,7 @@
     },
     {
       "key": "leader_trait_chosen",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -13268,6 +13700,7 @@
     },
     {
       "key": "leader_trait_composer_chosen",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -13322,6 +13755,7 @@
     },
     {
       "key": "leader_trait_instrument_chosen",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -13376,6 +13810,7 @@
     },
     {
       "key": "leader_trait_eater_chosen",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -13460,6 +13895,7 @@
     },
     {
       "key": "leader_trait_cradle_chosen",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -13513,6 +13949,7 @@
     },
     {
       "key": "leader_trait_whisperers_chosen",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -13597,6 +14034,7 @@
     },
     {
       "key": "leader_trait_mercenary_warrior",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -13627,6 +14065,7 @@
     },
     {
       "key": "leader_trait_ruler_hive_mind",
+      "canStart": false,
       "leaderClasses": [
         "scientist",
         "official",
@@ -13652,6 +14091,7 @@
     },
     {
       "key": "leader_trait_ruler_great_khan",
+      "canStart": false,
       "leaderClasses": [
         "scientist",
         "official",
@@ -13684,6 +14124,7 @@
     },
     {
       "key": "leader_trait_ruler_machine_intelligence",
+      "canStart": false,
       "leaderClasses": [
         "scientist",
         "official",
@@ -13709,6 +14150,7 @@
     },
     {
       "key": "leader_trait_ancient_knowledge",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "official",
@@ -13747,6 +14189,7 @@
     },
     {
       "key": "leader_trait_hacked",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -13779,6 +14222,7 @@
     },
     {
       "key": "leader_trait_firewalled",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -13809,6 +14253,7 @@
     },
     {
       "key": "leader_trait_virtual",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -13888,7 +14333,35 @@
       "descriptionKey": "leader_trait_virtual_desc"
     },
     {
+      "key": "leader_trait_principled",
+      "canStart": true,
+      "leaderClasses": [
+        "official"
+      ],
+      "rarity": "common",
+      "tier": 1,
+      "replaces": [],
+      "opposites": [],
+      "effects": {
+        "modifiers": {
+          "planet_stability_add": 2
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_stability_add": 2
+        }
+      },
+      "icon": "icons/traits/leader_trait_principled.png",
+      "nameKey": "leader_trait_principled",
+      "descriptionKey": "leader_trait_principled_desc"
+    },
+    {
       "key": "leader_trait_principled_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -13916,7 +14389,38 @@
       "descriptionKey": "leader_trait_principled_2_desc"
     },
     {
+      "key": "leader_trait_fleet_organizer",
+      "canStart": true,
+      "leaderClasses": [
+        "commander"
+      ],
+      "rarity": "common",
+      "tier": 1,
+      "replaces": [],
+      "opposites": [
+        "leader_trait_nervous",
+        "leader_trait_nervous_2"
+      ],
+      "effects": {
+        "modifiers": {
+          "country_naval_cap_mult": 0.05
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "country_naval_cap_mult": 0.05
+        }
+      },
+      "icon": "icons/traits/leader_trait_fleet_organizer.png",
+      "nameKey": "leader_trait_fleet_organizer",
+      "descriptionKey": "leader_trait_fleet_organizer_desc"
+    },
+    {
       "key": "leader_trait_fleet_organizer_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -13947,7 +14451,37 @@
       "descriptionKey": "leader_trait_fleet_organizer_2_desc"
     },
     {
+      "key": "leader_trait_spycraft",
+      "canStart": true,
+      "leaderClasses": [
+        "official"
+      ],
+      "rarity": "common",
+      "tier": 1,
+      "replaces": [],
+      "opposites": [],
+      "effects": {
+        "modifiers": {
+          "spy_network_daily_value_mult": 0.15,
+          "operations_cost_mult": -0.05
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "spy_network_daily_value_mult": 0.15,
+          "operations_cost_mult": -0.05
+        }
+      },
+      "icon": "icons/traits/leader_trait_spycraft.png",
+      "nameKey": "leader_trait_spycraft",
+      "descriptionKey": "leader_trait_spycraft_desc"
+    },
+    {
       "key": "leader_trait_spycraft_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -13977,7 +14511,38 @@
       "descriptionKey": "leader_trait_spycraft_2_desc"
     },
     {
+      "key": "leader_trait_spark_of_genius",
+      "canStart": true,
+      "leaderClasses": [
+        "scientist"
+      ],
+      "rarity": "common",
+      "tier": 1,
+      "replaces": [],
+      "opposites": [
+        "leader_trait_paranoid",
+        "leader_trait_paranoid_2"
+      ],
+      "effects": {
+        "modifiers": {
+          "all_technology_research_speed": 0.03
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "all_technology_research_speed": 0.03
+        }
+      },
+      "icon": "icons/traits/leader_trait_spark_of_genius.png",
+      "nameKey": "leader_trait_spark_of_genius",
+      "descriptionKey": "leader_trait_spark_of_genius_desc"
+    },
+    {
       "key": "leader_trait_spark_of_genius_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -14008,7 +14573,32 @@
       "descriptionKey": "leader_trait_spark_of_genius_2_desc"
     },
     {
+      "key": "trait_ruler_industrialist",
+      "canStart": true,
+      "leaderClasses": [
+        "official",
+        "scientist"
+      ],
+      "rarity": "common",
+      "tier": 1,
+      "replaces": [],
+      "opposites": [],
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "icon": "icons/traits/trait_ruler_industrialist.png",
+      "nameKey": "trait_ruler_industrialist",
+      "descriptionKey": "trait_ruler_industrialist_desc"
+    },
+    {
       "key": "trait_ruler_industrialist_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "scientist"
@@ -14033,7 +14623,37 @@
       "descriptionKey": "trait_ruler_industrialist_2_desc"
     },
     {
+      "key": "trait_ruler_warlike",
+      "canStart": true,
+      "leaderClasses": [
+        "commander"
+      ],
+      "rarity": "common",
+      "tier": 1,
+      "replaces": [],
+      "opposites": [],
+      "effects": {
+        "modifiers": {
+          "ship_weapon_damage": 0.05,
+          "army_damage_mult": 0.05
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "ship_weapon_damage": 0.05,
+          "army_damage_mult": 0.05
+        }
+      },
+      "icon": "icons/traits/trait_ruler_warlike.png",
+      "nameKey": "trait_ruler_warlike",
+      "descriptionKey": "trait_ruler_warlike_desc"
+    },
+    {
       "key": "trait_ruler_warlike_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -14063,7 +14683,39 @@
       "descriptionKey": "trait_ruler_warlike_2_desc"
     },
     {
+      "key": "trait_ruler_charismatic",
+      "canStart": true,
+      "leaderClasses": [
+        "scientist",
+        "official",
+        "commander"
+      ],
+      "rarity": "common",
+      "tier": 1,
+      "replaces": [],
+      "opposites": [],
+      "effects": {
+        "modifiers": {
+          "edicts_upkeep_mult": -0.075,
+          "country_edict_fund_add": 15
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "edicts_upkeep_mult": -0.075,
+          "country_edict_fund_add": 15
+        }
+      },
+      "icon": "icons/traits/trait_ruler_charismatic.png",
+      "nameKey": "trait_ruler_charismatic",
+      "descriptionKey": "trait_ruler_charismatic_desc"
+    },
+    {
       "key": "trait_ruler_charismatic_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist",
         "official",
@@ -14095,7 +14747,42 @@
       "descriptionKey": "trait_ruler_charismatic_2_desc"
     },
     {
+      "key": "trait_ruler_feedback_loop",
+      "canStart": true,
+      "leaderClasses": [
+        "scientist",
+        "official",
+        "commander"
+      ],
+      "rarity": "common",
+      "tier": 1,
+      "replaces": [],
+      "opposites": [
+        "leader_trait_tyrannical",
+        "leader_trait_tyrannical_2"
+      ],
+      "effects": {
+        "modifiers": {
+          "planet_stability_add": 1,
+          "planet_amenities_no_happiness_add": 100
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_stability_add": 1,
+          "planet_amenities_no_happiness_add": 100
+        }
+      },
+      "icon": "icons/traits/trait_ruler_feedback_loop.png",
+      "nameKey": "trait_ruler_feedback_loop",
+      "descriptionKey": "trait_ruler_feedback_loop_desc"
+    },
+    {
       "key": "trait_ruler_feedback_loop_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist",
         "official",
@@ -14130,7 +14817,37 @@
       "descriptionKey": "trait_ruler_feedback_loop_2_desc"
     },
     {
+      "key": "trait_ruler_logistic_understanding",
+      "canStart": true,
+      "leaderClasses": [
+        "commander",
+        "scientist",
+        "official"
+      ],
+      "rarity": "common",
+      "tier": 1,
+      "replaces": [],
+      "opposites": [],
+      "effects": {
+        "modifiers": {
+          "armies_upkeep_mult": -0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "armies_upkeep_mult": -0.1
+        }
+      },
+      "icon": "icons/traits/trait_ruler_logistic_understanding.png",
+      "nameKey": "trait_ruler_logistic_understanding",
+      "descriptionKey": "trait_ruler_logistic_understanding_desc"
+    },
+    {
       "key": "trait_ruler_logistic_understanding_2",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -14160,7 +14877,37 @@
       "descriptionKey": "trait_ruler_logistic_understanding_2_desc"
     },
     {
+      "key": "trait_ruler_eye_for_talent",
+      "canStart": true,
+      "leaderClasses": [
+        "scientist",
+        "official",
+        "commander"
+      ],
+      "rarity": "common",
+      "tier": 1,
+      "replaces": [],
+      "opposites": [],
+      "effects": {
+        "modifiers": {
+          "species_leader_exp_gain": 0.05
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "species_leader_exp_gain": 0.05
+        }
+      },
+      "icon": "icons/traits/trait_ruler_eye_for_talent.png",
+      "nameKey": "trait_ruler_eye_for_talent",
+      "descriptionKey": "trait_ruler_eye_for_talent_desc"
+    },
+    {
       "key": "trait_ruler_eye_for_talent_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist",
         "official",
@@ -14191,6 +14938,7 @@
     },
     {
       "key": "leader_trait_brainslug",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "official",
@@ -14248,6 +14996,7 @@
     },
     {
       "key": "leader_trait_admiral_hells_heart",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -14284,6 +15033,7 @@
     },
     {
       "key": "leader_trait_admiral_warform",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -14317,6 +15067,7 @@
     },
     {
       "key": "leader_trait_admiral_warform_node",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -14350,6 +15101,7 @@
     },
     {
       "key": "leader_trait_governor_gray",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -14380,6 +15132,7 @@
     },
     {
       "key": "leader_trait_govenor_caretaker",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -14407,6 +15160,7 @@
     },
     {
       "key": "leader_trait_govenor_caretaker_node",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -14436,6 +15190,7 @@
     },
     {
       "key": "leader_trait_caravan_counter",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -14462,6 +15217,7 @@
     },
     {
       "key": "leader_trait_waste_management_specialist",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -14488,6 +15244,7 @@
     },
     {
       "key": "leader_trait_nuumismatic_priest",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -14516,6 +15273,7 @@
     },
     {
       "key": "leader_trait_traumatized",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -14556,6 +15314,7 @@
     },
     {
       "key": "leader_trait_traumatized_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -14598,6 +15357,7 @@
     },
     {
       "key": "leader_trait_maimed",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -14626,6 +15386,7 @@
     },
     {
       "key": "leader_trait_inspired_archaeologist",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -14654,6 +15415,7 @@
     },
     {
       "key": "leader_trait_inspired_researcher",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -14682,6 +15444,7 @@
     },
     {
       "key": "leader_trait_inspired_surveyor",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -14710,6 +15473,7 @@
     },
     {
       "key": "leader_trait_governor_oracle",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -14738,6 +15502,7 @@
     },
     {
       "key": "leader_trait_bulwark_watcher",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -14768,6 +15533,7 @@
     },
     {
       "key": "leader_trait_bulwark_retaliator",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -14794,6 +15560,7 @@
     },
     {
       "key": "leader_trait_bulwark_sentinel",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -14820,6 +15587,7 @@
     },
     {
       "key": "leader_trait_scholarium_investigator",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -14850,6 +15618,7 @@
     },
     {
       "key": "leader_trait_scholarium_explorer",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -14876,6 +15645,7 @@
     },
     {
       "key": "leader_trait_scholarium_observer",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -14904,6 +15674,7 @@
     },
     {
       "key": "leader_trait_prospectorium_extractor",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -14934,6 +15705,7 @@
     },
     {
       "key": "leader_trait_prospectorium_optimizer",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -14960,6 +15732,7 @@
     },
     {
       "key": "leader_trait_prospectorium_refiner",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -14990,6 +15763,7 @@
     },
     {
       "key": "leader_trait_admiral_mind_wipe_01",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -15020,6 +15794,7 @@
     },
     {
       "key": "leader_trait_admiral_mind_wipe_02",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -15050,6 +15825,7 @@
     },
     {
       "key": "leader_trait_general_mind_wipe_01",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -15080,6 +15856,7 @@
     },
     {
       "key": "leader_trait_general_mind_wipe_02",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -15110,6 +15887,7 @@
     },
     {
       "key": "leader_trait_scientist_mind_wipe_01",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -15138,6 +15916,7 @@
     },
     {
       "key": "leader_trait_scientist_mind_wipe_02",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -15166,6 +15945,7 @@
     },
     {
       "key": "leader_trait_ruler_mind_wipe_01",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "official",
@@ -15196,6 +15976,7 @@
     },
     {
       "key": "leader_trait_ruler_mind_wipe_02",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "official",
@@ -15228,6 +16009,7 @@
     },
     {
       "key": "gestalt_trait_commander_mind_wipe_01",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -15258,6 +16040,7 @@
     },
     {
       "key": "gestalt_trait_commander_mind_wipe_02",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -15288,6 +16071,7 @@
     },
     {
       "key": "gestalt_trait_general_mind_wipe_01",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -15318,6 +16102,7 @@
     },
     {
       "key": "gestalt_trait_general_mind_wipe_02",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -15348,6 +16133,7 @@
     },
     {
       "key": "gestalt_trait_scientist_mind_wipe_02",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -15378,6 +16164,7 @@
     },
     {
       "key": "gestalt_trait_ruler_mind_wipe_01",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "official",
@@ -15408,6 +16195,7 @@
     },
     {
       "key": "gestalt_trait_ruler_mind_wipe_02",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "official",
@@ -15440,6 +16228,7 @@
     },
     {
       "key": "leader_trait_ambassador_ear_to_the_ground",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -15467,6 +16256,7 @@
     },
     {
       "key": "leader_trait_ambassador_ear_to_the_ground_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -15496,6 +16286,7 @@
     },
     {
       "key": "leader_trait_ambassador_ear_to_the_ground_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -15525,6 +16316,7 @@
     },
     {
       "key": "leader_trait_ambassador_whisper_networks",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -15552,6 +16344,7 @@
     },
     {
       "key": "leader_trait_ambassador_whisper_networks_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -15581,6 +16374,7 @@
     },
     {
       "key": "leader_trait_ambassador_whisper_networks_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -15610,6 +16404,7 @@
     },
     {
       "key": "leader_trait_ambassador_bully",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -15639,6 +16434,7 @@
     },
     {
       "key": "leader_trait_ambassador_bully_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -15670,6 +16466,7 @@
     },
     {
       "key": "leader_trait_ambassador_bully_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -15701,6 +16498,7 @@
     },
     {
       "key": "leader_trait_ambassador_favor_maker",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -15725,6 +16523,7 @@
     },
     {
       "key": "leader_trait_ambassador_favor_maker_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -15751,6 +16550,7 @@
     },
     {
       "key": "leader_trait_ambassador_favor_maker_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -15777,6 +16577,7 @@
     },
     {
       "key": "leader_trait_ambassador_pact_keeper",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -15804,6 +16605,7 @@
     },
     {
       "key": "leader_trait_ambassador_pact_keeper_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -15833,6 +16635,7 @@
     },
     {
       "key": "leader_trait_ambassador_pact_keeper_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -15862,6 +16665,7 @@
     },
     {
       "key": "leader_trait_ambassador_commercial_pact_focus",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -15889,6 +16693,7 @@
     },
     {
       "key": "leader_trait_ambassador_commercial_pact_focus_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -15918,6 +16723,7 @@
     },
     {
       "key": "leader_trait_ambassador_commercial_pact_focus_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -15947,6 +16753,7 @@
     },
     {
       "key": "leader_trait_ambassador_research_pact_focus",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -15974,6 +16781,7 @@
     },
     {
       "key": "leader_trait_ambassador_research_pact_focus_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16003,6 +16811,7 @@
     },
     {
       "key": "leader_trait_ambassador_research_pact_focus_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16032,6 +16841,7 @@
     },
     {
       "key": "leader_trait_ambassador_extra_envoys",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16063,6 +16873,7 @@
     },
     {
       "key": "leader_trait_ambassador_extra_envoys_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16096,6 +16907,7 @@
     },
     {
       "key": "leader_trait_ambassador_extra_envoys_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16129,6 +16941,7 @@
     },
     {
       "key": "leader_trait_resolution_category_commerce_focus",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16157,6 +16970,7 @@
     },
     {
       "key": "leader_trait_resolution_category_commerce_focus_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16187,6 +17001,7 @@
     },
     {
       "key": "leader_trait_resolution_category_commerce_focus_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16217,6 +17032,7 @@
     },
     {
       "key": "leader_trait_resolution_category_industry_focus",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16245,6 +17061,7 @@
     },
     {
       "key": "leader_trait_resolution_category_industry_focus_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16275,6 +17092,7 @@
     },
     {
       "key": "leader_trait_resolution_category_industry_focus_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16305,6 +17123,7 @@
     },
     {
       "key": "leader_trait_resolution_category_politics_traditions_focus",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16334,6 +17153,7 @@
     },
     {
       "key": "leader_trait_resolution_category_politics_traditions_focus_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16365,6 +17185,7 @@
     },
     {
       "key": "leader_trait_resolution_category_politics_traditions_focus_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16396,6 +17217,7 @@
     },
     {
       "key": "leader_trait_resolution_category_greatergood_focus",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16424,6 +17246,7 @@
     },
     {
       "key": "leader_trait_resolution_category_greatergood_focus_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16454,6 +17277,7 @@
     },
     {
       "key": "leader_trait_resolution_category_greatergood_focus_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16484,6 +17308,7 @@
     },
     {
       "key": "leader_trait_resolution_category_galacticreforms_focus",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16518,6 +17343,7 @@
     },
     {
       "key": "leader_trait_resolution_category_galacticreforms_focus_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16554,6 +17380,7 @@
     },
     {
       "key": "leader_trait_resolution_category_galacticreforms_focus_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16590,6 +17417,7 @@
     },
     {
       "key": "leader_trait_resolution_category_ecology_focus",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16618,6 +17446,7 @@
     },
     {
       "key": "leader_trait_resolution_category_ecology_focus_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16648,6 +17477,7 @@
     },
     {
       "key": "leader_trait_resolution_category_ecology_focus_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16678,6 +17508,7 @@
     },
     {
       "key": "leader_trait_resolution_category_galacticstudies_focus",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16706,6 +17537,7 @@
     },
     {
       "key": "leader_trait_resolution_category_galacticstudies_focus_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16736,6 +17568,7 @@
     },
     {
       "key": "leader_trait_resolution_category_galacticstudies_focus_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16766,6 +17599,7 @@
     },
     {
       "key": "leader_trait_resolution_category_divinity_focus",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16794,6 +17628,7 @@
     },
     {
       "key": "leader_trait_resolution_category_divinity_focus_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16824,6 +17659,7 @@
     },
     {
       "key": "leader_trait_resolution_category_divinity_focus_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16854,6 +17690,7 @@
     },
     {
       "key": "leader_trait_resolution_category_mutualdefense_focus",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16882,6 +17719,7 @@
     },
     {
       "key": "leader_trait_resolution_category_mutualdefense_focus_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16912,6 +17750,7 @@
     },
     {
       "key": "leader_trait_resolution_category_mutualdefense_focus_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16942,6 +17781,7 @@
     },
     {
       "key": "leader_trait_resolution_category_rulesofwar_focus",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -16970,6 +17810,7 @@
     },
     {
       "key": "leader_trait_resolution_category_rulesofwar_focus_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17000,6 +17841,7 @@
     },
     {
       "key": "leader_trait_resolution_category_rulesofwar_focus_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17030,6 +17872,7 @@
     },
     {
       "key": "leader_trait_resolution_category_defenseprivatization_focus",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17058,6 +17901,7 @@
     },
     {
       "key": "leader_trait_resolution_category_defenseprivatization_focus_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17088,6 +17932,7 @@
     },
     {
       "key": "leader_trait_resolution_category_defenseprivatization_focus_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17118,6 +17963,7 @@
     },
     {
       "key": "leader_trait_resolution_category_intergalacticdirective_focus",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17146,6 +17992,7 @@
     },
     {
       "key": "leader_trait_resolution_category_intergalacticdirective_focus_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17176,6 +18023,7 @@
     },
     {
       "key": "leader_trait_resolution_category_intergalacticdirective_focus_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17206,6 +18054,7 @@
     },
     {
       "key": "leader_trait_resolution_category_bureaucraticsurveillance_focus",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17234,6 +18083,7 @@
     },
     {
       "key": "leader_trait_resolution_category_bureaucraticsurveillance_focus_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17264,6 +18114,7 @@
     },
     {
       "key": "leader_trait_resolution_category_bureaucraticsurveillance_focus_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17294,6 +18145,7 @@
     },
     {
       "key": "leader_trait_resolution_category_pre_ftl_stances_focus",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17322,6 +18174,7 @@
     },
     {
       "key": "leader_trait_resolution_category_pre_ftl_stances_focus_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17352,6 +18205,7 @@
     },
     {
       "key": "leader_trait_resolution_category_pre_ftl_stances_focus_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17382,6 +18236,7 @@
     },
     {
       "key": "leader_trait_resolution_category_sanctions_focus",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17411,6 +18266,7 @@
     },
     {
       "key": "leader_trait_resolution_category_sanctions_focus_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17442,6 +18298,7 @@
     },
     {
       "key": "leader_trait_resolution_category_sanctions_focus_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17473,6 +18330,7 @@
     },
     {
       "key": "leader_trait_federal_negotiator",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17500,6 +18358,7 @@
     },
     {
       "key": "leader_trait_federal_negotiator_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17529,6 +18388,7 @@
     },
     {
       "key": "leader_trait_federal_negotiator_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17558,6 +18418,7 @@
     },
     {
       "key": "leader_trait_federal_greeter",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17585,6 +18446,7 @@
     },
     {
       "key": "leader_trait_federal_greeter_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17614,6 +18476,7 @@
     },
     {
       "key": "leader_trait_federal_greeter_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17643,6 +18506,7 @@
     },
     {
       "key": "leader_trait_federal_sweet_talker",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17670,6 +18534,7 @@
     },
     {
       "key": "leader_trait_federal_sweet_talker_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17699,6 +18564,7 @@
     },
     {
       "key": "leader_trait_federal_sweet_talker_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17728,6 +18594,7 @@
     },
     {
       "key": "leader_trait_federal_joint_navy",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17757,6 +18624,7 @@
     },
     {
       "key": "leader_trait_federal_joint_navy_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17788,6 +18656,7 @@
     },
     {
       "key": "leader_trait_federal_joint_navy_3",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17819,6 +18688,7 @@
     },
     {
       "key": "leader_trait_diplo_weight",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17846,6 +18716,7 @@
     },
     {
       "key": "leader_trait_supporting_voter",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17870,6 +18741,7 @@
     },
     {
       "key": "leader_trait_gorky",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -17902,6 +18774,7 @@
     },
     {
       "key": "leader_trait_legendary_leader",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -17926,6 +18799,7 @@
     },
     {
       "key": "leader_trait_legendary_offspring",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -17956,6 +18830,7 @@
     },
     {
       "key": "leader_trait_governor_psionic_communion",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -17985,6 +18860,7 @@
     },
     {
       "key": "leader_trait_legendary_terraformation_nucleus_3_buds",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -18007,6 +18883,7 @@
     },
     {
       "key": "leader_trait_legendary_terraformation_nucleus_2_buds",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -18029,6 +18906,7 @@
     },
     {
       "key": "leader_trait_legendary_terraformation_nucleus_1_bud",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -18051,6 +18929,7 @@
     },
     {
       "key": "leader_trait_legendary_far_from_home",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -18083,6 +18962,7 @@
     },
     {
       "key": "leader_trait_legendary_ancestors_knowledge",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -18125,7 +19005,43 @@
       "descriptionKey": "leader_trait_legendary_ancestors_knowledge_desc"
     },
     {
+      "key": "leader_trait_legendary_military_knowledge",
+      "canStart": true,
+      "leaderClasses": [
+        "official",
+        "commander",
+        "scientist"
+      ],
+      "sort": "veteran",
+      "rarity": "veteran",
+      "tier": 1,
+      "replaces": [],
+      "opposites": [],
+      "effects": {
+        "modifiers": {
+          "command_limit_add": 10,
+          "country_naval_cap_mult": 0.05,
+          "ship_starting_experience_add": 75
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "leader_trait_legendary_origin_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "command_limit_add": 10,
+          "country_naval_cap_mult": 0.05,
+          "ship_starting_experience_add": 75
+        }
+      },
+      "icon": "icons/traits/leader_trait_legendary_military_knowledge.png",
+      "nameKey": "leader_trait_legendary_military_knowledge",
+      "descriptionKey": "leader_trait_legendary_military_knowledge_desc"
+    },
+    {
       "key": "leader_trait_legendary_military_knowledge_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -18162,6 +19078,7 @@
     },
     {
       "key": "leader_trait_legendary_military_knowledge_3",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -18197,7 +19114,43 @@
       "descriptionKey": "leader_trait_legendary_military_knowledge_3_desc"
     },
     {
+      "key": "leader_trait_legendary_foe_hammer",
+      "canStart": true,
+      "leaderClasses": [
+        "official",
+        "commander",
+        "scientist"
+      ],
+      "sort": "veteran",
+      "rarity": "veteran",
+      "tier": 1,
+      "replaces": [],
+      "opposites": [],
+      "effects": {
+        "modifiers": {
+          "ship_fire_rate_mult": 0.05,
+          "ship_tracking_add": 5,
+          "ship_accuracy_add": 5
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "leader_trait_legendary_origin_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "ship_fire_rate_mult": 0.05,
+          "ship_tracking_add": 5,
+          "ship_accuracy_add": 5
+        }
+      },
+      "icon": "icons/traits/leader_trait_legendary_foe_hammer.png",
+      "nameKey": "leader_trait_legendary_foe_hammer",
+      "descriptionKey": "leader_trait_legendary_foe_hammer_desc"
+    },
+    {
       "key": "leader_trait_legendary_foe_hammer_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -18234,6 +19187,7 @@
     },
     {
       "key": "leader_trait_legendary_foe_hammer_3",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -18269,7 +19223,47 @@
       "descriptionKey": "leader_trait_legendary_foe_hammer_3_desc"
     },
     {
+      "key": "leader_trait_legendary_great_teacher",
+      "canStart": true,
+      "leaderClasses": [
+        "official",
+        "commander",
+        "scientist"
+      ],
+      "sort": "veteran",
+      "rarity": "veteran",
+      "tier": 1,
+      "replaces": [],
+      "opposites": [],
+      "effects": {
+        "modifiers": {
+          "species_leader_exp_gain": 0.1,
+          "leaders_upkeep_mult": -0.1,
+          "country_official_cap_add": 1,
+          "country_commander_cap_add": 1,
+          "country_scientist_cap_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "leader_trait_legendary_origin_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "species_leader_exp_gain": 0.1,
+          "leaders_upkeep_mult": -0.1,
+          "country_official_cap_add": 1,
+          "country_commander_cap_add": 1,
+          "country_scientist_cap_add": 1
+        }
+      },
+      "icon": "icons/traits/leader_trait_legendary_great_teacher.png",
+      "nameKey": "leader_trait_legendary_great_teacher",
+      "descriptionKey": "leader_trait_legendary_great_teacher_desc"
+    },
+    {
       "key": "leader_trait_legendary_great_teacher_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -18310,6 +19304,7 @@
     },
     {
       "key": "leader_trait_legendary_great_teacher_3",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -18349,7 +19344,43 @@
       "descriptionKey": "leader_trait_legendary_great_teacher_3_desc"
     },
     {
+      "key": "leader_trait_legendary_pious_ascet",
+      "canStart": true,
+      "leaderClasses": [
+        "official",
+        "commander",
+        "scientist"
+      ],
+      "sort": "veteran",
+      "rarity": "veteran",
+      "tier": 1,
+      "replaces": [],
+      "opposites": [],
+      "effects": {
+        "modifiers": {
+          "pop_amenities_usage_mult": -0.1,
+          "pop_housing_usage_mult": -0.1,
+          "planet_bureaucrats_society_research_produces_add": 0.25
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "leader_trait_legendary_origin_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "pop_amenities_usage_mult": -0.1,
+          "pop_housing_usage_mult": -0.1,
+          "planet_bureaucrats_society_research_produces_add": 0.25
+        }
+      },
+      "icon": "icons/traits/leader_trait_legendary_pious_ascet.png",
+      "nameKey": "leader_trait_legendary_pious_ascet",
+      "descriptionKey": "leader_trait_legendary_pious_ascet_desc"
+    },
+    {
       "key": "leader_trait_legendary_pious_ascet_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -18386,6 +19417,7 @@
     },
     {
       "key": "leader_trait_legendary_pious_ascet_3",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -18421,7 +19453,41 @@
       "descriptionKey": "leader_trait_legendary_pious_ascet_3_desc"
     },
     {
+      "key": "leader_trait_legendary_commanding_presence",
+      "canStart": true,
+      "leaderClasses": [
+        "official",
+        "commander",
+        "scientist"
+      ],
+      "sort": "veteran",
+      "rarity": "veteran",
+      "tier": 1,
+      "replaces": [],
+      "opposites": [],
+      "effects": {
+        "modifiers": {
+          "monthly_loyalty_from_subjects": 0.4,
+          "diplo_action_acceptance_add": 5
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "leader_trait_legendary_origin_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "monthly_loyalty_from_subjects": 0.4,
+          "diplo_action_acceptance_add": 5
+        }
+      },
+      "icon": "icons/traits/leader_trait_legendary_commanding_presence.png",
+      "nameKey": "leader_trait_legendary_commanding_presence",
+      "descriptionKey": "leader_trait_legendary_commanding_presence_desc"
+    },
+    {
       "key": "leader_trait_legendary_commanding_presence_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -18456,6 +19522,7 @@
     },
     {
       "key": "leader_trait_legendary_commanding_presence_3",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -18489,7 +19556,43 @@
       "descriptionKey": "leader_trait_legendary_commanding_presence_3_desc"
     },
     {
+      "key": "leader_trait_legendary_high_king",
+      "canStart": true,
+      "leaderClasses": [
+        "official",
+        "commander",
+        "scientist"
+      ],
+      "sort": "veteran",
+      "rarity": "veteran",
+      "tier": 1,
+      "replaces": [],
+      "opposites": [],
+      "effects": {
+        "modifiers": {
+          "planet_stability_add": 3,
+          "pop_cat_ruler_happiness": 0.05,
+          "pop_cat_ruler_bonus_workforce_mult": 0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "leader_trait_legendary_origin_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_stability_add": 3,
+          "pop_cat_ruler_happiness": 0.05,
+          "pop_cat_ruler_bonus_workforce_mult": 0.1
+        }
+      },
+      "icon": "icons/traits/leader_trait_legendary_high_king.png",
+      "nameKey": "leader_trait_legendary_high_king",
+      "descriptionKey": "leader_trait_legendary_high_king_desc"
+    },
+    {
       "key": "leader_trait_legendary_high_king_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -18526,6 +19629,7 @@
     },
     {
       "key": "leader_trait_legendary_high_king_3",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -18561,7 +19665,41 @@
       "descriptionKey": "leader_trait_legendary_high_king_3_desc"
     },
     {
+      "key": "leader_trait_legendary_gunboat_diplomacy",
+      "canStart": true,
+      "leaderClasses": [
+        "official",
+        "commander",
+        "scientist"
+      ],
+      "sort": "veteran",
+      "rarity": "veteran",
+      "tier": 1,
+      "replaces": [],
+      "opposites": [],
+      "effects": {
+        "modifiers": {
+          "diplo_weight_naval_mult": 0.1,
+          "country_power_projection_influence_produces_add": 0.25
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "leader_trait_legendary_origin_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "diplo_weight_naval_mult": 0.1,
+          "country_power_projection_influence_produces_add": 0.25
+        }
+      },
+      "icon": "icons/traits/leader_trait_legendary_gunboat_diplomacy.png",
+      "nameKey": "leader_trait_legendary_gunboat_diplomacy",
+      "descriptionKey": "leader_trait_legendary_gunboat_diplomacy_desc"
+    },
+    {
       "key": "leader_trait_legendary_gunboat_diplomacy_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -18596,6 +19734,7 @@
     },
     {
       "key": "leader_trait_legendary_gunboat_diplomacy_3",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -18629,7 +19768,41 @@
       "descriptionKey": "leader_trait_legendary_gunboat_diplomacy_3_desc"
     },
     {
+      "key": "leader_trait_legendary_scientific_diplomacy",
+      "canStart": true,
+      "leaderClasses": [
+        "official",
+        "commander",
+        "scientist"
+      ],
+      "sort": "veteran",
+      "rarity": "veteran",
+      "tier": 1,
+      "replaces": [],
+      "opposites": [],
+      "effects": {
+        "modifiers": {
+          "diplo_weight_technology_mult": 0.1,
+          "all_technology_research_speed": 0.05
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "leader_trait_legendary_scientific_diplomacy_tt",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "diplo_weight_technology_mult": 0.1,
+          "all_technology_research_speed": 0.05
+        }
+      },
+      "icon": "icons/traits/leader_trait_legendary_scientific_diplomacy.png",
+      "nameKey": "leader_trait_legendary_scientific_diplomacy",
+      "descriptionKey": "leader_trait_legendary_scientific_diplomacy_desc"
+    },
+    {
       "key": "leader_trait_legendary_scientific_diplomacy_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -18664,6 +19837,7 @@
     },
     {
       "key": "leader_trait_legendary_scientific_diplomacy_3",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -18697,7 +19871,41 @@
       "descriptionKey": "leader_trait_legendary_scientific_diplomacy_3_desc"
     },
     {
+      "key": "leader_trait_legendary_autarky",
+      "canStart": true,
+      "leaderClasses": [
+        "official",
+        "commander",
+        "scientist"
+      ],
+      "sort": "veteran",
+      "rarity": "veteran",
+      "tier": 1,
+      "replaces": [],
+      "opposites": [],
+      "effects": {
+        "modifiers": {
+          "planet_amenities_mult": 0.05,
+          "planet_jobs_food_produces_mult": 0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "leader_trait_legendary_origin_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_amenities_mult": 0.05,
+          "planet_jobs_food_produces_mult": 0.1
+        }
+      },
+      "icon": "icons/traits/leader_trait_legendary_autarky.png",
+      "nameKey": "leader_trait_legendary_autarky",
+      "descriptionKey": "leader_trait_legendary_autarky_desc"
+    },
+    {
       "key": "leader_trait_legendary_autarky_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -18732,6 +19940,7 @@
     },
     {
       "key": "leader_trait_legendary_autarky_3",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -18765,7 +19974,43 @@
       "descriptionKey": "leader_trait_legendary_autarky_3_desc"
     },
     {
+      "key": "leader_trait_legendary_natural_ruler",
+      "canStart": true,
+      "leaderClasses": [
+        "official",
+        "commander",
+        "scientist"
+      ],
+      "sort": "veteran",
+      "rarity": "veteran",
+      "tier": 1,
+      "replaces": [],
+      "opposites": [],
+      "effects": {
+        "modifiers": {
+          "planet_stability_add": 2.5,
+          "planet_jobs_upkeep_mult": -0.025,
+          "pop_government_ethic_attraction": 0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "leader_trait_legendary_origin_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_stability_add": 2.5,
+          "planet_jobs_upkeep_mult": -0.025,
+          "pop_government_ethic_attraction": 0.1
+        }
+      },
+      "icon": "icons/traits/leader_trait_legendary_natural_ruler.png",
+      "nameKey": "leader_trait_legendary_natural_ruler",
+      "descriptionKey": "leader_trait_legendary_natural_ruler_desc"
+    },
+    {
       "key": "leader_trait_legendary_natural_ruler_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -18802,6 +20047,7 @@
     },
     {
       "key": "leader_trait_legendary_natural_ruler_3",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -18837,7 +20083,43 @@
       "descriptionKey": "leader_trait_legendary_natural_ruler_3_desc"
     },
     {
+      "key": "leader_trait_legendary_industry_titan",
+      "canStart": true,
+      "leaderClasses": [
+        "official",
+        "commander",
+        "scientist"
+      ],
+      "sort": "veteran",
+      "rarity": "veteran",
+      "tier": 1,
+      "replaces": [],
+      "opposites": [],
+      "effects": {
+        "modifiers": {
+          "planet_jobs_minerals_produces_mult": 0.1,
+          "planet_jobs_alloys_produces_mult": 0.05,
+          "planet_jobs_consumer_goods_produces_mult": 0.05
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "leader_trait_legendary_origin_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_jobs_minerals_produces_mult": 0.1,
+          "planet_jobs_alloys_produces_mult": 0.05,
+          "planet_jobs_consumer_goods_produces_mult": 0.05
+        }
+      },
+      "icon": "icons/traits/leader_trait_legendary_industry_titan.png",
+      "nameKey": "leader_trait_legendary_industry_titan",
+      "descriptionKey": "leader_trait_legendary_industry_titan_desc"
+    },
+    {
       "key": "leader_trait_legendary_industry_titan_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -18874,6 +20156,7 @@
     },
     {
       "key": "leader_trait_legendary_industry_titan_3",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -18909,7 +20192,41 @@
       "descriptionKey": "leader_trait_legendary_industry_titan_3_desc"
     },
     {
+      "key": "leader_trait_legendary_great_inventor",
+      "canStart": true,
+      "leaderClasses": [
+        "official",
+        "commander",
+        "scientist"
+      ],
+      "sort": "veteran",
+      "rarity": "veteran",
+      "tier": 1,
+      "replaces": [],
+      "opposites": [],
+      "effects": {
+        "modifiers": {
+          "planet_pop_assembly_mult": 0.05,
+          "planet_pop_assemblers_engineering_research_produces_add": 0.5
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "leader_trait_legendary_great_inventor_tt",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_pop_assembly_mult": 0.05,
+          "planet_pop_assemblers_engineering_research_produces_add": 0.5
+        }
+      },
+      "icon": "icons/traits/leader_trait_legendary_great_inventor.png",
+      "nameKey": "leader_trait_legendary_great_inventor",
+      "descriptionKey": "leader_trait_legendary_great_inventor_desc"
+    },
+    {
       "key": "leader_trait_legendary_great_inventor_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -18944,6 +20261,7 @@
     },
     {
       "key": "leader_trait_legendary_great_inventor_3",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -18977,7 +20295,41 @@
       "descriptionKey": "leader_trait_legendary_great_inventor_3_desc"
     },
     {
+      "key": "leader_trait_legendary_genetic_purist",
+      "canStart": true,
+      "leaderClasses": [
+        "official",
+        "commander",
+        "scientist"
+      ],
+      "sort": "veteran",
+      "rarity": "veteran",
+      "tier": 1,
+      "replaces": [],
+      "opposites": [],
+      "effects": {
+        "modifiers": {
+          "BIOLOGICAL_species_trait_points_add": 1,
+          "planet_pops_upkeep_mult": -0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "leader_trait_legendary_origin_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "BIOLOGICAL_species_trait_points_add": 1,
+          "planet_pops_upkeep_mult": -0.1
+        }
+      },
+      "icon": "icons/traits/leader_trait_legendary_genetic_purist.png",
+      "nameKey": "leader_trait_legendary_genetic_purist",
+      "descriptionKey": "leader_trait_legendary_genetic_purist_desc"
+    },
+    {
       "key": "leader_trait_legendary_genetic_purist_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -19012,6 +20364,7 @@
     },
     {
       "key": "leader_trait_legendary_genetic_purist_3",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -19047,7 +20400,41 @@
       "descriptionKey": "leader_trait_legendary_genetic_purist_3_desc"
     },
     {
+      "key": "leader_trait_legendary_evervigilant",
+      "canStart": true,
+      "leaderClasses": [
+        "official",
+        "commander",
+        "scientist"
+      ],
+      "sort": "veteran",
+      "rarity": "veteran",
+      "tier": 1,
+      "replaces": [],
+      "opposites": [],
+      "effects": {
+        "modifiers": {
+          "intel_decryption_add": 1,
+          "intel_encryption_add": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "leader_trait_legendary_origin_desc",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "intel_decryption_add": 1,
+          "intel_encryption_add": 1
+        }
+      },
+      "icon": "icons/traits/leader_trait_legendary_evervigilant.png",
+      "nameKey": "leader_trait_legendary_evervigilant",
+      "descriptionKey": "leader_trait_legendary_evervigilant_desc"
+    },
+    {
       "key": "leader_trait_legendary_evervigilant_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -19082,6 +20469,7 @@
     },
     {
       "key": "leader_trait_legendary_evervigilant_3",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -19115,7 +20503,264 @@
       "descriptionKey": "leader_trait_legendary_evervigilant_3_desc"
     },
     {
+      "key": "leader_trait_legendary_unfriendly",
+      "canStart": true,
+      "leaderClasses": [
+        "official",
+        "commander",
+        "scientist"
+      ],
+      "tier": 0,
+      "replaces": [],
+      "opposites": [
+        "leader_trait_legendary_bad_meritocracy",
+        "leader_trait_legendary_dreamlike",
+        "leader_trait_legendary_harsh_ruler",
+        "leader_trait_legendary_hoplofobia",
+        "leader_trait_legendary_too_open",
+        "leader_trait_legendary_warmonger"
+      ],
+      "effects": {
+        "modifiers": {
+          "diplo_weight_mult": -0.25,
+          "envoys_add": -1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "diplo_weight_mult": -0.25,
+          "envoys_add": -1
+        }
+      },
+      "icon": "icons/traits/leader_trait_legendary_unfriendly.png",
+      "nameKey": "leader_trait_legendary_unfriendly",
+      "descriptionKey": "leader_trait_legendary_unfriendly_desc"
+    },
+    {
+      "key": "leader_trait_legendary_warmonger",
+      "canStart": true,
+      "leaderClasses": [
+        "official",
+        "commander",
+        "scientist"
+      ],
+      "tier": 0,
+      "replaces": [],
+      "opposites": [
+        "leader_trait_legendary_bad_meritocracy",
+        "leader_trait_legendary_dreamlike",
+        "leader_trait_legendary_harsh_ruler",
+        "leader_trait_legendary_hoplofobia",
+        "leader_trait_legendary_too_open",
+        "leader_trait_legendary_unfriendly"
+      ],
+      "effects": {
+        "modifiers": {
+          "pop_citizen_happiness": -0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "pop_citizen_happiness": -0.1
+        }
+      },
+      "icon": "icons/traits/leader_trait_legendary_warmonger.png",
+      "nameKey": "leader_trait_legendary_warmonger",
+      "descriptionKey": "leader_trait_legendary_warmonger_desc"
+    },
+    {
+      "key": "leader_trait_legendary_dreamlike",
+      "canStart": true,
+      "leaderClasses": [
+        "official",
+        "commander",
+        "scientist"
+      ],
+      "tier": 0,
+      "replaces": [],
+      "opposites": [
+        "leader_trait_legendary_bad_meritocracy",
+        "leader_trait_legendary_harsh_ruler",
+        "leader_trait_legendary_hoplofobia",
+        "leader_trait_legendary_too_open",
+        "leader_trait_legendary_unfriendly",
+        "leader_trait_legendary_warmonger"
+      ],
+      "effects": {
+        "modifiers": {
+          "planet_jobs_worker_produces_mult": -0.1,
+          "planet_researchers_upkeep_mult": 0.2
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_jobs_worker_produces_mult": -0.1,
+          "planet_researchers_upkeep_mult": 0.2
+        }
+      },
+      "icon": "icons/traits/leader_trait_legendary_dreamlike.png",
+      "nameKey": "leader_trait_legendary_dreamlike",
+      "descriptionKey": "leader_trait_legendary_dreamlike_desc"
+    },
+    {
+      "key": "leader_trait_legendary_harsh_ruler",
+      "canStart": true,
+      "leaderClasses": [
+        "official",
+        "commander",
+        "scientist"
+      ],
+      "tier": 0,
+      "replaces": [],
+      "opposites": [
+        "leader_trait_legendary_bad_meritocracy",
+        "leader_trait_legendary_dreamlike",
+        "leader_trait_legendary_hoplofobia",
+        "leader_trait_legendary_too_open",
+        "leader_trait_legendary_unfriendly",
+        "leader_trait_legendary_warmonger"
+      ],
+      "effects": {
+        "modifiers": {
+          "planet_crime_add": 20
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "leader_trait_legendary_harsh_ruler_tt",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_crime_add": 20
+        }
+      },
+      "icon": "icons/traits/leader_trait_legendary_harsh_ruler.png",
+      "nameKey": "leader_trait_legendary_harsh_ruler",
+      "descriptionKey": "leader_trait_legendary_harsh_ruler_desc"
+    },
+    {
+      "key": "leader_trait_legendary_too_open",
+      "canStart": true,
+      "leaderClasses": [
+        "official",
+        "commander",
+        "scientist"
+      ],
+      "tier": 0,
+      "replaces": [],
+      "opposites": [
+        "leader_trait_legendary_bad_meritocracy",
+        "leader_trait_legendary_dreamlike",
+        "leader_trait_legendary_harsh_ruler",
+        "leader_trait_legendary_hoplofobia",
+        "leader_trait_legendary_unfriendly",
+        "leader_trait_legendary_warmonger"
+      ],
+      "effects": {
+        "modifiers": {
+          "intel_encryption_add": -2,
+          "planet_pops_upkeep_mult": 0.15
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "intel_encryption_add": -2,
+          "planet_pops_upkeep_mult": 0.15
+        }
+      },
+      "icon": "icons/traits/leader_trait_legendary_too_open.png",
+      "nameKey": "leader_trait_legendary_too_open",
+      "descriptionKey": "leader_trait_legendary_too_open_desc"
+    },
+    {
+      "key": "leader_trait_legendary_hoplofobia",
+      "canStart": true,
+      "leaderClasses": [
+        "official",
+        "commander",
+        "scientist"
+      ],
+      "tier": 0,
+      "replaces": [],
+      "opposites": [
+        "leader_trait_legendary_bad_meritocracy",
+        "leader_trait_legendary_dreamlike",
+        "leader_trait_legendary_harsh_ruler",
+        "leader_trait_legendary_too_open",
+        "leader_trait_legendary_unfriendly",
+        "leader_trait_legendary_warmonger"
+      ],
+      "effects": {
+        "modifiers": {
+          "ships_upkeep_mult": 0.15,
+          "country_naval_cap_mult": -0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "ships_upkeep_mult": 0.15,
+          "country_naval_cap_mult": -0.1
+        }
+      },
+      "icon": "icons/traits/leader_trait_legendary_hoplofobia.png",
+      "nameKey": "leader_trait_legendary_hoplofobia",
+      "descriptionKey": "leader_trait_legendary_hoplofobia_desc"
+    },
+    {
+      "key": "leader_trait_legendary_bad_meritocracy",
+      "canStart": true,
+      "leaderClasses": [
+        "official",
+        "commander",
+        "scientist"
+      ],
+      "tier": 0,
+      "replaces": [],
+      "opposites": [
+        "leader_trait_legendary_dreamlike",
+        "leader_trait_legendary_harsh_ruler",
+        "leader_trait_legendary_hoplofobia",
+        "leader_trait_legendary_too_open",
+        "leader_trait_legendary_unfriendly",
+        "leader_trait_legendary_warmonger"
+      ],
+      "effects": {
+        "modifiers": {
+          "leaders_upkeep_mult": 0.3,
+          "pop_amenities_usage_mult": 0.2
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "leaders_upkeep_mult": 0.3,
+          "pop_amenities_usage_mult": 0.2
+        }
+      },
+      "icon": "icons/traits/leader_trait_legendary_bad_meritocracy.png",
+      "nameKey": "leader_trait_legendary_bad_meritocracy",
+      "descriptionKey": "leader_trait_legendary_bad_meritocracy_desc"
+    },
+    {
       "key": "leader_trait_legendary_delusional",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -19139,6 +20784,7 @@
     },
     {
       "key": "leader_trait_the_apparatus_luminary",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -19163,6 +20809,7 @@
     },
     {
       "key": "leader_trait_the_cybernetic_luminary",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -19203,6 +20850,7 @@
     },
     {
       "key": "leader_trait_the_psionic_luminary",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -19239,6 +20887,7 @@
     },
     {
       "key": "leader_trait_the_synth_luminary",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -19273,6 +20922,7 @@
     },
     {
       "key": "leader_trait_the_genetic_luminary",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -19307,6 +20957,7 @@
     },
     {
       "key": "leader_trait_unholy",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -19340,6 +20991,7 @@
     },
     {
       "key": "leader_trait_unholy_node",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -19373,6 +21025,7 @@
     },
     {
       "key": "leader_trait_fotd_scientist",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -19400,6 +21053,7 @@
     },
     {
       "key": "leader_trait_fotd_commander",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -19430,6 +21084,7 @@
     },
     {
       "key": "leader_trait_preftl_haggler",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -19458,6 +21113,7 @@
     },
     {
       "key": "leader_trait_zealot",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -19490,6 +21146,7 @@
     },
     {
       "key": "leader_trait_plague_hardened",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -19519,7 +21176,38 @@
       "descriptionKey": "leader_trait_plague_hardened_desc"
     },
     {
+      "key": "leader_trait_rift_warped",
+      "canStart": false,
+      "leaderClasses": [
+        "all"
+      ],
+      "rarity": "common",
+      "tier": 0,
+      "replaces": [],
+      "opposites": [],
+      "effects": {
+        "modifiers": {
+          "leader_lifespan_add": 50,
+          "species_leader_exp_gain": 0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipKey": "leader_trait_ignore_leader_cap_tt",
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "leader_lifespan_add": 50,
+          "species_leader_exp_gain": 0.1
+        }
+      },
+      "icon": "icons/traits/leader_trait_rift_warped.png",
+      "nameKey": "leader_trait_rift_warped",
+      "descriptionKey": "leader_trait_rift_warped_desc"
+    },
+    {
       "key": "leader_trait_partially_digested",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -19547,6 +21235,7 @@
     },
     {
       "key": "leader_trait_obelisk_curse",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -19575,6 +21264,7 @@
     },
     {
       "key": "leader_trait_planar_theorist",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -19601,6 +21291,7 @@
     },
     {
       "key": "leader_trait_planar_theorist_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -19629,6 +21320,7 @@
     },
     {
       "key": "leader_trait_academic_astral_rift_expert",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -19656,6 +21348,7 @@
     },
     {
       "key": "leader_trait_academic_astral_rift_expert_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -19685,6 +21378,7 @@
     },
     {
       "key": "leader_trait_academic_astral_rift_expert_3",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -19714,6 +21408,7 @@
     },
     {
       "key": "leader_trait_foreign_consciousness",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -19743,6 +21438,7 @@
     },
     {
       "key": "leader_trait_black_light_blinded",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -19778,6 +21474,7 @@
     },
     {
       "key": "leader_trait_sanitary_drone",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -19806,6 +21503,7 @@
     },
     {
       "key": "leader_trait_spacebender",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -19836,6 +21534,7 @@
     },
     {
       "key": "leader_trait_energy_weapon_specialist",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -19865,6 +21564,7 @@
     },
     {
       "key": "leader_trait_blorg_insight",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -19897,6 +21597,7 @@
     },
     {
       "key": "leader_trait_storm_rider_commander",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -19924,6 +21625,7 @@
     },
     {
       "key": "leader_trait_storm_rider_scientist",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -20069,6 +21771,7 @@
     },
     {
       "key": "leader_trait_storm_rider_official",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -20096,6 +21799,7 @@
     },
     {
       "key": "leader_trait_limited_cyborg",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -20136,6 +21840,7 @@
     },
     {
       "key": "leader_trait_robotic_surrogate",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -20166,6 +21871,7 @@
     },
     {
       "key": "leader_trait_ritualistic_implants_cyborg",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -20219,7 +21925,37 @@
       "descriptionKey": "leader_trait_ritualistic_implants_cyborg_desc"
     },
     {
+      "key": "leader_trait_buccaneer",
+      "canStart": true,
+      "leaderClasses": [
+        "official",
+        "commander",
+        "scientist"
+      ],
+      "rarity": "common",
+      "tier": 1,
+      "replaces": [],
+      "opposites": [],
+      "effects": {
+        "modifiers": {
+          "enemy_ship_destroyed_energy_add": 25
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "enemy_ship_destroyed_energy_add": 25
+        }
+      },
+      "icon": "icons/traits/leader_trait_buccaneer.png",
+      "nameKey": "leader_trait_buccaneer",
+      "descriptionKey": "leader_trait_buccaneer_desc"
+    },
+    {
       "key": "leader_trait_buccaneer_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -20250,6 +21986,7 @@
     },
     {
       "key": "leader_trait_buccaneer_3",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -20279,7 +22016,41 @@
       "descriptionKey": "leader_trait_buccaneer_3_desc"
     },
     {
+      "key": "leader_trait_trailblazer",
+      "canStart": true,
+      "leaderClasses": [
+        "official",
+        "commander",
+        "scientist"
+      ],
+      "rarity": "common",
+      "tier": 1,
+      "replaces": [],
+      "opposites": [],
+      "effects": {
+        "modifiers": {
+          "ship_sensor_range_add": 1,
+          "ship_hyperlane_range_add": 1,
+          "ship_speed_mult": 0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "ship_sensor_range_add": 1,
+          "ship_hyperlane_range_add": 1,
+          "ship_speed_mult": 0.1
+        }
+      },
+      "icon": "icons/traits/leader_trait_trailblazer.png",
+      "nameKey": "leader_trait_trailblazer",
+      "descriptionKey": "leader_trait_trailblazer_desc"
+    },
+    {
       "key": "leader_trait_trailblazer_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -20314,6 +22085,7 @@
     },
     {
       "key": "leader_trait_trailblazer_3",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -20347,7 +22119,37 @@
       "descriptionKey": "leader_trait_trailblazer_3_desc"
     },
     {
+      "key": "leader_trait_treasure_hoarder",
+      "canStart": true,
+      "leaderClasses": [
+        "official",
+        "commander",
+        "scientist"
+      ],
+      "rarity": "common",
+      "tier": 1,
+      "replaces": [],
+      "opposites": [],
+      "effects": {
+        "modifiers": {
+          "deposit_increase_on_survey_chance_mult": 0.1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "deposit_increase_on_survey_chance_mult": 0.1
+        }
+      },
+      "icon": "icons/traits/leader_trait_treasure_hoarder.png",
+      "nameKey": "leader_trait_treasure_hoarder",
+      "descriptionKey": "leader_trait_treasure_hoarder_desc"
+    },
+    {
       "key": "leader_trait_treasure_hoarder_2",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -20378,6 +22180,7 @@
     },
     {
       "key": "leader_trait_treasure_hoarder_3",
+      "canStart": false,
       "leaderClasses": [
         "official",
         "commander",
@@ -20408,6 +22211,7 @@
     },
     {
       "key": "leader_trait_pirate_queen",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -20437,6 +22241,7 @@
     },
     {
       "key": "leader_trait_trophy_hunter",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -20468,6 +22273,7 @@
     },
     {
       "key": "leader_trait_gifted_trapper",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -20501,6 +22307,7 @@
     },
     {
       "key": "leader_trait_void_hunter",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -20531,6 +22338,7 @@
     },
     {
       "key": "leader_trait_void_hunter_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -20563,6 +22371,7 @@
     },
     {
       "key": "leader_trait_void_tracker",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -20595,6 +22404,7 @@
     },
     {
       "key": "leader_trait_void_tracker_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -20629,6 +22439,7 @@
     },
     {
       "key": "leader_trait_cutholoid_victim",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -20656,6 +22467,7 @@
     },
     {
       "key": "trait_leader_second_chanced",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -20680,6 +22492,7 @@
     },
     {
       "key": "leader_trait_has_backup_clone",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -20705,6 +22518,7 @@
     },
     {
       "key": "leader_trait_backup_clone",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -20733,6 +22547,7 @@
     },
     {
       "key": "leader_trait_backup_clone_2",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -20759,6 +22574,7 @@
     },
     {
       "key": "leader_trait_backup_clone_3",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -20785,6 +22601,7 @@
     },
     {
       "key": "trait_ruler_apex_predator",
+      "canStart": false,
       "leaderClasses": [
         "scientist",
         "official",
@@ -20811,6 +22628,7 @@
     },
     {
       "key": "trait_leader_genetic_purist",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -20835,6 +22653,7 @@
     },
     {
       "key": "leader_trait_altered_metabolism",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -20861,6 +22680,7 @@
     },
     {
       "key": "leader_trait_hardened_survivalist",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -20892,6 +22712,7 @@
     },
     {
       "key": "leader_trait_judicial_subjugation",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -20921,6 +22742,7 @@
     },
     {
       "key": "leader_trait_judicial_execution",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -20945,6 +22767,7 @@
     },
     {
       "key": "leader_trait_unplugged_cybernetic_positives_3",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -20970,6 +22793,7 @@
     },
     {
       "key": "leader_trait_unplugged_cybernetic_positives_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -20995,6 +22819,7 @@
     },
     {
       "key": "leader_trait_unplugged_cybernetic_positives_1",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -21020,6 +22845,7 @@
     },
     {
       "key": "leader_trait_hibernating",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -21104,6 +22930,7 @@
     },
     {
       "key": "leader_trait_whispering_mind",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -21148,6 +22975,7 @@
     },
     {
       "key": "leader_trait_whispering_mind_2",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -21194,6 +23022,7 @@
     },
     {
       "key": "leader_trait_whispering_mind_3",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -21240,6 +23069,7 @@
     },
     {
       "key": "leader_trait_shroud_warped",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -21306,6 +23136,7 @@
     },
     {
       "key": "leader_trait_shroudshaper",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -21357,6 +23188,7 @@
     },
     {
       "key": "leader_trait_iron_will",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -21392,6 +23224,7 @@
     },
     {
       "key": "leader_trait_disciple_of_the_cradle",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -21425,6 +23258,7 @@
     },
     {
       "key": "leader_trait_disciple_of_the_eater",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -21448,6 +23282,7 @@
     },
     {
       "key": "leader_trait_disciple_of_the_instrument",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -21471,6 +23306,7 @@
     },
     {
       "key": "leader_trait_disciple_of_the_composer",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -21494,6 +23330,7 @@
     },
     {
       "key": "leader_trait_disciple_of_the_composer_2",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -21523,6 +23360,7 @@
     },
     {
       "key": "leader_trait_disciple_of_the_whisperers",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -21546,6 +23384,7 @@
     },
     {
       "key": "leader_trait_disciple_of_the_end",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -21569,6 +23408,7 @@
     },
     {
       "key": "leader_trait_blinded",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "scientist",
@@ -21615,6 +23455,7 @@
     },
     {
       "key": "leader_trait_paladin",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -21642,6 +23483,7 @@
     },
     {
       "key": "leader_trait_paladin_ace",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -21668,6 +23510,7 @@
     },
     {
       "key": "leader_trait_paladin_strategist",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -21693,6 +23536,7 @@
     },
     {
       "key": "leader_trait_paladin_ambusher",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -21721,6 +23565,7 @@
     },
     {
       "key": "leader_trait_paladin_logistician",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -21746,6 +23591,7 @@
     },
     {
       "key": "leader_trait_paladin_defender",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -21774,6 +23620,7 @@
     },
     {
       "key": "leader_trait_paladin_spearhead",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -21802,6 +23649,7 @@
     },
     {
       "key": "leader_trait_paladin_knight",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -21830,6 +23678,7 @@
     },
     {
       "key": "leader_trait_nomadic_revenant",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -21853,6 +23702,7 @@
     },
     {
       "key": "leader_trait_nomadic_sage",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -21882,6 +23732,7 @@
     },
     {
       "key": "leader_trait_nomadic_naturalist",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -21915,6 +23766,7 @@
     },
     {
       "key": "leader_trait_nomadic_caregiver",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -21938,6 +23790,7 @@
     },
     {
       "key": "leader_trait_nomadic_champion",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -21969,6 +23822,7 @@
     },
     {
       "key": "leader_trait_amnesiac",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -21992,6 +23846,7 @@
     },
     {
       "key": "leader_trait_nomadic_princess_1",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -22021,6 +23876,7 @@
     },
     {
       "key": "leader_trait_nomadic_princess_2",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -22044,6 +23900,7 @@
     },
     {
       "key": "leader_trait_circuit_champion",
+      "canStart": false,
       "leaderClasses": [
         "commander",
         "official",
@@ -22068,6 +23925,7 @@
     },
     {
       "key": "leader_trait_sable_pilot",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -22100,6 +23958,7 @@
     },
     {
       "key": "leader_trait_plunderer",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -22130,6 +23989,7 @@
     },
     {
       "key": "leader_trait_plunderer_2",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -22162,6 +24022,7 @@
     },
     {
       "key": "subclass_commander_admiral",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -22193,6 +24054,7 @@
     },
     {
       "key": "subclass_commander_general",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -22224,6 +24086,7 @@
     },
     {
       "key": "subclass_commander_governor",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -22251,6 +24114,7 @@
     },
     {
       "key": "subclass_commander_councilor",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -22274,6 +24138,7 @@
     },
     {
       "key": "subclass_official_delegate",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -22303,6 +24168,7 @@
     },
     {
       "key": "subclass_official_governor",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -22332,6 +24198,7 @@
     },
     {
       "key": "subclass_official_diplomacy_councilor",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -22355,6 +24222,7 @@
     },
     {
       "key": "subclass_official_economy_councilor",
+      "canStart": false,
       "leaderClasses": [
         "official"
       ],
@@ -22378,6 +24246,7 @@
     },
     {
       "key": "subclass_scientist_explorer",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -22409,6 +24278,7 @@
     },
     {
       "key": "subclass_scientist_scholar",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -22440,6 +24310,7 @@
     },
     {
       "key": "subclass_scientist_governor",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -22471,6 +24342,7 @@
     },
     {
       "key": "subclass_scientist_councilor",
+      "canStart": false,
       "leaderClasses": [
         "scientist"
       ],
@@ -22494,6 +24366,7 @@
     },
     {
       "key": "leader_trait_sentinel",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -22520,6 +24393,7 @@
     },
     {
       "key": "leader_trait_hive_affinity",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -22546,6 +24420,7 @@
     },
     {
       "key": "leader_trait_void_swimmer",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -22572,6 +24447,7 @@
     },
     {
       "key": "leader_trait_ethereal",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -22598,6 +24474,7 @@
     },
     {
       "key": "leader_trait_dimensional_stutter",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -22624,6 +24501,7 @@
     },
     {
       "key": "leader_trait_cybrex",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -22654,6 +24532,7 @@
     },
     {
       "key": "leader_trait_great_khan",
+      "canStart": false,
       "leaderClasses": [
         "commander"
       ],
@@ -23313,16 +25192,36 @@
     "leader_trait_firewalled_desc": "While safe from cyber attacks, our leaders are less effective learners.",
     "leader_trait_virtual": "Virtual Leader",
     "leader_trait_virtual_desc": "This virtual leader has unparalleled access to a wide range of advanced algorithms.",
+    "leader_trait_principled": "Principled",
+    "leader_trait_principled_desc": "This leader has a strict code and follows our empire\u0027s morals, setting a good example for others.",
     "leader_trait_principled_2": "$leader_trait_principled$ II",
     "leader_trait_principled_2_desc": "$leader_trait_principled_desc$",
+    "leader_trait_fleet_organizer": "Fleet Organizer",
+    "leader_trait_fleet_organizer_desc": "This leader is an expert at organization, having the necessary micromanagement skills to command very large starship formations.",
     "leader_trait_fleet_organizer_2": "$leader_trait_fleet_organizer$ II",
     "leader_trait_fleet_organizer_2_desc": "$leader_trait_fleet_organizer_desc$",
+    "leader_trait_spycraft": "Spycraft",
+    "leader_trait_spycraft_desc": "Some commanders prefer to use more subtle methods by employing spies and informants rather than brute strength.",
     "leader_trait_spycraft_2": "$leader_trait_spycraft$ II",
     "leader_trait_spycraft_2_desc": "$leader_trait_spycraft_desc$",
+    "leader_trait_spark_of_genius": "Spark of Genius",
+    "leader_trait_spark_of_genius_desc": "This leader is prone to sudden bursts of inspiration.",
+    "trait_ruler_industrialist": "Mining Rush",
+    "trait_ruler_industrialist_desc": "This leader has a firm focus on increasing mining output.",
+    "trait_ruler_warlike": "Warlike",
+    "trait_ruler_warlike_desc": "This leader does not shy away from conflict.",
     "trait_ruler_warlike_2": "$trait_ruler_warlike$ II",
     "trait_ruler_warlike_2_desc": "$trait_ruler_warlike_desc$",
+    "trait_ruler_charismatic": "Charismatic",
+    "trait_ruler_charismatic_desc": "This leader is exceptionally charismatic, enforcing their will with ease.",
+    "trait_ruler_feedback_loop": "Feedback Loop",
+    "trait_ruler_feedback_loop_desc": "Efficient feedback loops and action-reaction analysis make this unit far better at predicting outcomes.",
+    "trait_ruler_logistic_understanding": "Logistic Understanding",
+    "trait_ruler_logistic_understanding_desc": "This leader is well aware of the importance of properly-structured supply chains.",
     "trait_ruler_logistic_understanding_2": "$trait_ruler_logistic_understanding$ II",
     "trait_ruler_logistic_understanding_2_desc": "$trait_ruler_logistic_understanding_desc$",
+    "trait_ruler_eye_for_talent": "Eye for Talent",
+    "trait_ruler_eye_for_talent_desc": "This leader is considered to be unusually perceptive, spotting talent where others see only eccentricity or incompetence.",
     "trait_ruler_eye_for_talent_2": "$trait_ruler_eye_for_talent$ II",
     "trait_ruler_eye_for_talent_2_desc": "$trait_ruler_eye_for_talent_desc$",
     "leader_trait_brainslug": "$trait_brainslug$",
@@ -23481,6 +25380,48 @@
     "leader_trait_legendary_far_from_home_desc": "Where does he come from? Who placed him in cryostasis, and why was he released? The unanswered questions of his past fuel this leader\u0027s thirst for knowledge.",
     "leader_trait_legendary_ancestors_knowledge": "Ancestral Inheritance",
     "leader_trait_legendary_ancestors_knowledge_desc": "This leader\u0027s body is itself a vast storehouse of knowledge and skill; a genetic inheritance granted by the sacrifice of his ancestors.",
+    "leader_trait_legendary_military_knowledge": "Inspired Commander",
+    "leader_trait_legendary_military_knowledge_desc": "A brilliant military commander, loved by the troops.",
+    "leader_trait_legendary_foe_hammer": "Unwavering Aggressor",
+    "leader_trait_legendary_foe_hammer_desc": "An expert in starship weapons systems, this leader brings invaluable knowledge to fleet warfare.",
+    "leader_trait_legendary_great_teacher": "Wise Mentor",
+    "leader_trait_legendary_great_teacher_desc": "This leader displays exceptional educational skills, and will help others to reach their full potential.",
+    "leader_trait_legendary_pious_ascet": "Pious Ascetic",
+    "leader_trait_legendary_pious_ascet_desc": "This leader is a model of self-discipline, and an inspiration to all.",
+    "leader_trait_legendary_commanding_presence": "Commanding Presence",
+    "leader_trait_legendary_commanding_presence_desc": "Authority comes naturally to this leader, and few dare contest their decisions.",
+    "leader_trait_legendary_high_king": "High King",
+    "leader_trait_legendary_high_king_desc": "By merit alone, this leader earned the respect and loyalty of the other noble houses.",
+    "leader_trait_legendary_gunboat_diplomacy": "Gunboat Diplomat",
+    "leader_trait_legendary_gunboat_diplomacy_desc": "This leader favors displays of power. A well-placed threat is sometimes worth a thousand words.",
+    "leader_trait_legendary_scientific_diplomacy": "Brain Poacher",
+    "leader_trait_legendary_scientific_diplomacy_desc": "By offering the best, we can attract the brightest minds. This leader specializes in the recruitment of qualified personnel.",
+    "leader_trait_legendary_autarky": "Autark",
+    "leader_trait_legendary_autarky_desc": "This leader will strive to ensure the nation\u0027s self-sufficiency.",
+    "leader_trait_legendary_natural_ruler": "Enlightened Ruler",
+    "leader_trait_legendary_natural_ruler_desc": "Charismatic, caring and selfless, this leader seeks to improve quality of life for all.",
+    "leader_trait_legendary_industry_titan": "Titan of Industry",
+    "leader_trait_legendary_industry_titan_desc": "This leader sees a healthy economy as the foundation of any great nation.",
+    "leader_trait_legendary_great_inventor": "Great Inventor",
+    "leader_trait_legendary_great_inventor_desc": "This leader is a pioneer in robotics and our lead researcher in workforce automation.",
+    "leader_trait_legendary_genetic_purist": "Genome Artist",
+    "leader_trait_legendary_genetic_purist_desc": "This leader\u0027s flair for genetic manipulation is legendary.",
+    "leader_trait_legendary_evervigilant": "Ever Vigilant",
+    "leader_trait_legendary_evervigilant_desc": "This leader is extremely rigorous with security and encryption protocols, and personally oversees our intelligence department.",
+    "leader_trait_legendary_unfriendly": "Blunt",
+    "leader_trait_legendary_unfriendly_desc": "Callous and very direct, this leader regularly makes diplomatic blunders.",
+    "leader_trait_legendary_warmonger": "Warmonger",
+    "leader_trait_legendary_warmonger_desc": "Provocative and adversarial, this leader enjoys conflict, be it social or martial.",
+    "leader_trait_legendary_dreamlike": "Absent-Minded",
+    "leader_trait_legendary_dreamlike_desc": "This leader is easily distracted and often forgets about less important tasks.",
+    "leader_trait_legendary_harsh_ruler": "Brutal",
+    "leader_trait_legendary_harsh_ruler_desc": "This leader\u0027s answer to any issue is brutal oppression, which alienates the local population.",
+    "leader_trait_legendary_too_open": "Naive",
+    "leader_trait_legendary_too_open_desc": "This leader is too trusting and forgiving. Others find it easy to abuse these qualities.",
+    "leader_trait_legendary_hoplofobia": "Fearful",
+    "leader_trait_legendary_hoplofobia_desc": "Terrified of risks, this leader is overly cautious, and implements excessive checks and redundancies in their workflow.",
+    "leader_trait_legendary_bad_meritocracy": "Elitist",
+    "leader_trait_legendary_bad_meritocracy_desc": "This leader abhors mediocrity, often dismissing talented people for even the slightest mistake.",
     "leader_trait_legendary_delusional": "Paranoid Tyrant",
     "leader_trait_legendary_delusional_desc": "This leader\u0027s paranoid delusions are driving [Root.GetHimHer] towards isolation.",
     "leader_trait_the_apparatus_luminary": "Apparatus Bound",
@@ -23507,6 +25448,8 @@
     "leader_trait_zealot_desc": "Having gazed into the abyss, this leader possesses unshakeable faith.",
     "leader_trait_plague_hardened": "Plague-Hardened Commander",
     "leader_trait_plague_hardened_desc": "Having gazed into the abyss, this commander possesses a keen and tempered mind.",
+    "leader_trait_rift_warped": "Rift Warped",
+    "leader_trait_rift_warped_desc": "This leader has crossed the astral planes; the effects of such a journey are both lasting and profound.",
     "leader_trait_partially_digested": "Partially Digested",
     "leader_trait_partially_digested_desc": "This leader has had an unfortunate encounter with a giant worm from another dimension. While no longer whole of body, they have gained some unique insight into molecular Biology.",
     "leader_trait_obelisk_curse": "$obelisks_curse_modifier$",
@@ -23539,6 +25482,12 @@
     "leader_trait_robotic_surrogate_desc": "Cumbersome and slow, this robot body is a surrogate for a digitized leader in the $building_identity_repository$.",
     "leader_trait_ritualistic_implants_cyborg": "$trait_cyborg_ritualistic_implants$",
     "leader_trait_ritualistic_implants_cyborg_desc": "$trait_cyborg_ritualistic_implants_desc$",
+    "leader_trait_buccaneer": "Buccaneer",
+    "leader_trait_buccaneer_desc": "A master of battlefield salvage, this leader is able to extract every ounce of value from even the most damaged wrecks.",
+    "leader_trait_trailblazer": "Trailblazer",
+    "leader_trait_trailblazer_desc": "Enthralled by the rewarding prospects of the galactic frontier, this leader hopes to chart the furthest reaches of space.",
+    "leader_trait_treasure_hoarder": "Treasure Hoarder",
+    "leader_trait_treasure_hoarder_desc": "No bounty is high enough to satisfy this leader\u0027s ambition. The accumulation of valuable resources is their primary motivation.",
     "leader_trait_pirate_queen": "Pirate Queen",
     "leader_trait_pirate_queen_desc": "Years of skulduggery and outlandish exploits have created a leader who never leaves with less than she came for.",
     "leader_trait_trophy_hunter": "Trophy Hunter",
@@ -23691,18 +25640,6 @@
     "leader_trait_chosen_default": "Chosen One",
     "leader_trait_chosen_default_desc": "This leader is the $leader_trait_chosen$, an everlasting being that wields incredible psionic power.",
     "collective_key": "Collective",
-    "leader_trait_principled": "Principled",
-    "leader_trait_principled_desc": "This leader has a strict code and follows our empire\u0027s morals, setting a good example for others.",
-    "leader_trait_fleet_organizer": "Fleet Organizer",
-    "leader_trait_fleet_organizer_desc": "This leader is an expert at organization, having the necessary micromanagement skills to command very large starship formations.",
-    "leader_trait_spycraft": "Spycraft",
-    "leader_trait_spycraft_desc": "Some commanders prefer to use more subtle methods by employing spies and informants rather than brute strength.",
-    "trait_ruler_warlike": "Warlike",
-    "trait_ruler_warlike_desc": "This leader does not shy away from conflict.",
-    "trait_ruler_logistic_understanding": "Logistic Understanding",
-    "trait_ruler_logistic_understanding_desc": "This leader is well aware of the importance of properly-structured supply chains.",
-    "trait_ruler_eye_for_talent": "Eye for Talent",
-    "trait_ruler_eye_for_talent_desc": "This leader is considered to be unusually perceptive, spotting talent where others see only eccentricity or incompetence.",
     "trait_brainslug": "Brain Slug Host",
     "leader_trait_scientist_brainslug_desc": "This leader is enjoying the presence of a neural symbiont: a helpful slug that attaches itself to the brain stem of its host.",
     "shroud_touched_intro": "Passage through the Shroud is not lightly taken;",

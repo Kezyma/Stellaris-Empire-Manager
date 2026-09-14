@@ -60,6 +60,19 @@ public interface IWikiPack
 /// <param name="Key">The trait's own key, such as <c>leader_trait_carefree</c>.</param>
 public sealed record LeaderTraitDefinition(string Key)
 {
+    /// <summary>
+    /// Whether an empire may be designed holding this one.
+    /// </summary>
+    /// <remarks>
+    /// True for thirty-four of them. They are not a separate kind of thing - each declares a
+    /// leader class like any other leader trait and carries <c>starting_ruler_trait</c> on top - so
+    /// they are carried here as well as in the database, where the ruler's picker reads them. Twenty
+    /// -four are additionally marked <c>initial = no</c>, which means "not offered unconditionally"
+    /// rather than "never offered": the game gates them on an origin and offers them once it is
+    /// picked. So all thirty-four answer yes here, and the origin is a fact beside it.
+    /// </remarks>
+    public bool CanStart { get; init; }
+
     /// <summary>Which leader classes may hold it: commander, official, scientist.</summary>
     /// <remarks>
     /// A hundred and thirty-four of the game's traits write this as a bare word rather than a list,
@@ -121,8 +134,15 @@ public sealed record LeaderTraitPack : IWikiPack
     /// <summary>Where this pack lives, which is the whole of what names the file.</summary>
     public const string Domain = "leader-traits";
 
-    /// <summary>The shape these records are in, bumped when it changes.</summary>
-    public const int CurrentSchemaVersion = 1;
+    /// <summary>
+    /// The shape these records are in, bumped when it changes.
+    /// </summary>
+    /// <remarks>
+    /// Two: the traits an empire may start with joined the file, and brought <c>CanStart</c> with
+    /// them. Read at one, every trait would answer "cannot start" by default and the column would
+    /// be a quiet lie, so a file of the older shape is refused rather than believed.
+    /// </remarks>
+    public const int CurrentSchemaVersion = 2;
 
     /// <inheritdoc />
     public static int ExpectedSchemaVersion => CurrentSchemaVersion;
