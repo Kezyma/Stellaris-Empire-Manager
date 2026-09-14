@@ -88,7 +88,8 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
                     model.Path,
                     (wardrobes.GetValueOrDefault(portrait.Key) ?? PortraitWardrobe.None).Default,
                     (float)model.Scale,
-                    PoseFor(index, model.Mesh));
+                    PoseFor(index, model.Mesh),
+                    index.Declared(model.Mesh));
                 var destination = $"portraits/{portrait.Key}.png";
 
                 _file.WriteAllBytes(Path.Combine(outputDirectory, destination), png);
@@ -169,7 +170,8 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
                     model.Path,
                     (wardrobes.GetValueOrDefault(key) ?? PortraitWardrobe.None).Default,
                     (float)model.Scale,
-                    PoseFor(index, model.Mesh));
+                    PoseFor(index, model.Mesh),
+                    index.Declared(model.Mesh));
 
                 var (top, bottom) = Ink(image);
 
@@ -256,12 +258,19 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
         Dictionary<string, string> PortraitEntities,
         Dictionary<string, string> Entities,
         Dictionary<string, string> Meshes,
+        Dictionary<string, Dictionary<(string Name, int Index), string>> MeshTextures,
         Dictionary<string, string> Attachments,
         Dictionary<string, double> EntityScales,
         Dictionary<string, double> MeshScales,
         Dictionary<string, string> MeshAnimations,
         Dictionary<string, string> AnimationPaths)
     {
+        /// <summary>What one declaration dresses its parts in, which may be nothing.</summary>
+        /// <param name="mesh">The <c>pdxmesh</c> name, not the file it points at.</param>
+        /// <returns>The textures by part, or null where the declaration says nothing.</returns>
+        public IReadOnlyDictionary<(string Name, int Index), string>? Declared(string mesh) =>
+            MeshTextures.GetValueOrDefault(mesh);
+
         /// <summary>The model a portrait wears, and how much it is scaled by.</summary>
         public (string Mesh, string Path, double Scale)? Model(string portrait) =>
             PortraitEntities.GetValueOrDefault(portrait) is { } entity ? Of(entity) : null;
@@ -380,7 +389,8 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
                     {
                         var wearing = Wearing(run.Kind, texture);
 
-                        if (Drawn(mesh, run.Parts, (float)model.Scale, wearing, texture, evolution)
+                        if (Drawn(mesh, run.Parts, (float)model.Scale, wearing, texture, evolution,
+                                index.Declared(model.Mesh))
                             is not { } image || Trim(image) is not { } trimmed)
                         {
                             return;
@@ -518,11 +528,12 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
         float scale,
         PortraitTextures wearing,
         string? texture,
-        EvolutionArtwork? evolution)
+        EvolutionArtwork? evolution,
+        IReadOnlyDictionary<(string Name, int Index), string>? declared)
     {
         if (evolution is null || texture is null)
         {
-            return DrawLayer(mesh, parts, scale, wearing);
+            return DrawLayer(mesh, parts, scale, wearing, declared);
         }
 
         if (LoadTexture(texture) is not { } skin ||
@@ -532,7 +543,8 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
             return null;
         }
 
-        return DrawLayer(mesh, parts, scale, wearing, DdsImageOps.BlendEvolution(skin, decal, mask));
+        return DrawLayer(
+            mesh, parts, scale, wearing, declared, DdsImageOps.BlendEvolution(skin, decal, mask));
     }
 
     private DdsImage DrawLayer(
@@ -540,10 +552,11 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
         IReadOnlyCollection<MeshPart> parts,
         float scale,
         PortraitTextures wearing,
+        IReadOnlyDictionary<(string Name, int Index), string>? declared,
         DdsImage? instead = null)
     {
         var dressed = new PortraitMesh(
-            [.. mesh.Parts.Select(p => p with { Texture = TextureFor(p, wearing) })]);
+            [.. mesh.Parts.Select(p => p with { Texture = TextureFor(p, wearing, declared) })]);
 
         // Matched by position, since dressing them made new records. By position rather than by
         // value: a part's fields are arrays, so comparing two of them compares references, which
@@ -630,6 +643,7 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
         ReadPortraitEntities(),
         ReadEntities(),
         ReadMeshPaths(),
+        ReadMeshTextures(),
         ReadAttachments(),
         ReadScales("*.asset", "entity"),
         ReadScales("*.gfx", "pdxmesh"),
@@ -665,22 +679,28 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
 
     private readonly Dictionary<string, PortraitPose> _poses = new(StringComparer.OrdinalIgnoreCase);
 
-    private byte[] Draw(string meshPath, PortraitTextures wearing, float scale, PortraitPose pose) =>
-        PngWriter.Encode(Draw(_renderer, meshPath, wearing, scale, pose));
+    private byte[] Draw(
+        string meshPath,
+        PortraitTextures wearing,
+        float scale,
+        PortraitPose pose,
+        IReadOnlyDictionary<(string Name, int Index), string>? declared = null) =>
+        PngWriter.Encode(Draw(_renderer, meshPath, wearing, scale, pose, declared));
 
     private DdsImage Draw(
         PortraitRenderer renderer,
         string meshPath,
         PortraitTextures wearing,
         float scale,
-        PortraitPose pose)
+        PortraitPose pose,
+        IReadOnlyDictionary<(string Name, int Index), string>? declared = null)
     {
         var mesh = pose.ApplyTo(PortraitMesh.Load(_content.Read(meshPath)));
 
         // Each part is told what it is actually wearing before anything is drawn, so the renderer
         // has one job and a portrait in different clothes is the same call with a different set.
         var dressed = new PortraitMesh(
-            [.. mesh.Parts.Select(p => p with { Texture = TextureFor(p, wearing) })]);
+            [.. mesh.Parts.Select(p => p with { Texture = TextureFor(p, wearing, declared) })]);
 
         var textures = new Dictionary<string, DdsImage>(StringComparer.OrdinalIgnoreCase);
 
@@ -699,20 +719,41 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
     /// Finds the texture a part should wear.
     /// </summary>
     /// <remarks>
-    /// What the portrait says it is wearing comes first, because the mesh's own texture is a default
-    /// the definition is entitled to override — several humanoids are modelled in a general's coat
-    /// and dressed by their portrait in a ruler's. Where the portrait says nothing, the mesh's
-    /// texture stands; and since that is a bare file name which may live in any of the portrait
-    /// folders, it is looked up by name rather than assumed to sit beside its mesh.
+    /// <para>
+    /// Three answers, in order. What the portrait says it is wearing comes first, because the mesh's
+    /// own texture is a default the definition is entitled to override — several humanoids are
+    /// modelled in a general's coat and dressed by their portrait in a ruler's.
+    /// </para>
+    /// <para>
+    /// Then what the mesh's own <em>declaration</em> says, where it says anything. That is how four
+    /// portraits share one model and come out four colours; it ranks below the wardrobe and not
+    /// above it, which is the difference between fixing the Extradimensionals and repainting eight
+    /// humanoids, three salvagers and an aquatic that were never wrong.
+    /// </para>
+    /// <para>
+    /// Then the texture baked into the binary. Both of the last two are bare file names which may
+    /// live in any of the portrait folders, so both are looked up by name rather than assumed to sit
+    /// beside the mesh. Handing a bare name straight to the loader is what rendered a portrait
+    /// blank: nothing resolves it, the part is silently not drawn, and every part skipped is a
+    /// transparent picture with no error anywhere to say so.
+    /// </para>
     /// </remarks>
-    private string? TextureFor(MeshPart part, PortraitTextures wearing)
+    private string? TextureFor(
+        MeshPart part,
+        PortraitTextures wearing,
+        IReadOnlyDictionary<(string Name, int Index), string>? declared)
     {
         if (wearing.For(part.Kind) is { Length: > 0 } chosen)
         {
             return chosen;
         }
 
-        return part.Texture is { Length: > 0 } own ? FindTexture(own) : null;
+        // The shape entire where the declaration gives no index, which every portrait one does.
+        var named = declared?.GetValueOrDefault((part.Name, part.Index))
+            ?? declared?.GetValueOrDefault((part.Name, 0))
+            ?? part.Texture;
+
+        return named is { Length: > 0 } own ? FindTexture(own) : null;
     }
 
     /// <summary>
@@ -1245,6 +1286,105 @@ public sealed class PortraitBaker(LayeredContent content, SafeFile file)
         }
 
         return map;
+    }
+
+    /// <summary>
+    /// What each mesh declaration dresses its own named parts in.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A <c>pdxmesh</c> is a mesh file plus a set of <c>meshsettings</c> saying which texture each
+    /// named shape wears, and several declarations may name one file. The Extradimensionals are the
+    /// case: four portraits, one model, and the <c>.gfx</c> declaring them has its sections
+    /// commented BLUE, ORANGE, GREEN and FORMLESS. What separates them is eleven lines of
+    /// <c>texture_diffuse</c> each - and until this was read, all four wore whatever the shared
+    /// model bakes, which is the formless one. Even <c>exd1</c> was <c>exd4</c>.
+    /// </para>
+    /// <para>
+    /// Keyed by the declaration's <em>name</em> rather than by its file, which is the whole point:
+    /// keyed by file, the four blocks would overwrite each other and one picture would come out
+    /// again. <c>ShipBaker.Declared</c> keys by file because no two ship declarations share one.
+    /// </para>
+    /// <para>
+    /// And a map per declaration rather than one flat map, because shape names are generic -
+    /// <c>bodyShape</c> and <c>headShape</c> recur across every portrait family in the game - so a
+    /// single table would dress the mammalians in whatever the aquatics declared.
+    /// </para>
+    /// <para>
+    /// The part index comes with the name because a shape painted with several materials is several
+    /// meshes under one name. No portrait <c>.gfx</c> in the game writes an <c>index</c>, so these
+    /// all read 0 and match on the first probe; it is read anyway because the ships' do.
+    /// </para>
+    /// </remarks>
+    private Dictionary<string, Dictionary<(string Name, int Index), string>> ReadMeshTextures()
+    {
+        var map = new Dictionary<string, Dictionary<(string, int), string>>(StringComparer.Ordinal);
+
+        foreach (var path in _content.EnumerateFiles(ModelRoot, "*.gfx", recursive: true))
+        {
+            if (TryParse(path) is not { } document)
+            {
+                continue;
+            }
+
+            foreach (var node in document.Nodes)
+            {
+                Collect(node);
+            }
+        }
+
+        return map;
+
+        void Collect(CwNode node)
+        {
+            if (node.Block is not { } body)
+            {
+                return;
+            }
+
+            if (string.Equals(node.Key, "pdxmesh", StringComparison.Ordinal) &&
+                body.GetString("name") is { Length: > 0 } name)
+            {
+                var parts = new Dictionary<(string, int), string>();
+
+                foreach (var setting in body.Nodes.Where(n =>
+                    string.Equals(n.Key, "meshsettings", StringComparison.Ordinal)))
+                {
+                    // Both are required. An unnamed block says what the whole mesh wears, which is
+                    // not something this can act on without knowing which shapes that covers; and
+                    // the lithoids declare settings carrying only a normal and a specular map,
+                    // which say nothing about the colour being asked for here.
+                    if (setting.Block is not { } declared ||
+                        declared.GetString("name") is not { Length: > 0 } part ||
+                        declared.GetString("texture_diffuse") is not { Length: > 0 } diffuse)
+                    {
+                        continue;
+                    }
+
+                    var index = int.TryParse(
+                        declared.GetString("index"),
+                        System.Globalization.CultureInfo.InvariantCulture,
+                        out var slice)
+                        ? slice
+                        : 0;
+
+                    parts[(part, index)] = diffuse;
+                }
+
+                if (parts.Count > 0)
+                {
+                    // First wins, which matches the load order the caller enumerated in.
+                    map.TryAdd(name, parts);
+                }
+
+                return;
+            }
+
+            foreach (var child in body.Nodes)
+            {
+                Collect(child);
+            }
+        }
     }
 
     /// <summary>
