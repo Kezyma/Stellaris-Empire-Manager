@@ -36,7 +36,7 @@
     <NavLink href="wiki/species-traits" class="sem-tab">Species Traits</NavLink>
 </nav>
 
-@if (_session is null || _shelf is null || _filter is null)
+@if (!Ready)
 {
     <div class="sem-loading">
         @if (Host.LoadError is { } error)
@@ -408,6 +408,17 @@ else
     private ElementReference _body;
 
     /// <summary>
+    /// Whether the page is drawing its shelf rather than a loading line.
+    /// </summary>
+    /// <remarks>
+    /// The box above lives inside that branch, so until this is true the reference to it is the
+    /// empty one - and handing that to JavaScript is not a no-op, it resolves to something that is
+    /// not an element and throws. The two pages whose shelf comes from a file of its own have a real
+    /// window where the session has arrived and the shelf has not, which is where it threw.
+    /// </remarks>
+    private bool Ready => _session is not null && _shelf is not null && _filter is not null;
+
+    /// <summary>
     /// Held as the task rather than its result, for the reason the empire table gives: written as
     /// <c>_module ??= await Import()</c> two renders can both find it null and both import.
     /// </summary>
@@ -415,7 +426,7 @@ else
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (_session is null)
+        if (!Ready)
         {
             return;
         }
