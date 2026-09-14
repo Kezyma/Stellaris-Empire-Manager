@@ -127,6 +127,25 @@ allowed again, and the write that follows the answer is the save that was asked 
 tells "saved" from "waiting on an answer" - both look like the absence of an error message
 otherwise, and one caller closes the editor on it.
 
+## Running it while you work
+
+`.claude/launch.json` starts the site on `http://localhost:5155` under `dotnet watch`, so it rebuilds
+and restarts itself whenever anything in the project graph changes - including `Sem.Ui`, which is
+where nearly all of the work happens. Leave it running and reload the page.
+
+It runs with `--no-hot-reload`, and that is the whole point of the entry rather than an oversight.
+Hot reload patches the assemblies in the running process and does not rewrite the ones the server
+hands out, so a Blazor WebAssembly page that is reloaded fetches the last full build and silently
+loses the change - the page goes *backwards* while the terminal says the edit was applied in 790ms.
+Restarting on every change costs about twenty-five seconds and is always the truth.
+
+It builds Debug, which keeps it out of the way of `dotnet build -c Release` and `dotnet test -c Release`:
+different `bin` and `obj` subtrees, so the two can run at once and neither disturbs the other.
+
+`--launch-profile http` is what puts it on 5155 and sets `ASPNETCORE_ENVIRONMENT=Development`. The
+port is not arbitrary - it is registered as a redirect URI with both cloud providers, so moving it
+breaks signing in locally. See [cloud-setup.md](cloud-setup.md).
+
 ## Why the extracted data is committed
 
 `src/Sem.Web/wwwroot/gamedata` is 218 MB of extracted database, text and artwork, and it is in the

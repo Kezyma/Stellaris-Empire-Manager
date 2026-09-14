@@ -4,7 +4,15 @@
     {
       "name": "web",
       "runtimeExecutable": "dotnet",
-      "runtimeArgs": ["run", "--project", "src/Sem.Web", "--launch-profile", "http"],
+      "runtimeArgs": [
+        "watch",
+        "--no-hot-reload",
+        "--project",
+        "src/Sem.Web",
+        "run",
+        "--launch-profile",
+        "http"
+      ],
       "port": 5155
     }
   ]
