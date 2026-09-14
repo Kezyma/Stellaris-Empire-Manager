@@ -3966,14 +3966,24 @@ button.icon .sem-action-icon { display: block; }
    The column picker used to sit at the other end of it. It went to the table, which is the only
    thing it has anything to say about.
 */
+/*
+   What is being shown and how many of it, then whatever acts on it.
+
+   Packed from the left rather than spread across the width. Spread, the count landed in the middle
+   of the row with a hand's width of nothing on either side of it, reading as a third control rather
+   than as a remark about the two words beside it - and the buttons sat in the centre, which is where
+   the eye looks last on a row it is scanning left to right.
+*/
 .sem-list-head {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
     gap: var(--space-md);
     margin-bottom: var(--gap);
 }
+
+/* The gap that says the rest of the row is a different kind of thing. */
+.sem-list-head > .sem-file-bar { margin-left: auto; }
 
 /*
    Everything that acts on the designs file, at the head of the list it acts on.

@@ -4,6 +4,7 @@
 @inject SessionHost Host
 @inject IFileExchange Files
 @inject NavigationManager Navigation
+@inject AddressBar Address
 @inject UnsavedWorkGuard Unsaved
 @inject EditorState Editor
 @inject DesignSync Sync
@@ -120,16 +121,9 @@ else
             </div>
 
             @*
-                Everything that acts on the file, beside the thing that decides how it is shown.
-                They were tabs in the header until they were here, which made them look like
-                navigation and put them across the top of the wiki as well.
-            *@
-            <EmpireFileBar />
-
-            @*
-                How many there are, which is about the list rather than about the file: naming the
-                file here said the wrong thing anyway, since the desktop writes to the player's own
-                designs file whatever was imported.
+                How many there are, next to the control that draws them, because it is about the
+                list rather than about the file: naming the file here said the wrong thing anyway,
+                since the desktop writes to the player's own designs file whatever was imported.
             *@
             @if (_session.File is { } file && file.Designs.Count > 0)
             {
@@ -144,6 +138,16 @@ else
                     }
                 </p>
             }
+
+            @*
+                Everything that acts on the file, at the far end of the row. They were tabs in the
+                header until they were here, which made them look like navigation and put them
+                across the top of the wiki as well.
+
+                Apart from the two things on the left, which say what is being shown and how many of
+                it. These do something to the file instead, and a gap is what says so.
+            *@
+            <EmpireFileBar />
         </div>
 
         @if (_listView)
@@ -317,6 +321,31 @@ else
     [Parameter]
     public string? Shared { get; set; }
 
+    /// <summary>The last value the route gave, so a fresh arrival can be told from one handled.</summary>
+    private string? _routed;
+
+    /// <summary>
+    /// The link still to be acted on and then cleared out of the address.
+    /// </summary>
+    /// <remarks>
+    /// Held here rather than read from <see cref="Shared"/> each time, because opening an empire
+    /// writes the address directly now rather than navigating to it - which is what stops the list
+    /// being thrown back to the top - and nothing routes, so the route parameter does not change as
+    /// the editor works and cannot say when the link has been dealt with.
+    /// </remarks>
+    private string? _link;
+
+    /// <summary>
+    /// Whether the address is naming an empire, and so has something to take out of it.
+    /// </summary>
+    /// <remarks>
+    /// Tracked here because the two ways it comes to name one no longer meet in the route. A link
+    /// somebody followed arrives as the route parameter; the editor writes its own straight into
+    /// the bar, so that the list behind it is not thrown back to the top on every open and every
+    /// save. Only the first of those is visible as a parameter, and both have to be cleared.
+    /// </remarks>
+    private bool _named;
+
     /// <summary>Whether the editor is drawn over the list.</summary>
     /// <remarks>
     /// Kept in a service rather than here, because two of the things that open it are not on this
@@ -413,7 +442,16 @@ else
     /// </remarks>
     protected override void OnParametersSet()
     {
-        if (_ready && !Editing && !_closing && Shared is { Length: > 0 })
+        // A different value in the route is a different link. The same value again is this page
+        // being re-rendered for some other reason, and is not a second arrival.
+        if (Shared != _routed)
+        {
+            _routed = Shared;
+            _link = Shared;
+            _named |= Shared is { Length: > 0 };
+        }
+
+        if (_ready && !Editing && !_closing && _link is { Length: > 0 })
         {
             OpenSharedDesign();
         }
@@ -460,6 +498,10 @@ else
     {
         if (Editing)
         {
+            // The editor is writing the empire into the bar while it is open, so there will be
+            // something there to take out again.
+            _named = true;
+
             if (!_focused)
             {
                 _focused = true;
@@ -481,13 +523,18 @@ else
         // still being awaited, so this ran with no session, no editor open and the payload sitting
         // in the address - and cleared it before anything had looked at it. A shared link opened
         // the bare list.
-        if (_ready && Shared is { Length: > 0 })
+        if (_ready && _named)
         {
-            Navigation.NavigateTo(string.Empty, replace: true);
-            return;
+            _named = false;
+            _link = null;
+            _ = Address.ShowAsync(string.Empty);
         }
 
         // The address is clear, so whatever turns up in it next really is somebody opening a link.
+        //
+        // Reached in the same pass as the clearing above, which it did not used to be: the clearing
+        // was a navigation, so this waited for the render that came back from it. Writing the bar
+        // raises no such render, and waiting for one that never comes left this latched on.
         _closing = false;
     }
 
@@ -853,7 +900,7 @@ else
     /// link somebody sent is not ours to expire.
     /// </remarks>
     private string? SharedDesign() =>
-        Shared is { Length: > 0 } fromPath
+        _link is { Length: > 0 } fromPath
             ? fromPath
             : System.Web.HttpUtility.ParseQueryString(new Uri(Navigation.Uri).Query)[DesignLink.Parameter];
 

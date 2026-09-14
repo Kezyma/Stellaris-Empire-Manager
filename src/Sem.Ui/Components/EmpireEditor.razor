@@ -2,6 +2,7 @@
 @inject SessionHost Host
 @inject IFileExchange Files
 @inject NavigationManager Navigation
+@inject AddressBar Address
 @inject UnsavedWorkGuard Unsaved
 
 @*
@@ -498,7 +499,14 @@ else
         }
 
         _shown = encoded;
-        Navigation.NavigateTo(DesignLink.Address(encoded), replace: true);
+
+        // Written rather than navigated to. NavigateTo scrolls the page to the top on any change of
+        // path, whatever `replace` says, so opening an empire threw the list behind this dialog back
+        // to the top of itself - and so did every save, since this runs again on each one.
+        //
+        // Not awaited: the address is a courtesy to whoever the link is sent to, and nothing on
+        // screen is waiting on it.
+        _ = Address.ShowAsync(DesignLink.Address(encoded));
     }
 
     /// <summary>What the share button says, which depends on whether the last press worked.</summary>

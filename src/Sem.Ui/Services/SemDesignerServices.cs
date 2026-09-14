@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
 
@@ -50,6 +51,10 @@ public static class SemDesignerServices
         // hosts register it: inside the desktop's embedded browser the document is always visible,
         // so it answers "attended" forever and costs nothing.
         services.AddScoped(s => new PageAttention(s.GetRequiredService<IJSRuntime>()));
+
+        // What the address bar says, for the three places that write it without going anywhere.
+        services.AddScoped(s => new AddressBar(
+            s.GetRequiredService<NavigationManager>(), s.GetRequiredService<IJSRuntime>()));
 
         // One session for the whole app, so moving between the list and the designer keeps unsaved
         // work. The store is asked for rather than required: the desktop keeps none, because the

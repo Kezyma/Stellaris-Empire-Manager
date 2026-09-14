@@ -286,6 +286,59 @@ export function revealSelected(list, selector) {
 }
 
 /**
+ * The nearest thing around an element that scrolls, which may be the element itself.
+ *
+ * Which thing scrolls is not the same on both hosts. In a browser the window does. On the desktop
+ * the page is pinned to the window - html and body are `overflow: hidden` so the frame cannot be
+ * dragged about by its content - and `.sem-main` scrolls instead. So `window.scrollTo` there is a
+ * call that returns without doing anything, which is why a wiki link has never scrolled in the app.
+ *
+ * Asking for the style alone is not enough when the answer has to scroll something. A box that
+ * scrolls sideways - the wiki's own table sits in one - computes `overflow-y: auto` whether or not
+ * anything overflows it vertically, because CSS turns `visible` into `auto` the moment the other
+ * axis is not visible. Such a box answers "I scroll" and then does nothing when asked to, which is
+ * how a wiki link came to select its entry and leave the page at the top. So `vertically` asks the
+ * box to prove it, by having somewhere to go.
+ *
+ * @param {HTMLElement} start where to look from
+ * @param {boolean} [vertically] whether it must actually have vertical overflow
+ * @returns {HTMLElement|null} the scrolling ancestor, or null when the window is doing it
+ */
+function scrollerOf(start, vertically = false) {
+    for (let el = start; el && el !== document.body; el = el.parentElement) {
+        const overflow = getComputedStyle(el).overflowY;
+
+        if ((overflow === 'auto' || overflow === 'scroll') &&
+            (!vertically || el.scrollHeight > el.clientHeight)) {
+            return el;
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Puts an address in the bar without going anywhere.
+ *
+ * Blazor's own NavigateTo cannot do this. Its internal navigation sets a "scroll to the top after
+ * the next render" flag whenever the *path* differs from the current one, and reads that flag at the
+ * end of every applied batch. `replace: true` suppresses the history entry, not the scroll - so a
+ * reader who pressed a card two thirds of the way down a page was thrown back to the top of it.
+ *
+ * These addresses are not navigations. Nothing routes, no page changes, and the component doing it
+ * already knows what it means to show; the address is being written so the page can be sent to
+ * somebody. That is what replaceState is for.
+ *
+ * The existing state is handed back rather than dropped, because Blazor keeps its own payload there
+ * and a history entry without it is one the framework no longer recognises.
+ *
+ * @param {string} url where the bar should read
+ */
+export function setAddress(url) {
+    history.replaceState(history.state, '', url);
+}
+
+/**
  * Brings a linked entry into view on the page.
  *
  * Unlike revealSelected above, which scrolls a box and deliberately leaves the page alone, this is
@@ -314,11 +367,20 @@ export function scrollToEntry(root, selector) {
     const sticky = parseInt(styles.getPropertyValue('--sticky-top'), 10);
     const margin = Number.isFinite(sticky) ? sticky : 60;
 
-    const top = found.getBoundingClientRect().top + window.scrollY - margin;
-
     // Instant rather than smooth. A page that is still gliding when the reader starts reading is a
     // page they have to wait for, and a link they followed deliberately is not a transition.
-    window.scrollTo({ top: Math.max(0, top), behavior: 'instant' });
+    const scroller = scrollerOf(found, true);
+
+    if (scroller) {
+        const top = found.getBoundingClientRect().top - scroller.getBoundingClientRect().top
+            + scroller.scrollTop - margin;
+
+        scroller.scrollTo({ top: Math.max(0, top), behavior: 'instant' });
+    } else {
+        const top = found.getBoundingClientRect().top + window.scrollY - margin;
+
+        window.scrollTo({ top: Math.max(0, top), behavior: 'instant' });
+    }
 
     return true;
 }
@@ -880,19 +942,6 @@ export function enableCardReorder(list, owner) {
     const drift = () => scroller
         ? { x: scroller.scrollLeft - scrolledFrom.left, y: scroller.scrollTop - scrolledFrom.top }
         : { x: 0, y: 0 };
-
-    /** The nearest thing around an element that scrolls, which may be the element itself. */
-    const scrollerOf = start => {
-        for (let el = start; el && el !== document.body; el = el.parentElement) {
-            const overflow = getComputedStyle(el).overflowY;
-
-            if (overflow === 'auto' || overflow === 'scroll') {
-                return el;
-            }
-        }
-
-        return null;
-    };
 
     const settle = () => {
         for (const card of cards) {

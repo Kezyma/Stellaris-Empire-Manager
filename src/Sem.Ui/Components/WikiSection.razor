@@ -1,7 +1,7 @@
 @implements IAsyncDisposable
 @inject SessionHost Host
 @inject IJSRuntime Js
-@inject NavigationManager Navigation
+@inject AddressBar Address
 
 @*
     A shelf of the game, to read rather than to pick from.
@@ -167,6 +167,9 @@ else
     /// <summary>Which entry is picked out, whether by the address or by a press.</summary>
     private string? _chosen;
 
+    /// <summary>The last <see cref="Focus"/> this acted on, which is what the address last said.</summary>
+    private string? _routed;
+
     /// <summary>The key still waiting to be scrolled to, cleared once it has been.</summary>
     private string? _pending;
 
@@ -291,14 +294,16 @@ else
             Open();
         }
 
-        // The address decides which entry is picked out, so the page is the same thing to everybody
-        // who opens it. A press writes it there rather than here; this reads it back - including
-        // when the press was on a chip naming something on the page already in front of the reader.
-        if (Focus == _chosen)
+        // Against the last value taken from the address, not against the selection. The two part
+        // company the moment a press writes the bar without routing: Focus stays as it was, and
+        // comparing with _chosen would read that as "the address changed back" and drop the
+        // selection on the next render anybody happened to cause.
+        if (Focus == _routed)
         {
             return;
         }
 
+        _routed = Focus;
         _chosen = Focus;
         _pending = Focus;
 
@@ -317,17 +322,32 @@ else
     /// Picks an entry out, and puts it in the address so the page can be shared as it stands.
     /// </summary>
     /// <remarks>
-    /// Replacing rather than pushing. Reading down a list and pressing four things is one visit, not
+    /// <para>
+    /// Written into the bar rather than navigated to. Blazor's own NavigateTo scrolls the page to
+    /// the top whenever the path changes - <c>replace: true</c> suppresses the history entry, not
+    /// the scroll - so pressing a card two thirds of the way down a page threw the reader back to
+    /// the top of it. Nothing here is going anywhere: the page is already the right page and the
+    /// selection is already made.
+    /// </para>
+    /// <para>
+    /// No history entry either way. Reading down a list and pressing four things is one visit, not
     /// four, and a Back button that walks a reader back through their own browsing of one page is a
     /// Back button that does not go back.
+    /// </para>
     /// </remarks>
-    private void Choose(WikiRow row)
+    /// <param name="row">The entry pressed.</param>
+    /// <returns>A task that completes when the address has been written.</returns>
+    private async Task Choose(WikiRow row)
     {
         _chosen = _chosen == row.Key ? null : row.Key;
 
-        Navigation.NavigateTo(
-            _chosen is { Length: > 0 } key ? WikiLinks.Entry(Kind, key) : WikiLinks.Section(Kind),
-            replace: true);
+        // Kept in step with the address by hand, because nothing routes now and the route parameter
+        // will not come back round to say so.
+        _routed = _chosen;
+
+        await Address.ShowAsync(_chosen is { Length: > 0 } key
+            ? WikiLinks.Entry(Kind, key)
+            : WikiLinks.Section(Kind)).ConfigureAwait(true);
     }
 
     /// <summary>The box the popovers are bound through.</summary>
