@@ -165,15 +165,7 @@
     /// <summary>Which biography actually holds a plan, which is nothing until one is written.</summary>
     private PlanHome? Stored => Session.Plans.HomeOf(Design, Vocabulary);
 
-    /// <summary>
-    /// Whether this empire is being planned.
-    /// </summary>
-    /// <remarks>
-    /// Either because a biography already holds a plan, or because the player has said so and has
-    /// not decided anything yet. The second is what stops the checkbox from taking a biography the
-    /// moment it is ticked.
-    /// </remarks>
-    private bool Planning => Stored is not null || Session.PlanIntent is not null;
+    private bool Planning => Session.Plans.IsPlanning(Design, Vocabulary, Session.PlanIntent);
 
     /// <summary>
     /// The plan being edited, which is the stored one or the one a new plan starts as.
@@ -540,8 +532,7 @@
     /// <summary>Whether a plan may use that biography, which it may not if it holds writing.</summary>
     private bool CanCarry(PlanHome home) => Session.Plans.CanCarry(Design, home, Vocabulary);
 
-    /// <summary>Whether either biography is free, which is what makes planning possible at all.</summary>
-    private bool AnyFree => CanCarry(PlanHome.Species) || CanCarry(PlanHome.Ruler);
+    private bool AnyFree => Session.Plans.AnyFree(Design, Vocabulary);
 
     /// <summary>
     /// Moves the plan to the other biography, taking it out of the one it was in.

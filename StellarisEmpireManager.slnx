@@ -15,6 +15,7 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Sem.Core.Tests/Sem.Core.Tests.csproj" />
+    <Project Path="tests/Sem.Desktop.Tests/Sem.Desktop.Tests.csproj" />
     <Project Path="tests/Sem.Extraction.Tests/Sem.Extraction.Tests.csproj" />
     <Project Path="tests/Sem.Ui.Tests/Sem.Ui.Tests.csproj" />
   </Folder>

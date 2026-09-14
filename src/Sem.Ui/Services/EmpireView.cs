@@ -258,21 +258,6 @@ public sealed class EmpireView(DesignSession session, EmpireDesign design)
         : share < 0.005 ? "<1"
         : $"{share * 100:0}";
 
-    /// <summary>The ruler, as a line: their name and the title they hold, where they hold one.</summary>
-    public string Ruler
-    {
-        get
-        {
-            var name = _session.Localizer.RulerName(_design.Ruler, string.Empty);
-
-            var title = _design.Ruler.Title is { } held
-                ? _session.Localizer.Name(held, string.Empty)
-                : string.Empty;
-
-            return string.Join(", ", new[] { name, title }.Where(p => p.Length > 0));
-        }
-    }
-
     /// <summary>The homeworld's name and its class, as one line.</summary>
     public string Homeworld =>
         string.Join(

@@ -23,12 +23,24 @@ public sealed class GameDataCache
 
     /// <summary>Points the cache at the installation it is to be built from.</summary>
     /// <param name="installRoot">Where the game is installed.</param>
-    public GameDataCache(string installRoot)
+    /// <param name="cacheRoot">
+    /// Where to keep what is extracted, for a caller that needs to say.
+    /// </param>
+    /// <remarks>
+    /// The root is a parameter for one reason: <see cref="IsUsable"/> decides whether a launch
+    /// re-reads thirty-five thousand files or opens in a second, and answers through a sentence
+    /// nobody could assert while the only answer was the machine's real application-data folder. A
+    /// test that had to write there to arrange a case would be writing into the cache the developer
+    /// actually uses. Left alone it is the real one, which is every caller in the app.
+    /// </remarks>
+    public GameDataCache(string installRoot, string? cacheRoot = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(installRoot);
 
         _installRoot = PathNormalizer.Normalize(installRoot);
-        Directory = Path.Combine(WritePolicy.LocalCacheRoot(), "cache", KeyFor(_installRoot));
+
+        Directory = Path.Combine(
+            cacheRoot ?? WritePolicy.LocalCacheRoot(), "cache", KeyFor(_installRoot));
     }
 
     /// <summary>Where this installation's extracted data is kept.</summary>

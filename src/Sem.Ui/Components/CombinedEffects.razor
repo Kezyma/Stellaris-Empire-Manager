@@ -266,8 +266,48 @@
     /// <summary>Whether the totals are of the empire as planned rather than as it stands.</summary>
     private bool _withPlan;
 
-    /// <summary>What this empire means to become, or nothing where it is not being planned.</summary>
-    private EmpirePlan Plan => Session.Plans.PlanOf(Session.Current, Session.PlanVocabulary);
+    /// <summary>
+    /// What this empire means to become, or nothing where it is not being planned.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Worked out once and kept, because reading it is not free and this panel reads it a great
+    /// many times. PlanOf parses a biography looking for the plan's own wording, and the readers
+    /// are the checkbox twice, the sentence beside it, and four times inside Planned - which every
+    /// one of Combined, Contributions, Ordered and Changes goes through. Written plainly as an
+    /// expression it was re-parsing the same paragraph a dozen times per render, on a panel that
+    /// re-renders with every keystroke in the designer.
+    /// </para>
+    /// <para>
+    /// Kept against what it is made of rather than for the life of the component: the two
+    /// biographies and the vocabulary that says what a plan looks like. The session hands back the
+    /// same vocabulary until the context changes, so comparing the reference is enough, and a
+    /// biography edited in the designer changes the string - so the answer cannot go stale without
+    /// the key going with it.
+    /// </para>
+    /// </remarks>
+    private EmpirePlan Plan
+    {
+        get
+        {
+            var from = (
+                EmpirePlans.SpeciesBiography(Session.Current),
+                EmpirePlans.RulerBiography(Session.Current),
+                Session.PlanVocabulary);
+
+            if (_plan is null || from != _planFrom)
+            {
+                _plan = Session.Plans.PlanOf(Session.Current, Session.PlanVocabulary);
+                _planFrom = from;
+            }
+
+            return _plan;
+        }
+    }
+
+    private EmpirePlan? _plan;
+
+    private (string? Species, string? Ruler, PlanVocabulary Vocabulary) _planFrom;
 
     /// <summary>What the box says it will do, and why it will not where there is nothing to count.</summary>
     private string PlanExplained => Plan.Any

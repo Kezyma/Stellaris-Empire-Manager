@@ -134,6 +134,30 @@ public sealed class EmpirePlans(PlanText text)
         return written is not { Length: > 0 } || Text.IsPlan(written, vocabulary);
     }
 
+    /// <summary>
+    /// Whether either biography is free, which is what makes planning possible at all.
+    /// </summary>
+    /// <remarks>
+    /// Here rather than worked out by whoever is drawing. Both the tab and the switch beside it had
+    /// their own copy of this and of <see cref="IsPlanning"/>, character for character, because each
+    /// had to bind the design and the vocabulary itself - and a rule about what a plan may do
+    /// belongs with the rest of them.
+    /// </remarks>
+    public bool AnyFree(EmpireDesign? design, PlanVocabulary vocabulary) =>
+        CanCarry(design, PlanHome.Species, vocabulary) || CanCarry(design, PlanHome.Ruler, vocabulary);
+
+    /// <summary>
+    /// Whether this empire is being planned.
+    /// </summary>
+    /// <remarks>
+    /// Either because a biography already holds a plan, or because the player has said so and has
+    /// not decided anything yet. The second is what stops the box from taking a biography the moment
+    /// it is ticked - so the intent is handed in rather than read, since it belongs to the session
+    /// and this does not.
+    /// </remarks>
+    public bool IsPlanning(EmpireDesign? design, PlanVocabulary vocabulary, PlanHome? intent) =>
+        HomeOf(design, vocabulary) is not null || intent is not null;
+
     /// <summary>What is written in the founding species' biography, if anything.</summary>
     public static string? SpeciesBiography(EmpireDesign? design) => design?.Species.Biography;
 

@@ -5115,9 +5115,7 @@ button.icon .sem-action-icon { display: block; }
     /*
         minmax(0, 1fr) rather than 1fr, which is minmax(auto, 1fr) and so refuses to go below the
         widest thing inside it. The cards want 300px plus their padding, so on a 375px phone the one
-        column came out 362 wide in a 343 box and the page scrolled sideways by three pixels. The
-        wide-screen rule below already says minmax(0, 1fr) for the same reason; this is the case it
-        did not cover.
+        column came out 362 wide in a 343 box and the page scrolled sideways by three pixels.
     */
     grid-template-columns: minmax(0, 1fr);
     gap: var(--gap);

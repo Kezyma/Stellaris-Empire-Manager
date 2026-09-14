@@ -1,0 +1,55 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    The desktop shell's own tests, and the reason this project exists at all.
+
+    Sem.Desktop targets net10.0-windows with UseWPF, and a net10.0 test assembly cannot reference
+    one - so for a long time the class that writes the player's real designs file had no test
+    project that could reach it. That is how the archive came to be keeping a copy of the wrong side
+    of every save for as long as it did. This matches the shell's framework so the reference works.
+
+    CI needs nothing: ci.yml already runs on windows-latest, because the shell cannot build anywhere
+    else.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="Xunit.SkippableFact" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+
+    <!--
+      A WPF project's implicit usings leave System.IO out - System.IO.Path and
+      System.Windows.Shapes.Path would be ambiguous in every file - which is why every file in
+      Sem.Desktop that touches the disk imports it by hand. Named here instead, because the shared
+      helper below is written for the other test projects and should not have to know which of them
+      is a WPF one.
+    -->
+    <Using Include="System.IO" />
+  </ItemGroup>
+
+  <!--
+    Linked rather than copied. There is no mechanism for sharing anything between test projects, so
+    the easy thing is a second copy of a thirty-line helper - and a second copy of a small thing is
+    how this codebase ended up with three ways to find an unused name and two ways to make initials.
+    A shared project would be the answer at a third consumer; at two, this is.
+  -->
+  <ItemGroup>
+    <Compile Include="..\Sem.Core.Tests\TempDirectory.cs" Link="TempDirectory.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Sem.Desktop\Sem.Desktop.csproj" />
+  </ItemGroup>
+
+</Project>
