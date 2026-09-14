@@ -26,6 +26,17 @@ public sealed class OneDriveAuthTests
 
         public List<Uri?> Urls { get; } = [];
 
+        /// <summary>
+        /// Awaited before answering, so a request can be held genuinely in flight.
+        /// </summary>
+        /// <remarks>
+        /// Without a real suspension here nothing in these tests ever overlaps: the store answers
+        /// from a dictionary and this handler answers from a lambda, so two calls made one after
+        /// the other run to completion one after the other and a test of what happens when they do
+        /// not overlap proves nothing at all.
+        /// </remarks>
+        public Func<Task>? Holding { get; set; }
+
         protected override async Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request, CancellationToken cancellationToken)
         {
@@ -35,6 +46,11 @@ public sealed class OneDriveAuthTests
 
             Bodies.Add(body);
             Urls.Add(request.RequestUri);
+
+            if (Holding is { } held)
+            {
+                await held().ConfigureAwait(false);
+            }
 
             return answer(request, body);
         }
@@ -410,5 +426,148 @@ public sealed class OneDriveAuthTests
         Assert.Null(await auth.TokenAsync());
         Assert.False(await auth.SignedInAsync());
         Assert.Empty(handler.Bodies);
+    }
+
+    /// <summary>
+    /// A refusal left by one attempt does not describe the next one.
+    /// </summary>
+    /// <remarks>
+    /// The header shows a refusal in preference to a trouble, because the two want opposite
+    /// sentences - and a refusal was only ever cleared inside the redeem, which the early exits
+    /// never reach. So somebody whose browser had stopped keeping site data was told that Microsoft
+    /// had turned them down, quoting a code from minutes earlier, and went to check the one thing
+    /// that was working.
+    /// </remarks>
+    [Fact]
+    public async Task ARefusalDoesNotOutliveTheAttemptThatEarnedIt()
+    {
+        var (auth, _, session) = Built((_, _) => new HttpResponseMessage(HttpStatusCode.BadRequest)
+        {
+            Content = new StringContent(
+                "{\"error\":\"invalid_grant\",\"error_description\":\"AADSTS70008: expired\"}",
+                Encoding.UTF8,
+                "application/json"),
+        });
+
+        await auth.BeginAsync();
+
+        var state = await session.ReadForTabAsync("sem.cloud.state");
+
+        Assert.False(await auth.CompleteAsync($"{Redirect}?code=one&state={state}"));
+        Assert.NotNull(auth.Refusal);
+
+        // A second attempt that never gets as far as asking Microsoft anything: the browser kept
+        // nothing, so there is no verifier to redeem with.
+        await session.WriteForTabAsync("sem.cloud.verifier", null);
+        await session.WriteForTabAsync("sem.cloud.state", null);
+        await session.WriteAsync("sem.cloud.verifier", null);
+        await session.WriteAsync("sem.cloud.state", null);
+
+        Assert.False(await auth.CompleteAsync($"{Redirect}?code=two&state=whatever"));
+
+        Assert.Null(auth.Refusal);
+        Assert.NotNull(auth.Trouble);
+    }
+
+    /// <summary>
+    /// A rate limit or a bad gateway is not Microsoft saying the session is over.
+    /// </summary>
+    /// <remarks>
+    /// Any refusal at all used to drop the session, so a 429 from the token endpoint - or the HTML
+    /// a captive portal answers with - cost somebody a sign-in that was working and would have gone
+    /// on working a minute later.
+    /// </remarks>
+    [Theory]
+    [InlineData(HttpStatusCode.TooManyRequests)]
+    [InlineData(HttpStatusCode.ServiceUnavailable)]
+    [InlineData(HttpStatusCode.BadGateway)]
+    public async Task ATemporaryRefusalKeepsTheSession(HttpStatusCode status)
+    {
+        var (auth, _, session) = Built((_, _) => new HttpResponseMessage(status));
+
+        await session.WriteAsync("sem.cloud.refresh", "refresh-1");
+
+        Assert.Null(await auth.TokenAsync());
+
+        // Still there to try again with, which is the whole difference.
+        Assert.Equal("refresh-1", await session.ReadAsync("sem.cloud.refresh"));
+    }
+
+    /// <summary>And a refusal that does mean it still ends the session.</summary>
+    [Fact]
+    public async Task ARefusedRefreshStillEndsTheSession()
+    {
+        var (auth, _, session) = Built((_, _) => new HttpResponseMessage(HttpStatusCode.BadRequest)
+        {
+            Content = new StringContent(
+                "{\"error\":\"invalid_grant\"}", Encoding.UTF8, "application/json"),
+        });
+
+        await session.WriteAsync("sem.cloud.refresh", "refresh-1");
+
+        Assert.Null(await auth.TokenAsync());
+        Assert.Null(await session.ReadAsync("sem.cloud.refresh"));
+    }
+
+    /// <summary>
+    /// Two callers finding the token expired at once renew it once between them.
+    /// </summary>
+    /// <remarks>
+    /// Microsoft rotates a personal account's refresh token, so the second redemption of the same
+    /// one is answered invalid_grant - which used to be read as the session being over, throwing
+    /// away the good token the first caller had just stored. A poll and a save landing together is
+    /// an ordinary pairing, so this ended working connections.
+    ///
+    /// The first redemption is held open while the second caller arrives, which is the only way
+    /// this test means anything: left to run at their own pace the two calls never overlap and it
+    /// passes whether or not there is a gate.
+    /// </remarks>
+    [Fact]
+    public async Task TwoCallersAtOnceRenewTheTokenOnce()
+    {
+        var redemptions = 0;
+        var arrived = new TaskCompletionSource();
+        var release = new TaskCompletionSource();
+
+        var handler = new Handler((_, body) =>
+        {
+            if (body.Contains("refresh_token", StringComparison.Ordinal))
+            {
+                redemptions++;
+            }
+
+            return Granting($"token-{redemptions + 1}", $"refresh-{redemptions + 1}");
+        })
+        {
+            Holding = async () =>
+            {
+                arrived.TrySetResult();
+                await release.Task;
+            },
+        };
+
+        var session = new NoTokenStore();
+        await session.WriteAsync("sem.cloud.refresh", "refresh-1");
+
+        var auth = new OneDriveAuth(new HttpClient(handler), session, ClientId, Redirect);
+
+        var first = auth.TokenAsync();
+
+        // The first redemption is now genuinely in flight.
+        await arrived.Task;
+
+        var second = auth.TokenAsync();
+
+        release.SetResult();
+
+        var tokens = await Task.WhenAll(first, second);
+
+        Assert.Equal(1, redemptions);
+        Assert.Equal(tokens[0], tokens[1]);
+        Assert.NotNull(tokens[0]);
+
+        // And the rotated token is the one that survived, rather than being signed away by the
+        // caller that lost.
+        Assert.Equal("refresh-2", await session.ReadAsync("sem.cloud.refresh"));
     }
 }

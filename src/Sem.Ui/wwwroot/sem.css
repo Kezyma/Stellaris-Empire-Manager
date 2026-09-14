@@ -2618,18 +2618,6 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     .sem-designer { grid-template-columns: minmax(0, 1fr) 520px; }
 }
 
-/* One column, and the preview leads. Grid children follow source order, so without this the panel
-   would sit under every section — past the point where it answers anything. */
-@media (max-width: 1100px) {
-    .sem-designer { grid-template-columns: minmax(0, 1fr); }
-
-    .sem-summary-pane {
-        position: static !important;
-        order: -1;
-        max-height: none;
-    }
-}
-
 .sem-sections {
     display: flex;
     flex-direction: column;
@@ -2646,6 +2634,28 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
     /* What is left of the window once the header and the gap either side are taken. */
     max-height: calc(100vh - var(--sticky-top) - var(--gap));
     overflow-y: auto;
+}
+
+/*
+   One column, and the preview leads. Grid children follow source order, so without this the panel
+   would sit under every section - past the point where it answers anything.
+
+   Below the rule it overrides, which it was not. Written above it at equal specificity, only the
+   declaration carrying !important actually won: position went static and max-height did not, so
+   the pane stayed capped at a viewport height with a scrollbar of its own. On a phone that made
+   the expanded summary a nested scrolling region inside the page, which is the arrangement the
+   rest of this sheet works to avoid. In source order both declarations apply and the !important -
+   the only one in this file, and the tell that something here was not working - is not needed.
+*/
+@media (max-width: 1100px) {
+    .sem-designer { grid-template-columns: minmax(0, 1fr); }
+
+    .sem-summary-pane {
+        position: static;
+        order: -1;
+        max-height: none;
+        overflow-y: visible;
+    }
 }
 
 /*
@@ -7284,17 +7294,17 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
-    On a light ground the same hue has to come down to stay readable: a 68% lightness that reads as
-    a colour against a dark panel is nearly white against a pale one.
-*/
-@media (prefers-color-scheme: light) {
-    :root:not([data-theme="dark"]) .sem-chip > button > .badge,
-    :root:not([data-theme="dark"]) .sem-chip-stack > .lead > .badge {
-        color: hsl(var(--badge-hue, 0) 55% 32%);
-    }
-}
+    There was a light-theme branch here and it was making the badge unreadable for most people.
 
-:root[data-theme="light"] .sem-chip > button > .badge,
-:root[data-theme="light"] .sem-chip-stack > .lead > .badge {
-    color: hsl(var(--badge-hue, 0) 55% 32%);
-}
+    It brought the text down to 32% lightness under prefers-color-scheme: light, reasoning that a
+    68% hue which reads as a colour on a dark panel is nearly white on a pale one. True, and this
+    app has no pale one: :root carries a single dark palette, that media query was the only one of
+    its kind in the file, and data-theme is set nowhere - so the guard :not([data-theme="dark"])
+    always matched. The result was dark text on the same dark ground for every visitor whose
+    operating system is in light mode, which is most of them. Measured against --bg-raised it ran
+    from 3.06:1 down to 1.54:1 where the intended colour gives 5.4:1 to 9.2:1; AA wants 4.5.
+
+    Both blocks are gone rather than corrected. There is nothing to correct them against until
+    there is a light theme, and when there is one it will need a palette rather than one rule about
+    one badge.
+*/

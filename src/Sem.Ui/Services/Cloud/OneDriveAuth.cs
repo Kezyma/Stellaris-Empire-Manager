@@ -68,6 +68,17 @@ public sealed class OneDriveAuth
     private readonly string _clientId;
     private readonly string _redirectUri;
 
+    /// <summary>
+    /// Held while the access token is being renewed, so only one caller ever does it.
+    /// </summary>
+    /// <remarks>
+    /// Not disposed, deliberately, and the same choice the session host makes about its own gate: a
+    /// <see cref="SemaphoreSlim"/> only holds a wait handle once somebody has waited on a contended
+    /// one, this lives as long as the connection does, and nothing here has a disposal to hang it
+    /// off without making every holder of an auth disposable too.
+    /// </remarks>
+    private readonly SemaphoreSlim _renewing = new(1, 1);
+
     private string? _token;
     private DateTimeOffset _expires;
 
@@ -250,7 +261,13 @@ public sealed class OneDriveAuth
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(address);
 
+        // Both of them, and this is why. A refusal was only ever cleared inside RedeemAsync, which
+        // the early exits below never reach - so a refusal left by one attempt outlived it, and the
+        // header prefers a refusal to a trouble. Somebody whose browser had stopped keeping site
+        // data was therefore told that Microsoft had turned them down, with the code from an
+        // attempt several minutes earlier, and went to check the one thing that was working.
         Trouble = null;
+        Refusal = null;
 
         var query = Parsed(address);
 
@@ -357,25 +374,59 @@ public sealed class OneDriveAuth
     /// <returns>The token, or null where the player has to sign in again.</returns>
     public async Task<string?> TokenAsync()
     {
-        // A minute's grace, so a token is not spent on a request that will arrive after it expires.
-        if (_token is { Length: > 0 } && DateTimeOffset.UtcNow < _expires - TimeSpan.FromMinutes(1))
+        if (Fresh() is { } ready)
         {
-            return _token;
+            return ready;
         }
 
-        if (await _session.ReadAsync(RefreshKey).ConfigureAwait(false) is not { Length: > 0 } refresh)
+        // One renewal at a time.
+        //
+        // Microsoft rotates a personal account's refresh token, so the one that comes back replaces
+        // the one that was sent. Two callers finding the token expired at the same moment - a poll
+        // and a save, which is an ordinary pairing - both redeemed the same token, and the second
+        // was answered invalid_grant for a token the first had already spent. That was read as the
+        // session being over, and signing out threw away the good token the first had just stored.
+        // A working connection ended because the app asked itself twice.
+        await _renewing.WaitAsync().ConfigureAwait(false);
+
+        try
         {
-            return null;
+            // Asked again inside the gate: whoever was ahead has very likely just renewed it, and
+            // the whole point is that the second caller uses that rather than spending it.
+            if (Fresh() is { } renewed)
+            {
+                return renewed;
+            }
+
+            if (await _session.ReadAsync(RefreshKey).ConfigureAwait(false) is not { Length: > 0 } refresh)
+            {
+                return null;
+            }
+
+            var granted = await RedeemAsync(new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                ["grant_type"] = "refresh_token",
+                ["refresh_token"] = refresh,
+            }).ConfigureAwait(false);
+
+            return granted ? _token : null;
         }
-
-        var renewed = await RedeemAsync(new Dictionary<string, string>(StringComparer.Ordinal)
+        finally
         {
-            ["grant_type"] = "refresh_token",
-            ["refresh_token"] = refresh,
-        }).ConfigureAwait(false);
-
-        return renewed ? _token : null;
+            _renewing.Release();
+        }
     }
+
+    /// <summary>
+    /// The token in hand, where there is one with enough life left to spend.
+    /// </summary>
+    /// <remarks>
+    /// A minute's grace, so a token is not spent on a request that will arrive after it expires.
+    /// </remarks>
+    private string? Fresh() =>
+        _token is { Length: > 0 } && DateTimeOffset.UtcNow < _expires - TimeSpan.FromMinutes(1)
+            ? _token
+            : null;
 
     /// <summary>Forgets the session, here and in the tab. Microsoft is not told, and need not be.</summary>
     /// <remarks>
@@ -404,6 +455,21 @@ public sealed class OneDriveAuth
         await _session.WriteAsync(StateKey, null).ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Whether a refusal from the token endpoint means the sign-in is finished.
+    /// </summary>
+    /// <remarks>
+    /// Bad request is the one that matters: it carries invalid_grant, which is what a refresh token
+    /// that has been spent, revoked or rotated away comes back as. Unauthorized and forbidden are
+    /// the same answer said differently. Everything else - 429, the 5xx range, and whatever a
+    /// captive portal decides to return - says nothing about the session, and a session thrown away
+    /// over one of those costs somebody a sign-in for a minute of somebody else's trouble.
+    /// </remarks>
+    private static bool Ended(System.Net.HttpStatusCode status) =>
+        status is System.Net.HttpStatusCode.BadRequest
+            or System.Net.HttpStatusCode.Unauthorized
+            or System.Net.HttpStatusCode.Forbidden;
+
     private async Task<bool> RedeemAsync(Dictionary<string, string> form)
     {
         form["client_id"] = _clientId;
@@ -423,9 +489,15 @@ public sealed class OneDriveAuth
                 // exchange looks identical from outside to one that never arrived.
                 Refusal = await SaidAsync(response).ConfigureAwait(false);
 
-                // A refresh that is refused means the session is over rather than that something
-                // went wrong this minute, so what is kept is dropped and the player signs in again.
-                await SignOutAsync().ConfigureAwait(false);
+                // Only where the answer actually says the session is over. This used to drop it on
+                // any status at all, which threw away a working sign-in over a rate limit, a bad
+                // gateway, or the HTML a hotel wifi hands back instead of a token - none of which
+                // are Microsoft saying no, and all of which come right on their own.
+                if (Ended(response.StatusCode))
+                {
+                    await SignOutAsync().ConfigureAwait(false);
+                }
+
                 return false;
             }
 
