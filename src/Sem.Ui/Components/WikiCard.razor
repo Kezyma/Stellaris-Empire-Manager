@@ -1,0 +1,72 @@
+@*
+    One civic or origin, said in full.
+
+    A card rather than a tile, because this is a page to read rather than a picker to choose from:
+    the name and the icon say which one it is, and everything under them is the answer to a question
+    somebody came here with. What it does, who may have it, and what it costs in packs.
+
+    Not a button. Nothing on this page is selectable - pressing a civic in a wiki should do nothing,
+    and a tile that looks pressable and is not is worse than one that does not.
+*@
+
+<article class="sem-wiki-card @(Row.Reach.EverOffered ? null : "unreachable")">
+    <header>
+        <GameIcon Path="@Row.Icon" Alt="@Row.Name" />
+
+        <div class="title">
+            <h2>@Row.Name</h2>
+
+            <div class="sem-wiki-badges">
+                @*
+                    Two different kinds of "you cannot have this", and they are worth telling apart.
+                    A pack is something you could buy; a fallen empire's civic is not for sale.
+                *@
+                @if (Row.ClosedShort is { } closed)
+                {
+                    <span class="sem-badge closed" title="@Row.ClosedWhy">@closed</span>
+                }
+
+                @foreach (var pack in Row.Packs)
+                {
+                    <span class="sem-badge @(Row.Owned ? "pack" : "pack missing")"
+                          title="@(Row.Owned ? $"Needs {pack.Name}, which you have" : $"Needs {pack.Name}, which you do not have")">
+                        @pack.Name
+                    </span>
+                }
+            </div>
+        </div>
+    </header>
+
+    @if (Row.Description is { Length: > 0 })
+    {
+        <p class="sem-wiki-prose">@((MarkupString)Session.Localizer.Html($"{Row.Key}_desc", string.Empty))</p>
+    }
+
+    <EffectsList Effects="@Row.Effects" />
+
+    @*
+        All five conditions, each under its own heading, because the game means something different
+        by each and keeps them apart: what you must own, what your empire must already be for this to
+        appear, what makes it legal once it does, and the two halves of whether a government reform
+        can change its mind later. A reader mid-game asking "can I still get this" is asking about
+        the fourth, and running them together would lose them the answer.
+    *@
+    <dl class="sem-wiki-conditions">
+        @foreach (var condition in Row.Conditions)
+        {
+            <div class="@(condition.Stated ? "stated" : null)">
+                <dt>@condition.Heading</dt>
+                <dd>@condition.Sentence</dd>
+            </div>
+        }
+    </dl>
+</article>
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>The civic or origin to draw.</summary>
+    [Parameter, EditorRequired]
+    public required CivicRow Row { get; set; }
+}

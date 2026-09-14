@@ -1,0 +1,222 @@
+@implements IDisposable
+@inject SessionHost Host
+
+@*
+    A shelf of the game, to read rather than to pick from.
+
+    Civics and origins are the same record in the data and two different things to a player - an
+    origin is the whole of how an empire starts and carries a scene of the world it wakes up on, a
+    civic is one of two picks - so they get an address each and this component behind both. What
+    differs between the two pages is a title, a list and a word; everything else here would have
+    been written twice.
+
+    Everything a card says is already in gamedb.json. Nothing was extracted for this page: the
+    reachability, the pack and the description are all worked out from conditions the file already
+    carries, because a property added to the definition would bump the schema and send every desktop
+    player back through thirty-five thousand files.
+*@
+
+<h1>@Title</h1>
+
+<nav class="sem-wiki-nav" aria-label="Wiki sections">
+    <NavLink href="wiki/civics" class="sem-tab">Civics</NavLink>
+    <NavLink href="wiki/origins" class="sem-tab">Origins</NavLink>
+</nav>
+
+@if (_session is null)
+{
+    <div class="sem-loading">
+        @if (Host.LoadError is { } error)
+        {
+            <h2>The game data is not available</h2>
+            <p class="sem-hint">@error</p>
+            <p class="sem-hint">
+                A local build needs the data extracted first:
+                <code>dotnet run --project src/Sem.Cli -- extract --web</code>
+            </p>
+        }
+        else
+        {
+            <p>Loading game data…</p>
+        }
+    </div>
+}
+else
+{
+    @*
+        The page opens its own cascade. The layout's wraps the content pack panel and not the body,
+        so a page that did not do this would draw every icon, chip and effects list against a
+        missing session and say nothing about why.
+    *@
+    <CascadingValue Value="_session">
+        <div class="sem-list-head">
+            @*
+                The same two words the empire list uses, because it is the same choice: a card
+                answers "what is that one" and a list answers questions about the set - which of
+                these want a hive mind, which cost a pack I do not own.
+            *@
+            <div class="sem-view-toggle" role="group" aria-label="@($"How to show the {Noun}")">
+                <button type="button" aria-pressed="@(_listView ? "false" : "true")"
+                        @onclick="() => ShowList(false)">Cards</button>
+
+                <button type="button" aria-pressed="@(_listView ? "true" : "false")"
+                        @onclick="() => ShowList(true)">List</button>
+            </div>
+
+            <p class="sem-hint">
+                @(Narrowed.Count == Rows.Count
+                    ? $"{Rows.Count} {Noun}"
+                    : $"{Narrowed.Count} of {Rows.Count} {Noun}")
+            </p>
+        </div>
+
+        @*
+            The three broadest controls above the fold, where a reader who has a word in mind can
+            reach them without opening anything. The two toggles are separate questions on purpose:
+            one is a fixed property of the game and reads the same for everybody, the other is about
+            what this machine has installed.
+        *@
+        <div class="sem-row sem-wiki-search">
+            <SearchBox TRow="CivicRow" Filter="@_filter" Id="wiki-search"
+                       Label="@($"Search {Noun}")" OnChanged="Narrow" />
+
+            <AskedToggle TRow="CivicRow" Filter="@_filter" Key="reach"
+                         All="@(new ToggleWording("Everything", $"Showing every {One} the game defines. Press to show only the ones a player can take."))"
+                         Yes="@(new ToggleWording("Playable", $"Showing the {Noun} a player can take. Press to show the ones nobody can."))"
+                         No="@(new ToggleWording("Out of reach", $"Showing the {Noun} no player can take. Press to show everything."))"
+                         OnChanged="Narrow" />
+
+            <AskedToggle TRow="CivicRow" Filter="@_filter" Key="owned"
+                         All="@(new ToggleWording("Any pack", "Showing whatever the packs require. Press to show only what you own."))"
+                         Yes="@(new ToggleWording("Your packs", $"Showing the {Noun} your packs allow. Press to show the ones they do not."))"
+                         No="@(new ToggleWording("Not owned", $"Showing the {Noun} you would need another pack for. Press to show everything."))"
+                         OnChanged="Narrow" />
+        </div>
+
+        <FilterCard TRow="CivicRow" Rows="@Rows" Filter="@_filter" Facets="@CivicFacet.All"
+                    Title="@($"{Title} Filter")" Hidden="@CivicFacet.AskedElsewhere"
+                    OnChanged="Narrow" />
+
+        @if (Narrowed.Count == 0)
+        {
+            <p class="sem-hint">Nothing matches.</p>
+        }
+        else if (_listView)
+        {
+            <WikiTable Rows="@Narrowed" Noun="@Noun" />
+        }
+        else
+        {
+            <div class="sem-wiki-cards">
+                @foreach (var row in Narrowed)
+                {
+                    <WikiCard Row="@row" />
+                }
+            </div>
+        }
+    </CascadingValue>
+}
+
+@code {
+    /// <summary>Whether this is the origins page rather than the civics one.</summary>
+    [Parameter]
+    public bool ShowOrigins { get; set; }
+
+    /// <summary>What the page is called, in the heading and in the filter card.</summary>
+    [Parameter, EditorRequired]
+    public required string Title { get; set; }
+
+    /// <summary>The plural, for the counts and the spoken labels.</summary>
+    private string Noun => ShowOrigins ? "origins" : "civics";
+
+    /// <summary>And the singular, for the sentences that need one.</summary>
+    private string One => ShowOrigins ? "origin" : "civic";
+
+    private DesignSession? _session;
+
+    private CivicShelf? _shelf;
+
+    /// <summary>
+    /// What is being asked, which every control on the page writes to in place.
+    /// </summary>
+    /// <remarks>
+    /// One filter and not a copy each, for the reason the search box gives about itself: the cards,
+    /// the count and the card of headings all read it, and handing each of them their own is how
+    /// they stop agreeing about what is being shown.
+    /// </remarks>
+    private readonly Sifter<CivicRow> _filter = new(CivicFacet.All, row => row.Text);
+
+    private bool _listView;
+
+    /// <summary>What the chosen view is remembered under, shared by both wiki pages.</summary>
+    /// <remarks>
+    /// Shared deliberately. Civics and origins are the same list drawn the same way, and a reader
+    /// who switched one to a list and found the other still in cards would be looking at a setting
+    /// that remembered half of what they did.
+    /// </remarks>
+    private const string ViewSetting = "wiki-view";
+
+    private const string ListView = "list";
+
+    /// <summary>Everything on this page's shelf, before anything is asked of it.</summary>
+    private IReadOnlyList<CivicRow> Rows =>
+        _shelf is null ? [] : ShowOrigins ? _shelf.Origins : _shelf.Civics;
+
+    /// <summary>
+    /// What is left after the filter, worked out once per question asked.
+    /// </summary>
+    /// <remarks>
+    /// Held rather than written into a parameter, which is the mistake the empire list already
+    /// made and fixed: an expression in a parameter is evaluated on every render, so pressing a
+    /// toggle put all three hundred and fifty-eight rows through every heading twice.
+    /// </remarks>
+    private IReadOnlyList<CivicRow> Narrowed =>
+        _narrowed ??= _filter.Any ? [.. Rows.Where(_filter.Matches)] : Rows;
+
+    private IReadOnlyList<CivicRow>? _narrowed;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _session = await Host.GetAsync().ConfigureAwait(true);
+
+        if (_session is null)
+        {
+            return;
+        }
+
+        _session.Changed += Forget;
+        _shelf = new CivicShelf(_session);
+        _listView = _session.Preferences.Get(ViewSetting) == ListView;
+    }
+
+    /// <summary>
+    /// Reads the shelf again when the player's content packs change.
+    /// </summary>
+    /// <remarks>
+    /// Which pack a civic needs is a fact about the game, but whether the reader owns it is not -
+    /// and that is one of the two questions the toggles above ask. Left alone, switching a pack off
+    /// leaves every row still saying you have it.
+    /// </remarks>
+    private void Forget()
+    {
+        _shelf = _session is null ? null : new CivicShelf(_session);
+        _narrowed = null;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        if (_session is not null)
+        {
+            _session.Changed -= Forget;
+        }
+    }
+
+    private void Narrow() => _narrowed = null;
+
+    private void ShowList(bool list)
+    {
+        _listView = list;
+        _session?.Preferences.Set(ViewSetting, list ? ListView : "cards");
+    }
+}

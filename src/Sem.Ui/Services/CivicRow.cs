@@ -50,8 +50,21 @@ public sealed record CivicRow
     /// <summary>Whether a player could ever be offered it, and what shuts them out if not.</summary>
     public required CivicReach Reach { get; init; }
 
-    /// <summary>The content packs it is behind, as the game names them.</summary>
-    public required IReadOnlyList<string> Packs { get; init; }
+    /// <summary>
+    /// Two words for a badge saying it is out of reach, or nothing where it is not.
+    /// </summary>
+    /// <remarks>
+    /// Two forms rather than one, because a badge has room for two words and the answer is longer
+    /// than that. Both are written here rather than in the page: which of them a civic gets depends
+    /// on why it is closed, and that is a decision worth being able to test.
+    /// </remarks>
+    public string? ClosedShort { get; init; }
+
+    /// <summary>The whole of why, for the tip behind the badge.</summary>
+    public string? ClosedWhy { get; init; }
+
+    /// <summary>The content packs it is behind, named as the game names them.</summary>
+    public required IReadOnlyList<EmpireChoice> Packs { get; init; }
 
     /// <summary>Whether every pack it needs is one the reader has.</summary>
     public required bool Owned { get; init; }
@@ -80,6 +93,12 @@ public sealed record CivicRow
     /// <summary>The modifiers it touches, as choices named the way the effects list names them.</summary>
     public required IReadOnlyList<EmpireChoice> Bonuses { get; init; }
 
+    /// <summary>What it asks an empire to be under one heading, or nothing where it asks nothing.</summary>
+    /// <param name="category">Which kind of selection.</param>
+    /// <returns>The choices it wants, which may be none.</returns>
+    public IReadOnlyList<EmpireChoice> Wanting(SelectionCategory category) =>
+        Wants.TryGetValue(category, out var wanted) ? wanted : [];
+
     /// <summary>
     /// Everything about it a typed word should match.
     /// </summary>
@@ -92,8 +111,9 @@ public sealed record CivicRow
 
 /// <summary>One of the conditions the game states about a civic, said in a sentence.</summary>
 /// <param name="Heading">What the condition is about, in the reader's terms rather than the game's.</param>
-/// <param name="Sentence">The condition itself, or nothing where it says nothing.</param>
-public sealed record CivicCondition(string Heading, string? Sentence);
+/// <param name="Sentence">The condition itself, or what stands in for one where the game states none.</param>
+/// <param name="Stated">Whether the game states a condition at all, so a card can draw the two apart.</param>
+public sealed record CivicCondition(string Heading, string Sentence, bool Stated);
 
 /// <summary>
 /// Everything the game has to say about civics and origins, read once.
@@ -141,7 +161,12 @@ public sealed class CivicShelf(DesignSession session)
 
     private CivicRow Row(CivicDefinition civic, CivicReach reach)
     {
-        var name = session.Localizer.Text(civic.NameKey, Localizer.Prettify(civic.Key));
+        // The fallback is asked for twice on purpose. Text falls back when the key is missing, and
+        // one civic's key is present and empty: the game ships civic_caravaneer_caravansary with a
+        // blank name. Unnamed, it sorted to the front of the list and drew a card with an icon, a
+        // badge and no title at all.
+        var named = session.Localizer.Text(civic.NameKey, Localizer.Prettify(civic.Key));
+        var name = named is { Length: > 0 } ? named : Localizer.Prettify(civic.Key);
 
         // The same convention OptionChip reads by, and all three hundred and fifty-eight are in the
         // extracted text under it. Not a property on the definition: adding one would be tidier and
@@ -149,6 +174,7 @@ public sealed class CivicShelf(DesignSession session)
         var description = session.Localizer.Text($"{civic.Key}_desc", string.Empty);
 
         var packs = ContentPacks.Named(civic.Playable);
+        var owned = packs.All(session.OwnedDlc.Contains);
 
         return new CivicRow
         {
@@ -160,13 +186,42 @@ public sealed class CivicShelf(DesignSession session)
             Picture = civic.Picture,
             Effects = civic.Effects,
             Reach = reach,
-            Packs = packs,
-            Owned = packs.All(session.OwnedDlc.Contains),
+            ClosedShort = Shut(reach)?.Short,
+            ClosedWhy = Shut(reach)?.Why,
+            Packs = [.. packs.Select(name => new EmpireChoice(name, name, null, null))],
+            Owned = owned,
             Conditions = Conditions(civic),
             Wants = Wants(civic),
             Bonuses = Bonuses(civic),
             Text = $"{name} {description} {civic.Key}",
         };
+    }
+
+    /// <summary>
+    /// What to say about one no player can reach, in two lengths.
+    /// </summary>
+    /// <remarks>
+    /// The kinds of country are written out rather than printed as keys. The game names them
+    /// <c>fallen_empire</c> and <c>caravaneer_fleet</c>, and a card saying "only caravaneer_fleet"
+    /// is a row of script in the middle of a page of prose - which is the thing the modifier
+    /// formatter already goes to some trouble to avoid.
+    /// </remarks>
+    private static (string Short, string Why)? Shut(CivicReach reach)
+    {
+        if (reach.EverOffered)
+        {
+            return null;
+        }
+
+        if (reach.CountryTypes.Count == 0)
+        {
+            return ("By event only",
+                "The game only ever grants this during a game. Nothing in the empire designer offers it.");
+        }
+
+        var kinds = string.Join(" or ", reach.CountryTypes.Select(Localizer.Prettify));
+
+        return ("Not for players", $"Only {kinds} is offered this, which a designed empire never is.");
     }
 
     /// <summary>
@@ -181,12 +236,34 @@ public sealed class CivicShelf(DesignSession session)
     /// </remarks>
     private IReadOnlyList<CivicCondition> Conditions(CivicDefinition civic) =>
     [
-        new("Needs", session.Conditions.Describe(civic.Playable)),
-        new("Offered to", session.Conditions.Describe(civic.Potential)),
-        new("Allowed when", session.Conditions.Describe(civic.Possible)),
-        new("Can be added later", session.Conditions.Describe(civic.CanAddLater)),
-        new("Can be dropped later", session.Conditions.Describe(civic.CanRemoveLater)),
+        Condition("Needs", civic.Playable, "Nothing"),
+        Condition("Offered to", civic.Potential, "Any empire"),
+        Condition("Allowed when", civic.Possible, "Always"),
+        Condition("Added by reform", civic.CanAddLater, "Always"),
+        Condition("Dropped by reform", civic.CanRemoveLater, "Always"),
     ];
+
+    /// <summary>
+    /// One condition, with words of our own where the game states none.
+    /// </summary>
+    /// <remarks>
+    /// The stand-in matters as much as the sentence. A heading with a blank beside it reads as
+    /// something the page failed to work out, where what it means is that the game asks nothing -
+    /// and "nothing" and "always" are different answers to the five different questions, so the
+    /// wording belongs with the heading rather than being one word used five times.
+    ///
+    /// Here rather than in the page for the reason every service in this folder exists: a component
+    /// cannot be tested, and which of five headings gets which stand-in is exactly the kind of thing
+    /// that goes quietly wrong.
+    /// </remarks>
+    private CivicCondition Condition(string heading, Requirement? stated, string otherwise)
+    {
+        var sentence = session.Conditions.Describe(stated);
+
+        return sentence is { Length: > 0 }
+            ? new CivicCondition(heading, char.ToUpperInvariant(sentence[0]) + sentence[1..], true)
+            : new CivicCondition(heading, otherwise, false);
+    }
 
     /// <summary>
     /// What the conditions ask an empire to be, as choices the filter can offer.

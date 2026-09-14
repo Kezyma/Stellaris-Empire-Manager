@@ -1,0 +1,106 @@
+@*
+    The same shelf as a table, for the questions a card cannot answer.
+
+    A card answers "what is that one". A table answers questions about the set - which of these want
+    a hive mind, which come with a pack I do not own, which raise unity - because it puts the same
+    field of every row under one another where they can be compared.
+
+    Multiline rows, unlike the empire table. What is being compared here is prose: a description, a
+    list of modifiers and a set of conditions are each a paragraph, and squeezing them onto one line
+    would mean truncating the only thing the column is for. So the cells wrap and the rows are as
+    tall as they need to be, with each one ruled off from the next.
+
+    Not EmpireTable. That one is built around an empire's columns, sorts and moves rows, and its
+    cells are single-line chips - none of which is what this is. Sharing it would have meant making
+    it generic in the row and then teaching it a second idea of what a cell is.
+*@
+
+<div class="sem-table-wrap">
+    <table class="sem-table sem-wiki-table">
+        <caption class="sem-visually-hidden">@($"Every one of the {Noun} the game defines")</caption>
+
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Description</th>
+                <th scope="col">Effects</th>
+                <th scope="col">Requirements</th>
+                <th scope="col">Playable</th>
+                <th scope="col">Pack</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var row in Rows)
+            {
+                <tr class="@(row.Reach.EverOffered ? null : "unreachable")">
+                    <th scope="row" class="name">
+                        <span class="inner">
+                            <GameIcon Path="@row.Icon" Alt="@row.Name" />
+                            <span>@row.Name</span>
+                        </span>
+                    </th>
+
+                    <td class="prose">
+                        @if (row.Description is { Length: > 0 })
+                        {
+                            @((MarkupString)Session.Localizer.Html($"{row.Key}_desc", string.Empty))
+                        }
+                    </td>
+
+                    <td class="effects">
+                        <EffectsList Effects="@row.Effects" />
+                    </td>
+
+                    @*
+                        The conditions the game actually states. All five are on the card, where
+                        there is room to say that four of them ask nothing; a column of "Always"
+                        repeated three hundred times is a column that says nothing at all.
+                    *@
+                    <td class="conditions">
+                        <dl>
+                            @foreach (var condition in row.Conditions.Where(c => c.Stated))
+                            {
+                                <dt>@condition.Heading</dt>
+                                <dd>@condition.Sentence</dd>
+                            }
+                        </dl>
+                    </td>
+
+                    <td class="playable">
+                        @if (row.Reach.EverOffered)
+                        {
+                            <span class="yes">Yes</span>
+                        }
+                        else
+                        {
+                            <span class="no" title="@row.ClosedWhy">No</span>
+
+                            <span class="why" title="@row.ClosedWhy">@row.ClosedShort</span>
+                        }
+                    </td>
+
+                    <td class="packs">
+                        @foreach (var pack in row.Packs)
+                        {
+                            <span class="sem-badge @(row.Owned ? "pack" : "pack missing")">@pack.Name</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>What to draw, already narrowed and in order.</summary>
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<CivicRow> Rows { get; set; }
+
+    /// <summary>What the rows are, for the caption a screen reader meets before the table.</summary>
+    [Parameter, EditorRequired]
+    public required string Noun { get; set; }
+}
