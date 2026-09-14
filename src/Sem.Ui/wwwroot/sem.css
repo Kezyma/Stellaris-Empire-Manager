@@ -7354,7 +7354,7 @@ button.icon .sem-action-icon { display: block; }
 .sem-wiki-conditions {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
-    gap: var(--space-2xs) var(--space-lg);
+    gap: var(--space-md) var(--space-lg);
     margin: 0;
     font-size: var(--text-sm);
 }
@@ -7417,39 +7417,157 @@ button.icon .sem-action-icon { display: block; }
    there is, so the question is not how wide each should be but which should give way first: the
    description and the conditions carry the most words, the name and the pack the fewest.
 */
-.sem-wiki-table .prose { min-width: 16rem; }
-.sem-wiki-table .conditions { min-width: 14rem; }
+.sem-wiki-table tbody th.name { min-width: 18rem; }
+.sem-wiki-table .conditions { min-width: 15rem; }
 .sem-wiki-table .effects { min-width: 12rem; }
-.sem-wiki-table tbody th.name { min-width: 11rem; }
-.sem-wiki-table .playable { min-width: 7rem; }
-.sem-wiki-table .packs { min-width: 8rem; }
+.sem-wiki-table .playable { min-width: 5rem; }
+.sem-wiki-table .packs { min-width: 9rem; }
 
-.sem-wiki-table .conditions dl {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: var(--space-2xs) var(--space-md);
-    margin: 0;
+/*
+   The name and the description in one column, the name first and heavier.
+
+   They were two columns. A name is three words and a description is forty, so the pair spent a
+   whole track of the table's width on white space beside the short one and squeezed the long one
+   into what was left - and they are read together in any case, the name being the thing the
+   description is about.
+*/
+.sem-wiki-table tbody th.name {
+    font-weight: normal;
+}
+
+.sem-wiki-table tbody th.name .title {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.sem-wiki-table tbody th.name .prose {
+    display: block;
+    margin-top: var(--space-md);
+    color: var(--text-dim);
     font-size: var(--text-sm);
 }
 
-.sem-wiki-table .conditions dt {
-    color: var(--text-faint);
-    white-space: nowrap;
+/* One heading per condition the game states, and the bullets under it. */
+.sem-wiki-table .conditions .one + .one {
+    margin-top: var(--space-md);
 }
 
-.sem-wiki-table .conditions dd {
-    margin: 0;
+.sem-wiki-table .conditions .heading {
+    color: var(--text-faint);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
 }
 
 .sem-wiki-table .playable .yes { color: var(--good); }
 .sem-wiki-table .playable .no { color: var(--bad); }
 
-.sem-wiki-table .playable .why {
-    display: block;
-    color: var(--text-faint);
-    font-size: var(--text-xs);
+
+/*
+   A condition as the game draws it: nested bullets, with the join written over each group.
+
+   No bullet glyphs. Every leaf already carries a tick or a cross, which is the mark that matters,
+   and a disc in front of that is two marks per line saying one thing. The indentation is what
+   carries the nesting, so it is the one thing here with a firm size.
+*/
+.sem-conditions,
+.sem-conditions ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: var(--text-sm);
 }
 
-.sem-wiki-table .packs .sem-badge + .sem-badge {
-    margin-top: var(--space-xs);
+.sem-conditions li {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-md);
+    padding: 1px 0;
+}
+
+.sem-conditions li.group {
+    display: block;
+}
+
+.sem-conditions ul {
+    margin-left: var(--space-lg);
+    padding-left: var(--space-lg);
+    border-left: 1px solid var(--border);
+}
+
+/*
+   The join, as an overline over the group it binds. Written out rather than drawn as a bracket:
+   "all of" and "any of" are the whole difference between two conditions that look identical, and a
+   reader should not have to infer it from a line's shape.
+*/
+.sem-conditions .join {
+    display: block;
+    padding: var(--space-2xs) 0;
+    color: var(--text-faint);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+/*
+   The tick and the cross. Fixed width so the chips beside them line up down a column - a proportional
+   glyph would set every row's text a pixel or two from the last.
+*/
+.sem-conditions .mark {
+    flex: none;
+    width: 0.9rem;
+    text-align: center;
+    font-weight: 600;
+}
+
+.sem-conditions li.wants > .mark { color: var(--good); }
+
+.sem-conditions li.refuses > .mark { color: var(--bad); }
+
+/*
+   A bullet with neither mark keeps the indent the marked ones have, so a list holding both does not
+   look like two lists.
+*/
+.sem-conditions li.plain { padding-left: calc(0.9rem + var(--space-md)); }
+
+.sem-conditions .words {
+    color: var(--text-dim);
+}
+
+/*
+   A pack, wearing its own badge and saying which way the gate runs.
+
+   The cross is the case this exists for: Corporate Dominion requires you not to own Megacorp, and
+   a chip that simply said "Megacorp" told the reader to buy the pack that takes the civic away.
+*/
+.sem-pack-chip .mark {
+    font-weight: 600;
+    color: var(--good);
+}
+
+.sem-pack-chip:has(.mark):not(.unmet) { border-color: var(--accent-dim); }
+
+/*
+   One whose gate your packs do not satisfy. Bordered rather than dimmed: it is not less important
+   than the others, it is the one that decides whether you can have the civic at all.
+*/
+.sem-pack-chip.unmet {
+    border-color: var(--warn);
+    color: var(--warn);
+}
+
+.sem-pack-chip.unmet .mark { color: var(--warn); }
+
+/*
+   Several packs stack rather than running on. The cell is narrow, a chip will not break, and two
+   of them side by side push the column wider than the table can spare.
+
+   Left as a table cell rather than made a flex container: display:flex on a td stops it being a
+   cell at all, and the browser wraps it in an anonymous one that aligns on the baseline - which is
+   how a row of otherwise top-aligned cells ends up with one of them floating.
+*/
+.sem-wiki-table .packs .sem-pack-chip {
+    display: flex;
+    width: fit-content;
+    margin: 0 0 var(--space-sm) 0;
 }

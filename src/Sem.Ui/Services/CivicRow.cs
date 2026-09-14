@@ -63,11 +63,29 @@ public sealed record CivicRow
     /// <summary>The whole of why, for the tip behind the badge.</summary>
     public string? ClosedWhy { get; init; }
 
-    /// <summary>The content packs it is behind, named as the game names them.</summary>
-    public required IReadOnlyList<EmpireChoice> Packs { get; init; }
+    /// <summary>
+    /// The content packs it depends on, each with whether it must be owned or must not be.
+    /// </summary>
+    /// <remarks>
+    /// Both directions, because the game writes both. Corporate Dominion is the civic for an
+    /// oligarchy that <em>cannot</em> be a megacorp, and its whole condition is
+    /// <c>NOT = { has_dlc = Megacorp }</c> - so read one way round it wore a badge telling you to
+    /// buy the one pack that takes it away.
+    /// </remarks>
+    public required IReadOnlyList<CivicPack> Packs { get; init; }
 
-    /// <summary>Whether every pack it needs is one the reader has.</summary>
+    /// <summary>Whether what the reader owns satisfies every one of those gates.</summary>
     public required bool Owned { get; init; }
+
+    /// <summary>
+    /// The same packs as choices, for the heading that narrows by them.
+    /// </summary>
+    /// <remarks>
+    /// Built once here rather than mapped where it is read. The filter asks every row for this on
+    /// every keystroke in the search box, and a list built inside that call is three hundred and
+    /// fifty-eight allocations per letter typed for a list that never changes.
+    /// </remarks>
+    public required IReadOnlyList<EmpireChoice> PackChoices { get; init; }
 
     /// <summary>
     /// The five conditions the game states about it, each said in a sentence.
@@ -109,11 +127,33 @@ public sealed record CivicRow
     public required string Text { get; init; }
 }
 
-/// <summary>One of the conditions the game states about a civic, said in a sentence.</summary>
+/// <summary>
+/// One of the conditions the game states about a civic.
+/// </summary>
 /// <param name="Heading">What the condition is about, in the reader's terms rather than the game's.</param>
-/// <param name="Sentence">The condition itself, or what stands in for one where the game states none.</param>
-/// <param name="Stated">Whether the game states a condition at all, so a card can draw the two apart.</param>
-public sealed record CivicCondition(string Heading, string Sentence, bool Stated);
+/// <param name="Outline">
+/// The condition itself, as nested parts to indent - or nothing where the game states none.
+/// </param>
+/// <param name="Otherwise">What to say in its place where it states none.</param>
+public sealed record CivicCondition(string Heading, ConditionOutline? Outline, string Otherwise)
+{
+    /// <summary>Whether the game states a condition at all, so a page can draw the two apart.</summary>
+    public bool Stated => Outline is not null;
+}
+
+/// <summary>
+/// A content pack a civic depends on, ready to draw.
+/// </summary>
+/// <param name="Key">The pack as the game names it, which is what a filter remembers.</param>
+/// <param name="Name">What the pack is called on screen.</param>
+/// <param name="Icon">Its badge, the one the pack bar wears.</param>
+/// <param name="Wanted">True where it must be owned, false where owning it rules the civic out.</param>
+/// <param name="Held">Whether the reader owns it, which is not the same as whether that suits.</param>
+public sealed record CivicPack(string Key, string Name, string? Icon, bool Wanted, bool Held)
+{
+    /// <summary>Whether this one gate is satisfied by what the reader owns.</summary>
+    public bool Satisfied => Held == Wanted;
+}
 
 /// <summary>
 /// Everything the game has to say about civics and origins, read once.
@@ -173,8 +213,8 @@ public sealed class CivicShelf(DesignSession session)
         // would cost a schema bump, which every desktop player pays for by re-reading the game.
         var description = session.Localizer.Text($"{civic.Key}_desc", string.Empty);
 
-        var packs = ContentPacks.Named(civic.Playable);
-        var owned = packs.All(session.OwnedDlc.Contains);
+        var gates = ContentPacks.Gating(civic.Playable);
+        var packs = gates.Select(Pack).ToList();
 
         return new CivicRow
         {
@@ -188,13 +228,28 @@ public sealed class CivicShelf(DesignSession session)
             Reach = reach,
             ClosedShort = Shut(reach)?.Short,
             ClosedWhy = Shut(reach)?.Why,
-            Packs = [.. packs.Select(name => new EmpireChoice(name, name, null, null))],
-            Owned = owned,
+            Packs = packs,
+            PackChoices = [.. packs.Select(k => new EmpireChoice(k.Key, k.Name, k.Icon, null))],
+            Owned = ContentPacks.Satisfied(gates, session.OwnedDlc),
             Conditions = Conditions(civic),
             Wants = Wants(civic),
             Bonuses = Bonuses(civic),
             Text = $"{name} {description} {civic.Key}",
         };
+    }
+
+    /// <summary>One pack gate, with the badge the pack bar wears and whether the reader has it.</summary>
+    private CivicPack Pack(PackGate gate)
+    {
+        var pack = session.Data.Database.Dlc
+            .FirstOrDefault(d => string.Equals(d.Name, gate.Name, StringComparison.Ordinal));
+
+        return new CivicPack(
+            gate.Name,
+            session.Localizer.Text(pack?.NameKey, gate.Name),
+            pack?.Icon,
+            gate.Wanted,
+            session.OwnedDlc.Contains(gate.Name));
     }
 
     /// <summary>
@@ -236,34 +291,15 @@ public sealed class CivicShelf(DesignSession session)
     /// </remarks>
     private IReadOnlyList<CivicCondition> Conditions(CivicDefinition civic) =>
     [
-        Condition("Needs", civic.Playable, "Nothing"),
-        Condition("Offered to", civic.Potential, "Any empire"),
-        Condition("Allowed when", civic.Possible, "Always"),
-        Condition("Added by reform", civic.CanAddLater, "Always"),
-        Condition("Dropped by reform", civic.CanRemoveLater, "Always"),
+        new("Needs", _reader.Read(civic.Playable), "Nothing"),
+        new("Offered to", _reader.Read(civic.Potential), "Any empire"),
+        new("Allowed when", _reader.Read(civic.Possible), "Always"),
+        new("Added by reform", _reader.Read(civic.CanAddLater), "Always"),
+        new("Dropped by reform", _reader.Read(civic.CanRemoveLater), "Always"),
     ];
 
-    /// <summary>
-    /// One condition, with words of our own where the game states none.
-    /// </summary>
-    /// <remarks>
-    /// The stand-in matters as much as the sentence. A heading with a blank beside it reads as
-    /// something the page failed to work out, where what it means is that the game asks nothing -
-    /// and "nothing" and "always" are different answers to the five different questions, so the
-    /// wording belongs with the heading rather than being one word used five times.
-    ///
-    /// Here rather than in the page for the reason every service in this folder exists: a component
-    /// cannot be tested, and which of five headings gets which stand-in is exactly the kind of thing
-    /// that goes quietly wrong.
-    /// </remarks>
-    private CivicCondition Condition(string heading, Requirement? stated, string otherwise)
-    {
-        var sentence = session.Conditions.Describe(stated);
-
-        return sentence is { Length: > 0 }
-            ? new CivicCondition(heading, char.ToUpperInvariant(sentence[0]) + sentence[1..], true)
-            : new CivicCondition(heading, otherwise, false);
-    }
+    private readonly ConditionReader _reader =
+        new(session.Localizer, session.Data.Database);
 
     /// <summary>
     /// What the conditions ask an empire to be, as choices the filter can offer.

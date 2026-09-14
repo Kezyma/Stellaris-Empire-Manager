@@ -1,0 +1,71 @@
+@*
+    One of the game's conditions, indented the way the game indents it.
+
+    A tick or a cross against each thing, and a heading over each group saying whether all of it or
+    any of it has to hold. Run into a sentence instead, Corporate Dominion's own condition reads
+    "not ethic Gestalt Consciousness and not authority Corporate and Oligarchic Authority and not
+    Xenophobe or Fanatic Xenophobe" - four levels of nesting flattened into a word order that does
+    not carry it, and no way for a reader to tell which "and" binds tighter.
+
+    Recursive, because the shape is. A group draws a heading and a list of itself; a leaf draws a
+    mark and a chip. There is no depth limit: the deepest condition in the game is four, the
+    outline drops the levels that say nothing, and a limit would silently hide the one bullet that
+    explains why an option is closed.
+*@
+
+@if (Node.Join is ConditionJoin.Leaf)
+{
+    <li class="@(Node.Plain ? "plain" : Node.Wanted ? "wants" : "refuses")">
+        @*
+            The mark is decoration and the words beside it are not: a screen reader gets "needs" or
+            "must not have", where a tick and a cross are two characters that sound alike or read as
+            nothing at all.
+
+            Neither, for a bullet that states something about the condition rather than naming
+            something to hold - "must not have: never" is a sentence arguing with itself.
+        *@
+        @if (!Node.Plain)
+        {
+            <span class="mark" aria-hidden="true">@(Node.Wanted ? "✓" : "✗")</span>
+            <span class="sem-visually-hidden">@(Node.Wanted ? "Needs" : "Must not have")</span>
+        }
+
+        @if (Node.Chip is { } chip)
+        {
+            <span class="sem-cell-chip" title="@chip.Name">
+                @if (chip.Icon is { Length: > 0 })
+                {
+                    <GameIcon Path="@chip.Icon" Alt="" />
+                }
+
+                <span>@chip.Name</span>
+            </span>
+        }
+        else
+        {
+            <span class="words">@Node.Text</span>
+        }
+    </li>
+}
+else
+{
+    <li class="group">
+        <span class="join">@(Node.Join is ConditionJoin.All ? "All of" : "Any of")</span>
+
+        <ul>
+            @foreach (var part in Node.Parts)
+            {
+                <ConditionBullets Node="@part" />
+            }
+        </ul>
+    </li>
+}
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>The condition, or the part of one, to draw.</summary>
+    [Parameter, EditorRequired]
+    public required ConditionOutline Node { get; set; }
+}
