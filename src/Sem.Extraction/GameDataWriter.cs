@@ -127,7 +127,8 @@ public static class GameDataWriter
         // The wiki's own files, always written. They are small and cost nothing to build - no
         // pictures are drawn for them beyond the icons already baked - and a host that skipped them
         // would have a wiki page that could never fill itself.
-        var packs = WriteWikiPacks(extractor, database, outputDirectory, file, progress);
+        var packs = WriteWikiPacks(
+            extractor, database, shipReport.Fleet, outputDirectory, file, progress);
 
         return new ExtractionResult(
             database,
@@ -162,6 +163,7 @@ public static class GameDataWriter
     private static List<(string Domain, int Records, int Bytes)> WriteWikiPacks(
         GameDataExtractor extractor,
         GameDatabase database,
+        IReadOnlyList<ShipRender> fleet,
         string outputDirectory,
         SafeFile file,
         IProgress<string>? progress)
@@ -187,7 +189,41 @@ public static class GameDataWriter
         file.WriteAllBytes(
             Path.Combine(outputDirectory, WikiPackFileName(LeaderTraitPack.Domain)), json);
 
-        return [(LeaderTraitPack.Domain, leaders.Count, json.Length)];
+        var ships = new ShipsetPack
+        {
+            Stamp = new WikiPackStamp(
+                GameDataExtractor.ExtractorVersion, ShipsetPack.CurrentSchemaVersion),
+
+            Fleets =
+            [
+                .. fleet
+                    .GroupBy(f => f.Set, StringComparer.Ordinal)
+                    .Select(g => new ShipsetFleet(g.Key)
+                    {
+                        Ships = [.. g.Select(f => new ShipsetShip(f.ShipClass, f.Image))],
+                    }),
+            ],
+
+            // What the classes are called. The game keeps these under their bare keys - corvette,
+            // battleship - and nothing in the database reaches one, so the pruner has never had a
+            // reason to keep them and the pack carries them itself.
+            Text = LocalisationPruner.Slice(
+                fleet.Select(f => f.ShipClass).Distinct(StringComparer.Ordinal),
+                all,
+                database.ScriptedText),
+        };
+
+        var shipJson = JsonSerializer.SerializeToUtf8Bytes(
+            ships, GameDataJsonContext.Default.ShipsetPack);
+
+        file.WriteAllBytes(
+            Path.Combine(outputDirectory, WikiPackFileName(ShipsetPack.Domain)), shipJson);
+
+        return
+        [
+            (LeaderTraitPack.Domain, leaders.Count, json.Length),
+            (ShipsetPack.Domain, fleet.Count, shipJson.Length),
+        ];
     }
 
     /// <summary>

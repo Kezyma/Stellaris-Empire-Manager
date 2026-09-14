@@ -317,6 +317,13 @@ else
                     .LoadWikiPackAsync(LeaderTraitPack.Domain, GameDataJsonContext.Default.LeaderTraitPack)
                     .ConfigureAwait(true)),
 
+                // The shipsets are in the designer's data; the ships they fly are not. A hundred and
+                // forty renders across eighteen classes is a gallery for whoever opens the page
+                // rather than a field on a record every empire reads.
+                WikiKind.Shipsets => shelves.Shipsets(await Source
+                    .LoadWikiPackAsync(ShipsetPack.Domain, GameDataJsonContext.Default.ShipsetPack)
+                    .ConfigureAwait(true)),
+
                 _ => shelves.Of(Kind),
             };
 

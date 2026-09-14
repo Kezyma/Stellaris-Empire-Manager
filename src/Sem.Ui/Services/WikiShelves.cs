@@ -158,9 +158,6 @@ public sealed class WikiShelves(DesignSession session)
         WikiKind.Planets => new WikiShelf(
             "Planets", "planets", "planet", Planets(), WikiFacet.Planets) { Picture = "Sky" },
 
-        WikiKind.Shipsets => new WikiShelf(
-            "Shipsets", "shipsets", "shipset", Shipsets(), WikiFacet.Shipsets) { Picture = "Ship" },
-
         WikiKind.Personalities => new WikiShelf(
             "AI Personalities", "personalities", "personality",
             Personalities(), WikiFacet.Personalities),
@@ -655,17 +652,76 @@ public sealed class WikiShelves(DesignSession session)
     /// doing rather than a gap here - its picker spins the model and never writes the name - so the
     /// rest read as their key made readable, and the picture is the answer.
     /// </remarks>
-    private IReadOnlyList<WikiRow> Shipsets() =>
-    [
-        .. Database.GraphicalCultures
-            .Select(Shipset)
-            .OrderBy(r => r.Name, StringComparer.CurrentCulture),
-    ];
+    private IReadOnlyList<WikiRow> ShipsetRows(ShipsetPack? pack)
+    {
+        var fleets = (pack?.Fleets ?? []).ToDictionary(f => f.Set, StringComparer.Ordinal);
+
+        var reader = pack is null
+            ? session.Localizer
+            : Reading(pack.Text);
+
+        return
+        [
+            .. Database.GraphicalCultures
+                .Select(c => Shipset(c, fleets.GetValueOrDefault(c.Key), reader))
+                .OrderBy(r => r.Name, StringComparer.CurrentCulture),
+        ];
+    }
+
+    /// <summary>
+    /// The app's own text with a pack's merged over it.
+    /// </summary>
+    /// <remarks>
+    /// A pack carries the words <c>loc/en.json</c> cannot, which is pruned to what the database
+    /// reaches - so a ship class is not in there and neither is a leader trait. Merged rather than
+    /// read alone because a pack's own entries can refer to the app's.
+    /// </remarks>
+    /// <param name="carried">The pack's text.</param>
+    /// <returns>A reader that answers for both.</returns>
+    private Localizer Reading(IReadOnlyDictionary<string, string> carried)
+    {
+        var text = new Dictionary<string, string>(session.Data.Localisation, StringComparer.Ordinal);
+
+        foreach (var (key, value) in carried)
+        {
+            text[key] = value;
+        }
+
+        return new Localizer(
+            text,
+            Database.TextIcons,
+            session.Data.AssetUrl,
+            Database.ScriptedValues,
+            Database.ScriptedText);
+    }
+
+    /// <summary>
+    /// The shipsets, with every ship each one flies.
+    /// </summary>
+    /// <remarks>
+    /// The gallery is in the wiki's own file rather than the database. A hundred and forty renders
+    /// across eighteen classes is a page's business; the designer's picker wants one picture and has
+    /// a field for it, and widening that definition would cost every desktop player a re-read of
+    /// thirty-five thousand files.
+    /// </remarks>
+    /// <param name="pack">The fleet, where the page has fetched it.</param>
+    /// <returns>The shelf.</returns>
+    public WikiShelf Shipsets(ShipsetPack? pack) =>
+        new("Shipsets", "shipsets", "shipset", ShipsetRows(pack), WikiFacet.Shipsets)
+        {
+            Picture = "Ship",
+            Reader = pack is null ? null : Reading(pack.Text),
+        };
 
     /// <summary>One shipset, with a ship of its own drawn during extraction.</summary>
     /// <param name="culture">The graphical culture.</param>
+    /// <param name="fleet">Every ship it flies, where the page has fetched them.</param>
+    /// <param name="reader">The text, with the pack's merged in.</param>
     /// <returns>Its row.</returns>
-    private WikiRow Shipset(GraphicalCultureDefinition culture)
+    private WikiRow Shipset(
+        GraphicalCultureDefinition culture,
+        ShipsetFleet? fleet,
+        Localizer reader)
     {
         var offered = culture.Selectable is not AlwaysRequirement { Value: false };
 
@@ -685,6 +741,18 @@ public sealed class WikiShelves(DesignSession session)
             proseKey: culture.DescriptionKey) with
         {
             Picture = culture.ShipPreview,
+
+            // Every ship it flies, under the one drawn large. Named by class rather than by set,
+            // because two sets sharing a picture share it by flying the same hulls.
+            Gallery =
+            [
+                .. (fleet?.Ships ?? [])
+                    .Select(ship => new EmpireChoice(
+                        ship.ShipClass,
+                        reader.Text(ship.ShipClass, Localizer.Prettify(ship.ShipClass)),
+                        ship.Image,
+                        null)),
+            ],
         };
     }
 
@@ -1125,19 +1193,7 @@ public sealed class WikiShelves(DesignSession session)
         // II" - the name of the tier below, then a numeral - and it writes five of them as bracketed
         // commands only a running game can answer. Resolving all of that is what the localiser does,
         // and the pack's text is simply more entries for it to resolve against.
-        var text = new Dictionary<string, string>(session.Data.Localisation, StringComparer.Ordinal);
-
-        foreach (var (key, value) in pack?.Text ?? new Dictionary<string, string>(StringComparer.Ordinal))
-        {
-            text[key] = value;
-        }
-
-        var reader = new Localizer(
-            text,
-            Database.TextIcons,
-            session.Data.AssetUrl,
-            Database.ScriptedValues,
-            Database.ScriptedText);
+        var reader = Reading(pack?.Text ?? new Dictionary<string, string>(StringComparer.Ordinal));
 
         // By key, because a chip naming another trait has to find it: Replaces and Rules out both
         // carry keys from this same file, and looking each one up by walking the list would be

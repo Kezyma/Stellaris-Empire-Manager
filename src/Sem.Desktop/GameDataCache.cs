@@ -99,7 +99,9 @@ public sealed class GameDataCache
             // existed passes every other test and would never be rebuilt, leaving the page about it
             // permanently empty on this machine with nothing anywhere to say why.
             if (!File.Exists(Path.Combine(
-                Directory, GameDataWriter.WikiPackFileName(LeaderTraitPack.Domain))))
+                    Directory, GameDataWriter.WikiPackFileName(LeaderTraitPack.Domain))) ||
+                !File.Exists(Path.Combine(
+                    Directory, GameDataWriter.WikiPackFileName(ShipsetPack.Domain))))
             {
                 reason = "built before the wiki had its own data";
                 return false;

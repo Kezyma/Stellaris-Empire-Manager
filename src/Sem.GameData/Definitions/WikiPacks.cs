@@ -157,3 +157,59 @@ public sealed record LeaderTraitPack : IWikiPack
     public IReadOnlyDictionary<string, string> Text { get; init; } =
         new Dictionary<string, string>(StringComparer.Ordinal);
 }
+
+/// <summary>One drawn ship: which class it is, and where its picture went.</summary>
+/// <param name="ShipClass">The ship size's key, such as <c>battleship</c>.</param>
+/// <param name="Image">Where the picture lives within the extracted assets.</param>
+public sealed record ShipsetShip(string ShipClass, string Image);
+
+/// <summary>What one appearance set flies.</summary>
+/// <remarks>
+/// A set that models no ships of its own flies its fallback's, so two sets can name the same
+/// pictures. That is the game's arrangement rather than a duplicate: Solarpunk has no hulls anywhere
+/// and is flown with fungoid ones.
+/// </remarks>
+/// <param name="Set">The graphical culture's key.</param>
+public sealed record ShipsetFleet(string Set)
+{
+    /// <summary>Its ships, in the order the game declares the classes.</summary>
+    public IReadOnlyList<ShipsetShip> Ships { get; init; } = [];
+}
+
+/// <summary>
+/// Every ship each appearance set flies, drawn.
+/// </summary>
+/// <remarks>
+/// <para>
+/// Kept out of the database for the usual reason: the designer's picker wants one picture per set
+/// and has a field for it, and a hundred and forty renders across eighteen classes is a page's
+/// business rather than an empire's. Adding it to a definition every empire reads would cost a
+/// schema bump, which sends every desktop player back through thirty-five thousand files.
+/// </para>
+/// <para>
+/// The text is here for the same reason it is on the leader traits: <c>loc/en.json</c> is pruned to
+/// what the database reaches, and a ship class is not in the database, so "Corvette" is not in
+/// there and never will be.
+/// </para>
+/// </remarks>
+public sealed record ShipsetPack : IWikiPack
+{
+    /// <summary>Where this pack lives, which is the whole of what names the file.</summary>
+    public const string Domain = "shipsets";
+
+    /// <summary>The shape these records are in, bumped when it changes.</summary>
+    public const int CurrentSchemaVersion = 1;
+
+    /// <inheritdoc />
+    public static int ExpectedSchemaVersion => CurrentSchemaVersion;
+
+    /// <inheritdoc />
+    public required WikiPackStamp Stamp { get; init; }
+
+    /// <summary>What each set flies.</summary>
+    public IReadOnlyList<ShipsetFleet> Fleets { get; init; } = [];
+
+    /// <summary>The names the ship classes are written in.</summary>
+    public IReadOnlyDictionary<string, string> Text { get; init; } =
+        new Dictionary<string, string>(StringComparer.Ordinal);
+}

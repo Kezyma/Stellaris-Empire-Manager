@@ -1,7 +1,7 @@
 {
   "schemaVersion": 17,
   "gameVersion": "v4.5.0",
-  "extractorVersion": "0.1.0\u002B73f46842ce13",
+  "extractorVersion": "0.1.0\u002Bc4d3475232b9",
   "installFingerprint": "4c524a20ddb52a8f",
   "defines": {
     "ethicsPoints": 3,
@@ -163886,7 +163886,7 @@
         }
       ],
       "shipCategory": "default_ship",
-      "shipPreview": "ships/humanoid_01.png",
+      "shipPreview": "ships/humanoid_01/corvette.png",
       "nameKey": "HUMANOID_01",
       "descriptionKey": "humanoid_01_shipset_desc"
     },
@@ -163936,7 +163936,7 @@
         }
       ],
       "shipCategory": "default_ship",
-      "shipPreview": "ships/plantoid_01.png",
+      "shipPreview": "ships/plantoid_01/corvette.png",
       "nameKey": "PLANTOID_01",
       "descriptionKey": "plantoid_01_shipset_desc"
     },
@@ -163985,7 +163985,7 @@
         }
       ],
       "shipCategory": "default_ship",
-      "shipPreview": "ships/mammalian_01.png",
+      "shipPreview": "ships/mammalian_01/corvette.png",
       "nameKey": "MAMMALIAN_01",
       "descriptionKey": "mammalian_01_shipset_desc"
     },
@@ -164035,7 +164035,7 @@
         }
       ],
       "shipCategory": "default_ship",
-      "shipPreview": "ships/reptilian_01.png",
+      "shipPreview": "ships/reptilian_01/corvette.png",
       "nameKey": "REPTILIAN_01",
       "descriptionKey": "reptilian_01_shipset_desc"
     },
@@ -164085,7 +164085,7 @@
         }
       ],
       "shipCategory": "default_ship",
-      "shipPreview": "ships/avian_01.png",
+      "shipPreview": "ships/avian_01/corvette.png",
       "nameKey": "AVIAN_01",
       "descriptionKey": "avian_01_shipset_desc"
     },
@@ -164135,7 +164135,7 @@
         }
       ],
       "shipCategory": "default_ship",
-      "shipPreview": "ships/molluscoid_01.png",
+      "shipPreview": "ships/molluscoid_01/corvette.png",
       "nameKey": "MOLLUSCOID_01",
       "descriptionKey": "molluscoid_01_shipset_desc"
     },
@@ -164185,7 +164185,7 @@
         }
       ],
       "shipCategory": "default_ship",
-      "shipPreview": "ships/fungoid_01.png",
+      "shipPreview": "ships/fungoid_01/corvette.png",
       "nameKey": "FUNGOID_01",
       "descriptionKey": "fungoid_01_shipset_desc"
     },
@@ -164235,7 +164235,7 @@
         }
       ],
       "shipCategory": "default_ship",
-      "shipPreview": "ships/arthropoid_01.png",
+      "shipPreview": "ships/arthropoid_01/corvette.png",
       "nameKey": "ARTHROPOID_01",
       "descriptionKey": "arthropoid_01_shipset_desc"
     },
@@ -164248,7 +164248,7 @@
       "fallback": "mammalian_01",
       "hasCityArt": false,
       "cityLayers": [],
-      "shipPreview": "ships/pirate_01.png",
+      "shipPreview": "ships/mammalian_01/corvette.png",
       "nameKey": "PIRATE_01",
       "descriptionKey": "pirate_01_shipset_desc"
     },
@@ -164292,7 +164292,7 @@
           "maxPop": 4
         }
       ],
-      "shipPreview": "ships/ai_01.png",
+      "shipPreview": "ships/mammalian_01/corvette.png",
       "nameKey": "AI_01",
       "descriptionKey": "ai_01_shipset_desc"
     },
@@ -164305,7 +164305,7 @@
       "fallback": "mammalian_01",
       "hasCityArt": false,
       "cityLayers": [],
-      "shipPreview": "ships/ai_02.png",
+      "shipPreview": "ships/mammalian_01/corvette.png",
       "nameKey": "AI_02",
       "descriptionKey": "ai_02_shipset_desc"
     },
@@ -164355,7 +164355,7 @@
         }
       ],
       "shipCategory": "default_ship",
-      "shipPreview": "ships/fallen_empire_01.png",
+      "shipPreview": "ships/mammalian_01/corvette.png",
       "nameKey": "FALLEN_EMPIRE_01",
       "descriptionKey": "fallen_empire_01_shipset_desc"
     },
@@ -164405,7 +164405,7 @@
         }
       ],
       "shipCategory": "default_ship",
-      "shipPreview": "ships/fallen_empire_02.png",
+      "shipPreview": "ships/mammalian_01/corvette.png",
       "nameKey": "FALLEN_EMPIRE_02",
       "descriptionKey": "fallen_empire_02_shipset_desc"
     },
@@ -164455,7 +164455,7 @@
         }
       ],
       "shipCategory": "default_ship",
-      "shipPreview": "ships/fallen_empire_03.png",
+      "shipPreview": "ships/mammalian_01/corvette.png",
       "nameKey": "FALLEN_EMPIRE_03",
       "descriptionKey": "fallen_empire_03_shipset_desc"
     },
@@ -164505,7 +164505,7 @@
         }
       ],
       "shipCategory": "default_ship",
-      "shipPreview": "ships/fallen_empire_04.png",
+      "shipPreview": "ships/mammalian_01/corvette.png",
       "nameKey": "FALLEN_EMPIRE_04",
       "descriptionKey": "fallen_empire_04_shipset_desc"
     },
@@ -164555,7 +164555,7 @@
         }
       ],
       "shipCategory": "default_ship",
-      "shipPreview": "ships/fallen_machine_empire_01.png",
+      "shipPreview": "ships/mammalian_01/corvette.png",
       "nameKey": "FALLEN_MACHINE_EMPIRE_01",
       "descriptionKey": "fallen_machine_empire_01_shipset_desc"
     },
@@ -164569,7 +164569,7 @@
       "hasCityArt": false,
       "cityLayers": [],
       "shipCategory": "bio_ship",
-      "shipPreview": "ships/biogenesis_01_fallen_empire.png",
+      "shipPreview": "ships/mammalian_01/corvette.png",
       "nameKey": "BIOGENESIS_01_FALLEN_EMPIRE",
       "descriptionKey": "biogenesis_01_fallen_empire_shipset_desc"
     },
@@ -164582,7 +164582,7 @@
       "fallback": "mammalian_01",
       "hasCityArt": false,
       "cityLayers": [],
-      "shipPreview": "ships/swarm_01.png",
+      "shipPreview": "ships/mammalian_01/corvette.png",
       "nameKey": "SWARM_01",
       "descriptionKey": "swarm_01_shipset_desc"
     },
@@ -164595,7 +164595,7 @@
       "fallback": "mammalian_01",
       "hasCityArt": false,
       "cityLayers": [],
-      "shipPreview": "ships/extra_dimensional_01.png",
+      "shipPreview": "ships/mammalian_01/corvette.png",
       "nameKey": "EXTRA_DIMENSIONAL_01",
       "descriptionKey": "extra_dimensional_01_shipset_desc"
     },
@@ -164608,7 +164608,7 @@
       "fallback": "mammalian_01",
       "hasCityArt": false,
       "cityLayers": [],
-      "shipPreview": "ships/extra_dimensional_02.png",
+      "shipPreview": "ships/mammalian_01/corvette.png",
       "nameKey": "EXTRA_DIMENSIONAL_02",
       "descriptionKey": "extra_dimensional_02_shipset_desc"
     },
@@ -164621,7 +164621,7 @@
       "fallback": "mammalian_01",
       "hasCityArt": false,
       "cityLayers": [],
-      "shipPreview": "ships/extra_dimensional_03.png",
+      "shipPreview": "ships/mammalian_01/corvette.png",
       "nameKey": "EXTRA_DIMENSIONAL_03",
       "descriptionKey": "extra_dimensional_03_shipset_desc"
     },
@@ -164665,7 +164665,7 @@
           "maxPop": 4
         }
       ],
-      "shipPreview": "ships/industrial_01.png",
+      "shipPreview": "ships/mammalian_01/corvette.png",
       "nameKey": "INDUSTRIAL_01",
       "descriptionKey": "industrial_01_shipset_desc"
     },
@@ -164709,7 +164709,7 @@
           "maxPop": 4
         }
       ],
-      "shipPreview": "ships/preindustrial_01.png",
+      "shipPreview": "ships/mammalian_01/corvette.png",
       "nameKey": "PREINDUSTRIAL_01",
       "descriptionKey": "preindustrial_01_shipset_desc"
     },
@@ -164722,7 +164722,7 @@
       "fallback": "mammalian_01",
       "hasCityArt": false,
       "cityLayers": [],
-      "shipPreview": "ships/ancient_drone_01.png",
+      "shipPreview": "ships/mammalian_01/corvette.png",
       "nameKey": "ANCIENT_DRONE_01",
       "descriptionKey": "ancient_drone_01_shipset_desc"
     },
@@ -164735,7 +164735,7 @@
       "fallback": "mammalian_01",
       "hasCityArt": false,
       "cityLayers": [],
-      "shipPreview": "ships/guardian_01.png",
+      "shipPreview": "ships/mammalian_01/corvette.png",
       "nameKey": "GUARDIAN_01",
       "descriptionKey": "guardian_01_shipset_desc"
     },
@@ -164748,7 +164748,7 @@
       "fallback": "mammalian_01",
       "hasCityArt": false,
       "cityLayers": [],
-      "shipPreview": "ships/ancient.png",
+      "shipPreview": "ships/mammalian_01/corvette.png",
       "nameKey": "ANCIENT",
       "descriptionKey": "ancient_shipset_desc"
     },
@@ -164761,7 +164761,7 @@
       "fallback": "mammalian_01",
       "hasCityArt": false,
       "cityLayers": [],
-      "shipPreview": "ships/drone.png",
+      "shipPreview": "ships/mammalian_01/corvette.png",
       "nameKey": "DRONE",
       "descriptionKey": "drone_shipset_desc"
     },
@@ -164774,7 +164774,7 @@
       "fallback": "mammalian_01",
       "hasCityArt": false,
       "cityLayers": [],
-      "shipPreview": "ships/npf_01.png",
+      "shipPreview": "ships/mammalian_01/corvette.png",
       "nameKey": "NPF_01",
       "descriptionKey": "npf_01_shipset_desc"
     },
@@ -164787,7 +164787,7 @@
       "fallback": "mammalian_01",
       "hasCityArt": false,
       "cityLayers": [],
-      "shipPreview": "ships/npf_01_dirty.png",
+      "shipPreview": "ships/mammalian_01/corvette.png",
       "nameKey": "NPF_01_DIRTY",
       "descriptionKey": "npf_01_dirty_shipset_desc"
     },
@@ -164800,7 +164800,7 @@
       "fallback": "mammalian_01",
       "hasCityArt": false,
       "cityLayers": [],
-      "shipPreview": "ships/techno.png",
+      "shipPreview": "ships/mammalian_01/corvette.png",
       "nameKey": "TECHNO",
       "descriptionKey": "techno_shipset_desc"
     },
@@ -164850,7 +164850,7 @@
         }
       ],
       "shipCategory": "default_ship",
-      "shipPreview": "ships/lithoid_01.png",
+      "shipPreview": "ships/lithoid_01/corvette.png",
       "nameKey": "LITHOID_01",
       "descriptionKey": "lithoid_01_shipset_desc"
     },
@@ -164900,7 +164900,7 @@
         }
       ],
       "shipCategory": "default_ship",
-      "shipPreview": "ships/necroid_01.png",
+      "shipPreview": "ships/necroid_01/corvette.png",
       "nameKey": "NECROID_01",
       "descriptionKey": "necroid_01_shipset_desc"
     },
@@ -164914,7 +164914,7 @@
       "hasCityArt": false,
       "cityLayers": [],
       "shipCategory": "default_ship",
-      "shipPreview": "ships/nemesis_01.png",
+      "shipPreview": "ships/nemesis_01/corvette.png",
       "nameKey": "NEMESIS_01",
       "descriptionKey": "nemesis_01_shipset_desc"
     },
@@ -164927,7 +164927,7 @@
       "fallback": "reptilian_01",
       "hasCityArt": false,
       "cityLayers": [],
-      "shipPreview": "ships/lesser_messenger_00.png",
+      "shipPreview": "ships/reptilian_01/corvette.png",
       "nameKey": "LESSER_MESSENGER_00",
       "descriptionKey": "lesser_messenger_00_shipset_desc"
     },
@@ -164977,7 +164977,7 @@
         }
       ],
       "shipCategory": "default_ship",
-      "shipPreview": "ships/aquatic_01.png",
+      "shipPreview": "ships/aquatic_01/corvette.png",
       "nameKey": "AQUATIC_01",
       "descriptionKey": "aquatic_01_shipset_desc"
     },
@@ -165027,7 +165027,7 @@
         }
       ],
       "shipCategory": "default_ship",
-      "shipPreview": "ships/toxoid_01.png",
+      "shipPreview": "ships/toxoid_01/corvette.png",
       "nameKey": "TOXOID_01",
       "descriptionKey": "toxoid_01_shipset_desc"
     },
@@ -165040,7 +165040,7 @@
       "fallback": "mammalian_01",
       "hasCityArt": false,
       "cityLayers": [],
-      "shipPreview": "ships/subterranean_01.png",
+      "shipPreview": "ships/mammalian_01/corvette.png",
       "nameKey": "SUBTERRANEAN_01",
       "descriptionKey": "subterranean_01_shipset_desc"
     },
@@ -165089,7 +165089,7 @@
           "minPop": 5
         }
       ],
-      "shipPreview": "ships/solarpunk_01.png",
+      "shipPreview": "ships/fungoid_01/corvette.png",
       "nameKey": "SOLARPUNK_01",
       "descriptionKey": "solarpunk_01_shipset_desc"
     },
@@ -165139,7 +165139,7 @@
         }
       ],
       "shipCategory": "default_ship",
-      "shipPreview": "ships/cybernetics_01.png",
+      "shipPreview": "ships/cybernetics_01/corvette.png",
       "nameKey": "CYBERNETICS_01",
       "descriptionKey": "cybernetics_01_shipset_desc"
     },
@@ -165189,7 +165189,7 @@
         }
       ],
       "shipCategory": "default_ship",
-      "shipPreview": "ships/synthetics_01.png",
+      "shipPreview": "ships/synthetics_01/corvette.png",
       "nameKey": "SYNTHETICS_01",
       "descriptionKey": "synthetics_01_shipset_desc"
     },
@@ -165239,7 +165239,7 @@
         }
       ],
       "shipCategory": "bio_ship",
-      "shipPreview": "ships/biogenesis_02.png",
+      "shipPreview": "ships/mammalian_01/corvette.png",
       "nameKey": "BIOGENESIS_02",
       "descriptionKey": "biogenesis_02_shipset_desc"
     },
@@ -165289,7 +165289,7 @@
         }
       ],
       "shipCategory": "bio_ship",
-      "shipPreview": "ships/biogenesis_01.png",
+      "shipPreview": "ships/mammalian_01/corvette.png",
       "nameKey": "BIOGENESIS_01",
       "descriptionKey": "biogenesis_01_shipset_desc"
     },
@@ -165338,7 +165338,7 @@
           "minPop": 5
         }
       ],
-      "shipPreview": "ships/wilderness_01.png",
+      "shipPreview": "ships/mammalian_01/corvette.png",
       "nameKey": "WILDERNESS_01",
       "descriptionKey": "wilderness_01_shipset_desc"
     },
@@ -165352,7 +165352,7 @@
       "hasCityArt": false,
       "cityLayers": [],
       "shipCategory": "default_ship",
-      "shipPreview": "ships/slaver_01.png",
+      "shipPreview": "ships/mammalian_01/corvette.png",
       "nameKey": "SLAVER_01",
       "descriptionKey": "slaver_01_shipset_desc"
     },
@@ -165365,7 +165365,7 @@
       "fallback": "avian_01",
       "hasCityArt": false,
       "cityLayers": [],
-      "shipPreview": "ships/synth_queen_01.png",
+      "shipPreview": "ships/avian_01/corvette.png",
       "nameKey": "SYNTH_QUEEN_01",
       "descriptionKey": "synth_queen_01_shipset_desc"
     },
@@ -165415,7 +165415,7 @@
         }
       ],
       "shipCategory": "default_ship",
-      "shipPreview": "ships/psionic_01.png",
+      "shipPreview": "ships/psionic_01/corvette.png",
       "nameKey": "PSIONIC_01",
       "descriptionKey": "psionic_01_shipset_desc"
     },
@@ -165429,7 +165429,7 @@
       "hasCityArt": false,
       "cityLayers": [],
       "shipCategory": "default_ship",
-      "shipPreview": "ships/mindwarden_01.png",
+      "shipPreview": "ships/mindwarden_01/corvette.png",
       "nameKey": "MINDWARDEN_01",
       "descriptionKey": "mindwarden_01_shipset_desc"
     },
@@ -165479,7 +165479,7 @@
         }
       ],
       "shipCategory": "default_ship",
-      "shipPreview": "ships/infernal_01.png",
+      "shipPreview": "ships/infernal_01/corvette.png",
       "nameKey": "INFERNAL_01",
       "descriptionKey": "infernal_01_shipset_desc"
     },
@@ -165492,7 +165492,7 @@
       "fallback": "avian_01",
       "hasCityArt": false,
       "cityLayers": [],
-      "shipPreview": "ships/civilian_arkship.png",
+      "shipPreview": "ships/avian_01/corvette.png",
       "nameKey": "CIVILIAN_ARKSHIP",
       "descriptionKey": "civilian_arkship_shipset_desc"
     },
@@ -165505,7 +165505,7 @@
       "fallback": "avian_01",
       "hasCityArt": false,
       "cityLayers": [],
-      "shipPreview": "ships/military_arkship.png",
+      "shipPreview": "ships/avian_01/corvette.png",
       "nameKey": "MILITARY_ARKSHIP",
       "descriptionKey": "military_arkship_shipset_desc"
     },
@@ -165518,7 +165518,7 @@
       "fallback": "avian_01",
       "hasCityArt": false,
       "cityLayers": [],
-      "shipPreview": "ships/science_arkship.png",
+      "shipPreview": "ships/avian_01/corvette.png",
       "nameKey": "SCIENCE_ARKSHIP",
       "descriptionKey": "science_arkship_shipset_desc"
     },
@@ -165531,7 +165531,7 @@
       "fallback": "mammalian_01",
       "hasCityArt": false,
       "cityLayers": [],
-      "shipPreview": "ships/caravaneer_01.png",
+      "shipPreview": "ships/mammalian_01/corvette.png",
       "nameKey": "CARAVANEER_01",
       "descriptionKey": "caravaneer_01_shipset_desc"
     }

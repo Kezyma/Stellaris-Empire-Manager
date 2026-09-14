@@ -899,7 +899,7 @@ public sealed class WikiShelfTests
     [Fact]
     public void AShipsetIsNamedUnderItsKeyShoutedAndFallsBackToItReadable()
     {
-        var rows = Shipsets().Of(WikiKind.Shipsets).Rows;
+        var rows = Shipsets().Shipsets(pack: null).Rows;
 
         var named = rows.First(r => r.Key == "biogenesis_01");
         Assert.Equal("Spinovore", named.Name);
@@ -912,7 +912,7 @@ public sealed class WikiShelfTests
     [Fact]
     public void AShipsetWithNoShipsOfItsOwnSaysSo()
     {
-        var rows = Shipsets().Of(WikiKind.Shipsets).Rows;
+        var rows = Shipsets().Shipsets(pack: null).Rows;
 
         Assert.Equal("Grown", rows.First(r => r.Key == "biogenesis_01").Fact("Fleet")!.Text);
         Assert.Equal("Built", rows.First(r => r.Key == "humanoid_01").Fact("Fleet")!.Text);

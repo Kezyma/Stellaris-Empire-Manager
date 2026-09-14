@@ -188,8 +188,8 @@ public sealed class ShipRenderingTests
 
         var offered = sets
             .Where(s => s.Selectable is not AlwaysRequirement { Value: false })
-            .Select(set => (set.Key, Hull: baker.HullFor(set, byKey)))
-            .Where(pair => pair.Hull is not null)
+            .Select(set => (set.Key, Meshes: baker.PreviewMeshes(set, byKey)))
+            .Where(pair => pair.Meshes.Count > 0)
             .ToList();
 
         Assert.NotEmpty(offered);
@@ -199,12 +199,19 @@ public sealed class ShipRenderingTests
             // Counted over the parts that carry texture coordinates rather than the ones already
             // naming a texture, since the psionic and mindwarden hulls are given theirs later, out
             // of the set's mesh settings, and would otherwise measure as empty.
-            var mesh = PortraitMesh.Load(content.Read(pair.Hull!));
-            var vertices = mesh.Parts.Where(p => p.TexCoords.Length > 0).Sum(p => p.Positions.Length);
+            //
+            // And across every mesh the preview is drawn from, since a sectioned ship is several -
+            // a bow on its own would pass this and be half a ship.
+            var vertices = pair.Meshes
+                .Select(path => PortraitMesh.Load(content.Read(path)))
+                .SelectMany(mesh => mesh.Parts.Where(p => p.TexCoords.Length > 0))
+                .Sum(p => p.Positions.Length);
+
+            var drawn = string.Join(", ", pair.Meshes.Select(Path.GetFileName));
 
             Assert.True(
                 vertices > 1000,
-                $"{pair.Key} is drawn by {Path.GetFileName(pair.Hull)}, which has only {vertices} vertices.");
+                $"{pair.Key} is drawn by {drawn}, which has only {vertices} vertices.");
         });
     }
 

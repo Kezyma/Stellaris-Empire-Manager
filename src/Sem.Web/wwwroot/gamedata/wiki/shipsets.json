@@ -1,0 +1,1999 @@
+{
+  "stamp": {
+    "extractorVersion": "0.1.0\u002Bc4d3475232b9",
+    "schemaVersion": 1
+  },
+  "fleets": [
+    {
+      "set": "humanoid_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/humanoid_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/humanoid_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/humanoid_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/humanoid_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/humanoid_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/humanoid_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/humanoid_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/humanoid_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "plantoid_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/plantoid_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/plantoid_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/plantoid_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/plantoid_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/plantoid_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/plantoid_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/plantoid_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/plantoid_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "mammalian_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/mammalian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/mammalian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/mammalian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/mammalian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/mammalian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/mammalian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/mammalian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/mammalian_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "reptilian_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/reptilian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/reptilian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/reptilian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/reptilian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/reptilian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/reptilian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/reptilian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/reptilian_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "avian_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/avian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/avian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/avian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/avian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/avian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/avian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/avian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/avian_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "molluscoid_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/molluscoid_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/molluscoid_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/molluscoid_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/molluscoid_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/molluscoid_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/molluscoid_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/molluscoid_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/molluscoid_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "fungoid_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/fungoid_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/fungoid_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/fungoid_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/fungoid_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/fungoid_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/fungoid_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/fungoid_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/fungoid_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "arthropoid_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/arthropoid_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/arthropoid_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/arthropoid_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/arthropoid_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/arthropoid_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/arthropoid_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/arthropoid_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/arthropoid_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "pirate_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/mammalian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/mammalian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/mammalian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/mammalian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/mammalian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/mammalian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/mammalian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/mammalian_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "ai_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/mammalian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/mammalian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/mammalian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/mammalian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/mammalian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/mammalian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/mammalian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/ai_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "ai_02",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/mammalian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/mammalian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/mammalian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/mammalian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/mammalian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/mammalian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/mammalian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/mammalian_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "fallen_empire_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/mammalian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/mammalian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/mammalian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/mammalian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/mammalian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/mammalian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/mammalian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/mammalian_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "fallen_empire_02",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/mammalian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/mammalian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/mammalian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/mammalian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/mammalian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/mammalian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/mammalian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/mammalian_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "fallen_empire_03",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/mammalian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/mammalian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/mammalian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/mammalian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/mammalian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/mammalian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/mammalian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/mammalian_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "fallen_empire_04",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/mammalian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/mammalian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/mammalian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/mammalian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/mammalian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/mammalian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/mammalian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/mammalian_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "fallen_machine_empire_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/mammalian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/mammalian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/mammalian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/mammalian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/mammalian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/mammalian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/mammalian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/mammalian_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "biogenesis_01_fallen_empire",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/mammalian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/mammalian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/mammalian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/mammalian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/mammalian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/mammalian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/mammalian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/mammalian_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "swarm_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/mammalian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/mammalian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/mammalian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/mammalian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/mammalian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/mammalian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/mammalian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/swarm_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "extra_dimensional_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/mammalian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/mammalian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/mammalian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/mammalian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/mammalian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/mammalian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/mammalian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/mammalian_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "extra_dimensional_02",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/mammalian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/mammalian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/mammalian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/mammalian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/mammalian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/mammalian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/mammalian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/mammalian_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "extra_dimensional_03",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/mammalian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/mammalian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/mammalian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/mammalian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/mammalian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/mammalian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/mammalian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/mammalian_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "industrial_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/mammalian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/mammalian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/mammalian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/mammalian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/mammalian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/mammalian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/mammalian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/mammalian_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "preindustrial_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/mammalian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/mammalian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/mammalian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/mammalian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/mammalian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/mammalian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/mammalian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/mammalian_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "ancient_drone_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/mammalian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/mammalian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/mammalian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/mammalian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/mammalian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/mammalian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/mammalian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/mammalian_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "guardian_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/mammalian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/mammalian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/mammalian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/mammalian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/mammalian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/mammalian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/mammalian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/mammalian_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "ancient",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/mammalian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/mammalian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/mammalian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/mammalian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/mammalian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/mammalian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/mammalian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/mammalian_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "drone",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/mammalian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/mammalian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/mammalian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/mammalian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/mammalian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/mammalian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/mammalian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/mammalian_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "npf_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/mammalian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/mammalian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/mammalian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/mammalian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/mammalian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/mammalian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/mammalian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/mammalian_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "npf_01_dirty",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/mammalian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/mammalian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/mammalian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/mammalian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/mammalian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/mammalian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/mammalian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/mammalian_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "techno",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/mammalian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/mammalian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/mammalian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/mammalian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/mammalian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/mammalian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/mammalian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/mammalian_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "lithoid_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/lithoid_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/lithoid_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/lithoid_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/lithoid_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/lithoid_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/lithoid_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/lithoid_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/lithoid_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "necroid_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/necroid_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/necroid_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/necroid_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/necroid_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/necroid_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/necroid_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/necroid_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/necroid_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "nemesis_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/nemesis_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/nemesis_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/nemesis_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/nemesis_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/nemesis_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/nemesis_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/nemesis_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/nemesis_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "lesser_messenger_00",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/reptilian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/reptilian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/reptilian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/reptilian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/reptilian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/reptilian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/reptilian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/reptilian_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "aquatic_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/aquatic_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/aquatic_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/aquatic_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/aquatic_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/aquatic_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/aquatic_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/aquatic_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/aquatic_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "toxoid_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/toxoid_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/toxoid_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/toxoid_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/toxoid_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/toxoid_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/toxoid_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/toxoid_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/toxoid_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "subterranean_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/mammalian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/mammalian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/mammalian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/mammalian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/mammalian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/mammalian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/mammalian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/mammalian_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "solarpunk_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/fungoid_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/fungoid_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/fungoid_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/fungoid_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/fungoid_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/fungoid_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/fungoid_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/fungoid_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "cybernetics_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/cybernetics_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/cybernetics_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/cybernetics_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/cybernetics_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/cybernetics_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/cybernetics_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/cybernetics_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/cybernetics_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "synthetics_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/synthetics_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/synthetics_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/synthetics_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/synthetics_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/synthetics_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/synthetics_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/synthetics_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/synthetics_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "biogenesis_02",
+      "ships": [
+        {
+          "shipClass": "mauler_stage_2",
+          "image": "ships/biogenesis_02/mauler_stage_2.png"
+        },
+        {
+          "shipClass": "weaver_stage_2",
+          "image": "ships/biogenesis_02/weaver_stage_2.png"
+        },
+        {
+          "shipClass": "harbinger_stage_2",
+          "image": "ships/biogenesis_02/harbinger_stage_2.png"
+        },
+        {
+          "shipClass": "stinger_stage_2",
+          "image": "ships/biogenesis_02/stinger_stage_2.png"
+        },
+        {
+          "shipClass": "corvette",
+          "image": "ships/mammalian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/mammalian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/mammalian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/mammalian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/biogenesis_02/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/biogenesis_02/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/biogenesis_02/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/biogenesis_02/science.png"
+        }
+      ]
+    },
+    {
+      "set": "biogenesis_01",
+      "ships": [
+        {
+          "shipClass": "mauler_stage_2",
+          "image": "ships/biogenesis_01/mauler_stage_2.png"
+        },
+        {
+          "shipClass": "weaver_stage_2",
+          "image": "ships/biogenesis_01/weaver_stage_2.png"
+        },
+        {
+          "shipClass": "harbinger_stage_2",
+          "image": "ships/biogenesis_01/harbinger_stage_2.png"
+        },
+        {
+          "shipClass": "stinger_stage_2",
+          "image": "ships/biogenesis_01/stinger_stage_2.png"
+        },
+        {
+          "shipClass": "corvette",
+          "image": "ships/mammalian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/mammalian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/mammalian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/mammalian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/mammalian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/mammalian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/biogenesis_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/biogenesis_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "wilderness_01",
+      "ships": [
+        {
+          "shipClass": "mauler_stage_2",
+          "image": "ships/biogenesis_01/mauler_stage_2.png"
+        },
+        {
+          "shipClass": "weaver_stage_2",
+          "image": "ships/biogenesis_01/weaver_stage_2.png"
+        },
+        {
+          "shipClass": "harbinger_stage_2",
+          "image": "ships/biogenesis_01/harbinger_stage_2.png"
+        },
+        {
+          "shipClass": "stinger_stage_2",
+          "image": "ships/biogenesis_01/stinger_stage_2.png"
+        },
+        {
+          "shipClass": "corvette",
+          "image": "ships/mammalian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/mammalian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/mammalian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/mammalian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/mammalian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/mammalian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/biogenesis_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/biogenesis_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "slaver_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/mammalian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/mammalian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/mammalian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/mammalian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/mammalian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/mammalian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/mammalian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/mammalian_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "synth_queen_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/avian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/avian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/avian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/avian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/avian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/avian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/avian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/avian_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "psionic_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/psionic_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/psionic_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/psionic_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/psionic_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/psionic_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/psionic_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/psionic_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/psionic_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "mindwarden_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/mindwarden_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/mindwarden_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/mindwarden_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/mindwarden_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/mindwarden_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/mindwarden_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/mindwarden_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/mindwarden_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "infernal_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/infernal_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/infernal_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/infernal_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/infernal_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/mammalian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/infernal_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/infernal_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/infernal_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "civilian_arkship",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/avian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/avian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/avian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/avian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/avian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/avian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/avian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/avian_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "military_arkship",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/avian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/avian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/avian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/avian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/avian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/avian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/avian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/avian_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "science_arkship",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/avian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/avian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/avian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/avian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/avian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/avian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/avian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/avian_01/science.png"
+        }
+      ]
+    },
+    {
+      "set": "caravaneer_01",
+      "ships": [
+        {
+          "shipClass": "corvette",
+          "image": "ships/mammalian_01/corvette.png"
+        },
+        {
+          "shipClass": "destroyer",
+          "image": "ships/mammalian_01/destroyer.png"
+        },
+        {
+          "shipClass": "cruiser",
+          "image": "ships/mammalian_01/cruiser.png"
+        },
+        {
+          "shipClass": "battleship",
+          "image": "ships/mammalian_01/battleship.png"
+        },
+        {
+          "shipClass": "titan",
+          "image": "ships/mammalian_01/titan.png"
+        },
+        {
+          "shipClass": "constructor",
+          "image": "ships/mammalian_01/constructor.png"
+        },
+        {
+          "shipClass": "colonizer",
+          "image": "ships/mammalian_01/colonizer.png"
+        },
+        {
+          "shipClass": "science",
+          "image": "ships/mammalian_01/science.png"
+        }
+      ]
+    }
+  ],
+  "text": {
+    "corvette": "Corvette",
+    "destroyer": "Destroyer",
+    "cruiser": "Cruiser",
+    "battleship": "Battleship",
+    "titan": "Titan",
+    "constructor": "Construction Ship",
+    "colonizer": "Colony Ship",
+    "science": "Science Ship",
+    "mauler_stage_2": "$ship_growth_stage_2$ $mauler_class_cap$",
+    "weaver_stage_2": "$ship_growth_stage_2$ $weaver_class_cap$",
+    "harbinger_stage_2": "$ship_growth_stage_2$ $harbinger_class_cap$",
+    "stinger_stage_2": "$ship_growth_stage_2$ $stinger_class_cap$",
+    "ship_growth_stage_2": "Mature",
+    "mauler_class_cap": "Mauler",
+    "weaver_class_cap": "Weaver",
+    "harbinger_class_cap": "Harbinger",
+    "stinger_class_cap": "Stinger"
+  }
+}

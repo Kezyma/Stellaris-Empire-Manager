@@ -68,6 +68,21 @@ public static class MeshCommand
         Console.WriteLine();
         Console.WriteLine($"Total nodes: {asset.Descendants().Count()}");
         Console.WriteLine($"Meshes     : {asset.Descendants().Count(n => n.Name == "mesh")}");
+
+        // Where the model sits, which is the question when two of them are meant to be one ship. A
+        // warship above a corvette is a bow, a middle and a stern in separate files, and whether
+        // they are authored already in place or each about its own origin is the whole of how they
+        // are put together - and nothing in the game's own files says which.
+        var mesh = PortraitMesh.Load(bytes);
+
+        if (mesh.Parts.Count > 0)
+        {
+            var (min, max) = mesh.Bounds;
+
+            Console.WriteLine(
+                $"Bounds     : x {min.X:0.##} to {max.X:0.##}, "
+                    + $"y {min.Y:0.##} to {max.Y:0.##}, z {min.Z:0.##} to {max.Z:0.##}");
+        }
         return 0;
     }
 
