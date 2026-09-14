@@ -35,6 +35,11 @@ public static class SemDesignerServices
         // The header can start an empire or open a file from any page, so the question about unsaved
         // work has to be askable from outside the designer that knows how to ask it.
         services.AddScoped<UnsavedWorkGuard>();
+
+        // And the questions about the file itself, which are asked in one place and put in another:
+        // the layout opens a remembered file wherever the reader happens to land, and the empire
+        // list is where anybody is asked about it.
+        services.AddScoped<FileQuestions>();
         services.AddScoped<EditorState>();
 
         // How the pickers are drawn, which is a setting rather than the player's work, and is kept

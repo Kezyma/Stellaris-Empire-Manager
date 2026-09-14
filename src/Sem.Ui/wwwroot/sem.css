@@ -4056,6 +4056,55 @@ button.icon .sem-action-icon { display: block; }
     margin-bottom: var(--gap);
 }
 
+/*
+   Everything that acts on the designs file, at the head of the list it acts on.
+
+   Six icon buttons in a row, at the size the bulk bar and the editors already use, so that the one
+   row of controls at the top of this page is one kind of thing rather than two. Allowed to wrap for
+   the same reason the bulk bar is: six controls do not fit 375px, and a row that scrolls sideways is
+   one whose end nobody finds.
+
+   A label sits among them where the browser has no file picker, because a file input can only be
+   opened by a press that reaches it. It is a button in every respect but the element, and is given
+   the button's own shape here rather than a copy of it.
+*/
+.sem-file-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.sem-file-bar > label.icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--icon-btn);
+    height: var(--icon-btn);
+    padding: 0;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+
+.sem-file-bar > label.icon:hover { background: var(--bg-hover); border-color: var(--accent-dim); }
+
+/*
+   On, in the sense a connected file is on: the accent, filled, which is what this app means by a
+   thing that is currently the case. It was .active before, which fell through to the rule that
+   marks the current nav tab - so a connected cloud looked like the page you were reading.
+*/
+button.icon.on {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+}
+
+button.icon.on:hover:not(:disabled) {
+    background: var(--accent);
+    color: var(--bg);
+}
+
 .sem-columns {
     display: flex;
     align-items: center;

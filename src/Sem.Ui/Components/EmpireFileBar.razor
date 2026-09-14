@@ -1,0 +1,827 @@
+@implements IDisposable
+@inject SessionHost Host
+@inject IFileExchange Files
+@inject NavigationManager Navigation
+@inject UnsavedWorkGuard Guard
+@inject EditorState Editor
+@inject DesignSync Sync
+@inject FileQuestions Questions
+@inject IServiceProvider Services
+
+@*
+    Everything that acts on the designs file, on the page the file is.
+
+    These were tabs in the header, beside Empires and Wiki - so navigation and actions looked
+    identical, and every one of them was meaningless on a page about the game rather than about your
+    empires. A wiki reader had Save and Reset across the top of what they were reading.
+
+    Icons rather than words, because there are six of them and six verbs across the top of a list is
+    a sentence to read before the list underneath can be. Every one carries its name in a title and
+    in an aria-label, which is where the words went.
+
+    The questions come with the buttons. Some of them are asked by the layout rather than by
+    anything here - a file chosen on an earlier visit is fetched wherever the reader happens to land
+    - and those wait in FileQuestions until this is on screen to draw them.
+*@
+
+<div class="sem-file-bar">
+    @*
+        Make one. First because it is the only button here that adds something rather than moving
+        the file about, and the one somebody arriving at an empty list wants.
+    *@
+    <button type="button" class="icon" @onclick="Create"
+            title="Start a new empire" aria-label="Start a new empire">
+        <ActionIcon Name="create" />
+    </button>
+
+    @*
+        Two ways in, and only ever one of them on the page.
+
+        Where the browser has a file picker this is a plain button, because a picker opened from
+        code can be told to reopen in the folder the player last used - which after one import is
+        their Stellaris folder, and is the only way this app can ever land there. A page may not
+        name a directory itself.
+
+        Where it has not - Firefox and Safari have no picker - it falls back to the label and the
+        hidden input, which is the older arrangement and the reason for its oddities: a file input
+        cannot be opened from code, so the click has to be allowed to reach it, and the input is
+        hidden by size rather than by display because display:none takes it out of the tab order and
+        the label is not focusable either, which once left Import the one control here that no
+        keyboard could reach.
+
+        Either way the question about unsaved work is asked once the file has arrived, never before:
+        a dialog would spend the click that the picker needs.
+    *@
+    @if (_canPickFiles)
+    {
+        <button type="button" class="icon" @onclick="Pick"
+                title="Open a designs file" aria-label="Open a designs file">
+            <ActionIcon Name="import" />
+        </button>
+    }
+    else
+    {
+        <label class="icon" for="designs-file" title="Open a designs file"
+               aria-label="Open a designs file">
+            <ActionIcon Name="import" />
+        </label>
+
+        <InputFile id="designs-file" OnChange="Import" class="sem-visually-hidden" accept=".txt" />
+    }
+
+    @*
+        Where the file lives, for a host that can be pointed at one somewhere else. Beside Import
+        because it is the same question - where the empires come from - and lit while it is
+        answered, since that is what changes what Save means. Drawn only in a browser: the desktop
+        already has a real file.
+    *@
+    @if (_cloud is { } cloud)
+    {
+        @*
+            The path belongs in the sheet, where there is room for it to be read. Here it is the
+            title, which is where a button with no words says what it is about.
+        *@
+        <button type="button"
+                class="icon @(cloud.Connected ? "on" : null) @(cloud.SessionEnded ? "danger" : null)"
+                title="@(cloud.Where is { } path
+                    ? $"Saving to {path} in your {cloud.ProviderName}"
+                    : "Open a designs file you keep in the cloud")"
+                aria-label="@(cloud.Where is { } named
+                    ? $"Cloud file: {named}"
+                    : "Open a designs file you keep in the cloud")"
+                @onclick="() => Ask(q => q.Connecting = true)">
+            <ActionIcon Name="cloud" />
+        </button>
+    }
+
+    @*
+        Save, and beside it the answer to whether saving is something you ask for at all.
+
+        One button, and the glyph follows the verb: a disk where it writes the file in place, an
+        export arrow where it hands a new one over. Which of those it is depends on the host and on
+        whether a cloud file is connected, so the word this used to show - Save or Export - is now
+        the shape of the icon and the whole of the title.
+    *@
+    <button type="button" class="icon"
+            disabled="@(Nothing || Sync.Enabled)"
+            title="@(Sync.Enabled
+                ? "Your empires are written to the file as you go."
+                : $"{Files.SaveVerb} your empires")"
+            aria-label="@($"{Files.SaveVerb} your empires")"
+            @onclick="AskToSave">
+        <ActionIcon Name="@(Files.SavesInPlace ? "save" : "export")" />
+    </button>
+
+    @if (Sync.Available)
+    {
+        @*
+            Its own button rather than a checkbox set against Save's edge, which is what it was: a
+            label with a checkbox in it is interactive content, and interactive content inside a
+            button is not something a browser will lay out, so the two had to be wedged together.
+            On a bar of icon buttons it is simply another one, pressed rather than ticked, and
+            green while it is on the way every other on-or-off control in this app is.
+        *@
+        <button type="button" class="icon @(Sync.Enabled ? "good" : null)"
+                title="@SyncExplained" aria-pressed="@(Sync.Enabled ? "true" : "false")"
+                aria-label="Write to my designs file as I go"
+                @onclick="() => Sync.SetAsync(!Sync.Enabled)">
+            <ActionIcon Name="sync" />
+        </button>
+    }
+
+    @*
+        Last, and disabled by the same question as Save: both act on the whole file, so both are
+        meaningless when there is no file or nothing in it. Not marked dangerous - the warning
+        belongs on the dialog's confirm button, where the two existing delete flows already put it,
+        and a red button at the top of the list would shout every time the page was opened.
+    *@
+    <button type="button" class="icon" disabled="@Nothing" @onclick="Reset"
+            title="Delete every empire and start over"
+            aria-label="Delete every empire and start over">
+        <ActionIcon Name="reset" />
+    </button>
+</div>
+
+@if (_message is { } note)
+{
+    <p class="@(note.IsProblem ? "sem-header-error" : "sem-header-note")">@note.Text</p>
+}
+
+@*
+    Asked only where the button writes over something. In a browser it opens a dialog and the
+    player picks the file, so asking first would be asking twice; on the desktop it replaces the
+    designs file the game itself reads, which is worth a moment's pause even though a dated backup
+    is written beside it.
+*@
+@if (_saving)
+{
+    <ConfirmDialog Title="Replace your empire designs file?"
+                   Message="@($"Your {Count(Empires)} will be written over the file the game reads.")"
+                   OnDismiss="() => _saving = false">
+        <Options>
+            @*
+                Remembered as it is changed rather than when the file is written, so that turning it
+                off and then thinking better of the save still leaves it off next time. It is an
+                answer about backups, not about this one save.
+            *@
+            <label class="sem-choice">
+                <input type="checkbox" checked="@_backUp" @onchange="KeepBackup" />
+                <span>Keep a dated copy of the file it replaces</span>
+            </label>
+        </Options>
+        <ChildContent>
+            <button type="button" @onclick="() => _saving = false">Cancel</button>
+            <button type="button" class="danger" @onclick="Export">Replace it</button>
+        </ChildContent>
+    </ConfirmDialog>
+}
+
+@if (_resetting)
+{
+    <ConfirmDialog Title="@($"Delete all {Empires} of your empires?")"
+                   Message="@ResetWarning"
+                   OnDismiss="() => _resetting = false">
+        <button type="button" @onclick="() => _resetting = false">Keep them</button>
+        <button type="button" class="danger" @onclick="ClearEverything">Delete them all</button>
+    </ConfirmDialog>
+}
+
+@*
+    Asked only where it cannot be decided: the file changed underneath an empire carrying edits
+    nobody has saved, and taking the file would take those with it. Everywhere else the file is
+    simply loaded, which is the whole point of the thing being on.
+*@
+@if (Sync.Asking)
+{
+    <ConfirmDialog Title="Your designs file changed while you were editing."
+                   Message="@($"Something else has written {FileTitle}"
+                             + (Sync.Arrived is { } arrived
+                                 ? $", and it now holds {Count(arrived.Holds)}"
+                                 : string.Empty)
+                             + $". Taking it replaces the changes you have not saved{Editing}.")"
+                   OnDismiss="Sync.Decline">
+        <ArrivalChoices Theirs="the file" Take="Take File"
+                        OnChosen="(Arrival choice) => Sync.ResolveAsync(choice)" />
+    </ConfirmDialog>
+}
+
+@*
+    Signing in, choosing a file, and disconnecting - one sheet, because they are three steps of one
+    errand. The question about unsaved work is handed in rather than asked here: connecting opens a
+    different file, exactly as importing one does.
+*@
+@if (Questions.Connecting)
+{
+    <CloudDialog OnClose="() => Ask(q => q.Connecting = false)" ConfirmFirst="Guard.ConfirmAsync"
+                 Decide="AskAboutArrival" />
+}
+
+@*
+    The wait while a remembered file is fetched. On screen rather than silent because it is the one
+    moment the app is deliberately not ready: what is behind this is last visit's copy, and the file
+    about to replace it is still on its way.
+*@
+@if (Questions.Opening)
+{
+    <div class="sem-modal">
+        <div class="sheet" role="dialog" aria-modal="true" aria-live="polite">
+            <h2>Opening your file in @(_cloud?.ProviderName ?? "the cloud")</h2>
+            <p>Reading your empires from the file you connected to. This takes a moment.</p>
+        </div>
+    </div>
+}
+
+@*
+    And the answer when it could not be fetched at all - offline, or a sign-in that lapsed while the
+    tab was shut. Asked rather than assumed: carrying on quietly would put somebody to work on a
+    copy that is not the file they think they are editing, and refusing to open anything would hold
+    their empires hostage to a network.
+*@
+@if (Questions.Stranded)
+{
+    <ConfirmDialog Title="@($"Your file in {_cloud?.ProviderName ?? "the cloud"} could not be opened.")"
+                   Message="@("This browser still has the copy it kept last time. You can connect "
+                             + "again to work on the file itself, or carry on with that copy - "
+                             + "which Export hands back, and which you can put into the file later.")"
+                   OnDismiss="() => Ask(q => q.Stranded = false)">
+        <button type="button" @onclick="() => Ask(q => q.Stranded = false)">Use this browser's copy</button>
+        <button type="button" @onclick="Reconnect">Connect again</button>
+    </ConfirmDialog>
+}
+
+@*
+    What to do with the empires already open when an arriving file turns out to hold its own.
+
+    Asked only where both sides hold something and they differ, so an ordinary reload of a
+    connection that is in step is not a question. Nothing here writes: every answer decides what is
+    in front of you, and the file at the provider changes only when something saves.
+*@
+@if (Questions.Arriving is { } arrival)
+{
+    <ConfirmDialog Title="@($"You already have {Count(arrival.Mine)} open.")"
+                   Message="@($"{arrival.Name} holds {Count(arrival.Holds)}. Merging keeps your "
+                             + "order and adds theirs to it; the choice is only which copy of an "
+                             + $"empire you both have is the one kept. {arrival.Note}")"
+                   OnDismiss="() => Questions.Answer(null)">
+        <ArrivalChoices Theirs="@arrival.Theirs" Take="@arrival.Take"
+                        OnChosen="(Arrival choice) => Questions.Answer(choice)" />
+    </ConfirmDialog>
+}
+
+@code {
+    private DesignSession? _session;
+
+    /// <summary>What the bar has to say about the last file it handled, and how loudly.</summary>
+    /// <remarks>
+    /// Two unlike things end up here. A file that would not open is a failure and is coloured as
+    /// one. A file that downloaded because this browser has no save dialog, or one that opened
+    /// under a name the game would not recognise, is a remark - true, worth reading once, and
+    /// nothing the player did wrong. Shown in the same red, the remarks read as failures and the
+    /// failures stopped standing out.
+    /// </remarks>
+    private (string Text, bool IsProblem)? _message;
+
+    /// <summary>Whether the "delete everything" question is on screen.</summary>
+    private bool _resetting;
+
+    /// <summary>Whether the "replace your designs file" question is on screen.</summary>
+    private bool _saving;
+
+    /// <summary>Whether this save keeps a dated copy of the file it writes over.</summary>
+    private bool _backUp = true;
+
+    /// <summary>
+    /// Whether this browser can be asked to show a file picker.
+    /// </summary>
+    /// <remarks>
+    /// Asked of the host once the page exists, because it is a question about the browser and the
+    /// answer needs script to get at. False keeps the file input in the page, which is the only way
+    /// in on a browser without a picker, and is also what the desktop gets - it opens the player's
+    /// own file without asking and has no use for a dialog.
+    /// </remarks>
+    private bool _canPickFiles;
+
+    /// <summary>
+    /// The thing that decides where a save goes, where that can change during a visit.
+    /// </summary>
+    /// <remarks>
+    /// Asked for rather than injected, because it is absent in a browser and an injected service
+    /// that is not registered is an exception rather than a null. The desktop has one file exchange
+    /// for the life of the window, so there is nothing there to hear about - but the glyph on Save
+    /// is drawn from the exchange, so wherever there is one this has to be told when it changes.
+    /// </remarks>
+    private FileExchangeRouter? _files;
+
+    /// <summary>
+    /// The provider the app can be pointed at, where this host has one.
+    /// </summary>
+    /// <remarks>
+    /// Absent on the desktop, which already has the player's real file and needs nothing fetching.
+    /// </remarks>
+    private CloudConnection? _cloud;
+
+    /// <summary>Sets one of the waiting questions and redraws, which is all four of them.</summary>
+    /// <param name="set">What to change.</param>
+    private void Ask(Action<FileQuestions> set)
+    {
+        set(Questions);
+        Questions.Announce();
+    }
+
+    /// <summary>Asks first where the answer would overwrite something, and otherwise gets on with it.</summary>
+    private async Task AskToSave()
+    {
+        if (Files.SavesInPlace)
+        {
+            _backUp = _session?.Preferences.KeepsBackup ?? true;
+            _saving = true;
+            return;
+        }
+
+        await Export();
+    }
+
+    /// <summary>Remembers whether to keep the copy, for this save and for every one after it.</summary>
+    private void KeepBackup(ChangeEventArgs e)
+    {
+        _backUp = e.Value is true;
+        _session?.Preferences.SetKeepsBackup(_backUp);
+    }
+
+    /// <summary>
+    /// Connecting to a file at a provider, where keeping your own still points Save at it.
+    /// </summary>
+    /// <remarks>
+    /// Shaped to <see cref="ArrivalQuestion"/> exactly, since it is handed over as one.
+    /// </remarks>
+    private Task<Arrival?> AskAboutArrival(string name, int holds) =>
+        Questions.AskAsync(
+            _session?.File?.Designs.Count ?? 0, holds, name,
+            _cloud?.ProviderName ?? "the cloud", "Take Cloud",
+            "Nothing is written to it until you save.");
+
+    /// <summary>Importing one from disk, which writes nothing anywhere whatever the answer.</summary>
+    private Task<Arrival?> AskAboutImport(string name, int holds) =>
+        Questions.AskAsync(
+            _session?.File?.Designs.Count ?? 0, holds, name, "the file", "Take File",
+            "Your own file on disk is not touched either way.");
+
+    /// <summary>Whether there is a file with anything in it for the whole-file buttons to act on.</summary>
+    private bool Nothing => _session?.File is null || _session.File.Designs.Count == 0;
+
+    /// <summary>How many empires Reset would take, which the question has to say out loud.</summary>
+    private int Empires => _session?.File?.Designs.Count ?? 0;
+
+    /// <summary>
+    /// What Reset costs, and - the part worth reading - what it does not.
+    /// </summary>
+    /// <remarks>
+    /// The reassurance is the thing that makes the button safe to press. Nothing here can touch the
+    /// file the game reads: this app has never written it, and only ever offers a copy through a
+    /// save dialog the player drives. Someone about to delete an evening's work needs to know that
+    /// their designs file is not what is being deleted.
+    /// </remarks>
+    private string ResetWarning =>
+        $"All {Empires} empires you have made here are removed and the file is closed, leaving the "
+        + "app as it was on your first visit. Your Stellaris designs file is not touched - nothing "
+        + "on disk changes unless you export."
+        + (_cloud is { Connected: true } cloud
+            ? $" You are let go of {cloud.Where} and signed out of {cloud.ProviderName}, and the "
+                + "file there is left exactly as it is."
+            : string.Empty)
+        + " There is no undo.";
+
+    /// <summary>What the sync button does, in the one sentence a tooltip has.</summary>
+    private string SyncExplained =>
+        Sync.Enabled
+            ? "Your empires are written to your designs file as you go, and changes made to it "
+              + "outside this app are loaded. Press to go back to saving when you say so."
+            : "Write to your designs file as you go, and load anything the game writes to it. "
+              + "No dated backups are kept while this is on.";
+
+    /// <summary>The file the question is about, named where there is a name to use.</summary>
+    private string FileTitle =>
+        _session?.FileName is { Length: > 0 } named ? named : "your empire designs file";
+
+    /// <summary>" to Iferyx Amalgamated Fleets" - or nothing, where nothing is open.</summary>
+    private string Editing =>
+        _session?.Current is { } design
+            ? $" to {_session.Localizer.Name(design.Name, design.Key)}"
+            : string.Empty;
+
+    /// <summary>Takes the question down and goes to the provider to try again.</summary>
+    private void Reconnect() => Ask(q =>
+    {
+        q.Stranded = false;
+        q.Connecting = true;
+    });
+
+    protected override async Task OnInitializedAsync()
+    {
+        // The bar draws itself from the exchange - which glyph Save wears, and whether to ask
+        // before replacing a file - so it has to be told when the exchange underneath changes.
+        _files = Services.GetService(typeof(FileExchangeRouter)) as FileExchangeRouter;
+
+        if (_files is not null)
+        {
+            _files.Changed += OnChanged;
+        }
+
+        _cloud = Services.GetService(typeof(CloudConnection)) as CloudConnection;
+
+        if (_cloud is not null)
+        {
+            _cloud.Changed += OnChanged;
+        }
+
+        Sync.Changed += OnChanged;
+        Questions.Changed += OnChanged;
+
+        _session = await Host.GetAsync();
+
+        if (_session is not null)
+        {
+            _session.Changed += OnChanged;
+        }
+    }
+
+    /// <summary>
+    /// Finds out whether this host can show a file picker, once there is a page to ask from.
+    /// </summary>
+    /// <remarks>
+    /// After the first render rather than before it, because the answer comes from script and there
+    /// is none to run until then. Until it is known the bar shows the file input, which works
+    /// everywhere - so the worst a slow answer costs is that Import is briefly the older control.
+    /// </remarks>
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        var canPick = await Files.CanOpenAsync();
+
+        if (canPick != _canPickFiles)
+        {
+            _canPickFiles = canPick;
+            StateHasChanged();
+        }
+    }
+
+    public void Dispose()
+    {
+        if (_session is not null)
+        {
+            _session.Changed -= OnChanged;
+        }
+
+        if (_files is not null)
+        {
+            _files.Changed -= OnChanged;
+        }
+
+        if (_cloud is not null)
+        {
+            _cloud.Changed -= OnChanged;
+        }
+
+        Sync.Changed -= OnChanged;
+        Questions.Changed -= OnChanged;
+    }
+
+    private void OnChanged() => InvokeAsync(StateHasChanged);
+
+    /// <summary>
+    /// Opens a designs file in place of whatever is open.
+    /// </summary>
+    /// <remarks>
+    /// Asked about first, because this replaces the whole file and an empire being edited goes with
+    /// it. Declining drops the chosen file and leaves the session alone.
+    /// </remarks>
+    private async Task Import(InputFileChangeEventArgs e)
+    {
+        _message = null;
+
+        if (!await Guard.ConfirmAsync())
+        {
+            return;
+        }
+
+        try
+        {
+            // Generous enough for any real designs file; the player's own is about forty kilobytes.
+            await using var stream = e.File.OpenReadStream(maxAllowedSize: 16 * 1024 * 1024);
+            using var buffer = new MemoryStream();
+            await stream.CopyToAsync(buffer);
+
+            await Load(e.File.Name, buffer.ToArray());
+        }
+        catch (Exception ex) when (ex is Sem.Clausewitz.CwSyntaxException or IOException)
+        {
+            // Loading half a damaged file would be worse than refusing it.
+            _message = ($"That file could not be read: {ex.Message}", true);
+        }
+    }
+
+    /// <summary>
+    /// Asks the browser for a designs file, and opens whatever comes back.
+    /// </summary>
+    /// <remarks>
+    /// The picker first and the question afterwards, which is not the tidy order. A picker may only
+    /// be opened while a click is still being handled, and the question is a dialog waiting on a
+    /// person - ask it first and the click is long spent by the time the answer arrives. So the file
+    /// is chosen, then asked about, and declining drops it.
+    /// </remarks>
+    private async Task Pick()
+    {
+        _message = null;
+
+        if (await Files.OpenAsync() is not { } chosen)
+        {
+            // No picker, or the player closed it. Neither is a failure and neither is worth saying.
+            return;
+        }
+
+        if (!await Guard.ConfirmAsync())
+        {
+            return;
+        }
+
+        try
+        {
+            await Load(chosen.Name, chosen.Contents);
+        }
+        catch (Exception ex) when (ex is Sem.Clausewitz.CwSyntaxException or IOException)
+        {
+            _message = ($"That file could not be read: {ex.Message}", true);
+        }
+    }
+
+    /// <summary>Opens a designs file, asking first where there is unsaved work to weigh against it.</summary>
+    private async Task Load(string name, byte[] contents)
+    {
+        // Parsed here rather than after the question, so a file that will not parse is refused with
+        // the reason - the callers' catch is what turns that into a message.
+        var incoming = EmpireDesignsFile.Load(contents);
+        var arrival = Arrival.TakeTheirs;
+
+        // The same three rules connecting to a file at a provider follows, because it is the same
+        // question. Nothing open means nothing to lose. A file holding nothing is the one that used
+        // to go wrong here: it was treated as having nothing to lose either, and opened - which
+        // emptied the list, without asking, to gain nothing at all.
+        if (_session!.File is { Designs.Count: > 0 })
+        {
+            if (incoming.Designs.Count == 0)
+            {
+                _message = ($"{name} holds no empires, so nothing was imported.", false);
+                return;
+            }
+
+            // Dismissed, or answered "keep what I have" - which for an import are the same thing.
+            // Connecting is the only place those two part company, because there keeping your own
+            // still leaves Save pointed at the file.
+            if (await AskAboutImport(name, incoming.Designs.Count) is not { } answered
+                || answered is Arrival.KeepMine)
+            {
+                return;
+            }
+
+            arrival = answered;
+        }
+
+        // Closed either way. Merging can replace the very empire the editor is holding, and taking
+        // the file throws away the one it came from - and an editor left open over a file that has
+        // just changed underneath it is showing something nobody asked to see.
+        Editor.IsOpen = false;
+
+        if (arrival is Arrival.TakeTheirs)
+        {
+            _session.Open(incoming, name);
+        }
+        else
+        {
+            _session.Merge(incoming, replacingMatches: arrival is Arrival.TheirsWin);
+        }
+    }
+
+    /// <summary>A number of empires, said the way a sentence would say it.</summary>
+    private static string Count(int empires) => empires == 1 ? "one empire" : $"{empires} empires";
+
+    /// <summary>
+    /// Starts a new empire and opens it.
+    /// </summary>
+    /// <remarks>
+    /// Reachable from the designer as well as from the list, which means it can be pressed with
+    /// unsaved work in hand.
+    /// </remarks>
+    private async Task Create()
+    {
+        // Asked before anything is built. Adding the empire first and asking afterwards would leave
+        // a stray empire behind whenever the answer was no — and worse, selecting it would have
+        // taken the previous empire's unsaved changes as its saved state on the way past.
+        if (!await Guard.ConfirmAsync())
+        {
+            return;
+        }
+
+        var name = Available("New Empire");
+        var template = _session!.Data.Database.NewEmpireTemplate;
+
+        // Created rather than added: it belongs to the designer until it is saved, so that opening
+        // the page to look at what a new empire starts as and going back again leaves nothing
+        // behind. The game keeps a blank template of its own, which is what makes a new empire
+        // playable straight away rather than an empty shell.
+        _session.CreateEmpire(file =>
+        {
+            var design = string.IsNullOrEmpty(template)
+                ? file.Add(name)
+                : file.AddFromTemplate(template, name);
+
+            // Named as well as keyed. The game's blank template carries name="" - it is a template
+            // rather than a playable empire - so a new empire arrived with the key standing in for a
+            // name everywhere it was shown, while the design itself had none. Harmless until the
+            // rules learned to check for it, at which point a brand new empire read "the empire has
+            // no name" beside a heading showing exactly the name it appeared to have.
+            design.Name.SetLiteral(name);
+
+            return design;
+        });
+
+        // To the list, which opens its editor on whatever is in hand. The empire is already made by
+        // now, so this is only a matter of getting to the page the editor lives on - and from the
+        // list itself it is not even a navigation.
+        Editor.IsOpen = true;
+        Navigation.NavigateTo(string.Empty);
+    }
+
+    /// <summary>A name nothing in the file has yet.</summary>
+    private string Available(string wanted) =>
+        _session?.File?.AvailableKey(wanted) ?? wanted;
+
+    /// <summary>
+    /// Asks whether to throw away every empire, once the designer has had its say.
+    /// </summary>
+    /// <remarks>
+    /// Two questions in a row, and both are earned: the first is about the empire being edited and
+    /// can be answered by saving it, the second is about the whole file. Running them in this order
+    /// matters - asking "delete everything?" and then "save your changes first?" would be asking
+    /// someone to save work that is about to be deleted.
+    /// </remarks>
+    private async Task Reset()
+    {
+        if (!await Guard.ConfirmAsync())
+        {
+            return;
+        }
+
+        _resetting = true;
+    }
+
+    /// <summary>
+    /// Puts the session back to a first visit.
+    /// </summary>
+    /// <remarks>
+    /// The same call the app makes when it finds nothing kept from a previous visit, which is what
+    /// makes this a genuine start over rather than an emptied file: the imported name goes with it,
+    /// so the next export suggests the game's own filename again. Nothing is written here - the
+    /// host mirrors the empty file to browser storage on its own, and the player's real file is
+    /// only ever reached through Export.
+    /// </remarks>
+    private async Task ClearEverything()
+    {
+        _resetting = false;
+        _message = null;
+
+        // The file at the provider is let go of first. Reset means the app as it was on a first
+        // visit, and there is no first visit that is connected to anything - staying would leave
+        // Save pointed at a file holding empires the list no longer shows, which is the most
+        // confusing of the three states this could end in.
+        //
+        // Signed out as well, which the button pressed by hand deliberately does not do: letting
+        // go of a file is not the same as forgetting who you are, and somebody swapping files
+        // should not have to sign in twice. This is the throw-everything-away button, and a first
+        // visit is not signed in.
+        // Whether or not a file was ever reached, because a chosen file that has not been fetched
+        // yet is still a file the next load would go looking for.
+        if (_cloud is not null)
+        {
+            await _cloud.DisconnectAsync(signOut: true);
+        }
+
+        _session!.StartEmptyFile();
+
+        // Back to the list, with nothing open over it. The editor would otherwise be left holding
+        // an empire that no longer exists, and StartEmptyFile has already cleared the unsaved flag,
+        // so nothing asks again on the way out.
+        Editor.IsOpen = false;
+        Navigation.NavigateTo(string.Empty);
+    }
+
+    /// <summary>Hands the file over: a save dialog where there is one, a download where there is not.</summary>
+    /// <remarks>
+    /// Only a file the player named settles the work. The other three outcomes all leave it
+    /// outstanding and are told apart because they want different things said: a dismissed dialog
+    /// wants nothing said at all, and a download wants explaining, since the file has landed
+    /// somewhere the game will never look.
+    /// </remarks>
+    private async Task Export()
+    {
+        _saving = false;
+
+        var name = _session!.FileName is { Length: > 0 } existing ? existing : EmpireDesignsFile.FileName;
+
+        try
+        {
+            switch (await Files.SaveAsync(name, _session.Save(), _backUp))
+            {
+                case SaveOutcome.Saved:
+                    // Kept before it is called saved. The file the player named is not the copy this
+                    // app restores from - in a browser that is local storage - and marking the work
+                    // saved without writing it there disabled the Save button, stopped the warning on
+                    // the way out, and lost the edit on the next reload.
+                    if (await Host.RememberAsync() is { } problem)
+                    {
+                        _message = (problem, true);
+                        break;
+                    }
+
+                    _message = null;
+                    _session.MarkSaved();
+                    break;
+
+                // They closed the dialog. They know what they did, and nothing was written or handed
+                // over, so there is nothing to report.
+                case SaveOutcome.Cancelled:
+                    break;
+
+                // Nothing to say. A browser with no save dialog downloads instead, and on a phone
+                // that is every save - so the sentence explaining it was not news after the first
+                // time, it was a notice to dismiss on the way out of every save. The browser
+                // already says a file arrived, and where it went is the browser's business rather
+                // than this app's.
+                case SaveOutcome.Downloaded:
+                    _message = null;
+                    break;
+
+                // Two quite different things, told apart by whether this host writes the file
+                // itself. A browser that would not open its save dialog has still handed the work
+                // over, so there is a file and the sentence says where it went. A host that writes
+                // in place has not: nothing was downloaded and nothing was written, and telling
+                // somebody their file had arrived would be a plain untruth about work still at
+                // risk - which is why the second of these is a problem and the first is not.
+                case SaveOutcome.Refused:
+                    _message = Files.SavesInPlace
+                        ? ($"{name} could not be written, and nothing was downloaded instead. "
+                            + "Your empires are still here - export them to a file to be sure of them.", true)
+                        : ($"This browser would not open a save dialog, so {name} was downloaded "
+                            + "instead. Move it into your Stellaris folder for the game to find it.", false);
+                    break;
+
+                // The one failure with a button behind it, so it says which button. Worded as the
+                // sync says it, because they are the same event reached two ways and somebody who
+                // meets both should not have to work out that they mean the same thing.
+                case SaveOutcome.SignedOut:
+                    _message = ("Your cloud sign-in has ended, so nothing was written. "
+                        + "Connect again to carry on saving there.", true);
+                    break;
+
+                // Not a failure to save: the file moved on since it was read, and writing would
+                // have gone over the top of whatever arrived. So it is read and the question is
+                // put, which is the only answer that works with writing as you go switched off -
+                // this used to say "reload it", and with that off there is no reload to press.
+                case SaveOutcome.Conflicted:
+                    if (await Sync.ReconcileAsync())
+                    {
+                        _message = null;
+                        break;
+                    }
+
+                    // And the file that refused the write could not be read either. Nothing was
+                    // lost - the work is still in hand, and still unsaved - and the way out is to
+                    // let whatever is holding the file finish and press again.
+                    _message = ($"{name} changed somewhere else while you were editing, and could "
+                        + "not be read back, so nothing was written over it. "
+                        + "Try again in a moment.", true);
+                    break;
+
+                // An outcome this was not written for, which is a mistake in this app rather than
+                // anything the player did. It is here because the alternative is silence: a switch
+                // statement over an enum is not checked for exhaustiveness, so a new member added
+                // later would fall straight through - no message, the work still marked unsaved,
+                // and nothing anywhere to say why. Better to say something imperfect out loud.
+                default:
+                    _message = ($"{name} was not saved, and this app does not know why. "
+                        + "Export it to a file to be sure of it.", true);
+                    break;
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidOperationException)
+        {
+            // The desktop throws where a browser returns a value: no designs folder to write to, or a
+            // file something else is holding. This was the one save path with no guard, so those
+            // reached the error bar as an unhandled failure instead of the sentence written for them.
+            _message = ($"Your empires could not be saved: {ex.Message}", true);
+        }
+    }
+}

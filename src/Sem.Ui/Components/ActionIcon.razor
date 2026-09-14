@@ -89,6 +89,49 @@
             <path d="M5 12.5l4.5 4.5L19 7" />
             break;
 
+        case "create":
+            @* A plus, for the one button on the bar that makes something rather than moving it. *@
+            <path d="M12 5v14M5 12h14" />
+            break;
+
+        case "import":
+            @* Into a tray: the export arrow turned round, because it is the opposite errand. *@
+            <path d="M12 13V3" />
+            <path d="M8 7l4-4 4 4" />
+            <path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" />
+            break;
+
+        case "cloud":
+            @* A cloud, which is the word the button used to be. *@
+            <path d="M7 19a4 4 0 0 1 0-8 5.5 5.5 0 0 1 10.5 1.5A3.5 3.5 0 0 1 17 19z" />
+            break;
+
+        case "sync":
+            @*
+                Two arrows round a circle, for writing to the file as you go.
+
+                Lifted from the header, where it stood in for the word "Auto" - which had to be read
+                to mean anything, and read beside a verb looked like a second verb. This is what
+                every app means by this, and is understood without being read at all.
+            *@
+            <path d="M21 10a9 9 0 0 0-15.5-5.5L1 9" />
+            <path d="M1 4v5h5" />
+            <path d="M3 14a9 9 0 0 0 15.5 5.5L23 15" />
+            <path d="M23 20v-5h-5" />
+            break;
+
+        case "reset":
+            @*
+                A bin with a stack in it. Not the plain bin: this deletes every empire in the file
+                rather than the one thing a bin is pressed beside, and on a bar where Delete's own
+                glyph may sit a few pixels away the two have to be told apart at a glance.
+            *@
+            <path d="M4 7h16" />
+            <path d="M9 7V4h6v3" />
+            <path d="M6 7l1 13h10l1-13" />
+            <path d="M9 11h6M9 15h6" />
+            break;
+
         case "filter":
             @* A funnel, for a tab with something set under it. *@
             <path d="M4 5h16l-6 7.5V19l-4 2v-8.5z" fill="currentColor" stroke="none" />
@@ -118,9 +161,9 @@
 @code {
     /// <summary>
     /// Which glyph: <c>save</c>, <c>share</c>, <c>delete</c>, <c>revert</c>, <c>edit</c>,
-    /// <c>duplicate</c>, <c>close</c>, <c>edit-pencil</c>, <c>lite</c>, <c>advanced</c>,
-    /// <c>back</c>, <c>any</c>, <c>all</c>, <c>export</c>, <c>image</c>, <c>apply</c> or
-    /// <c>filter</c>.
+    /// <c>duplicate</c>, <c>close</c>, <c>edit-pencil</c>, <c>back</c>, <c>any</c>, <c>all</c>,
+    /// <c>export</c>, <c>image</c>, <c>apply</c>, <c>filter</c>, <c>create</c>, <c>import</c>,
+    /// <c>cloud</c>, <c>sync</c> or <c>reset</c>.
     /// </summary>
     [Parameter, EditorRequired]
     public required string Name { get; set; }
