@@ -144,13 +144,16 @@ internal static class LocalisationExtractor
 
         var builder = new StringBuilder(rest.Length - index);
 
+        // Where the last unescaped quote ended the value, or -1 while none has been seen.
+        var closed = -1;
+
         for (var i = index + 1; i < rest.Length; i++)
         {
             var c = rest[i];
 
             if (c == '\\' && i + 1 < rest.Length)
             {
-                // Values may contain escaped quotes, which a naive scan to the last quote breaks on.
+                // A backslash escape, which is the one case where a quote is part of the text.
                 builder.Append(rest[i + 1] switch
                 {
                     'n' => '\n',
@@ -164,17 +167,29 @@ internal static class LocalisationExtractor
 
             if (c == '"')
             {
-                key = name.ToString();
-                value = builder.ToString();
-                return true;
+                closed = builder.Length;
             }
 
             builder.Append(c);
         }
 
-        // An unterminated value; take what there was rather than dropping the entry.
         key = name.ToString();
-        value = builder.ToString().TrimEnd('\r');
+
+        // The last quote closes the value, not the first.
+        //
+        // Paradox does not escape the quotes inside a line - the game's own files are full of
+        // sentences like: there is no "divine spark" granting special value to a living mind - so a
+        // scan that stopped at the first one ended the value there and threw the rest away. It read
+        // as prose the whole way, which is what made it invisible: Fanatic Materialist's description
+        // stopped mid-sentence on the page and nothing anywhere said it had been cut.
+        //
+        // One per cent of the English localisation carries an inner quote, which is fifteen hundred
+        // entries. Escapes are still honoured on the way past, so a value that really does end in a
+        // backslashed quote is not mistaken for one that closed early.
+        value = closed >= 0
+            ? builder.ToString(0, closed)
+            : builder.ToString().TrimEnd('\r');
+
         return true;
     }
 }

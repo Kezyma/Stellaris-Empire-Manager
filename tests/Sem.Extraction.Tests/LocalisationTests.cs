@@ -38,13 +38,38 @@ public sealed class LocalisationTests
         Assert.Equal("Adaptive", entries["trait_adaptive"]);
     }
 
+    /// <summary>
+    /// A comment after the value is not part of it.
+    /// </summary>
+    /// <remarks>
+    /// Thirteen lines in the English files put one there, and none of the game's comments carries a
+    /// quote of its own - measured across all hundred and fifty thousand entries - so the rule that
+    /// the last quote closes the value leaves every one of them outside it.
+    /// </remarks>
     [Fact]
-    public void StopsAtTheClosingQuoteRatherThanTheLastOneOnTheLine()
+    public void ACommentAfterTheValueIsNotPartOfIt()
     {
-        // A comment may follow the value, and taking everything to the final quote swallows it.
         var entries = Read("l_english:\n TODO:0 \"placeholder\" #debug string; no need to translate\n");
 
         Assert.Equal("placeholder", entries["TODO"]);
+    }
+
+    /// <summary>
+    /// A value keeps the quotes inside it.
+    /// </summary>
+    /// <remarks>
+    /// Paradox does not escape them and fifteen hundred entries have them, so a reader that stopped
+    /// at the first quote ended the value there and threw the rest away. This is the shape that
+    /// found it: Fanatic Materialist's description stopped at "There is no ", mid-sentence, and read
+    /// as ordinary prose the whole way - which is why nothing noticed for as long as it did.
+    /// </remarks>
+    [Fact]
+    public void AValueKeepsTheQuotesInsideIt()
+    {
+        var entries = Read(
+            "l_english:\n ethic_x_desc:0 \"There is no \"divine spark\" in a living mind.\"\n");
+
+        Assert.Equal("There is no \"divine spark\" in a living mind.", entries["ethic_x_desc"]);
     }
 
     [Fact]
