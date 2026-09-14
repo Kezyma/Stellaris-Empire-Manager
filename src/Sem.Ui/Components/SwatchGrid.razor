@@ -17,7 +17,7 @@
         *@
         <button type="button"
                 class="sem-swatch none @(Selected is null ? "selected" : null)"
-                title="@AutomaticLabel" aria-label="@AutomaticLabel"
+                title="Automatic" aria-label="Automatic"
                 aria-pressed="@(Selected is null ? "true" : "false")"
                 @onclick="() => OnPick.InvokeAsync(null)"></button>
     }
@@ -59,10 +59,6 @@
     /// <summary>Whether to offer a tile that hands the slot back to the game.</summary>
     [Parameter]
     public bool Automatic { get; set; }
-
-    /// <summary>What that tile is called, since the three callers word it differently.</summary>
-    [Parameter]
-    public string AutomaticLabel { get; set; } = "Automatic";
 
     /// <summary>Raised with the palette name picked, or null for the automatic tile.</summary>
     [Parameter]

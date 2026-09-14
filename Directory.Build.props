@@ -8,13 +8,16 @@
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <AnalysisLevel>latest</AnalysisLevel>
     <!--
-      On so the compiler checks doc comments: malformed XML, a <param> naming an argument that does
-      not exist, two <summary> elements on one member. Nothing checked them before, and sixteen
-      members had quietly ended up carrying a second summary that belonged to something else.
+      On so the compiler checks doc comments, and so CS1591 - "missing doc comment on a public
+      member" - is an error everywhere. That was once suppressed here while a comment pass worked
+      through the projects one at a time; the pass is finished, the suppression is gone, and every
+      public member in the solution carries a comment because the build will not complete otherwise.
 
-      CS1591 - "missing doc comment on a public member" - is suppressed while the comment pass works
-      through the projects one at a time. Removing it from this list is how each project is declared
-      finished.
+      What it checks is malformed XML and a <param> naming an argument that does not exist. This
+      used to claim it also catches two <summary> elements on one member, and it does not - Roslyn
+      has no diagnostic for a repeated <summary>, so the generated XML simply carries both. Five
+      members were quietly doing it, each with a summary stranded above the wrong field from an
+      edit that inserted something between them.
     -->
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);CA1848;CA1031</NoWarn>

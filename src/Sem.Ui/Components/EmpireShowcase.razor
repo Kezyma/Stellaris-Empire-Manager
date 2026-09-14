@@ -13,35 +13,39 @@
 *@
 
 
-<div class="sem-showcase @(Collapsible ? "collapsible" : null) @(Collapsible && !_expanded ? "collapsed" : null)">
+@*
+    There was a second header here for a panel that could not be collapsed - flag, name, government
+    and ruler, laid out flat. Only one thing has ever drawn this component and it has always asked
+    for the collapsing header, so that branch was unreachable markup, its Ruler line was the only
+    reader of a whole property, and thirty lines of stylesheet matched nothing. The parameter went
+    with it: left behind with one branch gone it would have been a way to ask for a panel with no
+    header at all.
+*@
+<div class="sem-showcase collapsible @(_expanded ? null : "collapsed")">
     @*
-        Where the panel can be collapsed — the designer's pane on a narrow screen — the header is a
-        button and everything else folds behind it. The same three facts either way: the flag, the
-        name, and who is in charge.
+        The header is a button and everything else folds behind it - the designer's pane on a narrow
+        screen. Flag, name, and who is in charge.
     *@
-    @if (Collapsible)
+    <button type="button" class="head" aria-expanded="@(_expanded ? "true" : "false")"
+            @onclick="() => _expanded = !_expanded">
+        <FlagPreview Flag="@Design.Flag" Class="small" />
+
+        <span class="titles">
+            <span class="name">@Session.Localizer.Name(Design.Name, Design.Key)</span>
+            <span class="government">@Government</span>
+        </span>
+
+        <span class="chevron" aria-hidden="true">@(_expanded ? "▾" : "▸")</span>
+    </button>
+
+    @*
+        Outside the body on purpose. Folded away on a phone, the body is what disappears, and Save
+        disappearing with it would leave no way to keep an empire without first reopening the
+        summary of it. The head above cannot hold them either: it is itself a button.
+    *@
+    @if (Actions is not null)
     {
-        <button type="button" class="head" aria-expanded="@(_expanded ? "true" : "false")"
-                @onclick="() => _expanded = !_expanded">
-            <FlagPreview Flag="@Design.Flag" Class="small" />
-
-            <span class="titles">
-                <span class="name">@Session.Localizer.Name(Design.Name, Design.Key)</span>
-                <span class="government">@Government</span>
-            </span>
-
-            <span class="chevron" aria-hidden="true">@(_expanded ? "▾" : "▸")</span>
-        </button>
-
-        @*
-            Outside the body on purpose. Folded away on a phone, the body is what disappears, and
-            Save disappearing with it would leave no way to keep an empire without first reopening
-            the summary of it. The head above cannot hold them either: it is itself a button.
-        *@
-        @if (Actions is not null)
-        {
-            <div class="actions">@Actions</div>
-        }
+        <div class="actions">@Actions</div>
     }
 
     <div class="body">
@@ -49,26 +53,6 @@
                Arkship="@(View.IsNomadic ? View.Arkship : null)"
                Portrait="@RulerPortrait" Flag="@Design.Flag" Design="@Design"
                Alt="@Session.Localizer.Name(Design.Species.Name, string.Empty)" />
-
-    @* The game's own header: flag, empire name, and who is in charge. *@
-    @if (!Collapsible)
-    {
-    <div class="identity">
-        <FlagPreview Flag="@Design.Flag" Class="medium" />
-
-        <div class="titles">
-            <div class="name">@Session.Localizer.Name(Design.Name, Design.Key)</div>
-            <div class="sub">@Government</div>
-            <div class="sub faint">@Ruler</div>
-        </div>
-
-        @if (Actions is not null)
-        {
-            @* Where the panel does not fold, they belong beside the name they act on. *@
-            <div class="actions">@Actions</div>
-        }
-    </div>
-    }
 
     @* And its second box: the species, framed, with the authority and origin beside it. *@
     <div class="species">
@@ -173,30 +157,13 @@
     public RenderFragment? Actions { get; set; }
 
     /// <summary>
-    /// Whether the panel folds behind its header.
+    /// Whether the detail is showing.
     /// </summary>
     /// <remarks>
-    /// The designer's pane wants this and the select screen does not: on a narrow screen the pane
-    /// sits above the choices rather than beside them, and a screenful of summary between the reader
-    /// and the options is worse than a tap. The stylesheet shows the body regardless once there is
-    /// room for it beside the choices, so this only ever matters below the breakpoint.
+    /// The stylesheet shows the body regardless once there is room for it beside the choices, so
+    /// this only ever matters below the breakpoint.
     /// </remarks>
-    [Parameter]
-    public bool Collapsible { get; set; }
-
-    /// <summary>Whether the detail is showing, where it can be folded away.</summary>
     private bool _expanded;
-
-    /// <summary>
-    /// Whether the modifiers inside this may be folded away on a narrow screen.
-    /// </summary>
-    /// <remarks>
-    /// The empire list wants it: below the width that puts the preview beside the list, the panel
-    /// sits on top of the empires and every modifier is a scroll away from choosing one. The
-    /// designer does not, because there the panel is what the page is for.
-    /// </remarks>
-    [Parameter]
-    public bool FoldModifiers { get; set; }
 
     /// <summary>
     /// Whether to list what is wrong with the empire under everything else.
@@ -281,8 +248,6 @@
     /// <summary>What the game would play this empire as, and how likely each is.</summary>
     private IReadOnlyList<EmpireChoice> Personalities => View.Personalities;
 
-    private string Ruler => View.Ruler;
-
     private string Homeworld => View.Homeworld;
 
     private string StartingSystem => View.StartingSystem;
@@ -299,13 +264,6 @@
 
     private string SecondName(SpeciesDesign species) => View.SecondName(species);
 
-    /// <summary>
-    /// A labelled row of icons with their names, which is how the game shows a set of choices.
-    /// </summary>
-    /// <remarks>
-    /// Nothing is drawn for an empty set. A gestalt empire has no civics until it has an authority,
-    /// and an empty heading would read as a fault rather than as a stage.
-    /// </remarks>
     /// <summary>
     /// The same row, with only the likeliest chip standing and the rest a hover away.
     /// </summary>

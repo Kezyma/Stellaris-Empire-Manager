@@ -37,6 +37,8 @@
                             title="@ethic.Name"
                             @onmouseenter="() => _hovered = ethic.Key"
                             @onfocus="() => _hovered = ethic.Key"
+                            @onmouseleave="() => Unhover(ethic.Key)"
+                            @onblur="() => Unhover(ethic.Key)"
                             @onpointerdown="_press.Noted"
                             @ontouchstart="_press.NotedTouch"
                             @onclick="() => Choose(ethic)">
@@ -85,10 +87,23 @@
     /// Which conviction the pointer is over.
     /// </summary>
     /// <remarks>
-    /// Kept after the pointer leaves rather than cleared, as the trait list does it: a panel that
-    /// empties between one icon and the next flickers as the pointer crosses the grid.
+    /// Cleared when it leaves, the way the grid of authorities beside it in this very view does.
+    /// It used to be kept, reasoning that a panel emptying between one icon and the next would
+    /// flicker - true of the trait and plan lists, which have nothing to fall back to, and not of
+    /// this one: Described falls through to the chosen ethic and then to the first, so it cannot
+    /// empty. What the difference actually produced was two grids side by side where sweeping off
+    /// one leaves the last icon you passed on screen and sweeping off the other snaps back.
     /// </remarks>
     private string? _hovered;
+
+    /// <summary>Lets go of the hover, unless the pointer has already moved to another icon.</summary>
+    private void Unhover(string key)
+    {
+        if (_hovered == key)
+        {
+            _hovered = null;
+        }
+    }
 
     /// <summary>Whether a press is a finger reading or a hand choosing.</summary>
     private readonly PressReading _press = new();

@@ -173,8 +173,15 @@ else
                         in, before there was a table to have an opinion about; here it is one they
                         reach for with the table in front of them and a column in mind.
                     *@
-                    <div class="sem-columns">
-                        <label id="column-picker">Columns</label>
+                    @*
+                        The word names the group rather than labelling nothing. It was a <label>
+                        with no control to point at and an id nothing referred to, so what a screen
+                        reader met here was an unnamed multi-select whose own button says "Choose" -
+                        no indication anywhere that it picks columns. Every other grouped control in
+                        the app is a role="group" with a name, and now so is this.
+                    *@
+                    <div class="sem-columns" role="group" aria-labelledby="column-picker">
+                        <span id="column-picker">Columns</span>
                         <MultiSelect Label="Choose" Options="@ColumnOptions" Selected="@_visible"
                                      OnChanged="RememberColumns" />
                     </div>

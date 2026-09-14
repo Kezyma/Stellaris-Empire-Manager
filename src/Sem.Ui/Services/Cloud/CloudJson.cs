@@ -82,14 +82,6 @@ public sealed class GraphItems
 }
 
 /// <summary>
-/// The shapes that cross the wire to a provider, serialised without reflection.
-/// </summary>
-/// <remarks>
-/// Source-generated for the reason the game data's own context is: this assembly is published into
-/// a trimmed WebAssembly bundle, where a reflecting serialiser is both a warning and a way to find
-/// out at runtime that a property was trimmed away.
-/// </remarks>
-/// <summary>
 /// What the token endpoint hands back when it will not grant one.
 /// </summary>
 /// <remarks>
@@ -108,6 +100,14 @@ public sealed class TokenRefusal
     public string? Description { get; set; }
 }
 
+/// <summary>
+/// The shapes that cross the wire to a provider, serialised without reflection.
+/// </summary>
+/// <remarks>
+/// Source-generated for the reason the game data's own context is: this assembly is published into
+/// a trimmed WebAssembly bundle, where a reflecting serialiser is both a warning and a way to find
+/// out at runtime that a property was trimmed away.
+/// </remarks>
 [JsonSerializable(typeof(TokenGrant))]
 [JsonSerializable(typeof(TokenRefusal))]
 [JsonSerializable(typeof(GraphItem))]

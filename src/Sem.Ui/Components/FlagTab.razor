@@ -358,14 +358,6 @@
         _ => string.Empty,
     };
 
-    /// <summary>
-    /// A swatch, in the colour the flag would actually be.
-    /// </summary>
-    /// <remarks>
-    /// The game keeps two colours against every name - one for a flag and one for the map - and
-    /// these are flags, so they are the flag's. The map's are drawn in the map colour, beside the
-    /// setting that uses them.
-    /// </remarks>
     /// <summary>The palette on show, where there is only room for one.</summary>
     /// <remarks>
     /// The primary, to begin with, which is the order the file writes them in and the order the
@@ -384,7 +376,14 @@
     /// <summary>What a slot is set to, named the way the swatches name themselves.</summary>
     private string ColorName(int slot) => Swatches.Named(ColorAt(slot), "Not set");
 
-    /// <summary>The colour a slot is set to, as CSS, for the dot beside its name.</summary>
+    /// <summary>
+    /// The colour a slot is set to, as CSS, for the dot beside its name.
+    /// </summary>
+    /// <remarks>
+    /// The game keeps two colours against every name - one for a flag and one for the map - and
+    /// these are flags, so they are the flag's. The map's are drawn in the map colour, beside the
+    /// setting that uses them.
+    /// </remarks>
     private string? Shown(int slot) =>
         Swatches.Of(Session.Data.Database, ColorAt(slot), Swatches.FlagShade);
 

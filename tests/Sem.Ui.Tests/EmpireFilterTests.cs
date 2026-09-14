@@ -112,6 +112,38 @@ public sealed class EmpireFilterTests
     }
 
     /// <summary>
+    /// And only the headings that can hold several are offered "all of these".
+    /// </summary>
+    /// <remarks>
+    /// This had no test at all, which is the half that went wrong. Both arities used to be matched
+    /// against a written-out list of keys, so a heading added without being put in one was simply
+    /// not in it - and every test that looked like it guarded that read the same property, so they
+    /// all agreed about the heading that had been forgotten. Second species traits and all three of
+    /// the plan's headings went out that way.
+    ///
+    /// The arity is declared by the heading now, through One, Many or Asked, so leaving it out is
+    /// not something that can be done. This pins which answer each one was given, which is the
+    /// question that is left.
+    /// </remarks>
+    [Fact]
+    public void OnlyTheHeadingsThatHoldSeveralOfferAllOfThem()
+    {
+        var several = EmpireFacet.All.Where(f => f.Several).Select(f => f.Key).Order();
+
+        Assert.Equal(
+            [
+                "civics", "ethics", "personality", "plancivics", "planperks", "plantraditions",
+                "rulertraits", "secondtraits", "traits",
+            ],
+            several);
+    }
+
+    /// <summary>Every heading is one of the three, and no heading is two of them.</summary>
+    [Fact]
+    public void EveryHeadingIsExactlyOneKind() =>
+        Assert.All(EmpireFacet.All, facet => Assert.False(facet.YesNo && facet.Several));
+
+    /// <summary>
     /// Every heading that offers a list gets it from whatever decides what an empire may hold.
     /// </summary>
     /// <remarks>

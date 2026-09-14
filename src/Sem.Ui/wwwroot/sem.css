@@ -1105,11 +1105,6 @@ button.sem-tab:disabled:hover { background: none; }
     box-shadow: inset 0 0 0 1px var(--accent-dim);
 }
 
-.sem-option.blocked {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
 .sem-option .body {
     flex: 1;
     min-width: 0;
@@ -1120,26 +1115,6 @@ button.sem-tab:disabled:hover { background: none; }
     display: flex;
     gap: var(--space-sm);
     align-items: baseline;
-}
-
-.sem-option .cost {
-    margin-left: auto;
-    color: var(--gold);
-    font-variant-numeric: tabular-nums;
-}
-
-.sem-option .cost.negative { color: var(--good); }
-
-.sem-option .why {
-    color: var(--bad);
-    font-size: var(--text-sm);
-    margin-top: 3px;
-}
-
-.sem-option .dlc {
-    color: var(--warn);
-    font-size: var(--text-sm);
-    margin-top: 3px;
 }
 
 /* ---------------------------------------------------------------- images */
@@ -1609,12 +1584,6 @@ h1:has(+ .sem-hint), h2:has(+ .sem-hint), h3:has(+ .sem-hint), h4:has(+ .sem-hin
 /* In a row the flex gap already spaces it, and a margin would be added on top of that. */
 .sem-row > .sem-hint,
 .sem-dlc-bar > .sem-hint { margin-top: 0; }
-
-.sem-desc {
-    color: var(--text-dim);
-    font-size: var(--text-sm);
-    margin-top: var(--space-sm);
-}
 
 /* ---------------------------------------------------------------- empire list */
 
@@ -4234,7 +4203,8 @@ button.icon .sem-action-icon { display: block; }
     color: var(--text-dim);
 }
 
-.sem-columns > label {
+/* The word beside the picker, which names the group rather than labelling a control. */
+.sem-columns > span {
     color: var(--text-dim);
     white-space: nowrap;
 }
@@ -4580,11 +4550,6 @@ button.icon .sem-action-icon { display: block; }
     width: 0.85em;
     height: 0.85em;
     color: var(--accent);
-}
-
-/* The one control above the tabs, and the widest thing in the card. */
-.sem-filters > .body > .search {
-    max-width: 30rem;
 }
 
 /*
@@ -5175,34 +5140,6 @@ button.icon .sem-action-icon { display: block; }
     border-radius: var(--radius);
 }
 
-.sem-showcase .identity {
-    display: flex;
-    align-items: center;
-    gap: var(--gap);
-}
-
-.sem-showcase .identity .titles { flex: 1; min-width: 0; }
-
-.sem-showcase .identity .name {
-    font-size: var(--text-xl);
-    font-weight: 600;
-    line-height: 1.2;
-}
-
-.sem-showcase .identity .sub {
-    color: var(--text-dim);
-    font-size: var(--text-sm);
-}
-
-.sem-showcase .identity .sub.faint { color: var(--text-faint); }
-
-/* A row of glyphs now, rather than two worded buttons that spaced themselves. */
-.sem-showcase .identity .actions {
-    display: flex;
-    gap: var(--space-sm);
-    flex-shrink: 0;
-}
-
 /*
    The game frames the portrait and sets the species beside it; so does this.
 
@@ -5496,21 +5433,6 @@ button.icon .sem-action-icon { display: block; }
 }
 
 /*
-   Small text, but not a small target: 54 by 19 was the only control in the designer under 24 pixels
-   in either direction, and it sits beside a panel that is scrolled with a thumb.
-*/
-.sem-combined .compare {
-    min-height: 24px;
-    padding: 0 var(--space-sm);
-    font-size: var(--text-xs);
-}
-
-.sem-combined .compare[aria-pressed="true"] {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-}
-
-/*
    What an edit changed: the old number, an arrow, the new one, and the difference. Both numbers are
    shown because "-10%" says how far something moved without saying what it moved from, and comparing
    the two is the whole point of the view.
@@ -5787,11 +5709,6 @@ button.icon .sem-action-icon { display: block; }
     .sem-header-burger {
         width: 44px;
         height: 44px;
-    }
-
-    .sem-combined .compare {
-        min-height: 36px;
-        padding: 0 10px;
     }
 
     /*
@@ -6977,48 +6894,6 @@ button.icon .sem-action-icon { display: block; }
 .sem-combined-worded > .sem-effects-text {
     margin: 0;
     font-size: var(--text-sm);
-}
-
-/*
-   The modifiers panel, and whether it may be folded away.
-
-   Wide, it may not: the fold is a heading, the chevron is not drawn, and nothing suggests pressing
-   it. display:contents so the button leaves no box of its own between the heading and its text.
-*/
-.sem-combined.collapsible > .heading > .fold {
-    display: contents;
-    background: none;
-    border: none;
-    padding: 0;
-    color: inherit;
-    font: inherit;
-    cursor: default;
-}
-
-.sem-combined.collapsible > .heading > .fold .chevron { display: none; }
-
-/*
-   Narrow, it may - and only there, because that is where the panel sits above what the reader came
-   for rather than beside it, and every modifier is a scroll away from choosing an empire.
-
-   Every rule that makes it a fold lives in here, so a panel somebody folded on a phone is open
-   again on a monitor. The same arrangement the pickers use, and for the same reason: a fold that
-   can only be reopened by making the window narrow again is a fold that has swallowed the panel.
-*/
-@media (max-width: 1100px) {
-    .sem-combined.collapsible > .heading > .fold {
-        display: flex;
-        align-items: baseline;
-        gap: var(--space-sm);
-        cursor: pointer;
-    }
-
-    .sem-combined.collapsible > .heading > .fold .chevron {
-        display: inline;
-        color: var(--text-faint);
-    }
-
-    .sem-combined.collapsible:not(.open) > .body { display: none; }
 }
 
 /* The three views, sized to sit beside a heading rather than above a picker. */

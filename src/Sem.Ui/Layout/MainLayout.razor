@@ -640,7 +640,6 @@
     /// <summary>Whether the connect-to-a-provider sheet is on screen.</summary>
     private bool _connecting;
 
-    /// <summary>Whether a file chosen on an earlier visit is still being fetched.</summary>
     /// <summary>What the releases page is offering, where anything here can ask. Null on the desktop.</summary>
     private Releases? _releases;
 
@@ -696,6 +695,7 @@
         _build = await releases.NewestAsync();
     }
 
+    /// <summary>Whether a file chosen on an earlier visit is still being fetched.</summary>
     private bool _opening;
 
     /// <summary>
@@ -1008,8 +1008,6 @@
         }
     }
 
-    /// <summary>Adds the imported empires to the ones already open, name for name.</summary>
-    /// <summary>Throws the open file away and keeps the imported one, which is what import did.</summary>
     /// <summary>A number of empires, said the way a sentence would say it.</summary>
     private static string Count(int empires) => empires == 1 ? "one empire" : $"{empires} empires";
 

@@ -54,8 +54,8 @@
         {
             <button type="button"
                     aria-pressed="@(option.Key == Species.Class ? "true" : "false")"
-                    class="@(option.Key == Species.Class ? "selected" : null) @(option.Enabled || option.Key == Species.Class ? null : "blocked")"
-                    disabled="@(!option.Enabled && option.Key != Species.Class)"
+                    class="@(option.Key == Species.Class ? "selected" : null) @(Blocked(option.Enabled, option.Key == Species.Class) ? "blocked" : null)"
+                    aria-disabled="@(Blocked(option.Enabled, option.Key == Species.Class) ? "true" : null)"
                     @onclick="() => SetClass(option.Key)">
                 @Session.Localizer.Text(option.Key)
             </button>
@@ -84,8 +84,8 @@
                     faces — so a label here could only be the file's key, which is what "avi18" was.
                 *@
                 <button type="button"
-                        class="sem-portrait @(portrait.Key == Selected ? "selected" : null) @(portrait.Enabled ? null : "blocked")"
-                        disabled="@(!portrait.Enabled && portrait.Key != Selected)"
+                        class="sem-portrait @(portrait.Key == Selected ? "selected" : null) @(Blocked(portrait.Enabled, portrait.Key == Selected) ? "blocked" : null)"
+                        aria-disabled="@(Blocked(portrait.Enabled, portrait.Key == Selected) ? "true" : null)"
                         title="@caption"
                         @onclick="() => Choose(portrait.Key)">
 
@@ -179,8 +179,31 @@
     private string? Thumbnail(string key) =>
         PortraitArtwork.For(Session.Data.Database, key, Species.Gender);
 
+    /// <summary>
+    /// Whether an option cannot be taken as things stand. One already held never is.
+    /// </summary>
+    /// <remarks>
+    /// Both lists, which used to disagree: the classes counted the one in use as available and the
+    /// portraits did not, so a design holding a class the rules now refuse showed it bright while a
+    /// design holding a refused portrait showed it at four-tenths opacity. The same question about
+    /// the same kind of thing, two rows apart.
+    /// </remarks>
+    private static bool Blocked(bool enabled, bool held) => !enabled && !held;
+
     private void Choose(string key)
     {
+        // Refused here rather than by the button. A disabled button is not sent mouse events, so it
+        // cannot be hovered, focused or given a tooltip - and it is exactly the blocked options that
+        // have something to explain. This was the last picker still making them inert, and its
+        // reasons had nowhere to be read; the other five say why at length.
+        // One rules pass, on a press rather than on a render, which is where the note above the
+        // grid is about.
+        if (Portraits.FirstOrDefault(p => p.Key == key) is { } state
+            && Blocked(state.Enabled, key == Selected))
+        {
+            return;
+        }
+
         Session.Edit(_ =>
         {
             Species.Portrait = key;
@@ -197,6 +220,13 @@
     private void SetClass(string? key)
     {
         if (key is not { Length: > 0 })
+        {
+            return;
+        }
+
+        // As above: marked unavailable to a reader rather than made unreachable.
+        if (ClassOptions.FirstOrDefault(o => o.Key == key) is { } option
+            && Blocked(option.Enabled, key == Species.Class))
         {
             return;
         }
