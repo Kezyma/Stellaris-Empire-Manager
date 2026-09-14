@@ -182,9 +182,9 @@ public sealed class ConditionReader(Localizer localizer, GameDatabase database)
     /// </summary>
     /// <remarks>
     /// Every category the game can ask about, because an unhandled one falls through to its own key
-    /// prettified - which reads as a name and is not one. The two left without a picture are an
-    /// archetype and a country type, which are script rather than content; they still get a chip,
-    /// because what makes it a chip is being a named thing rather than a phrase.
+    /// prettified - which reads as a name and is not one. The one left without a picture is a
+    /// country type, which is script rather than content; it still gets a chip, because what makes
+    /// it a chip is being a named thing rather than a phrase.
     /// </remarks>
     public EmpireChoice Chip(SelectionRequirement selection)
     {
@@ -195,8 +195,8 @@ public sealed class ConditionReader(Localizer localizer, GameDatabase database)
         // The artwork and what the thing does, together, because the chip this feeds opens a panel
         // on hover and a chip with neither opens an empty one. Four of the ten categories the game
         // asks about carry no artwork at all - a species class, an archetype, a graphical culture
-        // and a country type are script rather than content - and they still get a chip, because
-        // what makes it a chip is being a named thing rather than a phrase.
+        // and a country type are script rather than content - and three of those four have
+        // something to borrow instead.
         var (icon, effects) = selection.Category switch
         {
             SelectionCategory.Ethics => (_database.Ethic(key)?.Icon, _database.Ethic(key)?.Effects),
@@ -209,11 +209,13 @@ public sealed class ConditionReader(Localizer localizer, GameDatabase database)
                 (_database.AscensionPerk(key)?.Icon, _database.AscensionPerk(key)?.Effects),
             SelectionCategory.TraditionTree => (_database.TraditionTree(key)?.Icon, null),
 
-            // Neither of these has an icon in the game, and both have something better. A species
-            // class wears one of its own faces - the first the game lists, which is the one its
-            // picker opens on - and a shipset wears the render of its own ships that the designer
-            // already shows beside it.
+            // None of these has an icon in the game, and each has something better. A species class
+            // wears one of its own faces - the first the game lists, which is the one its picker
+            // opens on. An archetype wears the trait every species of it carries, which is where
+            // the word on the chip comes from anyway: Machine, Lithoid, Mechanical. And a shipset
+            // wears the render of its own ships that the designer already shows beside it.
             SelectionCategory.SpeciesClass => (SpeciesFaces.Of(_database, key), null),
+            SelectionCategory.SpeciesArchetype => (ArchetypeMarks.Of(_database, key), null),
             SelectionCategory.GraphicalCulture => (_database.GraphicalCulture(key)?.ShipPreview, null),
 
             _ => (null, null),

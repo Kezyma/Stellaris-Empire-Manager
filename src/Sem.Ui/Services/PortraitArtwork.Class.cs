@@ -55,3 +55,81 @@ public static class SpeciesFaces
             .FirstOrDefault(found => found is { Length: > 0 });
     }
 }
+
+/// <summary>
+/// The trait every species of an archetype carries, and so the picture an archetype wears.
+/// </summary>
+/// <remarks>
+/// <para>
+/// An archetype has no artwork either - <c>ArchetypeDefinition</c> is a trait budget and a flag -
+/// so chips reading "Machine", "Lithoid" or "Biological" were bare words sitting beside chips that
+/// all carried pictures. The game does give every species of an archetype a trait, and traits have
+/// icons, so that is what stands for it.
+/// </para>
+/// <para>
+/// Derived from the classes rather than written down here, and derived rather than extracted: a
+/// property on the definition would read better and would cost a schema bump, which sends every
+/// desktop player back through thirty-five thousand files to learn something the file they already
+/// have can tell them.
+/// </para>
+/// </remarks>
+public static class ArchetypeMarks
+{
+    /// <summary>
+    /// The one archetype the game leaves implicit.
+    /// </summary>
+    /// <remarks>
+    /// Every other archetype has classes that name a forced trait - Biological and Pre-Sapient say
+    /// <c>trait_organic</c>, Lithoid <c>trait_lithoid</c>, Machine <c>trait_machine_unit</c>, Other
+    /// <c>trait_exd</c>. The <c>ROBOT</c> class names none, so there is nothing to read; the game
+    /// calls the archetype "Mechanical" and ships <c>trait_mechanical</c> under the same word, which
+    /// is the trait every robotic species carries. Named here rather than matched by display text,
+    /// which would be a guess dressed up as a rule and would break in any other language.
+    /// </remarks>
+    private const string Robotic = "trait_mechanical";
+
+    /// <summary>The icon that stands for an archetype, or nothing where none can be found.</summary>
+    /// <param name="database">The extracted game.</param>
+    /// <param name="archetype">The archetype key, such as <c>MACHINE</c>.</param>
+    /// <returns>The image path, or null.</returns>
+    public static string? Of(GameDatabase database, string? archetype)
+    {
+        ArgumentNullException.ThrowIfNull(database);
+
+        return Trait(database, archetype) is { } trait ? database.Trait(trait)?.Icon : null;
+    }
+
+    /// <summary>
+    /// Which trait an archetype is known by.
+    /// </summary>
+    /// <remarks>
+    /// The commonest of the forced traits among its classes, rather than the first: Pre-Sapient has
+    /// nine classes forcing <c>trait_organic</c> and one apiece forcing the lithoid and thermophile
+    /// traits, and the answer wanted is the one they nearly all share.
+    /// </remarks>
+    /// <param name="database">The extracted game.</param>
+    /// <param name="archetype">The archetype key.</param>
+    /// <returns>The trait key, or null.</returns>
+    public static string? Trait(GameDatabase database, string? archetype)
+    {
+        ArgumentNullException.ThrowIfNull(database);
+
+        if (archetype is not { Length: > 0 })
+        {
+            return null;
+        }
+
+        var forced = database.SpeciesClasses
+            .Where(c => string.Equals(c.Archetype, archetype, StringComparison.Ordinal))
+            .Select(c => c.ForcedTrait)
+            .OfType<string>()
+            .Where(t => t.Length > 0)
+            .GroupBy(t => t, StringComparer.Ordinal)
+            .OrderByDescending(g => g.Count())
+            .ThenBy(g => g.Key, StringComparer.Ordinal)
+            .Select(g => g.Key)
+            .FirstOrDefault();
+
+        return forced ?? (database.Archetype(archetype) is { IsRobotic: true } ? Robotic : null);
+    }
+}

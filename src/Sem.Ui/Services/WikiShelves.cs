@@ -568,7 +568,15 @@ public sealed class WikiShelves(DesignSession session)
             .OrderBy(c => c.Name, StringComparer.CurrentCulture),
     ];
 
-    /// <summary>Keys as the chips the rest of the app draws them as.</summary>
+    /// <summary>
+    /// Keys as the chips the rest of the app draws them as.
+    /// </summary>
+    /// <remarks>
+    /// The archetype is last because it is the only one that is not looked up but worked out, and
+    /// because its key cannot be mistaken for any of the others. Without it the Archetype chip was
+    /// a bare word on every species row, beside an Always-has chip that had a picture - which is
+    /// what made the gap visible.
+    /// </remarks>
     private IReadOnlyList<EmpireChoice> Named(params IEnumerable<string?> keys) =>
     [
         .. keys.OfType<string>()
@@ -576,7 +584,8 @@ public sealed class WikiShelves(DesignSession session)
             .Select(k => new EmpireChoice(
                 k,
                 session.Localizer.Text(k, Localizer.Prettify(k)),
-                Database.Ethic(k)?.Icon ?? Database.Trait(k)?.Icon ?? Database.Civic(k)?.Icon,
+                Database.Ethic(k)?.Icon ?? Database.Trait(k)?.Icon ?? Database.Civic(k)?.Icon
+                    ?? ArchetypeMarks.Of(Database, k),
                 Database.Ethic(k)?.Effects ?? Database.Trait(k)?.Effects)),
     ];
 }
