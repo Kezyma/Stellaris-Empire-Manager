@@ -346,8 +346,10 @@ public sealed class DesignSync : IDisposable
     /// purpose rather than by accident.
     /// </para>
     /// <para>
-    /// And whatever comes out of it is written back where it differs from the file, because this
-    /// only runs with the sync on and that is what the sync is.
+    /// And whatever comes out of it is written back where it differs from the file. Not only with
+    /// the sync on, which is what this used to say: <see cref="ReconcileAsync"/> asks the same
+    /// question about a refused save, and with writing as you go switched off the answer is the
+    /// only thing that will ever write.
     /// </para>
     /// </remarks>
     public async Task ResolveAsync(Arrival answer)
@@ -368,7 +370,21 @@ public sealed class DesignSync : IDisposable
 
         if (owed)
         {
-            await WriteAsync().ConfigureAwait(false);
+            // Recorded rather than dropped when something else holds the flag. WriteAsync turns
+            // away while a read or a write is in flight, and this was the one caller that did not
+            // say so - the two event handlers have said it since the flag existed. An answer
+            // pressed during a poll was therefore lost, and lost silently and for good: the
+            // baseline had already moved to what arrived, so every comparison afterwards found the
+            // two sides in step and nothing ever wrote. Most reachable against a provider, where
+            // the flag is held across an HTTP read rather than across a few hundred milliseconds.
+            if (_busy)
+            {
+                _missed = true;
+            }
+            else
+            {
+                await WriteAsync().ConfigureAwait(false);
+            }
         }
 
         Changed?.Invoke();

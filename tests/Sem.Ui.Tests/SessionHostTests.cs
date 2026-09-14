@@ -77,8 +77,38 @@ public sealed class SessionHostTests
 
         public bool Refuse { get; init; }
 
-        public Task<SaveOutcome> SaveAsync(string fileName, byte[] contents) =>
-            Task.FromResult(SaveOutcome.Saved);
+        /// <summary>
+        /// Whether this one writes the file the session came from, which the cloud exchange does.
+        /// </summary>
+        /// <remarks>
+        /// The plain browser save never reaches <see cref="SaveAsync"/> at all - with nowhere to
+        /// write it goes straight to the store - so the window across an await only exists for a
+        /// host that saves in place, and in a tab that means a provider.
+        /// </remarks>
+        public bool InPlace { get; init; }
+
+        public bool SavesInPlace => InPlace;
+
+        /// <summary>
+        /// Something to do in the middle of a save, so the window across the await can be tested.
+        /// </summary>
+        /// <remarks>
+        /// A browser save really does suspend - a provider write is an HTTP round-trip of seconds -
+        /// and an empire edited during one is the case that used to be marked saved regardless.
+        /// </remarks>
+        public Action? DuringSave { get; set; }
+
+        public async Task<SaveOutcome> SaveAsync(string fileName, byte[] contents)
+        {
+            var interrupt = DuringSave;
+            DuringSave = null;
+
+            // Yielded first, so the caller is genuinely suspended here rather than running on.
+            await Task.Yield();
+            interrupt?.Invoke();
+
+            return SaveOutcome.Saved;
+        }
 
         public sealed class Store(Browser owner) : IDesignStore
         {
@@ -293,6 +323,56 @@ public sealed class SessionHostTests
         session.Edit(design => design.Authority = "auth_democratic");
 
         Assert.NotNull(await host.RememberAsync());
+    }
+
+    /// <summary>
+    /// An empire edited while a save is in flight is not covered by that save.
+    /// </summary>
+    /// <remarks>
+    /// The bytes that left are the ones the save is a promise about. Marked saved regardless, the
+    /// Save button went quiet and the warning on the way out was disarmed over an edit that no file
+    /// anywhere held - so closing the tab took it with no prompt. Only reachable where the save
+    /// actually suspends, which is a browser writing to a provider.
+    /// </remarks>
+    [Fact]
+    public async Task AnEditMadeDuringASaveIsNotMarkedSaved()
+    {
+        var files = new Browser { InPlace = true };
+        var (host, session) = await OpenAsync(files, new Browser.Store(files));
+
+        session.Edit(design => design.Authority = "auth_democratic");
+
+        files.DuringSave = () => session.EditFile(file => file.Add("Added mid-save"));
+
+        Assert.Null(await host.SaveAsync());
+
+        // Still owed to the file, and the browser's copy holds it rather than the older bytes.
+        Assert.True(session.HasUnwrittenFileChanges || session.IsModified);
+
+        // Unwrapped here rather than through the encoder, which is internal and reached elsewhere
+        // by reflection. The marker and the encoding are what KeptTests pins; this only needs to
+        // read what is inside.
+        const string Marker = "{sem/b64}";
+
+        var kept = System.Text.Encoding.UTF8.GetString(
+            Convert.FromBase64String(files.Kept![Marker.Length..]));
+
+        Assert.Contains("Added mid-save", kept, StringComparison.Ordinal);
+    }
+
+    /// <summary>And an ordinary save, with nothing landing during it, still settles the work.</summary>
+    [Fact]
+    public async Task AnUninterruptedSaveStillMarksTheWorkSaved()
+    {
+        var files = new Browser { InPlace = true };
+        var (host, session) = await OpenAsync(files, new Browser.Store(files));
+
+        session.Edit(design => design.Authority = "auth_democratic");
+
+        Assert.Null(await host.SaveAsync());
+
+        Assert.False(session.IsModified);
+        Assert.False(session.HasUnwrittenFileChanges);
     }
 
     /// <summary>

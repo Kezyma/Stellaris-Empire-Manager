@@ -123,9 +123,16 @@ public sealed class DesignSyncTests
             return Task.FromResult(SaveOutcome.Saved);
         }
 
+        /// <summary>Something to do in the middle of a read, so the busy window can be tested.</summary>
+        public Action? DuringRead { get; set; }
+
         public Task<(string Name, byte[] Contents)?> TryOpenExistingAsync()
         {
             Reads++;
+
+            var interrupt = DuringRead;
+            DuringRead = null;
+            interrupt?.Invoke();
 
             if (Unreadable)
             {
@@ -614,6 +621,46 @@ public sealed class DesignSyncTests
         Assert.Contains("changed somewhere else", trouble, StringComparison.Ordinal);
         Assert.False(host.Deferred);
         Assert.False(sync.Asking);
+    }
+
+    /// <summary>
+    /// An answer pressed while something else is reading still reaches the file.
+    /// </summary>
+    /// <remarks>
+    /// The write that follows an answer used to be dropped outright when a read or a write was in
+    /// flight - and dropped for good, because the baseline had already moved to what arrived, so
+    /// every comparison afterwards found the two sides in step. The two event handlers have always
+    /// recorded the miss instead; this caller did not. Reachable against a provider, whose reads are
+    /// HTTP round-trips rather than milliseconds.
+    /// </remarks>
+    [Fact]
+    public async Task AnAnswerGivenDuringAReadIsNotLost()
+    {
+        var disk = new Disk("First");
+        var (sync, _, session) = await OpenAsync(disk);
+
+        await sync.SetAsync(true);
+        session.Select(session.File!.Designs[0]);
+        session.Edit(design => design.Name.Key = "Renamed, not saved");
+
+        disk.WrittenElsewhere("Built in the game");
+        await sync.RefreshAsync();
+
+        Assert.True(sync.Asking);
+
+        // Answered from inside the next read, which is exactly the window that used to swallow it.
+        Task? answered = null;
+        disk.DuringRead = () => answered = sync.ResolveAsync(Arrival.KeepMine);
+
+        await sync.RefreshAsync();
+        await answered!;
+
+        Assert.False(sync.Asking);
+
+        // Keeping your own means your own reach the file, whenever the answer happened to land.
+        // Dropped, the file would still be holding what the game put there.
+        Assert.Equal(["First"], Names(EmpireDesignsFile.Load(disk.Contents)));
+        Assert.Equal(Names(session), Names(EmpireDesignsFile.Load(disk.Contents)));
     }
 
     /// <summary>Turning it off stops the watching, and leaves the file where it stands.</summary>

@@ -22,6 +22,10 @@ public sealed class DesktopFileExchange(SafeFile file, string designsPath) : IFi
     private readonly SafeFile _file = file ?? throw new ArgumentNullException(nameof(file));
     private readonly string _designsPath = designsPath ?? throw new ArgumentNullException(nameof(designsPath));
 
+    /// <summary>Where a copy of each replaced version goes, out of the player's folder.</summary>
+    private readonly FileArchive _archive = new(
+        file!, Path.Combine(WritePolicy.LocalCacheRoot(), "archive"));
+
     /// <summary>
     /// What the file held the last time this app read or wrote it.
     /// </summary>
@@ -152,10 +156,12 @@ public sealed class DesktopFileExchange(SafeFile file, string designsPath) : IFi
             return Task.FromResult(SaveOutcome.Conflicted);
         }
 
-        // Kept before anything is replaced, so a save that goes wrong still leaves a way back. Not
-        // what the player is choosing about: this one is the app's own, out of sight and out of
-        // their folder, and it costs them nothing to have.
-        Archive(contents);
+        // A copy of what is about to be written over. This used to be handed the bytes about to be
+        // written instead, which is a record of what each save created and no way back from any of
+        // them - so the archive is asked for the file rather than told what is in it, and there is
+        // no longer a wrong thing to pass. The app's own copy, out of sight and out of the
+        // player's folder, and it costs them nothing to have.
+        _archive.KeepReplaced(_designsPath);
 
         _file.ReplaceAtomically(
             _designsPath, contents, backUp ? SafeFile.DatedBackupPath(_designsPath) : null);
@@ -274,45 +280,5 @@ public sealed class DesktopFileExchange(SafeFile file, string designsPath) : IFi
 
             return SaveOutcome.Saved;
         }).Task;
-    }
-
-    /// <summary>Keeps a copy in the app's own folder, where the game will never overwrite it.</summary>
-    private void Archive(byte[] contents)
-    {
-        var archive = Path.Combine(
-            WritePolicy.LocalCacheRoot(),
-            "archive",
-            $"{DateTime.Now:yyyyMMdd-HHmmss}-{Path.GetFileName(_designsPath)}");
-
-        try
-        {
-            _file.WriteAllBytes(archive, contents);
-            Prune(Path.GetDirectoryName(archive)!);
-        }
-        catch (IOException)
-        {
-            // An archive that cannot be written must not stop the save the user asked for.
-        }
-    }
-
-    /// <summary>Keeps the archive to a useful size rather than letting it grow without end.</summary>
-    private static void Prune(string directory, int keep = 20)
-    {
-        try
-        {
-            foreach (var stale in new DirectoryInfo(directory)
-                         .GetFiles("*.txt")
-                         .OrderByDescending(f => f.CreationTimeUtc)
-                         .Skip(keep))
-            {
-                stale.Delete();
-            }
-        }
-        catch (IOException)
-        {
-        }
-        catch (UnauthorizedAccessException)
-        {
-        }
     }
 }

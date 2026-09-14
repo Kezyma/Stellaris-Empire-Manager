@@ -153,9 +153,19 @@ public sealed class SafeFile(WritePolicy policy)
         var directory = Path.GetDirectoryName(Path.GetFullPath(path))!;
         var staged = Path.Combine(directory, $".{Path.GetFileName(path)}.{Guid.NewGuid():N}.tmp");
 
+        var bytes = content.ToArray();
+
         try
         {
-            File.WriteAllBytes(staged, content.ToArray());
+            // Retried like the swap below it, and for the same reason: the staging file is
+            // deliberately created in the target's own directory, which is the OneDrive-synced,
+            // scanner-watched folder the retry loop exists for. Left outside it, a lock of the kind
+            // that is routine here failed the save with a raw message instead of the written one.
+            //
+            // Named for the target rather than for the staging file, because what the reader needs
+            // to know is which of their files did not get written - and that the one they care
+            // about is untouched, which at this point it is.
+            Retry(() => File.WriteAllBytes(staged, bytes), path);
 
             Retry(
                 () =>
@@ -182,13 +192,24 @@ public sealed class SafeFile(WritePolicy policy)
         }
     }
 
+    /// <summary>
+    /// Makes the folder a write is about to land in, if it is not there already.
+    /// </summary>
+    /// <remarks>
+    /// The policy is asked first and outside the retry, because a refusal will never become an
+    /// acceptance and trying it five times only makes the failure slower. The filesystem call is
+    /// inside it, because this is the one line of every write that was not: a folder that could not
+    /// be created threw a raw <see cref="UnauthorizedAccessException"/> straight past the wrapper,
+    /// so a caller that had carefully caught <see cref="IOException"/> - which is every caller -
+    /// caught nothing.
+    /// </remarks>
     private void EnsureParentDirectory(string path)
     {
         var parent = Path.GetDirectoryName(Path.GetFullPath(path));
         if (!string.IsNullOrEmpty(parent) && !Directory.Exists(parent))
         {
             Policy.EnsureWritable(parent);
-            Directory.CreateDirectory(parent);
+            Retry(() => Directory.CreateDirectory(parent), parent);
         }
     }
 

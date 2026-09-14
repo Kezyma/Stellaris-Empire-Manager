@@ -277,21 +277,36 @@ public sealed class SessionHost(
                 }
 
                 // And the browser's own copy, where there is one. It is not what was written - the
-                // file is - but it is what the next load holds before it has fetched anything, and
-                // this is the one moment the two are known to agree. Unreported on purpose: the
-                // empires are in the file, so a browser that will not keep a second copy has cost
-                // nothing worth interrupting somebody over.
+                // file is - but it is what the next load holds before it has fetched anything.
+                // Unreported on purpose: the empires are in the file, so a browser that will not
+                // keep a second copy has cost nothing worth interrupting somebody over.
+                //
+                // What is in hand now rather than what went to the file, which after an await may
+                // no longer be the same thing. Writing the older bytes here was how an edit made
+                // during a four-second save to a provider ended up in neither place.
                 if (_store.Keeps)
                 {
-                    await _store.WriteAsync(Kept.Encode(contents)).ConfigureAwait(false);
+                    await _store.WriteAsync(Kept.Encode(session.Save())).ConfigureAwait(false);
                 }
             }
-            else if (!await _store.WriteAsync(Kept.Encode(contents)).ConfigureAwait(false))
+            else if (!await _store.WriteAsync(Kept.Encode(session.Save())).ConfigureAwait(false))
             {
                 return "Your browser would not keep the file. Download it to be sure of it.";
             }
 
-            session.MarkSaved();
+            // Only where the work still is what was written. A save is a promise about the bytes
+            // that left, and an empire edited while they were in flight is not covered by it -
+            // marked saved anyway, the Save button went quiet and the warning on the way out was
+            // disarmed over an edit no file anywhere had.
+            //
+            // Compared rather than asked, for the reason the sync records beside its own version of
+            // this: the session's flags answer for the moment the write began, so they cannot tell
+            // us about a change made during it. The bytes can.
+            if (Same(session.Save(), contents))
+            {
+                session.MarkSaved();
+            }
+
             Saved?.Invoke(contents);
             return null;
         }
@@ -300,6 +315,9 @@ public sealed class SessionHost(
             return $"Your empires could not be saved: {ex.Message}";
         }
     }
+
+    /// <summary>Whether two written forms of the file are the same bytes.</summary>
+    private static bool Same(byte[] left, byte[] right) => left.AsSpan().SequenceEqual(right);
 
     /// <summary>
     /// Keeps the file wherever this host keeps one, after it has been handed to the player.
