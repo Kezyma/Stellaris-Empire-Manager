@@ -108,6 +108,30 @@ public sealed class WikiShelves(DesignSession session)
         ];
     }
 
+    /// <summary>
+    /// One civic, with the two trees the game states about an empire read as one list.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The game keeps <c>potential</c> and <c>possible</c> apart and means something by it: failing
+    /// the first hides the civic from the list, failing the second shows it greyed out with the
+    /// game's own explanation. Measured, they even divide neatly - potential asks about the empire's
+    /// shape, mostly its authority and ethics, and possible is almost all mutual exclusion with other
+    /// civics and origins.
+    /// </para>
+    /// <para>
+    /// It is a distinction about how the game refuses you rather than about whether it does, and a
+    /// wiki is not reproducing the game's picker. Both answer the one question a reader came with -
+    /// what does my empire have to be - so they are one list, and two narrow columns that were often
+    /// half empty become one that is not. The origins show why: twelve of them state the first and
+    /// fifty-seven the second, with only eight stating both.
+    /// </para>
+    /// <para>
+    /// They merge without a seam. Both are AND groups, so the outline flattens them into one list
+    /// rather than nesting, and the twenty-five entries that name the same thing in both trees say
+    /// it once - see the outline's own deduplication.
+    /// </para>
+    /// </remarks>
     private WikiRow Civic(CivicDefinition civic, CivicReach reach)
     {
         var shut = Shut(reach);
@@ -120,8 +144,10 @@ public sealed class WikiShelves(DesignSession session)
             shut?.Short,
             shut?.Why,
             [
-                new WikiCondition("Offered to", _reader.Read(civic.Potential), "Any empire"),
-                new WikiCondition("Allowed when", _reader.Read(civic.Possible), "Always"),
+                new WikiCondition(
+                    "Requirements",
+                    _reader.Read(new AllRequirement([civic.Potential, civic.Possible])),
+                    "Any empire"),
             ],
             [],
             Wants(civic.Potential, civic.Possible)) with
@@ -244,7 +270,7 @@ public sealed class WikiShelves(DesignSession session)
             authority.AiOnly
                 ? "The game keeps this for its own empires. Nothing in the empire designer offers it."
                 : null,
-            [new WikiCondition("Allowed when", _reader.Read(authority.Possible), "Always")],
+            [new WikiCondition("Requirements", _reader.Read(authority.Possible), "Any empire")],
             AuthorityFacts(authority),
             Wants(authority.Possible)) with
         {

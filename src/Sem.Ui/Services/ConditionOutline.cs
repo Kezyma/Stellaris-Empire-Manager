@@ -139,7 +139,7 @@ public sealed class ConditionReader(Localizer localizer, GameDatabase database)
     /// A group of parts, with the ones that say nothing dropped and a lone survivor unwrapped.
     /// </summary>
     /// <remarks>
-    /// Both simplifications earn their place on the real corpus. The game writes
+    /// All three simplifications earn their place on the real corpus. The game writes
     /// <c>NOT = { AND = { has_ethic = gestalt } }</c> where it means "not a gestalt", and drawn
     /// literally that is two levels of indentation and a heading over a single bullet. Dropping the
     /// empty parts matters for the same reason: half of what an <c>AND</c> holds is often an
@@ -163,6 +163,11 @@ public sealed class ConditionReader(Localizer localizer, GameDatabase database)
                 parts.Add(built);
             }
         }
+
+        // Said once, however many times it is said. Two of the game's trees are read as one list
+        // here, and twenty-five civics name the same thing in both - so without this a reader would
+        // be told twice, in the same words, that their empire must not be a gestalt.
+        parts = [.. parts.Distinct()];
 
         return parts.Count switch
         {

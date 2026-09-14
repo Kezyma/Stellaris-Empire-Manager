@@ -185,6 +185,18 @@
     [Parameter, EditorRequired]
     public required string Noun { get; set; }
 
+    /// <summary>
+    /// The whole shelf, which is what the columns are decided from.
+    /// </summary>
+    /// <remarks>
+    /// Not the narrowed rows. A column is drawn only where something fills it, and asked of the
+    /// search results that made the table's shape change as the reader typed: narrowing to one
+    /// playable civic took the Playable column away, and clearing the box brought it back. The
+    /// shelf is what the page is about; the search only says which of it to show.
+    /// </remarks>
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<WikiRow> All { get; set; }
+
     /// <summary>Whether anything here carries a picture, and so whether that column is drawn.</summary>
     /// <remarks>
     /// Worked out when the rows change rather than in the markup, where it would be a pass over
@@ -214,15 +226,15 @@
     /// </remarks>
     protected override void OnParametersSet()
     {
-        _pictures = Rows.Any(r => r.Picture is { Length: > 0 });
-        _playable = Rows.Any(r => !r.Playable);
-        _packs = Rows.Any(r => r.Packs.Count > 0);
+        _pictures = All.Any(r => r.Picture is { Length: > 0 });
+        _playable = All.Any(r => !r.Playable);
+        _packs = All.Any(r => r.Packs.Count > 0);
 
-        _facts = [.. Rows.SelectMany(r => r.Facts).Select(f => f.Heading).Distinct(StringComparer.Ordinal)];
+        _facts = [.. All.SelectMany(r => r.Facts).Select(f => f.Heading).Distinct(StringComparer.Ordinal)];
 
         _conditions =
         [
-            .. Rows.SelectMany(r => r.Conditions)
+            .. All.SelectMany(r => r.Conditions)
                 .Where(c => c.Stated)
                 .Select(c => c.Heading)
                 .Distinct(StringComparer.Ordinal),

@@ -96,20 +96,64 @@ public sealed class WikiShelfTests
     }
 
     /// <summary>
-    /// The two conditions about the empire are there, in the game's own order.
+    /// The two trees the game states about an empire are read as one list.
     /// </summary>
     /// <remarks>
-    /// Two of the five. Potential decides whether the option is drawn and Possible whether it may
-    /// then be taken, and a reader asking why an empire cannot have something wants to know which
-    /// of the two refused.
+    /// The game keeps potential and possible apart and means something by it - failing the first
+    /// hides the option, failing the second greys it out - but that is about how it refuses you
+    /// rather than whether, and a reader asks one question. Two narrow columns, often half empty,
+    /// become one that is not.
     /// </remarks>
     [Fact]
-    public void TheTwoConditionsAboutTheEmpireAreThere()
+    public void TheTwoTreesAboutTheEmpireAreReadAsOneList()
+    {
+        var row = Row(new CivicDefinition("civic_named", IsOrigin: false)
+        {
+            Potential = new SelectionRequirement(SelectionCategory.Authority, "auth_democratic"),
+            Possible = new NotRequirement(new SelectionRequirement(SelectionCategory.Civics, "civic_other")),
+        });
+
+        var requirements = Assert.Single(row.Conditions);
+
+        Assert.Equal("Requirements", requirements.Heading);
+        Assert.Equal(ConditionJoin.All, requirements.Outline!.Join);
+        Assert.Equal(
+            ["auth_democratic", "civic_other"],
+            requirements.Outline.Parts.Select(p => p.Chip!.Key));
+    }
+
+    /// <summary>
+    /// And where both trees say the same thing, it is said once.
+    /// </summary>
+    /// <remarks>
+    /// Twenty-five of the three hundred and fifty-eight name the same selection in both, so without
+    /// this a reader would be told twice, in the same words, that their empire must not be a gestalt.
+    /// </remarks>
+    [Fact]
+    public void WhatBothTreesSayIsSaidOnce()
+    {
+        var row = Row(new CivicDefinition("civic_named", IsOrigin: false)
+        {
+            Potential = new SelectionRequirement(SelectionCategory.Authority, "auth_democratic"),
+            Possible = new SelectionRequirement(SelectionCategory.Authority, "auth_democratic"),
+        });
+
+        var requirements = Assert.Single(row.Conditions);
+
+        Assert.Equal(ConditionJoin.Leaf, requirements.Outline!.Join);
+        Assert.Equal("auth_democratic", requirements.Outline.Chip!.Key);
+    }
+
+    /// <summary>A kind that states nothing carries one heading with words in place of a list.</summary>
+    [Fact]
+    public void AKindThatStatesNothingSaysSo()
     {
         var row = Row(new CivicDefinition("civic_named", IsOrigin: false));
 
-        Assert.Equal(["Offered to", "Allowed when"], row.Conditions.Select(c => c.Heading));
-        Assert.All(row.Conditions, c => Assert.False(c.Stated));
+        var requirements = Assert.Single(row.Conditions);
+
+        Assert.False(requirements.Stated);
+        Assert.Equal("Any empire", requirements.Otherwise);
     }
 
     /// <summary>
@@ -128,7 +172,7 @@ public sealed class WikiShelfTests
             Playable = new DlcRequirement("Utopia"),
         });
 
-        Assert.DoesNotContain("Needs", row.Conditions.Select(c => c.Heading));
+        Assert.Equal(["Requirements"], row.Conditions.Select(c => c.Heading));
         Assert.Equal("Utopia", Assert.Single(row.Packs).Name);
     }
 
@@ -149,22 +193,7 @@ public sealed class WikiShelfTests
             CanRemoveLater = new AlwaysRequirement(false),
         });
 
-        Assert.Equal(2, row.Conditions.Count);
-    }
-
-    /// <summary>
-    /// Each silent condition gets words of its own rather than one word used twice.
-    /// </summary>
-    /// <remarks>
-    /// "Offered to: Always" says something subtly different from what it means. The two ask
-    /// different questions, so what stands in for silence has to differ with them.
-    /// </remarks>
-    [Fact]
-    public void EachSilentConditionGetsItsOwnWords()
-    {
-        var row = Row(new CivicDefinition("civic_named", IsOrigin: false));
-
-        Assert.Equal(["Any empire", "Always"], row.Conditions.Select(c => c.Otherwise));
+        Assert.Single(row.Conditions);
     }
 
     /// <summary>A condition the game does state comes back as something to indent.</summary>
@@ -176,11 +205,11 @@ public sealed class WikiShelfTests
             Potential = new SelectionRequirement(SelectionCategory.Ethics, "ethic_militarist"),
         });
 
-        var offered = row.Conditions[0];
+        var stated = Assert.Single(row.Conditions);
 
-        Assert.True(offered.Stated);
-        Assert.Equal("Militarist", offered.Outline!.Chip!.Name);
-        Assert.True(offered.Outline.Wanted);
+        Assert.True(stated.Stated);
+        Assert.Equal("Militarist", stated.Outline!.Chip!.Name);
+        Assert.True(stated.Outline.Wanted);
     }
 
     /// <summary>
