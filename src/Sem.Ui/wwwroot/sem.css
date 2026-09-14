@@ -7364,14 +7364,15 @@ button.icon.ended {
 }
 
 /*
-   A chip the wiki has a page for, which is most of them on these pages and none of them anywhere
-   else. Underlined on hover rather than coloured at rest: several hundred of these sit inside the
-   requirement bullets, and an accent on every one would make the bullets unreadable while saying
-   the same thing about all of them.
+   A chip the wiki has a page for.
+
+   The pointer and nothing else. It was underlined on hover, which was a fair hint while only some
+   chips led anywhere - but nearly all of them will in the end, and a mark that is about to be on
+   everything is a mark that says nothing. It also read as an inconsistency rather than as a hint:
+   two chips side by side in one column, one underlining and one not, because one of them happened
+   to have a page already.
 */
 .sem-chip .sem-chip-link { cursor: pointer; }
-
-.sem-chip .sem-chip-link:hover:not(:disabled) > span { text-decoration: underline; }
 
 /*
    What a row costs you, in one of three colours.

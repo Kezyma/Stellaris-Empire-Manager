@@ -47,7 +47,30 @@ public sealed record WikiShelf(
     string Noun,
     string One,
     IReadOnlyList<WikiRow> Rows,
-    IReadOnlyList<Facet<WikiRow>> Facets);
+    IReadOnlyList<Facet<WikiRow>> Facets)
+{
+    /// <summary>
+    /// The text this shelf is written in, where that is not the app's own.
+    /// </summary>
+    /// <remarks>
+    /// Null for every shelf read from the database, which is written in the text every page already
+    /// has. A shelf read from one of the wiki's own files is not: a leader trait's name and prose
+    /// are in that file and nowhere else, because the app's localisation is pruned to what the
+    /// database reaches. The page cascades this so the chips and the prose resolve through it.
+    /// </remarks>
+    public Localizer? Reader { get; init; }
+
+    /// <summary>
+    /// The keys this shelf answers for that the database does not carry.
+    /// </summary>
+    /// <remarks>
+    /// Empty for every shelf read from the database, where a key can simply be looked up. A shelf
+    /// read from one of the wiki's own files has to say so, or a chip naming one of its entries has
+    /// nowhere to go - which is how the Replaces and Rules out chips came to be the only ones on a
+    /// wiki page that were not links.
+    /// </remarks>
+    public IReadOnlySet<string> Entries { get; init; } = new HashSet<string>(StringComparer.Ordinal);
+}
 
 /// <summary>
 /// Everything the game has to say about the things the wiki shows, read once.
@@ -242,11 +265,11 @@ public sealed class WikiShelves(DesignSession session)
         // "Fanatic" in its name.
         WikiFact.Of(
             "Other form",
-            Named(ethic.IsFanatic ? ethic.RegularVariant : ethic.FanaticVariant)),
+            Ethics(ethic.IsFanatic ? ethic.RegularVariant : ethic.FanaticVariant)),
 
         ethic.IsGestalt
             ? WikiFact.Said("Rules out", "Every other ethic")
-            : WikiFact.Of("Rules out", Named(Opposing(ethic))),
+            : WikiFact.Of("Rules out", Ethics(Opposing(ethic))),
     ];
 
     /// <summary>
@@ -313,7 +336,7 @@ public sealed class WikiShelves(DesignSession session)
     [
         WikiFact.Said("Elections", Localizer.Prettify(authority.ElectionType)),
         WikiFact.Said("Heir", authority.HasHeir ? "Yes" : "No"),
-        WikiFact.Of("Forces", Named(authority.ForcedTraits)),
+        WikiFact.Of("Forces", Traits(authority.ForcedTraits)),
     ];
 
     /// <summary>
@@ -397,8 +420,8 @@ public sealed class WikiShelves(DesignSession session)
     /// </remarks>
     private IReadOnlyList<WikiFact> SpeciesFacts(SpeciesClassDefinition species, IReadOnlyList<string> faces) =>
     [
-        WikiFact.Of("Archetype", Named(species.Archetype)),
-        WikiFact.Of("Always has", Named(species.ForcedTrait)),
+        WikiFact.Of("Archetype", Archetypes(species.Archetype)),
+        WikiFact.Of("Always has", Traits(species.ForcedTrait)),
         WikiFact.Said("Portraits", faces.Count.ToString(System.Globalization.CultureInfo.CurrentCulture)),
     ];
 
@@ -677,14 +700,23 @@ public sealed class WikiShelves(DesignSession session)
             Database.ScriptedValues,
             Database.ScriptedText);
 
+        // By key, because a chip naming another trait has to find it: Replaces and Rules out both
+        // carry keys from this same file, and looking each one up by walking the list would be
+        // seven hundred scans for every one of seven hundred rows.
+        var known = traits.ToDictionary(t => t.Key, StringComparer.Ordinal);
+
         return new WikiShelf(
             "Leader Traits", "leader traits", "leader trait",
             [
                 .. traits
-                    .Select(t => LeaderTrait(t, traits, reader))
+                    .Select(t => LeaderTrait(t, known, reader))
                     .OrderBy(r => r.Name, StringComparer.CurrentCulture),
             ],
-            WikiFacet.LeaderTraits);
+            WikiFacet.LeaderTraits)
+        {
+            Reader = reader,
+            Entries = known.Keys.ToHashSet(StringComparer.Ordinal),
+        };
     }
 
     /// <summary>
@@ -698,10 +730,10 @@ public sealed class WikiShelves(DesignSession session)
     /// </remarks>
     private WikiRow LeaderTrait(
         LeaderTraitDefinition trait,
-        IReadOnlyList<LeaderTraitDefinition> all,
+        IReadOnlyDictionary<string, LeaderTraitDefinition> known,
         Localizer reader)
     {
-        var named = Chained(trait, all, reader);
+        var named = Chained(trait, known, reader);
         var described = reader.Text(trait.DescriptionKey, string.Empty);
 
         return Row(
@@ -712,7 +744,7 @@ public sealed class WikiShelves(DesignSession session)
             null,
             null,
             [],
-            LeaderTraitFacts(trait),
+            LeaderTraitFacts(trait, known, reader),
             null) with
         {
             Icon = trait.Icon,
@@ -730,9 +762,9 @@ public sealed class WikiShelves(DesignSession session)
     /// which is in the database and so is named in the ordinary localisation. Failing both, the key
     /// prettified, which reads as a name and is at least not a blank cell.
     /// </remarks>
-    private string Chained(
+    private static string Chained(
         LeaderTraitDefinition trait,
-        IReadOnlyList<LeaderTraitDefinition> all,
+        IReadOnlyDictionary<string, LeaderTraitDefinition> known,
         Localizer reader,
         int depth = 0)
     {
@@ -747,8 +779,8 @@ public sealed class WikiShelves(DesignSession session)
         {
             foreach (var earlier in trait.Replaces)
             {
-                if (all.FirstOrDefault(t => t.Key == earlier) is { } below &&
-                    Chained(below, all, reader, depth + 1) is { Length: > 0 } inherited &&
+                if (known.GetValueOrDefault(earlier) is { } below &&
+                    Chained(below, known, reader, depth + 1) is { Length: > 0 } inherited &&
                     inherited != Localizer.Prettify(below.Key))
                 {
                     return inherited;
@@ -780,9 +812,20 @@ public sealed class WikiShelves(DesignSession session)
         text is { Length: > 0 } said && !said.TrimStart().StartsWith('[') ? said : null;
 
     /// <summary>What is worth saying about a leader trait beyond what it does.</summary>
-    private IReadOnlyList<WikiFact> LeaderTraitFacts(LeaderTraitDefinition trait) =>
+    /// <param name="trait">The trait.</param>
+    /// <param name="known">Every trait the file carries, for the chips that name one.</param>
+    /// <param name="reader">The text, with the file's merged in.</param>
+    /// <returns>The facts, in the order the columns want them.</returns>
+    private IReadOnlyList<WikiFact> LeaderTraitFacts(
+        LeaderTraitDefinition trait,
+        IReadOnlyDictionary<string, LeaderTraitDefinition> known,
+        Localizer reader) =>
     [
-        WikiFact.Of("Class", Named(trait.LeaderClasses)),
+        // Said rather than a chip, because it is the answer to a yes-or-no question and a chip
+        // saying "Yes" reads as a thing rather than as an answer. Blank for the rest, so the column
+        // is a short list of the ones a player can have rather than seven hundred noes.
+        WikiFact.Said("At start", trait.CanStart ? "Yes" : null),
+        WikiFact.Of("Class", Leaders(trait.LeaderClasses)),
         WikiFact.Said("Sort", trait.Sort is { Length: > 0 } sort ? Localizer.Prettify(sort) : null),
         WikiFact.Said("Rarity", trait.Rarity is { Length: > 0 } rare ? Localizer.Prettify(rare) : null),
 
@@ -791,8 +834,8 @@ public sealed class WikiShelves(DesignSession session)
         WikiFact.Said(
             "Tier",
             trait.Tier > 0 ? trait.Tier.ToString(System.Globalization.CultureInfo.CurrentCulture) : null),
-        WikiFact.Of("Replaces", Named(trait.Replaces)),
-        WikiFact.Of("Rules out", Named(trait.Opposites)),
+        WikiFact.Of("Replaces", LeaderTraitChips(known, reader, trait.Replaces)),
+        WikiFact.Of("Rules out", LeaderTraitChips(known, reader, trait.Opposites)),
     ];
 
     /// <summary>What is worth saying about a species trait beyond what it does.</summary>
@@ -801,33 +844,135 @@ public sealed class WikiShelves(DesignSession session)
         // Said as a number rather than as chips, and sortable, because the whole of picking traits
         // is spending a budget: two points for Intelligent, and a drawback to pay for it.
         WikiFact.Said("Cost", trait.Cost.ToString(System.Globalization.CultureInfo.CurrentCulture)),
-        WikiFact.Of("Archetype", Named(trait.AllowedArchetypes)),
-        WikiFact.Of("Only for", Named(trait.AllowedSpeciesClasses)),
-        WikiFact.Of("Rules out", Named(trait.Opposites)),
-        WikiFact.Of("Homeworld", Named(trait.AllowedPlanetClasses)),
-        WikiFact.Of("Origin", Named(trait.AllowedOrigins)),
-        WikiFact.Of("Not with", Named(trait.ForbiddenEthics)),
-        WikiFact.Of("Needs civic", Named(trait.AllowedCivics)),
+        WikiFact.Of("Archetype", Archetypes(trait.AllowedArchetypes)),
+        WikiFact.Of("Only for", Classes(trait.AllowedSpeciesClasses)),
+        WikiFact.Of("Rules out", Traits(trait.Opposites)),
+        WikiFact.Of("Homeworld", Worlds(trait.AllowedPlanetClasses)),
+        WikiFact.Of("Origin", Civics(trait.AllowedOrigins)),
+        WikiFact.Of("Not with", Ethics(trait.ForbiddenEthics)),
+        WikiFact.Of("Needs civic", Civics(trait.AllowedCivics)),
     ];
 
     /// <summary>
-    /// Keys as the chips the rest of the app draws them as.
+    /// One chip, told what kind of thing it is naming.
     /// </summary>
     /// <remarks>
-    /// The archetype is last because it is the only one that is not looked up but worked out, and
-    /// because its key cannot be mistaken for any of the others. Without it the Archetype chip was
-    /// a bare word on every species row, beside an Always-has chip that had a picture - which is
-    /// what made the gap visible.
+    /// <para>
+    /// Replaces a single method that took a bare key and guessed by trying each lookup in turn. A
+    /// key it could not place got no picture, no effects and an empty panel on hover - which was
+    /// most of them: leader classes, species classes and planet classes are all outside the chain it
+    /// tried, and so is every key that lives in the wiki's own file rather than the database.
+    /// </para>
+    /// <para>
+    /// Guessing was also answering the wrong question in one case. <c>LITHOID</c> and <c>MACHINE</c>
+    /// are both archetype keys and species-class keys, so an Archetype chip found a species class
+    /// and pointed at its page. A chip that is told what it names cannot make that mistake.
+    /// </para>
     /// </remarks>
-    private IReadOnlyList<EmpireChoice> Named(params IEnumerable<string?> keys) =>
+    /// <param name="key">What the chip carries.</param>
+    /// <param name="icon">Its picture.</param>
+    /// <param name="effects">What it does, for the panel behind it.</param>
+    /// <param name="description">Where its prose lives, when that is not its own key.</param>
+    /// <returns>The chip.</returns>
+    private EmpireChoice Chip(
+        string key,
+        string? icon,
+        EffectSet? effects = null,
+        string? description = null) =>
+        new(key, session.Localizer.Text(key, Localizer.Prettify(key)), icon, effects)
+        {
+            Description = description,
+        };
+
+    /// <summary>Only the keys that name something, since the game writes empty lists freely.</summary>
+    private static IEnumerable<string> Real(IEnumerable<string?> keys) =>
+        keys.OfType<string>().Where(k => k.Length > 0);
+
+    /// <summary>Ethics, which carry both a picture and what they do.</summary>
+    private IReadOnlyList<EmpireChoice> Ethics(params IEnumerable<string?> keys) =>
+        [.. Real(keys).Select(k => Chip(k, Database.Ethic(k)?.Icon, Database.Ethic(k)?.Effects))];
+
+    /// <summary>Species traits.</summary>
+    private IReadOnlyList<EmpireChoice> Traits(params IEnumerable<string?> keys) =>
+        [.. Real(keys).Select(k => Chip(k, Database.Trait(k)?.Icon, Database.Trait(k)?.Effects))];
+
+    /// <summary>Civics and origins, which are the same record told apart by a flag.</summary>
+    private IReadOnlyList<EmpireChoice> Civics(params IEnumerable<string?> keys) =>
+        [.. Real(keys).Select(k => Chip(k, Database.Civic(k)?.Icon, Database.Civic(k)?.Effects))];
+
+    /// <summary>Archetypes, which wear the trait every species of them carries.</summary>
+    private IReadOnlyList<EmpireChoice> Archetypes(params IEnumerable<string?> keys) =>
+        [.. Real(keys).Select(k => Chip(k, ArchetypeMarks.Of(Database, k)))];
+
+    /// <summary>Species classes, which wear one of their own faces.</summary>
+    private IReadOnlyList<EmpireChoice> Classes(params IEnumerable<string?> keys) =>
+        [.. Real(keys).Select(k => Chip(k, SpeciesFaces.Of(Database, k)))];
+
+    /// <summary>
+    /// Leader classes, which have a badge of their own.
+    /// </summary>
+    /// <remarks>
+    /// Three of the four are baked - the envoy asks for a frame past the end of the sheet, and may
+    /// not rule, so it is never offered and never named here.
+    /// </remarks>
+    private IReadOnlyList<EmpireChoice> Leaders(params IEnumerable<string?> keys) =>
+        [.. Real(keys).Select(k => Chip(k, Database.LeaderClass(k)?.Icon))];
+
+    /// <summary>
+    /// Homeworlds, which say nothing about themselves.
+    /// </summary>
+    /// <remarks>
+    /// The game writes no description for a planet class at all - there is no <c>pc_ocean_desc</c>
+    /// anywhere - so a world borrows the prose of the habitability trait living there would give,
+    /// which is the only thing it has to say. The designer's own picker has always done this; the
+    /// wiki was showing a bare word with an empty panel behind it.
+    /// </remarks>
+    private IReadOnlyList<EmpireChoice> Worlds(params IEnumerable<string?> keys) =>
     [
-        .. keys.OfType<string>()
-            .Where(k => k.Length > 0)
-            .Select(k => new EmpireChoice(
+        .. Real(keys).Select(k =>
+        {
+            var habitability = session.Rules.HabitabilityTraitFor(k);
+
+            return Chip(
                 k,
-                session.Localizer.Text(k, Localizer.Prettify(k)),
-                Database.Ethic(k)?.Icon ?? Database.Trait(k)?.Icon ?? Database.Civic(k)?.Icon
-                    ?? ArchetypeMarks.Of(Database, k),
-                Database.Ethic(k)?.Effects ?? Database.Trait(k)?.Effects)),
+                Database.PlanetClass(k)?.Icon,
+                Database.Trait(habitability)?.Effects,
+                habitability is { Length: > 0 } trait ? $"{trait}_desc" : null);
+        }),
+    ];
+
+    /// <summary>
+    /// Leader traits, which are in the wiki's own file rather than the database.
+    /// </summary>
+    /// <remarks>
+    /// Named through the reader the shelf built, which has the file's text merged over the app's.
+    /// Without it a chip fell back to the key prettified - "Leader Trait Armada Logistician II" -
+    /// and reading the file's text raw would have been worse still, since the game writes a second
+    /// tier's name as a reference to the first.
+    /// </remarks>
+    /// <param name="known">Every trait the file carries, by key.</param>
+    /// <param name="reader">The text, with the file's merged in.</param>
+    /// <param name="keys">What to name.</param>
+    /// <returns>The chips.</returns>
+    private static IReadOnlyList<EmpireChoice> LeaderTraitChips(
+        IReadOnlyDictionary<string, LeaderTraitDefinition> known,
+        Localizer reader,
+        IEnumerable<string?> keys) =>
+    [
+        .. Real(keys).Select(k =>
+        {
+            var trait = known.GetValueOrDefault(k);
+
+            return new EmpireChoice(
+                k,
+
+                // Through the chain, as the row heading is. A chip naming one of the two hundred
+                // and thirty-four tiers the game never named would otherwise read as its key
+                // prettified - "Leader Trait Adventurous Spirit 2" - beside a row headed with the
+                // real name.
+                trait is null ? reader.Text(k, Localizer.Prettify(k)) : Chained(trait, known, reader),
+                trait?.Icon,
+                trait?.Effects);
+        }),
     ];
 }

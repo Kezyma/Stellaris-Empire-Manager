@@ -29,6 +29,13 @@ public sealed class LeaderTraitShelfTests
                     ExtractorVersion = "test",
                     Defines = new GameDefines { EthicsPoints = 3, CivicPoints = 2, CityPopLevel = 4 },
                     Dlc = [new DlcDefinition("paragon", "Galactic Paragons", null, null, true)],
+                    LeaderClasses =
+                    [
+                        new LeaderClassDefinition("scientist", "scientist")
+                        {
+                            Icon = "icons/leaders/scientist.png",
+                        },
+                    ],
                 },
                 known.ToDictionary(k => k.Key, k => k.Name, StringComparer.Ordinal),
                 "assets"));
@@ -180,6 +187,82 @@ public sealed class LeaderTraitShelfTests
             .Rows);
 
         Assert.Null(row.Fact("Tier"));
+    }
+
+    /// <summary>A leader class chip wears its own badge.</summary>
+    [Fact]
+    public void AClassChipWearsItsBadge()
+    {
+        var row = Assert.Single(Shelves()
+            .LeaderTraits(Pack(
+                [new LeaderTraitDefinition("leader_trait_carefree") { LeaderClasses = ["scientist"] }],
+                ("leader_trait_carefree", "Carefree")))
+            .Rows);
+
+        var chip = Assert.Single(row.Fact("Class")!.Chips);
+
+        Assert.Equal("icons/leaders/scientist.png", chip.Icon);
+    }
+
+    /// <summary>
+    /// A chip naming another trait wears that trait's picture and is named the way its row is.
+    /// </summary>
+    /// <remarks>
+    /// These keys are in the wiki's own file and in no collection the database has, so a chip built
+    /// the ordinary way found nothing: no picture, an empty panel, and the key prettified for a name
+    /// - "Leader Trait Adventurous Spirit 2" sitting beside a row headed "Adventurous Spirit".
+    /// </remarks>
+    [Fact]
+    public void AChipNamingAnotherTraitIsDrawnAsThatTraitIs()
+    {
+        var rows = Shelves()
+            .LeaderTraits(Pack(
+                [
+                    new LeaderTraitDefinition("leader_trait_wrecker")
+                    {
+                        Tier = 1,
+                        Icon = "icons/traits/wrecker.png",
+                    },
+                    new LeaderTraitDefinition("leader_trait_wrecker_2")
+                    {
+                        Tier = 2,
+                        Replaces = ["leader_trait_wrecker"],
+                        Icon = "icons/traits/wrecker_2.png",
+                    },
+                    new LeaderTraitDefinition("leader_trait_rival")
+                    {
+                        Opposites = ["leader_trait_wrecker_2"],
+                    },
+                ],
+                ("leader_trait_wrecker", "Wrecker"),
+                ("leader_trait_rival", "Rival")))
+            .Rows;
+
+        // The tier that replaces one: its chip names the tier below, which the game did name.
+        var replaces = Assert.Single(
+            rows.First(r => r.Key == "leader_trait_wrecker_2").Fact("Replaces")!.Chips);
+
+        Assert.Equal("Wrecker", replaces.Name);
+        Assert.Equal("icons/traits/wrecker.png", replaces.Icon);
+
+        // And one ruling out a tier the game never named takes the name of what that tier replaces,
+        // rather than the key prettified.
+        var rules = Assert.Single(rows.First(r => r.Key == "leader_trait_rival").Fact("Rules out")!.Chips);
+
+        Assert.Equal("Wrecker", rules.Name);
+        Assert.Equal("icons/traits/wrecker_2.png", rules.Icon);
+    }
+
+    /// <summary>The shelf says which keys it answers for, so those chips can be links.</summary>
+    [Fact]
+    public void TheShelfNamesTheKeysOnlyItKnows()
+    {
+        var shelf = Shelves().LeaderTraits(Pack(
+            [new LeaderTraitDefinition("leader_trait_carefree")],
+            ("leader_trait_carefree", "Carefree")));
+
+        Assert.Contains("leader_trait_carefree", shelf.Entries);
+        Assert.NotNull(shelf.Reader);
     }
 
     /// <summary>

@@ -19,7 +19,11 @@ namespace Sem.Ui.Services;
 /// </para>
 /// </remarks>
 /// <param name="database">The extracted game.</param>
-public sealed class WikiLinks(GameDatabase database)
+/// <param name="shelf">
+/// Which shelf the wiki's own file is for, where one is open, and the keys it carries. A leader
+/// trait is in no collection the database has, so it can only be recognised by being told.
+/// </param>
+public sealed class WikiLinks(GameDatabase database, (WikiKind Kind, IReadOnlySet<string> Keys)? shelf = null)
 {
     private readonly GameDatabase _database =
         database ?? throw new ArgumentNullException(nameof(database));
@@ -62,6 +66,13 @@ public sealed class WikiLinks(GameDatabase database)
         if (key is not { Length: > 0 })
         {
             return null;
+        }
+
+        // What the page in front of the reader carries, first: its keys are the ones the database
+        // cannot answer for, and asking it first costs one set lookup.
+        if (shelf is { } open && open.Keys.Contains(key))
+        {
+            return open.Kind;
         }
 
         if (_database.Civic(key) is { } civic)

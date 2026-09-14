@@ -676,6 +676,70 @@ public sealed class WikiShelfTests
             shelves.Of(WikiKind.SpeciesTraits).Rows.Select(r => r.Key));
     }
 
+    /// <summary>
+    /// A homeworld chip wears the world's icon and borrows the habitability trait's prose.
+    /// </summary>
+    /// <remarks>
+    /// The game writes no description for a planet class at all, so a chip that looked one up under
+    /// the world's own key opened an empty panel. The designer's own picker has always borrowed the
+    /// preference trait's; the wiki was the only place that did not.
+    /// </remarks>
+    [Fact]
+    public void AHomeworldChipWearsTheWorldAndBorrowsItsPreferencesProse()
+    {
+        var chip = Assert.Single(Worlds().Fact("Homeworld")!.Chips);
+
+        Assert.Equal("pc_ocean", chip.Key);
+        Assert.Equal("icons/planets/pc_ocean.png", chip.Icon);
+        Assert.Equal("trait_pc_ocean_preference_desc", chip.Description);
+    }
+
+    /// <summary>A world the game names no preference for still gets its picture.</summary>
+    [Fact]
+    public void AHomeworldWithNoPreferenceStillWearsTheWorld()
+    {
+        var chip = Assert.Single(Worlds(preference: false).Fact("Homeworld")!.Chips);
+
+        Assert.Equal("icons/planets/pc_ocean.png", chip.Icon);
+        Assert.Null(chip.Description);
+    }
+
+    /// <summary>One trait limited to a world, with or without a preference trait to borrow from.</summary>
+    private static WikiRow Worlds(bool preference = true)
+    {
+        var traits = new List<TraitDefinition>
+        {
+            new("trait_aquatic", TraitKind.Species) { AllowedPlanetClasses = ["pc_ocean"] },
+        };
+
+        if (preference)
+        {
+            traits.Add(new TraitDefinition("trait_pc_ocean_preference", TraitKind.Species));
+        }
+
+        var session = new DesignSession(
+            new Sem.Ui.Services.GameData(
+                new GameDatabase
+                {
+                    SchemaVersion = GameDatabase.CurrentSchemaVersion,
+                    GameVersion = "test",
+                    ExtractorVersion = "test",
+                    Defines = new GameDefines { EthicsPoints = 3, CivicPoints = 2, CityPopLevel = 4 },
+                    Traits = traits,
+                    PlanetClasses =
+                    [
+                        new PlanetClassDefinition("pc_ocean") { Icon = "icons/planets/pc_ocean.png" },
+                    ],
+                },
+                new Dictionary<string, string>(StringComparer.Ordinal),
+                "assets"));
+
+        session.StartEmptyFile();
+
+        return new WikiShelves(session).Of(WikiKind.SpeciesTraits).Rows
+            .First(r => r.Key == "trait_aquatic");
+    }
+
     /// <summary>One species trait, read as the wiki reads it.</summary>
     private static WikiRow Trait(TraitDefinition trait) =>
         Assert.Single(Shelves([trait]).Of(WikiKind.SpeciesTraits).Rows);

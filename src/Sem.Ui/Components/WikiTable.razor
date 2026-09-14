@@ -115,7 +115,7 @@
                         @if (row.Description is { Length: > 0 })
                         {
                             <span class="prose">
-                                @((MarkupString)Session.Localizer.Html($"{row.Key}_desc", string.Empty))
+                                @((MarkupString)Wording.Html(row.DescriptionKey, string.Empty))
                             </span>
                         }
                     </th>
@@ -209,6 +209,21 @@
 @code {
     [CascadingParameter]
     public required DesignSession Session { get; set; }
+
+    /// <summary>
+    /// The text this shelf is written in, where a page carries its own.
+    /// </summary>
+    /// <remarks>
+    /// The row's own key, through the page's reader. It was the key rebuilt by hand and read from
+    /// the session - which ignored <c>DescriptionKey</c> entirely, so anything describing itself
+    /// under another key drew a blank, and every leader trait did: their prose is in the wiki's own
+    /// file and the session has never seen it.
+    /// </remarks>
+    [CascadingParameter(Name = "WikiText")]
+    public Localizer? Reader { get; set; }
+
+    /// <summary>Whichever reader answers for this shelf.</summary>
+    private Localizer Wording => Reader ?? Session.Localizer;
 
     /// <summary>What to draw, already narrowed and in order.</summary>
     [Parameter, EditorRequired]

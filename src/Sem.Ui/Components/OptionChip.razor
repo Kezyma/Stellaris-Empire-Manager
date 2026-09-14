@@ -225,9 +225,20 @@
         }
     }
 
+    /// <summary>
+    /// The text this chip is written in, where a page carries its own.
+    /// </summary>
+    /// <remarks>
+    /// Absent everywhere but a wiki page built from one of the wiki's own files. A leader trait's
+    /// prose lives in that file and nowhere else - the app's localisation is pruned to what the
+    /// database reaches - so reading the session's would give every one of them an empty panel.
+    /// </remarks>
+    [CascadingParameter(Name = "WikiText")]
+    public Localizer? Wording { get; set; }
+
     /// <summary>What the game says about it, from wherever it says it.</summary>
     private string Lore =>
-        Session.Localizer.Html(DescriptionKey ?? $"{Key}_desc", string.Empty) ?? string.Empty;
+        (Wording ?? Session.Localizer).Html(DescriptionKey ?? $"{Key}_desc", string.Empty) ?? string.Empty;
 
     private ElementReference _anchor;
     private ElementReference _panel;

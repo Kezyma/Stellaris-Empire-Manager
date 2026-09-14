@@ -186,7 +186,14 @@ internal static class TraitsExtractor
     private static IReadOnlyList<string> ReadLeaderClasses(CwBlock body) =>
         body.GetList("leader_class") is { Count: > 0 } listed
             ? listed
-            : body.GetString("leader_class") is { Length: > 0 } single ? [single] : [];
+
+            // "all" is the one value that is not a class. It says every class may hold the trait,
+            // which is what an empty list already says, and naming it would put a chip on the page
+            // for something the game has no badge and no word for.
+            : body.GetString("leader_class") is { Length: > 0 } single
+                && !string.Equals(single, "all", StringComparison.Ordinal)
+                ? [single]
+                : [];
 
     private static TraitKind ClassifyTrait(CwBlock body)
     {
@@ -197,10 +204,14 @@ internal static class TraitsExtractor
 
         // Leader traits name the classes that can hold them; species traits name archetypes.
         //
-        // Either way round, as ReadLeaderClasses reads it. Asking only for a block missed
-        // leader_trait_rift_warped, which writes "leader_class = all" as a bare word and has no
-        // leader_trait_type to fall back on - so one leader trait sat in the species list.
-        return ReadLeaderClasses(body).Count > 0 || body.GetString("leader_trait_type") is not null
+        // Whether the field is there at all, either way round - not what it names. Asking only for
+        // a block missed leader_trait_rift_warped, which writes "leader_class = all" as a bare word
+        // and has no leader_trait_type to fall back on, so one leader trait sat in the species list.
+        // Asking ReadLeaderClasses instead would miss it again for the opposite reason: "all" is
+        // not a class, so that answers with nothing at all.
+        return body.GetBlock("leader_class") is not null
+            || body.GetString("leader_class") is { Length: > 0 }
+            || body.GetString("leader_trait_type") is not null
             ? TraitKind.Leader
             : TraitKind.Species;
     }

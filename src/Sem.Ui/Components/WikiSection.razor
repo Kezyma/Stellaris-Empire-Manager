@@ -74,6 +74,13 @@ else
      *@
      <CascadingValue Value="_links">
       @*
+        The text this shelf is written in, where that is not the app's own. A page built from one of
+        the wiki's own files carries its own names and prose - the app's localisation is pruned to
+        what the database reaches, and these keys are not in the database - so the chips and the row
+        prose have to resolve through it rather than through the session's.
+      *@
+      <CascadingValue Value="_shelf?.Reader" Name="WikiText">
+      @*
         One box around both views, because the popovers are bound to it rather than to each chip.
         A civics page draws several hundred of them and binding each one costs a round trip into
         JavaScript before anybody has hovered anything; bindPopoversWhenPointed puts one listener
@@ -114,12 +121,20 @@ else
             <SearchBox TRow="WikiRow" Filter="@_filter" Id="wiki-search"
                        Label="@($"Search {Noun}")" OnChanged="Narrow" />
 
+            @*
+                Only where the shelf has the heading. The leader traits have no such question - a
+                leader trait is earned in a game rather than offered in a list - and a toggle nothing
+                reads still writes into the filter, which was enough to make it think something had
+                been asked and re-sort seven hundred rows on every press.
+            *@
+            @if (_shelf!.Facets.Any(f => f.Key == WikiFacet.Reach))
+            {
             <AskedToggle TRow="WikiRow" Filter="@_filter" Key="reach"
                          All="@(new ToggleWording("All", $"Showing every {One} the game defines. Press to show only the ones a player can take."))"
                          Yes="@(new ToggleWording("Playable", $"Showing the {Noun} a player can take. Press to show the ones nobody can."))"
                          No="@(new ToggleWording("Unplayable", $"Showing the {Noun} no player can take. Press to show all of them."))"
                          OnChanged="Narrow" />
-
+            }
         </div>
 
         <FilterCard TRow="WikiRow" Rows="@Rows" Filter="@_filter" Facets="@_shelf!.Facets"
@@ -146,6 +161,7 @@ else
             </div>
         }
       </div>
+      </CascadingValue>
      </CascadingValue>
     </CascadingValue>
 }
@@ -302,6 +318,13 @@ else
         if (_shelf is { } shelf)
         {
             _filter = new Sifter<WikiRow>(shelf.Facets, row => row.Text);
+
+            // Rebuilt with the shelf rather than once at startup, because a shelf read from one of
+            // the wiki's own files carries keys the database has never heard of and a chip naming
+            // one has to be able to find it.
+            _links = new WikiLinks(
+                _session!.Data.Database,
+                shelf.Entries.Count > 0 ? (Kind, shelf.Entries) : null);
         }
     }
 

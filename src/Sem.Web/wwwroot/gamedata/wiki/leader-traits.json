@@ -1,6 +1,6 @@
 {
   "stamp": {
-    "extractorVersion": "0.1.0\u002Bc9d9ef1d1f3c",
+    "extractorVersion": "0.1.0\u002Bc41cd336103c",
     "schemaVersion": 2
   },
   "traits": [
@@ -21178,9 +21178,7 @@
     {
       "key": "leader_trait_rift_warped",
       "canStart": false,
-      "leaderClasses": [
-        "all"
-      ],
+      "leaderClasses": [],
       "rarity": "common",
       "tier": 0,
       "replaces": [],

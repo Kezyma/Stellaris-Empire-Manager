@@ -57,7 +57,7 @@
 
     @if (Row.Description is { Length: > 0 })
     {
-        <p class="sem-wiki-prose">@((MarkupString)Session.Localizer.Html(Row.DescriptionKey, string.Empty))</p>
+        <p class="sem-wiki-prose">@((MarkupString)Wording.Html(Row.DescriptionKey, string.Empty))</p>
     }
 
     @*
@@ -107,6 +107,13 @@
 @code {
     [CascadingParameter]
     public required DesignSession Session { get; set; }
+
+    /// <summary>The text this shelf is written in, where a page carries its own.</summary>
+    [CascadingParameter(Name = "WikiText")]
+    public Localizer? Reader { get; set; }
+
+    /// <summary>Whichever reader answers for this shelf.</summary>
+    private Localizer Wording => Reader ?? Session.Localizer;
 
     /// <summary>The entry to draw.</summary>
     [Parameter, EditorRequired]
