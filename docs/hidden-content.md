@@ -61,13 +61,37 @@ a flag that is by definition unset while an empire is being designed; and its po
 identical to that of `machines`, which is offered already. **There is no hidden portrait sitting on
 a class a player can pick.**
 
+## What the designer cannot reach, by a third route
+
+### Civics gated on already having something - `potential = { has_civic = <itself> }`
+
+Found while building the wiki, by reading the conditions rather than by playing. Six civics and three
+origins are out of reach for a reason the survey below was not looking for: not the kind of country
+you are, but something you would have to be holding already.
+
+Four of them ask for themselves outright. `civic_galactic_sovereign`, its megacorp twin,
+`civic_psionic_sovereign` and `civic_great_khans_vision` each carry
+`potential = { has_civic = <that same civic> }` and `can_add_later = no`, which is how the game says
+"only an empire I have already granted this to". Two more, `civic_diadochi` and
+`civic_great_khans_legacy`, ask for the Khan's Vision, so they are out of reach because it is. The
+three `origin_legendary_leader_*` origins are a ring: each asks for any one of the three, and nothing
+can put the first one in your hand.
+
+**Not tested in game, and it does not need to be.** Nothing here is being offered - the question is
+only what the wiki labels, and the app's own rules engine already hides every one of the nine when
+asked for a blank empire's options. That agreement is what `CivicCorpusTests` pins.
+
+`CivicReach` is where the rule lives. It reads the whole shelf at once for this reason: a civic that
+is out of reach because another one is cannot be judged on its own, and neither can a ring.
+
 ## Checked and found complete
 
 No gap between the installation and what is offered: flag backgrounds (63), flag colours (72),
 ethics (17), advisor voices (27), species archetypes (6), leader classes, starting ruler traits (34 -
 the twenty-four marked `initial = no` are gated on an origin, and the game offers them once that
-origin is picked, which is what we do), civics (none are `always = no`; the forty-eight that never
-appear require a country type a player can never be), origins (sixteen correctly hidden), species
+origin is picked, which is what we do), civics (none are `always = no`; forty-seven of the fifty-three
+that never appear require a country type a player can never be, and the other six are the section
+above), origins (nineteen hidden - sixteen marked unplayable outright, three the ring above), species
 traits, homeworlds (eighteen reachable), portrait categories, prescripted empires and starting
 systems.
 

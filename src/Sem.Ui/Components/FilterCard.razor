@@ -1,4 +1,5 @@
-﻿@implements IDisposable
+@typeparam TRow where TRow : class
+@implements IDisposable
 
 @*
     What the reader is looking for, in a card above the lists.
@@ -8,9 +9,12 @@
     a control that narrows something the table is not currently showing. These narrow the empires,
     not the columns, so they sit with the question rather than with the answer.
 
-    One set for both lists. "Which of these are Fanatic Purifiers" is not a question about the
-    player's empires or about the game's, and answering it twice with two sets of controls would be
-    two chances to have them disagree.
+    One set for every list it narrows. "Which of these are Fanatic Purifiers" is not a question
+    about the player's empires or about the game's, and answering it twice with two sets of controls
+    would be two chances to have them disagree.
+
+    Generic in the row, because none of the above is a fact about empires: the wiki narrows three
+    hundred and fifty-eight civics with the same card, and the alternative was a second copy of it.
 
     Written from the table of headings rather than one block per heading. There are thirteen, every
     one is the same control asking the same question of a different field, and thirteen copies is
@@ -27,7 +31,7 @@
         <button type="button" class="fold" aria-expanded="@(_open ? "true" : "false")"
                 @onclick="() => _open = !_open">
             <span class="chevron" aria-hidden="true">@(_open ? "▾" : "▸")</span>
-            <h2>Empire Filter</h2>
+            <h2>@Title</h2>
         </button>
 
         @if (Filter.Any)
@@ -69,7 +73,7 @@
             group of buttons that each say whether they are pressed owes nothing it does not give.
         *@
         <div class="sem-filter-tabs" role="group" aria-label="Which filters to show">
-            @foreach (var group in EmpireFacet.Groups)
+            @foreach (var group in Groups)
             {
                 var set = Narrowing(group);
 
@@ -87,7 +91,7 @@
         </div>
 
     <div class="controls">
-        @foreach (var facet in EmpireFacet.All.Where(f => f.Group == _group && Shown(f)))
+        @foreach (var facet in Facets.Where(f => f.Group == _group && Shown(f)))
         {
             var options = Offered(facet);
 
@@ -144,21 +148,40 @@
 
 @code {
     /// <summary>
-    /// Every empire there is, both lists together, which is what the choices are drawn from.
+    /// Every row there is, which is what the choices are drawn from.
     /// </summary>
     /// <remarks>
     /// Offered rather than exhaustive: the game has eighty-one civics and a file has a handful, and
     /// a list of eighty-one where seventy-four find nothing is a list to scroll past rather than to
-    /// read. What is here is what something in one of the two lists actually holds.
+    /// read. What is here is what a row in front of the reader actually holds.
     /// </remarks>
     [Parameter, EditorRequired]
-    public required IReadOnlyList<EmpireRow> Rows { get; set; }
+    public required IReadOnlyList<TRow> Rows { get; set; }
 
     [CascadingParameter]
     public required DesignSession Session { get; set; }
 
     [Parameter, EditorRequired]
-    public required EmpireFilter Filter { get; set; }
+    public required Sifter<TRow> Filter { get; set; }
+
+    /// <summary>The headings it offers, which is the whole of what makes one card differ from another.</summary>
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<Facet<TRow>> Facets { get; set; }
+
+    /// <summary>What the card calls itself.</summary>
+    [Parameter]
+    public string Title { get; set; } = "Filter";
+
+    /// <summary>
+    /// Headings the card does not draw, though they still narrow.
+    /// </summary>
+    /// <remarks>
+    /// For the questions a reader asks first and most often, which belong beside the search rather
+    /// than behind a fold. The narrowing is unchanged either way - a heading left out here is still
+    /// a heading every row answers - so a control elsewhere writes to the same set.
+    /// </remarks>
+    [Parameter]
+    public IReadOnlySet<string> Hidden { get; set; } = new HashSet<string>(StringComparer.Ordinal);
 
     /// <summary>Raised whenever the filter changed, so the page can draw the lists again.</summary>
     [Parameter]
@@ -184,8 +207,12 @@
     /// </remarks>
     private bool _open;
 
+    /// <summary>The tabs, in the order the headings declare them.</summary>
+    private IReadOnlyList<string> Groups =>
+        [.. Facets.Select(f => f.Group).Distinct(StringComparer.Ordinal)];
+
     /// <summary>Which tab of headings is showing.</summary>
-    private string _group = EmpireFacet.Groups[0];
+    private string _group = string.Empty;
 
     /// <summary>Whether anything under one tab is narrowing the lists, so the tab can say so.</summary>
     /// <remarks>
@@ -195,17 +222,17 @@
     /// tab as narrowed and left no way to find what had done it.
     /// </remarks>
     private bool Narrowing(string group) =>
-        EmpireFacet.All.Any(f => f.Group == group && Shown(f) && Filter.Keys(f.Key).Count > 0);
+        Facets.Any(f => f.Group == group && Shown(f) && Filter.Keys(f.Key).Count > 0);
 
     /// <summary>
     /// Whether a heading is one this card draws.
     /// </summary>
     /// <remarks>
-    /// The preset one is not. It is the question a reader asks first and most often, so it is a
-    /// button beside the search rather than a dropdown behind a fold - but it stays a heading, so
-    /// the narrowing itself is unchanged and every row still answers it.
+    /// Some are not, and are asked beside the search instead - the question a reader asks first and
+    /// most often does not belong behind a fold. One left out stays a heading either way, so the
+    /// narrowing itself is unchanged and every row still answers it.
     /// </remarks>
-    private static bool Shown(EmpireFacet facet) => facet.Key != "preset";
+    private bool Shown(Facet<TRow> facet) => !Hidden.Contains(facet.Key);
 
     /// <summary>What the editor would offer under each heading, worked out once and held.</summary>
     private EmpireOptions? _options;
@@ -220,7 +247,7 @@
     private EmpireOptions Options => _options ??= new EmpireOptions(Session);
 
     /// <summary>The rows the offers were drawn from, which is the only thing that dates them.</summary>
-    private IReadOnlyList<EmpireRow>? _builtFor;
+    private IReadOnlyList<TRow>? _builtFor;
 
     /// <summary>
     /// Forgets the offers when, and only when, the rows they were drawn from have changed.
@@ -242,7 +269,11 @@
         _offered.Clear();
     }
 
-    protected override void OnInitialized() => Session.Changed += Forget;
+    protected override void OnInitialized()
+    {
+        _group = Groups[0];
+        Session.Changed += Forget;
+    }
 
     /// <summary>
     /// Forgets the offers when the player's content packs change.
@@ -266,13 +297,13 @@
     public void Dispose() => Session.Changed -= Forget;
 
     /// <summary>What the any-or-all switch is doing, said the same way in the label and the tip.</summary>
-    private string Switching(EmpireFacet facet) =>
+    private string Switching(Facet<TRow> facet) =>
         Filter.RequiresAll(facet.Key)
             ? $"Asking for empires with every one of the {facet.Label.ToLowerInvariant()} ticked"
             : $"Asking for empires with any of the {facet.Label.ToLowerInvariant()} ticked";
 
     /// <summary>Everything the rows hold under one heading, once each, in the order it reads in.</summary>
-    private IReadOnlyList<EmpireChoice> Offered(EmpireFacet facet)
+    private IReadOnlyList<EmpireChoice> Offered(Facet<TRow> facet)
     {
         if (_offered.TryGetValue(facet.Key, out var known))
         {
@@ -297,7 +328,7 @@
     }
 
     /// <summary>Which of the three a yes-or-no heading is set to, as the dropdown spells it.</summary>
-    private string Answer(EmpireFacet facet)
+    private string Answer(Facet<TRow> facet)
     {
         var keys = Filter.Keys(facet.Key);
 
@@ -311,7 +342,7 @@
     /// Written into the same set every other heading uses, so the matching does not have to know
     /// that these two are drawn differently from the rest.
     /// </remarks>
-    private async Task Answering(EmpireFacet facet, string? answer)
+    private async Task Answering(Facet<TRow> facet, string? answer)
     {
         var keys = Filter.Keys(facet.Key);
         keys.Clear();

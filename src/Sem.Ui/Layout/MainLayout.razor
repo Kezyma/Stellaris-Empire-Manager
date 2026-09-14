@@ -59,6 +59,11 @@
                routes through the NavigationManager like any other. *@
             <NavLink href="" Match="NavLinkMatch.All" class="sem-tab">Empires</NavLink>
 
+            @* Outside the session check beside it: the wiki page fetches its own and says so
+               while it waits, where everything below here acts on a session that is already
+               in hand. A tab that appeared once the data loaded would be a tab nobody saw. *@
+            <NavLink href="wiki" class="sem-tab">Wiki</NavLink>
+
             @if (_session is not null)
             {
                 <button type="button" class="sem-tab" @onclick="Create">Create</button>

@@ -141,7 +141,9 @@ else
 
         @if (_listView)
         {
-            <EmpireFilters Rows="@AllRows" Filter="@_filter" OnChanged="FilterChanged" />
+            <FilterCard Rows="@AllRows" Filter="@_filter" Facets="@EmpireFacet.All"
+                        Title="Empire Filter" Hidden="@EmpireFacet.AskedElsewhere"
+                        OnChanged="FilterChanged" />
 
             @*
                 One table for both. They were two, which is how the cards show them - and a table is
@@ -158,8 +160,13 @@ else
                          Bulk="@(_selected.Count > 0 ? BulkBar : null)"
                          Empty="No empires match.">
                 <Title>
-                    <EmpireSearch Filter="@_filter" OnChanged="FilterChanged" />
-                    <PresetToggle Filter="@_filter" OnChanged="FilterChanged" />
+                    <SearchBox Filter="@_filter" Id="empire-search" Label="Search empires"
+                               OnChanged="FilterChanged" />
+                    <AskedToggle Filter="@_filter" Key="preset" YesFirst="false"
+                                 All="@(new ToggleWording("All", "Showing every empire. Press to show only your own."))"
+                                 Yes="@(new ToggleWording("Preset", "Showing the game's own empires. Press to show all."))"
+                                 No="@(new ToggleWording("Custom", "Showing your own empires. Press to show the game's."))"
+                                 OnChanged="FilterChanged" />
                 </Title>
 
                 <Controls>

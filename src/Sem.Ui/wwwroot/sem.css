@@ -5683,6 +5683,13 @@ button.icon .sem-action-icon { display: block; }
     */
     .sem-view-toggle button { padding: 10px 14px; }
 
+    /*
+        And the three-answer toggles beside a search box, for the same reason and one more: they
+        state a height in --control-h, which is 29 and which the padding rule above cannot reach
+        past. There are three of them on a wiki page and one on the empire list.
+    */
+    .sem-preset-toggle { height: 40px; }
+
     button.icon,
     .sem-randomise,
     .sem-gender,
@@ -7181,3 +7188,268 @@ button.icon .sem-action-icon { display: block; }
     there is a light theme, and when there is one it will need a palette rather than one rule about
     one badge.
 */
+
+
+/* ------------------------------------------------------------------- wiki */
+
+/*
+   A shelf of the game to read rather than a picker to choose from, in two views.
+
+   Everything here is new markup and nothing here is a new idea: the search box, the three-answer
+   toggles, the filter card and the view toggle are the controls the empire list already uses, so
+   they are already styled and already sized for a finger. What is left is the two shapes a row can
+   take - a card and a very tall table row - and the badge that says what a pack costs you.
+*/
+
+.sem-wiki-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    margin-bottom: var(--gap);
+}
+
+/*
+   The current section, said the way the header's own tabs say it.
+
+   NavLink writes .active onto whichever one matches, and without a rule for it the two sections
+   read as two buttons with nothing to choose between them - which on a page whose heading already
+   says "Civics" is a navigation that only tells you where you are twice.
+*/
+.sem-wiki-nav .sem-tab.active {
+    background: var(--bg-hover);
+    border-color: var(--accent);
+    color: var(--text);
+}
+
+/*
+   The search and the two toggles on one line, with the box taking whatever the toggles leave.
+
+   .sem-row wraps by default and the box is happy at any width, so without this the box took the
+   whole line and pushed both toggles onto a second one - two controls and a great deal of empty
+   space above them.
+*/
+.sem-wiki-search {
+    align-items: center;
+    margin-bottom: var(--gap);
+}
+
+.sem-wiki-search .sem-search {
+    flex: 1;
+    min-width: 12rem;
+}
+
+/*
+   The same track as the empire cards, and deliberately.
+
+   A civic card holds more than an empire card does, but it holds it in the same column widths - and
+   two grids on the same site that disagree about where a column fits are two answers to one
+   question. auto-fill rather than a breakpoint, for the reason stated up at the subsections: what
+   has to fit these is the space they are given, which is not the width of the window.
+*/
+.sem-wiki-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--gap);
+}
+
+.sem-wiki-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+/*
+   One nobody can take, dimmed rather than hidden.
+
+   Hiding them is what the toggle above is for, and it is the reader's decision. Dimming says the
+   same thing the badge says, in the one way that survives being skimmed: everything on this card is
+   true about the game and none of it is true about anything you can build.
+*/
+.sem-wiki-card.unreachable {
+    border-style: dashed;
+    border-color: var(--border-strong);
+}
+
+.sem-wiki-card.unreachable > header,
+.sem-wiki-card.unreachable > .sem-wiki-prose {
+    opacity: 0.75;
+}
+
+.sem-wiki-card > header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-lg);
+}
+
+.sem-wiki-card > header .title {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    min-width: 0;
+}
+
+.sem-wiki-card h2 {
+    font-size: var(--text-lg);
+    margin: 0;
+}
+
+.sem-wiki-prose {
+    margin: 0;
+    color: var(--text-dim);
+    font-size: var(--text-sm);
+}
+
+.sem-wiki-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+}
+
+/*
+   What a row costs you, in one of three colours.
+
+   Three, because there are three different answers and only one of them is bad news you can do
+   something about: a pack you have, a pack you would have to buy, and a civic that is not for sale
+   at any price. Painting the last two the same would tell a reader to go looking in a shop for a
+   fallen empire's civic.
+*/
+.sem-badge {
+    display: inline-block;
+    padding: 1px var(--space-md);
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--border-strong);
+    font-size: var(--text-xs);
+    color: var(--text-dim);
+    white-space: nowrap;
+}
+
+.sem-badge.pack {
+    border-color: var(--accent-dim);
+    color: var(--accent);
+}
+
+.sem-badge.pack.missing {
+    border-color: var(--warn);
+    color: var(--warn);
+}
+
+.sem-badge.closed {
+    border-color: var(--bad);
+    color: var(--bad);
+}
+
+/*
+   The five conditions, as a definition list rather than five lines of prose.
+
+   The headings carry the distinction the game makes between them, and a reader scanning several
+   cards is comparing one heading down the page - so the headings line up in a column of their own
+   and the sentences beside them. auto rather than a fixed first track, because "Dropped by reform"
+   and "Needs" are very different widths and a track wide enough for the first wastes half the card
+   on every other row.
+*/
+.sem-wiki-conditions {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-2xs) var(--space-lg);
+    margin: 0;
+    font-size: var(--text-sm);
+}
+
+.sem-wiki-conditions > div {
+    display: contents;
+}
+
+.sem-wiki-conditions dt {
+    color: var(--text-faint);
+    white-space: nowrap;
+}
+
+.sem-wiki-conditions dd {
+    margin: 0;
+    color: var(--text-faint);
+}
+
+/*
+   The ones the game actually states, told apart from the ones standing in for silence.
+
+   Four of the five say nothing for most civics, and a card where "Always" and a real condition look
+   identical is a card you have to read in full to find the one line that matters.
+*/
+.sem-wiki-conditions > .stated dt,
+.sem-wiki-conditions > .stated dd {
+    color: var(--text-dim);
+}
+
+/*
+   The list view: the same shelf with the rows compared rather than the cards read.
+
+   Multiline, unlike every other table here, because what is being compared is prose. The cells wrap
+   and each row is as tall as its tallest cell, so a rule between rows is doing the work that a
+   single-line row gets from its own alignment.
+*/
+/*
+   Both halves named, and the row header named the longer way on purpose.
+
+   The shared rule that sets every cell to middle and nowrap is `.sem-table tbody th`, which is one
+   class and two elements - so `.sem-wiki-table th` loses to it and only the td cells changed. The
+   name column kept its icon and its title floating at the vertical middle of a row eight lines tall.
+*/
+.sem-wiki-table td,
+.sem-wiki-table tbody th {
+    vertical-align: top;
+    white-space: normal;
+}
+
+.sem-wiki-table tbody tr + tr > * {
+    border-top: 1px solid var(--border);
+}
+
+.sem-wiki-table tbody tr.unreachable {
+    color: var(--text-faint);
+}
+
+/*
+   Widths as proportions rather than pixels. Six columns of prose will always want more room than
+   there is, so the question is not how wide each should be but which should give way first: the
+   description and the conditions carry the most words, the name and the pack the fewest.
+*/
+.sem-wiki-table .prose { min-width: 16rem; }
+.sem-wiki-table .conditions { min-width: 14rem; }
+.sem-wiki-table .effects { min-width: 12rem; }
+.sem-wiki-table tbody th.name { min-width: 11rem; }
+.sem-wiki-table .playable { min-width: 7rem; }
+.sem-wiki-table .packs { min-width: 8rem; }
+
+.sem-wiki-table .conditions dl {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-2xs) var(--space-md);
+    margin: 0;
+    font-size: var(--text-sm);
+}
+
+.sem-wiki-table .conditions dt {
+    color: var(--text-faint);
+    white-space: nowrap;
+}
+
+.sem-wiki-table .conditions dd {
+    margin: 0;
+}
+
+.sem-wiki-table .playable .yes { color: var(--good); }
+.sem-wiki-table .playable .no { color: var(--bad); }
+
+.sem-wiki-table .playable .why {
+    display: block;
+    color: var(--text-faint);
+    font-size: var(--text-xs);
+}
+
+.sem-wiki-table .packs .sem-badge + .sem-badge {
+    margin-top: var(--space-xs);
+}
