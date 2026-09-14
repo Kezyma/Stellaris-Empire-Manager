@@ -153,7 +153,8 @@ public sealed class CivicCorpusTests
         var shipped = database!.Dlc.Select(d => d.Name).ToHashSet(StringComparer.Ordinal);
 
         var unknown = database.Civics
-            .SelectMany(c => ContentPacks.Named(c.Playable))
+            .SelectMany(c => ContentPacks.Gating(c.Playable))
+            .Select(p => p.Name)
             .Distinct(StringComparer.Ordinal)
             .Where(name => !shipped.Contains(name));
 
