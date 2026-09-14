@@ -162,8 +162,18 @@ that does it properly: extract, build, test, and rehearse the real Pages publish
 
 ## The wiki, and why it needed no new data
 
-`/wiki/civics` and `/wiki/origins` show every civic and origin the game defines, including the ones
-no player can ever take. That needed nothing extracted.
+`/wiki/civics`, `/wiki/origins`, `/wiki/ethics` and `/wiki/authorities` show every one of those the
+game defines, including the ones no player can ever take. That needed nothing extracted.
+
+The four shelves are one component and one row type. They are very different records and a reader
+asks the same things of each - what is it, what does it do, who may have it, what does it cost in
+packs - so `WikiRow` carries that much and `WikiRow.Facts` carries whatever a kind has that the
+others do not: an ethic's cost and opposite, an authority's elections and heir. A field per kind
+would leave every row three-quarters empty and give each page a reason to know about the others.
+
+A column is drawn only where the rows fill it. The ethics are why: the game gates them on nothing at
+all, so Playable would say Yes seventeen times and Pack would be blank, and both would take width
+from the columns that do say something.
 
 `gamedb.json` already carries all 358 of them, unfiltered - `EmpireOptions` narrows them at the point
 of use, not at extraction - so the three things the pages need beyond the records themselves are

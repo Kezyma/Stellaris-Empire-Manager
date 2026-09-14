@@ -9,7 +9,7 @@
     and a tile that looks pressable and is not is worse than one that does not.
 *@
 
-<article class="sem-wiki-card @(Row.Reach.EverOffered ? null : "unreachable")">
+<article class="sem-wiki-card @(Row.Playable ? null : "unreachable")">
     @*
         The scene the empire wakes up on, above the words - which is where the designer's own picker
         puts it, and for the reason stated there: it is what the option looks like, and reading about
@@ -47,17 +47,26 @@
 
     @if (Row.Description is { Length: > 0 })
     {
-        <p class="sem-wiki-prose">@((MarkupString)Session.Localizer.Html($"{Row.Key}_desc", string.Empty))</p>
+        <p class="sem-wiki-prose">@((MarkupString)Session.Localizer.Html(Row.DescriptionKey, string.Empty))</p>
+    }
+
+    @*
+        What is true of this kind and not of the others, above what it does. An ethic's cost decides
+        whether a reader can afford it at all, which is a question they ask before what it grants.
+    *@
+    @if (Row.Facts.Count > 0)
+    {
+        <div class="sem-wiki-facts">
+            <WikiFacts Facts="@Row.Facts" />
+        </div>
     }
 
     <EffectsList Effects="@Row.Effects" />
 
     @*
-        All five conditions, each under its own heading, because the game means something different
-        by each and keeps them apart: what you must own, what your empire must already be for this to
-        appear, what makes it legal once it does, and the two halves of whether a government reform
-        can change its mind later. A reader mid-game asking "can I still get this" is asking about
-        the fourth, and running them together would lose them the answer.
+        Whatever conditions this kind of entry states, each under its own heading. A civic keeps two
+        apart - what makes it appear at all against what then makes it legal - an authority states
+        only the second, and an ethic states none and so draws none of this.
     *@
     <dl class="sem-wiki-conditions">
         @foreach (var condition in Row.Conditions)
@@ -86,5 +95,5 @@
 
     /// <summary>The civic or origin to draw.</summary>
     [Parameter, EditorRequired]
-    public required CivicRow Row { get; set; }
+    public required WikiRow Row { get; set; }
 }

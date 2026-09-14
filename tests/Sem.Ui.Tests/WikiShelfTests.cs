@@ -4,7 +4,7 @@ using Sem.Ui.Services;
 namespace Sem.Ui.Tests;
 
 /// <summary>
-/// What the wiki has to say about one civic, before any of it reaches a page.
+/// What the wiki has to say about one entry, before any of it reaches a page.
 /// </summary>
 /// <remarks>
 /// Every test in this project is service-level, so anything the wiki works out inside a component
@@ -12,9 +12,11 @@ namespace Sem.Ui.Tests;
 /// which of the five conditions gets which words when the game states none, what a card says about
 /// something no player can have, and what a typed word is matched against.
 /// </remarks>
-public sealed class CivicShelfTests
+public sealed class WikiShelfTests
 {
-    private static CivicShelf Shelf(params CivicDefinition[] civics)
+    private static WikiShelves Shelves(params CivicDefinition[] civics) => Shelves(civics, []);
+
+    private static WikiShelves Shelves(CivicDefinition[] civics, EthicDefinition[] ethics)
     {
         var session = new DesignSession(
             new Sem.Ui.Services.GameData(
@@ -25,7 +27,9 @@ public sealed class CivicShelfTests
                     ExtractorVersion = "test",
                     Defines = new GameDefines { EthicsPoints = 3, CivicPoints = 2, CityPopLevel = 4 },
                     Civics = civics,
-                    Ethics = [new EthicDefinition("ethic_militarist", 1, "militarist") { Icon = "icons/militarist.png" }],
+                    Ethics = ethics.Length > 0
+                        ? ethics
+                        : [new EthicDefinition("ethic_militarist", 1, "militarist") { Icon = "icons/militarist.png" }],
                     Dlc =
                     [
                         new DlcDefinition("utopia", "Utopia", null, null, true),
@@ -41,11 +45,11 @@ public sealed class CivicShelfTests
                 "assets"));
 
         session.StartEmptyFile();
-        return new CivicShelf(session);
+        return new WikiShelves(session);
     }
 
-    private static CivicRow Row(CivicDefinition civic) =>
-        Assert.Single(Shelf(civic).Civics);
+    private static WikiRow Row(CivicDefinition civic) =>
+        Assert.Single(Shelves(civic).Of(WikiKind.Civics).Rows);
 
     /// <summary>A civic is read out of the database into everything a page needs.</summary>
     [Fact]
@@ -369,12 +373,12 @@ public sealed class CivicShelfTests
     [Fact]
     public void CivicsAndOriginsAreToldApart()
     {
-        var shelf = Shelf(
+        var shelves = Shelves(
             new CivicDefinition("civic_named", IsOrigin: false),
             new CivicDefinition("origin_named", IsOrigin: true));
 
-        Assert.Equal(["civic_named"], shelf.Civics.Select(r => r.Key));
-        Assert.Equal(["origin_named"], shelf.Origins.Select(r => r.Key));
+        Assert.Equal(["civic_named"], shelves.Of(WikiKind.Civics).Rows.Select(r => r.Key));
+        Assert.Equal(["origin_named"], shelves.Of(WikiKind.Origins).Rows.Select(r => r.Key));
     }
 
     /// <summary>
@@ -389,11 +393,177 @@ public sealed class CivicShelfTests
     [Fact]
     public void TheShelfIsReadOnceAndHeld()
     {
-        var shelf = Shelf(
+        var shelves = Shelves(
             new CivicDefinition("civic_named", IsOrigin: false),
             new CivicDefinition("origin_named", IsOrigin: true));
 
-        Assert.Same(shelf.Civics, shelf.Civics);
-        Assert.Same(shelf.Origins, shelf.Origins);
+        Assert.Same(shelves.Of(WikiKind.Civics), shelves.Of(WikiKind.Civics));
+        Assert.Same(shelves.Of(WikiKind.Origins), shelves.Of(WikiKind.Origins));
+    }
+
+    /// <summary>
+    /// An ethic states no conditions, so it carries none.
+    /// </summary>
+    /// <remarks>
+    /// Not one of the seventeen has a <c>playable</c> or a <c>possible</c> between them, which is
+    /// why the ethics page draws neither condition column nor a pack column: every one of them is
+    /// within anybody's reach and behind nothing.
+    /// </remarks>
+    [Fact]
+    public void AnEthicCarriesNoConditionsAndNoPacks()
+    {
+        var row = Ethic(new EthicDefinition("ethic_militarist", 1, "mil"));
+
+        Assert.Empty(row.Conditions);
+        Assert.Empty(row.Packs);
+        Assert.True(row.Playable);
+        Assert.True(row.Owned);
+    }
+
+    /// <summary>What an ethic costs is said against what an empire has to spend.</summary>
+    /// <remarks>
+    /// Three points buy the whole of an empire's ethics, so an ethic taking two of them is most of
+    /// the decision - and "2" alone does not say that where "2 of 3" does.
+    /// </remarks>
+    [Fact]
+    public void AnEthicSaysItsCostAgainstTheBudget()
+    {
+        Assert.Equal("2 of 3", Ethic(new EthicDefinition("ethic_militarist", 2, "mil")).Fact("Cost")!.Text);
+    }
+
+    /// <summary>
+    /// An ethic names the other strength of itself, under one heading for both directions.
+    /// </summary>
+    /// <remarks>
+    /// One heading, not "Stronger form" and "Milder form". Those read better on a card and are a
+    /// disaster in a table: the heading would differ by row, so the columns are the union of both
+    /// and every ethic fills one and leaves the other blank down all seventeen rows.
+    /// </remarks>
+    [Fact]
+    public void AnEthicNamesTheOtherStrengthOfItself()
+    {
+        var ordinary = Ethic(
+            new EthicDefinition("ethic_militarist", 1, "mil")
+            {
+                CategoryValue = 1,
+                FanaticVariant = "ethic_fanatic_militarist",
+            },
+            new EthicDefinition("ethic_fanatic_militarist", 2, "mil")
+            {
+                CategoryValue = 0,
+                RegularVariant = "ethic_militarist",
+            });
+
+        Assert.Equal("Ordinary", ordinary.Fact("Intensity")!.Text);
+        Assert.Equal(
+            ["ethic_fanatic_militarist"],
+            ordinary.Fact("Other form")!.Chips.Select(c => c.Key));
+    }
+
+    /// <summary>
+    /// And it rules out the other side of its own pair, not the other strength of itself.
+    /// </summary>
+    /// <remarks>
+    /// The game groups a pair under one category and places each on a scale within it, so the two
+    /// forms of one pole sit on the same side of the middle. Reading the category alone would have
+    /// Militarist ruling out Fanatic Militarist, which is the one thing in the category it is not
+    /// opposed to.
+    /// </remarks>
+    [Fact]
+    public void AnEthicRulesOutTheOtherSideOfItsOwnPair()
+    {
+        var militarist = Ethic(
+            new EthicDefinition("ethic_militarist", 1, "mil") { CategoryValue = 1 },
+            new EthicDefinition("ethic_fanatic_militarist", 2, "mil") { CategoryValue = 0 },
+            new EthicDefinition("ethic_pacifist", 1, "mil") { CategoryValue = 3 },
+            new EthicDefinition("ethic_fanatic_pacifist", 2, "mil") { CategoryValue = 4 },
+            new EthicDefinition("ethic_xenophobe", 1, "xen") { CategoryValue = 1 });
+
+        Assert.Equal(
+            ["ethic_fanatic_pacifist", "ethic_pacifist"],
+            militarist.Fact("Rules out")!.Chips.Select(c => c.Key).Order());
+    }
+
+    /// <summary>Gestalt rules out every other ethic, which is a sentence rather than a list.</summary>
+    [Fact]
+    public void GestaltRulesOutEverythingInWords()
+    {
+        var gestalt = Ethic(new EthicDefinition("ethic_gestalt_consciousness", 3, "hive") { IsGestalt = true });
+
+        Assert.Equal("Gestalt", gestalt.Fact("Intensity")!.Text);
+        Assert.Equal("Every other ethic", gestalt.Fact("Rules out")!.Text);
+    }
+
+    /// <summary>
+    /// An authority the game keeps for itself is out of a player's reach.
+    /// </summary>
+    /// <remarks>
+    /// The flag rather than a condition, and that is the rules layer's own decision restated: two
+    /// authorities declare a country type in <c>potential</c>, the game's designer does not read it,
+    /// and honouring it would hide Machine Intelligence from the player entitled to it.
+    /// </remarks>
+    [Fact]
+    public void AnAuthorityTheGameKeepsForItselfIsOutOfReach()
+    {
+        Assert.False(Authority(new AuthorityDefinition("auth_ai") { AiOnly = true }).Playable);
+        Assert.True(Authority(new AuthorityDefinition("auth_democratic")).Playable);
+    }
+
+    /// <summary>An authority says how rulers are chosen, whether there is an heir, and what it forces.</summary>
+    [Fact]
+    public void AnAuthoritySaysHowItIsGoverned()
+    {
+        var row = Authority(new AuthorityDefinition("auth_imperial")
+        {
+            ElectionType = "none",
+            HasHeir = true,
+            ForcedTraits = ["trait_hive_mind"],
+        });
+
+        Assert.Equal("None", row.Fact("Elections")!.Text);
+        Assert.Equal("Yes", row.Fact("Heir")!.Text);
+        Assert.Equal(["trait_hive_mind"], row.Fact("Forces")!.Chips.Select(c => c.Key));
+    }
+
+    /// <summary>And an authority behind a pack carries it, the same way a civic does.</summary>
+    [Fact]
+    public void AnAuthorityBehindAPackCarriesIt()
+    {
+        var row = Authority(new AuthorityDefinition("auth_corporate")
+        {
+            Playable = new DlcRequirement("Utopia"),
+        });
+
+        Assert.Equal("Utopia", Assert.Single(row.Packs).Name);
+        Assert.True(row.Owned);
+    }
+
+    /// <summary>The first of some ethics, read as the wiki reads them.</summary>
+    private static WikiRow Ethic(params EthicDefinition[] ethics) =>
+        Shelves([], ethics).Of(WikiKind.Ethics).Rows.First(r => r.Key == ethics[0].Key);
+
+    /// <summary>One authority, likewise.</summary>
+    private static WikiRow Authority(AuthorityDefinition authority)
+    {
+        var session = new DesignSession(
+            new Sem.Ui.Services.GameData(
+                new GameDatabase
+                {
+                    SchemaVersion = GameDatabase.CurrentSchemaVersion,
+                    GameVersion = "test",
+                    ExtractorVersion = "test",
+                    Defines = new GameDefines { EthicsPoints = 3, CivicPoints = 2, CityPopLevel = 4 },
+                    Authorities = [authority],
+                    Traits = [new TraitDefinition("trait_hive_mind", TraitKind.Species)],
+                    Dlc =
+                    [
+                        new DlcDefinition("utopia", "Utopia", null, null, true),
+                    ],
+                },
+                new Dictionary<string, string>(StringComparer.Ordinal),
+                "assets"));
+
+        session.StartEmptyFile();
+        return Assert.Single(new WikiShelves(session).Of(WikiKind.Authorities).Rows);
     }
 }

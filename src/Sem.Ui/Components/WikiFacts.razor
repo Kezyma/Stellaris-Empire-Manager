@@ -1,0 +1,37 @@
+@*
+    The things true of one kind of entry and not of the others: an ethic's cost, an authority's
+    elections, the traits a hive mind forces on its founders.
+
+    Chips where the fact names things, because an ethic's opposite is a thing with a name and a
+    picture and should look the same here as it does in a picker. A word where it says a word.
+*@
+
+@foreach (var fact in Facts)
+{
+    <div class="one">
+        <div class="heading">@fact.Heading</div>
+
+        <div class="said">
+            @if (fact.Text is { Length: > 0 } text)
+            {
+                <span class="words">@text</span>
+            }
+
+            @foreach (var chip in fact.Chips)
+            {
+                <OptionChip Key="@chip.Key" Name="@chip.Name" Icon="@chip.Icon"
+                            DescriptionKey="@chip.Description" Effects="@chip.Effects"
+                            Deferred="true" />
+            }
+        </div>
+    </div>
+}
+
+@code {
+    [CascadingParameter]
+    public required DesignSession Session { get; set; }
+
+    /// <summary>What to say. Empty facts are left out before they reach here.</summary>
+    [Parameter, EditorRequired]
+    public required IReadOnlyList<WikiFact> Facts { get; set; }
+}

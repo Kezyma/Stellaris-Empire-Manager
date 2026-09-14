@@ -22,9 +22,11 @@
 <nav class="sem-wiki-nav" aria-label="Wiki sections">
     <NavLink href="wiki/civics" class="sem-tab">Civics</NavLink>
     <NavLink href="wiki/origins" class="sem-tab">Origins</NavLink>
+    <NavLink href="wiki/ethics" class="sem-tab">Ethics</NavLink>
+    <NavLink href="wiki/authorities" class="sem-tab">Authorities</NavLink>
 </nav>
 
-@if (_session is null)
+@if (_session is null || _shelf is null || _filter is null)
 {
     <div class="sem-loading">
         @if (Host.LoadError is { } error)
@@ -85,24 +87,24 @@ else
             what this machine has installed.
         *@
         <div class="sem-row sem-wiki-search">
-            <SearchBox TRow="CivicRow" Filter="@_filter" Id="wiki-search"
+            <SearchBox TRow="WikiRow" Filter="@_filter" Id="wiki-search"
                        Label="@($"Search {Noun}")" OnChanged="Narrow" />
 
-            <AskedToggle TRow="CivicRow" Filter="@_filter" Key="reach"
+            <AskedToggle TRow="WikiRow" Filter="@_filter" Key="reach"
                          All="@(new ToggleWording("All", $"Showing every {One} the game defines. Press to show only the ones a player can take."))"
                          Yes="@(new ToggleWording("Playable", $"Showing the {Noun} a player can take. Press to show the ones nobody can."))"
                          No="@(new ToggleWording("Unplayable", $"Showing the {Noun} no player can take. Press to show all of them."))"
                          OnChanged="Narrow" />
 
-            <AskedToggle TRow="CivicRow" Filter="@_filter" Key="owned"
+            <AskedToggle TRow="WikiRow" Filter="@_filter" Key="owned"
                          All="@(new ToggleWording("All packs", "Showing whatever the packs require. Press to show only what your packs allow."))"
                          Yes="@(new ToggleWording("Owned", $"Showing the {Noun} your packs allow. Press to show the ones they do not."))"
                          No="@(new ToggleWording("Not owned", $"Showing the {Noun} your packs rule out. Press to show all of them."))"
                          OnChanged="Narrow" />
         </div>
 
-        <FilterCard TRow="CivicRow" Rows="@Rows" Filter="@_filter" Facets="@CivicFacet.All"
-                    Title="@($"{Title} Filter")" Hidden="@CivicFacet.AskedElsewhere"
+        <FilterCard TRow="WikiRow" Rows="@Rows" Filter="@_filter" Facets="@_shelf!.Facets"
+                    Title="@($"{Title} Filter")" Hidden="@WikiFacet.AskedElsewhere"
                     OnChanged="Narrow" />
 
         @if (Narrowed.Count == 0)
@@ -127,23 +129,24 @@ else
 }
 
 @code {
-    /// <summary>Whether this is the origins page rather than the civics one.</summary>
-    [Parameter]
-    public bool ShowOrigins { get; set; }
+    /// <summary>Which shelf of the game this page shows.</summary>
+    [Parameter, EditorRequired]
+    public required WikiKind Kind { get; set; }
 
     /// <summary>What the page is called, in the heading and in the filter card.</summary>
-    [Parameter, EditorRequired]
-    public required string Title { get; set; }
+    private string Title => _shelf?.Title ?? string.Empty;
 
     /// <summary>The plural, for the counts and the spoken labels.</summary>
-    private string Noun => ShowOrigins ? "origins" : "civics";
+    private string Noun => _shelf?.Noun ?? string.Empty;
 
     /// <summary>And the singular, for the sentences that need one.</summary>
-    private string One => ShowOrigins ? "origin" : "civic";
+    private string One => _shelf?.One ?? string.Empty;
 
     private DesignSession? _session;
 
-    private CivicShelf? _shelf;
+    private WikiShelves? _shelves;
+
+    private WikiShelf? _shelf;
 
     /// <summary>
     /// What is being asked, which every control on the page writes to in place.
@@ -153,7 +156,7 @@ else
     /// the count and the card of headings all read it, and handing each of them their own is how
     /// they stop agreeing about what is being shown.
     /// </remarks>
-    private readonly Sifter<CivicRow> _filter = new(CivicFacet.All, row => row.Text);
+    private Sifter<WikiRow>? _filter;
 
     private bool _listView;
 
@@ -168,8 +171,7 @@ else
     private const string ListView = "list";
 
     /// <summary>Everything on this page's shelf, before anything is asked of it.</summary>
-    private IReadOnlyList<CivicRow> Rows =>
-        _shelf is null ? [] : ShowOrigins ? _shelf.Origins : _shelf.Civics;
+    private IReadOnlyList<WikiRow> Rows => _shelf?.Rows ?? [];
 
     /// <summary>
     /// What is left after the filter, worked out once per question asked.
@@ -179,10 +181,10 @@ else
     /// made and fixed: an expression in a parameter is evaluated on every render, so pressing a
     /// toggle put all three hundred and fifty-eight rows through every heading twice.
     /// </remarks>
-    private IReadOnlyList<CivicRow> Narrowed =>
-        _narrowed ??= _filter.Any ? [.. Rows.Where(_filter.Matches)] : Rows;
+    private IReadOnlyList<WikiRow> Narrowed =>
+        _narrowed ??= _filter is { Any: true } ? [.. Rows.Where(_filter.Matches)] : Rows;
 
-    private IReadOnlyList<CivicRow>? _narrowed;
+    private IReadOnlyList<WikiRow>? _narrowed;
 
     protected override async Task OnInitializedAsync()
     {
@@ -194,7 +196,8 @@ else
         }
 
         _session.Changed += Forget;
-        _shelf = new CivicShelf(_session);
+        _shelves = new WikiShelves(_session);
+        Open();
         _listView = _session.Preferences.Get(ViewSetting) == ListView;
     }
 
@@ -208,9 +211,44 @@ else
     /// </remarks>
     private void Forget()
     {
-        _shelf = _session is null ? null : new CivicShelf(_session);
-        _narrowed = null;
+        _shelves = _session is null ? null : new WikiShelves(_session);
+        Open();
         StateHasChanged();
+    }
+
+    /// <summary>
+    /// Takes the shelf this page is for, and a filter that answers for it.
+    /// </summary>
+    /// <remarks>
+    /// A filter each, because the headings differ between shelves: an ethic has a cost heading and a
+    /// civic has none, and one filter carried between them would hold ticks under a heading the page
+    /// in front of the reader does not draw.
+    /// </remarks>
+    private void Open()
+    {
+        _shelf = _shelves?.Of(Kind);
+        _narrowed = null;
+
+        if (_shelf is { } shelf)
+        {
+            _filter = new Sifter<WikiRow>(shelf.Facets, row => row.Text);
+        }
+    }
+
+    /// <summary>
+    /// Opens the other shelf when the reader moves between sections.
+    /// </summary>
+    /// <remarks>
+    /// The four pages are one component behind four addresses, so moving between them changes a
+    /// parameter rather than building anything - and without this the reader arrived at Ethics
+    /// looking at the civics.
+    /// </remarks>
+    protected override void OnParametersSet()
+    {
+        if (_shelves is not null && _shelf?.Title != _shelves.Of(Kind).Title)
+        {
+            Open();
+        }
     }
 
     /// <summary>The box the popovers are bound through.</summary>

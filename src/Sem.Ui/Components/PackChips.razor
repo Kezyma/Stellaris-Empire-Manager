@@ -41,7 +41,7 @@
 
     /// <summary>The packs this civic depends on, in either direction.</summary>
     [Parameter, EditorRequired]
-    public required IReadOnlyList<CivicPack> Packs { get; set; }
+    public required IReadOnlyList<WikiPack> Packs { get; set; }
 
     /// <summary>
     /// The whole of what one chip means, which is more than two words can carry.
@@ -51,7 +51,7 @@
     /// would act on. Needing a pack you lack is a thing to buy; being ruled out by one you own is a
     /// thing to know and nothing to do about.
     /// </remarks>
-    private static string Told(CivicPack pack) => (pack.Wanted, pack.Held) switch
+    private static string Told(WikiPack pack) => (pack.Wanted, pack.Held) switch
     {
         (true, true) => $"Needs {pack.Name}, which you have.",
         (true, false) => $"Needs {pack.Name}, which you do not have.",

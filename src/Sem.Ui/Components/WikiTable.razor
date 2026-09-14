@@ -44,18 +44,44 @@
                 }
 
                 <th scope="col">@Header(NameColumn, "Name")</th>
+
+                @*
+                    What is true of this kind and not of the others, a column each. The headings come
+                    from the rows, so a shelf that says nothing of the sort draws nothing.
+                *@
+                @foreach (var heading in _facts)
+                {
+                    <th scope="col"><span class="plain">@heading</span></th>
+                }
+
                 <th scope="col"><span class="plain">Effects</span></th>
-                <th scope="col"><span class="plain">Offered to</span></th>
-                <th scope="col"><span class="plain">Allowed when</span></th>
-                <th scope="col">@Header(PlayableColumn, "Playable")</th>
-                <th scope="col">@Header(PackColumn, "Pack")</th>
+
+                @foreach (var heading in _conditions)
+                {
+                    <th scope="col"><span class="plain">@heading</span></th>
+                }
+
+                @*
+                    Playable only where some of them are not, and Pack only where something is behind
+                    one. A column answering the same thing on every row costs width to say nothing -
+                    which for the ethics is both of these, since the game gates them on nothing.
+                *@
+                @if (_playable)
+                {
+                    <th scope="col">@Header(PlayableColumn, "Playable")</th>
+                }
+
+                @if (_packs)
+                {
+                    <th scope="col">@Header(PackColumn, "Pack")</th>
+                }
             </tr>
         </thead>
 
         <tbody>
             @foreach (var row in Sorted)
             {
-                <tr class="@(row.Reach.EverOffered ? null : "unreachable")">
+                <tr class="@(row.Playable ? null : "unreachable")">
                     @if (_pictures)
                     {
                         <td class="scene">
@@ -81,6 +107,16 @@
                         }
                     </th>
 
+                    @foreach (var heading in _facts)
+                    {
+                        <td class="fact">
+                            @if (row.Fact(heading) is { } fact)
+                            {
+                                <WikiFacts Facts="@(new[] { fact })" />
+                            }
+                        </td>
+                    }
+
                     <td class="effects">
                         <EffectsList Effects="@row.Effects" />
                     </td>
@@ -94,10 +130,12 @@
                         Empty where the game asks nothing, which is most rows for the second of them.
                         A column of "Always" three hundred times is a column saying nothing.
                     *@
-                    @foreach (var condition in row.Conditions)
+                    @foreach (var heading in _conditions)
                     {
+                        var stated = row.Conditions.FirstOrDefault(c => c.Heading == heading);
+
                         <td class="conditions">
-                            @if (condition.Outline is { } outline)
+                            @if (stated?.Outline is { } outline)
                             {
                                 <ConditionList Node="@outline" />
                             }
@@ -109,20 +147,26 @@
                         nobody can be, or an event - is already a bullet in the column to the left,
                         and saying it twice on one row made the narrower column repeat the wider one.
                     *@
-                    <td class="playable">
-                        @if (row.Reach.EverOffered)
-                        {
-                            <span class="yes">Yes</span>
-                        }
-                        else
-                        {
-                            <span class="no" title="@row.ClosedWhy">No</span>
-                        }
-                    </td>
+                    @if (_playable)
+                    {
+                        <td class="playable">
+                            @if (row.Playable)
+                            {
+                                <span class="yes">Yes</span>
+                            }
+                            else
+                            {
+                                <span class="no" title="@row.ClosedWhy">No</span>
+                            }
+                        </td>
+                    }
 
-                    <td class="packs">
-                        <PackChips Packs="@row.Packs" />
-                    </td>
+                    @if (_packs)
+                    {
+                        <td class="packs">
+                            <PackChips Packs="@row.Packs" />
+                        </td>
+                    }
                 </tr>
             }
         </tbody>
@@ -135,7 +179,7 @@
 
     /// <summary>What to draw, already narrowed and in order.</summary>
     [Parameter, EditorRequired]
-    public required IReadOnlyList<CivicRow> Rows { get; set; }
+    public required IReadOnlyList<WikiRow> Rows { get; set; }
 
     /// <summary>What the rows are, for the caption a screen reader meets before the table.</summary>
     [Parameter, EditorRequired]
@@ -148,8 +192,42 @@
     /// </remarks>
     private bool _pictures;
 
-    protected override void OnParametersSet() =>
+    /// <summary>Whether any of them is out of reach, and so whether that column is worth drawing.</summary>
+    private bool _playable;
+
+    /// <summary>Whether any of them is behind a pack.</summary>
+    private bool _packs;
+
+    /// <summary>The fact headings this shelf has, in the order its rows state them.</summary>
+    private IReadOnlyList<string> _facts = [];
+
+    /// <summary>And the condition headings, likewise.</summary>
+    private IReadOnlyList<string> _conditions = [];
+
+    /// <summary>
+    /// Which columns this shelf wants, asked of the rows rather than told by the page.
+    /// </summary>
+    /// <remarks>
+    /// Every one of these is a column that would otherwise be blank or identical the whole way down.
+    /// The ethics are the case: nothing gates them, so Playable would say Yes seventeen times and
+    /// Pack nothing at all, and both would take width from the columns that do say something.
+    /// </remarks>
+    protected override void OnParametersSet()
+    {
         _pictures = Rows.Any(r => r.Picture is { Length: > 0 });
+        _playable = Rows.Any(r => !r.Playable);
+        _packs = Rows.Any(r => r.Packs.Count > 0);
+
+        _facts = [.. Rows.SelectMany(r => r.Facts).Select(f => f.Heading).Distinct(StringComparer.Ordinal)];
+
+        _conditions =
+        [
+            .. Rows.SelectMany(r => r.Conditions)
+                .Where(c => c.Stated)
+                .Select(c => c.Heading)
+                .Distinct(StringComparer.Ordinal),
+        ];
+    }
 
     private const string NameColumn = "name";
 
@@ -201,7 +279,7 @@
     /// table learned: this runs on every render, and a search box that narrows the list on each
     /// keystroke would otherwise sort three hundred rows for every letter typed twice over.
     /// </remarks>
-    private IReadOnlyList<CivicRow> Sorted
+    private IReadOnlyList<WikiRow> Sorted
     {
         get
         {
@@ -221,8 +299,8 @@
         }
     }
 
-    private IReadOnlyList<CivicRow>? _ordered;
-    private IReadOnlyList<CivicRow>? _orderedFor;
+    private IReadOnlyList<WikiRow>? _ordered;
+    private IReadOnlyList<WikiRow>? _orderedFor;
     private string? _orderedBy;
     private bool _orderedDown;
 
@@ -234,7 +312,7 @@
     /// share a pack with dozens of others - so without the name settling it the same list sorted the
     /// same way would read differently depending on what it was sorted by before.
     /// </remarks>
-    private IEnumerable<CivicRow> Ordering
+    private IEnumerable<WikiRow> Ordering
     {
         get
         {
@@ -249,7 +327,7 @@
             // way round for a reader: the first press of a column should show the thing somebody
             // pressed it looking for.
             var ordered = _sort == PlayableColumn
-                ? Key(r => r.Reach.EverOffered ? 0 : 1)
+                ? Key(r => r.Playable ? 0 : 1)
                 : Key(r => r.Packs.Count == 0 ? 1 : 0).ThenBy(Pack, StringComparer.CurrentCulture);
 
             return ordered.ThenBy(r => r.Name, StringComparer.CurrentCulture);
@@ -264,9 +342,9 @@
     /// that brought it in first, and that is the one a reader looking down the column expects to
     /// find it under.
     /// </remarks>
-    private static string Pack(CivicRow row) =>
+    private static string Pack(WikiRow row) =>
         row.Packs.Count == 0 ? string.Empty : row.Packs[0].Name;
 
-    private IOrderedEnumerable<CivicRow> Key(Func<CivicRow, int> of) =>
+    private IOrderedEnumerable<WikiRow> Key(Func<WikiRow, int> of) =>
         _descending ? Rows.OrderByDescending(of) : Rows.OrderBy(of);
 }

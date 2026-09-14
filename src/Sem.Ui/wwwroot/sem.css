@@ -7534,6 +7534,51 @@ button.icon .sem-action-icon { display: block; }
 
 
 /*
+   The facts one kind of thing has and the others do not: a cost, an opposite, an election.
+
+   A heading and its answer, the same shape the conditions use beside them, so a card reads down as
+   one list of questions rather than as two lists that happen to sit together.
+*/
+.sem-wiki-facts {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-md) var(--space-lg);
+    font-size: var(--text-sm);
+}
+
+.sem-wiki-facts > .one {
+    display: contents;
+}
+
+.sem-wiki-facts .heading {
+    color: var(--text-faint);
+    white-space: nowrap;
+}
+
+.sem-wiki-facts .said {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-sm);
+    min-width: 0;
+}
+
+.sem-wiki-facts .words { color: var(--text-dim); }
+
+/*
+   In a table cell there is one fact and the heading is the column, so the grid is not wanted: what
+   is left is the answer, wrapping in whatever width the column was given.
+*/
+.sem-wiki-table .fact { min-width: 7rem; }
+
+.sem-wiki-table .fact .sem-wiki-facts,
+.sem-wiki-table .fact .sem-wiki-facts > .one {
+    display: block;
+}
+
+.sem-wiki-table .fact .heading { display: none; }
+
+/*
    A condition as the game draws it: nested bullets, with the join written over each group.
 
    No bullet glyphs. Every leaf already carries a tick or a cross, which is the mark that matters,
