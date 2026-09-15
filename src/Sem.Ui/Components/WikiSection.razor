@@ -325,6 +325,12 @@ else
                     .LoadWikiPackAsync(ShipsetPack.Domain, GameDataJsonContext.Default.ShipsetPack)
                     .ConfigureAwait(true)),
 
+                // Likewise: the designer shows which empires are drawn a personality, and how one
+                // behaves once drawn is nothing a design can hold.
+                WikiKind.Personalities => shelves.Personalities(await Source
+                    .LoadWikiPackAsync(PersonalityPack.Domain, GameDataJsonContext.Default.PersonalityPack)
+                    .ConfigureAwait(true)),
+
                 _ => shelves.Of(Kind),
             };
 

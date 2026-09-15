@@ -929,11 +929,65 @@ public sealed class WikiShelfTests
     [Fact]
     public void APersonalityIsNamedUnderItsPrefix()
     {
-        var row = Assert.Single(Personalities().Of(WikiKind.Personalities).Rows);
+        var row = Assert.Single(Personalities().Personalities(pack: null).Rows);
 
         Assert.Equal("Honourbound Warriors", row.Name);
         Assert.Equal("They fight fairly.", row.Description);
         Assert.Equal("50", row.Fact("Weight")!.Text);
+    }
+
+    /// <summary>
+    /// And how it plays, which is in the wiki's own file rather than the database.
+    /// </summary>
+    /// <remarks>
+    /// The page said a personality's name, its odds and nothing else, while the game documents
+    /// sixteen behaviour flags and twenty-one numbers for each of them in the comment block its own
+    /// files open with.
+    /// </remarks>
+    [Fact]
+    public void APersonalitySaysHowItPlays()
+    {
+        var pack = new PersonalityPack
+        {
+            Stamp = new WikiPackStamp("test", PersonalityPack.CurrentSchemaVersion),
+            Personalities =
+            [
+                new PersonalityDetail("honorbound_warriors")
+                {
+                    Behaviours = ["conqueror", "subjugator"],
+                    Attitude = new Dictionary<string, double>(StringComparer.Ordinal)
+                    {
+                        ["aggressiveness"] = 1.75,
+                    },
+                    Diplomacy = new Dictionary<string, double>(StringComparer.Ordinal)
+                    {
+                        ["nap_acceptance"] = -100,
+                    },
+                    Fleet = new Dictionary<string, double>(StringComparer.Ordinal)
+                    {
+                        ["armor_ratio"] = 0.4,
+                    },
+                    Weapons = "weapon_type_energy",
+                },
+            ],
+            Text = new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                ["weapon_type_energy"] = "Energy",
+            },
+        };
+
+        var row = Assert.Single(Personalities().Personalities(pack).Rows);
+
+        Assert.Equal(["Conqueror", "Subjugator"], row.Fact("Behaviour")!.Chips.Select(c => c.Name));
+
+        // Named properly rather than prettified, and each wearing its own figure: the game localises
+        // none of these, so "Nap Acceptance" was the only thing the key could be made to say.
+        var signs = Assert.Single(row.Fact("Will sign")!.Chips);
+        Assert.Equal("Non-aggression", signs.Name);
+        Assert.Equal("-100", signs.Badge);
+
+        Assert.Equal("Armour", Assert.Single(row.Fact("Ships")!.Chips).Name);
+        Assert.Equal("Energy", row.Fact("Weapons")!.Text);
     }
 
     /// <summary>A government says what it calls whoever is in charge, in both forms.</summary>

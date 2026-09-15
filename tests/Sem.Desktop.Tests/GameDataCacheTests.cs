@@ -68,7 +68,10 @@ public sealed class GameDataCacheTests
             // Every domain, since the gate asks for every domain: a cache from before one existed
             // is what it is looking for, and one file standing in for all of them would stop
             // noticing the moment a second domain arrived.
-            foreach (var domain in new[] { LeaderTraitPack.Domain, ShipsetPack.Domain })
+            foreach (var domain in new[]
+                     {
+                         LeaderTraitPack.Domain, ShipsetPack.Domain, PersonalityPack.Domain,
+                     })
             {
                 var pack = Path.Combine(cache.Directory, GameDataWriter.WikiPackFileName(domain));
 

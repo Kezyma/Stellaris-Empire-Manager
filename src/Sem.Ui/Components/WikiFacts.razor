@@ -19,8 +19,14 @@
 
             @foreach (var chip in fact.Chips)
             {
+                @*
+                    The badge travels too. A personality's numbers are chips wearing their own
+                    figure - aggressiveness 1.75, bravery 1.5 - and without this they were a row of
+                    words with the numbers dropped on the floor.
+                *@
                 <OptionChip Key="@chip.Key" Name="@chip.Name" Icon="@chip.Icon"
                             DescriptionKey="@chip.Description" Effects="@chip.Effects"
+                            Badge="@chip.Badge" BadgeLevel="@chip.BadgeLevel"
                             Deferred="true" />
             }
         </div>

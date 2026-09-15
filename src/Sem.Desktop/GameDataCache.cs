@@ -101,7 +101,9 @@ public sealed class GameDataCache
             if (!File.Exists(Path.Combine(
                     Directory, GameDataWriter.WikiPackFileName(LeaderTraitPack.Domain))) ||
                 !File.Exists(Path.Combine(
-                    Directory, GameDataWriter.WikiPackFileName(ShipsetPack.Domain))))
+                    Directory, GameDataWriter.WikiPackFileName(ShipsetPack.Domain))) ||
+                !File.Exists(Path.Combine(
+                    Directory, GameDataWriter.WikiPackFileName(PersonalityPack.Domain))))
             {
                 reason = "built before the wiki had its own data";
                 return false;

@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text.Json;
 using Sem.Extraction.Extractors;
@@ -129,6 +129,16 @@ public sealed class GameDataExtractor(LayeredContent content)
     /// </remarks>
     public IReadOnlyList<LeaderTraitDefinition> LeaderTraits { get; private set; } = [];
 
+    /// <summary>
+    /// How each AI personality plays, which is the wiki's business and not an empire's.
+    /// </summary>
+    /// <remarks>
+    /// Beside the leader traits and for the same reason. The game documents every one of these
+    /// fields at length in the comment block its own files open with, and none of them is anything a
+    /// design can hold - an empire being made has no AI to carry them.
+    /// </remarks>
+    public IReadOnlyList<PersonalityDetail> Personalities { get; private set; } = [];
+
     /// <summary>Builds a database from an installation directory.</summary>
     public static GameDatabase ExtractFrom(string installRoot, IProgress<string>? progress = null) =>
         new GameDataExtractor(LayeredContent.ForInstall(installRoot)).Extract(progress);
@@ -179,7 +189,9 @@ public sealed class GameDataExtractor(LayeredContent content)
         var governmentTypes = GovernmentExtractor.ExtractGovernmentTypes(loader, requirements);
 
         // What one of these designs is played as when it turns up as somebody's neighbour.
-        var personalities = PersonalityExtractor.Extract(loader, requirements);
+        var personalityDetail = new List<PersonalityDetail>();
+        var personalities = PersonalityExtractor.Extract(loader, requirements, personalityDetail);
+        Personalities = personalityDetail;
 
         Report("Reading ascension perks and tradition trees");
         var ascensionPerks = AscensionExtractor.Extract(loader, requirements, assets, Localisation);

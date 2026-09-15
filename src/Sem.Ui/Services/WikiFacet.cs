@@ -184,6 +184,11 @@ public static class WikiFacet
         Many("ethic", "Ethics", r => r.Wanting(SelectionCategory.Ethics)),
         Many("authority", "Authority", r => r.Wanting(SelectionCategory.Authority)),
         Many("civic", "Civics", r => r.Wanting(SelectionCategory.Civics)),
+
+        // What it will do, which narrows better than anything else here: "which of my neighbours
+        // enslaves" is a question with an answer, and the ethics heading only says who might.
+        Many("behaviour", "Behaviour", r => Fact(r, "Behaviour")),
+        Many("weapons", "Weapons", r => Fact(r, "Weapons")),
     ];
 
     /// <summary>

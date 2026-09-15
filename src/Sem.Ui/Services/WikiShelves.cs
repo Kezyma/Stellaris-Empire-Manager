@@ -170,10 +170,6 @@ public sealed class WikiShelves(DesignSession session)
         WikiKind.Planets => new WikiShelf(
             "Planets", "planets", "planet", Planets(), WikiFacet.Planets) { Picture = "Sky" },
 
-        WikiKind.Personalities => new WikiShelf(
-            "AI Personalities", "personalities", "personality",
-            Personalities(), WikiFacet.Personalities),
-
         WikiKind.Governments => new WikiShelf(
             "Governments", "governments", "government", Governments(), WikiFacet.Governments),
 
@@ -704,6 +700,13 @@ public sealed class WikiShelves(DesignSession session)
             text[key] = value;
         }
 
+        // And what a personality's numbers mean, which is ours rather than the game's - see Scores.
+        // Put here so a chip can find it the way it finds everything else, under a key of our own.
+        foreach (var (field, said) in Scores)
+        {
+            text[Meaning(field)] = said.Means;
+        }
+
         return new Localizer(
             text,
             Database.TextIcons,
@@ -809,17 +812,46 @@ public sealed class WikiShelves(DesignSession session)
     /// from every personality its shape allows - so the question a reader has is which empires can
     /// be played as this, and the condition is the whole of the answer.
     /// </remarks>
-    private IReadOnlyList<WikiRow> Personalities() =>
-    [
-        .. Database.Personalities
-            .Select(Personality)
-            .OrderBy(r => r.Name, StringComparer.CurrentCulture),
-    ];
+    private IReadOnlyList<WikiRow> PersonalityRows(PersonalityPack? pack)
+    {
+        var detail = (pack?.Personalities ?? []).ToDictionary(d => d.Key, StringComparer.Ordinal);
+        var reader = pack is null ? session.Localizer : Reading(pack.Text);
+
+        return
+        [
+            .. Database.Personalities
+                .Select(p => Personality(p, detail.GetValueOrDefault(p.Key), reader))
+                .OrderBy(r => r.Name, StringComparer.CurrentCulture),
+        ];
+    }
+
+    /// <summary>
+    /// The personalities, with how each of them plays.
+    /// </summary>
+    /// <remarks>
+    /// The database carries which empires are drawn a personality and with what odds, because the
+    /// designer shows that. How it behaves once drawn - what it will conquer, enslave and sign, what
+    /// it arms its ships with - is in the wiki's own file, since an empire being designed has no AI
+    /// to carry any of it.
+    /// </remarks>
+    /// <param name="pack">The detail, where the page has fetched it.</param>
+    /// <returns>The shelf.</returns>
+    public WikiShelf Personalities(PersonalityPack? pack) =>
+        new("AI Personalities", "personalities", "personality",
+            PersonalityRows(pack), WikiFacet.Personalities)
+        {
+            Reader = pack is null ? null : Reading(pack.Text),
+        };
 
     /// <summary>One personality, named under the prefix the game keeps them under.</summary>
     /// <param name="personality">The personality.</param>
+    /// <param name="detail">How it plays, where the page has fetched it.</param>
+    /// <param name="reader">The text, with the pack's merged in.</param>
     /// <returns>Its row.</returns>
-    private WikiRow Personality(PersonalityDefinition personality) =>
+    private WikiRow Personality(
+        PersonalityDefinition personality,
+        PersonalityDetail? detail,
+        Localizer reader) =>
         Row(
             personality.Key,
             EffectSet.None,
@@ -830,7 +862,7 @@ public sealed class WikiShelves(DesignSession session)
                 ? "The game refuses this one outright, so no empire is ever played as it."
                 : null,
             [new WikiCondition("Played by", _reader.Read(personality.Allow), "Any empire")],
-            PersonalityFacts(personality),
+            PersonalityFacts(personality, detail, reader),
             Wants(personality.Allow),
             nameKey: personality.NameKey,
             proseKey: personality.DescriptionKey);
@@ -846,9 +878,119 @@ public sealed class WikiShelves(DesignSession session)
     /// nothing a reader can do anything with.
     /// </remarks>
     /// <param name="personality">The personality.</param>
+    /// <param name="detail">How it plays, where the page has fetched it.</param>
+    /// <param name="reader">The text, with the pack's merged in.</param>
     /// <returns>Its facts.</returns>
-    private static IReadOnlyList<WikiFact> PersonalityFacts(PersonalityDefinition personality) =>
-        [WikiFact.Said("Weight", Number(personality.Weight))];
+    private static IReadOnlyList<WikiFact> PersonalityFacts(
+        PersonalityDefinition personality,
+        PersonalityDetail? detail,
+        Localizer reader) =>
+    [
+        WikiFact.Said("Weight", Number(personality.Weight)),
+
+        // What it will do, which is the question a reader arrives with: is this the neighbour that
+        // takes planets, the one that enslaves, or the one that leaves you alone.
+        WikiFact.Of(
+            "Behaviour",
+            [.. (detail?.Behaviours ?? []).Select(b => Trait(b, Localizer.Prettify(b)))]),
+
+        WikiFact.Of("Attitude", Scored(detail?.Attitude)),
+        WikiFact.Of("Will sign", Scored(detail?.Diplomacy)),
+        WikiFact.Of("Ships", Scored(detail?.Fleet)),
+
+        WikiFact.Said(
+            "Weapons",
+            detail?.Weapons is { Length: > 0 } arms ? reader.Text(arms, Localizer.Prettify(arms)) : null),
+    ];
+
+    /// <summary>
+    /// What each of a personality's numbers is called, and what it decides.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Ours, because the game has none. These are script identifiers and nothing localises them, so
+    /// the choice is between the key made readable - "Nap Acceptance", "Threat Others Modifier" -
+    /// and saying it properly. The meanings are the game's own: every one is documented at length in
+    /// the comment block its personality files open with.
+    /// </para>
+    /// <para>
+    /// The suffixes go with the heading. Under "Will sign", every field ends in <c>_acceptance</c>
+    /// and under "Ships" every one ends in <c>_ratio</c>, so keeping them said the same word seven
+    /// times in a row.
+    /// </para>
+    /// </remarks>
+    private static readonly Dictionary<string, (string Name, string Means)> Scores =
+        new(StringComparer.Ordinal)
+        {
+            ["aggressiveness"] = ("Aggressiveness", "How readily it declares war and insults its "
+                + "neighbours, and how much of its fleet it commits when it does."),
+            ["bravery"] = ("Bravery", "How willingly it picks a rival or a war target its own size "
+                + "rather than one it can be sure of beating."),
+            ["combat_bravery"] = ("Combat bravery", "How long it stays in a battle that is going "
+                + "badly before it withdraws."),
+            ["trade_willingness"] = ("Trade willingness", "How good a deal it wants. At 1.0 it will "
+                + "take one that is even."),
+            ["military_spending"] = ("Military spending", "The share of its minerals and energy that "
+                + "goes to fleets and armies."),
+            ["colony_spending"] = ("Colony spending", "The share that goes to settling new worlds."),
+            ["threat_modifier"] = ("Threat", "How much threat it accrues when somebody else is "
+                + "conquered."),
+            ["threat_others_modifier"] = ("Threat to others", "How much threat everybody else "
+                + "accrues when it is conquered."),
+            ["friction_modifier"] = ("Border friction", "How much sharing a border with it sours "
+                + "the relationship."),
+            ["claims_modifier"] = ("Claims", "How badly it takes a claim made on its space."),
+            ["advanced_start_chance"] = ("Advanced start", "How likely it is to be one of the "
+                + "empires the galaxy starts ahead."),
+            ["federation_acceptance"] = ("Federation", "Added to its chance of forming or joining one."),
+            ["nap_acceptance"] = ("Non-aggression", "Added to its chance of signing a pact."),
+            ["commercial_pact_acceptance"] = ("Commercial pact", "Added to its chance of signing one."),
+            ["research_agreement_acceptance"] = ("Research agreement", "Added to its chance of "
+                + "signing one."),
+            ["migration_pact_acceptance"] = ("Migration pact", "Added to its chance of signing one."),
+            ["defensive_pact_acceptance"] = ("Defensive pact", "Added to its chance of signing one."),
+            ["loyalty_acceptance"] = ("Subject loyalty", "How much it cares whether its subjects are "
+                + "loyal when weighing a deal with them."),
+            ["armor_ratio"] = ("Armour", "The share of a ship's defences it wants in armour."),
+            ["shields_ratio"] = ("Shields", "The share it wants in shields."),
+            ["hull_ratio"] = ("Hull", "The share it wants in hull, where the technology allows."),
+        };
+
+    /// <summary>Where one of those sentences is kept, under a key of our own so nothing collides.</summary>
+    /// <param name="field">The field.</param>
+    /// <returns>The key.</returns>
+    private static string Meaning(string field) => $"sem_personality_{field}_desc";
+
+    /// <summary>
+    /// A group of a personality's numbers, each chip wearing its own.
+    /// </summary>
+    /// <remarks>
+    /// The number in front rather than in the name, which is what the chip's badge is for and what
+    /// its own note says it was added for: a personality has no artwork in the game, and what tells
+    /// one of these apart at a glance is the figure.
+    /// </remarks>
+    /// <param name="scores">The fields it states, which may be none.</param>
+    /// <returns>The chips, in the order the group lists them.</returns>
+    private static IReadOnlyList<EmpireChoice> Scored(IReadOnlyDictionary<string, double>? scores) =>
+    [
+        .. (scores ?? new Dictionary<string, double>(StringComparer.Ordinal))
+            .Select(p => new EmpireChoice(
+                p.Key,
+                Scores.TryGetValue(p.Key, out var said) ? said.Name : Localizer.Prettify(p.Key),
+                null,
+                null)
+            {
+                Badge = Number(p.Value),
+                BadgeLevel = p.Value,
+                Description = Meaning(p.Key),
+            }),
+    ];
+
+    /// <summary>One behaviour, which the game names in script and nowhere else.</summary>
+    /// <param name="key">The flag.</param>
+    /// <param name="name">Its name, made readable.</param>
+    /// <returns>The chip.</returns>
+    private static EmpireChoice Trait(string key, string name) => new(key, name, null, null);
 
     /// <summary>
     /// The governments, which are what an empire ends up called.

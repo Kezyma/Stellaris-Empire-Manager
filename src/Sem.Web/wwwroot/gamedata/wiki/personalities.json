@@ -1,0 +1,1560 @@
+{
+  "stamp": {
+    "extractorVersion": "0.1.0\u002B1ad5344986e2",
+    "schemaVersion": 1
+  },
+  "personalities": [
+    {
+      "key": "honorbound_warriors",
+      "behaviours": [
+        "conqueror",
+        "subjugator",
+        "uplifter",
+        "multispecies",
+        "crisis_fighter"
+      ],
+      "attitude": {
+        "aggressiveness": 1.75,
+        "bravery": 1.5,
+        "combat_bravery": 2,
+        "trade_willingness": 0.7,
+        "military_spending": 1.2,
+        "colony_spending": 0.9,
+        "threat_modifier": 0.75,
+        "threat_others_modifier": 0.5,
+        "friction_modifier": 1,
+        "claims_modifier": 2,
+        "advanced_start_chance": 75
+      },
+      "diplomacy": {
+        "federation_acceptance": 0,
+        "nap_acceptance": -100,
+        "commercial_pact_acceptance": -20,
+        "research_agreement_acceptance": 0,
+        "migration_pact_acceptance": 0,
+        "defensive_pact_acceptance": 20,
+        "loyalty_acceptance": 1
+      },
+      "fleet": {
+        "armor_ratio": 0.4,
+        "shields_ratio": 0.4,
+        "hull_ratio": 0.2
+      },
+      "weapons": "weapon_type_energy"
+    },
+    {
+      "key": "evangelising_zealots",
+      "behaviours": [
+        "conqueror",
+        "opportunist",
+        "slaver",
+        "dominator",
+        "crisis_fighter"
+      ],
+      "attitude": {
+        "aggressiveness": 1.25,
+        "bravery": 1,
+        "combat_bravery": 1,
+        "trade_willingness": 0.75,
+        "military_spending": 1.1,
+        "colony_spending": 1.1,
+        "threat_modifier": 0.9,
+        "threat_others_modifier": 0.66,
+        "friction_modifier": 1.2,
+        "claims_modifier": 1.5,
+        "advanced_start_chance": 50
+      },
+      "diplomacy": {
+        "federation_acceptance": 0,
+        "nap_acceptance": 0,
+        "commercial_pact_acceptance": -20,
+        "research_agreement_acceptance": -20,
+        "migration_pact_acceptance": 0,
+        "defensive_pact_acceptance": 0,
+        "loyalty_acceptance": 1
+      },
+      "fleet": {
+        "armor_ratio": 0.5,
+        "shields_ratio": 0.4,
+        "hull_ratio": 0.1
+      },
+      "weapons": "weapon_type_kinetic"
+    },
+    {
+      "key": "erudite_explorers",
+      "behaviours": [
+        "conqueror",
+        "subjugator",
+        "opportunist",
+        "uplifter",
+        "infiltrator",
+        "robot_liberator",
+        "multispecies",
+        "crisis_fighter",
+        "sneak_attacker"
+      ],
+      "attitude": {
+        "aggressiveness": 0.75,
+        "bravery": 0.75,
+        "combat_bravery": 1,
+        "trade_willingness": 0.9,
+        "military_spending": 0.9,
+        "colony_spending": 1,
+        "threat_modifier": 1.2,
+        "threat_others_modifier": 0.8,
+        "friction_modifier": 0.5,
+        "claims_modifier": 1,
+        "advanced_start_chance": 25
+      },
+      "diplomacy": {
+        "federation_acceptance": 0,
+        "nap_acceptance": 5,
+        "commercial_pact_acceptance": 10,
+        "research_agreement_acceptance": 50,
+        "migration_pact_acceptance": 0,
+        "defensive_pact_acceptance": 5,
+        "loyalty_acceptance": 2
+      },
+      "fleet": {
+        "armor_ratio": 0.3,
+        "shields_ratio": 0.7,
+        "hull_ratio": 0
+      },
+      "weapons": "weapon_type_energy"
+    },
+    {
+      "key": "spiritual_seekers",
+      "behaviours": [
+        "liberator",
+        "uplifter",
+        "infiltrator",
+        "robot_exploiter",
+        "multispecies",
+        "crisis_fighter"
+      ],
+      "attitude": {
+        "aggressiveness": 0.25,
+        "bravery": 0.75,
+        "combat_bravery": 1,
+        "trade_willingness": 0.9,
+        "military_spending": 0.8,
+        "colony_spending": 1,
+        "threat_modifier": 1.1,
+        "threat_others_modifier": 1,
+        "friction_modifier": 0.25,
+        "claims_modifier": 1,
+        "advanced_start_chance": 10
+      },
+      "diplomacy": {
+        "federation_acceptance": 0,
+        "nap_acceptance": 20,
+        "commercial_pact_acceptance": 10,
+        "research_agreement_acceptance": 10,
+        "migration_pact_acceptance": 20,
+        "defensive_pact_acceptance": 10,
+        "loyalty_acceptance": 1
+      },
+      "fleet": {
+        "armor_ratio": 0.4,
+        "shields_ratio": 0.4,
+        "hull_ratio": 0.2
+      },
+      "weapons": "weapon_type_energy"
+    },
+    {
+      "key": "ruthless_capitalists",
+      "behaviours": [
+        "conqueror",
+        "subjugator",
+        "opportunist",
+        "slaver",
+        "infiltrator",
+        "robot_exploiter",
+        "multispecies",
+        "crisis_fighter",
+        "wants_tribute",
+        "sneak_attacker"
+      ],
+      "attitude": {
+        "aggressiveness": 1,
+        "bravery": 0.5,
+        "combat_bravery": 1,
+        "trade_willingness": 1,
+        "military_spending": 1,
+        "colony_spending": 1.1,
+        "threat_modifier": 1,
+        "threat_others_modifier": 0.75,
+        "friction_modifier": 0.5,
+        "claims_modifier": 1.5,
+        "advanced_start_chance": 25
+      },
+      "diplomacy": {
+        "federation_acceptance": 0,
+        "nap_acceptance": -10,
+        "commercial_pact_acceptance": 20,
+        "research_agreement_acceptance": 10,
+        "migration_pact_acceptance": 0,
+        "defensive_pact_acceptance": 0,
+        "loyalty_acceptance": 0.5
+      },
+      "fleet": {
+        "armor_ratio": 0.4,
+        "shields_ratio": 0.5,
+        "hull_ratio": 0.1
+      },
+      "weapons": "weapon_type_kinetic"
+    },
+    {
+      "key": "peaceful_traders",
+      "behaviours": [
+        "liberator",
+        "opportunist",
+        "uplifter",
+        "robot_liberator",
+        "multispecies",
+        "crisis_fighter",
+        "wants_tribute"
+      ],
+      "attitude": {
+        "aggressiveness": 0.5,
+        "bravery": 0.5,
+        "combat_bravery": 1,
+        "trade_willingness": 1,
+        "military_spending": 0.9,
+        "colony_spending": 1.1,
+        "threat_modifier": 1.3,
+        "threat_others_modifier": 1,
+        "friction_modifier": 0.25,
+        "claims_modifier": 1,
+        "advanced_start_chance": 10
+      },
+      "diplomacy": {
+        "federation_acceptance": 0,
+        "nap_acceptance": 20,
+        "commercial_pact_acceptance": 20,
+        "research_agreement_acceptance": 10,
+        "migration_pact_acceptance": 20,
+        "defensive_pact_acceptance": 0,
+        "loyalty_acceptance": 1
+      },
+      "fleet": {
+        "armor_ratio": 0.4,
+        "shields_ratio": 0.5,
+        "hull_ratio": 0.1
+      },
+      "weapons": "weapon_type_strike_craft"
+    },
+    {
+      "key": "hegemonic_imperialists",
+      "behaviours": [
+        "conqueror",
+        "subjugator",
+        "opportunist",
+        "slaver",
+        "dominator",
+        "robot_exploiter",
+        "crisis_fighter"
+      ],
+      "attitude": {
+        "aggressiveness": 1.5,
+        "bravery": 1,
+        "combat_bravery": 1,
+        "trade_willingness": 0.8,
+        "military_spending": 1.1,
+        "colony_spending": 1,
+        "threat_modifier": 1,
+        "threat_others_modifier": 0.66,
+        "friction_modifier": 1.5,
+        "claims_modifier": 1.5,
+        "advanced_start_chance": 50
+      },
+      "diplomacy": {
+        "federation_acceptance": 0,
+        "nap_acceptance": -10,
+        "commercial_pact_acceptance": -10,
+        "research_agreement_acceptance": -10,
+        "migration_pact_acceptance": -50,
+        "defensive_pact_acceptance": 10,
+        "loyalty_acceptance": 1
+      },
+      "fleet": {
+        "armor_ratio": 0.5,
+        "shields_ratio": 0.5,
+        "hull_ratio": 0
+      },
+      "weapons": "weapon_type_energy"
+    },
+    {
+      "key": "slaving_despots",
+      "behaviours": [
+        "conqueror",
+        "subjugator",
+        "opportunist",
+        "slaver",
+        "dominator",
+        "crisis_fighter",
+        "sneak_attacker"
+      ],
+      "attitude": {
+        "aggressiveness": 1.5,
+        "bravery": 0.5,
+        "combat_bravery": 1,
+        "trade_willingness": 0.8,
+        "military_spending": 1.1,
+        "colony_spending": 0.9,
+        "threat_modifier": 1,
+        "threat_others_modifier": 0.5,
+        "friction_modifier": 1,
+        "claims_modifier": 2,
+        "advanced_start_chance": 50
+      },
+      "diplomacy": {
+        "federation_acceptance": 0,
+        "nap_acceptance": -20,
+        "commercial_pact_acceptance": 0,
+        "research_agreement_acceptance": 0,
+        "migration_pact_acceptance": -100,
+        "defensive_pact_acceptance": 0,
+        "loyalty_acceptance": 0.25
+      },
+      "fleet": {
+        "armor_ratio": 0.3,
+        "shields_ratio": 0.4,
+        "hull_ratio": 0.3
+      },
+      "weapons": "weapon_type_explosive"
+    },
+    {
+      "key": "decadent_hierarchy",
+      "behaviours": [
+        "opportunist",
+        "slaver",
+        "infiltrator",
+        "robot_exploiter",
+        "crisis_fighter",
+        "sneak_attacker"
+      ],
+      "attitude": {
+        "aggressiveness": 0.5,
+        "bravery": 0.5,
+        "combat_bravery": 1,
+        "trade_willingness": 0.9,
+        "military_spending": 1.1,
+        "colony_spending": 0.9,
+        "threat_modifier": 1.1,
+        "threat_others_modifier": 0.75,
+        "friction_modifier": 0.75,
+        "claims_modifier": 1.5,
+        "advanced_start_chance": 10
+      },
+      "diplomacy": {
+        "federation_acceptance": 0,
+        "nap_acceptance": 20,
+        "commercial_pact_acceptance": 0,
+        "research_agreement_acceptance": 0,
+        "migration_pact_acceptance": -100,
+        "defensive_pact_acceptance": -10,
+        "loyalty_acceptance": 0.5
+      },
+      "fleet": {
+        "armor_ratio": 0.3,
+        "shields_ratio": 0.5,
+        "hull_ratio": 0.2
+      },
+      "weapons": "weapon_type_kinetic"
+    },
+    {
+      "key": "democratic_crusaders",
+      "behaviours": [
+        "conqueror",
+        "liberator",
+        "uplifter",
+        "infiltrator",
+        "robot_liberator",
+        "multispecies",
+        "crisis_fighter"
+      ],
+      "attitude": {
+        "aggressiveness": 1,
+        "bravery": 1.25,
+        "combat_bravery": 1,
+        "trade_willingness": 0.9,
+        "military_spending": 1.2,
+        "colony_spending": 1,
+        "threat_modifier": 1.1,
+        "friction_modifier": 0.75,
+        "claims_modifier": 0.75,
+        "advanced_start_chance": 50
+      },
+      "diplomacy": {
+        "federation_acceptance": 0,
+        "nap_acceptance": 0,
+        "commercial_pact_acceptance": 0,
+        "research_agreement_acceptance": 0,
+        "migration_pact_acceptance": 0,
+        "defensive_pact_acceptance": 20,
+        "loyalty_acceptance": 2
+      },
+      "fleet": {
+        "armor_ratio": 0.5,
+        "shields_ratio": 0.4,
+        "hull_ratio": 0.1
+      },
+      "weapons": "weapon_type_kinetic"
+    },
+    {
+      "key": "harmonious_hierarchy",
+      "behaviours": [
+        "uplifter",
+        "infiltrator",
+        "robot_exploiter",
+        "multispecies",
+        "crisis_fighter"
+      ],
+      "attitude": {
+        "aggressiveness": 0.5,
+        "bravery": 0.75,
+        "combat_bravery": 1,
+        "trade_willingness": 0.9,
+        "military_spending": 0.8,
+        "colony_spending": 1.1,
+        "threat_modifier": 0.75,
+        "threat_others_modifier": 0.9,
+        "friction_modifier": 0.5,
+        "claims_modifier": 0.75,
+        "advanced_start_chance": 10
+      },
+      "diplomacy": {
+        "federation_acceptance": 0,
+        "nap_acceptance": 20,
+        "commercial_pact_acceptance": 10,
+        "research_agreement_acceptance": 10,
+        "migration_pact_acceptance": -10,
+        "defensive_pact_acceptance": 0,
+        "loyalty_acceptance": 2
+      },
+      "fleet": {
+        "armor_ratio": 0.6,
+        "shields_ratio": 0.4,
+        "hull_ratio": 0
+      },
+      "weapons": "weapon_type_explosive"
+    },
+    {
+      "key": "federation_builders",
+      "behaviours": [
+        "liberator",
+        "opportunist",
+        "uplifter",
+        "robot_liberator",
+        "multispecies",
+        "crisis_fighter"
+      ],
+      "attitude": {
+        "aggressiveness": 0.75,
+        "bravery": 1.25,
+        "combat_bravery": 1,
+        "trade_willingness": 0.95,
+        "military_spending": 1,
+        "colony_spending": 1,
+        "threat_modifier": 1.2,
+        "threat_others_modifier": 0.9,
+        "friction_modifier": 0.25,
+        "claims_modifier": 0.75,
+        "advanced_start_chance": 25
+      },
+      "diplomacy": {
+        "federation_acceptance": 0,
+        "nap_acceptance": 25,
+        "commercial_pact_acceptance": 15,
+        "research_agreement_acceptance": 15,
+        "migration_pact_acceptance": 10,
+        "defensive_pact_acceptance": 25,
+        "loyalty_acceptance": 2
+      },
+      "fleet": {
+        "armor_ratio": 0.3,
+        "shields_ratio": 0.6,
+        "hull_ratio": 0.1
+      },
+      "weapons": "weapon_type_energy"
+    },
+    {
+      "key": "xenophobic_isolationists",
+      "behaviours": [
+        "opportunist",
+        "displacer",
+        "robot_exploiter",
+        "isolationist",
+        "crisis_fighter",
+        "wants_tribute",
+        "sneak_attacker"
+      ],
+      "attitude": {
+        "aggressiveness": 0.5,
+        "bravery": 0.75,
+        "combat_bravery": 1,
+        "trade_willingness": 0.5,
+        "military_spending": 1.2,
+        "colony_spending": 1,
+        "threat_modifier": 0.75,
+        "threat_others_modifier": 0.75,
+        "friction_modifier": 2,
+        "claims_modifier": 5,
+        "advanced_start_chance": 10
+      },
+      "diplomacy": {
+        "federation_acceptance": 0,
+        "nap_acceptance": 20,
+        "commercial_pact_acceptance": -20,
+        "research_agreement_acceptance": -20,
+        "migration_pact_acceptance": -100,
+        "defensive_pact_acceptance": -20,
+        "loyalty_acceptance": 0.25
+      },
+      "fleet": {
+        "armor_ratio": 0.3,
+        "shields_ratio": 0.6,
+        "hull_ratio": 0.1
+      },
+      "weapons": "weapon_type_explosive"
+    },
+    {
+      "key": "fanatic_purifiers",
+      "behaviours": [
+        "conqueror",
+        "opportunist",
+        "slaver",
+        "purger",
+        "dominator",
+        "robot_exploiter",
+        "attack_neutrals"
+      ],
+      "attitude": {
+        "aggressiveness": 2,
+        "bravery": 1,
+        "combat_bravery": 1.25,
+        "trade_willingness": 0.5,
+        "military_spending": 1.2,
+        "colony_spending": 1.2,
+        "threat_modifier": 0,
+        "threat_others_modifier": 0,
+        "friction_modifier": 0,
+        "claims_modifier": 0,
+        "advanced_start_chance": 100
+      },
+      "diplomacy": {
+        "federation_acceptance": -1000,
+        "migration_pact_acceptance": -1000,
+        "loyalty_acceptance": 0.25
+      },
+      "fleet": {
+        "armor_ratio": 0.4,
+        "shields_ratio": 0.5,
+        "hull_ratio": 0.1
+      },
+      "weapons": "weapon_type_kinetic"
+    },
+    {
+      "key": "hive_mind",
+      "behaviours": [
+        "conqueror",
+        "opportunist",
+        "slaver",
+        "displacer",
+        "propagator",
+        "crisis_fighter"
+      ],
+      "attitude": {
+        "aggressiveness": 2,
+        "bravery": 1,
+        "combat_bravery": 1,
+        "trade_willingness": 0.7,
+        "military_spending": 1,
+        "colony_spending": 1.2,
+        "threat_modifier": 0.75,
+        "threat_others_modifier": 0.5,
+        "friction_modifier": 1.5,
+        "claims_modifier": 1.5,
+        "advanced_start_chance": 75
+      },
+      "diplomacy": {
+        "federation_acceptance": 0,
+        "nap_acceptance": -10,
+        "commercial_pact_acceptance": 0,
+        "research_agreement_acceptance": 0,
+        "migration_pact_acceptance": -100,
+        "defensive_pact_acceptance": -10,
+        "loyalty_acceptance": 1
+      },
+      "fleet": {
+        "armor_ratio": 0.2,
+        "shields_ratio": 0.4,
+        "hull_ratio": 0.4
+      },
+      "weapons": "weapon_type_kinetic"
+    },
+    {
+      "key": "devouring_swarm",
+      "behaviours": [
+        "conqueror",
+        "opportunist",
+        "purger",
+        "dominator",
+        "attack_neutrals"
+      ],
+      "attitude": {
+        "aggressiveness": 3,
+        "bravery": 1.1,
+        "combat_bravery": 1.25,
+        "trade_willingness": 0,
+        "military_spending": 1.2,
+        "colony_spending": 1.2,
+        "threat_modifier": 0,
+        "threat_others_modifier": 0,
+        "friction_modifier": 0,
+        "claims_modifier": 0,
+        "advanced_start_chance": 100
+      },
+      "diplomacy": {
+        "federation_acceptance": -1000,
+        "nap_acceptance": -1000,
+        "commercial_pact_acceptance": -1000,
+        "research_agreement_acceptance": -1000,
+        "migration_pact_acceptance": -1000,
+        "defensive_pact_acceptance": -1000,
+        "loyalty_acceptance": 0.25
+      },
+      "fleet": {
+        "armor_ratio": 0.2,
+        "shields_ratio": 0.4,
+        "hull_ratio": 0.4
+      },
+      "weapons": "weapon_type_strike_craft"
+    },
+    {
+      "key": "migrating_flock",
+      "behaviours": [
+        "uplifter",
+        "infiltrator",
+        "robot_liberator",
+        "multispecies",
+        "crisis_fighter",
+        "sneak_attacker"
+      ],
+      "attitude": {
+        "aggressiveness": 0.25,
+        "bravery": 0.5,
+        "combat_bravery": 1,
+        "trade_willingness": 1.1,
+        "military_spending": 0.8,
+        "colony_spending": 1.2,
+        "threat_modifier": 1.1,
+        "threat_others_modifier": 1.1,
+        "friction_modifier": 0,
+        "claims_modifier": 0.5,
+        "advanced_start_chance": 10
+      },
+      "diplomacy": {
+        "federation_acceptance": 0,
+        "nap_acceptance": 20,
+        "commercial_pact_acceptance": 20,
+        "research_agreement_acceptance": 20,
+        "migration_pact_acceptance": 100,
+        "defensive_pact_acceptance": 0,
+        "loyalty_acceptance": 0.5
+      },
+      "fleet": {
+        "armor_ratio": 0.4,
+        "shields_ratio": 0.4,
+        "hull_ratio": 0.2
+      },
+      "weapons": "weapon_type_strike_craft"
+    },
+    {
+      "key": "metalhead",
+      "behaviours": [
+        "conqueror",
+        "opportunist",
+        "purger",
+        "dominator",
+        "robot_liberator",
+        "attack_neutrals"
+      ],
+      "attitude": {
+        "aggressiveness": 10,
+        "bravery": 10,
+        "combat_bravery": 10,
+        "trade_willingness": 0,
+        "military_spending": 1.2,
+        "colony_spending": 1.2,
+        "threat_modifier": 0,
+        "threat_others_modifier": 0,
+        "friction_modifier": 0,
+        "claims_modifier": 0,
+        "advanced_start_chance": 100
+      },
+      "diplomacy": {
+        "federation_acceptance": -1000,
+        "nap_acceptance": -1000,
+        "commercial_pact_acceptance": -1000,
+        "research_agreement_acceptance": -1000,
+        "migration_pact_acceptance": -1000,
+        "defensive_pact_acceptance": -1000,
+        "loyalty_acceptance": 1
+      },
+      "fleet": {
+        "armor_ratio": 0.5,
+        "shields_ratio": 0,
+        "hull_ratio": 0.5
+      },
+      "weapons": "weapon_type_energy"
+    },
+    {
+      "key": "machine_intelligence",
+      "behaviours": [
+        "conqueror",
+        "opportunist",
+        "slaver",
+        "displacer",
+        "infiltrator",
+        "robot_liberator",
+        "crisis_fighter"
+      ],
+      "attitude": {
+        "aggressiveness": 1,
+        "bravery": 1,
+        "combat_bravery": 1,
+        "trade_willingness": 0.8,
+        "military_spending": 1,
+        "colony_spending": 1.2,
+        "threat_modifier": 0.75,
+        "threat_others_modifier": 0.5,
+        "friction_modifier": 1.25,
+        "claims_modifier": 1.25,
+        "advanced_start_chance": 50
+      },
+      "diplomacy": {
+        "federation_acceptance": 0,
+        "nap_acceptance": 0,
+        "commercial_pact_acceptance": 0,
+        "research_agreement_acceptance": 0,
+        "defensive_pact_acceptance": 0,
+        "loyalty_acceptance": 1
+      },
+      "fleet": {
+        "armor_ratio": 0.4,
+        "shields_ratio": 0.4,
+        "hull_ratio": 0.2
+      },
+      "weapons": "weapon_type_energy"
+    },
+    {
+      "key": "assimilators",
+      "behaviours": [
+        "conqueror",
+        "opportunist",
+        "dominator",
+        "robot_liberator",
+        "propagator",
+        "crisis_fighter",
+        "sneak_attacker"
+      ],
+      "attitude": {
+        "aggressiveness": 2,
+        "bravery": 0.8,
+        "combat_bravery": 1,
+        "trade_willingness": 0.5,
+        "military_spending": 1.2,
+        "colony_spending": 1.2,
+        "threat_modifier": 0.75,
+        "threat_others_modifier": 0.5,
+        "friction_modifier": 1.25,
+        "claims_modifier": 2,
+        "advanced_start_chance": 100
+      },
+      "diplomacy": {
+        "federation_acceptance": 0,
+        "loyalty_acceptance": 1
+      },
+      "fleet": {
+        "armor_ratio": 0.5,
+        "shields_ratio": 0.3,
+        "hull_ratio": 0.2
+      },
+      "weapons": "weapon_type_kinetic"
+    },
+    {
+      "key": "exterminators",
+      "behaviours": [
+        "conqueror",
+        "opportunist",
+        "purger",
+        "dominator",
+        "robot_liberator",
+        "attack_neutrals"
+      ],
+      "attitude": {
+        "aggressiveness": 2,
+        "bravery": 1,
+        "combat_bravery": 1.5,
+        "trade_willingness": 1,
+        "military_spending": 1.2,
+        "colony_spending": 1.2,
+        "threat_modifier": 0,
+        "threat_others_modifier": 0,
+        "friction_modifier": 0,
+        "claims_modifier": 0,
+        "advanced_start_chance": 100
+      },
+      "diplomacy": {
+        "loyalty_acceptance": 0.25
+      },
+      "fleet": {
+        "armor_ratio": 0.4,
+        "shields_ratio": 0.5,
+        "hull_ratio": 0.1
+      },
+      "weapons": "weapon_type_explosive"
+    },
+    {
+      "key": "servitors",
+      "behaviours": [
+        "conqueror",
+        "subjugator",
+        "opportunist",
+        "uplifter",
+        "infiltrator",
+        "robot_liberator",
+        "crisis_fighter"
+      ],
+      "attitude": {
+        "aggressiveness": 0.75,
+        "bravery": 1.25,
+        "combat_bravery": 1,
+        "trade_willingness": 0.9,
+        "military_spending": 1.1,
+        "colony_spending": 1.1,
+        "threat_modifier": 0.75,
+        "threat_others_modifier": 0.75,
+        "friction_modifier": 0,
+        "claims_modifier": 0.75,
+        "advanced_start_chance": 25
+      },
+      "diplomacy": {
+        "federation_acceptance": 0,
+        "nap_acceptance": 0,
+        "commercial_pact_acceptance": 0,
+        "research_agreement_acceptance": 0,
+        "defensive_pact_acceptance": 0,
+        "loyalty_acceptance": 2
+      },
+      "fleet": {
+        "armor_ratio": 0.4,
+        "shields_ratio": 0.6,
+        "hull_ratio": 0
+      },
+      "weapons": "weapon_type_energy"
+    },
+    {
+      "key": "fanatic_befrienders",
+      "behaviours": [
+        "conqueror",
+        "subjugator",
+        "opportunist",
+        "uplifter",
+        "infiltrator",
+        "multispecies",
+        "crisis_fighter"
+      ],
+      "attitude": {
+        "aggressiveness": 2,
+        "bravery": 1.5,
+        "combat_bravery": 1,
+        "trade_willingness": 1,
+        "military_spending": 1.2,
+        "colony_spending": 1,
+        "threat_modifier": 0.5,
+        "threat_others_modifier": 0.75,
+        "friction_modifier": 0,
+        "claims_modifier": 0.25,
+        "advanced_start_chance": 25
+      },
+      "diplomacy": {
+        "federation_acceptance": 0,
+        "nap_acceptance": 50,
+        "commercial_pact_acceptance": 50,
+        "research_agreement_acceptance": 50,
+        "migration_pact_acceptance": 50,
+        "defensive_pact_acceptance": 50,
+        "loyalty_acceptance": 2
+      },
+      "fleet": {
+        "armor_ratio": 0.4,
+        "shields_ratio": 0.5,
+        "hull_ratio": 0.1
+      },
+      "weapons": "weapon_type_energy"
+    },
+    {
+      "key": "became_the_crisis",
+      "behaviours": [
+        "conqueror",
+        "subjugator",
+        "opportunist",
+        "purger",
+        "dominator",
+        "robot_exploiter",
+        "attack_neutrals"
+      ],
+      "attitude": {
+        "aggressiveness": 2,
+        "bravery": 1,
+        "combat_bravery": 2,
+        "trade_willingness": 0.5,
+        "military_spending": 2,
+        "colony_spending": 0.5,
+        "threat_modifier": 0,
+        "threat_others_modifier": 0,
+        "friction_modifier": 0,
+        "claims_modifier": 0,
+        "advanced_start_chance": 100
+      },
+      "diplomacy": {
+        "loyalty_acceptance": 0.25
+      },
+      "fleet": {
+        "armor_ratio": 0.4,
+        "shields_ratio": 0.5,
+        "hull_ratio": 0.1
+      },
+      "weapons": "weapon_type_explosive"
+    },
+    {
+      "key": "galactic_defense_force",
+      "behaviours": [
+        "crisis_fighter",
+        "crisis_leader"
+      ],
+      "attitude": {},
+      "diplomacy": {},
+      "fleet": {}
+    },
+    {
+      "key": "imperial_origin_overlord_ai",
+      "behaviours": [
+        "crisis_fighter"
+      ],
+      "attitude": {
+        "aggressiveness": 0.1,
+        "bravery": 0.5,
+        "combat_bravery": 0.5,
+        "trade_willingness": 0.25,
+        "military_spending": 1,
+        "colony_spending": 0.5
+      },
+      "diplomacy": {
+        "loyalty_acceptance": 0.5
+      },
+      "fleet": {}
+    },
+    {
+      "key": "hive_mind_friend",
+      "behaviours": [
+        "liberator",
+        "opportunist",
+        "slaver",
+        "displacer",
+        "infiltrator",
+        "propagator",
+        "crisis_fighter"
+      ],
+      "attitude": {
+        "aggressiveness": 1.25,
+        "bravery": 1.25,
+        "combat_bravery": 1,
+        "trade_willingness": 0.95,
+        "military_spending": 1,
+        "colony_spending": 1.2,
+        "threat_modifier": 1.2,
+        "threat_others_modifier": 0.9,
+        "friction_modifier": 0.5,
+        "claims_modifier": 1,
+        "advanced_start_chance": 25
+      },
+      "diplomacy": {
+        "federation_acceptance": 70,
+        "nap_acceptance": 15,
+        "commercial_pact_acceptance": 0,
+        "research_agreement_acceptance": 10,
+        "migration_pact_acceptance": -100,
+        "defensive_pact_acceptance": 15,
+        "loyalty_acceptance": 1
+      },
+      "fleet": {
+        "armor_ratio": 0.2,
+        "shields_ratio": 0.4,
+        "hull_ratio": 0.4
+      },
+      "weapons": "weapon_type_strike_craft"
+    },
+    {
+      "key": "decadent_capitalists",
+      "behaviours": [
+        "subjugator",
+        "opportunist",
+        "slaver",
+        "uplifter",
+        "infiltrator",
+        "robot_exploiter",
+        "crisis_fighter",
+        "wants_tribute",
+        "sneak_attacker"
+      ],
+      "attitude": {
+        "aggressiveness": 0.25,
+        "bravery": 0.25,
+        "combat_bravery": 0.25,
+        "trade_willingness": 0.75,
+        "military_spending": 0.25,
+        "colony_spending": 0.5,
+        "threat_modifier": 1,
+        "threat_others_modifier": 0.75,
+        "friction_modifier": 0.5,
+        "claims_modifier": 1.5,
+        "advanced_start_chance": 25
+      },
+      "diplomacy": {
+        "federation_acceptance": 0,
+        "nap_acceptance": 20,
+        "commercial_pact_acceptance": 50,
+        "research_agreement_acceptance": 10,
+        "migration_pact_acceptance": 10,
+        "defensive_pact_acceptance": -10,
+        "loyalty_acceptance": 0.5
+      },
+      "fleet": {
+        "armor_ratio": 0.2,
+        "shields_ratio": 0.7,
+        "hull_ratio": 0.1
+      },
+      "weapons": "weapon_type_energy"
+    },
+    {
+      "key": "scorching_infernals",
+      "behaviours": [
+        "conqueror",
+        "opportunist",
+        "slaver",
+        "purger",
+        "dominator",
+        "robot_exploiter",
+        "attack_neutrals"
+      ],
+      "attitude": {
+        "aggressiveness": 2,
+        "bravery": 1,
+        "combat_bravery": 1.25,
+        "trade_willingness": 0.25,
+        "military_spending": 1.35,
+        "colony_spending": 1.15,
+        "threat_modifier": 0,
+        "threat_others_modifier": 0,
+        "friction_modifier": 0,
+        "claims_modifier": 0,
+        "advanced_start_chance": 100
+      },
+      "diplomacy": {
+        "federation_acceptance": -1000,
+        "migration_pact_acceptance": -1000,
+        "loyalty_acceptance": 0.25
+      },
+      "fleet": {
+        "armor_ratio": 0.4,
+        "shields_ratio": 0.5,
+        "hull_ratio": 0.1
+      },
+      "weapons": "weapon_type_kinetic"
+    },
+    {
+      "key": "hyperthermia_empire",
+      "behaviours": [
+        "conqueror",
+        "subjugator",
+        "opportunist",
+        "dominator"
+      ],
+      "attitude": {
+        "aggressiveness": 2,
+        "bravery": 1,
+        "combat_bravery": 2,
+        "trade_willingness": 0.5,
+        "military_spending": 2,
+        "colony_spending": 0.5,
+        "threat_modifier": 0,
+        "threat_others_modifier": 0,
+        "friction_modifier": 0,
+        "claims_modifier": 0,
+        "advanced_start_chance": 100
+      },
+      "diplomacy": {
+        "loyalty_acceptance": 0.25
+      },
+      "fleet": {
+        "armor_ratio": 0.6,
+        "shields_ratio": 0.4,
+        "hull_ratio": 0.1
+      },
+      "weapons": "weapon_type_kinetic"
+    },
+    {
+      "key": "fallen_empire_spiritualist",
+      "behaviours": [
+        "holy_planets",
+        "isolationist"
+      ],
+      "attitude": {
+        "aggressiveness": 1.5,
+        "bravery": 2,
+        "combat_bravery": 1.25,
+        "trade_willingness": 0.33,
+        "threat_modifier": 0,
+        "threat_others_modifier": 0.33,
+        "friction_modifier": 0,
+        "claims_modifier": 10
+      },
+      "diplomacy": {},
+      "fleet": {}
+    },
+    {
+      "key": "fallen_empire_materialist",
+      "behaviours": [
+        "robot_exploiter"
+      ],
+      "attitude": {
+        "aggressiveness": 1,
+        "bravery": 2,
+        "combat_bravery": 1.25,
+        "trade_willingness": 0.5,
+        "threat_modifier": 0,
+        "threat_others_modifier": 0.33,
+        "friction_modifier": 0,
+        "claims_modifier": 10
+      },
+      "diplomacy": {},
+      "fleet": {}
+    },
+    {
+      "key": "fallen_empire_xenophobe",
+      "behaviours": [
+        "slaver",
+        "demands_clear_borders",
+        "isolationist"
+      ],
+      "attitude": {
+        "aggressiveness": 2,
+        "bravery": 2,
+        "combat_bravery": 1.25,
+        "trade_willingness": 0,
+        "threat_modifier": 0,
+        "threat_others_modifier": 0.15,
+        "friction_modifier": 0,
+        "claims_modifier": 10
+      },
+      "diplomacy": {},
+      "fleet": {}
+    },
+    {
+      "key": "fallen_empire_xenophile",
+      "behaviours": [
+        "liberator",
+        "multispecies"
+      ],
+      "attitude": {
+        "aggressiveness": 0.5,
+        "bravery": 2,
+        "combat_bravery": 1.25,
+        "trade_willingness": 0.5,
+        "threat_modifier": 0,
+        "threat_others_modifier": 0.5,
+        "friction_modifier": 0,
+        "claims_modifier": 10
+      },
+      "diplomacy": {},
+      "fleet": {}
+    },
+    {
+      "key": "awakened_fallen_empire_spiritualist",
+      "behaviours": [
+        "conqueror",
+        "infiltrator"
+      ],
+      "attitude": {
+        "aggressiveness": 1.5,
+        "bravery": 2,
+        "combat_bravery": 1.25,
+        "trade_willingness": 0.33,
+        "threat_modifier": 0,
+        "threat_others_modifier": 0,
+        "friction_modifier": 0
+      },
+      "diplomacy": {},
+      "fleet": {}
+    },
+    {
+      "key": "awakened_fallen_empire_materialist",
+      "behaviours": [
+        "conqueror",
+        "subjugator",
+        "opportunist",
+        "robot_exploiter",
+        "crisis_fighter",
+        "crisis_leader"
+      ],
+      "attitude": {
+        "aggressiveness": 1,
+        "bravery": 2,
+        "combat_bravery": 1.25,
+        "trade_willingness": 0.5,
+        "threat_modifier": 0,
+        "threat_others_modifier": 0,
+        "friction_modifier": 0
+      },
+      "diplomacy": {},
+      "fleet": {}
+    },
+    {
+      "key": "awakened_fallen_empire_xenophobe",
+      "behaviours": [
+        "conqueror",
+        "slaver",
+        "dominator",
+        "isolationist"
+      ],
+      "attitude": {
+        "aggressiveness": 2,
+        "bravery": 2,
+        "combat_bravery": 1.25,
+        "trade_willingness": 0,
+        "threat_modifier": 0,
+        "threat_others_modifier": 0,
+        "friction_modifier": 0
+      },
+      "diplomacy": {},
+      "fleet": {}
+    },
+    {
+      "key": "awakened_fallen_empire_xenophile",
+      "behaviours": [
+        "subjugator",
+        "opportunist",
+        "uplifter",
+        "crisis_fighter",
+        "crisis_leader"
+      ],
+      "attitude": {
+        "aggressiveness": 0.5,
+        "bravery": 2,
+        "combat_bravery": 1.25,
+        "trade_willingness": 0.5,
+        "threat_modifier": 1,
+        "threat_others_modifier": 0,
+        "friction_modifier": 0
+      },
+      "diplomacy": {},
+      "fleet": {}
+    },
+    {
+      "key": "fallen_empire_machine",
+      "behaviours": [
+        "purger",
+        "robot_liberator",
+        "enigmatic"
+      ],
+      "attitude": {
+        "aggressiveness": 1,
+        "bravery": 2,
+        "combat_bravery": 1.25,
+        "trade_willingness": 0.5,
+        "threat_modifier": 0,
+        "threat_others_modifier": 0.33,
+        "friction_modifier": 0
+      },
+      "diplomacy": {},
+      "fleet": {}
+    },
+    {
+      "key": "awakened_fallen_empire_machine",
+      "behaviours": [
+        "purger",
+        "robot_liberator",
+        "crisis_fighter",
+        "crisis_leader",
+        "custodian",
+        "enigmatic",
+        "limited"
+      ],
+      "attitude": {
+        "aggressiveness": 1,
+        "bravery": 2,
+        "combat_bravery": 1.25,
+        "trade_willingness": 0.5,
+        "threat_modifier": 0,
+        "threat_others_modifier": 0.33,
+        "friction_modifier": 0
+      },
+      "diplomacy": {},
+      "fleet": {}
+    },
+    {
+      "key": "berserk_fallen_empire_machine",
+      "behaviours": [
+        "purger",
+        "robot_liberator",
+        "berserker",
+        "enigmatic",
+        "limited"
+      ],
+      "attitude": {
+        "aggressiveness": 10,
+        "bravery": 10,
+        "trade_willingness": 0,
+        "threat_modifier": 0,
+        "threat_others_modifier": 0,
+        "friction_modifier": 0
+      },
+      "diplomacy": {},
+      "fleet": {}
+    },
+    {
+      "key": "fallen_empire_hive_mind",
+      "behaviours": [
+        "multispecies"
+      ],
+      "attitude": {
+        "aggressiveness": 0.5,
+        "bravery": 2,
+        "combat_bravery": 1.25,
+        "trade_willingness": 0.5,
+        "threat_modifier": 0,
+        "threat_others_modifier": 0.5,
+        "friction_modifier": 0,
+        "claims_modifier": 10
+      },
+      "diplomacy": {},
+      "fleet": {}
+    },
+    {
+      "key": "awakened_fallen_empire_hive_mind_war",
+      "behaviours": [
+        "conqueror",
+        "infiltrator",
+        "multispecies",
+        "isolationist",
+        "crisis_leader",
+        "crisis_fighter"
+      ],
+      "attitude": {
+        "aggressiveness": 10,
+        "bravery": 10,
+        "combat_bravery": 1.25,
+        "trade_willingness": 0,
+        "threat_modifier": 0,
+        "threat_others_modifier": 0,
+        "friction_modifier": 0
+      },
+      "diplomacy": {},
+      "fleet": {}
+    },
+    {
+      "key": "awakened_fallen_empire_hive_mind_growth",
+      "behaviours": [
+        "conqueror",
+        "opportunist",
+        "purger",
+        "dominator",
+        "multispecies",
+        "attack_neutrals"
+      ],
+      "attitude": {
+        "aggressiveness": 10,
+        "bravery": 1.1,
+        "combat_bravery": 1.25,
+        "trade_willingness": 0,
+        "threat_modifier": 0,
+        "threat_others_modifier": 0,
+        "friction_modifier": 0
+      },
+      "diplomacy": {},
+      "fleet": {}
+    },
+    {
+      "key": "awakened_fallen_empire_hive_mind_control",
+      "behaviours": [
+        "conqueror",
+        "subjugator",
+        "slaver",
+        "dominator",
+        "infiltrator",
+        "multispecies",
+        "crisis_fighter"
+      ],
+      "attitude": {
+        "aggressiveness": 1,
+        "bravery": 2,
+        "combat_bravery": 1.25,
+        "trade_willingness": 0.33,
+        "threat_modifier": 0,
+        "threat_others_modifier": 0,
+        "friction_modifier": 0
+      },
+      "diplomacy": {},
+      "fleet": {}
+    },
+    {
+      "key": "pre_ftl_splintered",
+      "behaviours": [],
+      "attitude": {},
+      "diplomacy": {},
+      "fleet": {}
+    },
+    {
+      "key": "mirrored_empire_spiritualist",
+      "behaviours": [
+        "isolationist"
+      ],
+      "attitude": {
+        "aggressiveness": 1.5,
+        "bravery": 0,
+        "combat_bravery": 0,
+        "trade_willingness": 0.33,
+        "threat_modifier": 0,
+        "threat_others_modifier": 0,
+        "friction_modifier": 0,
+        "claims_modifier": 0
+      },
+      "diplomacy": {},
+      "fleet": {}
+    },
+    {
+      "key": "mirrored_empire_xenophobe",
+      "behaviours": [
+        "isolationist"
+      ],
+      "attitude": {
+        "aggressiveness": 2,
+        "bravery": 0,
+        "combat_bravery": 0,
+        "trade_willingness": 0,
+        "threat_modifier": 0,
+        "threat_others_modifier": 0,
+        "friction_modifier": 0,
+        "claims_modifier": 0
+      },
+      "diplomacy": {},
+      "fleet": {}
+    },
+    {
+      "key": "mirrored_empire_default",
+      "behaviours": [
+        "isolationist"
+      ],
+      "attitude": {
+        "aggressiveness": 0,
+        "bravery": 0,
+        "combat_bravery": 0,
+        "trade_willingness": 0.5,
+        "threat_modifier": 0,
+        "threat_others_modifier": 0,
+        "friction_modifier": 0,
+        "claims_modifier": 0
+      },
+      "diplomacy": {},
+      "fleet": {}
+    },
+    {
+      "key": "benevolent_wilderness",
+      "behaviours": [
+        "liberator",
+        "opportunist",
+        "slaver",
+        "displacer",
+        "infiltrator",
+        "propagator",
+        "crisis_fighter"
+      ],
+      "attitude": {
+        "aggressiveness": 0.5,
+        "bravery": 1.25,
+        "combat_bravery": 1,
+        "trade_willingness": 0.95,
+        "military_spending": 1,
+        "colony_spending": 2,
+        "threat_modifier": 0.75,
+        "threat_others_modifier": 0.75,
+        "friction_modifier": 0.5,
+        "claims_modifier": 1,
+        "advanced_start_chance": 0
+      },
+      "diplomacy": {
+        "federation_acceptance": 70,
+        "nap_acceptance": 15,
+        "commercial_pact_acceptance": 0,
+        "research_agreement_acceptance": 10,
+        "migration_pact_acceptance": -100,
+        "defensive_pact_acceptance": 15,
+        "loyalty_acceptance": 1
+      },
+      "fleet": {
+        "armor_ratio": 0.2,
+        "shields_ratio": 0.4,
+        "hull_ratio": 0.4
+      },
+      "weapons": "weapon_type_kinetic"
+    },
+    {
+      "key": "rampant_wilderness",
+      "behaviours": [
+        "conqueror",
+        "opportunist",
+        "purger",
+        "dominator",
+        "attack_neutrals"
+      ],
+      "attitude": {
+        "aggressiveness": 3,
+        "bravery": 1.1,
+        "combat_bravery": 1.25,
+        "trade_willingness": 0,
+        "military_spending": 1.2,
+        "colony_spending": 1.2,
+        "threat_modifier": 0,
+        "threat_others_modifier": 0,
+        "friction_modifier": 0,
+        "claims_modifier": 0,
+        "advanced_start_chance": 100
+      },
+      "diplomacy": {
+        "federation_acceptance": -1000,
+        "nap_acceptance": -1000,
+        "commercial_pact_acceptance": -1000,
+        "research_agreement_acceptance": -1000,
+        "migration_pact_acceptance": -1000,
+        "defensive_pact_acceptance": -1000,
+        "loyalty_acceptance": 0.25
+      },
+      "fleet": {
+        "armor_ratio": 0.2,
+        "shields_ratio": 0.2,
+        "hull_ratio": 0.6
+      },
+      "weapons": "weapon_type_explosive"
+    }
+  ],
+  "text": {
+    "weapon_type_energy": "\u00A7YEnergy\u00A7!",
+    "weapon_type_kinetic": "\u00A7YKinetic\u00A7!",
+    "weapon_type_strike_craft": "\u00A7YStrike Craft\u00A7!",
+    "weapon_type_explosive": "\u00A7YExplosive\u00A7!"
+  }
+}

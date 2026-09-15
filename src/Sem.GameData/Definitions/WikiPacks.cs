@@ -213,3 +213,76 @@ public sealed record ShipsetPack : IWikiPack
     public IReadOnlyDictionary<string, string> Text { get; init; } =
         new Dictionary<string, string>(StringComparer.Ordinal);
 }
+
+/// <summary>
+/// How one AI personality plays, beyond which empires are drawn it.
+/// </summary>
+/// <remarks>
+/// <para>
+/// The game documents every one of these at the top of its own file, in a comment block longer than
+/// most of the personalities under it - what aggressiveness does to a war declaration, what
+/// trade willingness means at 1.0, what each behaviour flag decides. None of it was read, so the
+/// page said a personality's name, its odds and nothing about how it behaves.
+/// </para>
+/// <para>
+/// Kept in the wiki's own file for the usual reason: an empire being designed has no AI, so none of
+/// this belongs on a record every visitor to the designer fetches.
+/// </para>
+/// </remarks>
+/// <param name="Key">The personality, as the game names it.</param>
+public sealed record PersonalityDetail(string Key)
+{
+    /// <summary>
+    /// What it will do, as the flags it answers yes to.
+    /// </summary>
+    /// <remarks>
+    /// Only the yesses. The game writes both - fifty of the fifty-one say whether they conquer - and
+    /// a chip saying "will not enslave" beside twelve others is a list of everything a personality
+    /// is not. What is left out is what it will not do.
+    /// </remarks>
+    public IReadOnlyList<string> Behaviours { get; init; } = [];
+
+    /// <summary>How it carries itself: aggressiveness, bravery, what it spends on.</summary>
+    public IReadOnlyDictionary<string, double> Attitude { get; init; } =
+        new Dictionary<string, double>(StringComparer.Ordinal);
+
+    /// <summary>What it will sign, as the number added to its chance of accepting each.</summary>
+    public IReadOnlyDictionary<string, double> Diplomacy { get; init; } =
+        new Dictionary<string, double>(StringComparer.Ordinal);
+
+    /// <summary>What it builds its ships out of, as the share of each it aims for.</summary>
+    public IReadOnlyDictionary<string, double> Fleet { get; init; } =
+        new Dictionary<string, double>(StringComparer.Ordinal);
+
+    /// <summary>And what it arms them with, which the game names and localises.</summary>
+    public string? Weapons { get; init; }
+}
+
+/// <summary>
+/// Every AI personality, as a page about them needs them.
+/// </summary>
+/// <remarks>
+/// The text travels with the records because <c>loc/en.json</c> is pruned to what the database
+/// reaches, and the weapon types these name are reached by nothing in it.
+/// </remarks>
+public sealed record PersonalityPack : IWikiPack
+{
+    /// <summary>Where this pack lives, which is the whole of what names the file.</summary>
+    public const string Domain = "personalities";
+
+    /// <summary>The shape these records are in, bumped when it changes.</summary>
+    public const int CurrentSchemaVersion = 1;
+
+    /// <inheritdoc />
+    public static int ExpectedSchemaVersion => CurrentSchemaVersion;
+
+    /// <inheritdoc />
+    public required WikiPackStamp Stamp { get; init; }
+
+    /// <summary>The personalities, in the order the game declares them.</summary>
+    public IReadOnlyList<PersonalityDetail> Personalities { get; init; } = [];
+
+    /// <summary>The names the weapon types are written in.</summary>
+    public IReadOnlyDictionary<string, string> Text { get; init; } =
+        new Dictionary<string, string>(StringComparer.Ordinal);
+}

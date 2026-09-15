@@ -219,10 +219,32 @@ public static class GameDataWriter
         file.WriteAllBytes(
             Path.Combine(outputDirectory, WikiPackFileName(ShipsetPack.Domain)), shipJson);
 
+        var personalities = new PersonalityPack
+        {
+            Stamp = new WikiPackStamp(
+                GameDataExtractor.ExtractorVersion, PersonalityPack.CurrentSchemaVersion),
+
+            Personalities = extractor.Personalities,
+
+            // The weapon types they name, which the game localises and the pruner has never had a
+            // reason to keep - nothing in the database reaches one.
+            Text = LocalisationPruner.Slice(
+                extractor.Personalities.Select(d => d.Weapons).OfType<string>().Distinct(StringComparer.Ordinal),
+                all,
+                database.ScriptedText),
+        };
+
+        var personalityJson = JsonSerializer.SerializeToUtf8Bytes(
+            personalities, GameDataJsonContext.Default.PersonalityPack);
+
+        file.WriteAllBytes(
+            Path.Combine(outputDirectory, WikiPackFileName(PersonalityPack.Domain)), personalityJson);
+
         return
         [
             (LeaderTraitPack.Domain, leaders.Count, json.Length),
             (ShipsetPack.Domain, fleet.Count, shipJson.Length),
+            (PersonalityPack.Domain, extractor.Personalities.Count, personalityJson.Length),
         ];
     }
 
