@@ -284,10 +284,27 @@ public sealed class ConditionReader(Localizer localizer, GameDatabase database)
         CountRequirement count =>
             $"{Localizer.Prettify(count.Of.ToString())} {Compared(count.Comparison)} {count.Value}",
 
-        UnknownRequirement unknown => Localizer.Prettify(unknown.Name),
+        UnknownRequirement unknown => Said(unknown.Value) is { Length: > 0 } named
+            ? $"{Localizer.Prettify(unknown.Name)}: {named}"
+            : Localizer.Prettify(unknown.Name),
 
         _ => Localizer.Prettify(requirement.GetType().Name),
     };
+
+    /// <summary>
+    /// What a condition's argument is called, where the game calls it anything.
+    /// </summary>
+    /// <remarks>
+    /// The game has words for a technology, a menace perk and a ship category, and the whole point
+    /// of keeping the argument is to show them - "Has Technology" alone was on fifteen perks and
+    /// named none of them. It has none for most of its country flags, and a prettified
+    /// <c>finish_shroud_forged_liberation_flag</c> is a line of script wearing capital letters, so
+    /// for those the condition goes back to saying only what it asks.
+    /// </remarks>
+    /// <param name="value">The argument, or nothing where the condition took none.</param>
+    /// <returns>Its name, or nothing.</returns>
+    private string? Said(string? value) =>
+        value is { Length: > 0 } ? _localizer.Text(value, string.Empty) : null;
 
     private static string Compared(CountComparison comparison) => comparison switch
     {

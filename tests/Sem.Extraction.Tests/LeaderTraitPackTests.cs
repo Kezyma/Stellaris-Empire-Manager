@@ -102,6 +102,69 @@ public sealed class LeaderTraitPackTests
         Assert.DoesNotContain(Read.Value.Extract().Traits, t => t.Key == "leader_trait_rift_warped");
     }
 
+    /// <summary>
+    /// A leader trait says where its numbers land, rather than handing them all to the empire.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The game documents this beside the traits themselves - <c>councilor_modifier</c> is "modifier
+    /// applied to country if leader is on the Council", <c>fleet_modifier</c> "the fleet the leader
+    /// is assigned to" - and matched by shape alone they were read as one always-on list.
+    /// </para>
+    /// <para>
+    /// Which was not merely unsaid, it was wrong. Paladin Ace gives five percent evasion from the
+    /// council and fifty percent leading a fleet, and flattened together those two became a single
+    /// fifty-five percent that the trait never gives anybody.
+    /// </para>
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void ALeaderTraitSaysWhereItsNumbersLand()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var ace = Assert.Single(Read.Value.LeaderTraits, t => t.Key == "leader_trait_paladin_ace");
+
+        Assert.Empty(ace.Effects.Modifiers);
+        Assert.Equal(2, ace.Effects.Conditional.Count);
+
+        Assert.Equal(
+            ["on_the_council", "leading_the_fleet"],
+            ace.Effects.Conditional.Select(c => Assert.IsType<UnknownRequirement>(c.When).Name));
+
+        Assert.Equal(
+            [0.05, 0.5],
+            ace.Effects.Conditional.Select(c => c.Modifiers["ship_evasion_mult"]));
+    }
+
+    /// <summary>
+    /// And a triggered block of the same scope reads as the scope and its own trigger together.
+    /// </summary>
+    /// <remarks>
+    /// Which is why the scope is kept as a condition rather than as a label. A hundred and thirty-four
+    /// triggered councilor blocks were dropped outright before this, for not being one of the two
+    /// triggered blocks a leader trait was known to write.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void AScopeAndItsOwnTriggerReadAsOneCondition()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var ambusher = Assert.Single(
+            Read.Value.LeaderTraits,
+            t => t.Key == "leader_trait_paladin_ambusher");
+
+        var cloaking = Assert.Single(
+            ambusher.Effects.Conditional,
+            c => c.Modifiers.ContainsKey("ship_cloaking_strength_add"));
+
+        var both = Assert.IsType<AllRequirement>(cloaking.When);
+
+        Assert.Equal("on_the_council", Assert.IsType<UnknownRequirement>(both.Items[0]).Name);
+        Assert.IsType<DlcRequirement>(both.Items[1]);
+    }
+
     /// <summary>And the database still holds only what a design can hold.</summary>
     [SkippableFact]
     [Trait("Category", "RealData")]

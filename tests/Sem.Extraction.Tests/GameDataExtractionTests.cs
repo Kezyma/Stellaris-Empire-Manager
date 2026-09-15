@@ -162,6 +162,21 @@ public sealed class GameDataExtractionTests
             "is_heir",
             "has_edict",
             "colony.ship?",
+
+            // And the nine that arrived with the scoped blocks, which are read now that a leader
+            // trait says where its numbers land rather than handing them all to the empire. The
+            // council, the galactic community and a federation delegate are the scopes that were
+            // being skipped, and they ask about exactly those things: who the custodian is, which
+            // resolution is on the floor, and whichever country FROM happens to be pointing at.
+            "FROM",
+            "FROM.owner",
+            "from.controller",
+            "has_galactic_custodian",
+            "has_galactic_emperor",
+            "is_active_resolution",
+            "is_galactic_community_member",
+            "is_variable_set",
+            "check_variable",
         ];
 
         var unexpected = database.UnrecognisedEffectConditions.Keys.Except(known, StringComparer.Ordinal);
@@ -174,6 +189,46 @@ public sealed class GameDataExtractionTests
                 database.UnrecognisedEffectConditions
                     .Where(p => !known.Contains(p.Key, StringComparer.Ordinal))
                     .Select(p => $"  {p.Value,5}  {p.Key}")));
+    }
+
+    /// <summary>
+    /// A condition about a game in progress keeps what it named.
+    /// </summary>
+    /// <remarks>
+    /// Fifteen ascension perks need a technology first, and the compiler threw the technology away
+    /// and kept only the word <c>has_technology</c> - so all fifteen showed the reader the same
+    /// bullet and named none of them. Galactic Wonders and Master Builders both wait on
+    /// mega-engineering, and the game has words for it.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void APerkKeepsTheNameOfTheTechnologyItWaitsFor()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var database = Database.Value;
+
+        var named = database.AscensionPerks.ToDictionary(
+            p => p.Key,
+            p => new AllRequirement([p.Potential, p.Possible])
+                .AndNested()
+                .OfType<UnknownRequirement>()
+                .Where(u => string.Equals(u.Name, "has_technology", StringComparison.Ordinal))
+                .Select(u => u.Value)
+                .OfType<string>()
+                .ToList(),
+            StringComparer.Ordinal);
+
+        Assert.Equal(15, named.Count(p => p.Value.Count > 0));
+        Assert.Equal(["tech_mega_engineering"], named["ap_galactic_wonders"]);
+        Assert.Equal(["tech_titans"], named["ap_colossus"]);
+
+        // And the name is one the game writes words for, which is the whole point of keeping it -
+        // the pruner keeps a technology's entry now that something reaches it.
+        var extractor = new GameDataExtractor(LayeredContent.ForInstall(InstallRoot!));
+        var text = extractor.ExtractLocalisation(reachableFrom: database);
+
+        Assert.Equal("Mega-Engineering", text.GetValueOrDefault("tech_mega_engineering"));
     }
 
     [SkippableFact]

@@ -139,7 +139,19 @@ public sealed record PredicateRequirement(string Name) : Requirement;
 /// What to treat it as while evaluating. True by default, so unrecognised script never hides an
 /// option the player should be able to pick.
 /// </param>
-public sealed record UnknownRequirement(string Name, bool Assume = true) : Requirement;
+public sealed record UnknownRequirement(string Name, bool Assume = true) : Requirement
+{
+    /// <summary>
+    /// What the condition named, where it named something.
+    /// </summary>
+    /// <remarks>
+    /// Not every unknown has one - most are a trigger asked with yes or no - but the ones that do
+    /// are the ones worth reading. <c>has_technology = tech_mega_engineering</c> compiles here, and
+    /// without this the name went in the bin and fifteen ascension perks each said "Has Technology"
+    /// and left the reader to guess which. Kept as the game's own key so it can be looked up.
+    /// </remarks>
+    public string? Value { get; init; }
+}
 
 /// <summary>
 /// How many of something have been taken already, compared against a number.

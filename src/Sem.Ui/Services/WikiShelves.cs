@@ -712,11 +712,31 @@ public sealed class WikiShelves(DesignSession session)
 
             // The whole view, not the sky. A world is drawn as its sky with bands of landscape in
             // front of it, so the sky alone is the clouds with nothing underneath - which is what
-            // every planet card was showing. Composed by the same method the room scene uses, with
-            // no city on it, because this is the world rather than anybody's world.
-            Layers = [.. WorldBackdrop.Layers(world, city: null, level: 0)],
+            // every planet card was showing. Composed by the same method the room scene uses, and
+            // bare of a city, because this is the world rather than anybody's world.
+            Layers = [.. WorldBackdrop.Layers(world, Skyline(world), level: 0)],
         };
     }
+
+    /// <summary>
+    /// Whose towers to paint on a world that is made of them.
+    /// </summary>
+    /// <remarks>
+    /// The ecumenopolis, and nothing else in the folder: it declares a fixed city level of six and
+    /// no landscape of its own, because the game paints the empire's own towers straight onto its
+    /// sky and that is the surface. Drawn bare it was the clouds and nothing underneath, which is
+    /// the fault the other worlds had and this one kept for a different reason.
+    ///
+    /// Borrowing a skyline is not drawing somebody's empire here - at the level the world fixes,
+    /// the towers reach the horizon and are the world - so the first culture with city art stands
+    /// in for all of them, and every other world stays bare.
+    /// </remarks>
+    /// <param name="world">The world.</param>
+    /// <returns>The culture whose city to borrow, or null to draw the world as it comes.</returns>
+    private GraphicalCultureDefinition? Skyline(PlanetClassDefinition world) =>
+        world is { FixedCityLevel: not null, ShowsCity: true, Scenery.Count: 0 }
+            ? Database.GraphicalCultures.FirstOrDefault(c => c.CityLayers.Count > 0)
+            : null;
 
     /// <summary>
     /// What puts a world in the homeworld picker that would not otherwise be in it.
@@ -995,12 +1015,18 @@ public sealed class WikiShelves(DesignSession session)
     /// <param name="detail">How it plays, where the page has fetched it.</param>
     /// <param name="reader">The text, with the pack's merged in.</param>
     /// <returns>Its facts.</returns>
-    private static IReadOnlyList<WikiFact> PersonalityFacts(
+    private IReadOnlyList<WikiFact> PersonalityFacts(
         PersonalityDefinition personality,
         PersonalityDetail? detail,
         Localizer reader) =>
     [
         WikiFact.Said("Weight", Number(personality.Weight)),
+
+        // And what tips the draw toward it. Six of the fifty-one are pulled at by the empire's own
+        // ethics, traits and civics - Evangelising Zealots gains two for a fanatic spiritualist and
+        // one for Conformists, and loses one for Repugnant - which the record has carried all along
+        // while the page printed a base weight and left the reader to guess what moved it.
+        WikiFact.Of("More likely", Pulls(personality.Additions)),
 
         // What it will do, which is the question a reader arrives with: is this the neighbour that
         // takes planets, the one that enslaves, or the one that leaves you alone.
@@ -1099,6 +1125,58 @@ public sealed class WikiShelves(DesignSession session)
                 Description = Meaning(p.Key),
             }),
     ];
+
+    /// <summary>
+    /// What tips the draw toward a personality, and by how much.
+    /// </summary>
+    /// <remarks>
+    /// Added rather than multiplied, which the game says at the top of its own file, so the badge
+    /// carries a sign. A factor of nothing is left out: one personality names a civic and adds zero
+    /// for it, which is the game keeping a hook it does not currently use.
+    /// </remarks>
+    /// <param name="factors">The weight additions, which for forty-five of them are none.</param>
+    /// <returns>The chips.</returns>
+    private IReadOnlyList<EmpireChoice> Pulls(IReadOnlyList<WeightFactor> factors) =>
+        [.. factors.Where(f => f.Factor != 0).Select(Pull).OfType<EmpireChoice>()];
+
+    /// <summary>
+    /// One of those, drawn as the thing it names wherever it names one.
+    /// </summary>
+    /// <remarks>
+    /// A condition that is a single choice becomes that choice's own chip, with its picture and its
+    /// panel - an ethic looks here as it looks in a picker. Anything else is a sentence, which is
+    /// what the two that ask about a government or an election type come out as.
+    /// </remarks>
+    /// <param name="factor">The addition.</param>
+    /// <returns>The chip, or nothing where the condition says nothing.</returns>
+    private EmpireChoice? Pull(WeightFactor factor)
+    {
+        var badge = factor.Factor > 0 ? $"+{Number(factor.Factor)}" : Number(factor.Factor);
+
+        if (factor.When is SelectionRequirement selection &&
+            Selected(selection.Category, selection.Key) is { } chosen)
+        {
+            return chosen with { Badge = badge, BadgeLevel = factor.Factor };
+        }
+
+        return session.Conditions.Describe(factor.When) is { Length: > 0 } said
+            ? new EmpireChoice(said, said, null, null) { Badge = badge, BadgeLevel = factor.Factor }
+            : null;
+    }
+
+    /// <summary>One chosen thing, drawn the way its own kind is drawn.</summary>
+    /// <param name="category">What kind of thing it is.</param>
+    /// <param name="key">Which one.</param>
+    /// <returns>The chip, or nothing for a kind that has no chip builder.</returns>
+    private EmpireChoice? Selected(SelectionCategory category, string key) => category switch
+    {
+        SelectionCategory.Ethics => Ethics(key).FirstOrDefault(),
+        SelectionCategory.Traits => Traits(key).FirstOrDefault(),
+        SelectionCategory.Civics or SelectionCategory.Origin => Civics(key).FirstOrDefault(),
+        SelectionCategory.SpeciesClass => Classes(key).FirstOrDefault(),
+        SelectionCategory.SpeciesArchetype => Archetypes(key).FirstOrDefault(),
+        _ => null,
+    };
 
     /// <summary>One behaviour, which the game names in script and nowhere else.</summary>
     /// <param name="key">The flag.</param>
@@ -1807,6 +1885,11 @@ public sealed class WikiShelves(DesignSession session)
         WikiFact.Of("Rules out", Traits(trait.Opposites)),
         WikiFact.Of("Homeworld", Worlds(trait.AllowedPlanetClasses)),
         WikiFact.Of("Origin", Civics(trait.AllowedOrigins)),
+
+        // And the origin that rules it out, which is the one flat list on the record that reached
+        // no column. One trait says it - Sedentary, which Void Dwellers will not have - and a
+        // heading that one row answers is still a heading that row was missing.
+        WikiFact.Of("Not for", Civics(trait.ForbiddenOrigins)),
         WikiFact.Of("Not with", Ethics(trait.ForbiddenEthics)),
         WikiFact.Of("Needs civic", Civics(trait.AllowedCivics)),
     ];

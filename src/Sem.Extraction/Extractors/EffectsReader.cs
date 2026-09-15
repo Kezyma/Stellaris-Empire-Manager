@@ -46,6 +46,45 @@ public static class EffectsReader
     ];
 
     /// <summary>
+    /// Where a leader's modifiers land, said as a condition.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A leader trait does not simply give its numbers to the empire. The game's own documentation
+    /// beside these traits says where each block goes - <c>councilor_modifier</c> is "modifier
+    /// applied to country if leader is on the Council", <c>fleet_modifier</c> "the fleet the leader
+    /// is assigned to" - and matched by shape they were all read as always-on. So two hundred and
+    /// seventy-one traits said "+10% ship fire rate" with no hint that it counts only while that
+    /// leader sits on the council, and eighty-one said it without saying whose fleet.
+    /// </para>
+    /// <para>
+    /// Kept as a condition rather than as a label, because a condition composes. A triggered block
+    /// of the same scope carries a trigger of its own, and the two read as one sentence - "when on
+    /// the council and with Utopia" - which a label beside a list could not do. It is a condition a
+    /// design cannot settle, which is exactly what the rules engine already means by an unknown:
+    /// permitted, and kept out of any total.
+    /// </para>
+    /// <para>
+    /// The four scopes that are the subject itself are not here. <c>modifier</c>, <c>self_modifier</c>,
+    /// <c>country_modifier</c> and <c>species_modifier</c> all land on the thing being described, so
+    /// for those always-on is the truth.
+    /// </para>
+    /// </remarks>
+    private static readonly IReadOnlyDictionary<string, string> LeaderScopes =
+        new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["councilor"] = "on_the_council",
+            ["planet"] = "governing_a_colony",
+            ["system"] = "in_the_same_system",
+            ["sector"] = "governing_a_sector_capital",
+            ["fleet"] = "leading_the_fleet",
+            ["army"] = "commanding_the_armies",
+            ["galcom"] = "sitting_on_the_galactic_council",
+            ["federation"] = "delegate_to_the_federation",
+            ["background_planet"] = "on_their_homeworld",
+        };
+
+    /// <summary>
     /// The triggered block the game shows for everything except a trait.
     /// </summary>
     /// <remarks>
@@ -135,7 +174,26 @@ public static class EffectsReader
                 continue;
             }
 
-            if (IsAlwaysOnModifierBlock(key))
+            // Where a leader's numbers land, before the shape test below can call them everybody's.
+            // Both forms at once: the plain block is the scope alone, the triggered one is the scope
+            // and its own trigger together, and reading them in one arm is what stops a hundred and
+            // thirty-four triggered councilor blocks from being dropped for not being on a list.
+            if (forLeader && LeaderScope(key) is { } scope)
+            {
+                var values = new Dictionary<string, double>(StringComparer.Ordinal);
+                Accumulate(values, block, loader);
+
+                if (values.Count > 0)
+                {
+                    conditional.Add(new ConditionalEffects(
+                        Also(scope, requirements.CompileEffectCondition(block.GetBlock("potential"))),
+                        values)
+                    {
+                        TooltipKey = block.GetString("custom_tooltip"),
+                    });
+                }
+            }
+            else if (IsAlwaysOnModifierBlock(key))
             {
                 Accumulate(modifiers, block, loader);
 
@@ -442,6 +500,38 @@ public static class EffectsReader
     private static bool IsAlwaysOnModifierBlock(string key) =>
         !key.StartsWith("triggered_", StringComparison.Ordinal) &&
         (key == "modifier" || key.EndsWith("_modifier", StringComparison.Ordinal));
+
+    /// <summary>
+    /// Whether a block puts a leader's numbers somewhere other than on the leader, and where.
+    /// </summary>
+    /// <remarks>
+    /// The triggered form and the plain form of a scope are the same scope, so the prefix is taken
+    /// off before looking it up. A name that is not one of the game's documented scopes - the plain
+    /// <c>modifier</c>, the leader's own <c>self_modifier</c>, and everything a species or a country
+    /// writes - answers nothing and is read as it was before.
+    /// </remarks>
+    /// <param name="key">The block's name.</param>
+    /// <returns>The condition the scope amounts to, or nothing where the block has no scope.</returns>
+    private static Requirement? LeaderScope(string key)
+    {
+        var name = key.StartsWith("triggered_", StringComparison.Ordinal)
+            ? key["triggered_".Length..]
+            : key;
+
+        return name.EndsWith("_modifier", StringComparison.Ordinal) &&
+               LeaderScopes.TryGetValue(name[..^"_modifier".Length], out var said)
+            ? new UnknownRequirement(said)
+            : null;
+    }
+
+    /// <summary>
+    /// Two conditions as one, without wrapping a condition that says nothing.
+    /// </summary>
+    /// <param name="scope">Where the numbers land.</param>
+    /// <param name="also">What the block itself asks, which for a plain block is nothing.</param>
+    /// <returns>The pair, or the scope alone.</returns>
+    private static Requirement Also(Requirement scope, Requirement also) =>
+        also is AlwaysRequirement { Value: true } ? scope : new AllRequirement([scope, also]);
 
     /// <summary>
     /// Adds a block's modifiers to a running total.

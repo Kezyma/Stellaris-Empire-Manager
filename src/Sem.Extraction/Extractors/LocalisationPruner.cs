@@ -519,6 +519,15 @@ internal static partial class LocalisationPruner
             foreach (var nested in requirement.AndNested())
             {
                 Add(nested.FailureText);
+
+                // And a condition naming a thing names it by the game's own key, which the game's
+                // own entry then titles - tech_mega_engineering is "Mega-Engineering". Nothing else
+                // in the database reaches a technology, so without asking here the reader would get
+                // the key back and print it.
+                if (nested is UnknownRequirement unknown)
+                {
+                    Add(unknown.Value);
+                }
             }
         }
     }

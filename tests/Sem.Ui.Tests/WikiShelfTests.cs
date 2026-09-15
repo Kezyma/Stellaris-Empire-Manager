@@ -1002,6 +1002,27 @@ public sealed class WikiShelfTests
         Assert.Equal("Energy", row.Fact("Weapons")!.Text);
     }
 
+    /// <summary>
+    /// And what tips the draw toward it, which the page never said.
+    /// </summary>
+    /// <remarks>
+    /// Six of the fifty-one are pulled at by the empire's own ethics, traits and civics, and the
+    /// page printed a base weight and left the reader to work out what moved it. A condition naming
+    /// a single choice becomes that choice's chip; anything else becomes a sentence; and a factor
+    /// of nothing is left out, because one personality names a civic and adds zero for it.
+    /// </remarks>
+    [Fact]
+    public void APersonalitySaysWhatPullsTheDrawTowardIt()
+    {
+        var row = Assert.Single(Personalities().Personalities(pack: null).Rows);
+        var pulls = row.Fact("More likely")!.Chips;
+
+        Assert.Equal(["Fanatic Militarist", "election type none"], pulls.Select(c => c.Name));
+        Assert.Equal(["+2", "-1"], pulls.Select(c => c.Badge));
+
+        Assert.DoesNotContain(pulls, c => c.Key == "civic_barbaric_despoilers");
+    }
+
     /// <summary>A government says what it calls whoever is in charge, in both forms.</summary>
     [Fact]
     public void AGovernmentSaysBothFormsOfBothTitles()
@@ -1095,6 +1116,27 @@ public sealed class WikiShelfTests
             Traits = [new TraitDefinition("trait_void_dweller", TraitKind.Species)],
         });
 
+    /// <summary>
+    /// A world that is made of city is drawn with one.
+    /// </summary>
+    /// <remarks>
+    /// The ecumenopolis is the one world in the folder with a fixed city level and no landscape of
+    /// its own - the game paints the empire's towers straight onto its sky and that is the surface -
+    /// so drawn bare, the way every other world is, its card was the clouds and nothing underneath.
+    /// The habitat beside it says it shows no city at all, and must stay bare.
+    /// </remarks>
+    [Fact]
+    public void AWorldMadeOfCityIsDrawnWithOne()
+    {
+        var rows = PlanetShelf().Of(WikiKind.Planets).Rows.ToDictionary(r => r.Key, StringComparer.Ordinal);
+
+        Assert.Equal(
+            ["worlds/pc_city_sky.png", "cities/humanoid_01_06.png"],
+            rows["pc_city"].Layers);
+
+        Assert.Equal(["worlds/pc_habitat_sky.png"], rows["pc_habitat"].Layers);
+    }
+
     /// <summary>Four worlds and a civic that opens one of them.</summary>
     private static WikiShelves PlanetShelf() =>
         Shelves(new GameDatabase
@@ -1108,7 +1150,30 @@ public sealed class WikiShelfTests
                 new PlanetClassDefinition("pc_ocean") { Climate = "wet", IsStartingWorld = true },
                 new PlanetClassDefinition("pc_volcanic") { Climate = "dry" },
                 new PlanetClassDefinition("pc_frozen") { Climate = "cold" },
-                new PlanetClassDefinition("pc_habitat") { ShowsCity = false },
+                new PlanetClassDefinition("pc_habitat")
+                {
+                    ShowsCity = false,
+                    Sky = "worlds/pc_habitat_sky.png",
+                },
+
+                // The one world that is a city. No landscape, and a level the game fixes for it.
+                new PlanetClassDefinition("pc_city")
+                {
+                    Climate = "dry",
+                    Sky = "worlds/pc_city_sky.png",
+                    FixedCityLevel = 6,
+                },
+            ],
+            GraphicalCultures =
+            [
+                new GraphicalCultureDefinition("humanoid_01")
+                {
+                    CityLayers =
+                    [
+                        new CityLayer(5, "cities/humanoid_01_05.png", 0, 4),
+                        new CityLayer(6, "cities/humanoid_01_06.png", 5, null),
+                    ],
+                },
             ],
             Civics =
             [
@@ -1161,10 +1226,28 @@ public sealed class WikiShelfTests
                 GameVersion = "test",
                 ExtractorVersion = "test",
                 Defines = new GameDefines { EthicsPoints = 3, CivicPoints = 2, CityPopLevel = 4 },
-                Personalities = [new PersonalityDefinition("honorbound_warriors", 50, 0)],
+                Personalities =
+                [
+                    new PersonalityDefinition("honorbound_warriors", 50, 0)
+                    {
+                        Additions =
+                        [
+                            new WeightFactor(
+                                new SelectionRequirement(SelectionCategory.Ethics, "ethic_fanatic_militarist"),
+                                2),
+                            new WeightFactor(new FieldRequirement("election_type", "none"), -1),
+
+                            // The hook the game keeps and does not currently use.
+                            new WeightFactor(
+                                new SelectionRequirement(SelectionCategory.Civics, "civic_barbaric_despoilers"),
+                                0),
+                        ],
+                    },
+                ],
             },
             ("personality_honorbound_warriors", "Honourbound Warriors"),
-            ("personality_honorbound_warriors_desc", "They fight fairly."));
+            ("personality_honorbound_warriors_desc", "They fight fairly."),
+            ("ethic_fanatic_militarist", "Fanatic Militarist"));
 
     /// <summary>One government, with both forms of both titles.</summary>
     private static WikiShelves Governments() =>

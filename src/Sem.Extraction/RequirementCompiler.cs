@@ -543,9 +543,12 @@ public sealed class RequirementCompiler
         // Something a running game would know and this empire will find out. Only while compiling a
         // plan, and only as an assumption rather than a constant, so that a negation stays as
         // permissive as the condition it wraps.
+        //
+        // The value comes with it. Unknowable is not the same as unreadable: the plan cannot answer
+        // "do I have mega-engineering yet", but it can certainly say that is what is being asked.
         if (_compilingPlan && DesignPredicates.UnknowableWhenPlanning.Contains(key))
         {
-            return new UnknownRequirement(key);
+            return new UnknownRequirement(key) { Value = node.ScalarValue };
         }
 
         // Conditions naming a value rather than answering yes or no, such as

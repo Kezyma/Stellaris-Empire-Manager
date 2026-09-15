@@ -1,7 +1,7 @@
 {
   "schemaVersion": 17,
   "gameVersion": "v4.5.0",
-  "extractorVersion": "0.1.0\u002B1ad5344986e2",
+  "extractorVersion": "0.1.0\u002Bcd155dac6f8b",
   "installFingerprint": "4c524a20ddb52a8f",
   "defines": {
     "ethicsPoints": 3,
@@ -42961,12 +42961,14 @@
       "canAddLater": {
         "kind": "unknown",
         "name": "has_technology",
-        "assume": true
+        "assume": true,
+        "value": "tech_subspace_drive"
       },
       "canRemoveLater": {
         "kind": "unknown",
         "name": "has_technology",
-        "assume": true
+        "assume": true,
+        "value": "tech_jump_drive_1"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -43713,6 +43715,7 @@
         "kind": "unknown",
         "name": "has_technology",
         "assume": true,
+        "value": "tech_mine_dark_matter",
         "failureText": "CIVIC_NOT_MODDABLE_ONLY_REMOVE"
       },
       "canRemoveLater": {
@@ -43720,7 +43723,8 @@
         "item": {
           "kind": "unknown",
           "name": "has_country_flag",
-          "assume": true
+          "assume": true,
+          "value": "civic_dark_consortium_locked"
         },
         "failureText": "CIVIC_LOCKED"
       },
@@ -45816,7 +45820,8 @@
           {
             "kind": "unknown",
             "name": "has_technology",
-            "assume": true
+            "assume": true,
+            "value": "tech_psionic_theory"
           },
           {
             "kind": "all",
@@ -62738,7 +62743,8 @@
           {
             "kind": "unknown",
             "name": "has_technology",
-            "assume": true
+            "assume": true,
+            "value": "tech_psionic_theory"
           },
           {
             "kind": "all",
@@ -65000,12 +65006,14 @@
       "canAddLater": {
         "kind": "unknown",
         "name": "has_technology",
-        "assume": true
+        "assume": true,
+        "value": "tech_subspace_drive"
       },
       "canRemoveLater": {
         "kind": "unknown",
         "name": "has_technology",
-        "assume": true
+        "assume": true,
+        "value": "tech_jump_drive_1"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -66275,7 +66283,8 @@
           {
             "kind": "unknown",
             "name": "has_technology",
-            "assume": true
+            "assume": true,
+            "value": "tech_psionic_theory"
           },
           {
             "kind": "all",
@@ -69415,12 +69424,14 @@
       "canAddLater": {
         "kind": "unknown",
         "name": "has_technology",
-        "assume": true
+        "assume": true,
+        "value": "tech_subspace_drive"
       },
       "canRemoveLater": {
         "kind": "unknown",
         "name": "has_technology",
-        "assume": true
+        "assume": true,
+        "value": "tech_jump_drive_1"
       },
       "forcedTraits": [],
       "softTraits": [],
@@ -70317,6 +70328,7 @@
         "kind": "unknown",
         "name": "has_technology",
         "assume": true,
+        "value": "tech_mine_dark_matter",
         "failureText": "CIVIC_NOT_MODDABLE_ONLY_REMOVE"
       },
       "canRemoveLater": {
@@ -70331,7 +70343,8 @@
             "item": {
               "kind": "unknown",
               "name": "has_country_flag",
-              "assume": true
+              "assume": true,
+              "value": "civic_dark_consortium_locked"
             }
           }
         ],
@@ -71909,7 +71922,8 @@
           {
             "kind": "unknown",
             "name": "has_technology",
-            "assume": true
+            "assume": true,
+            "value": "tech_psionic_theory"
           },
           {
             "kind": "all",
@@ -73605,7 +73619,8 @@
                 {
                   "kind": "unknown",
                   "name": "has_country_flag",
-                  "assume": true
+                  "assume": true,
+                  "value": "synthetic_empire"
                 }
               ]
             }
@@ -73851,7 +73866,8 @@
                     {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "finish_shroud_forged_liberation_flag"
                     }
                   ]
                 }
@@ -73872,6 +73888,7 @@
             "kind": "unknown",
             "name": "num_tradition_categories",
             "assume": true,
+            "value": "@max_tradition_trees",
             "failureText": "requires_free_tradition_tree"
           },
           {
@@ -73899,12 +73916,14 @@
                       {
                         "kind": "unknown",
                         "name": "has_country_flag",
-                        "assume": true
+                        "assume": true,
+                        "value": "clone_army_fertility_unlocked"
                       },
                       {
                         "kind": "unknown",
                         "name": "has_country_flag",
-                        "assume": true
+                        "assume": true,
+                        "value": "clone_army_full_potential"
                       }
                     ],
                     "failureText": "clone_soldier_locked_genes"
@@ -74027,12 +74046,14 @@
                         {
                           "kind": "unknown",
                           "name": "has_country_flag",
-                          "assume": true
+                          "assume": true,
+                          "value": "is_decyberized"
                         },
                         {
                           "kind": "unknown",
                           "name": "has_country_flag",
-                          "assume": true
+                          "assume": true,
+                          "value": "is_cyberized"
                         }
                       ]
                     }
@@ -74238,7 +74259,8 @@
                     {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "finish_shroud_forged_liberation_flag"
                     }
                   ]
                 }
@@ -74259,6 +74281,7 @@
             "kind": "unknown",
             "name": "num_tradition_categories",
             "assume": true,
+            "value": "@max_tradition_trees",
             "failureText": "requires_free_tradition_tree"
           }
         ]
@@ -74518,7 +74541,8 @@
                                 {
                                   "kind": "unknown",
                                   "name": "has_country_flag",
-                                  "assume": true
+                                  "assume": true,
+                                  "value": "finish_shroud_forged_liberation_flag"
                                 }
                               ]
                             }
@@ -74544,6 +74568,7 @@
             "kind": "unknown",
             "name": "num_tradition_categories",
             "assume": true,
+            "value": "@max_tradition_trees",
             "failureText": "requires_free_tradition_tree"
           }
         ]
@@ -74776,7 +74801,8 @@
                                 {
                                   "kind": "unknown",
                                   "name": "has_country_flag",
-                                  "assume": true
+                                  "assume": true,
+                                  "value": "finish_shroud_forged_liberation_flag"
                                 }
                               ]
                             }
@@ -74802,6 +74828,7 @@
             "kind": "unknown",
             "name": "num_tradition_categories",
             "assume": true,
+            "value": "@max_tradition_trees",
             "failureText": "requires_free_tradition_tree"
           }
         ]
@@ -74925,7 +74952,8 @@
                 {
                   "kind": "unknown",
                   "name": "has_country_flag",
-                  "assume": true
+                  "assume": true,
+                  "value": "synthetic_empire"
                 }
               ]
             }
@@ -75150,7 +75178,8 @@
                     {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "finish_shroud_forged_liberation_flag"
                     }
                   ]
                 }
@@ -75162,6 +75191,7 @@
             "kind": "unknown",
             "name": "num_tradition_categories",
             "assume": true,
+            "value": "@max_tradition_trees",
             "failureText": "requires_free_tradition_tree"
           }
         ]
@@ -75200,7 +75230,8 @@
                 {
                   "kind": "unknown",
                   "name": "has_country_flag",
-                  "assume": true
+                  "assume": true,
+                  "value": "ratling_country"
                 },
                 {
                   "kind": "selection",
@@ -75310,7 +75341,8 @@
                         {
                           "kind": "unknown",
                           "name": "has_country_flag",
-                          "assume": true
+                          "assume": true,
+                          "value": "synthetic_empire"
                         }
                       ]
                     }
@@ -75359,7 +75391,8 @@
                             "item": {
                               "kind": "unknown",
                               "name": "has_country_flag",
-                              "assume": true
+                              "assume": true,
+                              "value": "is_cyberized"
                             }
                           }
                         ]
@@ -75419,7 +75452,8 @@
                     "item": {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "finish_shroud_forged_control_flag"
                     }
                   }
                 ]
@@ -75456,7 +75490,8 @@
                           {
                             "kind": "unknown",
                             "name": "has_country_flag",
-                            "assume": true
+                            "assume": true,
+                            "value": "synthetic_empire"
                           },
                           {
                             "kind": "predicate",
@@ -75516,7 +75551,8 @@
                             {
                               "kind": "unknown",
                               "name": "has_country_flag",
-                              "assume": true
+                              "assume": true,
+                              "value": "synthetic_empire"
                             },
                             {
                               "kind": "predicate",
@@ -75635,6 +75671,7 @@
             "kind": "unknown",
             "name": "num_tradition_categories",
             "assume": true,
+            "value": "@max_tradition_trees",
             "failureText": "requires_free_tradition_tree"
           },
           {
@@ -75660,6 +75697,7 @@
                     "kind": "unknown",
                     "name": "has_country_flag",
                     "assume": true,
+                    "value": "is_decyberized",
                     "failureText": "requires_unplugged_decyberized"
                   }
                 ]
@@ -76018,7 +76056,8 @@
                                 {
                                   "kind": "unknown",
                                   "name": "has_country_flag",
-                                  "assume": true
+                                  "assume": true,
+                                  "value": "finish_shroud_forged_liberation_flag"
                                 }
                               ]
                             }
@@ -76044,6 +76083,7 @@
             "kind": "unknown",
             "name": "num_tradition_categories",
             "assume": true,
+            "value": "@max_tradition_trees",
             "failureText": "requires_free_tradition_tree"
           }
         ]
@@ -76130,7 +76170,8 @@
                     {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "is_player_crisis"
                     }
                   ]
                 },
@@ -76212,7 +76253,8 @@
             "item": {
               "kind": "unknown",
               "name": "has_country_flag",
-              "assume": true
+              "assume": true,
+              "value": "heir_of_the_khan_khan"
             },
             "failureText": "requires_actor_not_khan"
           }
@@ -76295,7 +76337,8 @@
                     {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "is_player_crisis"
                     }
                   ]
                 },
@@ -76377,7 +76420,8 @@
             "item": {
               "kind": "unknown",
               "name": "has_country_flag",
-              "assume": true
+              "assume": true,
+              "value": "heir_of_the_khan_khan"
             },
             "failureText": "requires_actor_not_khan"
           }
@@ -76457,7 +76501,8 @@
                     {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "is_player_crisis"
                     }
                   ]
                 },
@@ -76566,7 +76611,8 @@
                 "item": {
                   "kind": "unknown",
                   "name": "has_country_flag",
-                  "assume": true
+                  "assume": true,
+                  "value": "finish_shroud_forged_liberation_flag"
                 }
               }
             ],
@@ -76593,7 +76639,8 @@
                       "item": {
                         "kind": "unknown",
                         "name": "has_country_flag",
-                        "assume": true
+                        "assume": true,
+                        "value": "shroud_forged_can_become_the_crisis"
                       }
                     }
                   ]
@@ -76618,7 +76665,8 @@
                         "item": {
                           "kind": "unknown",
                           "name": "has_country_flag",
-                          "assume": true
+                          "assume": true,
+                          "value": "shroud_forged_can_become_the_crisis"
                         }
                       }
                     ]
@@ -76748,7 +76796,8 @@
                     {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "is_player_crisis"
                     }
                   ]
                 },
@@ -76887,7 +76936,8 @@
                     {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "is_player_crisis"
                     }
                   ]
                 },
@@ -76964,12 +77014,14 @@
               {
                 "kind": "unknown",
                 "name": "exists",
-                "assume": true
+                "assume": true,
+                "value": "this"
               },
               {
                 "kind": "unknown",
                 "name": "uses_ship_category",
-                "assume": true
+                "assume": true,
+                "value": "bio_ship"
               }
             ],
             "failureText": "must_use_bioships"
@@ -77071,7 +77123,8 @@
                     {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "is_player_crisis"
                     }
                   ]
                 },
@@ -77124,7 +77177,8 @@
               {
                 "kind": "unknown",
                 "name": "has_country_flag",
-                "assume": true
+                "assume": true,
+                "value": "red_giant_discovered_crystallized_entropy"
               }
             ],
             "failureText": "requires_ascension_perks_3"
@@ -77355,6 +77409,7 @@
         "kind": "unknown",
         "name": "has_technology",
         "assume": true,
+        "value": "tech_archaeostudies",
         "failureText": "requires_technology_tech_archaeostudies"
       },
       "effects": {
@@ -77507,7 +77562,8 @@
           {
             "kind": "unknown",
             "name": "has_technology",
-            "assume": true
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
           },
           {
             "kind": "any",
@@ -77775,7 +77831,8 @@
           {
             "kind": "unknown",
             "name": "has_technology",
-            "assume": true
+            "assume": true,
+            "value": "tech_titans"
           },
           {
             "kind": "count",
@@ -77878,6 +77935,7 @@
             "kind": "unknown",
             "name": "has_technology",
             "assume": true,
+            "value": "tech_climate_restoration",
             "failureText": "requires_technology_tech_climate_restoration"
           },
           {
@@ -78159,7 +78217,8 @@
           {
             "kind": "unknown",
             "name": "has_technology",
-            "assume": true
+            "assume": true,
+            "value": "tech_starbase_4"
           },
           {
             "kind": "selection",
@@ -78238,7 +78297,8 @@
           {
             "kind": "unknown",
             "name": "has_technology",
-            "assume": true
+            "assume": true,
+            "value": "tech_waystation_3"
           },
           {
             "kind": "selection",
@@ -78831,7 +78891,8 @@
                     {
                       "kind": "unknown",
                       "name": "has_menace_perk",
-                      "assume": true
+                      "assume": true,
+                      "value": "menp_behemoth_ever_hungry"
                     }
                   ]
                 },
@@ -78957,12 +79018,14 @@
             "kind": "unknown",
             "name": "has_technology",
             "assume": true,
+            "value": "tech_habitat_1",
             "failureText": "requires_technology_habitat_1"
           },
           {
             "kind": "unknown",
             "name": "has_technology",
             "assume": true,
+            "value": "tech_arkship_tier_2",
             "failureText": "requires_tech_arkship_tier_2"
           }
         ]
@@ -79058,6 +79121,7 @@
             "kind": "unknown",
             "name": "has_technology",
             "assume": true,
+            "value": "tech_mega_engineering",
             "failureText": "requires_mega_engineering"
           }
         ]
@@ -79111,12 +79175,14 @@
             "kind": "unknown",
             "name": "has_technology",
             "assume": true,
+            "value": "tech_mega_engineering",
             "failureText": "requires_mega_engineering"
           },
           {
             "kind": "unknown",
             "name": "has_country_flag",
             "assume": true,
+            "value": "has_built_or_repaired_megastructure",
             "failureText": "requires_built_or_repaired_megastructure"
           }
         ]
@@ -79249,7 +79315,8 @@
               {
                 "kind": "unknown",
                 "name": "has_technology",
-                "assume": true
+                "assume": true,
+                "value": "tech_climate_restoration"
               },
               {
                 "kind": "selection",
@@ -79357,6 +79424,7 @@
             "kind": "unknown",
             "name": "has_technology",
             "assume": true,
+            "value": "tech_climate_restoration",
             "failureText": "requires_technology_tech_climate_restoration"
           },
           {
@@ -79454,6 +79522,7 @@
             "kind": "unknown",
             "name": "has_technology",
             "assume": true,
+            "value": "tech_housing_2",
             "failureText": "requires_technology_housing_2"
           },
           {
@@ -79545,6 +79614,7 @@
             "kind": "unknown",
             "name": "has_technology",
             "assume": true,
+            "value": "tech_gene_tailoring",
             "failureText": "requires_technology_gene_tailoring"
           }
         ]
@@ -79654,7 +79724,8 @@
                 {
                   "kind": "unknown",
                   "name": "has_country_flag",
-                  "assume": true
+                  "assume": true,
+                  "value": "knights_detox"
                 }
               ]
             }
@@ -79672,6 +79743,7 @@
         "kind": "unknown",
         "name": "has_technology",
         "assume": true,
+        "value": "tech_climate_restoration",
         "failureText": "requires_technology_tech_climate_restoration"
       },
       "effects": {
@@ -79773,6 +79845,7 @@
             "kind": "unknown",
             "name": "has_technology",
             "assume": true,
+            "value": "tech_advanced_storm_manipulation",
             "failureText": "requires_technology_tech_advanced_storm_manipulation"
           },
           {
@@ -80018,7 +80091,8 @@
                 {
                   "kind": "unknown",
                   "name": "has_menace_perk",
-                  "assume": true
+                  "assume": true,
+                  "value": "menp_behemoth_ever_hungry"
                 }
               ]
             },
@@ -80190,7 +80264,8 @@
                 {
                   "kind": "unknown",
                   "name": "has_menace_perk",
-                  "assume": true
+                  "assume": true,
+                  "value": "menp_behemoth_ever_hungry"
                 }
               ]
             }
@@ -80457,7 +80532,8 @@
                         {
                           "kind": "unknown",
                           "name": "has_country_flag",
-                          "assume": true
+                          "assume": true,
+                          "value": "finish_shroud_forged_liberation_flag"
                         }
                       ]
                     }
@@ -80508,7 +80584,8 @@
                     {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "purity_tradition_unlocked"
                     },
                     {
                       "kind": "selection",
@@ -80523,7 +80600,8 @@
                     {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "mutation_tradition_unlocked"
                     },
                     {
                       "kind": "selection",
@@ -80661,7 +80739,8 @@
                         {
                           "kind": "unknown",
                           "name": "has_country_flag",
-                          "assume": true
+                          "assume": true,
+                          "value": "finish_shroud_forged_liberation_flag"
                         }
                       ]
                     }
@@ -80712,7 +80791,8 @@
                     {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "purity_tradition_unlocked"
                     },
                     {
                       "kind": "selection",
@@ -80727,7 +80807,8 @@
                     {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "cloning_tradition_unlocked"
                     }
                   ]
                 },
@@ -80737,7 +80818,8 @@
                     {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "mutation_tradition_unlocked"
                     },
                     {
                       "kind": "selection",
@@ -80948,7 +81030,8 @@
                         {
                           "kind": "unknown",
                           "name": "has_country_flag",
-                          "assume": true
+                          "assume": true,
+                          "value": "finish_shroud_forged_liberation_flag"
                         }
                       ]
                     }
@@ -81107,7 +81190,8 @@
                         {
                           "kind": "unknown",
                           "name": "has_country_flag",
-                          "assume": true
+                          "assume": true,
+                          "value": "finish_shroud_forged_liberation_flag"
                         }
                       ]
                     }
@@ -81264,7 +81348,8 @@
                         {
                           "kind": "unknown",
                           "name": "has_country_flag",
-                          "assume": true
+                          "assume": true,
+                          "value": "finish_shroud_forged_liberation_flag"
                         }
                       ]
                     }
@@ -81315,7 +81400,8 @@
                     {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "purity_tradition_unlocked"
                     },
                     {
                       "kind": "selection",
@@ -81330,14 +81416,16 @@
                     {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "cloning_tradition_unlocked"
                     }
                   ]
                 },
                 {
                   "kind": "unknown",
                   "name": "has_country_flag",
-                  "assume": true
+                  "assume": true,
+                  "value": "clone_army_full_potential"
                 }
               ]
             }
@@ -81481,7 +81569,8 @@
                         {
                           "kind": "unknown",
                           "name": "has_country_flag",
-                          "assume": true
+                          "assume": true,
+                          "value": "finish_shroud_forged_liberation_flag"
                         }
                       ]
                     }
@@ -81609,7 +81698,8 @@
                     {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "purity_tradition_unlocked"
                     },
                     {
                       "kind": "selection",
@@ -81624,7 +81714,8 @@
                     {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "cloning_tradition_unlocked"
                     }
                   ]
                 },
@@ -81634,7 +81725,8 @@
                     {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "mutation_tradition_unlocked"
                     },
                     {
                       "kind": "selection",
@@ -81756,7 +81848,8 @@
                     {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "purity_tradition_unlocked"
                     },
                     {
                       "kind": "selection",
@@ -81771,7 +81864,8 @@
                     {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "cloning_tradition_unlocked"
                     }
                   ]
                 },
@@ -81781,7 +81875,8 @@
                     {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "mutation_tradition_unlocked"
                     },
                     {
                       "kind": "selection",
@@ -81946,7 +82041,8 @@
                         {
                           "kind": "unknown",
                           "name": "has_country_flag",
-                          "assume": true
+                          "assume": true,
+                          "value": "finish_shroud_forged_liberation_flag"
                         }
                       ]
                     }
@@ -81997,14 +82093,16 @@
                     {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "cloning_tradition_unlocked"
                     }
                   ]
                 },
                 {
                   "kind": "unknown",
                   "name": "has_country_flag",
-                  "assume": true
+                  "assume": true,
+                  "value": "clone_army_full_potential"
                 },
                 {
                   "kind": "any",
@@ -82012,7 +82110,8 @@
                     {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "mutation_tradition_unlocked"
                     },
                     {
                       "kind": "selection",
@@ -82203,7 +82302,8 @@
                         {
                           "kind": "unknown",
                           "name": "has_country_flag",
-                          "assume": true
+                          "assume": true,
+                          "value": "finish_shroud_forged_liberation_flag"
                         }
                       ]
                     }
@@ -82230,7 +82330,8 @@
                     {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "purity_tradition_unlocked"
                     },
                     {
                       "kind": "selection",
@@ -82245,7 +82346,8 @@
                     {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "cloning_tradition_unlocked"
                     }
                   ]
                 },
@@ -82255,7 +82357,8 @@
                     {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "mutation_tradition_unlocked"
                     },
                     {
                       "kind": "selection",
@@ -82406,7 +82509,8 @@
                         {
                           "kind": "unknown",
                           "name": "has_country_flag",
-                          "assume": true
+                          "assume": true,
+                          "value": "finish_shroud_forged_liberation_flag"
                         }
                       ]
                     }
@@ -84151,7 +84255,8 @@
       "possible": {
         "kind": "unknown",
         "name": "has_technology",
-        "assume": true
+        "assume": true,
+        "value": "tech_alien_cloning"
       },
       "variants": [],
       "nameKey": "tr_domestication_adopt"
@@ -91653,7 +91758,8 @@
                       {
                         "kind": "unknown",
                         "name": "has_technology",
-                        "assume": true
+                        "assume": true,
+                        "value": "tech_integrated_cybernetics"
                       }
                     ]
                   }
@@ -93156,7 +93262,8 @@
           {
             "kind": "unknown",
             "name": "has_technology",
-            "assume": true
+            "assume": true,
+            "value": "tech_integrated_cybernetics"
           }
         ]
       },
@@ -93361,7 +93468,8 @@
           {
             "kind": "unknown",
             "name": "has_technology",
-            "assume": true
+            "assume": true,
+            "value": "tech_gene_tailoring"
           }
         ]
       },
@@ -95251,7 +95359,8 @@
                     {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "ratling_country"
                     }
                   ]
                 }
@@ -95270,14 +95379,16 @@
                       {
                         "kind": "unknown",
                         "name": "has_country_flag",
-                        "assume": true
+                        "assume": true,
+                        "value": "ratling_country"
                       }
                     ]
                   },
                   {
                     "kind": "unknown",
                     "name": "has_technology",
-                    "assume": true
+                    "assume": true,
+                    "value": "tech_psionic_theory"
                   }
                 ]
               }
@@ -95499,12 +95610,14 @@
                     {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "ratling_country"
                     },
                     {
                       "kind": "unknown",
                       "name": "has_country_flag",
-                      "assume": true
+                      "assume": true,
+                      "value": "finish_shroud_forged_liberation_flag"
                     }
                   ]
                 }
@@ -95528,19 +95641,22 @@
                       {
                         "kind": "unknown",
                         "name": "has_country_flag",
-                        "assume": true
+                        "assume": true,
+                        "value": "ratling_country"
                       },
                       {
                         "kind": "unknown",
                         "name": "has_country_flag",
-                        "assume": true
+                        "assume": true,
+                        "value": "finish_shroud_forged_liberation_flag"
                       }
                     ]
                   },
                   {
                     "kind": "unknown",
                     "name": "has_technology",
-                    "assume": true
+                    "assume": true,
+                    "value": "tech_psionic_theory"
                   }
                 ]
               }
@@ -97299,7 +97415,8 @@
                   {
                     "kind": "unknown",
                     "name": "has_technology",
-                    "assume": true
+                    "assume": true,
+                    "value": "tech_synthetic_workers"
                   }
                 ]
               }
@@ -97557,7 +97674,8 @@
                             {
                               "kind": "unknown",
                               "name": "has_country_flag",
-                              "assume": true
+                              "assume": true,
+                              "value": "synthetic_empire"
                             },
                             {
                               "kind": "predicate",
@@ -97579,7 +97697,8 @@
                               {
                                 "kind": "unknown",
                                 "name": "has_country_flag",
-                                "assume": true
+                                "assume": true,
+                                "value": "synthetic_empire"
                               },
                               {
                                 "kind": "predicate",
@@ -97921,7 +98040,8 @@
                             {
                               "kind": "unknown",
                               "name": "has_country_flag",
-                              "assume": true
+                              "assume": true,
+                              "value": "synthetic_empire"
                             },
                             {
                               "kind": "predicate",
@@ -97943,7 +98063,8 @@
                               {
                                 "kind": "unknown",
                                 "name": "has_country_flag",
-                                "assume": true
+                                "assume": true,
+                                "value": "synthetic_empire"
                               },
                               {
                                 "kind": "predicate",
@@ -188993,25 +189114,34 @@
   "newEmpireTemplate": "\u0022New Empire\u0022=\r\n{\r\n\tkey=\u0022New Empire\u0022\r\n\tship_prefix=\r\n\t{\r\n\t\tkey=\u0022\u0022\r\n\t}\r\n\tspecies=\r\n\t{\r\n\t\tclass=\u0022HUM\u0022\r\n\t\tportrait=\u0022human\u0022\r\n\t\tname_list=\u0022HUM1\u0022\r\n\t\tgender=not_set\r\n\t\ttrait=\u0022trait_organic\u0022\r\n\t}\r\n\tname=\r\n\t{\r\n\t\tkey=\u0022\u0022\r\n\t}\r\n\tadjective=\r\n\t{\r\n\t\tkey=\u0022\u0022\r\n\t}\r\n\tauthority=\u0022auth_democratic\u0022\r\n\tgovernment=\u0022gov_despotic_empire\u0022\r\n\tis_nomadic=no\r\n\tplanet_name=\r\n\t{\r\n\t\tkey=\u0022\u0022\r\n\t}\r\n\tplanet_class=\u0022pc_continental\u0022\r\n\tship_size=\u0022civilian_arkship_tier_1\u0022\r\n\tsystem_name=\r\n\t{\r\n\t\tkey=\u0022\u0022\r\n\t}\r\n\tinitializer=\u0022\u0022\r\n\tgraphical_culture=\u0022mammalian_01\u0022\r\n\tcity_graphical_culture=\u0022mammalian_01\u0022\r\n\tempire_flag=\r\n\t{\r\n\t\ticon=\r\n\t\t{\r\n\t\t\tcategory=\u0022pointy\u0022\r\n\t\t\tfile=\u0022flag_pointy_2.dds\u0022\r\n\t\t}\r\n\t\tbackground=\r\n\t\t{\r\n\t\t\tcategory=\u0022backgrounds\u0022\r\n\t\t\tfile=\u0022v.dds\u0022\r\n\t\t}\r\n\t\tcolors=\r\n\t\t{\r\n\t\t\t\u0022red\u0022\r\n\t\t\t\u0022black\u0022\r\n\t\t\t\u0022null\u0022\r\n\t\t\t\u0022null\u0022\r\n\t\t\t\u0022null\u0022\r\n\t\t\t\u0022null\u0022\r\n\t\t}\r\n\t}\r\n\truler=\r\n\t{\r\n\t\tgender=female\r\n\t\tname=\r\n\t\t{\r\n\t\t\tfull_names=\r\n\t\t\t{\r\n\t\t\t\tkey=\u0022\u0022\r\n\t\t\t}\r\n\t\t}\r\n\t\tportrait=\u0022human_female_04\u0022\r\n\t\ttexture=0\r\n\t\tevolution_mask=0\r\n\t\tattachment=0\r\n\t\tclothes=4\r\n\t\tleader_class=\u0022official\u0022\r\n\t}\r\n\tspawn_as_fallen=no\r\n\tignore_portrait_duplication=no\r\n\troom=\u0022default_room\u0022\r\n\tspawn_enabled=no\r\n\torigin=\u0022origin_default\u0022\r\n}\r\n",
   "unrecognisedTriggers": {},
   "unrecognisedEffectConditions": {
-    "leader_class": 140,
-    "is_ruler": 86,
-    "owner?": 75,
-    "from?": 67,
+    "owner?": 238,
+    "from?": 230,
+    "leader_class": 217,
+    "is_ruler": 202,
+    "resource_expenses_compare": 36,
     "has_policy_flag": 36,
-    "is_councilor": 24,
-    "resource_expenses_compare": 18,
+    "is_councilor": 33,
+    "FROM": 32,
+    "has_leader_flag": 17,
+    "fleet.solar_system": 10,
+    "planet.solar_system?": 10,
     "planet": 9,
     "is_immortal": 6,
-    "fleet.solar_system": 5,
-    "planet.solar_system?": 5,
+    "is_heir": 5,
+    "has_galactic_custodian": 3,
+    "has_galactic_emperor": 3,
+    "is_active_resolution": 3,
     "any_rival_country": 3,
     "any_archaeological_site": 2,
-    "has_leader_flag": 2,
     "has_federation": 2,
     "federation": 2,
     "has_relic": 1,
-    "is_heir": 1,
+    "FROM.owner": 1,
     "has_edict": 1,
+    "from.controller": 1,
+    "is_variable_set": 1,
+    "check_variable": 1,
+    "is_galactic_community_member": 1,
     "colony.ship?": 1,
     "calc_true_if": 1
   }

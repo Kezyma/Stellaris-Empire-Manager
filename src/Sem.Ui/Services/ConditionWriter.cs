@@ -62,7 +62,14 @@ public sealed class ConditionWriter(Localizer localizer)
 
             DlcRequirement dlc => negated ? $"without {dlc.Name}" : $"with {dlc.Name}",
 
-            FieldRequirement field => Phrase(negated ? "not" : null, Words(field.Field), Words(field.Value)),
+            // The value read rather than spelled out, because half of these name something the game
+            // has written words for: a personality that likes a science directorate says so as a
+            // field, and the phrase came out "government gov science directorate". The ones with no
+            // entry - an election type of none, of democratic - are already ordinary words.
+            FieldRequirement field => Phrase(
+                negated ? "not" : null,
+                Words(field.Field),
+                _localizer.Text(field.Value, Words(field.Value))),
 
             PredicateRequirement predicate => negated
                 ? $"not {Words(predicate.Name)}"
@@ -73,7 +80,16 @@ public sealed class ConditionWriter(Localizer localizer)
             // same way every other arm is: this one alone dropped the "not", so a leader trait that
             // pays out while off the council was headed "When councilor" - the opposite of the truth,
             // printed directly under the game's own sentence saying so.
-            UnknownRequirement unknown => negated ? $"not {Words(unknown.Name)}" : Words(unknown.Name),
+            // Carrying whatever it named, where the game has a name for it. "has technology" on its
+            // own was every one of these, and the perks that ask for mega-engineering and for
+            // psionic theory looked like the same condition. A country flag the game never names
+            // stays as it was, because a prettified script key is not an answer.
+            UnknownRequirement unknown => Phrase(
+                negated ? "not" : null,
+                Words(unknown.Name),
+                unknown.Value is { Length: > 0 } named
+                    ? _localizer.Text(named, string.Empty)
+                    : string.Empty),
 
             _ => null,
         };
@@ -98,7 +114,17 @@ public sealed class ConditionWriter(Localizer localizer)
             builder.Append(prefix).Append(' ');
         }
 
-        return builder.Append(subject).Append(' ').Append(value).ToString();
+        builder.Append(subject);
+
+        // A subject with nothing said about it is still a phrase - "has technology" on its own is
+        // what a condition that named no technology comes out as - and it must not come out with a
+        // space hanging off the end of it.
+        if (value is { Length: > 0 })
+        {
+            builder.Append(' ').Append(value);
+        }
+
+        return builder.ToString();
     }
 
     private static string Category(SelectionCategory category) => category switch

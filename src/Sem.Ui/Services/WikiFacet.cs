@@ -199,6 +199,10 @@ public static class WikiFacet
         // enslaves" is a question with an answer, and the ethics heading only says who might.
         Many("behaviour", "Behaviour", r => Fact(r, "Behaviour")),
         Many("weapons", "Weapons", r => Fact(r, "Weapons")),
+
+        // What tips the draw toward one, which is the other half of "who will I meet": the ethics
+        // heading says who may be played as this, and this says who is likely to be.
+        Many("pulls", "More likely", r => Fact(r, "More likely")),
     ];
 
     /// <summary>
