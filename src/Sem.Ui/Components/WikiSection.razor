@@ -331,6 +331,28 @@ else
                     .LoadWikiPackAsync(PersonalityPack.Domain, GameDataJsonContext.Default.PersonalityPack)
                     .ConfigureAwait(true)),
 
+                // The government family, whose packs carry what an empire is never refused for and
+                // so was never in the designer's data: how long a ruler holds office, whether
+                // reforming renames the empire, and which way a pop drifts.
+                WikiKind.Ethics => shelves.Ethics(await Source
+                    .LoadWikiPackAsync(EthicPack.Domain, GameDataJsonContext.Default.EthicPack)
+                    .ConfigureAwait(true)),
+
+                WikiKind.Authorities => shelves.Authorities(await Source
+                    .LoadWikiPackAsync(AuthorityPack.Domain, GameDataJsonContext.Default.AuthorityPack)
+                    .ConfigureAwait(true)),
+
+                WikiKind.Governments => shelves.Governments(await Source
+                    .LoadWikiPackAsync(GovernmentPack.Domain, GameDataJsonContext.Default.GovernmentPack)
+                    .ConfigureAwait(true)),
+
+                // One pack for two pages, because a civic and an origin are one collection.
+                WikiKind.Civics or WikiKind.Origins => shelves.Civics(
+                    Kind,
+                    await Source
+                        .LoadWikiPackAsync(CivicPack.Domain, GameDataJsonContext.Default.CivicPack)
+                        .ConfigureAwait(true)),
+
                 _ => shelves.Of(Kind),
             };
 

@@ -139,6 +139,18 @@ public sealed class GameDataExtractor(LayeredContent content)
     /// </remarks>
     public IReadOnlyList<PersonalityDetail> Personalities { get; private set; } = [];
 
+    /// <summary>
+    /// What the ethics, authorities, governments, civics and origins say beyond what a design needs.
+    /// </summary>
+    /// <remarks>
+    /// Beside the leader traits and the personalities, and for the same reason: an empire is never
+    /// refused for any of it. How long a ruler holds office, whether reforming renames the empire,
+    /// which civic replaces this one for a megacorp, and the hundred and thirty-one sentences the
+    /// game writes about which way a pop drifts - all of it is a page's business and none of it a
+    /// designer's.
+    /// </remarks>
+    public GovernmentFamily Family { get; private set; } = new();
+
     /// <summary>Builds a database from an installation directory.</summary>
     public static GameDatabase ExtractFrom(string installRoot, IProgress<string>? progress = null) =>
         new GameDataExtractor(LayeredContent.ForInstall(installRoot)).Extract(progress);
@@ -179,14 +191,30 @@ public sealed class GameDataExtractor(LayeredContent content)
         var speciesClasses = SpeciesExtractor.ExtractSpeciesClasses(loader, requirements);
 
         Report("Reading ethics and traits");
-        var ethics = EthicsExtractor.Extract(loader, requirements, assets);
+        var ethicDetail = new List<EthicDetail>();
+        var ethics = EthicsExtractor.Extract(loader, requirements, assets, Localisation, ethicDetail);
         var (traits, leaderTraits) = TraitsExtractor.Extract(loader, requirements, assets);
         LeaderTraits = leaderTraits;
 
         Report("Reading governments");
-        var authorities = GovernmentExtractor.ExtractAuthorities(loader, requirements, assets);
-        var civics = GovernmentExtractor.ExtractCivics(loader, requirements, assets, Localisation);
-        var governmentTypes = GovernmentExtractor.ExtractGovernmentTypes(loader, requirements);
+        var authorityDetail = new List<AuthorityDetail>();
+        var civicDetail = new List<CivicDetail>();
+        var governmentDetail = new List<GovernmentDetail>();
+
+        var authorities = GovernmentExtractor.ExtractAuthorities(
+            loader, requirements, assets, authorityDetail);
+        var civics = GovernmentExtractor.ExtractCivics(
+            loader, requirements, assets, Localisation, civicDetail);
+        var governmentTypes = GovernmentExtractor.ExtractGovernmentTypes(
+            loader, requirements, governmentDetail);
+
+        Family = new GovernmentFamily
+        {
+            Ethics = ethicDetail,
+            Authorities = authorityDetail,
+            Governments = governmentDetail,
+            Civics = civicDetail,
+        };
 
         // What one of these designs is played as when it turns up as somebody's neighbour.
         var personalityDetail = new List<PersonalityDetail>();

@@ -240,11 +240,82 @@ public static class GameDataWriter
         file.WriteAllBytes(
             Path.Combine(outputDirectory, WikiPackFileName(PersonalityPack.Domain)), personalityJson);
 
+        // The government family, which is four files because the civics and the origins are one
+        // collection the game tells apart by a flag - so the two pages about them read one pack.
+        var family = extractor.Family;
+
+        var ethics = new EthicPack
+        {
+            Stamp = new WikiPackStamp(
+                GameDataExtractor.ExtractorVersion, EthicPack.CurrentSchemaVersion),
+
+            Ethics = family.Ethics,
+
+            // The drift sentences, which the game writes for its own tooltip and nothing in the
+            // database reaches - so the pruner has never had a reason to keep one.
+            Text = LocalisationPruner.Slice(
+                family.Ethics.SelectMany(e => e.Drift).Select(d => d.DescriptionKey),
+                all,
+                database.ScriptedText),
+        };
+
+        var ethicJson = JsonSerializer.SerializeToUtf8Bytes(
+            ethics, GameDataJsonContext.Default.EthicPack);
+
+        file.WriteAllBytes(
+            Path.Combine(outputDirectory, WikiPackFileName(EthicPack.Domain)), ethicJson);
+
+        var authorities = new AuthorityPack
+        {
+            Stamp = new WikiPackStamp(
+                GameDataExtractor.ExtractorVersion, AuthorityPack.CurrentSchemaVersion),
+            Authorities = family.Authorities,
+        };
+
+        var authorityJson = JsonSerializer.SerializeToUtf8Bytes(
+            authorities, GameDataJsonContext.Default.AuthorityPack);
+
+        file.WriteAllBytes(
+            Path.Combine(outputDirectory, WikiPackFileName(AuthorityPack.Domain)), authorityJson);
+
+        var governments = new GovernmentPack
+        {
+            Stamp = new WikiPackStamp(
+                GameDataExtractor.ExtractorVersion, GovernmentPack.CurrentSchemaVersion),
+            Governments = family.Governments,
+        };
+
+        var governmentJson = JsonSerializer.SerializeToUtf8Bytes(
+            governments, GameDataJsonContext.Default.GovernmentPack);
+
+        file.WriteAllBytes(
+            Path.Combine(outputDirectory, WikiPackFileName(GovernmentPack.Domain)), governmentJson);
+
+        var civics = new CivicPack
+        {
+            Stamp = new WikiPackStamp(
+                GameDataExtractor.ExtractorVersion, CivicPack.CurrentSchemaVersion),
+
+            // No text of its own. Everything this pack names - the civic it becomes, the packs its
+            // AI gate asks for - the database already reaches, so the pruner has already kept it.
+            Civics = family.Civics,
+        };
+
+        var civicJson = JsonSerializer.SerializeToUtf8Bytes(
+            civics, GameDataJsonContext.Default.CivicPack);
+
+        file.WriteAllBytes(
+            Path.Combine(outputDirectory, WikiPackFileName(CivicPack.Domain)), civicJson);
+
         return
         [
             (LeaderTraitPack.Domain, leaders.Count, json.Length),
             (ShipsetPack.Domain, fleet.Count, shipJson.Length),
             (PersonalityPack.Domain, extractor.Personalities.Count, personalityJson.Length),
+            (EthicPack.Domain, family.Ethics.Count, ethicJson.Length),
+            (AuthorityPack.Domain, family.Authorities.Count, authorityJson.Length),
+            (GovernmentPack.Domain, family.Governments.Count, governmentJson.Length),
+            (CivicPack.Domain, family.Civics.Count, civicJson.Length),
         ];
     }
 

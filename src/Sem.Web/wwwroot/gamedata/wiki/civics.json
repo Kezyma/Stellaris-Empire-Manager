@@ -1,0 +1,5063 @@
+{
+  "stamp": {
+    "extractorVersion": "0.1.0\u002B48fafe77b784",
+    "schemaVersion": 1
+  },
+  "civics": [
+    {
+      "key": "civic_corvee_system",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_imperial_cult",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_beacon_of_liberty",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_exalted_priesthood",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_philosopher_king",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_meritocracy",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_citizen_service",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_technocracy",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_feudal_realm",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_police_state",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_idealistic_foundation",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_environmentalist",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_slaver_guilds",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_inwards_perfection",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_warrior_culture",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_distinguished_admiralty",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_free_haven",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_cutthroat_politics",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_corporate_dominion",
+      "aiPlayable": {
+        "kind": "not",
+        "item": {
+          "kind": "dlc",
+          "name": "Megacorp"
+        }
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_agrarian_idyll",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_shadow_council",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_mining_guilds",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_parliamentary_system",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_efficient_bureaucracy",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_nationalistic_zeal",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_functional_architecture",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_aristocratic_elite",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_shared_burden",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Megacorp"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_fanatic_purifiers",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_barbaric_despoilers",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Apocalypse"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_byzantine_bureaucracy",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Megacorp"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_merchant_guilds",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Megacorp"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_reanimated_armies",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Necroids Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_diplomatic_corps",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Federations"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_death_cult",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Necroids Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_memorialist",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Necroids Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_catalytic_processing",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Plantoids Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_crafters",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_pleasure_seekers",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_idyllic_bloom",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Plantoids Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_anglers",
+      "becomesInstead": "civic_corporate_anglers",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Aquatics Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_anglers",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Aquatics Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_pompous_purists",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_toxic_baths",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Toxoids Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_relentless_industrialists",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Toxoids Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_scavengers",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Toxoids Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_ascensionists",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_memory_vault",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Galactic Paragons"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_crusader_spirit",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Galactic Paragons"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_eager_explorers",
+      "becomesInstead": "civic_privatized_exploration",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hyperspace_specialty",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Astral Planes"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_dimensional_worship",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Astral Planes"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_heroic_tales",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Galactic Paragons"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_dystopian_society",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Galactic Paragons"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_selective_kinship",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Lithoids Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_dark_consortium",
+      "becomesInstead": "civic_corporate_dark_consortium",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Astral Planes"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_natural_design",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "The Machine Age"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_sovereign_guardianship",
+      "becomesInstead": "civic_corporate_sovereign_guardianship",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Astral Planes"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_guided_sapience",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "The Machine Age"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_toxic_baths_individual_machine",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Toxoids Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_individual_machine_replication",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_individual_machine_predictive_analysis",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_individual_machine_warbots",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_astrometeorology",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Cosmic Storms"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_storm_callers",
+      "becomesInstead": "civic_storm_callers_megacorp",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Cosmic Storms"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_environmental_architects",
+      "becomesInstead": "civic_environmental_architects_megacorp",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Cosmic Storms"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_galactic_curators",
+      "becomesInstead": "civic_corporate_galactic_curators",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Grand Archive"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_beastmasters",
+      "becomesInstead": "civic_corporate_beastmasters",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Grand Archive"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_genetic_identification",
+      "becomesInstead": "civic_corporate_genetic_identification",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "BioGenesis"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_crowdsourcing",
+      "becomesInstead": "civic_corporate_crowdsourcing",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "BioGenesis"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_civil_education",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "BioGenesis"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_entropy_drinkers",
+      "becomesInstead": "civic_entropy_drinkers_corporate",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Shadows of the Shroud"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_superstitious_beliefs",
+      "becomesInstead": "civic_corporate_superstitious_beliefs",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Shadows of the Shroud"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_twisted_experimenters",
+      "becomesInstead": "civic_twisted_experimenters_corporate",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Shadows of the Shroud"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_secret_societies",
+      "becomesInstead": "civic_secret_societies_corporate",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Shadows of the Shroud"
+      },
+      "suppressesFactions": true,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_chosen",
+      "becomesInstead": "civic_corporate_chosen",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Shadows of the Shroud"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_tankbound",
+      "becomesInstead": "civic_tankbound_corporate",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Shadows of the Shroud"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_scorched_earth",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Infernals Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_world_forgers",
+      "becomesInstead": "civic_corporate_world_forgers",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Infernals Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_pyrolatry",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Infernals Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_galvanic_symbiosis",
+      "becomesInstead": "civic_corporate_galvanic_symbiosis",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Infernals Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_caravan_masters",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Nomads"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_deep_sleep",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Nomads"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_void_reavers",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Nomads"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_flight_schools",
+      "becomesInstead": "civic_corporate_flight_schools",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Nomads"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hired_guns",
+      "becomesInstead": "civic_corporate_hired_guns",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Nomads"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_star_seekers",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Nomads"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_default",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": true,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_default_nomads",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Nomads"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": true,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": true,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_sacred_path",
+      "aiPlayable": {
+        "kind": "always",
+        "value": false
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": true,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_heirs_of_the_khan",
+      "aiPlayable": {
+        "kind": "always",
+        "value": false
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": true,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_forever_cruise",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Nomads"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": true,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_red_giant",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Infernals Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_cosmic_dawn",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Infernals Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_shroud_forged",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": true,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_mindwardens",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": true,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": true,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_endbringers",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": true,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_evolutionary_predators",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_starlit_citadel",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_wilderness",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": true,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_treasure_hunters",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": true,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_primal_calling",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": true,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_storm_chasers",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": true,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_cybernetic_creed",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": true,
+      "onlyOneInTheGalaxy": true,
+      "blocksRandomMachineEmpires": true,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_synthetic_fertility",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": true,
+      "blocksRandomMachineEmpires": true,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_arc_welders",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": true,
+      "onlyOneInTheGalaxy": true,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_riftworld",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": true,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_legendary_leader",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": true,
+      "onlyOneInTheGalaxy": true,
+      "blocksRandomMachineEmpires": true,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_legendary_leader_death",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": true,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_legendary_leader_imperial",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": true,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_legendary_leader_dictatorial",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": true,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_payback",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": true,
+      "blocksRandomMachineEmpires": true,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_broken_shackles",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": true,
+      "blocksRandomMachineEmpires": true,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": false
+    },
+    {
+      "key": "origin_fear_of_the_dark",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": true,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_overtuned",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": true,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_toxic_knights",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": true,
+      "onlyOneInTheGalaxy": true,
+      "blocksRandomMachineEmpires": true,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_progenitor_hive",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": true,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_subterranean",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": true,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": true,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_subterranean_machines",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": true,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_star_slingshot",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_shroudwalker_apprentice",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": true,
+      "blocksRandomMachineEmpires": true,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_imperial_vassal",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_here_be_dragons",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": true,
+      "onlyOneInTheGalaxy": true,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_ocean_paradise",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": true,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": true,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_ocean_machines",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": true,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_necrophage",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": true,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": true,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_remnants",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": true,
+      "onlyOneInTheGalaxy": true,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_shattered_ring",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": true,
+      "onlyOneInTheGalaxy": true,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": true,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_void_dwellers",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": true,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": true,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": false
+    },
+    {
+      "key": "origin_void_machines",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": true,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": false
+    },
+    {
+      "key": "origin_scion",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": true,
+      "blocksRandomMachineEmpires": true,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_shoulders_of_giants",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": true,
+      "blocksRandomMachineEmpires": true,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_common_ground",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": true,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_hegemon",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": true,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_doomsday",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": true,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": true,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_lithoid",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": true,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_life_seeded",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": false
+    },
+    {
+      "key": "origin_post_apocalyptic",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": true,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": true,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_post_apocalyptic_machines",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": true,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_clone_army",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": true,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_machine",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": true,
+      "onlyOneInTheGalaxy": true,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": false
+    },
+    {
+      "key": "origin_unplugged",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_mechanists",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": true,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": true,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_syncretic_evolution",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": true,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_tree_of_life",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": true,
+      "onlyOneInTheGalaxy": true,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_fruitful",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_galactic_doorstep",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": true,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_lost_colony",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": true,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": true,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_fallen_empire",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_fallen_empire_hive",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_enlightened",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_default_pre_ftl",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_separatists",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_liberated",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_demonic_incursion",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_khan_successor",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_life_seeded_ai_only",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": false
+    },
+    {
+      "key": "origin_common_ground_npc",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_hegemon_npc",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_imperial_vassal_overlord",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_slavers",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": true,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_nomadic_purger",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_nomadic_settled",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "origin_nomadic_subject",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_remnants",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_custodian_directives",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_awakened_machine",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_malfunctioning_custodian",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_final_defense_protocols",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_lethargic_leadership",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_empire_in_decline",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_antediluvian_mind",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_sluggish_drones",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_fragmented_command",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hyper_aggressive_drones",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_unstable_drones",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_stunted_drones",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_restored_mind",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_ancient_memories_of_war",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_ancient_memories_of_growth",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_ancient_memories_of_control",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_revanchist_fervor",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_ancient_caches_of_technology",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_secret_of_fire",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_the_wheel",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_landed_nobility",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_flat_world_theory",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_increasing_urbanization",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_atmospheric_pollution",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_life_seeded",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_secret_of_fire",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_the_wheel",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_burgeoning_nodes",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_flat_world_theory",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_centralized_consciousness",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_atmospheric_pollution",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_ancient_preservers",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_trading_conglomerate",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_artist_collective",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_mercenary_enclave",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_salvager_enclave",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_shroudwalker_enclave",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_mindwarden_enclave",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_champions_forge_enclave",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_military_order",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_ancient_machine_intelligence",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_anarcho_tribalism",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_great_khans_vision",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_diadochi",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_great_khans_legacy",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_galactic_sovereign",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_galactic_sovereign_megacorp",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_psionic_sovereign",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_caravaneer_caravansary",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_caravaneer_fleet1",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_caravaneer_fleet2",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_caravaneer_fleet3",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_subspace_ephapse",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_natural_neural_network",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_ascetic",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_one_mind",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_divided_attention",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_strength_of_legions",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_subsumed_will",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_pooled_knowledge",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_devouring_swarm",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_empath",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_memorialist",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_catalytic_processing",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Plantoids Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_idyllic_bloom",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Plantoids Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_toxic_baths",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Toxoids Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_ascensionists",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_cordyceptic_drones",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Necroids Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_stargazers",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "First Contact Story Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_memory_vault_hive",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Galactic Paragons"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_upkeep_twister",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Galactic Paragons"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_void_hive",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Lithoids Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_hyperspace_specialty",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Astral Planes"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_sovereign_guardianship",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Astral Planes"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_natural_design",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "The Machine Age"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_guided_sapience",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "The Machine Age"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_beastmasters",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Grand Archive"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_astrometeorology_hive",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Cosmic Storms"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_environmental_architects_hive",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Cosmic Storms"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_galactic_curators",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Grand Archive"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_familiar_face",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "BioGenesis"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_shared_genetics",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "BioGenesis"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_aerospace_adaptation",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "BioGenesis"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_bodysnatcher",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "BioGenesis"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_entropy_drinkers_hive_mind",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Shadows of the Shroud"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_superstitious_beliefs",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Shadows of the Shroud"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_twisted_experimenters_hive_mind",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Shadows of the Shroud"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_chosen",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Shadows of the Shroud"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_scorched_earth",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Infernals Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_world_forgers",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Infernals Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_galvanic_symbiosis",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Infernals Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_deep_sleep",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Nomads"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_hive_star_seekers",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Nomads"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_servitor",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_terminator",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_assimilator",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_builder",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_factory_overclock",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_unitary_cohesion",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_rockbreakers",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_zero_waste_protocols",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_built_to_last",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_ota_updates",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_warbots",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_introspective",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_delegated_functions",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_predictive_analysis",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_replication",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_maintenance_protocols",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_memorialist",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_catalytic_processing",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Plantoids Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_toxic_baths",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Toxoids Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_ascensionists",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_exploration_protocol",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "First Contact Story Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_hyperspace_specialty",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Astral Planes"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_memory_vault_machine",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Galactic Paragons"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_upkeep_twister",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Galactic Paragons"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_sovereign_guardianship",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Astral Planes"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_obsessional_directive",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "The Machine Age"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_diplomatic_protocols",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "The Machine Age"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_tactical_algorithms",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "The Machine Age"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_guided_sapience",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "The Machine Age"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_spybots",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Nemesis"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_astromining_drones",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Megacorp"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_beastmasters",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Grand Archive"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_astrometeorology_machine",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Cosmic Storms"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_environmental_architects_machine",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Cosmic Storms"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_galactic_curators",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Grand Archive"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_stalwart_network",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "BioGenesis"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_entropy_drinkers_machine",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Shadows of the Shroud"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_superstitious_beliefs",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Shadows of the Shroud"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_chosen",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Shadows of the Shroud"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_world_forgers",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Infernals Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_galvanic_symbiosis",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Infernals Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_deep_sleep",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Nomads"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_machine_star_seekers",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Nomads"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_franchising",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_trading_posts",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_media_conglomerate",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_naval_contractors",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_free_traders",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_private_prospectors",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_gospel_of_the_masses",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_ruthless_competition",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_criminal_heritage",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_private_military_companies",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_indentured_assets",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_brand_loyalty",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_public_relations_specialists",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_death_cult_corporate",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_corporate_catalytic_processing",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Plantoids Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_corporate_hedonism",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_corporate_anglers",
+      "becomesInstead": "civic_anglers",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Aquatics Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_corporate_machine_anglers",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Aquatics Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_corporate_crafters",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_permanent_employment",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Necroids Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_corporate_relentless_industrialists",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Toxoids Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_corporate_toxic_baths",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Toxoids Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_corporate_scavengers",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Toxoids Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_corporate_ascensionists",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_privatized_exploration",
+      "becomesInstead": "civic_eager_explorers",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_corporate_hyperspace_specialty",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Astral Planes"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_corporate_dimensional_worship",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Astral Planes"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_crusader_spirit_corporate",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Galactic Paragons"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_task_delegation_corporate",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Galactic Paragons"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_private_healthcare_corporate",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Galactic Paragons"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_memory_vault_corporate",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Galactic Paragons"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_worker_coop",
+      "aiPlayable": {
+        "kind": "always",
+        "value": true
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_corporate_dark_consortium",
+      "becomesInstead": "civic_dark_consortium",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Astral Planes"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_augmentation_bazaars",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "The Machine Age"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_corporate_sovereign_guardianship",
+      "becomesInstead": "civic_sovereign_guardianship",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Astral Planes"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_corporate_guided_sapience",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "The Machine Age"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_corporate_toxic_baths_individual_machine",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Toxoids Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_astrometeorology_megacorp",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Cosmic Storms"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_storm_callers_megacorp",
+      "becomesInstead": "civic_storm_callers",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Cosmic Storms"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_environmental_architects_megacorp",
+      "becomesInstead": "civic_environmental_architects",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Cosmic Storms"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_corporate_galactic_curators",
+      "becomesInstead": "civic_galactic_curators",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Grand Archive"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_corporate_beastmasters",
+      "becomesInstead": "civic_beastmasters",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Grand Archive"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_corporate_genetic_identification",
+      "becomesInstead": "civic_genetic_identification",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "BioGenesis"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_corporate_crowdsourcing",
+      "becomesInstead": "civic_crowdsourcing",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "BioGenesis"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_entropy_drinkers_corporate",
+      "becomesInstead": "civic_entropy_drinkers",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Shadows of the Shroud"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_corporate_superstitious_beliefs",
+      "becomesInstead": "civic_superstitious_beliefs",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Shadows of the Shroud"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_twisted_experimenters_corporate",
+      "becomesInstead": "civic_twisted_experimenters",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Shadows of the Shroud"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_secret_societies_corporate",
+      "becomesInstead": "civic_secret_societies",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Shadows of the Shroud"
+      },
+      "suppressesFactions": true,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_corporate_chosen",
+      "becomesInstead": "civic_chosen",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Shadows of the Shroud"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_tankbound_corporate",
+      "becomesInstead": "civic_tankbound",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Shadows of the Shroud"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_corporate_world_forgers",
+      "becomesInstead": "civic_world_forgers",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Infernals Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_corporate_galvanic_symbiosis",
+      "becomesInstead": "civic_galvanic_symbiosis",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Infernals Species Pack"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_caravan_masters_corporate",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Nomads"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_corporate_deep_sleep",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Nomads"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_corporate_flight_schools",
+      "becomesInstead": "civic_flight_schools",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Nomads"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_corporate_hired_guns",
+      "becomesInstead": "civic_hired_guns",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Nomads"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    },
+    {
+      "key": "civic_corporate_star_seekers",
+      "aiPlayable": {
+        "kind": "dlc",
+        "name": "Nomads"
+      },
+      "suppressesFactions": false,
+      "customStartScreen": false,
+      "advancedStart": false,
+      "onlyOneInTheGalaxy": false,
+      "blocksRandomMachineEmpires": false,
+      "neighboursUninhabitable": false,
+      "neighboursPreferred": true
+    }
+  ]
+}

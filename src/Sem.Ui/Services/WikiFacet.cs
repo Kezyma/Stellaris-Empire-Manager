@@ -88,6 +88,12 @@ public static class WikiFacet
         // actually about them.
         Many("wording", "Also called", r => Fact(r, "Also called")),
         Many("worded", "Reworded for", r => Fact(r, "Reworded for")),
+
+        // The origin half of the same record, which a civic never answers and so never draws.
+        Many("becomes", "Becomes", r => Fact(r, "Becomes")),
+        Many("ai", "AI empires", r => Fact(r, "AI empires")),
+        Many("galaxy", "In the galaxy", r => Fact(r, "In the galaxy")),
+        Many("advanced", "Advanced start", r => Fact(r, "Advanced start")),
         Many("forces", "Forces", r => Fact(r, "Forces")),
         Many("starts", "Starts on", r => Fact(r, "Starts on")),
         Many("system", "Starting system", r => Fact(r, "Starting system")),
@@ -109,7 +115,13 @@ public static class WikiFacet
         Many("cost", "Cost", r => Fact(r, "Cost")),
         Many("intensity", "Intensity", r => Fact(r, "Intensity")),
         Many("bonus", "Bonus", r => r.Bonuses, Effects),
-    ];
+    
+        // What the game says about a pop coming to hold it, which is the whole of what an ethic
+        // does that the designer never had to know.
+        Many("pops", "Pops", r => Fact(r, "Pops")),
+        Many("toward", "Drift toward", r => Fact(r, "Drift toward")),
+        Many("away", "Drift away", r => Fact(r, "Drift away")),
+];
 
     /// <summary>The authorities, which are eight records with a great deal said about each.</summary>
     public static IReadOnlyList<Facet<WikiRow>> Authorities { get; } =
@@ -120,7 +132,11 @@ public static class WikiFacet
         Many("forces", "Forces", r => Fact(r, "Forces")),
         Many("pack", "Content pack", r => r.PackChoices),
         Many("bonus", "Bonus", r => r.Bonuses, Effects),
-    ];
+    
+        Many("term", "Term", r => Fact(r, "Term")),
+        Many("reform", "Reform", r => Fact(r, "Reform")),
+        Many("politics", "Politics", r => Fact(r, "Politics")),
+];
 
     /// <summary>The species classes, which carry no effects and so have no bonus heading.</summary>
     public static IReadOnlyList<Facet<WikiRow>> Species { get; } =
@@ -224,7 +240,10 @@ public static class WikiFacet
         Many("authority", "Authority", r => r.Wanting(SelectionCategory.Authority)),
         Many("ethic", "Ethics", r => r.Wanting(SelectionCategory.Ethics)),
         Many("civic", "Civics", r => r.Wanting(SelectionCategory.Civics)),
-    ];
+    
+        Many("rename", "On reform", r => Fact(r, "On reform")),
+        Many("naming", "Ruler names", r => Fact(r, "Ruler names")),
+];
 
     /// <summary>The ascension perks, narrowed by the path they belong to.</summary>
     public static IReadOnlyList<Facet<WikiRow>> AscensionPerks { get; } =

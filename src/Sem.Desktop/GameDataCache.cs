@@ -98,12 +98,19 @@ public sealed class GameDataCache
             // And the wiki's own files, for exactly the same reason: a cache from before a domain
             // existed passes every other test and would never be rebuilt, leaving the page about it
             // permanently empty on this machine with nothing anywhere to say why.
-            if (!File.Exists(Path.Combine(
-                    Directory, GameDataWriter.WikiPackFileName(LeaderTraitPack.Domain))) ||
-                !File.Exists(Path.Combine(
-                    Directory, GameDataWriter.WikiPackFileName(ShipsetPack.Domain))) ||
-                !File.Exists(Path.Combine(
-                    Directory, GameDataWriter.WikiPackFileName(PersonalityPack.Domain))))
+            string[] domains =
+            [
+                LeaderTraitPack.Domain,
+                ShipsetPack.Domain,
+                PersonalityPack.Domain,
+                EthicPack.Domain,
+                AuthorityPack.Domain,
+                GovernmentPack.Domain,
+                CivicPack.Domain,
+            ];
+
+            if (domains.Any(d => !File.Exists(
+                    Path.Combine(Directory, GameDataWriter.WikiPackFileName(d)))))
             {
                 reason = "built before the wiki had its own data";
                 return false;

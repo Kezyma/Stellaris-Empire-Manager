@@ -149,16 +149,78 @@ public sealed class WikiShelves(DesignSession session)
         return shelf;
     }
 
+    /// <summary>
+    /// The ethics, with what the game says about a pop drifting toward one.
+    /// </summary>
+    /// <remarks>
+    /// A hundred and thirty-one sentences the game wrote for its own ethics-drift tooltip. Nothing
+    /// in the designer's data reaches one, because nothing a design does depends on them.
+    /// </remarks>
+    /// <param name="pack">What was fetched, or null where nothing was.</param>
+    /// <returns>The shelf.</returns>
+    public WikiShelf Ethics(EthicPack? pack) =>
+        new("Ethics", "ethics", "ethic", EthicRows(pack), WikiFacet.Ethics);
+
+    /// <summary>The authorities, with how each runs an empire's politics.</summary>
+    /// <param name="pack">What was fetched, or null where nothing was.</param>
+    /// <returns>The shelf.</returns>
+    public WikiShelf Authorities(AuthorityPack? pack) =>
+        new(
+            "Authorities", "authorities", "authority",
+            AuthorityRows(Detail(pack?.Authorities, a => a.Key)),
+            WikiFacet.Authorities);
+
+    /// <summary>The governments, with what each does to an empire's names.</summary>
+    /// <param name="pack">What was fetched, or null where nothing was.</param>
+    /// <returns>The shelf.</returns>
+    public WikiShelf Governments(GovernmentPack? pack) =>
+        new(
+            "Governments", "governments", "government",
+            GovernmentRows(Detail(pack?.Governments, g => g.Key)),
+            WikiFacet.Governments);
+
+    /// <summary>
+    /// The civics, or the origins, with what each says beyond what choosing it needs.
+    /// </summary>
+    /// <remarks>
+    /// One pack for both pages, because a civic and an origin are one collection the game tells
+    /// apart by a flag.
+    /// </remarks>
+    /// <param name="kind">Which of the two pages is asking.</param>
+    /// <param name="pack">What was fetched, or null where nothing was.</param>
+    /// <returns>The shelf.</returns>
+    public WikiShelf Civics(WikiKind kind, CivicPack? pack) =>
+        kind == WikiKind.Origins
+            ? new WikiShelf(
+                "Origins", "origins", "origin",
+                Civics(origins: true, Detail(pack?.Civics, c => c.Key)), WikiFacet.Civics)
+            : new WikiShelf(
+                "Civics", "civics", "civic",
+                Civics(origins: false, Detail(pack?.Civics, c => c.Key)), WikiFacet.Civics);
+
+    /// <summary>A pack's records by key, or nothing where the pack has not arrived.</summary>
+    /// <typeparam name="T">What the pack holds.</typeparam>
+    /// <param name="records">The records.</param>
+    /// <param name="key">How to name one.</param>
+    /// <returns>The lookup, which is empty until the page has its file.</returns>
+    private static IReadOnlyDictionary<string, T> Detail<T>(
+        IReadOnlyList<T>? records,
+        Func<T, string> key) =>
+        records is null
+            ? new Dictionary<string, T>(StringComparer.Ordinal)
+            : records.ToDictionary(key, StringComparer.Ordinal);
+
     private WikiShelf Read(WikiKind kind) => kind switch
     {
         WikiKind.Origins => new WikiShelf(
-            "Origins", "origins", "origin", Civics(origins: true), WikiFacet.Civics),
+            "Origins", "origins", "origin", Civics(origins: true, None<CivicDetail>()), WikiFacet.Civics),
 
         WikiKind.Ethics => new WikiShelf(
-            "Ethics", "ethics", "ethic", Ethics(), WikiFacet.Ethics),
+            "Ethics", "ethics", "ethic", EthicRows(pack: null), WikiFacet.Ethics),
 
         WikiKind.Authorities => new WikiShelf(
-            "Authorities", "authorities", "authority", Authorities(), WikiFacet.Authorities),
+            "Authorities", "authorities", "authority",
+            AuthorityRows(None<AuthorityDetail>()), WikiFacet.Authorities),
 
         WikiKind.Species => new WikiShelf(
             "Species", "species classes", "species class", Species(), WikiFacet.Species),
@@ -171,14 +233,22 @@ public sealed class WikiShelves(DesignSession session)
             "Planets", "planets", "planet", Planets(), WikiFacet.Planets) { Picture = "Sky" },
 
         WikiKind.Governments => new WikiShelf(
-            "Governments", "governments", "government", Governments(), WikiFacet.Governments),
+            "Governments", "governments", "government",
+            GovernmentRows(None<GovernmentDetail>()), WikiFacet.Governments),
 
         WikiKind.AscensionPerks => new WikiShelf(
             "Ascension Perks", "ascension perks", "ascension perk",
             AscensionPerks(), WikiFacet.AscensionPerks),
 
-        _ => new WikiShelf("Civics", "civics", "civic", Civics(origins: false), WikiFacet.Civics),
+        _ => new WikiShelf(
+            "Civics", "civics", "civic", Civics(origins: false, None<CivicDetail>()), WikiFacet.Civics),
     };
+
+    /// <summary>No detail at all, for a shelf built before its page has fetched one.</summary>
+    /// <typeparam name="T">What the pack would have held.</typeparam>
+    /// <returns>An empty lookup.</returns>
+    private static IReadOnlyDictionary<string, T> None<T>() =>
+        new Dictionary<string, T>(StringComparer.Ordinal);
 
     /// <summary>
     /// The civics, or the origins, which are the same records with a flag set.
@@ -188,7 +258,7 @@ public sealed class WikiShelves(DesignSession session)
     /// half of them are wanted, because it has to be: a civic can be out of reach only because
     /// another one is, and three origins are a ring that each ask for one of the others.
     /// </remarks>
-    private IReadOnlyList<WikiRow> Civics(bool origins)
+    private IReadOnlyList<WikiRow> Civics(bool origins, IReadOnlyDictionary<string, CivicDetail> detail)
     {
         var reach = CivicReach.Across(Database.Civics);
 
@@ -196,7 +266,7 @@ public sealed class WikiShelves(DesignSession session)
         [
             .. Database.Civics
                 .Where(c => c.IsOrigin == origins)
-                .Select(c => Civic(c, reach[c.Key]))
+                .Select(c => Civic(c, reach[c.Key], detail.GetValueOrDefault(c.Key)))
                 .OrderBy(r => r.Name, StringComparer.CurrentCulture),
         ];
     }
@@ -225,7 +295,7 @@ public sealed class WikiShelves(DesignSession session)
     /// it once - see the outline's own deduplication.
     /// </para>
     /// </remarks>
-    private WikiRow Civic(CivicDefinition civic, CivicReach reach)
+    private WikiRow Civic(CivicDefinition civic, CivicReach reach, CivicDetail? detail)
     {
         var shut = Shut(reach);
 
@@ -242,7 +312,7 @@ public sealed class WikiShelves(DesignSession session)
                     _reader.Read(new AllRequirement([civic.Potential, civic.Possible])),
                     "Any empire"),
             ],
-            CivicFacts(civic),
+            CivicFacts(civic, detail),
             Wants(civic.Potential, civic.Possible)) with
         {
             Icon = civic.Icon,
@@ -379,8 +449,9 @@ public sealed class WikiShelves(DesignSession session)
     /// </para>
     /// </remarks>
     /// <param name="civic">The civic or origin.</param>
+    /// <param name="detail">What the page fetched about it, or null before that arrives.</param>
     /// <returns>Its facts.</returns>
-    private IReadOnlyList<WikiFact> CivicFacts(CivicDefinition civic) =>
+    private IReadOnlyList<WikiFact> CivicFacts(CivicDefinition civic, CivicDetail? detail) =>
     [
         WikiFact.Said("Reform", Reform(civic)),
         WikiFact.Of("Forces", Traits(civic.ForcedTraits)),
@@ -400,7 +471,66 @@ public sealed class WikiShelves(DesignSession session)
         // And what somebody else is shown in place of all that. A hive mind reading this page was
         // reading wording written for an empire it is not.
         .. Wordings(civic.Variants, civic.NameKey, $"{civic.Key}_desc"),
+
+        // What it turns into when the empire reforms into the kind with its own version of it -
+        // forty pairs, and the wiki had no edge between them at all.
+        WikiFact.Of("Becomes", Civics(detail?.BecomesInstead)),
+
+        WikiFact.Said("AI empires", AiGate(civic, detail)),
+        WikiFact.Said("Factions", detail is { SuppressesFactions: true } ? "Suppressed" : null),
+
+        // The rest is an origin's half of the record. A civic states none of it, and a fact with
+        // nothing in it never reaches a column - so the two pages draw different headings from one
+        // list, which is the same arrangement the reform and starting-system facts already use.
+        WikiFact.Said("Advanced start", detail is { AdvancedStart: true } ? "Allowed" : null),
+        WikiFact.Said(
+            "In the galaxy",
+            detail is { OnlyOneInTheGalaxy: true } ? "One empire only" : null),
+        WikiFact.Said(
+            "Start screen",
+            detail is { CustomStartScreen: true } ? "Its own" : null),
+        WikiFact.Said(
+            "Machine empires",
+            detail is { BlocksRandomMachineEmpires: true } ? "Not generated beside it" : null),
+
+        // What the galaxy puts next door, which between them are the lonely starts.
+        WikiFact.Said(
+            "Neighbours",
+            detail switch
+            {
+                { NeighboursUninhabitable: true } => "Nothing settleable",
+                { NeighboursPreferred: false } => "Nothing in particular",
+                _ => null,
+            }),
     ];
+
+    /// <summary>
+    /// What an empire the game runs itself has to be to take this one.
+    /// </summary>
+    /// <remarks>
+    /// Said only where it differs from what a player must be, which is the whole reason the game
+    /// writes the field: two civics let a player take what an AI without the content pack cannot,
+    /// and on every other one this repeats the Requirements column.
+    /// </remarks>
+    /// <param name="civic">The civic or origin, for what a player must be.</param>
+    /// <param name="detail">What the page fetched, or null before it arrives.</param>
+    /// <returns>The words, or nothing.</returns>
+    private string? AiGate(CivicDefinition civic, CivicDetail? detail)
+    {
+        if (detail?.AiPlayable is not { } gate)
+        {
+            return null;
+        }
+
+        // Compared as the sentences they come out as rather than as trees, because two trees
+        // compiled from two blocks are never the same object and a record's list does not compare
+        // by its contents. Both go through one writer, so equal conditions read identically.
+        var said = session.Conditions.Describe(gate);
+
+        return said == session.Conditions.Describe(civic.Playable)
+            ? null
+            : said is { Length: > 0 } ? said : "Never take it";
+    }
 
     /// <summary>
     /// Whether a government reform can take this on or give it up.
@@ -447,14 +577,24 @@ public sealed class WikiShelves(DesignSession session)
     /// rules out and which form of itself it has are the questions instead, and they are facts
     /// rather than conditions.
     /// </remarks>
-    private IReadOnlyList<WikiRow> Ethics() =>
-    [
-        .. Database.Ethics
-            .Select(Ethic)
-            .OrderBy(r => r.Name, StringComparer.CurrentCulture),
-    ];
+    private IReadOnlyList<WikiRow> EthicRows(EthicPack? pack)
+    {
+        var detail = Detail(pack?.Ethics, e => e.Key);
 
-    private WikiRow Ethic(EthicDefinition ethic) =>
+        // The drift sentences are in the pack rather than in the app's own text, so the chips have
+        // to be named through a reader that has both - the same arrangement the leader traits use,
+        // and the reason a chip built with the ordinary localiser came out empty and was dropped.
+        var reader = pack is null ? session.Localizer : Reading(pack.Text);
+
+        return
+        [
+            .. Database.Ethics
+                .Select(e => Ethic(e, detail.GetValueOrDefault(e.Key), reader))
+                .OrderBy(r => r.Name, StringComparer.CurrentCulture),
+        ];
+    }
+
+    private WikiRow Ethic(EthicDefinition ethic, EthicDetail? detail, Localizer reader) =>
         Row(
             ethic.Key,
             ethic.Effects,
@@ -463,7 +603,7 @@ public sealed class WikiShelves(DesignSession session)
             null,
             null,
             [],
-            EthicFacts(ethic),
+            EthicFacts(ethic, detail, reader),
             null) with
         {
             Icon = ethic.Icon,
@@ -485,13 +625,24 @@ public sealed class WikiShelves(DesignSession session)
     /// all sixteen of the others, which is a sentence rather than a list.
     /// </para>
     /// </remarks>
-    private IReadOnlyList<WikiFact> EthicFacts(EthicDefinition ethic) =>
+    private IReadOnlyList<WikiFact> EthicFacts(
+        EthicDefinition ethic,
+        EthicDetail? detail,
+        Localizer reader) =>
     [
         WikiFact.Said("Cost", ethic.Cost.ToString(System.Globalization.CultureInfo.CurrentCulture)),
 
         WikiFact.Said(
             "Intensity",
             ethic.IsGestalt ? "Gestalt" : ethic.IsFanatic ? "Fanatic" : "Ordinary"),
+
+        // Whether a pop can come to hold it at all, which the eight fanatics cannot: a pop drifts
+        // to the ordinary form and the empire's own ethics decide the rest. Which is also why none
+        // of the eight carries a single drift sentence.
+        WikiFact.Said("Pops", detail is { DriftsInto: false } ? "Cannot drift into it" : null),
+
+        WikiFact.Of("Drift toward", Drift(detail, reader, draws: true)),
+        WikiFact.Of("Drift away", Drift(detail, reader, draws: false)),
 
         // One heading rather than "Stronger form" and "Milder form", which is what it was. The
         // direction reads better on a card and is a disaster in a table: the heading differs by row,
@@ -527,6 +678,52 @@ public sealed class WikiShelves(DesignSession session)
     }
 
     /// <summary>
+    /// The sentences the game writes about a pop leaning one way or the other.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Two headings, because the game writes them in two colours and means two different things by
+    /// them. A hundred and six draw pops toward the ethic and twenty-five push them away, and run
+    /// together under one heading a reader would have to read the sign on each to tell which.
+    /// </para>
+    /// <para>
+    /// The sentence is the chip. These are not names of things - there is nothing to link to and no
+    /// picture to draw - they are the game's own prose, already written for a player, and what the
+    /// page had instead was nothing at all.
+    /// </para>
+    /// </remarks>
+    /// <param name="detail">What the page fetched, or null before it arrives.</param>
+    /// <param name="reader">The text, with the pack's merged in.</param>
+    /// <param name="draws">Which of the two headings is being built.</param>
+    /// <returns>The chips.</returns>
+    private static IReadOnlyList<EmpireChoice> Drift(
+        EthicDetail? detail,
+        Localizer reader,
+        bool draws) =>
+    [
+        .. (detail?.Drift ?? [])
+            .Where(d => d.Draws == draws)
+            .Select(d => Unsigned(reader.Text(d.DescriptionKey, string.Empty)))
+            .Where(said => said is { Length: > 0 })
+            .Distinct(StringComparer.Ordinal)
+            .Select(said => new EmpireChoice(said, said, null, null)),
+    ];
+
+    /// <summary>
+    /// A drift sentence without the sign the game opens it with.
+    /// </summary>
+    /// <remarks>
+    /// The game writes every one of them as "+ Empire is at war" or "- Pop has trait Weak", because
+    /// in its own tooltip the two run together in one list and the sign is the only thing telling
+    /// them apart. Here the heading does that, and the sign repeated down a column of a dozen chips
+    /// is a column of plus signs.
+    /// </remarks>
+    /// <param name="said">The sentence, once the markup is off it.</param>
+    /// <returns>What it says.</returns>
+    private static string Unsigned(string said) =>
+        said.Length > 1 && said[0] is '+' or '-' ? said[1..].TrimStart() : said;
+
+    /// <summary>
     /// The authorities, whose reachability the rules layer already has an opinion about.
     /// </summary>
     /// <remarks>
@@ -535,14 +732,16 @@ public sealed class WikiShelves(DesignSession session)
     /// not read it, and honouring it would hide Machine Intelligence from the player who is entitled
     /// to it. What actually keeps one out of the list is the flag.
     /// </remarks>
-    private IReadOnlyList<WikiRow> Authorities() =>
+    /// <param name="detail">What each page fetched, which is empty until it arrives.</param>
+    /// <returns>The rows.</returns>
+    private IReadOnlyList<WikiRow> AuthorityRows(IReadOnlyDictionary<string, AuthorityDetail> detail) =>
     [
         .. Database.Authorities
-            .Select(Authority)
+            .Select(a => Authority(a, detail.GetValueOrDefault(a.Key)))
             .OrderBy(r => r.Name, StringComparer.CurrentCulture),
     ];
 
-    private WikiRow Authority(AuthorityDefinition authority) =>
+    private WikiRow Authority(AuthorityDefinition authority, AuthorityDetail? detail) =>
         Row(
             authority.Key,
             authority.Effects,
@@ -553,7 +752,7 @@ public sealed class WikiShelves(DesignSession session)
                 ? "The game keeps this for its own empires. Nothing in the empire designer offers it."
                 : null,
             [new WikiCondition("Requirements", _reader.Read(authority.Possible), "Any empire")],
-            AuthorityFacts(authority),
+            AuthorityFacts(authority, detail),
             Wants(authority.Possible)) with
         {
             Icon = authority.Icon,
@@ -567,12 +766,98 @@ public sealed class WikiShelves(DesignSession session)
     /// them and are not in the prose - and the traits an authority forces are a real cost, since a
     /// hive mind's founders are hive-minded whatever else the player wanted them to be.
     /// </remarks>
-    private IReadOnlyList<WikiFact> AuthorityFacts(AuthorityDefinition authority) =>
+    private IReadOnlyList<WikiFact> AuthorityFacts(
+        AuthorityDefinition authority,
+        AuthorityDetail? detail) =>
     [
         WikiFact.Said("Elections", Localizer.Prettify(authority.ElectionType)),
         WikiFact.Said("Heir", authority.HasHeir ? "Yes" : "No"),
         WikiFact.Of("Forces", Traits(authority.ForcedTraits)),
+
+        // How long the office is held, which the page had no way of saying: it said "democratic"
+        // and left a reader to find out that the term is ten years and an oligarchy's is twenty.
+        WikiFact.Said("Term", Years(detail?.ElectionTermYears)),
+
+        WikiFact.Said(
+            "Candidates",
+            detail?.MaxElectionCandidates is { } many
+                ? many.ToString(System.Globalization.CultureInfo.CurrentCulture)
+                : null),
+
+        // And the most permanent decision in empire creation, which nothing warned anybody about.
+        // Three authorities refuse every reform: choose one and the empire is that for ever.
+        WikiFact.Said("Reform", detail is { CanReform: false } ? "Never" : null),
+
+        WikiFact.Of("Politics", Politics(detail)),
+        WikiFact.Of("Colour", Accent(detail)),
     ];
+
+    /// <summary>
+    /// What a government does to the names of the people in charge.
+    /// </summary>
+    /// <remarks>
+    /// Thirty-six number their rulers and twenty-six give them a house, and the two are not the
+    /// same question - an empire can do both, or one, or neither.
+    /// </remarks>
+    /// <param name="detail">What the page fetched, or null before it arrives.</param>
+    /// <returns>The chips.</returns>
+    private static IReadOnlyList<EmpireChoice> Naming(GovernmentDetail? detail) =>
+        detail is null
+            ? []
+            : [
+                .. new (bool Has, string Said)[]
+                    {
+                        (detail.RegnalNames, "Numbered"),
+                        (detail.DynasticNames, "Dynastic"),
+                    }
+                    .Where(p => p.Has)
+                    .Select(p => new EmpireChoice(p.Said, p.Said, null, null)),
+            ];
+
+    /// <summary>A term of office, said as the years it is.</summary>
+    /// <param name="years">The term, where the office has one.</param>
+    /// <returns>The words, or nothing.</returns>
+    private static string? Years(int? years) =>
+        years is { } many
+            ? string.Create(
+                System.Globalization.CultureInfo.CurrentCulture,
+                $"{many} years")
+            : null;
+
+    /// <summary>
+    /// What an empire under this authority has in the way of internal politics.
+    /// </summary>
+    /// <remarks>
+    /// Said as the things it has rather than as a column of yes and no, because that is how a
+    /// reader compares two of them: a hive mind's row is empty and an oligarchy's carries four.
+    /// Whether an empire has factions at all is a large mechanical difference and was only ever
+    /// implied by prose.
+    /// </remarks>
+    /// <param name="detail">What the page fetched, or null before it arrives.</param>
+    /// <returns>The chips.</returns>
+    private static IReadOnlyList<EmpireChoice> Politics(AuthorityDetail? detail) =>
+        detail is null
+            ? []
+            : [
+                .. new (bool Has, string Said)[]
+                    {
+                        (detail.HasFactions, "Factions"),
+                        (detail.HasAgendas, "Agendas"),
+                        (detail.UsesMandates, "Mandates"),
+                        (detail.ReElectionAllowed, "Re-election"),
+                        (detail.EmergencyElections, "Emergency elections"),
+                    }
+                    .Where(p => p.Has)
+                    .Select(p => new EmpireChoice(p.Said, p.Said, null, null)),
+            ];
+
+    /// <summary>The game's own accent colour for an authority, drawn rather than named.</summary>
+    /// <param name="detail">What the page fetched, or null before it arrives.</param>
+    /// <returns>The chip, or none.</returns>
+    private static IReadOnlyList<EmpireChoice> Accent(AuthorityDetail? detail) =>
+        detail?.Colour is { Length: > 0 } colour
+            ? [new EmpireChoice("colour", "Accent", null, null) { Swatch = colour }]
+            : [];
 
     /// <summary>
     /// The species classes, which are the one shelf whose entries are a set of pictures.
@@ -1539,17 +1824,19 @@ public sealed class WikiShelves(DesignSession session)
     /// Empire rather than a Despotic Hegemony. The weight is therefore the second half of every
     /// answer and is a column rather than a footnote.
     /// </remarks>
-    private IReadOnlyList<WikiRow> Governments() =>
+    private IReadOnlyList<WikiRow> GovernmentRows(
+        IReadOnlyDictionary<string, GovernmentDetail> detail) =>
     [
         .. Database.GovernmentTypes
-            .Select(Government)
+            .Select(g => Government(g, detail.GetValueOrDefault(g.Key)))
             .OrderBy(r => r.Name, StringComparer.CurrentCulture),
     ];
 
     /// <summary>One government, with the titles it hands out.</summary>
     /// <param name="government">The government type.</param>
+    /// <param name="detail">What the page fetched about it, or null before that arrives.</param>
     /// <returns>Its row.</returns>
-    private WikiRow Government(GovernmentTypeDefinition government)
+    private WikiRow Government(GovernmentTypeDefinition government, GovernmentDetail? detail)
     {
         // Ninety-seven of the hundred and seventy are out of a design's reach, and they are out of
         // it for two quite different reasons - so they get two quite different sentences rather
@@ -1579,7 +1866,7 @@ public sealed class WikiShelves(DesignSession session)
                         + "is never called this, and an empire that has played a while may be."
                 : null,
             [new WikiCondition("Requirements", _reader.Read(government.Possible), "Any empire")],
-            GovernmentFacts(government),
+            GovernmentFacts(government, detail),
             Wants(government.Possible));
     }
 
@@ -1592,9 +1879,18 @@ public sealed class WikiShelves(DesignSession session)
     /// twenty-eight governments name a female ruler and only twenty-seven a female heir.
     /// </remarks>
     /// <param name="government">The government type.</param>
+    /// <param name="detail">What the page fetched about it, or null before that arrives.</param>
     /// <returns>Its facts.</returns>
-    private IReadOnlyList<WikiFact> GovernmentFacts(GovernmentTypeDefinition government) =>
+    private IReadOnlyList<WikiFact> GovernmentFacts(
+        GovernmentTypeDefinition government,
+        GovernmentDetail? detail) =>
     [
+        // Why the empire got renamed when it reformed, which is a hundred and fifteen of them and
+        // is the one thing about a government a player is most likely to have wondered about.
+        WikiFact.Said("On reform", detail is { ForcesRename: true } ? "Renames the empire" : null),
+
+        WikiFact.Of("Ruler names", Naming(detail)),
+
         WikiFact.Said("Ruler", Title(government.RulerTitleKey)),
         WikiFact.Said("Ruler (female)", Title(government.RulerTitleFemaleKey)),
         WikiFact.Said("Heir", Title(government.HeirTitleKey)),

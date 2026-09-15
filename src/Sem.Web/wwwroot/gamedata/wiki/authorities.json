@@ -1,0 +1,107 @@
+{
+  "stamp": {
+    "extractorVersion": "0.1.0\u002B48fafe77b784",
+    "schemaVersion": 1
+  },
+  "authorities": [
+    {
+      "key": "auth_democratic",
+      "electionTermYears": 10,
+      "electionType": "democratic",
+      "canReform": true,
+      "hasFactions": true,
+      "hasAgendas": false,
+      "hasHeir": false,
+      "reElectionAllowed": true,
+      "usesMandates": true,
+      "emergencyElections": false,
+      "colour": "rgb(81 140 44)"
+    },
+    {
+      "key": "auth_oligarchic",
+      "electionTermYears": 20,
+      "electionType": "oligarchic",
+      "canReform": true,
+      "hasFactions": true,
+      "hasAgendas": true,
+      "hasHeir": false,
+      "reElectionAllowed": false,
+      "usesMandates": false,
+      "emergencyElections": true,
+      "maxElectionCandidates": 4,
+      "colour": "rgb(164 135 18)"
+    },
+    {
+      "key": "auth_dictatorial",
+      "electionType": "oligarchic",
+      "canReform": true,
+      "hasFactions": true,
+      "hasAgendas": true,
+      "hasHeir": false,
+      "reElectionAllowed": false,
+      "usesMandates": false,
+      "emergencyElections": false,
+      "colour": "rgb(162 85 12)"
+    },
+    {
+      "key": "auth_imperial",
+      "canReform": true,
+      "hasFactions": true,
+      "hasAgendas": true,
+      "hasHeir": true,
+      "reElectionAllowed": false,
+      "usesMandates": false,
+      "emergencyElections": false,
+      "colour": "rgb(141 38 38)"
+    },
+    {
+      "key": "auth_hive_mind",
+      "electionType": "none",
+      "canReform": false,
+      "hasFactions": false,
+      "hasAgendas": false,
+      "hasHeir": false,
+      "reElectionAllowed": false,
+      "usesMandates": false,
+      "emergencyElections": false,
+      "colour": "rgb(225 165 33)"
+    },
+    {
+      "key": "auth_machine_intelligence",
+      "electionType": "none",
+      "canReform": false,
+      "hasFactions": false,
+      "hasAgendas": false,
+      "hasHeir": false,
+      "reElectionAllowed": false,
+      "usesMandates": false,
+      "emergencyElections": false,
+      "colour": "rgb(0 165 155)"
+    },
+    {
+      "key": "auth_ancient_machine_intelligence",
+      "electionType": "none",
+      "canReform": false,
+      "hasFactions": true,
+      "hasAgendas": false,
+      "hasHeir": false,
+      "reElectionAllowed": false,
+      "usesMandates": false,
+      "emergencyElections": false
+    },
+    {
+      "key": "auth_corporate",
+      "electionTermYears": 20,
+      "electionType": "oligarchic",
+      "canReform": true,
+      "hasFactions": true,
+      "hasAgendas": true,
+      "hasHeir": false,
+      "reElectionAllowed": false,
+      "usesMandates": false,
+      "emergencyElections": true,
+      "maxElectionCandidates": 4,
+      "colour": "rgb(132 143 38)"
+    }
+  ]
+}

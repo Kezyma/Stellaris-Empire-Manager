@@ -1,0 +1,1028 @@
+{
+  "stamp": {
+    "extractorVersion": "0.1.0\u002B48fafe77b784",
+    "schemaVersion": 1
+  },
+  "governments": [
+    {
+      "key": "gov_stagnant_ascendancy",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_awakened_ascendancy",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_custodian_matrix",
+      "forcesRename": true,
+      "regnalNames": true,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_berserker_machine",
+      "forcesRename": true,
+      "regnalNames": true,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_galactic_defense_unit",
+      "forcesRename": true,
+      "regnalNames": true,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_war_splinter",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_growth_splinter",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_control_splinter",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_fused_ascendancy",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_tribal_society",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_feudal_realms",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_fragmented_nation_states",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_curator_enclave",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_trader_enclave",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_artist_enclave",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_marauder_clans",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_marauder_khanate",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_diadochi",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_successor_khanate",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_military_order",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_ancient_machine_intelligence",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_mercenary_enclave",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_salvager_enclave",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_shroudwalker_enclave",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_mindwarden_enclave",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_unplugged_assimilator_empire",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_champions_forge_enclave",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_representative_democracy",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_plutocratic_oligarchy",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_constitutional_dictatorship",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_despotic_empire",
+      "forcesRename": false,
+      "regnalNames": true,
+      "dynasticNames": true
+    },
+    {
+      "key": "gov_hive_mind",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_machine_empire",
+      "forcesRename": true,
+      "regnalNames": true,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_megacorporation",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_wilderness",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_fallback",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_theocratic_republic",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_theocratic_oligarchy",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_theocratic_dictatorship",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_theocratic_monarchy",
+      "forcesRename": false,
+      "regnalNames": true,
+      "dynasticNames": true
+    },
+    {
+      "key": "gov_direct_democracy",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_executive_committee",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_totalitarian_regime",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_despotic_hegemony",
+      "forcesRename": false,
+      "regnalNames": true,
+      "dynasticNames": true
+    },
+    {
+      "key": "gov_star_empire",
+      "forcesRename": false,
+      "regnalNames": true,
+      "dynasticNames": true
+    },
+    {
+      "key": "gov_military_dictatorship",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_military_junta",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_military_commissariat",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_moral_democracy",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_irenic_bureaucracy",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_irenic_dictatorship",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_irenic_monarchy",
+      "forcesRename": false,
+      "regnalNames": true,
+      "dynasticNames": true
+    },
+    {
+      "key": "gov_divine_empire",
+      "forcesRename": true,
+      "regnalNames": true,
+      "dynasticNames": true
+    },
+    {
+      "key": "gov_holy_tribunal",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_megachurch",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_martial_empire",
+      "forcesRename": true,
+      "regnalNames": true,
+      "dynasticNames": true
+    },
+    {
+      "key": "gov_martial_dictatorship",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_war_council",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_assembly_of_clans",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_citizen_stratocracy",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_citizen_republic",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_celestial_empire",
+      "forcesRename": true,
+      "regnalNames": true,
+      "dynasticNames": true
+    },
+    {
+      "key": "gov_rational_consensus",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_science_directorate",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_technocratic_dictatorship",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_illuminated_autocracy",
+      "forcesRename": true,
+      "regnalNames": true,
+      "dynasticNames": true
+    },
+    {
+      "key": "gov_feudal_empire",
+      "forcesRename": true,
+      "regnalNames": true,
+      "dynasticNames": true
+    },
+    {
+      "key": "gov_enlightened_monarchy",
+      "forcesRename": true,
+      "regnalNames": true,
+      "dynasticNames": true
+    },
+    {
+      "key": "gov_elective_monarchy",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_machine_research",
+      "forcesRename": true,
+      "regnalNames": true,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_machine_industrial",
+      "forcesRename": true,
+      "regnalNames": true,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_worker_coop",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_communal_parity",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_bandit_kingdom",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_bandit_commune",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_grim_council",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_mortal_empire",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_band_blood",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_sacrificial_megachurch",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_defensive_union",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_dimensional_covenant",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_parasitic_overmind",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_trade_league",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_machine_servitor",
+      "forcesRename": true,
+      "regnalNames": true,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_machine_assimilator",
+      "forcesRename": true,
+      "regnalNames": true,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_purity_assembly",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_purification_committee",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_purity_order",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_blood_court",
+      "forcesRename": true,
+      "regnalNames": true,
+      "dynasticNames": true
+    },
+    {
+      "key": "gov_devouring_swarm",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_blood_forest",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_machine_terminator",
+      "forcesRename": true,
+      "regnalNames": true,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_criminal_syndicate",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_pirate_haven",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_subversive_cult",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_imperial_domain",
+      "forcesRename": true,
+      "regnalNames": true,
+      "dynasticNames": true
+    },
+    {
+      "key": "gov_imperial_domain_hives",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_imperial_domain_machines",
+      "forcesRename": true,
+      "regnalNames": true,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_imperial_domain_megacorp",
+      "forcesRename": true,
+      "regnalNames": true,
+      "dynasticNames": true
+    },
+    {
+      "key": "gov_cyber_democracy_individualist",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_cyber_democracy_collectivist",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_cyber_oligarchy_individualist",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_cyber_oligarchy_collectivist",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_cyber_dictatorial_individualist",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_cyber_dictatorial_collectivist",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_cyber_imperial_individualist",
+      "forcesRename": false,
+      "regnalNames": true,
+      "dynasticNames": true
+    },
+    {
+      "key": "gov_cyber_imperial_collectivist",
+      "forcesRename": false,
+      "regnalNames": true,
+      "dynasticNames": true
+    },
+    {
+      "key": "gov_cyber_corporate_individualist",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_cyber_corporate_collectivist",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_cyber_hive_volitional",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_cyber_hive_integrated",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_cyber_creed_monarchy",
+      "forcesRename": false,
+      "regnalNames": true,
+      "dynasticNames": true
+    },
+    {
+      "key": "gov_cyber_creed_dictatorship",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_cyber_creed_oligarchy",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_cyber_creed_democracy",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_cyber_creed_divine_empire",
+      "forcesRename": true,
+      "regnalNames": true,
+      "dynasticNames": true
+    },
+    {
+      "key": "gov_cyber_creed_megachurch",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_cyber_creed_holy_tribunal",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_cyber_creed_subversive_cult",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_synth_democracy_physical",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_synth_democracy_virtual",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_synth_oligarchy_physical",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_synth_oligarchy_virtual",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_synth_dictatorship_physical",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_synth_dictatorship_virtual",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_synth_imperial_physical",
+      "forcesRename": false,
+      "regnalNames": true,
+      "dynasticNames": true
+    },
+    {
+      "key": "gov_synth_imperial_virtual",
+      "forcesRename": false,
+      "regnalNames": true,
+      "dynasticNames": true
+    },
+    {
+      "key": "gov_synth_corporate_physical",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_synth_corporate_virtual",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_memory_aggregator",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_neural_chorus",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_bio_democratic_phenotypical_autonomy",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_bio_imperial_biotic_dominion",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_bio_oligarchic_eugenic_hierarchy",
+      "forcesRename": true,
+      "regnalNames": true,
+      "dynasticNames": true
+    },
+    {
+      "key": "gov_bio_corporate_organic_syndicate",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_bio_dictatorial_nucleic_judiciary",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_bio_hive_mind_purity_paradigm",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_bio_democratic_cordant_multiplicity",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_bio_oligarchic_replicating_regency",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_bio_imperial_hereditary_continuity",
+      "forcesRename": true,
+      "regnalNames": true,
+      "dynasticNames": true
+    },
+    {
+      "key": "gov_bio_corporate_replicatory_association",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_bio_dictatorial_homogenous_submission",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_bio_hive_mind_replicating_horde",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_bio_democratic_biodiverse_liberty",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_bio_democratic_evopred_mutation",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_bio_oligarchic_catalytic_command",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_bio_oligarchic_evopred_mutation",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_bio_imperial_genomic_expansionist",
+      "forcesRename": true,
+      "regnalNames": true,
+      "dynasticNames": true
+    },
+    {
+      "key": "gov_bio_imperial_evopred_mutation",
+      "forcesRename": true,
+      "regnalNames": true,
+      "dynasticNames": true
+    },
+    {
+      "key": "gov_bio_corporate_organ_usury",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_bio_corporate_evopred_mutation",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_bio_dictatorial_hybrid_mandate",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_bio_dictatorial_evopred_mutation",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_bio_hive_mind_adaptive_dominion",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_bio_hive_mind_evopred_mutation",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_storm_chasers",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_shroud_transcendent_democracy",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_shroud_transcendent_oligarchy",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_shroud_transcendent_dictatorial",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_shroud_transcendent_imperial",
+      "forcesRename": false,
+      "regnalNames": true,
+      "dynasticNames": true
+    },
+    {
+      "key": "gov_shroud_transcendent_corporate",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_shroud_transcendent_hive",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_shroud_transcendent_machine",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_shroud_corporeal_democracy",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_shroud_corporeal_oligarchy",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_shroud_corporeal_dictatorial",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_shroud_corporeal_imperial",
+      "forcesRename": false,
+      "regnalNames": true,
+      "dynasticNames": true
+    },
+    {
+      "key": "gov_shroud_corporeal_corporate",
+      "forcesRename": false,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_shroud_corporeal_hive",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    },
+    {
+      "key": "gov_shroud_corporeal_machine",
+      "forcesRename": true,
+      "regnalNames": false,
+      "dynasticNames": false
+    }
+  ]
+}

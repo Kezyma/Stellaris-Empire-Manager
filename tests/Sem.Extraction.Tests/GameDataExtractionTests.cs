@@ -309,6 +309,65 @@ public sealed class GameDataExtractionTests
                 r => r is AlwaysRequirement { Value: false, Because: "has_country_flag" }));
     }
 
+    /// <summary>
+    /// The government family carries what a design is never refused for.
+    /// </summary>
+    /// <remarks>
+    /// Five collections and four files, none of which the empire designer has ever needed: a term
+    /// of office cannot block a design and neither can a forced rename. The counts are the game's
+    /// own and were each taken from its files rather than from this code.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void TheGovernmentFamilyCarriesWhatADesignIsNeverRefusedFor()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var extractor = new GameDataExtractor(LayeredContent.ForInstall(InstallRoot!));
+        extractor.Extract();
+        var family = extractor.Family;
+
+        // The strongest single find in the audit: a hundred and thirty-two sentences the game wrote
+        // for its own ethics-drift tooltip, a hundred and seven of them drawing pops in.
+        var drift = family.Ethics.SelectMany(e => e.Drift).ToList();
+        Assert.Equal(132, drift.Count);
+        Assert.Equal(107, drift.Count(d => d.Draws));
+
+        // And the eight fanatics, which no pop ever drifts into and which therefore write none.
+        Assert.Equal(8, family.Ethics.Count(e => !e.DriftsInto));
+        Assert.All(
+            family.Ethics.Where(e => !e.DriftsInto),
+            e => Assert.Empty(e.Drift));
+
+        var democratic = Assert.Single(family.Authorities, a => a.Key == "auth_democratic");
+        Assert.Equal(10, democratic.ElectionTermYears);
+        Assert.True(democratic.UsesMandates);
+        Assert.Equal("rgb(81 140 44)", democratic.Colour);
+
+        // The three an empire can never reform out of, which nothing anywhere warned anybody about.
+        Assert.Equal(3, family.Authorities.Count(a => !a.CanReform));
+
+        Assert.Equal(115, family.Governments.Count(g => g.ForcesRename));
+        Assert.Equal(36, family.Governments.Count(g => g.RegnalNames));
+        Assert.Equal(26, family.Governments.Count(g => g.DynasticNames));
+
+        Assert.Equal(40, family.Civics.Count(c => c.BecomesInstead is { Length: > 0 }));
+        Assert.Equal(28, family.Civics.Count(c => c.OnlyOneInTheGalaxy));
+        Assert.Equal(18, family.Civics.Count(c => c.BlocksRandomMachineEmpires));
+        Assert.Equal(52, family.Civics.Count(c => c.CustomStartScreen));
+
+        // Both neighbour fields are flags, whatever their names suggest - checked by hand in the
+        // files, where every one of the fourteen is written as a bare yes or no.
+        Assert.Equal(7, family.Civics.Count(c => c.NeighboursUninhabitable));
+        Assert.Equal(6, family.Civics.Count(c => !c.NeighboursPreferred));
+
+        // And the AI's own gate, which is a condition rather than a flag: a hundred and fifty write
+        // one, and it is not the same question as what a player may take.
+        Assert.Equal(
+            150,
+            family.Civics.Count(c => c.AiPlayable is not AlwaysRequirement { Value: true }));
+    }
+
     [SkippableFact]
     [Trait("Category", "RealData")]
     public void TraitBudgetsMatchTheArchetypesTheGameDefines()

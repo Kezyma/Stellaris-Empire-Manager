@@ -71,6 +71,8 @@ public sealed class GameDataCacheTests
             foreach (var domain in new[]
                      {
                          LeaderTraitPack.Domain, ShipsetPack.Domain, PersonalityPack.Domain,
+                         EthicPack.Domain, AuthorityPack.Domain, GovernmentPack.Domain,
+                         CivicPack.Domain,
                      })
             {
                 var pack = Path.Combine(cache.Directory, GameDataWriter.WikiPackFileName(domain));

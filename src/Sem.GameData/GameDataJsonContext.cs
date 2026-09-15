@@ -38,4 +38,8 @@ namespace Sem.GameData;
 [JsonSerializable(typeof(LeaderTraitPack))]
 [JsonSerializable(typeof(ShipsetPack))]
 [JsonSerializable(typeof(PersonalityPack))]
+[JsonSerializable(typeof(EthicPack))]
+[JsonSerializable(typeof(AuthorityPack))]
+[JsonSerializable(typeof(GovernmentPack))]
+[JsonSerializable(typeof(CivicPack))]
 public sealed partial class GameDataJsonContext : JsonSerializerContext;

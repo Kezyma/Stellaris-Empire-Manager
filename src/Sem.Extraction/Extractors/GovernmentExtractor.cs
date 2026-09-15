@@ -10,14 +10,34 @@ internal static class GovernmentExtractor
     public static List<AuthorityDefinition> ExtractAuthorities(
         ScriptLoader loader,
         RequirementCompiler requirements,
-        AssetCatalog assets)
+        AssetCatalog assets,
+        List<AuthorityDetail> detail)
     {
+        ArgumentNullException.ThrowIfNull(detail);
+
         var results = new List<AuthorityDefinition>();
         var councilors = ReadRulerCouncilors(loader, requirements);
 
         foreach (var entry in loader.LoadDefinitions("common/governments/authorities"))
         {
             var body = entry.Body;
+
+            // How the empire under it is run, which the designer never asked for because none of it
+            // can refuse a design - and which is most of what tells one of the eight from another.
+            detail.Add(new AuthorityDetail(entry.Key)
+            {
+                ElectionTermYears = loader.ResolveInt(body.GetString("election_term_years")),
+                ElectionType = body.GetString("election_type"),
+                CanReform = body.GetBool("can_reform", defaultValue: true),
+                HasFactions = body.GetBool("has_factions", defaultValue: true),
+                HasAgendas = body.GetBool("has_agendas"),
+                HasHeir = body.GetBool("has_heir"),
+                ReElectionAllowed = body.GetBool("re_election_allowed"),
+                UsesMandates = body.GetBool("uses_mandates"),
+                EmergencyElections = body.GetBool("can_have_emergency_elections"),
+                MaxElectionCandidates = loader.ResolveInt(body.GetString("max_election_candidates")),
+                Colour = Accent(body.GetBlock("color")),
+            });
 
             results.Add(new AuthorityDefinition(entry.Key)
             {
@@ -55,9 +75,11 @@ internal static class GovernmentExtractor
         ScriptLoader loader,
         RequirementCompiler requirements,
         AssetCatalog assets,
-        IReadOnlyDictionary<string, string> text)
+        IReadOnlyDictionary<string, string> text,
+        List<CivicDetail> detail)
     {
         ArgumentNullException.ThrowIfNull(text);
+        ArgumentNullException.ThrowIfNull(detail);
 
         var results = new List<CivicDefinition>();
 
@@ -65,6 +87,33 @@ internal static class GovernmentExtractor
         {
             var body = entry.Body;
             var isOrigin = body.GetBool("is_origin");
+            var flags = body.GetList("flags");
+
+            // What it says beyond what choosing it needs. An origin answers the second half of
+            // these and a civic the first; a field the other kind never writes stays at its default.
+            detail.Add(new CivicDetail(entry.Key)
+            {
+                BecomesInstead = body.GetString("alternate_civic_version"),
+
+                // A block, not a yes or a no. The game writes the AI's gate as a condition of its
+                // own and two civics use that to let a player take what an AI without the pack
+                // cannot.
+                AiPlayable = body.GetBlock("ai_playable") is { } allowed
+                    ? requirements.CompileTrigger(allowed)
+                    : new AlwaysRequirement(true),
+
+                SuppressesFactions = flags.Contains("suppress_vanilla_factions", StringComparer.Ordinal),
+                CustomStartScreen = flags.Contains("custom_start_screen", StringComparer.Ordinal),
+                AdvancedStart = body.GetBool("advanced_start"),
+                OnlyOneInTheGalaxy = body.GetBool("max_once_global"),
+                BlocksRandomMachineEmpires = body.GetBool("blocks_random_machine_empire_generation"),
+
+                // Both of these are flags, whatever their names suggest: the game writes
+                // "non_colonizable_planet_class_neighbor = yes" and means "put nothing settleable
+                // next door", not "put these classes next door".
+                NeighboursUninhabitable = body.GetBool("non_colonizable_planet_class_neighbor"),
+                NeighboursPreferred = body.GetBool("preferred_planet_class_neighbor", defaultValue: true),
+            });
             var effects = EffectsReader.Read(body, loader, requirements, tagsKey: "tags");
             var secondarySpecies = body.GetBlock("has_secondary_species");
 
@@ -178,13 +227,48 @@ internal static class GovernmentExtractor
     private const string NotModdable = "CIVIC_NOT_MODDABLE";
 
     /// <summary>
+    /// An authority's own accent colour, as CSS.
+    /// </summary>
+    /// <remarks>
+    /// Written as four whole numbers - red, green, blue and an alpha every one of them sets to
+    /// full - so the alpha is read and dropped rather than carried into a colour nothing would
+    /// draw differently for it.
+    /// </remarks>
+    /// <param name="block">The colour block, where the authority states one.</param>
+    /// <returns>The colour, or nothing for the one authority that names none.</returns>
+    private static string? Accent(CwBlock? block)
+    {
+        if (block is null)
+        {
+            return null;
+        }
+
+        var channels = block.Nodes
+            .Where(n => !n.IsAssignment && n.Scalar is not null)
+            .Select(n => n.ScalarValue!)
+            .Take(3)
+            .Select(v => int.TryParse(v, System.Globalization.NumberStyles.Integer,
+                System.Globalization.CultureInfo.InvariantCulture, out var n) ? n : -1)
+            .ToList();
+
+        return channels.Count < 3 || channels.Any(c => c < 0)
+            ? null
+            : string.Create(
+                System.Globalization.CultureInfo.InvariantCulture,
+                $"rgb({channels[0]} {channels[1]} {channels[2]})");
+    }
+
+    /// <summary>
     /// Reads the government types, which decide what an empire is called. The game picks the
     /// highest-weighted one whose conditions the design meets, breaking ties by file order.
     /// </summary>
     public static List<GovernmentTypeDefinition> ExtractGovernmentTypes(
         ScriptLoader loader,
-        RequirementCompiler requirements)
+        RequirementCompiler requirements,
+        List<GovernmentDetail> detail)
     {
+        ArgumentNullException.ThrowIfNull(detail);
+
         var results = new List<GovernmentTypeDefinition>();
         var order = 0;
 
@@ -197,6 +281,15 @@ internal static class GovernmentExtractor
             {
                 continue;
             }
+
+            // What it does to the empire's names, which is the whole of what the record had left to
+            // say and includes the answer to "why was my empire renamed when I reformed".
+            detail.Add(new GovernmentDetail(entry.Key)
+            {
+                ForcesRename = body.GetBool("should_force_rename"),
+                RegnalNames = body.GetBool("use_regnal_names"),
+                DynasticNames = body.GetBool("dynastic_last_names"),
+            });
 
             results.Add(new GovernmentTypeDefinition(entry.Key, Weight(body, loader), order++)
             {
