@@ -25,6 +25,16 @@
         <img class="sem-detail-picture @Shape" src="@Session.Data.AssetUrl(picture)"
              alt="" loading="lazy">
     }
+    else if (Row.Layers.Count > 0)
+    {
+        @* A scene built from several, furthest first - see WikiRow.Layers. *@
+        <div class="sem-detail-picture stacked @Shape">
+            @foreach (var layer in Row.Layers)
+            {
+                <img src="@Session.Data.AssetUrl(layer)" alt="" loading="lazy">
+            }
+        </div>
+    }
 
     <header>
         @* Only where this shelf has pictures at all - see the same gate on the table. *@

@@ -49,6 +49,20 @@ public sealed record WikiRow
     /// </remarks>
     public string? Picture { get; init; }
 
+    /// <summary>
+    /// Or a scene built from several pictures, furthest from the viewer first.
+    /// </summary>
+    /// <remarks>
+    /// The worlds, which the game does not draw as one picture and could not: a world is a sky with
+    /// bands of landscape in front of it, and the empire's city is painted between those bands so
+    /// that one row of hills sits behind the towers and the next sits in front. Taking the sky alone
+    /// left every planet card showing its clouds and nothing of the ground.
+    /// </remarks>
+    public IReadOnlyList<string> Layers { get; init; } = [];
+
+    /// <summary>Whether it has artwork of either kind, which is what decides the column.</summary>
+    public bool Pictured => Picture is { Length: > 0 } || Layers.Count > 0;
+
     /// <summary>What it does, for the effects list to draw.</summary>
     public required EffectSet Effects { get; init; }
 

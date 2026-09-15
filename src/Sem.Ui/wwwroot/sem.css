@@ -7381,6 +7381,26 @@ button.icon.ended {
 }
 
 /*
+   A scene built from several pictures rather than one.
+
+   The worlds: a sky with bands of landscape in front of it, which is how the game paints one and
+   why it cannot be a single file - the empire's city goes between those bands. Stacked exactly as
+   the room's window stacks them, in a box that keeps the frame the class already gives it.
+*/
+.sem-detail-picture.stacked {
+    position: relative;
+    overflow: hidden;
+}
+
+.sem-detail-picture.stacked > img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/*
    And a tile wide enough to hold one.
 
    The 52-pixel square is the portrait picker's, which is right for a face and took a fifth off each

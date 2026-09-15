@@ -1,4 +1,5 @@
 using Sem.GameData;
+using Sem.Ui.Components;
 
 namespace Sem.Ui.Services;
 
@@ -594,7 +595,12 @@ public sealed class WikiShelves(DesignSession session)
             Wants(world.Potential)) with
         {
             Icon = world.Icon,
-            Picture = world.Sky,
+
+            // The whole view, not the sky. A world is drawn as its sky with bands of landscape in
+            // front of it, so the sky alone is the clouds with nothing underneath - which is what
+            // every planet card was showing. Composed by the same method the room scene uses, with
+            // no city on it, because this is the world rather than anybody's world.
+            Layers = [.. WorldBackdrop.Layers(world, city: null, level: 0)],
         };
     }
 

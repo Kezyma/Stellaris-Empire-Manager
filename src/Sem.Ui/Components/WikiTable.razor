@@ -118,6 +118,15 @@
                                 <img class="sem-detail-picture @Shape" src="@Session.Data.AssetUrl(picture)"
                                      alt="" loading="lazy">
                             }
+                            else if (row.Layers.Count > 0)
+                            {
+                                <div class="sem-detail-picture stacked @Shape">
+                                    @foreach (var layer in row.Layers)
+                                    {
+                                        <img src="@Session.Data.AssetUrl(layer)" alt="" loading="lazy">
+                                    }
+                                </div>
+                            }
                         </td>
                     }
 
@@ -440,7 +449,7 @@
     /// </remarks>
     protected override void OnParametersSet()
     {
-        _pictures = All.Any(r => r.Picture is { Length: > 0 });
+        _pictures = All.Any(r => r.Pictured);
         _playable = All.Any(r => !r.Playable);
         _packs = All.Any(r => r.Packs.Count > 0);
         _effects = All.Any(r => !r.Effects.IsEmpty);
