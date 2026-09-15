@@ -7390,6 +7390,14 @@ button.icon.ended {
 .sem-detail-picture.stacked {
     position: relative;
     overflow: hidden;
+
+    /*
+        On the void, as the room's own window is. Sixteen of these worlds are out in space - an
+        asteroid field, a black hole, a star - and the game draws them with the top third of the
+        canvas left empty for whatever is behind. On a card that was the card showing through, which
+        reads as a gap above the picture rather than as the sky it is.
+    */
+    background: var(--bg-void);
 }
 
 .sem-detail-picture.stacked > img {
