@@ -167,6 +167,42 @@ public sealed class ConditionReaderTests
     }
 
     /// <summary>
+    /// An "any of" a constant already satisfies asks nothing at all.
+    /// </summary>
+    /// <remarks>
+    /// The other half of dropping the parts that say nothing. In an "all of" a satisfied part is
+    /// filler and the rest of the group still stands; in an "any of" it settles the whole group, so
+    /// what is left beside it is not a condition any more.
+    ///
+    /// Evangelising Zealots is the one in the game: it allows a default country or an exiled one,
+    /// the first is every design there is and the second is a country type no design can be. Read
+    /// the other way the page said "Played by: Never" above a list of conditions an empire plainly
+    /// can meet.
+    /// </remarks>
+    [Fact]
+    public void AnAnyOfAConstantSatisfiesAsksNothing()
+    {
+        var node = Reader().Read(new AllRequirement(
+        [
+            new AnyRequirement([new AlwaysRequirement(true), new AlwaysRequirement(false)]),
+            Ethic("ethic_militarist"),
+        ]))!;
+
+        Assert.Equal(ConditionJoin.Leaf, node.Join);
+        Assert.Equal("Militarist", node.Chip!.Name);
+    }
+
+    /// <summary>And an "any of" nothing in it can satisfy still says so.</summary>
+    [Fact]
+    public void AnAnyOfNothingCanSatisfyStillSaysNever()
+    {
+        var node = Reader().Read(
+            new AnyRequirement([new AlwaysRequirement(false), new AlwaysRequirement(false)]))!;
+
+        Assert.Equal("Never", node.Text);
+    }
+
+    /// <summary>
     /// A group of the same kind inside a group is lifted into it.
     /// </summary>
     /// <remarks>

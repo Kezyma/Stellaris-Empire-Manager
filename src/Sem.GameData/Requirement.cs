@@ -65,6 +65,53 @@ public abstract record Requirement
             yield return nested;
         }
     }
+
+    /// <summary>
+    /// What the constants in this condition settle on their own, where they settle it at all.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Three-valued, because most of a condition is neither true nor false until a design answers
+    /// it: a selection is a thing the reader may or may not pick, and this says nothing about those.
+    /// What it does answer is the part the extractor already decided - an <c>is_country_type</c>
+    /// that is not <c>default</c>, a flag no design can set - and whether that alone decides the
+    /// whole.
+    /// </para>
+    /// <para>
+    /// Which is the question "can this ever be reached". Asking it of the top of the tree only, as
+    /// a bare <c>always = no</c>, found two of the twenty personalities the game will never give
+    /// anybody: the other eighteen write the refusal as one clause of an <c>allow</c> block beside
+    /// the ethics they want, and were being offered as though a design could be played as a fallen
+    /// empire.
+    /// </para>
+    /// </remarks>
+    /// <returns>True, false, or null where the design decides.</returns>
+    public bool? Settled()
+    {
+        switch (this)
+        {
+            case AlwaysRequirement always:
+                return always.Value;
+
+            case NotRequirement not:
+                return not.Item.Settled() is { } inner ? !inner : null;
+
+            case AllRequirement all:
+            {
+                var answers = all.Items.Select(i => i.Settled()).ToList();
+                return answers.Contains(false) ? false : answers.Contains(null) ? null : true;
+            }
+
+            case AnyRequirement any:
+            {
+                var answers = any.Items.Select(i => i.Settled()).ToList();
+                return answers.Contains(true) ? true : answers.Contains(null) ? null : false;
+            }
+
+            default:
+                return null;
+        }
+    }
 }
 
 /// <summary>A condition that is always true or always false.</summary>

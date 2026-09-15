@@ -941,11 +941,34 @@ public sealed class WikiShelfTests
     [Fact]
     public void APersonalityIsNamedUnderItsPrefix()
     {
-        var row = Assert.Single(Personalities().Personalities(pack: null).Rows);
+        var row = Honourbound(Personalities().Personalities(pack: null));
 
         Assert.Equal("Honourbound Warriors", row.Name);
         Assert.Equal("They fight fairly.", row.Description);
         Assert.Equal("50", row.Fact("Weight")!.Text);
+    }
+
+    /// <summary>
+    /// A personality the game keeps for a country it generates itself is marked as one.
+    /// </summary>
+    /// <remarks>
+    /// Twenty of the fifty-one, and only two of them write the refusal as the whole of their allow
+    /// block. The other eighteen write it as one clause beside the ethics they want - a fallen
+    /// empire's, a pre-FTL world's - so asking only whether the top of the tree was a flat no left
+    /// them on the page as though a design could be played as one.
+    /// </remarks>
+    [Fact]
+    public void APersonalityNobodyIsEverPlayedAsSaysSo()
+    {
+        var rows = Personalities().Personalities(pack: null).Rows
+            .ToDictionary(r => r.Key, StringComparer.Ordinal);
+
+        Assert.False(rows["fallen_empire_spiritualist"].Playable);
+        Assert.Equal("Never drawn", rows["fallen_empire_spiritualist"].ClosedShort);
+
+        // And the one beside it, whose refusal is one clause of four, stays on the page.
+        Assert.True(rows["honorbound_warriors"].Playable);
+        Assert.Null(rows["honorbound_warriors"].ClosedShort);
     }
 
     /// <summary>
@@ -988,9 +1011,17 @@ public sealed class WikiShelfTests
             },
         };
 
-        var row = Assert.Single(Personalities().Personalities(pack).Rows);
+        var row = Honourbound(Personalities().Personalities(pack));
 
-        Assert.Equal(["Conqueror", "Subjugator"], row.Fact("Behaviour")!.Chips.Select(c => c.Name));
+        var behaviours = row.Fact("Behaviour")!.Chips;
+        Assert.Equal(["Conqueror", "Subjugator"], behaviours.Select(c => c.Name));
+
+        // Each carrying what the switch decides, which the game documents in the comment block its
+        // personality files open with and nowhere else. Without it the panel behind one was a name
+        // over an empty box, since a behaviour is a yes-or-no and has no numbers to list.
+        Assert.Equal(
+            ["sem_personality_conqueror_desc", "sem_personality_subjugator_desc"],
+            behaviours.Select(c => c.Description));
 
         // Named properly rather than prettified, and each wearing its own figure: the game localises
         // none of these, so "Nap Acceptance" was the only thing the key could be made to say.
@@ -1014,14 +1045,43 @@ public sealed class WikiShelfTests
     [Fact]
     public void APersonalitySaysWhatPullsTheDrawTowardIt()
     {
-        var row = Assert.Single(Personalities().Personalities(pack: null).Rows);
-        var pulls = row.Fact("More likely")!.Chips;
+        var pulls = Honourbound(Personalities().Personalities(pack: null)).Fact("More likely")!.Chips;
 
-        Assert.Equal(["Fanatic Militarist", "election type none"], pulls.Select(c => c.Name));
-        Assert.Equal(["+2", "-1"], pulls.Select(c => c.Badge));
+        Assert.Equal(
+            [
+                "Fanatic Militarist",
 
+                // A compound is its parts, each its own chip and each a link to the page about it.
+                // Said in one sentence this read "government Science Directorate or government
+                // Illuminated Autocracy", which named two governments and pointed at neither.
+                "Science Directorate",
+                "Illuminated Autocracy",
+
+                // A field that names nothing says what it means instead. "election type democratic"
+                // put the word democratic on a chip, where it reads as the authority of that name.
+                "No elections",
+
+                // And a refusal is the thing refused, which keeps the picture and the link: a
+                // reader told that being pacifist costs two may want to go and read about Pacifist.
+                "Not Pacifist",
+            ],
+            pulls.Select(c => c.Name));
+
+        Assert.Equal(["+2", "+2", "+2", "-1", "-2"], pulls.Select(c => c.Badge));
+
+        // The links, which are the point of drawing them as chips at all.
+        Assert.Equal("gov_science_directorate", pulls[1].Key);
+        Assert.Equal("ethic_pacifist", pulls[4].Key);
+
+        // And the hook the game keeps and does not use, which adds nothing and is left out.
         Assert.DoesNotContain(pulls, c => c.Key == "civic_barbaric_despoilers");
     }
+
+    /// <summary>The one row the shelf is built around, now that it holds two.</summary>
+    /// <param name="shelf">The shelf.</param>
+    /// <returns>Honourbound Warriors.</returns>
+    private static WikiRow Honourbound(WikiShelf shelf) =>
+        Assert.Single(shelf.Rows, r => r.Key == "honorbound_warriors");
 
     /// <summary>A government says what it calls whoever is in charge, in both forms.</summary>
     [Fact]
@@ -1235,7 +1295,18 @@ public sealed class WikiShelfTests
                             new WeightFactor(
                                 new SelectionRequirement(SelectionCategory.Ethics, "ethic_fanatic_militarist"),
                                 2),
+                            new WeightFactor(
+                                new AnyRequirement(
+                                [
+                                    new FieldRequirement("government", "gov_science_directorate"),
+                                    new FieldRequirement("government", "gov_illuminated_autocracy"),
+                                ]),
+                                2),
                             new WeightFactor(new FieldRequirement("election_type", "none"), -1),
+                            new WeightFactor(
+                                new NotRequirement(
+                                    new SelectionRequirement(SelectionCategory.Ethics, "ethic_pacifist")),
+                                -2),
 
                             // The hook the game keeps and does not currently use.
                             new WeightFactor(
@@ -1243,11 +1314,37 @@ public sealed class WikiShelfTests
                                 0),
                         ],
                     },
+
+                    // And one the game keeps for a country it generates itself, which states the
+                    // refusal as one clause of its allow block rather than as the whole of it.
+                    new PersonalityDefinition("fallen_empire_spiritualist", 100, 1)
+                    {
+                        Allow = new AllRequirement(
+                        [
+                            new AlwaysRequirement(false),
+                            new SelectionRequirement(
+                                SelectionCategory.Ethics, "ethic_fanatic_spiritualist"),
+                        ]),
+                    },
+                ],
+                GovernmentTypes =
+                [
+                    new GovernmentTypeDefinition("gov_science_directorate", 100, 0),
+                    new GovernmentTypeDefinition("gov_illuminated_autocracy", 100, 1),
+                ],
+                Ethics =
+                [
+                    new EthicDefinition("ethic_pacifist", 1, "pacifist"),
+                    new EthicDefinition("ethic_fanatic_militarist", 2, "militarist"),
                 ],
             },
             ("personality_honorbound_warriors", "Honourbound Warriors"),
             ("personality_honorbound_warriors_desc", "They fight fairly."),
-            ("ethic_fanatic_militarist", "Fanatic Militarist"));
+            ("personality_fallen_empire_spiritualist", "Spiritualist Fallen Empire"),
+            ("ethic_fanatic_militarist", "Fanatic Militarist"),
+            ("ethic_pacifist", "Pacifist"),
+            ("gov_science_directorate", "Science Directorate"),
+            ("gov_illuminated_autocracy", "Illuminated Autocracy"));
 
     /// <summary>One government, with both forms of both titles.</summary>
     private static WikiShelves Governments() =>

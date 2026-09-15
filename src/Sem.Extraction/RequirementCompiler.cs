@@ -319,13 +319,13 @@ public sealed class RequirementCompiler
                     items.Add(Group(node.Block, children => new AnyRequirement(children)));
                     break;
 
-                case "NOT" when node.Block is not null:
-                    items.Add(Group(node.Block, children => new NotRequirement(Combine(children))));
-                    break;
-
-                // NOR means none of them, which is not the same as "not all of them".
-                case "NOR" when node.Block is not null:
-                    items.Add(Group(node.Block, children => new NotRequirement(new AnyRequirement(children))));
+                // NOT over several conditions is NOR, not NAND - the engine's own documentation
+                // says so, and the data agrees: three personalities write
+                // "NOT = { has_ethic = pacifist  has_ethic = fanatic_pacifist }", and since no
+                // empire can hold both of those at once, "not both" would be a clause that never
+                // refuses anybody. What it means is "no kind of pacifist".
+                case "NOT" or "NOR" when node.Block is not null:
+                    items.Add(Group(node.Block, Neither));
                     break;
 
                 // A bare scalar such as is_nomadic = no, which the 4.x grammar allows here -
@@ -449,11 +449,11 @@ public sealed class RequirementCompiler
             case "AND" when node.Block is not null:
                 return CompileTrigger(node.Block, depth + 1);
 
-            case "NOT" when node.Block is not null:
-                return new NotRequirement(CompileTrigger(node.Block, depth + 1));
-
-            case "NOR" when node.Block is not null:
-                return new NotRequirement(new AnyRequirement(CompileTriggerChildren(node.Block, depth)));
+            // Both of these mean none of what is inside them - see the note beside the other place
+            // this is compiled. NAND below is the one that means "not all of them", and it is
+            // written where that is what the game wants.
+            case "NOT" or "NOR" when node.Block is not null:
+                return Neither(CompileTriggerChildren(node.Block, depth));
 
             case "NAND" when node.Block is not null:
                 return new NotRequirement(CompileTrigger(node.Block, depth + 1));
@@ -565,6 +565,18 @@ public sealed class RequirementCompiler
 
         return RecordUnrecognised(key);
     }
+
+    /// <summary>
+    /// None of these, which is what the game's <c>NOT</c> and <c>NOR</c> both mean.
+    /// </summary>
+    /// <remarks>
+    /// A single condition is negated on its own rather than wrapped in a group of one, which is the
+    /// same answer and one less level for every reader of the tree to walk through.
+    /// </remarks>
+    /// <param name="children">What must not hold.</param>
+    /// <returns>The condition.</returns>
+    private static Requirement Neither(List<Requirement> children) =>
+        new NotRequirement(children.Count == 1 ? children[0] : new AnyRequirement(children));
 
     /// <summary>
     /// Compiles "how many of these do I have" against a number, or nothing when either half of it

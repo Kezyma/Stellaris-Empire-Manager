@@ -1,7 +1,7 @@
 {
   "schemaVersion": 17,
   "gameVersion": "v4.5.0",
-  "extractorVersion": "0.1.0\u002Bcd155dac6f8b",
+  "extractorVersion": "0.1.0\u002B05c0404b3911",
   "installFingerprint": "4c524a20ddb52a8f",
   "defines": {
     "ethicsPoints": 3,
@@ -78472,7 +78472,7 @@
       "potential": {
         "kind": "not",
         "item": {
-          "kind": "all",
+          "kind": "any",
           "items": [
             {
               "kind": "selection",
@@ -79714,7 +79714,7 @@
           {
             "kind": "not",
             "item": {
-              "kind": "all",
+              "kind": "any",
               "items": [
                 {
                   "kind": "selection",
@@ -103673,7 +103673,7 @@
           {
             "kind": "not",
             "item": {
-              "kind": "all",
+              "kind": "any",
               "items": [
                 {
                   "kind": "selection",
@@ -103956,7 +103956,7 @@
           {
             "kind": "not",
             "item": {
-              "kind": "all",
+              "kind": "any",
               "items": [
                 {
                   "kind": "any",
@@ -104291,7 +104291,7 @@
           {
             "kind": "not",
             "item": {
-              "kind": "all",
+              "kind": "any",
               "items": [
                 {
                   "kind": "selection",
@@ -104913,7 +104913,7 @@
           "when": {
             "kind": "not",
             "item": {
-              "kind": "all",
+              "kind": "any",
               "items": [
                 {
                   "kind": "selection",
@@ -186965,7 +186965,7 @@
           {
             "kind": "not",
             "item": {
-              "kind": "all",
+              "kind": "any",
               "items": [
                 {
                   "kind": "always",

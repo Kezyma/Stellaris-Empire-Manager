@@ -149,8 +149,29 @@ public sealed class ConditionReader(Localizer localizer, GameDatabase database)
     {
         List<ConditionOutline> parts = [];
 
-        foreach (var built in items.Select(i => Build(i, wanted)).OfType<ConditionOutline>())
+        foreach (var item in items)
         {
+            var built = Build(item, wanted);
+
+            // Nothing to draw, which means two different things. In an "all of" it is a part that
+            // asks for nothing and the rest of the group still stands. In an "any of" it is a part
+            // already satisfied, and one of those settles the whole group - so the group asks
+            // nothing and must go, rather than leaving its unsatisfiable siblings standing.
+            //
+            // Left in, Evangelising Zealots read "Played by: Never" above a list of conditions an
+            // empire can plainly meet: the game allows a default country or an exiled one, the
+            // first of those is every design there is, and the second is a country type no design
+            // can be.
+            if (built is null)
+            {
+                if (join == ConditionJoin.Any)
+                {
+                    return null;
+                }
+
+                continue;
+            }
+
             // A group of the same kind nested directly inside this one is the same question asked
             // twice. Lifting its parts here keeps the indentation to the nesting that means
             // something.

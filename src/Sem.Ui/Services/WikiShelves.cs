@@ -838,9 +838,10 @@ public sealed class WikiShelves(DesignSession session)
             text[key] = value;
         }
 
-        // And what a personality's numbers mean, which is ours rather than the game's - see Scores.
-        // Put here so a chip can find it the way it finds everything else, under a key of our own.
-        foreach (var (field, said) in Scores)
+        // And what a personality's numbers and switches mean, which is ours rather than the game's -
+        // see Scores and Behaviours. Put here so a chip can find it the way it finds everything
+        // else, under a key of our own.
+        foreach (var (field, said) in Scores.Concat(Behaviours))
         {
             text[Meaning(field)] = said.Means;
         }
@@ -985,21 +986,31 @@ public sealed class WikiShelves(DesignSession session)
     private WikiRow Personality(
         PersonalityDefinition personality,
         PersonalityDetail? detail,
-        Localizer reader) =>
-        Row(
+        Localizer reader)
+    {
+        // Settled rather than read off the top of the tree. Two of these write the refusal as the
+        // whole of allow and were marked; the other eighteen write it as one clause beside the
+        // ethics they want - "is_country_type = fallen_empire", and then which fallen empire -
+        // and were being offered as though a design could be played as one.
+        var never = personality.Allow.Settled() is false;
+
+        return Row(
             personality.Key,
             EffectSet.None,
             playable: null,
-            reachable: personality.Allow is not AlwaysRequirement { Value: false },
-            personality.Allow is AlwaysRequirement { Value: false } ? "Never drawn" : null,
-            personality.Allow is AlwaysRequirement { Value: false }
-                ? "The game refuses this one outright, so no empire is ever played as it."
+            reachable: !never,
+            never ? "Never drawn" : null,
+            never
+                ? "The game keeps this one for a country it generates itself - a fallen empire, a "
+                    + "pre-FTL world, a mirrored empire, the galactic defence force - and an empire "
+                    + "you design is always an ordinary one. No design is ever played as it."
                 : null,
             [new WikiCondition("Played by", _reader.Read(personality.Allow), "Any empire")],
             PersonalityFacts(personality, detail, reader),
             Wants(personality.Allow),
             nameKey: personality.NameKey,
             proseKey: personality.DescriptionKey);
+    }
 
     /// <summary>
     /// How likely the draw is to land on this one.
@@ -1030,9 +1041,7 @@ public sealed class WikiShelves(DesignSession session)
 
         // What it will do, which is the question a reader arrives with: is this the neighbour that
         // takes planets, the one that enslaves, or the one that leaves you alone.
-        WikiFact.Of(
-            "Behaviour",
-            [.. (detail?.Behaviours ?? []).Select(b => Trait(b, Localizer.Prettify(b)))]),
+        WikiFact.Of("Behaviour", [.. (detail?.Behaviours ?? []).Select(Trait)]),
 
         WikiFact.Of("Attitude", Scored(detail?.Attitude)),
         WikiFact.Of("Will sign", Scored(detail?.Diplomacy)),
@@ -1096,6 +1105,63 @@ public sealed class WikiShelves(DesignSession session)
             ["hull_ratio"] = ("Hull", "The share it wants in hull, where the technology allows."),
         };
 
+    /// <summary>
+    /// What each of a personality's behaviour switches is called, and what it decides.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The same arrangement as <see cref="Scores"/> and for the same reason: these are script words
+    /// with no localisation anywhere, so a chip either says the key made readable or says what the
+    /// switch means. The meanings are the game's own - eighteen of them are documented in the
+    /// comment block the personality files open with, and four more in a note beside their only
+    /// use.
+    /// </para>
+    /// <para>
+    /// Four are documented nowhere: <c>attack_neutrals</c>, <c>displacer</c>, <c>wants_tribute</c>
+    /// and <c>demands_clear_borders</c>. Those four are read from the name and say no more than the
+    /// name does, which is marked here so nobody later mistakes them for the game's wording.
+    /// </para>
+    /// </remarks>
+    private static readonly Dictionary<string, (string Name, string Means)> Behaviours =
+        new(StringComparer.Ordinal)
+        {
+            ["conqueror"] = ("Conqueror", "Will it take planets from other empires?"),
+            ["subjugator"] = ("Subjugator", "Will it make other empires its vassals?"),
+            ["liberator"] = ("Liberator", "Will it free the empires it conquers?"),
+            ["opportunist"] = ("Opportunist", "Is it likelier to attack somebody already at war?"),
+            ["uplifter"] = ("Uplifter", "Will it uplift and enlighten other species?"),
+            ["infiltrator"] = ("Infiltrator", "Will it infiltrate pre-FTL worlds?"),
+            ["dominator"] = ("Dominator", "Will it invade pre-FTL worlds?"),
+            ["slaver"] = ("Slaver", "Will it enslave pops?"),
+            ["purger"] = ("Purger", "Will it purge alien pops?"),
+            ["robot_exploiter"] = ("Robot exploiter", "Will it use robots for menial labour?"),
+            ["robot_liberator"] = ("Robot liberator", "Will it give robots rights?"),
+            ["propagator"] = ("Propagator", "Will it turn aggressive only once it is boxed in?"),
+            ["multispecies"] = ("Multispecies", "Will it give aliens rights?"),
+            ["crisis_leader"] = ("Crisis leader", "Will it fight the crisis and call on others to "
+                + "join it? A fallen empire's, which an emperor or a custodian does anyway."),
+            ["crisis_fighter"] = ("Crisis fighter", "Will it consider fighting the crisis at all? "
+                + "Without this it looks after itself and nobody else."),
+            ["sneak_attacker"] = ("Sneak attacker", "Will it attack with cloaked fleets?"),
+            ["isolationist"] = ("Isolationist", "It keeps its borders closed, always."),
+            ["limited"] = ("Limited", "Several of the ordinary AI behaviours are held back for it."),
+            ["holy_planets"] = ("Holy planets", "The spiritualist fallen empire's regard for the "
+                + "worlds it holds sacred."),
+            ["enigmatic"] = ("Enigmatic", "The machine fallen empires' own, which nothing else has."),
+            ["custodian"] = ("Custodian", "An awakened machine fallen empire's: it settles nothing "
+                + "further and its attitude is fixed."),
+            ["berserker"] = ("Berserker", "The other of those: it settles nothing further and its "
+                + "attitude is fixed."),
+
+            // The four the game explains nowhere. Read from the name and saying no more than it.
+            ["attack_neutrals"] = ("Attacks neutrals", "Whether it will attack an empire it has no "
+                + "quarrel with."),
+            ["displacer"] = ("Displacer", "Whether it drives alien pops off its worlds."),
+            ["wants_tribute"] = ("Wants tribute", "Whether it would rather be paid than conquer."),
+            ["demands_clear_borders"] = ("Demands clear borders", "Whether it insists other empires "
+                + "stay out of its space."),
+        };
+
     /// <summary>Where one of those sentences is kept, under a key of our own so nothing collides.</summary>
     /// <param name="field">The field.</param>
     /// <returns>The key.</returns>
@@ -1137,32 +1203,126 @@ public sealed class WikiShelves(DesignSession session)
     /// <param name="factors">The weight additions, which for forty-five of them are none.</param>
     /// <returns>The chips.</returns>
     private IReadOnlyList<EmpireChoice> Pulls(IReadOnlyList<WeightFactor> factors) =>
-        [.. factors.Where(f => f.Factor != 0).Select(Pull).OfType<EmpireChoice>()];
+        [.. factors.Where(f => f.Factor != 0).SelectMany(Pull)];
 
     /// <summary>
-    /// One of those, drawn as the thing it names wherever it names one.
+    /// One of those, drawn as the things it names.
     /// </summary>
     /// <remarks>
-    /// A condition that is a single choice becomes that choice's own chip, with its picture and its
-    /// panel - an ethic looks here as it looks in a picker. Anything else is a sentence, which is
-    /// what the two that ask about a government or an election type come out as.
+    /// A condition names one thing or several, and either way each is its own chip with its own
+    /// picture, its own panel and a link to the page about it. Written as one sentence they were
+    /// unreadable and in places actively misleading: "government Science Directorate or government
+    /// Illuminated Autocracy" is two governments a reader might want to go and read about, and
+    /// "election type democratic" looks like the name of an authority.
+    ///
+    /// Every chip in a factor wears the same number, because the factor is one addition however
+    /// many things have to be true for it.
     /// </remarks>
     /// <param name="factor">The addition.</param>
-    /// <returns>The chip, or nothing where the condition says nothing.</returns>
-    private EmpireChoice? Pull(WeightFactor factor)
-    {
-        var badge = factor.Factor > 0 ? $"+{Number(factor.Factor)}" : Number(factor.Factor);
+    /// <returns>The chips, or one saying it in words where the condition names nothing.</returns>
+    private IReadOnlyList<EmpireChoice> Pull(WeightFactor factor) =>
+        Marked(factor, factor.Factor > 0 ? $"+{Number(factor.Factor)}" : Number(factor.Factor));
 
-        if (factor.When is SelectionRequirement selection &&
-            Selected(selection.Category, selection.Key) is { } chosen)
+    /// <summary>
+    /// A weight factor as chips, each wearing the figure the factor carries.
+    /// </summary>
+    /// <remarks>
+    /// Shared by the two pages that show one. A personality's factors add and a government's
+    /// multiply, so the badge differs and nothing else does - both are "what moves this number, and
+    /// by how much".
+    /// </remarks>
+    /// <param name="factor">The factor.</param>
+    /// <param name="badge">The figure, already written the way its page writes one.</param>
+    /// <returns>The chips.</returns>
+    private IReadOnlyList<EmpireChoice> Marked(WeightFactor factor, string badge)
+    {
+        if (Named(factor.When, denied: false) is { Count: > 0 } chips)
         {
-            return chosen with { Badge = badge, BadgeLevel = factor.Factor };
+            return [.. chips.Select(c => c with { Badge = badge, BadgeLevel = factor.Factor })];
         }
 
         return session.Conditions.Describe(factor.When) is { Length: > 0 } said
-            ? new EmpireChoice(said, said, null, null) { Badge = badge, BadgeLevel = factor.Factor }
-            : null;
+            ? [new EmpireChoice(said, said, null, null) { Badge = badge, BadgeLevel = factor.Factor }]
+            : [];
     }
+
+    /// <summary>
+    /// Everything a condition names, as the chips those things are drawn as.
+    /// </summary>
+    /// <remarks>
+    /// All of it or none of it. A condition with one part this cannot name is said in words
+    /// instead, whole, rather than drawn as the parts it happens to recognise and quietly missing
+    /// the rest.
+    ///
+    /// The connective is not kept, which is a loss worth naming. For the personalities it costs
+    /// nothing - every compound there is a set of things an empire could not hold at once, one
+    /// government or one degree of an ethic - but a government's factors name civics, and an empire
+    /// can hold two of those at once. There the shared badge is what says the chips belong to one
+    /// figure, and a bracketed tree in a row of chips would cost more than it told anybody.
+    /// </remarks>
+    /// <param name="requirement">The condition.</param>
+    /// <param name="denied">Whether an odd number of negations stands over it.</param>
+    /// <returns>The chips, or none where any part of it has no name.</returns>
+    private IReadOnlyList<EmpireChoice> Named(Requirement requirement, bool denied)
+    {
+        switch (requirement)
+        {
+            case SelectionRequirement selection
+                when Selected(selection.Category, selection.Key) is { } chosen:
+                return [Refused(chosen, denied)];
+
+            case FieldRequirement field when Stated(field) is { } stated:
+                return [Refused(stated, denied)];
+
+            case NotRequirement not:
+                return Named(not.Item, !denied);
+
+            case AllRequirement all:
+                return Each(all.Items, denied);
+
+            case AnyRequirement any:
+                return Each(any.Items, denied);
+
+            default:
+                return [];
+        }
+    }
+
+    /// <summary>Every part of a group, or nothing at all where one of them has no name.</summary>
+    /// <param name="items">The parts.</param>
+    /// <param name="denied">Whether an odd number of negations stands over them.</param>
+    /// <returns>The chips.</returns>
+    private IReadOnlyList<EmpireChoice> Each(IReadOnlyList<Requirement> items, bool denied)
+    {
+        List<EmpireChoice> chips = [];
+
+        foreach (var item in items)
+        {
+            if (Named(item, denied) is not { Count: > 0 } named)
+            {
+                return [];
+            }
+
+            chips.AddRange(named);
+        }
+
+        return chips;
+    }
+
+    /// <summary>
+    /// The same chip, said as the thing the empire must not be.
+    /// </summary>
+    /// <remarks>
+    /// In the name rather than as a mark of its own, so it survives everywhere a chip goes - the
+    /// row, the stack's panel, the tooltip - and so the picture and the link stay: a reader told
+    /// that being repugnant costs a personality a point may well want to go and read about
+    /// Repugnant.
+    /// </remarks>
+    /// <param name="chip">The chip.</param>
+    /// <param name="denied">Whether it is the thing wanted or the thing refused.</param>
+    /// <returns>The chip, named either way.</returns>
+    private static EmpireChoice Refused(EmpireChoice chip, bool denied) =>
+        denied ? chip with { Name = $"Not {chip.Name}" } : chip;
 
     /// <summary>One chosen thing, drawn the way its own kind is drawn.</summary>
     /// <param name="category">What kind of thing it is.</param>
@@ -1175,14 +1335,81 @@ public sealed class WikiShelves(DesignSession session)
         SelectionCategory.Civics or SelectionCategory.Origin => Civics(key).FirstOrDefault(),
         SelectionCategory.SpeciesClass => Classes(key).FirstOrDefault(),
         SelectionCategory.SpeciesArchetype => Archetypes(key).FirstOrDefault(),
+        SelectionCategory.Authority => Authorities(key).FirstOrDefault(),
         _ => null,
     };
 
-    /// <summary>One behaviour, which the game names in script and nowhere else.</summary>
-    /// <param name="key">The flag.</param>
-    /// <param name="name">Its name, made readable.</param>
+    /// <summary>
+    /// One plain field, drawn as whatever it names.
+    /// </summary>
+    /// <remarks>
+    /// Most of these name a record the wiki has a page for, so the chip is the ordinary one and
+    /// carries a link to it. The election type names nothing: it is a property of the authority
+    /// rather than a thing in its own right, and said as the game spells it the word "democratic"
+    /// sits on a chip where it reads as the authority of that name.
+    /// </remarks>
+    /// <param name="field">The condition.</param>
+    /// <returns>The chip, or nothing for a field with nothing to point at.</returns>
+    private EmpireChoice? Stated(FieldRequirement field) => field.Field switch
+    {
+        "government" => Governments(field.Value).FirstOrDefault(),
+        "authority" => Authorities(field.Value).FirstOrDefault(),
+        "origin" => Civics(field.Value).FirstOrDefault(),
+        "species_class" => Classes(field.Value).FirstOrDefault(),
+        "species_archetype" => Archetypes(field.Value).FirstOrDefault(),
+        "planet_class" => Worlds(field.Value).FirstOrDefault(),
+        "graphical_culture" => Shipsets(field.Value).FirstOrDefault(),
+        "election_type" => Elections(field.Value),
+        _ => null,
+    };
+
+    /// <summary>
+    /// How an empire chooses whoever is in charge, said rather than spelled.
+    /// </summary>
+    /// <remarks>
+    /// Three values in the whole game. Named ours, because the game writes them as bare script
+    /// words with nothing behind them - there is no <c>election_type_democratic</c> anywhere in the
+    /// localisation - and because the bare words are the problem: "democratic" beside a list of
+    /// ethics reads as the authority called that, which is a different thing an empire also has.
+    /// </remarks>
+    /// <param name="value">What the condition asks for.</param>
+    /// <returns>The chip, or nothing for a word this does not know.</returns>
+    private static EmpireChoice? Elections(string value) => value switch
+    {
+        "democratic" => Saying(value, "Holds elections"),
+        "oligarchic" => Saying(value, "Elected from a shortlist"),
+        "none" => Saying(value, "No elections"),
+        _ => null,
+    };
+
+    /// <summary>A chip that is a statement rather than a thing, under a key of our own.</summary>
+    /// <param name="value">What the game called it.</param>
+    /// <param name="said">What it means.</param>
     /// <returns>The chip.</returns>
-    private static EmpireChoice Trait(string key, string name) => new(key, name, null, null);
+    private static EmpireChoice Saying(string value, string said) =>
+        new($"sem_election_{value}", said, null, null);
+
+    /// <summary>
+    /// One behaviour, with the game's own account of what it decides.
+    /// </summary>
+    /// <remarks>
+    /// These are the AI's yes-or-no switches and carry no numbers of their own: a personality
+    /// states them in a <c>behaviour</c> block and its figures separately, which is why this group
+    /// is a row of names where every other one here is a row of badges. So the panel behind one had
+    /// nothing to list - and nothing to say either, which made it "Robot Exploiter" over an empty
+    /// box.
+    /// </remarks>
+    /// <param name="key">The flag.</param>
+    /// <returns>The chip.</returns>
+    private static EmpireChoice Trait(string key) =>
+        new(
+            key,
+            Behaviours.TryGetValue(key, out var said) ? said.Name : Localizer.Prettify(key),
+            null,
+            null)
+        {
+            Description = Meaning(key),
+        };
 
     /// <summary>
     /// The governments, which are what an empire ends up called.
@@ -1250,23 +1477,15 @@ public sealed class WikiShelves(DesignSession session)
     /// What raises a government's odds, and by how much.
     /// </summary>
     /// <remarks>
-    /// The condition read as a sentence and the multiplier as the chip's badge, which is the shape
-    /// the personality numbers already use. Written through <see cref="ConditionWriter"/> rather than
-    /// the outline reader because a chip wants one line rather than a bulleted tree.
+    /// The thing named as its own chip and the multiplier as the chip's badge, which is the shape
+    /// the personality numbers already use - and every one of the fifteen names civics and nothing
+    /// else, so all of them draw. Said as a sentence they read "civic Barbaric Despoilers and civic
+    /// Death Cult", which is a line of script for two civics the wiki has pages about.
     /// </remarks>
     /// <param name="factors">The weight factors, which are usually none.</param>
-    /// <returns>The chips, one per factor that says something.</returns>
+    /// <returns>The chips, one per thing each factor names.</returns>
     private IReadOnlyList<EmpireChoice> Multipliers(IReadOnlyList<WeightFactor> factors) =>
-    [
-        .. factors
-            .Select(f => (Said: session.Conditions.Describe(f.When), f.Factor))
-            .Where(f => f.Said is { Length: > 0 })
-            .Select(f => new EmpireChoice(f.Said!, f.Said!, null, null)
-            {
-                Badge = $"x{Number(f.Factor)}",
-                BadgeLevel = f.Factor,
-            }),
-    ];
+        [.. factors.SelectMany(f => Marked(f, $"x{Number(f.Factor)}"))];
 
     /// <summary>One title as the game writes it, or nothing where it names none.</summary>
     /// <param name="key">The localisation key.</param>
@@ -1964,6 +2183,21 @@ public sealed class WikiShelves(DesignSession session)
                 mark is { Length: > 0 } trait ? $"{trait}_desc" : null);
         }),
     ];
+
+    /// <summary>
+    /// Governments, which have no picture and no prose of their own.
+    /// </summary>
+    /// <remarks>
+    /// A name and a link, which is the whole of what one of these is worth as a chip and is exactly
+    /// what was missing: the page about a government is where its titles and its odds are, and a
+    /// personality naming one had been saying the key in a sentence.
+    /// </remarks>
+    private IReadOnlyList<EmpireChoice> Governments(params IEnumerable<string?> keys) =>
+        [.. Real(keys).Select(k => Chip(k, null, null))];
+
+    /// <summary>Authorities, which carry both a picture and what they do.</summary>
+    private IReadOnlyList<EmpireChoice> Authorities(params IEnumerable<string?> keys) =>
+        [.. Real(keys).Select(k => Chip(k, Database.Authority(k)?.Icon, Database.Authority(k)?.Effects))];
 
     /// <summary>Species classes, which wear one of their own faces.</summary>
     private IReadOnlyList<EmpireChoice> Classes(params IEnumerable<string?> keys) =>
