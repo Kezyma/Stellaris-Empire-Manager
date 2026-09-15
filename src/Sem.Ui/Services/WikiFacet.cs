@@ -143,7 +143,10 @@ public static class WikiFacet
         Many("archetype", "Archetype", r => Fact(r, "Archetype")),
         Many("trait", "Always has", r => Fact(r, "Always has")),
         Many("shipset", "Flies", r => Fact(r, "Flies")),
-    ];
+    
+        Many("uplift", "Uplifts into", r => Fact(r, "Uplifts into")),
+        Many("generation", "Generation", r => Fact(r, "Generation")),
+];
 
     /// <summary>
     /// The species traits, narrowed by what they cost and who may take them.
@@ -164,7 +167,15 @@ public static class WikiFacet
         Many("homeworld", "Homeworld", r => Fact(r, "Homeworld")),
         Many("pack", "Content pack", r => r.PackChoices),
         Many("bonus", "Bonus", r => r.Bonuses, Effects),
-    ];
+    
+        // The words the game groups them by, which have no text of their own and exist for exactly
+        // this: there was no way to ask the page for the negative traits, or the robotic ones.
+        Many("tags", "Tags", r => Fact(r, "Tags")),
+        Many("worth", "Worth", r => Fact(r, "Worth")),
+        Many("species", "Species", r => Fact(r, "Species")),
+        Many("pays", "Pays", r => Fact(r, "Pays")),
+        Many("produces", "Produces", r => Fact(r, "Produces")),
+];
 
     /// <summary>
     /// The worlds, narrowed by the two things that decide whether one is any use.

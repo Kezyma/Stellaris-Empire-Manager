@@ -307,6 +307,41 @@ public static class GameDataWriter
         file.WriteAllBytes(
             Path.Combine(outputDirectory, WikiPackFileName(CivicPack.Domain)), civicJson);
 
+        var speciesTraits = new SpeciesTraitPack
+        {
+            Stamp = new WikiPackStamp(
+                GameDataExtractor.ExtractorVersion, SpeciesTraitPack.CurrentSchemaVersion),
+
+            Traits = family.SpeciesTraits,
+
+            // The resource names, which the pruner keeps only where a modifier reaches one - and a
+            // trait's resources block is not a modifier, so exotic gases and rare crystals are named
+            // here by nothing else at all.
+            Text = LocalisationPruner.Slice(
+                family.SpeciesTraits.SelectMany(t => t.Resources).Select(r => r.Resource),
+                all,
+                database.ScriptedText),
+        };
+
+        var speciesTraitJson = JsonSerializer.SerializeToUtf8Bytes(
+            speciesTraits, GameDataJsonContext.Default.SpeciesTraitPack);
+
+        file.WriteAllBytes(
+            Path.Combine(outputDirectory, WikiPackFileName(SpeciesTraitPack.Domain)), speciesTraitJson);
+
+        var speciesClasses = new SpeciesClassPack
+        {
+            Stamp = new WikiPackStamp(
+                GameDataExtractor.ExtractorVersion, SpeciesClassPack.CurrentSchemaVersion),
+            Classes = family.SpeciesClasses,
+        };
+
+        var speciesClassJson = JsonSerializer.SerializeToUtf8Bytes(
+            speciesClasses, GameDataJsonContext.Default.SpeciesClassPack);
+
+        file.WriteAllBytes(
+            Path.Combine(outputDirectory, WikiPackFileName(SpeciesClassPack.Domain)), speciesClassJson);
+
         return
         [
             (LeaderTraitPack.Domain, leaders.Count, json.Length),
@@ -316,6 +351,8 @@ public static class GameDataWriter
             (AuthorityPack.Domain, family.Authorities.Count, authorityJson.Length),
             (GovernmentPack.Domain, family.Governments.Count, governmentJson.Length),
             (CivicPack.Domain, family.Civics.Count, civicJson.Length),
+            (SpeciesTraitPack.Domain, family.SpeciesTraits.Count, speciesTraitJson.Length),
+            (SpeciesClassPack.Domain, family.SpeciesClasses.Count, speciesClassJson.Length),
         ];
     }
 

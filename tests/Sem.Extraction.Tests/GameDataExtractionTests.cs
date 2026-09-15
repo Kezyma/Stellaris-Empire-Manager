@@ -368,6 +368,46 @@ public sealed class GameDataExtractionTests
             family.Civics.Count(c => c.AiPlayable is not AlwaysRequirement { Value: true }));
     }
 
+    /// <summary>
+    /// The species family carries what a picker never needed.
+    /// </summary>
+    /// <remarks>
+    /// The grouping words above all, which the extractor's own comment says are for filtering and
+    /// have no text - so until they were carried there was no way to ask the page for the negative
+    /// traits, or the robotic ones. And the resources block, which is not a modifier block and so
+    /// reached the effects reader not at all: Scintillating Skin makes rare crystals and showed a
+    /// reader nothing whatsoever.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void TheSpeciesFamilyCarriesWhatAPickerNeverNeeded()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var extractor = new GameDataExtractor(LayeredContent.ForInstall(InstallRoot!));
+        extractor.Extract();
+        var family = extractor.Family;
+
+        Assert.Equal(298, family.SpeciesTraits.Count(t => t.Tags.Count > 0));
+        Assert.Equal(243, family.SpeciesTraits.Count(t => t.SlaveCost is not null));
+        Assert.Equal(32, family.SpeciesTraits.Count(t => t.ClassOverride is not null));
+
+        var skin = Assert.Single(family.SpeciesTraits, t => t.Key == "trait_lithoid_scintillating");
+        Assert.Equal(
+            [new TraitResource("rare_crystals", Upkeep: false)],
+            skin.Resources);
+
+        // And the organic trait, whose food upkeep is the other half of the same field.
+        var organic = Assert.Single(family.SpeciesTraits, t => t.Key == "trait_organic");
+        Assert.Contains(organic.Resources, r => r is { Resource: "food", Upkeep: true });
+
+        // Eleven pre-sapient classes exist to become another class, and nothing joined the two.
+        Assert.Equal(11, family.SpeciesClasses.Count(c => c.UpliftedInto is { Length: > 0 }));
+        Assert.Equal(
+            "MAM",
+            Assert.Single(family.SpeciesClasses, c => c.Key == "PRE_MAM").UpliftedInto);
+    }
+
     [SkippableFact]
     [Trait("Category", "RealData")]
     public void TraitBudgetsMatchTheArchetypesTheGameDefines()

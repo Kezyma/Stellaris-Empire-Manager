@@ -1,0 +1,229 @@
+{
+  "stamp": {
+    "extractorVersion": "0.1.0\u002B5224d37f4172",
+    "schemaVersion": 1
+  },
+  "classes": [
+    {
+      "key": "HUM",
+      "hasGenders": true,
+      "randomised": true
+    },
+    {
+      "key": "PRE_MAM",
+      "upliftedInto": "MAM",
+      "hasGenders": true,
+      "randomised": false
+    },
+    {
+      "key": "PRE_REP",
+      "upliftedInto": "REP",
+      "hasGenders": true,
+      "randomised": false
+    },
+    {
+      "key": "PRE_AVI",
+      "upliftedInto": "AVI",
+      "hasGenders": true,
+      "randomised": false
+    },
+    {
+      "key": "PRE_ART",
+      "upliftedInto": "ART",
+      "hasGenders": true,
+      "randomised": false
+    },
+    {
+      "key": "PRE_MOL",
+      "upliftedInto": "MOL",
+      "hasGenders": true,
+      "randomised": false
+    },
+    {
+      "key": "PRE_FUN",
+      "upliftedInto": "FUN",
+      "hasGenders": true,
+      "randomised": false
+    },
+    {
+      "key": "PRE_PLANT",
+      "upliftedInto": "PLANT",
+      "hasGenders": true,
+      "randomised": false
+    },
+    {
+      "key": "PRE_LITHOID",
+      "upliftedInto": "LITHOID",
+      "hasGenders": true,
+      "randomised": false
+    },
+    {
+      "key": "PRE_AQUATIC",
+      "upliftedInto": "AQUATIC",
+      "hasGenders": true,
+      "randomised": false
+    },
+    {
+      "key": "PRE_TOX",
+      "upliftedInto": "TOX",
+      "hasGenders": true,
+      "randomised": false
+    },
+    {
+      "key": "PRE_INF",
+      "upliftedInto": "INF",
+      "hasGenders": true,
+      "randomised": false
+    },
+    {
+      "key": "AI",
+      "hasGenders": false,
+      "randomised": false
+    },
+    {
+      "key": "SWARM",
+      "hasGenders": false,
+      "randomised": false
+    },
+    {
+      "key": "EXD",
+      "hasGenders": false,
+      "randomised": false
+    },
+    {
+      "key": "ROBOT",
+      "hasGenders": true,
+      "randomised": false
+    },
+    {
+      "key": "MACHINE",
+      "hasGenders": true,
+      "randomised": true
+    },
+    {
+      "key": "SALVAGER",
+      "hasGenders": false,
+      "randomised": false
+    },
+    {
+      "key": "SHROUDWALKER",
+      "hasGenders": false,
+      "randomised": false
+    },
+    {
+      "key": "MINDWARDEN_ENCLAVE",
+      "hasGenders": false,
+      "randomised": false
+    },
+    {
+      "key": "PARAGON",
+      "hasGenders": false,
+      "randomised": false
+    },
+    {
+      "key": "MSI_SLAVER",
+      "hasGenders": true,
+      "randomised": false
+    },
+    {
+      "key": "SOLARPUNK",
+      "hasGenders": true,
+      "randomised": true
+    },
+    {
+      "key": "MAM",
+      "hasGenders": true,
+      "randomised": true
+    },
+    {
+      "key": "REP",
+      "hasGenders": true,
+      "randomised": true
+    },
+    {
+      "key": "AVI",
+      "hasGenders": true,
+      "randomised": true
+    },
+    {
+      "key": "ART",
+      "hasGenders": true,
+      "randomised": true
+    },
+    {
+      "key": "MOL",
+      "hasGenders": true,
+      "randomised": true
+    },
+    {
+      "key": "FUN",
+      "hasGenders": true,
+      "randomised": true
+    },
+    {
+      "key": "PLANT",
+      "hasGenders": true,
+      "randomised": true
+    },
+    {
+      "key": "LITHOID",
+      "hasGenders": true,
+      "randomised": true
+    },
+    {
+      "key": "NECROID",
+      "hasGenders": true,
+      "randomised": true
+    },
+    {
+      "key": "IMPERIAL",
+      "hasGenders": true,
+      "randomised": true
+    },
+    {
+      "key": "AQUATIC",
+      "hasGenders": true,
+      "randomised": true
+    },
+    {
+      "key": "TOX",
+      "hasGenders": true,
+      "randomised": true
+    },
+    {
+      "key": "CYBERNETIC",
+      "hasGenders": true,
+      "randomised": true
+    },
+    {
+      "key": "BIOGENESIS_02",
+      "hasGenders": true,
+      "randomised": true
+    },
+    {
+      "key": "BIOGENESIS_01",
+      "hasGenders": true,
+      "randomised": true
+    },
+    {
+      "key": "WILDERNESS",
+      "hasGenders": true,
+      "randomised": true
+    },
+    {
+      "key": "PSIONIC",
+      "hasGenders": true,
+      "randomised": true
+    },
+    {
+      "key": "MINDWARDEN",
+      "hasGenders": true,
+      "randomised": true
+    },
+    {
+      "key": "INF",
+      "hasGenders": true,
+      "randomised": true
+    }
+  ]
+}

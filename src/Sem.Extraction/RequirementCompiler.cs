@@ -65,6 +65,10 @@ public sealed class RequirementCompiler
         // The founder's class, which a design states outright. It was the one condition in the whole
         // extraction asking something the design knows and being told nobody knew.
         ["is_species_class"] = SelectionCategory.SpeciesClass,
+
+        // And its archetype, asked by four of the traits' own add and remove conditions. The same
+        // question the allowed_archetypes list answers, written as a trigger.
+        ["is_archetype"] = SelectionCategory.SpeciesArchetype,
     };
 
     /// <summary>
@@ -469,7 +473,10 @@ public sealed class RequirementCompiler
             // moddable_conditions_custom_tooltip; these are the same keys met anywhere else,
             // including the success_text that sits beside a fail_text and used to be compiled as
             // though it were a rule.
-            case "success_text" or "fail_text" or "moddable_conditions_custom_tooltip":
+            // "text" among them, which is the game's generic way of labelling the block it sits in -
+            // a species trait writes "text = trait_auto_hab_preference_tt_mod" beside the conditions
+            // it explains. Wording, like the two beside it, and not a rule.
+            case "success_text" or "fail_text" or "text" or "moddable_conditions_custom_tooltip":
                 return new AlwaysRequirement(true);
 
             // Triggers that name a scope rather than a condition; the design is always the country.

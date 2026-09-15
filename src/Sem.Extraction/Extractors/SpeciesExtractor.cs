@@ -55,15 +55,35 @@ internal static class SpeciesExtractor
     }
 
     /// <summary>Reads the species classes, including which the player may choose.</summary>
+    /// <param name="loader">The script loader.</param>
+    /// <param name="requirements">The compiler.</param>
+    /// <param name="detail">Filled in with what a page about the classes needs.</param>
+    /// <returns>The classes.</returns>
     public static List<SpeciesClassDefinition> ExtractSpeciesClasses(
         ScriptLoader loader,
-        RequirementCompiler requirements)
+        RequirementCompiler requirements,
+        List<SpeciesClassDetail> detail)
     {
+        ArgumentNullException.ThrowIfNull(detail);
+
         var results = new List<SpeciesClassDefinition>();
 
         foreach (var entry in loader.LoadDefinitions("common/species_classes"))
         {
             var body = entry.Body;
+
+            // What the page about them needs. The uplift link is the whole point of eleven of the
+            // forty-two rows: a pre-sapient class exists to become another one, and nothing joined
+            // the two.
+            detail.Add(new SpeciesClassDetail(entry.Key)
+            {
+                UpliftedInto = body.GetString("uplifted_into"),
+                HasGenders = body.GetBool("gender", defaultValue: true),
+
+                // Written as a block on thirteen of them and a bare no on twenty, so the question
+                // is whether it says no rather than whether it says yes.
+                Randomised = body.GetString("randomized") != "no",
+            });
 
             // A class with no archetype is not a species: several exist purely to contribute a
             // ship or city appearance, and dropping them would take those appearances with them.

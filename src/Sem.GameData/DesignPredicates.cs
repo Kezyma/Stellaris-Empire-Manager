@@ -154,6 +154,12 @@ public static class DesignPredicates
         "has_been_the_crisis",
         "has_menace_perk",
 
+        // A policy in force and a modifier applied, which a species trait's own add and remove
+        // conditions ask about: whether cyberisation is limited, whether the pops carry something an
+        // event put on them. Both are states a game reaches rather than choices a design makes.
+        "has_policy_flag",
+        "has_modifier",
+
         // Things events set, including the megastructure flag that Galactic Wonders asks for and
         // that no design could ever answer yes to.
         "has_country_flag",

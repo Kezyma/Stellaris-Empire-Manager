@@ -567,4 +567,136 @@ public sealed record GovernmentFamily
 
     /// <summary>What each civic and origin says beyond what choosing one needs.</summary>
     public IReadOnlyList<CivicDetail> Civics { get; init; } = [];
+
+    /// <summary>What each species trait says beyond what picking one needs.</summary>
+    public IReadOnlyList<SpeciesTraitDetail> SpeciesTraits { get; init; } = [];
+
+    /// <summary>What each species class says beyond what choosing one needs.</summary>
+    public IReadOnlyList<SpeciesClassDetail> SpeciesClasses { get; init; } = [];
+}
+
+/// <summary>
+/// A resource a species trait makes its pops pay for or produce.
+/// </summary>
+/// <remarks>
+/// Named rather than measured. Forty-three of the forty-four blocks in the folder carry a trigger
+/// and five scale by a scripted multiplier, so a single figure beside one would be a number the
+/// trait does not actually give - while which resource it touches, and which way, is the whole of
+/// what the page was missing. Scintillating Skin makes rare crystals and showed no numbers at all.
+/// </remarks>
+/// <param name="Resource">The resource's own key.</param>
+/// <param name="Upkeep">Whether the pops pay it rather than make it.</param>
+public sealed record TraitResource(string Resource, bool Upkeep);
+
+/// <summary>
+/// What a species trait says beyond what picking one needs.
+/// </summary>
+/// <param name="Key">The trait's own key.</param>
+public sealed record SpeciesTraitDetail(string Key)
+{
+    /// <summary>
+    /// The words the game groups it under, which have no text and are purely for filtering.
+    /// </summary>
+    /// <remarks>
+    /// Two hundred and eighty-eight traits carry them - positive on 242, organic on 220, negative
+    /// on 52 - and until now there was no way to ask the page for the negative ones.
+    /// </remarks>
+    public IReadOnlyList<string> Tags { get; init; } = [];
+
+    /// <summary>What a pop with it is worth on the slave market.</summary>
+    public int? SlaveCost { get; init; }
+
+    /// <summary>What must hold for it to be added to a species later, where the game says.</summary>
+    public Requirement? CanAddLater { get; init; }
+
+    /// <summary>And for it to be taken off again.</summary>
+    public Requirement? CanRemoveLater { get; init; }
+
+    /// <summary>What lets a species of the wrong class hold it anyway.</summary>
+    public Requirement? ClassOverride { get; init; }
+
+    /// <summary>What its pops pay for and produce.</summary>
+    public IReadOnlyList<TraitResource> Resources { get; init; } = [];
+
+    /// <summary>The worlds a species with it cannot leave.</summary>
+    public IReadOnlyList<string> BoundToWorlds { get; init; } = [];
+
+    /// <summary>Whether it is one of the advanced traits.</summary>
+    public bool Advanced { get; init; }
+
+    /// <summary>Whether leaders of the species never die of old age.</summary>
+    public bool ImmortalLeaders { get; init; }
+
+    /// <summary>Whether it makes the species a thinking one. Ten say no.</summary>
+    public bool Sapient { get; init; } = true;
+
+    /// <summary>Whether the species cannot grow pops of its own.</summary>
+    public bool Infertile { get; init; }
+
+    /// <summary>Whether it improves the species' leaders.</summary>
+    public bool ImprovesLeaders { get; init; }
+}
+
+/// <summary>Every species trait, as a page about them needs them.</summary>
+public sealed record SpeciesTraitPack : IWikiPack
+{
+    /// <summary>Where this pack lives, which is the whole of what names the file.</summary>
+    public const string Domain = "species-traits";
+
+    /// <summary>The shape these records are in, bumped when it changes.</summary>
+    public const int CurrentSchemaVersion = 1;
+
+    /// <inheritdoc />
+    public static int ExpectedSchemaVersion => CurrentSchemaVersion;
+
+    /// <inheritdoc />
+    public required WikiPackStamp Stamp { get; init; }
+
+    /// <summary>The traits, in the order the game declares them.</summary>
+    public IReadOnlyList<SpeciesTraitDetail> Traits { get; init; } = [];
+
+    /// <summary>The resource names, which nothing in the database reaches.</summary>
+    public IReadOnlyDictionary<string, string> Text { get; init; } =
+        new Dictionary<string, string>(StringComparer.Ordinal);
+}
+
+/// <summary>
+/// What a species class says beyond what an empire choosing one needs.
+/// </summary>
+/// <param name="Key">The class's own key.</param>
+public sealed record SpeciesClassDetail(string Key)
+{
+    /// <summary>
+    /// What a pre-sapient of this class becomes when an empire uplifts it.
+    /// </summary>
+    /// <remarks>
+    /// Eleven of the forty-two rows are pre-sapient classes whose entire point is this field, and
+    /// nothing linked them to the class they turn into.
+    /// </remarks>
+    public string? UpliftedInto { get; init; }
+
+    /// <summary>Whether the class has genders at all.</summary>
+    public bool HasGenders { get; init; } = true;
+
+    /// <summary>Whether the galaxy generator will spawn empires of it.</summary>
+    public bool Randomised { get; init; } = true;
+}
+
+/// <summary>Every species class, as a page about them needs them.</summary>
+public sealed record SpeciesClassPack : IWikiPack
+{
+    /// <summary>Where this pack lives, which is the whole of what names the file.</summary>
+    public const string Domain = "species";
+
+    /// <summary>The shape these records are in, bumped when it changes.</summary>
+    public const int CurrentSchemaVersion = 1;
+
+    /// <inheritdoc />
+    public static int ExpectedSchemaVersion => CurrentSchemaVersion;
+
+    /// <inheritdoc />
+    public required WikiPackStamp Stamp { get; init; }
+
+    /// <summary>The classes, in the order the game declares them.</summary>
+    public IReadOnlyList<SpeciesClassDetail> Classes { get; init; } = [];
 }

@@ -215,6 +215,27 @@ public sealed class WikiShelves(DesignSession session)
             ? new Dictionary<string, T>(StringComparer.Ordinal)
             : records.ToDictionary(key, StringComparer.Ordinal);
 
+    /// <summary>
+    /// The species traits, with everything a picker never needed to know.
+    /// </summary>
+    /// <param name="pack">What was fetched, or null where nothing was.</param>
+    /// <returns>The shelf.</returns>
+    public WikiShelf SpeciesTraits(SpeciesTraitPack? pack) =>
+        new(
+            "Species Traits", "species traits", "species trait",
+            SpeciesTraitRows(pack), WikiFacet.SpeciesTraits)
+        {
+            Reader = pack is null ? null : Reading(pack.Text),
+        };
+
+    /// <summary>The species classes, with what a pre-sapient one becomes.</summary>
+    /// <param name="pack">What was fetched, or null where nothing was.</param>
+    /// <returns>The shelf.</returns>
+    public WikiShelf Species(SpeciesClassPack? pack) =>
+        new(
+            "Species", "species classes", "species class",
+            SpeciesRows(Detail(pack?.Classes, c => c.Key)), WikiFacet.Species);
+
     private WikiShelf Read(WikiKind kind) => kind switch
     {
         WikiKind.Origins => new WikiShelf(
@@ -228,11 +249,12 @@ public sealed class WikiShelves(DesignSession session)
             AuthorityRows(None<AuthorityDetail>()), WikiFacet.Authorities),
 
         WikiKind.Species => new WikiShelf(
-            "Species", "species classes", "species class", Species(), WikiFacet.Species),
+            "Species", "species classes", "species class",
+            SpeciesRows(None<SpeciesClassDetail>()), WikiFacet.Species),
 
         WikiKind.SpeciesTraits => new WikiShelf(
             "Species Traits", "species traits", "species trait",
-            SpeciesTraits(), WikiFacet.SpeciesTraits),
+            SpeciesTraitRows(pack: null), WikiFacet.SpeciesTraits),
 
         WikiKind.Planets => new WikiShelf(
             "Planets", "planets", "planet", Planets(), WikiFacet.Planets) { Picture = "Sky" },
@@ -899,10 +921,10 @@ public sealed class WikiShelves(DesignSession session)
     /// list. They carry no effects and no packs; what a reader wants is the archetype, the trait
     /// every member is born with, and the faces.
     /// </remarks>
-    private IReadOnlyList<WikiRow> Species() =>
+    private IReadOnlyList<WikiRow> SpeciesRows(IReadOnlyDictionary<string, SpeciesClassDetail> detail) =>
     [
         .. Database.SpeciesClasses
-            .Select(SpeciesClass)
+            .Select(c => SpeciesClass(c, detail.GetValueOrDefault(c.Key)))
             .OrderBy(r => r.Name, StringComparer.CurrentCulture),
     ];
 
@@ -928,7 +950,7 @@ public sealed class WikiShelves(DesignSession session)
     /// of it, which is how Toxoid comes to carry a Toxoids chip without this method mentioning one.
     /// </para>
     /// </remarks>
-    private WikiRow SpeciesClass(SpeciesClassDefinition species)
+    private WikiRow SpeciesClass(SpeciesClassDefinition species, SpeciesClassDetail? detail)
     {
         var faces = SpeciesFaces.All(Database, species.Key);
         var (shut, why) = Closed(species, faces);
@@ -941,7 +963,7 @@ public sealed class WikiShelves(DesignSession session)
             shut,
             why,
             [new WikiCondition("Requirements", _reader.Read(species.Possible), "Any empire")],
-            SpeciesFacts(species, faces),
+            SpeciesFacts(species, faces, detail),
             Wants(species.Possible)) with
         {
             Icon = SpeciesFaces.Of(Database, species.Key),
@@ -1012,7 +1034,10 @@ public sealed class WikiShelves(DesignSession session)
     /// and one the game states nowhere a player would look. The count of faces is a number worth
     /// sorting by: thirty for the humanoids and two for a pre-sapient.
     /// </remarks>
-    private IReadOnlyList<WikiFact> SpeciesFacts(SpeciesClassDefinition species, IReadOnlyList<string> faces) =>
+    private IReadOnlyList<WikiFact> SpeciesFacts(
+        SpeciesClassDefinition species,
+        IReadOnlyList<string> faces,
+        SpeciesClassDetail? detail) =>
     [
         WikiFact.Of("Archetype", Archetypes(species.Archetype)),
         WikiFact.Of("Always has", Traits(species.ForcedTrait)),
@@ -1024,6 +1049,24 @@ public sealed class WikiShelves(DesignSession session)
         WikiFact.Of("Opens", Worlds(species.AddedPlanetClasses)),
         WikiFact.Of("Closes", Worlds(species.RemovedPlanetClasses)),
         WikiFact.Said("Portraits", faces.Count.ToString(System.Globalization.CultureInfo.CurrentCulture)),
+
+        // What a pre-sapient of this class becomes when somebody uplifts it, which is the entire
+        // point of eleven of the forty-two rows and joined them to nothing.
+        WikiFact.Of("Uplifts into", Classes(detail?.UpliftedInto)),
+
+        WikiFact.Tagged(
+            "Generation",
+            detail is null
+                ? []
+                : [
+                    .. new (bool Has, string Said)[]
+                        {
+                            (!detail.Randomised, "Never generated"),
+                            (!detail.HasGenders, "No genders"),
+                        }
+                        .Where(m => m.Has)
+                        .Select(m => m.Said),
+                ]),
     ];
 
     /// <summary>
@@ -2235,13 +2278,19 @@ public sealed class WikiShelves(DesignSession session)
     /// Read from the database, which already carries all three hundred and sixty-four: the
     /// designer's own picker needs them, so unlike the leader traits there is nothing to fetch.
     /// </remarks>
-    private IReadOnlyList<WikiRow> SpeciesTraits() =>
-    [
-        .. Database.Traits
-            .Where(t => t.Kind == TraitKind.Species)
-            .Select(SpeciesTrait)
-            .OrderBy(r => r.Name, StringComparer.CurrentCulture),
-    ];
+    private IReadOnlyList<WikiRow> SpeciesTraitRows(SpeciesTraitPack? pack)
+    {
+        var detail = Detail(pack?.Traits, t => t.Key);
+        var reader = pack is null ? session.Localizer : Reading(pack.Text);
+
+        return
+        [
+            .. Database.Traits
+                .Where(t => t.Kind == TraitKind.Species)
+                .Select(t => SpeciesTrait(t, detail.GetValueOrDefault(t.Key), reader))
+                .OrderBy(r => r.Name, StringComparer.CurrentCulture),
+        ];
+    }
 
     /// <summary>
     /// One species trait.
@@ -2259,7 +2308,10 @@ public sealed class WikiShelves(DesignSession session)
     /// which is what this app does too.
     /// </para>
     /// </remarks>
-    private WikiRow SpeciesTrait(TraitDefinition trait) =>
+    private WikiRow SpeciesTrait(
+        TraitDefinition trait,
+        SpeciesTraitDetail? detail,
+        Localizer reader) =>
         Row(
             trait.Key,
             trait.Effects,
@@ -2274,7 +2326,7 @@ public sealed class WikiShelves(DesignSession session)
                     + "never offered in a list."
                 : null,
             [],
-            SpeciesTraitFacts(trait),
+            SpeciesTraitFacts(trait, detail, reader),
             null) with
         {
             Icon = trait.Icon,
@@ -2563,7 +2615,10 @@ public sealed class WikiShelves(DesignSession session)
     ];
 
     /// <summary>What is worth saying about a species trait beyond what it does.</summary>
-    private IReadOnlyList<WikiFact> SpeciesTraitFacts(TraitDefinition trait) =>
+    private IReadOnlyList<WikiFact> SpeciesTraitFacts(
+        TraitDefinition trait,
+        SpeciesTraitDetail? detail,
+        Localizer reader) =>
     [
         // Said as a number rather than as chips, and sortable, because the whole of picking traits
         // is spending a budget: two points for Intelligent, and a drawback to pay for it.
@@ -2585,7 +2640,113 @@ public sealed class WikiShelves(DesignSession session)
         WikiFact.Of("Not for", Civics(trait.ForbiddenOrigins)),
         WikiFact.Of("Not with", Ethics(trait.ForbiddenEthics)),
         WikiFact.Of("Needs civic", Civics(trait.AllowedCivics)),
+
+        // The words the game groups it under, which carry no text of their own and exist purely to
+        // be filtered by - which is exactly what a facet is. Two hundred and eighty-eight traits
+        // carry them and there was no way to ask the page for the negative ones.
+        WikiFact.Tagged("Tags", Grouped(detail)),
+
+        WikiFact.Said("Worth", Traded(detail?.SlaveCost)),
+
+        // What its pops pay for and produce, which for several traits is the whole of what they do:
+        // the effects reader matches modifier blocks, and a resources block is not one, so
+        // Scintillating Skin and Gaseous Byproducts reached the page with nothing at all.
+        WikiFact.Of("Pays", Resources(detail, reader, upkeep: true)),
+        WikiFact.Of("Produces", Resources(detail, reader, upkeep: false)),
+
+        WikiFact.Of("Bound to", Worlds(detail?.BoundToWorlds ?? [])),
+
+        // The five the game states as plain flags, said together because each is a headline and
+        // none of them is worth a column of its own.
+        WikiFact.Tagged("Species", Marks(detail)),
+
+        WikiFact.Said("Added later", Gate(detail?.CanAddLater)),
+        WikiFact.Said("Removed later", Gate(detail?.CanRemoveLater)),
+        WikiFact.Said("Other classes", Gate(detail?.ClassOverride)),
     ];
+
+    /// <summary>The words a trait is grouped under, made readable.</summary>
+    /// <param name="detail">What the page fetched, or null before it arrives.</param>
+    /// <returns>The labels.</returns>
+    private static IReadOnlyList<string> Grouped(SpeciesTraitDetail? detail) =>
+        [.. (detail?.Tags ?? []).Select(Localizer.Prettify)];
+
+    /// <summary>What a pop carrying it fetches on the slave market.</summary>
+    /// <param name="cost">The figure, where the trait states one.</param>
+    /// <returns>The words, or nothing.</returns>
+    private static string? Traded(int? cost) =>
+        cost is { } trade ? Number(trade) : null;
+
+    /// <summary>
+    /// The five plain flags a trait can raise, said as the things they are.
+    /// </summary>
+    /// <remarks>
+    /// Together under one heading rather than five columns of mostly nothing: between them only
+    /// forty-six traits raise any of them, and a reader wants to know which ones do rather than to
+    /// compare five columns of blanks.
+    /// </remarks>
+    /// <param name="detail">What the page fetched, or null before it arrives.</param>
+    /// <returns>The labels.</returns>
+    private static IReadOnlyList<string> Marks(SpeciesTraitDetail? detail) =>
+        detail is null
+            ? []
+            : [
+                .. new (bool Has, string Said)[]
+                    {
+                        (detail.Advanced, "Advanced"),
+                        (!detail.Sapient, "Pre-sapient"),
+                        (detail.Infertile, "Infertile"),
+                        (detail.ImmortalLeaders, "Immortal leaders"),
+                        (detail.ImprovesLeaders, "Improves leaders"),
+                    }
+                    .Where(m => m.Has)
+                    .Select(m => m.Said),
+            ];
+
+    /// <summary>
+    /// What a trait makes its pops pay for, or produce.
+    /// </summary>
+    /// <remarks>
+    /// Named rather than measured, for the reason the record gives: forty-three of the forty-four
+    /// blocks carry a trigger and five scale by a scripted multiplier, so a figure beside one would
+    /// be a number the trait does not give. Which resource, and which way, is what was missing.
+    /// </remarks>
+    /// <param name="detail">What the page fetched, or null before it arrives.</param>
+    /// <param name="reader">The text, with the pack's merged in.</param>
+    /// <param name="upkeep">Which of the two headings is being built.</param>
+    /// <returns>The chips.</returns>
+    private IReadOnlyList<EmpireChoice> Resources(
+        SpeciesTraitDetail? detail,
+        Localizer reader,
+        bool upkeep) =>
+    [
+        .. (detail?.Resources ?? [])
+            .Where(r => r.Upkeep == upkeep)
+            .Select(r => new EmpireChoice(
+                r.Resource,
+                reader.Text(r.Resource, Localizer.Prettify(r.Resource)),
+                null,
+                null)),
+    ];
+
+    /// <summary>
+    /// What a condition on adding or removing a trait amounts to, in a word.
+    /// </summary>
+    /// <remarks>
+    /// Most of them are a bare yes or no - the game writes "species_possible_remove = { always = no
+    /// }" on two hundred and thirty-six traits - and the rest name a real gate: the empire has
+    /// gene tailoring, the species is not already cybernetic. So the flat answers are said flatly
+    /// and anything else is read out.
+    /// </remarks>
+    /// <param name="gate">The condition, where the trait states one.</param>
+    /// <returns>The words, or nothing where the trait says nothing.</returns>
+    private string? Gate(Requirement? gate) => gate switch
+    {
+        null => null,
+        AlwaysRequirement { Value: true } => "Always",
+        AlwaysRequirement { Value: false } => "Never",
+        _ => session.Conditions.Describe(gate) is { Length: > 0 } said ? said : null,
+    };
 
     /// <summary>
     /// One chip, told what kind of thing it is naming.

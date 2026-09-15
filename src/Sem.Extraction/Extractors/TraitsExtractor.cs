@@ -21,11 +21,19 @@ internal static class TraitsExtractor
     /// directions and the designer has to block the pairing either way round.
     /// </para>
     /// </remarks>
+    /// <param name="loader">The script loader.</param>
+    /// <param name="requirements">The compiler.</param>
+    /// <param name="assets">Where the icons are registered.</param>
+    /// <param name="detail">Filled in with what a page about the species traits needs.</param>
+    /// <returns>The traits, and the leader traits the wiki keeps its own file of.</returns>
     public static (List<TraitDefinition> Traits, List<LeaderTraitDefinition> Leaders) Extract(
         ScriptLoader loader,
         RequirementCompiler requirements,
-        AssetCatalog assets)
+        AssetCatalog assets,
+        List<SpeciesTraitDetail> detail)
     {
+        ArgumentNullException.ThrowIfNull(detail);
+
         var traits = new List<TraitDefinition>();
         var leaders = new List<LeaderTraitDefinition>();
         var colors = TraitIconComposer.ReadNamedColors(loader);
@@ -60,6 +68,25 @@ internal static class TraitsExtractor
             {
                 continue;
             }
+
+            // What a page about them needs and a picker never did: the grouping words, what a pop
+            // with it is worth, what it makes its pops pay for, and whether a game can add or take
+            // it away later.
+            detail.Add(new SpeciesTraitDetail(entry.Key)
+            {
+                Tags = body.GetList("tags"),
+                SlaveCost = loader.ResolveInt(body.GetBlock("slave_cost")?.GetString("trade")),
+                CanAddLater = Gate(body, "species_potential_add", requirements),
+                CanRemoveLater = Gate(body, "species_possible_remove", requirements),
+                ClassOverride = Gate(body, "species_class_override", requirements),
+                Resources = Resources(body),
+                BoundToWorlds = body.GetList("bound_to_planet_classes"),
+                Advanced = body.GetBool("advanced_trait"),
+                ImmortalLeaders = body.GetBool("immortal_leaders"),
+                Sapient = body.GetBool("sapient", defaultValue: true),
+                Infertile = body.GetBool("infertile"),
+                ImprovesLeaders = body.GetBool("improves_leaders"),
+            });
 
             traits.Add(new TraitDefinition(entry.Key, kind)
             {
@@ -202,6 +229,66 @@ internal static class TraitsExtractor
                 && !string.Equals(single, "all", StringComparison.Ordinal)
                 ? [single]
                 : [];
+
+    /// <summary>
+    /// One of the trait's condition blocks, compiled, or nothing where it states none.
+    /// </summary>
+    /// <remarks>
+    /// Compiled as a plan's condition rather than a design's, because every one of them asks about
+    /// a game already under way - whether the species has been gene-tailored, whether the empire has
+    /// the technology - and a design cannot answer any of it.
+    /// </remarks>
+    /// <param name="body">The trait's definition.</param>
+    /// <param name="field">Which block.</param>
+    /// <param name="requirements">The compiler.</param>
+    /// <returns>The condition, or null.</returns>
+    private static Requirement? Gate(CwBlock body, string field, RequirementCompiler requirements) =>
+        body.GetBlock(field) is { } block ? requirements.CompilePlanTrigger(block) : null;
+
+    /// <summary>
+    /// What a trait makes its pops pay for and produce.
+    /// </summary>
+    /// <remarks>
+    /// Named rather than measured - see <see cref="TraitResource"/> for why. Thirty-five traits
+    /// declare one and for several it is the whole of what they do: the extractor's effects reader
+    /// matches <c>modifier</c> and <c>*_modifier</c> only, so Gaseous Byproducts and Scintillating
+    /// Skin reached the page with no numbers and no words.
+    /// </remarks>
+    /// <param name="body">The trait's definition.</param>
+    /// <returns>The resources, which for most traits are none.</returns>
+    private static List<TraitResource> Resources(CwBlock body)
+    {
+        var found = new List<TraitResource>();
+
+        if (body.GetBlock("resources") is not { } resources)
+        {
+            return found;
+        }
+
+        foreach (var node in resources.Nodes)
+        {
+            if (node.Key is not ("upkeep" or "produces") || node.Block is null)
+            {
+                continue;
+            }
+
+            var upkeep = node.Key == "upkeep";
+
+            foreach (var amount in node.Block.Nodes)
+            {
+                // Everything in the block that is a plain number is a resource. What is not is the
+                // trigger beside them and the multiplier under it, both of which are blocks.
+                if (amount.Key is { } resource and not ("trigger" or "mult" or "category") &&
+                    amount.Scalar is not null &&
+                    !found.Any(f => f.Resource == resource && f.Upkeep == upkeep))
+                {
+                    found.Add(new TraitResource(resource, upkeep));
+                }
+            }
+        }
+
+        return found;
+    }
 
     private static TraitKind ClassifyTrait(CwBlock body)
     {

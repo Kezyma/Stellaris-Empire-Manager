@@ -353,6 +353,14 @@ else
                         .LoadWikiPackAsync(CivicPack.Domain, GameDataJsonContext.Default.CivicPack)
                         .ConfigureAwait(true)),
 
+                WikiKind.SpeciesTraits => shelves.SpeciesTraits(await Source
+                    .LoadWikiPackAsync(SpeciesTraitPack.Domain, GameDataJsonContext.Default.SpeciesTraitPack)
+                    .ConfigureAwait(true)),
+
+                WikiKind.Species => shelves.Species(await Source
+                    .LoadWikiPackAsync(SpeciesClassPack.Domain, GameDataJsonContext.Default.SpeciesClassPack)
+                    .ConfigureAwait(true)),
+
                 _ => shelves.Of(Kind),
             };
 

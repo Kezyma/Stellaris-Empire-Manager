@@ -188,12 +188,16 @@ public sealed class GameDataExtractor(LayeredContent content)
 
         Report("Reading species");
         var archetypes = SpeciesExtractor.ExtractArchetypes(loader);
-        var speciesClasses = SpeciesExtractor.ExtractSpeciesClasses(loader, requirements);
+        var speciesClassDetail = new List<SpeciesClassDetail>();
+        var speciesClasses = SpeciesExtractor.ExtractSpeciesClasses(
+            loader, requirements, speciesClassDetail);
 
         Report("Reading ethics and traits");
         var ethicDetail = new List<EthicDetail>();
         var ethics = EthicsExtractor.Extract(loader, requirements, assets, Localisation, ethicDetail);
-        var (traits, leaderTraits) = TraitsExtractor.Extract(loader, requirements, assets);
+        var speciesTraitDetail = new List<SpeciesTraitDetail>();
+        var (traits, leaderTraits) = TraitsExtractor.Extract(
+            loader, requirements, assets, speciesTraitDetail);
         LeaderTraits = leaderTraits;
 
         Report("Reading governments");
@@ -214,6 +218,8 @@ public sealed class GameDataExtractor(LayeredContent content)
             Authorities = authorityDetail,
             Governments = governmentDetail,
             Civics = civicDetail,
+            SpeciesTraits = speciesTraitDetail,
+            SpeciesClasses = speciesClassDetail,
         };
 
         // What one of these designs is played as when it turns up as somebody's neighbour.
