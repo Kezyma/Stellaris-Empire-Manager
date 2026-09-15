@@ -2282,12 +2282,13 @@ public sealed class WikiShelves(DesignSession session)
     {
         var detail = Detail(pack?.Traits, t => t.Key);
         var reader = pack is null ? session.Localizer : Reading(pack.Text);
+        var conditions = new ConditionReader(reader, Database);
 
         return
         [
             .. Database.Traits
                 .Where(t => t.Kind == TraitKind.Species)
-                .Select(t => SpeciesTrait(t, detail.GetValueOrDefault(t.Key), reader))
+                .Select(t => SpeciesTrait(t, detail.GetValueOrDefault(t.Key), reader, conditions))
                 .OrderBy(r => r.Name, StringComparer.CurrentCulture),
         ];
     }
@@ -2311,7 +2312,8 @@ public sealed class WikiShelves(DesignSession session)
     private WikiRow SpeciesTrait(
         TraitDefinition trait,
         SpeciesTraitDetail? detail,
-        Localizer reader) =>
+        Localizer reader,
+        ConditionReader conditions) =>
         Row(
             trait.Key,
             trait.Effects,
@@ -2325,7 +2327,7 @@ public sealed class WikiShelves(DesignSession session)
                 ? "The game keeps this one to itself. It is given out by an event or an origin and "
                     + "never offered in a list."
                 : null,
-            [],
+            Gates(detail, conditions),
             SpeciesTraitFacts(trait, detail, reader),
             null) with
         {
@@ -2365,11 +2367,16 @@ public sealed class WikiShelves(DesignSession session)
         // seven hundred scans for every one of seven hundred rows.
         var known = traits.ToDictionary(t => t.Key, StringComparer.Ordinal);
 
+        // Over the pack's own text, so a chip inside one of these conditions is named the way the
+        // page names everything else. The shelf's ordinary reader knows none of these keys.
+        var conditions = new ConditionReader(reader, Database);
+
         return new WikiShelf(
             "Leader Traits", "leader traits", "leader trait",
             [
                 .. Chains(traits, known.Keys.ToHashSet(StringComparer.Ordinal))
-                    .Select(chain => Grouped([.. chain.Select(t => LeaderTrait(t, known, reader))]))
+                    .Select(chain => Grouped(
+                        [.. chain.Select(t => LeaderTrait(t, known, reader, conditions))]))
                     .OrderBy(r => r.Name, StringComparer.CurrentCulture),
             ],
             WikiFacet.LeaderTraits)
@@ -2505,7 +2512,8 @@ public sealed class WikiShelves(DesignSession session)
     private WikiRow LeaderTrait(
         LeaderTraitDefinition trait,
         IReadOnlyDictionary<string, LeaderTraitDefinition> known,
-        Localizer reader)
+        Localizer reader,
+        ConditionReader conditions)
     {
         var named = Chained(trait, known, reader);
         var described = reader.Text(trait.DescriptionKey, string.Empty);
@@ -2517,7 +2525,13 @@ public sealed class WikiShelves(DesignSession session)
             reachable: true,
             null,
             null,
-            [],
+
+            // The whole of when a leader can actually be given it, which three hundred and one
+            // traits write out. Drawn as an outline rather than said as a sentence: these are the
+            // deepest conditions in the game outside an ascension perk, and run together they came
+            // out as a paragraph nobody could parse.
+            [new WikiCondition("Given when", conditions.Read(trait.CanBeGiven), "Nothing in particular")],
+
             LeaderTraitFacts(trait, known, reader),
             null) with
         {
@@ -2631,9 +2645,6 @@ public sealed class WikiShelves(DesignSession session)
         WikiFact.Of("Not for", Civics(trait.ForbiddenOrigins)),
         WikiFact.Of("Ethics", Ethics(trait.AllowedEthics)),
 
-        // And the whole of when a leader can actually be given it, which three hundred and one
-        // traits write out and nothing read a character of.
-        WikiFact.Said("Given when", Gate(trait.CanBeGiven)),
     ];
 
     /// <summary>How a leader comes to hold a trait, where the game rules one of the ways out.</summary>
@@ -2728,9 +2739,6 @@ public sealed class WikiShelves(DesignSession session)
         // none of them is worth a column of its own.
         WikiFact.Tagged("Species", Marks(detail)),
 
-        WikiFact.Said("Added later", Gate(detail?.CanAddLater)),
-        WikiFact.Said("Removed later", Gate(detail?.CanRemoveLater)),
-        WikiFact.Said("Other classes", Gate(detail?.ClassOverride)),
     ];
 
     /// <summary>The words a trait is grouped under, made readable.</summary>
@@ -2798,23 +2806,29 @@ public sealed class WikiShelves(DesignSession session)
     ];
 
     /// <summary>
-    /// What a condition on adding or removing a trait amounts to, in a word.
+    /// The conditions a species trait states about being added to a species, or taken off it.
     /// </summary>
     /// <remarks>
-    /// Most of them are a bare yes or no - the game writes "species_possible_remove = { always = no
-    /// }" on two hundred and thirty-six traits - and the rest name a real gate: the empire has
-    /// gene tailoring, the species is not already cybernetic. So the flat answers are said flatly
-    /// and anything else is read out.
+    /// Drawn the way every other condition in the wiki is drawn - a bulleted tree of ticks and
+    /// crosses against named things - rather than run together into a sentence. Most of them are a
+    /// bare yes or no, and a flat yes draws nothing at all: an outline says what stands in the way,
+    /// and nothing standing in the way is what the heading's own fallback is for.
     /// </remarks>
-    /// <param name="gate">The condition, where the trait states one.</param>
-    /// <returns>The words, or nothing where the trait says nothing.</returns>
-    private string? Gate(Requirement? gate) => gate switch
-    {
-        null => null,
-        AlwaysRequirement { Value: true } => "Always",
-        AlwaysRequirement { Value: false } => "Never",
-        _ => session.Conditions.Describe(gate) is { Length: > 0 } said ? said : null,
-    };
+    /// <param name="detail">What the page fetched, or null before it arrives.</param>
+    /// <param name="reader">A reader over the text the pack brought with it.</param>
+    /// <returns>The three columns.</returns>
+    private static IReadOnlyList<WikiCondition> Gates(
+        SpeciesTraitDetail? detail,
+        ConditionReader reader) =>
+    [
+        new WikiCondition("Added later", reader.Read(detail?.CanAddLater), "Always"),
+        new WikiCondition("Removed later", reader.Read(detail?.CanRemoveLater), "Always"),
+
+        // Thirty-two traits let a species of the wrong class hold them anyway, which is the escape
+        // hatch from the "Only for" column beside it - a column the page had been drawing as though
+        // it were absolute.
+        new WikiCondition("Other classes", reader.Read(detail?.ClassOverride), "Only its own"),
+    ];
 
     /// <summary>
     /// One chip, told what kind of thing it is naming.
