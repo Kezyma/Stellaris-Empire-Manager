@@ -1,6 +1,6 @@
 {
   "stamp": {
-    "extractorVersion": "0.1.0\u002B8b019dc1b5f0",
+    "extractorVersion": "0.1.0\u002B8708cf40997f",
     "schemaVersion": 3
   },
   "traits": [
@@ -15956,17 +15956,20 @@
                         {
                           "kind": "unknown",
                           "name": "resource_expenses_compare",
-                          "assume": true
+                          "assume": true,
+                          "said": "zero food spending"
                         },
                         {
                           "kind": "unknown",
                           "name": "resource_expenses_compare",
-                          "assume": true
+                          "assume": true,
+                          "said": "zero minerals spending"
                         },
                         {
                           "kind": "unknown",
                           "name": "resource_expenses_compare",
-                          "assume": true
+                          "assume": true,
+                          "said": "zero energy spending"
                         }
                       ]
                     }
@@ -15980,17 +15983,20 @@
                           {
                             "kind": "unknown",
                             "name": "resource_expenses_compare",
-                            "assume": true
+                            "assume": true,
+                            "said": "zero food spending"
                           },
                           {
                             "kind": "unknown",
                             "name": "resource_expenses_compare",
-                            "assume": true
+                            "assume": true,
+                            "said": "zero minerals spending"
                           },
                           {
                             "kind": "unknown",
                             "name": "resource_expenses_compare",
-                            "assume": true
+                            "assume": true,
+                            "said": "zero energy spending"
                           }
                         ]
                       },
@@ -18278,17 +18284,20 @@
                         {
                           "kind": "unknown",
                           "name": "resource_expenses_compare",
-                          "assume": true
+                          "assume": true,
+                          "said": "zero food spending"
                         },
                         {
                           "kind": "unknown",
                           "name": "resource_expenses_compare",
-                          "assume": true
+                          "assume": true,
+                          "said": "zero minerals spending"
                         },
                         {
                           "kind": "unknown",
                           "name": "resource_expenses_compare",
-                          "assume": true
+                          "assume": true,
+                          "said": "zero energy spending"
                         }
                       ]
                     }
@@ -18302,17 +18311,20 @@
                           {
                             "kind": "unknown",
                             "name": "resource_expenses_compare",
-                            "assume": true
+                            "assume": true,
+                            "said": "zero food spending"
                           },
                           {
                             "kind": "unknown",
                             "name": "resource_expenses_compare",
-                            "assume": true
+                            "assume": true,
+                            "said": "zero minerals spending"
                           },
                           {
                             "kind": "unknown",
                             "name": "resource_expenses_compare",
-                            "assume": true
+                            "assume": true,
+                            "said": "zero energy spending"
                           }
                         ]
                       },
@@ -22369,17 +22381,20 @@
                         {
                           "kind": "unknown",
                           "name": "resource_expenses_compare",
-                          "assume": true
+                          "assume": true,
+                          "said": "zero food spending"
                         },
                         {
                           "kind": "unknown",
                           "name": "resource_expenses_compare",
-                          "assume": true
+                          "assume": true,
+                          "said": "zero minerals spending"
                         },
                         {
                           "kind": "unknown",
                           "name": "resource_expenses_compare",
-                          "assume": true
+                          "assume": true,
+                          "said": "zero energy spending"
                         }
                       ]
                     }
@@ -22393,17 +22408,20 @@
                           {
                             "kind": "unknown",
                             "name": "resource_expenses_compare",
-                            "assume": true
+                            "assume": true,
+                            "said": "zero food spending"
                           },
                           {
                             "kind": "unknown",
                             "name": "resource_expenses_compare",
-                            "assume": true
+                            "assume": true,
+                            "said": "zero minerals spending"
                           },
                           {
                             "kind": "unknown",
                             "name": "resource_expenses_compare",
-                            "assume": true
+                            "assume": true,
+                            "said": "zero energy spending"
                           }
                         ]
                       },
@@ -27774,17 +27792,20 @@
                         {
                           "kind": "unknown",
                           "name": "resource_expenses_compare",
-                          "assume": true
+                          "assume": true,
+                          "said": "zero food spending"
                         },
                         {
                           "kind": "unknown",
                           "name": "resource_expenses_compare",
-                          "assume": true
+                          "assume": true,
+                          "said": "zero minerals spending"
                         },
                         {
                           "kind": "unknown",
                           "name": "resource_expenses_compare",
-                          "assume": true
+                          "assume": true,
+                          "said": "zero energy spending"
                         }
                       ]
                     }
@@ -27798,17 +27819,20 @@
                           {
                             "kind": "unknown",
                             "name": "resource_expenses_compare",
-                            "assume": true
+                            "assume": true,
+                            "said": "zero food spending"
                           },
                           {
                             "kind": "unknown",
                             "name": "resource_expenses_compare",
-                            "assume": true
+                            "assume": true,
+                            "said": "zero minerals spending"
                           },
                           {
                             "kind": "unknown",
                             "name": "resource_expenses_compare",
-                            "assume": true
+                            "assume": true,
+                            "said": "zero energy spending"
                           }
                         ]
                       },
@@ -29415,17 +29439,20 @@
                         {
                           "kind": "unknown",
                           "name": "resource_expenses_compare",
-                          "assume": true
+                          "assume": true,
+                          "said": "zero food spending"
                         },
                         {
                           "kind": "unknown",
                           "name": "resource_expenses_compare",
-                          "assume": true
+                          "assume": true,
+                          "said": "zero minerals spending"
                         },
                         {
                           "kind": "unknown",
                           "name": "resource_expenses_compare",
-                          "assume": true
+                          "assume": true,
+                          "said": "zero energy spending"
                         }
                       ]
                     }
@@ -29439,17 +29466,20 @@
                           {
                             "kind": "unknown",
                             "name": "resource_expenses_compare",
-                            "assume": true
+                            "assume": true,
+                            "said": "zero food spending"
                           },
                           {
                             "kind": "unknown",
                             "name": "resource_expenses_compare",
-                            "assume": true
+                            "assume": true,
+                            "said": "zero minerals spending"
                           },
                           {
                             "kind": "unknown",
                             "name": "resource_expenses_compare",
-                            "assume": true
+                            "assume": true,
+                            "said": "zero energy spending"
                           }
                         ]
                       },

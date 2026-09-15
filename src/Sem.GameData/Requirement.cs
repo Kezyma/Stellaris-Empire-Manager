@@ -277,6 +277,23 @@ public sealed record UnknownRequirement(string Name, bool Assume = true) : Requi
     /// and left the reader to guess which. Kept as the game's own key so it can be looked up.
     /// </remarks>
     public string? Value { get; init; }
+
+    /// <summary>
+    /// What the condition asks, where the extractor could write it out and the game could not.
+    /// </summary>
+    /// <remarks>
+    /// The other half of <see cref="Value"/>, and the difference matters. A value is one of the
+    /// game's own keys and is shown only where the game has words for it - a technology, a menace
+    /// perk - because a prettified script key is not an answer. This is a phrase this app composed
+    /// from a block of arguments the game gives no name to at all, and is shown as written.
+    ///
+    /// For the conditions whose argument is a block rather than a word.
+    /// <c>resource_expenses_compare = { resource = food  value &gt; 0 }</c> is the one in the
+    /// corpus: read without it, a leader trait's condition came out as "must not have Resource
+    /// Expenses Compare" over "needs Resource Expenses Compare", which is the same six words twice
+    /// and tells a reader nothing whatever.
+    /// </remarks>
+    public string? Said { get; init; }
 }
 
 /// <summary>

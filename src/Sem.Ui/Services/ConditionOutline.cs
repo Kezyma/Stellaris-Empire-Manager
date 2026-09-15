@@ -306,6 +306,10 @@ public sealed class ConditionReader(Localizer localizer, GameDatabase database)
         CountRequirement count =>
             $"{Localizer.Prettify(count.Of.ToString())} {Compared(count.Comparison)} {count.Value}",
 
+        // A phrase the extractor wrote stands in for the trigger's own name, because it says the
+        // same thing in English - "food spending above 0" rather than "Resource Expenses Compare".
+        UnknownRequirement { Said: { Length: > 0 } written } => Sentence(written),
+
         UnknownRequirement unknown => Said(unknown.Value) is { Length: > 0 } named
             ? $"{Localizer.Prettify(unknown.Name)}: {named}"
             : Localizer.Prettify(unknown.Name),
@@ -327,6 +331,11 @@ public sealed class ConditionReader(Localizer localizer, GameDatabase database)
     /// <returns>Its name, or nothing.</returns>
     private string? Said(string? value) =>
         value is { Length: > 0 } ? _localizer.Text(value, string.Empty) : null;
+
+    /// <summary>A written phrase with its first letter raised, since it stands as a bullet.</summary>
+    /// <param name="said">The phrase.</param>
+    /// <returns>It, capitalised.</returns>
+    private static string Sentence(string said) => char.ToUpperInvariant(said[0]) + said[1..];
 
     private static string Compared(CountComparison comparison) => comparison switch
     {

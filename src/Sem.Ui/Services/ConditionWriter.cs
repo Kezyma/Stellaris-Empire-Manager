@@ -86,6 +86,11 @@ public sealed class ConditionWriter(Localizer localizer)
             // own was every one of these, and the perks that ask for mega-engineering and for
             // psionic theory looked like the same condition. A country flag the game never names
             // stays as it was, because a prettified script key is not an answer.
+            // A phrase the extractor wrote says the whole thing on its own - see UnknownRequirement.
+            UnknownRequirement { Said: { Length: > 0 } written } => negated
+                ? $"not {written}"
+                : written,
+
             UnknownRequirement unknown => Phrase(
                 negated ? "not" : null,
                 Words(unknown.Name),

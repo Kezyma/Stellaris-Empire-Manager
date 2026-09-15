@@ -565,7 +565,11 @@ public sealed class RequirementCompiler
         // "do I have mega-engineering yet", but it can certainly say that is what is being asked.
         if (_compilingPlan && DesignPredicates.UnknowableWhenPlanning.Contains(key))
         {
-            return new UnknownRequirement(key) { Value = node.ScalarValue };
+            return new UnknownRequirement(key)
+            {
+                Value = node.ScalarValue,
+                Said = Compared(key, node.Block),
+            };
         }
 
         // Conditions naming a value rather than answering yes or no, such as
@@ -582,6 +586,67 @@ public sealed class RequirementCompiler
 
         return RecordUnrecognised(key);
     }
+
+    /// <summary>
+    /// A comparison the game states as a block of arguments, written out.
+    /// </summary>
+    /// <remarks>
+    /// One trigger in the corpus takes this shape - <c>resource_expenses_compare = { resource =
+    /// food  value &gt; 0 }</c> - and it is the one whose arguments mattered most, because without
+    /// them the two branches of the condition that asks it read identically: "Must not have Resource
+    /// Expenses Compare" above "Needs Resource Expenses Compare". The subject and the threshold both
+    /// come out of the block, and the operator comes off the node the game wrote it on rather than
+    /// being assumed.
+    ///
+    /// Zero is worth its own wording. Six of the nine in the game ask for exactly nought and the
+    /// game says why beside them - "check if we have an uninitialized economy" - so "zero food
+    /// spending" is both shorter than "food spending of 0" and closer to what is being asked. Zero
+    /// rather than no, because every one of these is drawn under a tick or a cross that already
+    /// carries a word for it, and "must not have no food spending" is a sentence nobody can read.
+    /// </remarks>
+    /// <param name="key">The trigger.</param>
+    /// <param name="block">Its arguments, where it takes a block rather than a word.</param>
+    /// <returns>The phrase, or nothing for a trigger whose arguments this cannot read.</returns>
+    private static string? Compared(string key, CwBlock? block)
+    {
+        if (block is null || !string.Equals(key, "resource_expenses_compare", StringComparison.Ordinal))
+        {
+            return null;
+        }
+
+        if (block.GetString("resource") is not { Length: > 0 } resource)
+        {
+            return null;
+        }
+
+        var threshold = block.Nodes.FirstOrDefault(n => n.Key == "value");
+
+        if (threshold?.ScalarValue is not { Length: > 0 } amount)
+        {
+            return null;
+        }
+
+        if (threshold.Operator is not (">" or "<" or ">=" or "<=") && amount is "0")
+        {
+            return $"zero {Worded(resource)} spending";
+        }
+
+        var compared = threshold.Operator switch
+        {
+            ">" => "above",
+            "<" => "below",
+            ">=" => "at least",
+            "<=" => "at most",
+            _ => "of exactly",
+        };
+
+        return $"{Worded(resource)} spending {compared} {amount}";
+    }
+
+    /// <summary>A script word as ordinary words, for a phrase this file writes itself.</summary>
+    /// <param name="word">The word.</param>
+    /// <returns>It, with the underscores out.</returns>
+    private static string Worded(string word) => word.Replace('_', ' ');
 
     /// <summary>
     /// None of these, which is what the game's <c>NOT</c> and <c>NOR</c> both mean.
