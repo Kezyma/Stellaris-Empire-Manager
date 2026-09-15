@@ -1087,12 +1087,39 @@ public sealed class WikiShelfTests
     [Fact]
     public void AGovernmentSaysBothFormsOfBothTitles()
     {
-        var row = Assert.Single(Governments().Of(WikiKind.Governments).Rows);
+        var row = Assert.Single(Governments().Of(WikiKind.Governments).Rows, r => r.Key == "gov_imperial");
 
         Assert.Equal("Emperor", row.Fact("Ruler")!.Text);
         Assert.Equal("Empress", row.Fact("Ruler (female)")!.Text);
         Assert.Equal("Heir Apparent", row.Fact("Heir")!.Text);
         Assert.Equal("100", row.Fact("Weight")!.Text);
+    }
+
+    /// <summary>
+    /// A government out of a design's reach says which kind of out of reach it is.
+    /// </summary>
+    /// <remarks>
+    /// Ninety-seven of the hundred and seventy are, and for two different reasons. Twenty-seven are
+    /// the game's own: an empire it runs itself is called one and nobody else ever is. The other
+    /// seventy wait on something an event sets, which a player does reach - just not while the
+    /// empire is being designed. One badge over both would have been wrong for whichever half read
+    /// it.
+    /// </remarks>
+    [Fact]
+    public void AGovernmentOutOfReachSaysWhichKind()
+    {
+        var rows = Governments().Of(WikiKind.Governments).Rows
+            .ToDictionary(r => r.Key, StringComparer.Ordinal);
+
+        Assert.True(rows["gov_imperial"].Playable);
+        Assert.Null(rows["gov_imperial"].ClosedShort);
+
+        Assert.False(rows["gov_stagnant_ascendancy"].Playable);
+        Assert.Equal("Only for the AI", rows["gov_stagnant_ascendancy"].ClosedShort);
+
+        // And the one a game reaches later, whose refusal is a flag rather than the AI.
+        Assert.False(rows["gov_cyber_creed_megachurch"].Playable);
+        Assert.Equal("Not at the start", rows["gov_cyber_creed_megachurch"].ClosedShort);
     }
 
     /// <summary>An ascension perk reads the name of its path rather than prettifying the key.</summary>
@@ -1197,6 +1224,30 @@ public sealed class WikiShelfTests
         Assert.Equal(["worlds/pc_habitat_sky.png"], rows["pc_habitat"].Layers);
     }
 
+    /// <summary>
+    /// A world says whether anybody can settle it, which is not the same as starting there.
+    /// </summary>
+    /// <remarks>
+    /// What stood in this column was <c>show_city</c>, which is a fact about drawing the backdrop
+    /// rather than about the world - whether the game paints an empire's own towers over the
+    /// picture - and read as one it put "Built on it" on a gas giant. Twenty-four of the sixty-nine
+    /// classes can be settled and only nine of those are worlds an empire may begin on.
+    /// </remarks>
+    [Fact]
+    public void AWorldSaysWhetherAnybodyCanSettleIt()
+    {
+        var rows = PlanetShelf().Of(WikiKind.Planets).Rows.ToDictionary(r => r.Key, StringComparer.Ordinal);
+
+        Assert.Equal("Yes", rows["pc_ocean"].Fact("Colonisable")!.Text);
+        Assert.Equal("Yes", rows["pc_habitat"].Fact("Colonisable")!.Text);
+
+        // Settled by nobody, and still drawn with a sky and a landscape of its own.
+        Assert.Equal("No", rows["pc_frozen"].Fact("Colonisable")!.Text);
+
+        // And the art flag it replaced is off the page, though the scene still reads it.
+        Assert.Null(rows["pc_ocean"].Fact("Cities"));
+    }
+
     /// <summary>Four worlds and a civic that opens one of them.</summary>
     private static WikiShelves PlanetShelf() =>
         Shelves(new GameDatabase
@@ -1207,12 +1258,18 @@ public sealed class WikiShelfTests
             Defines = new GameDefines { EthicsPoints = 3, CivicPoints = 2, CityPopLevel = 4 },
             PlanetClasses =
             [
-                new PlanetClassDefinition("pc_ocean") { Climate = "wet", IsStartingWorld = true },
+                new PlanetClassDefinition("pc_ocean")
+                {
+                    Climate = "wet",
+                    IsStartingWorld = true,
+                    Colonizable = true,
+                },
                 new PlanetClassDefinition("pc_volcanic") { Climate = "dry" },
                 new PlanetClassDefinition("pc_frozen") { Climate = "cold" },
                 new PlanetClassDefinition("pc_habitat")
                 {
                     ShowsCity = false,
+                    Colonizable = true,
                     Sky = "worlds/pc_habitat_sky.png",
                 },
 
@@ -1362,6 +1419,27 @@ public sealed class WikiShelfTests
                         RulerTitleKey = "title_emperor",
                         RulerTitleFemaleKey = "title_empress",
                         HeirTitleKey = "title_heir",
+                    },
+
+                    // One only the game itself is ever called, and one an empire reaches during a
+                    // game. Both write the refusal as a clause of the block rather than as the whole
+                    // of it, which is how every one of the ninety-seven writes it.
+                    new GovernmentTypeDefinition("gov_stagnant_ascendancy", 100, 1)
+                    {
+                        Possible = new AllRequirement(
+                        [
+                            new AlwaysRequirement(false) { Because = "is_ai" },
+                            new SelectionRequirement(SelectionCategory.Civics, "civic_lethargic_leadership"),
+                        ]),
+                    },
+
+                    new GovernmentTypeDefinition("gov_cyber_creed_megachurch", 100, 2)
+                    {
+                        Possible = new AllRequirement(
+                        [
+                            new AlwaysRequirement(false) { Because = "has_country_flag" },
+                            new SelectionRequirement(SelectionCategory.Civics, "civic_corporate_dominion"),
+                        ]),
                     },
                 ],
             },

@@ -9,6 +9,19 @@ public sealed record PlanetClassDefinition(string Key)
     /// <summary>Whether an empire may start here without an origin saying so.</summary>
     public bool IsStartingWorld { get; init; }
 
+    /// <summary>
+    /// Whether anybody can settle here at all.
+    /// </summary>
+    /// <remarks>
+    /// A broader question than starting here, and a different one: twenty-four of the sixty-nine
+    /// classes say yes, and only nine of those are worlds an empire may begin on. The rest are
+    /// places a game reaches later - a ring segment, a habitat, an ecumenopolis - and the forty-five
+    /// that say no are the ones nobody ever lives on, which is most of the galaxy.
+    ///
+    /// Every class in the folder states it, so there is no default to argue about.
+    /// </remarks>
+    public bool Colonizable { get; init; }
+
     /// <summary>What must hold for this to be offered, normally owning a content pack.</summary>
     public Requirement Potential { get; init; } = new AlwaysRequirement(true);
 

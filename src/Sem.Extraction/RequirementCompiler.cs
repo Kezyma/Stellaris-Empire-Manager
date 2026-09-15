@@ -496,7 +496,9 @@ public sealed class RequirementCompiler
 
             // An empire being designed is always an ordinary playable country.
             case "is_country_type" when node.ScalarValue is { } countryType:
-                return new AlwaysRequirement(countryType == "default");
+                return countryType == "default"
+                    ? new AlwaysRequirement(true)
+                    : new AlwaysRequirement(false) { Because = key };
 
             // "if = { limit = { condition } rest }" means the rest applies only when the limit
             // holds, so it is satisfied either by the limit failing or by everything holding.
@@ -555,7 +557,7 @@ public sealed class RequirementCompiler
         // "has_country_flag = some_flag", which the designer can still decide.
         if (DesignPredicates.NeverTrueInDesigner.Contains(key))
         {
-            return new AlwaysRequirement(false);
+            return new AlwaysRequirement(false) { Because = key };
         }
 
         if (DesignPredicates.AssumedTrueInDesigner.Contains(key))
@@ -649,7 +651,7 @@ public sealed class RequirementCompiler
         }
         else if (DesignPredicates.NeverTrueInDesigner.Contains(name))
         {
-            result = new AlwaysRequirement(false);
+            result = new AlwaysRequirement(false) { Because = name };
         }
         else if (DesignPredicates.AssumedTrueInDesigner.Contains(name))
         {

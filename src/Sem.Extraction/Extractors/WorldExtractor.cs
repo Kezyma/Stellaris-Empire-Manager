@@ -48,6 +48,11 @@ internal static class WorldExtractor
             {
                 Climate = body.GetString("climate"),
                 IsStartingWorld = body.GetBool("initial") && body.GetBool("starting_planet", defaultValue: true),
+
+                // Whether anybody settles here, which the page had no way of saying: "Start here"
+                // answers a narrower question, so a gas giant and a habitat both read "No" and only
+                // one of them is a place an empire can ever live.
+                Colonizable = body.GetBool("colonizable"),
                 Potential = requirements.CompileTrigger(body.GetBlock("potential")),
 
                 // Each class names its own picture, and the larger of the two is a frame of a strip

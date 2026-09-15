@@ -115,7 +115,22 @@ public abstract record Requirement
 }
 
 /// <summary>A condition that is always true or always false.</summary>
-public sealed record AlwaysRequirement(bool Value) : Requirement;
+public sealed record AlwaysRequirement(bool Value) : Requirement
+{
+    /// <summary>
+    /// Which trigger settled it, where the extractor settled it rather than the game writing it.
+    /// </summary>
+    /// <remarks>
+    /// Most of these are the game's own <c>always = no</c> and have nothing to name. The rest are
+    /// this app deciding that a design can never answer yes to something - it is not the AI, it has
+    /// no country flags yet, it is an ordinary country and not a fallen empire - and which of those
+    /// it was is the difference between two quite different sentences. Ninety-seven governments are
+    /// out of a design's reach: twenty-seven because only an empire the game runs itself is ever
+    /// called one, and seventy because they wait on something an event sets, which a player does
+    /// reach, just not at creation.
+    /// </remarks>
+    public string? Because { get; init; }
+}
 
 /// <summary>Every child must hold.</summary>
 public sealed record AllRequirement(IReadOnlyList<Requirement> Items) : Requirement;

@@ -791,7 +791,11 @@ public sealed class WikiShelves(DesignSession session)
 
         WikiFact.Of("Opened by", opened),
         WikiFact.Of("Preference", Traits(preference)),
-        WikiFact.Said("Cities", world.ShowsCity ? "Built on it" : "Already one"),
+        // Whether anybody lives here, which is the question after habitability and the one the page
+        // could not answer. What stood here was show_city, and that is a fact about drawing the
+        // backdrop rather than about the world: it says whether the game paints an empire's own
+        // towers over the picture, which is why it read "Built on it" on a gas giant.
+        WikiFact.Said("Colonisable", world.Colonizable ? "Yes" : "No"),
     ];
 
     /// <summary>
@@ -1432,16 +1436,32 @@ public sealed class WikiShelves(DesignSession session)
     /// <returns>Its row.</returns>
     private WikiRow Government(GovernmentTypeDefinition government)
     {
-        var refused = government.Possible is AlwaysRequirement { Value: false };
+        // Ninety-seven of the hundred and seventy are out of a design's reach, and they are out of
+        // it for two quite different reasons - so they get two quite different sentences rather
+        // than one badge reading "never used" over both.
+        //
+        // Settled rather than read off the top of the tree, for the reason the personalities give:
+        // not one of these writes the refusal as the whole of its possible block. Every one writes
+        // it as a clause beside the civics it wants, so asking only whether the top was a flat no
+        // found none of them at all.
+        var refused = government.Possible.Settled() is false;
+        var onlyAi = refused && government.Possible
+            .AndNested()
+            .Any(r => r is AlwaysRequirement { Value: false, Because: "is_ai" });
 
         return Row(
             government.Key,
             EffectSet.None,
             playable: null,
             reachable: !refused,
-            refused ? "Never used" : null,
+            refused ? onlyAi ? "Only for the AI" : "Not at the start" : null,
             refused
-                ? "The game refuses this one outright, so no design is ever called it."
+                ? onlyAi
+                    ? "An empire the game runs itself, and only ever that. Its own file says so at "
+                        + "the top: none of the governments in it are available to player empires."
+                    : "Reached during a game rather than at its start. It waits on something an "
+                        + "event sets, which no empire has while it is being designed - so a design "
+                        + "is never called this, and an empire that has played a while may be."
                 : null,
             [new WikiCondition("Requirements", _reader.Read(government.Possible), "Any empire")],
             GovernmentFacts(government),

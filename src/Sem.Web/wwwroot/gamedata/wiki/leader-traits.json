@@ -1,6 +1,6 @@
 {
   "stamp": {
-    "extractorVersion": "0.1.0\u002B05c0404b3911",
+    "extractorVersion": "0.1.0\u002B2fd9bb8a432c",
     "schemaVersion": 2
   },
   "traits": [
@@ -2745,7 +2745,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "not",
@@ -2754,11 +2755,13 @@
                         "items": [
                           {
                             "kind": "always",
-                            "value": false
+                            "value": false,
+                            "because": "exists"
                           },
                           {
                             "kind": "always",
-                            "value": false
+                            "value": false,
+                            "because": "uses_ship_category"
                           }
                         ]
                       }
@@ -2788,18 +2791,21 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "all",
                       "items": [
                         {
                           "kind": "always",
-                          "value": false
+                          "value": false,
+                          "because": "exists"
                         },
                         {
                           "kind": "always",
-                          "value": false
+                          "value": false,
+                          "because": "uses_ship_category"
                         }
                       ]
                     }
@@ -6119,7 +6125,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "any",
@@ -6190,11 +6197,13 @@
                           "items": [
                             {
                               "kind": "always",
-                              "value": false
+                              "value": false,
+                              "because": "exists"
                             },
                             {
                               "kind": "always",
-                              "value": false
+                              "value": false,
+                              "because": "uses_ship_category"
                             }
                           ]
                         }
@@ -6226,7 +6235,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "not",
@@ -6299,11 +6309,13 @@
                             "items": [
                               {
                                 "kind": "always",
-                                "value": false
+                                "value": false,
+                                "because": "exists"
                               },
                               {
                                 "kind": "always",
-                                "value": false
+                                "value": false,
+                                "because": "uses_ship_category"
                               }
                             ]
                           }
@@ -6347,7 +6359,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "any",
@@ -6418,11 +6431,13 @@
                           "items": [
                             {
                               "kind": "always",
-                              "value": false
+                              "value": false,
+                              "because": "exists"
                             },
                             {
                               "kind": "always",
-                              "value": false
+                              "value": false,
+                              "because": "uses_ship_category"
                             }
                           ]
                         }
@@ -6454,7 +6469,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "not",
@@ -6527,11 +6543,13 @@
                             "items": [
                               {
                                 "kind": "always",
-                                "value": false
+                                "value": false,
+                                "because": "exists"
                               },
                               {
                                 "kind": "always",
-                                "value": false
+                                "value": false,
+                                "because": "uses_ship_category"
                               }
                             ]
                           }
@@ -6677,7 +6695,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -6709,7 +6728,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -8080,7 +8100,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -8129,7 +8150,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -8233,7 +8255,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -8282,7 +8305,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -8389,7 +8413,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -8438,7 +8463,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -8542,7 +8568,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -8591,7 +8618,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -8637,7 +8665,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -8686,7 +8715,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -8793,7 +8823,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -8842,7 +8873,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -8888,7 +8920,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -8996,7 +9029,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -9045,7 +9079,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -9091,7 +9126,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -9194,7 +9230,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "not",
@@ -9228,7 +9265,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -9290,7 +9328,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "not",
@@ -9324,7 +9363,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -9444,7 +9484,8 @@
               "items": [
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "exists"
                 },
                 {
                   "kind": "unknown",
@@ -9483,11 +9524,13 @@
                     },
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -9515,14 +9558,16 @@
               "items": [
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "exists"
                 },
                 {
                   "kind": "all",
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "has_country_flag"
                     },
                     {
                       "kind": "selection",
@@ -9561,14 +9606,16 @@
                 },
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "exists"
                 },
                 {
                   "kind": "all",
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "has_country_flag"
                     },
                     {
                       "kind": "selection",
@@ -9609,7 +9656,8 @@
                     },
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "all",
@@ -9621,7 +9669,8 @@
                         },
                         {
                           "kind": "always",
-                          "value": false
+                          "value": false,
+                          "because": "has_country_flag"
                         }
                       ]
                     }
@@ -9660,7 +9709,8 @@
                     },
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "all",
@@ -9672,7 +9722,8 @@
                         },
                         {
                           "kind": "always",
-                          "value": false
+                          "value": false,
+                          "because": "has_country_flag"
                         }
                       ]
                     }
@@ -9714,7 +9765,8 @@
                     },
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "all",
@@ -9726,7 +9778,8 @@
                         },
                         {
                           "kind": "always",
-                          "value": false
+                          "value": false,
+                          "because": "has_country_flag"
                         }
                       ]
                     }
@@ -9764,7 +9817,8 @@
                     },
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "all",
@@ -9776,7 +9830,8 @@
                         },
                         {
                           "kind": "always",
-                          "value": false
+                          "value": false,
+                          "because": "has_country_flag"
                         }
                       ]
                     }
@@ -9877,7 +9932,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -9941,7 +9997,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -9987,7 +10044,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -10126,7 +10184,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -10172,7 +10231,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -10218,7 +10278,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -10325,7 +10386,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -10374,7 +10436,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -10478,7 +10541,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -10527,7 +10591,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -10634,7 +10699,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -10683,7 +10749,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -10747,7 +10814,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -10851,7 +10919,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -10900,7 +10969,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -10964,7 +11034,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -11225,7 +11296,8 @@
               "items": [
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "exists"
                 },
                 {
                   "kind": "unknown",
@@ -11278,7 +11350,8 @@
               "items": [
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "exists"
                 },
                 {
                   "kind": "unknown",
@@ -12913,7 +12986,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "not",
@@ -12922,7 +12996,8 @@
                         "items": [
                           {
                             "kind": "always",
-                            "value": false
+                            "value": false,
+                            "because": "has_country_flag"
                           },
                           {
                             "kind": "predicate",
@@ -12959,14 +13034,16 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "any",
                       "items": [
                         {
                           "kind": "always",
-                          "value": false
+                          "value": false,
+                          "because": "has_country_flag"
                         },
                         {
                           "kind": "predicate",
@@ -13002,7 +13079,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "any",
@@ -13073,11 +13151,13 @@
                           "items": [
                             {
                               "kind": "always",
-                              "value": false
+                              "value": false,
+                              "because": "exists"
                             },
                             {
                               "kind": "always",
-                              "value": false
+                              "value": false,
+                              "because": "uses_ship_category"
                             }
                           ]
                         }
@@ -13659,7 +13739,8 @@
                     },
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -13708,7 +13789,8 @@
                     },
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -13757,7 +13839,8 @@
                     },
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -18668,7 +18751,8 @@
                 },
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "exists"
                 }
               ]
             },
@@ -18689,7 +18773,8 @@
                 },
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "exists"
                 }
               ]
             },
@@ -18710,7 +18795,8 @@
                 },
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "exists"
                 }
               ]
             },
@@ -18731,7 +18817,8 @@
                 },
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "exists"
                 }
               ]
             },
@@ -23792,7 +23879,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -23824,7 +23912,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -23896,7 +23985,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -23928,7 +24018,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -24000,7 +24091,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -24032,7 +24124,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -24102,7 +24195,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -24134,7 +24228,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -24193,7 +24288,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -24225,7 +24321,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -24310,7 +24407,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -24342,7 +24440,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -24412,7 +24511,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -24444,7 +24544,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -24516,7 +24617,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -24548,7 +24650,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -24620,7 +24723,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -24652,7 +24756,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -24722,7 +24827,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -24754,7 +24860,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -24826,7 +24933,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -24858,7 +24966,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -24930,7 +25039,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -24962,7 +25072,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -25032,7 +25143,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -25064,7 +25176,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -25136,7 +25249,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -25168,7 +25282,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -25240,7 +25355,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -25272,7 +25388,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -25342,7 +25459,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -25374,7 +25492,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -25446,7 +25565,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -25478,7 +25598,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -25550,7 +25671,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -25582,7 +25704,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -25652,7 +25775,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -25684,7 +25808,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -25756,7 +25881,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -25788,7 +25914,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -25860,7 +25987,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -25892,7 +26020,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -25962,7 +26091,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -25994,7 +26124,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -26066,7 +26197,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -26098,7 +26230,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -26170,7 +26303,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -26202,7 +26336,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -26272,7 +26407,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -26304,7 +26440,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -26376,7 +26513,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -26408,7 +26546,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -26480,7 +26619,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -26512,7 +26652,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -26582,7 +26723,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -26614,7 +26756,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -26686,7 +26829,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -26718,7 +26862,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -26790,7 +26935,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -26822,7 +26968,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -26892,7 +27039,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -26924,7 +27072,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -26996,7 +27145,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -27028,7 +27178,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -27100,7 +27251,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -27132,7 +27284,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -27202,7 +27355,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -27234,7 +27388,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -27306,7 +27461,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -27338,7 +27494,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -27410,7 +27567,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -27442,7 +27600,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -27513,7 +27672,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -27544,7 +27704,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -27616,7 +27777,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -27647,7 +27809,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -27719,7 +27882,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -27750,7 +27914,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -29503,7 +29668,8 @@
               "items": [
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "exists"
                 },
                 {
                   "kind": "all",
@@ -29518,11 +29684,13 @@
                       "items": [
                         {
                           "kind": "always",
-                          "value": false
+                          "value": false,
+                          "because": "has_country_flag"
                         },
                         {
                           "kind": "always",
-                          "value": false
+                          "value": false,
+                          "because": "has_country_flag"
                         }
                       ]
                     }
@@ -29547,7 +29715,8 @@
               "items": [
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "exists"
                 },
                 {
                   "kind": "all",
@@ -29558,7 +29727,8 @@
                     },
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "has_country_flag"
                     }
                   ]
                 }
@@ -29883,7 +30053,8 @@
               "items": [
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "exists"
                 },
                 {
                   "kind": "unknown",
@@ -29949,7 +30120,8 @@
                     },
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "not",
@@ -29987,7 +30159,8 @@
                     },
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "predicate",
@@ -30088,7 +30261,8 @@
                     },
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "all",
@@ -30100,7 +30274,8 @@
                         },
                         {
                           "kind": "always",
-                          "value": false
+                          "value": false,
+                          "because": "has_country_flag"
                         }
                       ]
                     }
@@ -30195,7 +30370,8 @@
                 },
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "exists"
                 },
                 {
                   "kind": "selection",
@@ -30233,7 +30409,8 @@
                 },
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "exists"
                 },
                 {
                   "kind": "selection",
@@ -30382,11 +30559,13 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "has_country_flag"
                     }
                   ]
                 }
@@ -30404,11 +30583,13 @@
               "items": [
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "exists"
                 },
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "has_country_flag"
                 }
               ]
             },
@@ -30468,7 +30649,8 @@
                     },
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "not",
@@ -30506,7 +30688,8 @@
                     },
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "predicate",
@@ -30701,7 +30884,8 @@
                 },
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "exists"
                 },
                 {
                   "kind": "selection",
@@ -30739,7 +30923,8 @@
                 },
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "exists"
                 },
                 {
                   "kind": "selection",
@@ -31272,7 +31457,8 @@
                     },
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "not",
@@ -31310,7 +31496,8 @@
                     },
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "predicate",
@@ -32063,7 +32250,8 @@
                     },
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -32109,7 +32297,8 @@
                     },
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "unknown",
@@ -44925,11 +45114,13 @@
                             "items": [
                               {
                                 "kind": "always",
-                                "value": false
+                                "value": false,
+                                "because": "exists"
                               },
                               {
                                 "kind": "always",
-                                "value": false
+                                "value": false,
+                                "because": "exists"
                               },
                               {
                                 "kind": "unknown",
@@ -44992,11 +45183,13 @@
                           "items": [
                             {
                               "kind": "always",
-                              "value": false
+                              "value": false,
+                              "because": "exists"
                             },
                             {
                               "kind": "always",
-                              "value": false
+                              "value": false,
+                              "because": "exists"
                             },
                             {
                               "kind": "unknown",
@@ -45168,11 +45361,13 @@
                         "items": [
                           {
                             "kind": "always",
-                            "value": false
+                            "value": false,
+                            "because": "exists"
                           },
                           {
                             "kind": "always",
-                            "value": false
+                            "value": false,
+                            "because": "exists"
                           },
                           {
                             "kind": "unknown",
@@ -45226,11 +45421,13 @@
                       "items": [
                         {
                           "kind": "always",
-                          "value": false
+                          "value": false,
+                          "because": "exists"
                         },
                         {
                           "kind": "always",
-                          "value": false
+                          "value": false,
+                          "because": "exists"
                         },
                         {
                           "kind": "unknown",
@@ -45291,11 +45488,13 @@
                           "items": [
                             {
                               "kind": "always",
-                              "value": false
+                              "value": false,
+                              "because": "exists"
                             },
                             {
                               "kind": "always",
-                              "value": false
+                              "value": false,
+                              "because": "exists"
                             },
                             {
                               "kind": "unknown",
@@ -45359,11 +45558,13 @@
                           "items": [
                             {
                               "kind": "always",
-                              "value": false
+                              "value": false,
+                              "because": "exists"
                             },
                             {
                               "kind": "always",
-                              "value": false
+                              "value": false,
+                              "because": "exists"
                             },
                             {
                               "kind": "unknown",
@@ -45495,11 +45696,13 @@
                             "items": [
                               {
                                 "kind": "always",
-                                "value": false
+                                "value": false,
+                                "because": "exists"
                               },
                               {
                                 "kind": "always",
-                                "value": false
+                                "value": false,
+                                "because": "exists"
                               },
                               {
                                 "kind": "unknown",
@@ -45563,11 +45766,13 @@
                           "items": [
                             {
                               "kind": "always",
-                              "value": false
+                              "value": false,
+                              "because": "exists"
                             },
                             {
                               "kind": "always",
-                              "value": false
+                              "value": false,
+                              "because": "exists"
                             },
                             {
                               "kind": "unknown",
@@ -45632,11 +45837,13 @@
                             "items": [
                               {
                                 "kind": "always",
-                                "value": false
+                                "value": false,
+                                "because": "exists"
                               },
                               {
                                 "kind": "always",
-                                "value": false
+                                "value": false,
+                                "because": "exists"
                               },
                               {
                                 "kind": "unknown",
@@ -45700,11 +45907,13 @@
                           "items": [
                             {
                               "kind": "always",
-                              "value": false
+                              "value": false,
+                              "because": "exists"
                             },
                             {
                               "kind": "always",
-                              "value": false
+                              "value": false,
+                              "because": "exists"
                             },
                             {
                               "kind": "unknown",
@@ -46892,14 +47101,16 @@
               "items": [
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "exists"
                 },
                 {
                   "kind": "all",
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "has_country_flag"
                     },
                     {
                       "kind": "all",
@@ -46909,11 +47120,13 @@
                           "items": [
                             {
                               "kind": "always",
-                              "value": false
+                              "value": false,
+                              "because": "has_country_flag"
                             },
                             {
                               "kind": "always",
-                              "value": false
+                              "value": false,
+                              "because": "has_country_flag"
                             }
                           ]
                         },
@@ -46963,14 +47176,16 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "all",
                       "items": [
                         {
                           "kind": "always",
-                          "value": false
+                          "value": false,
+                          "because": "has_country_flag"
                         },
                         {
                           "kind": "selection",
@@ -47023,14 +47238,16 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "all",
                       "items": [
                         {
                           "kind": "always",
-                          "value": false
+                          "value": false,
+                          "because": "has_country_flag"
                         },
                         {
                           "kind": "selection",
@@ -47083,14 +47300,16 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "all",
                       "items": [
                         {
                           "kind": "always",
-                          "value": false
+                          "value": false,
+                          "because": "has_country_flag"
                         },
                         {
                           "kind": "selection",
@@ -47168,11 +47387,13 @@
                 "items": [
                   {
                     "kind": "always",
-                    "value": false
+                    "value": false,
+                    "because": "exists"
                   },
                   {
                     "kind": "always",
-                    "value": false
+                    "value": false,
+                    "because": "has_country_flag"
                   },
                   {
                     "kind": "any",
@@ -47350,7 +47571,8 @@
                           },
                           {
                             "kind": "always",
-                            "value": false
+                            "value": false,
+                            "because": "has_technology"
                           }
                         ]
                       }
@@ -47372,11 +47594,13 @@
               "items": [
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "exists"
                 },
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "has_country_flag"
                 },
                 {
                   "kind": "any",
@@ -47554,7 +47778,8 @@
                         },
                         {
                           "kind": "always",
-                          "value": false
+                          "value": false,
+                          "because": "has_technology"
                         }
                       ]
                     }
@@ -47576,14 +47801,16 @@
               "items": [
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "exists"
                 },
                 {
                   "kind": "all",
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "has_country_flag"
                     },
                     {
                       "kind": "selection",
@@ -47638,11 +47865,13 @@
                 "items": [
                   {
                     "kind": "always",
-                    "value": false
+                    "value": false,
+                    "because": "exists"
                   },
                   {
                     "kind": "always",
-                    "value": false
+                    "value": false,
+                    "because": "has_country_flag"
                   },
                   {
                     "kind": "any",
@@ -47820,7 +48049,8 @@
                           },
                           {
                             "kind": "always",
-                            "value": false
+                            "value": false,
+                            "because": "has_technology"
                           }
                         ]
                       }
@@ -47844,11 +48074,13 @@
               "items": [
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "exists"
                 },
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "has_country_flag"
                 },
                 {
                   "kind": "any",
@@ -48026,7 +48258,8 @@
                         },
                         {
                           "kind": "always",
-                          "value": false
+                          "value": false,
+                          "because": "has_technology"
                         }
                       ]
                     }
@@ -48048,14 +48281,16 @@
               "items": [
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "exists"
                 },
                 {
                   "kind": "all",
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "has_country_flag"
                     },
                     {
                       "kind": "selection",
@@ -48108,11 +48343,13 @@
                 "items": [
                   {
                     "kind": "always",
-                    "value": false
+                    "value": false,
+                    "because": "exists"
                   },
                   {
                     "kind": "always",
-                    "value": false
+                    "value": false,
+                    "because": "has_country_flag"
                   },
                   {
                     "kind": "any",
@@ -48290,7 +48527,8 @@
                           },
                           {
                             "kind": "always",
-                            "value": false
+                            "value": false,
+                            "because": "has_technology"
                           }
                         ]
                       }
@@ -48314,11 +48552,13 @@
               "items": [
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "exists"
                 },
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "has_country_flag"
                 },
                 {
                   "kind": "any",
@@ -48496,7 +48736,8 @@
                         },
                         {
                           "kind": "always",
-                          "value": false
+                          "value": false,
+                          "because": "has_technology"
                         }
                       ]
                     }
@@ -48519,14 +48760,16 @@
               "items": [
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "exists"
                 },
                 {
                   "kind": "all",
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "has_country_flag"
                     },
                     {
                       "kind": "selection",
@@ -48911,7 +49154,8 @@
               "items": [
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "exists"
                 },
                 {
                   "kind": "all",
@@ -48923,13 +49167,15 @@
                     },
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "has_country_flag"
                     }
                   ]
                 },
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "species"
                 }
               ]
             },
@@ -48954,7 +49200,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "all",
@@ -48966,13 +49213,15 @@
                         },
                         {
                           "kind": "always",
-                          "value": false
+                          "value": false,
+                          "because": "has_country_flag"
                         }
                       ]
                     },
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "species"
                     }
                   ]
                 }
@@ -48998,7 +49247,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "all",
@@ -49010,13 +49260,15 @@
                         },
                         {
                           "kind": "always",
-                          "value": false
+                          "value": false,
+                          "because": "has_country_flag"
                         }
                       ]
                     },
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "species"
                     }
                   ]
                 }
@@ -49043,7 +49295,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "all",
@@ -49055,13 +49308,15 @@
                         },
                         {
                           "kind": "always",
-                          "value": false
+                          "value": false,
+                          "because": "has_country_flag"
                         }
                       ]
                     },
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "species"
                     }
                   ]
                 }
@@ -49185,7 +49440,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "not",
@@ -49231,7 +49487,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "not",
@@ -50162,7 +50419,8 @@
                     },
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "not",
@@ -50222,7 +50480,8 @@
                     },
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -50349,7 +50608,8 @@
                     },
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "not",
@@ -50409,7 +50669,8 @@
                     },
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "selection",
@@ -51469,7 +51730,8 @@
                   "kind": "not",
                   "item": {
                     "kind": "always",
-                    "value": false
+                    "value": false,
+                    "because": "exists"
                   }
                 }
               ]
@@ -51493,7 +51755,8 @@
                 },
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "exists"
                 }
               ]
             },
@@ -51556,7 +51819,8 @@
                   "kind": "not",
                   "item": {
                     "kind": "always",
-                    "value": false
+                    "value": false,
+                    "because": "exists"
                   }
                 }
               ]
@@ -51581,7 +51845,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "not",
@@ -51680,7 +51945,8 @@
                 },
                 {
                   "kind": "always",
-                  "value": false
+                  "value": false,
+                  "because": "exists"
                 }
               ]
             },
@@ -52202,7 +52468,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "not",
@@ -52360,7 +52627,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "not",
@@ -52418,7 +52686,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "not",
@@ -52594,7 +52863,8 @@
                   "items": [
                     {
                       "kind": "always",
-                      "value": false
+                      "value": false,
+                      "because": "exists"
                     },
                     {
                       "kind": "not",

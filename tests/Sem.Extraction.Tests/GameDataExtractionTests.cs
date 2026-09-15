@@ -231,6 +231,77 @@ public sealed class GameDataExtractionTests
         Assert.Equal("Mega-Engineering", text.GetValueOrDefault("tech_mega_engineering"));
     }
 
+    /// <summary>
+    /// Every world says whether anybody can settle it.
+    /// </summary>
+    /// <remarks>
+    /// All sixty-nine classes state it, so there is no default to argue about, and twenty-four say
+    /// yes. It is a wider question than starting there - nine worlds are starting worlds - and the
+    /// page had no way of asking it: what stood in that column was <c>show_city</c>, which decides
+    /// whether the backdrop gets an empire's towers painted on it and nothing else.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void AWorldSaysWhetherAnybodyCanSettleIt()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var worlds = Database.Value.PlanetClasses.ToDictionary(w => w.Key, StringComparer.Ordinal);
+
+        Assert.Equal(24, worlds.Values.Count(w => w.Colonizable));
+
+        Assert.True(worlds["pc_gaia"].Colonizable);
+        Assert.True(worlds["pc_habitat"].Colonizable);
+        Assert.True(worlds["pc_city"].Colonizable);
+        Assert.False(worlds["pc_gas_giant"].Colonizable);
+        Assert.False(worlds["pc_black_hole"].Colonizable);
+
+        // And the flag it replaced is still read, because the scene is still drawn from it.
+        Assert.False(worlds["pc_habitat"].ShowsCity);
+        Assert.True(worlds["pc_gaia"].ShowsCity);
+    }
+
+    /// <summary>
+    /// A condition the extractor settles rather than the game says why it settled it.
+    /// </summary>
+    /// <remarks>
+    /// Ninety-seven governments are out of a design's reach and the reasons are two: twenty-seven
+    /// because only an empire the game runs itself is ever called one - the file they live in says
+    /// so at the top - and seventy because they wait on a flag an event sets, which a player does
+    /// reach, just not at creation. Told apart they are two sentences; not told apart they were one
+    /// badge that had to be wrong for one half of them.
+    ///
+    /// One of the twenty-seven names both, and the AI wins: a government only the game is called is
+    /// out of reach whatever else it also waits on.
+    /// </remarks>
+    [SkippableFact]
+    [Trait("Category", "RealData")]
+    public void AConditionTheExtractorSettlesSaysWhy()
+    {
+        Skip.If(InstallRoot is null, "Stellaris is not installed on this machine.");
+
+        var refused = Database.Value.GovernmentTypes
+            .Where(g => g.Possible.Settled() is false)
+            .ToList();
+
+        Assert.Equal(97, refused.Count);
+
+        var ai = refused
+            .Where(g => g.Possible.AndNested()
+                .Any(r => r is AlwaysRequirement { Value: false, Because: "is_ai" }))
+            .ToList();
+
+        Assert.Equal(27, ai.Count);
+        Assert.Contains(ai, g => g.Key == "gov_stagnant_ascendancy");
+
+        // And the rest wait on something a game sets rather than on being somebody else.
+        Assert.All(
+            refused.Except(ai),
+            g => Assert.Contains(
+                g.Possible.AndNested(),
+                r => r is AlwaysRequirement { Value: false, Because: "has_country_flag" }));
+    }
+
     [SkippableFact]
     [Trait("Category", "RealData")]
     public void TraitBudgetsMatchTheArchetypesTheGameDefines()

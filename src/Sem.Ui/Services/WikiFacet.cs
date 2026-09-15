@@ -160,7 +160,7 @@ public static class WikiFacet
         Many("climate", "Climate", r => Fact(r, "Climate")),
         Many("start", "Start here", r => Fact(r, "Start here")),
         Many("opened", "Opened by", r => Fact(r, "Opened by")),
-        Many("cities", "Cities", r => Fact(r, "Cities")),
+        Many("settled", "Colonisable", r => Fact(r, "Colonisable")),
         Many("pack", "Content pack", r => r.PackChoices),
         Many("bonus", "Bonus", r => r.Bonuses, Effects),
     ];
