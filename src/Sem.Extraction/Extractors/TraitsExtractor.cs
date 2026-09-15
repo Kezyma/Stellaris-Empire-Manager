@@ -192,6 +192,27 @@ internal static class TraitsExtractor
             Opposites = body.GetList("opposites"),
             RequiredDlc = body.GetString("host_has_dlc"),
 
+            // When a leader can actually be given it, which is the largest thing the page about
+            // them was missing: three hundred and one write the block and nothing read it.
+            CanBeGiven = body.GetBlock("leader_potential_add") is { } given
+                ? requirements.CompilePlanTrigger(given)
+                : null,
+
+            Cost = body.GetCost(loader) is var priced and > 0 ? priced : null,
+            Randomised = body.GetBool("randomized", defaultValue: true),
+            Initial = body.GetBool("initial", defaultValue: true),
+
+            // The fourth value in the inline script the icon, the rarity and the tier already come
+            // out of. Yes on 299, no on 435 and "triggered" on 29, and read by nothing until now.
+            Council = recipe?.GetString("COUNCIL"),
+
+            ForcedCouncilor = body.GetBool("force_councilor_trait"),
+            ImmortalLeaders = body.GetBool("immortal_leaders"),
+            Prerequisites = body.GetList("prerequisites"),
+            AllowedOrigins = body.GetList("allowed_origins"),
+            ForbiddenOrigins = body.GetList("forbidden_origins"),
+            AllowedEthics = body.GetList("allowed_ethics"),
+
             // Read as a leader's rather than as a species trait's. The two state their effects in
             // different words - a leader says what it does while not on the council, or while
             // governing a planet - and read the other way round a hundred and thirteen of them had

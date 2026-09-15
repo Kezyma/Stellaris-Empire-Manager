@@ -160,6 +160,33 @@ public static class DesignPredicates
         "has_policy_flag",
         "has_modifier",
 
+        // And everything a leader trait asks before the game will offer itself to a leader. Every
+        // one of these is about a particular person in a particular game - which post they hold,
+        // what they are already trained in, how skilled they are, who made them, what the empire
+        // has met and can afford - and a design has no leaders at all.
+        "is_councilor",
+        "is_ruler",
+        "is_heir",
+        "is_immortal",
+        "has_base_skill",
+        "has_leader_flag",
+        "has_trait_tier1or2",
+        "has_trait_tier1or2or3",
+        "any_pool_leader",
+        "has_communications",
+        "is_galactic_community_member",
+        "resource_expenses_compare",
+        "any_owned_planet",
+        "is_scope_type",
+        "creator",
+        "FROM",
+
+        // Three more of the same, uncovered once the sixteen above stopped hiding them: which class
+        // the leader is, and two scopes over places an empire holds.
+        "leader_class",
+        "any_system_within_border",
+        "any_owned_nonprimary_starbase",
+
         // Things events set, including the megastructure flag that Galactic Wonders asks for and
         // that no design could ever answer yes to.
         "has_country_flag",

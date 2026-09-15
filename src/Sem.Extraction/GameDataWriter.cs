@@ -373,6 +373,13 @@ public static class GameDataWriter
         yield return trait.NameKey;
         yield return trait.DescriptionKey;
 
+        // And the technologies eighteen of them wait on, which the database reaches through nothing
+        // at all - the same gap the ascension perks had before their own conditions kept the name.
+        foreach (var technology in trait.Prerequisites)
+        {
+            yield return technology;
+        }
+
         foreach (var key in Said(trait.Effects))
         {
             yield return key;

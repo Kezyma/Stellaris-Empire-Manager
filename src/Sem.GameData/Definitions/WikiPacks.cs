@@ -112,6 +112,57 @@ public sealed record LeaderTraitDefinition(string Key)
     /// <summary>Path to its icon within the extracted assets.</summary>
     public string? Icon { get; init; }
 
+    /// <summary>
+    /// What a leader must be for the game to offer it at all.
+    /// </summary>
+    /// <remarks>
+    /// The game's own words: "if exists, evaluates if leader can get trait". Three hundred and one
+    /// write one and nothing read a single character of it, so the whole of when a leader can
+    /// actually be given a trait was missing from the page about them.
+    /// </remarks>
+    public Requirement? CanBeGiven { get; init; }
+
+    /// <summary>What it costs a leader, where the game prices it.</summary>
+    public int? Cost { get; init; }
+
+    /// <summary>
+    /// Whether a leader can be rolled it at level-up.
+    /// </summary>
+    /// <remarks>
+    /// Two hundred and four say no, which is a quarter of the file that can never come up that way
+    /// and said nothing about it.
+    /// </remarks>
+    public bool Randomised { get; init; } = true;
+
+    /// <summary>Whether a leader can start with it.</summary>
+    public bool Initial { get; init; } = true;
+
+    /// <summary>Whether it is a councilor trait: yes, no, or under its own condition.</summary>
+    /// <remarks>
+    /// The <c>COUNCIL</c> argument of the inline script the extractor already opens for the icon,
+    /// the rarity and the tier. Seven hundred and sixty-three traits pass through that block and
+    /// this value sat in it, unread, beside three the extractor takes.
+    /// </remarks>
+    public string? Council { get; init; }
+
+    /// <summary>Whether the game treats it as a councilor trait whatever its modifiers say.</summary>
+    public bool ForcedCouncilor { get; init; }
+
+    /// <summary>Whether leaders holding it never die of old age.</summary>
+    public bool ImmortalLeaders { get; init; }
+
+    /// <summary>The technologies an empire must have researched before a leader can hold it.</summary>
+    public IReadOnlyList<string> Prerequisites { get; init; } = [];
+
+    /// <summary>The origins it is offered under, and the ones it is refused to.</summary>
+    public IReadOnlyList<string> AllowedOrigins { get; init; } = [];
+
+    /// <inheritdoc cref="AllowedOrigins" />
+    public IReadOnlyList<string> ForbiddenOrigins { get; init; } = [];
+
+    /// <summary>The ethics it is offered under.</summary>
+    public IReadOnlyList<string> AllowedEthics { get; init; } = [];
+
     /// <summary>Localisation key for the display name.</summary>
     public string NameKey => Key;
 
@@ -142,7 +193,7 @@ public sealed record LeaderTraitPack : IWikiPack
     /// them. Read at one, every trait would answer "cannot start" by default and the column would
     /// be a quiet lie, so a file of the older shape is refused rather than believed.
     /// </remarks>
-    public const int CurrentSchemaVersion = 2;
+    public const int CurrentSchemaVersion = 3;
 
     /// <inheritdoc />
     public static int ExpectedSchemaVersion => CurrentSchemaVersion;

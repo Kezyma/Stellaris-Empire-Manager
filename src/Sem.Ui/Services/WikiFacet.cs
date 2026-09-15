@@ -115,11 +115,11 @@ public static class WikiFacet
         Many("cost", "Cost", r => Fact(r, "Cost")),
         Many("intensity", "Intensity", r => Fact(r, "Intensity")),
         Many("bonus", "Bonus", r => r.Bonuses, Effects),
-    
+
         // What the game says about a pop coming to hold it, which is the whole of what an ethic
         // does that the designer never had to know.
         Many("pops", "Pops", r => Fact(r, "Pops")),
-];
+    ];
 
     /// <summary>The authorities, which are eight records with a great deal said about each.</summary>
     public static IReadOnlyList<Facet<WikiRow>> Authorities { get; } =
@@ -130,11 +130,11 @@ public static class WikiFacet
         Many("forces", "Forces", r => Fact(r, "Forces")),
         Many("pack", "Content pack", r => r.PackChoices),
         Many("bonus", "Bonus", r => r.Bonuses, Effects),
-    
+
         Many("term", "Term", r => Fact(r, "Term")),
         Many("reform", "Reform", r => Fact(r, "Reform")),
         Many("politics", "Politics", r => Fact(r, "Politics")),
-];
+    ];
 
     /// <summary>The species classes, which carry no effects and so have no bonus heading.</summary>
     public static IReadOnlyList<Facet<WikiRow>> Species { get; } =
@@ -143,10 +143,10 @@ public static class WikiFacet
         Many("archetype", "Archetype", r => Fact(r, "Archetype")),
         Many("trait", "Always has", r => Fact(r, "Always has")),
         Many("shipset", "Flies", r => Fact(r, "Flies")),
-    
+
         Many("uplift", "Uplifts into", r => Fact(r, "Uplifts into")),
         Many("generation", "Generation", r => Fact(r, "Generation")),
-];
+    ];
 
     /// <summary>
     /// The species traits, narrowed by what they cost and who may take them.
@@ -167,7 +167,7 @@ public static class WikiFacet
         Many("homeworld", "Homeworld", r => Fact(r, "Homeworld")),
         Many("pack", "Content pack", r => r.PackChoices),
         Many("bonus", "Bonus", r => r.Bonuses, Effects),
-    
+
         // The words the game groups them by, which have no text of their own and exist for exactly
         // this: there was no way to ask the page for the negative traits, or the robotic ones.
         Many("tags", "Tags", r => Fact(r, "Tags")),
@@ -175,7 +175,7 @@ public static class WikiFacet
         Many("species", "Species", r => Fact(r, "Species")),
         Many("pays", "Pays", r => Fact(r, "Pays")),
         Many("produces", "Produces", r => Fact(r, "Produces")),
-];
+    ];
 
     /// <summary>
     /// The worlds, narrowed by the two things that decide whether one is any use.
@@ -249,10 +249,10 @@ public static class WikiFacet
         Many("authority", "Authority", r => r.Wanting(SelectionCategory.Authority)),
         Many("ethic", "Ethics", r => r.Wanting(SelectionCategory.Ethics)),
         Many("civic", "Civics", r => r.Wanting(SelectionCategory.Civics)),
-    
+
         Many("rename", "On reform", r => Fact(r, "On reform")),
         Many("naming", "Ruler names", r => Fact(r, "Ruler names")),
-];
+    ];
 
     /// <summary>The ascension perks, narrowed by the path they belong to.</summary>
     public static IReadOnlyList<Facet<WikiRow>> AscensionPerks { get; } =
@@ -284,6 +284,11 @@ public static class WikiFacet
         Many("tier", "Tier", r => Fact(r, "Tier")),
         Many("pack", "Content pack", r => r.PackChoices),
         Many("bonus", "Bonus", r => r.Bonuses, Effects),
+
+        Many("council", "Council", r => Fact(r, "Council")),
+        Many("comes", "Comes up", r => Fact(r, "Comes up")),
+        Many("technology", "Needs technology", r => Fact(r, "Needs technology")),
+        Many("ethics", "Ethics", r => Fact(r, "Ethics")),
     ];
 
     /// <summary>

@@ -2612,6 +2612,74 @@ public sealed class WikiShelves(DesignSession session)
         // file, so a trait that replaces another is drawn as a later step of the same entry, and a
         // column repeating that beside it said the same thing twice.
         WikiFact.Of("Rules out", LeaderTraitChips(known, reader, trait.Opposites)),
+
+        WikiFact.Said(
+            "Cost",
+            trait.Cost is { } price ? price.ToString(System.Globalization.CultureInfo.CurrentCulture) : null),
+
+        // Whether the game will ever roll it at a level-up, and whether a leader can arrive holding
+        // it. Two hundred and four say no to the first and two hundred and thirty-four to the
+        // second, which between them is a quarter of the file a player will never simply be handed.
+        WikiFact.Tagged("Comes up", Rolled(trait)),
+
+        // Whether it counts as a councilor trait, which the game states in the same inline script
+        // it states the icon, the rarity and the tier in - three of which were already read.
+        WikiFact.Said("Council", Council(trait)),
+
+        WikiFact.Of("Needs technology", Technologies(trait.Prerequisites, reader)),
+        WikiFact.Of("Origin", Civics(trait.AllowedOrigins)),
+        WikiFact.Of("Not for", Civics(trait.ForbiddenOrigins)),
+        WikiFact.Of("Ethics", Ethics(trait.AllowedEthics)),
+
+        // And the whole of when a leader can actually be given it, which three hundred and one
+        // traits write out and nothing read a character of.
+        WikiFact.Said("Given when", Gate(trait.CanBeGiven)),
+    ];
+
+    /// <summary>How a leader comes to hold a trait, where the game rules one of the ways out.</summary>
+    /// <param name="trait">The trait.</param>
+    /// <returns>The labels.</returns>
+    private static IReadOnlyList<string> Rolled(LeaderTraitDefinition trait) =>
+    [
+        .. new (bool Has, string Said)[]
+            {
+                (!trait.Initial, "Never at the start"),
+                (!trait.Randomised, "Never rolled"),
+                (trait.ImmortalLeaders, "Immortal leader"),
+                (trait.ForcedCouncilor, "Counts as councilor"),
+            }
+            .Where(m => m.Has)
+            .Select(m => m.Said),
+    ];
+
+    /// <summary>Whether a trait is a councilor's, in the game's own three words.</summary>
+    /// <param name="trait">The trait.</param>
+    /// <returns>The word, or nothing where the script names none.</returns>
+    private static string? Council(LeaderTraitDefinition trait) => trait.Council switch
+    {
+        "yes" => "Yes",
+        "no" => "No",
+        { Length: > 0 } other => Localizer.Prettify(other),
+        _ => null,
+    };
+
+    /// <summary>
+    /// The technologies a leader trait waits on.
+    /// </summary>
+    /// <remarks>
+    /// Eighteen name one - destroyers, cruisers, cloaking, battleships, sapient AI - and the game
+    /// titles every key, which is what stage two's work on the ascension perks already proved.
+    /// </remarks>
+    /// <param name="keys">The technologies.</param>
+    /// <param name="reader">The text, with the pack's merged in.</param>
+    /// <returns>The chips.</returns>
+    private static IReadOnlyList<EmpireChoice> Technologies(
+        IReadOnlyList<string> keys,
+        Localizer reader) =>
+    [
+        .. keys
+            .Where(k => k is { Length: > 0 })
+            .Select(k => new EmpireChoice(k, reader.Text(k, Localizer.Prettify(k)), null, null)),
     ];
 
     /// <summary>What is worth saying about a species trait beyond what it does.</summary>
