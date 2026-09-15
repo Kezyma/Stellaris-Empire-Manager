@@ -103,17 +103,40 @@ else
 
     private IJSObjectReference? _module;
 
+    /// <summary>Whether the list now on the page is the one that was tied to the chip.</summary>
+    /// <remarks>
+    /// Not "has this component ever bound". The markup here is two quite different things - a stack
+    /// with a list, and a plain chip with none - so leaving the first form takes the elements the
+    /// binding was made against with it, and coming back builds new ones that nothing is listening
+    /// to.
+    /// </remarks>
+    private bool _bound;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // A set of one was drawn as an ordinary chip and has no list to hang anything off. It ties
-        // its own panel up, exactly as a chip anywhere else does.
-        if (!firstRender || Rest == 0)
+        // A set of one is drawn as an ordinary chip and has no list to hang anything off. It ties
+        // its own panel up, exactly as a chip anywhere else does - and the flag goes down, because
+        // the elements that were bound have just left the page.
+        if (Rest == 0)
+        {
+            _bound = false;
+            return;
+        }
+
+        // Not only on the first render, which is the whole of the bug this replaces. What an empire
+        // might be given changes with every ethic picked, so an empire being built goes from one
+        // personality to several and back while the editor is open - and bound once at the start, a
+        // list that appeared later had nothing listening to it. Which is exactly what it looked
+        // like: the chip kept up as you designed, the list would not open, and saving and reopening
+        // fixed it because that builds the whole thing again with its list already there.
+        if (_bound)
         {
             return;
         }
 
-        _module = await Js.InvokeAsync<IJSObjectReference>("import", "./_content/Sem.Ui/sem.js");
+        _module ??= await Js.InvokeAsync<IJSObjectReference>("import", "./_content/Sem.Ui/sem.js");
         await _module.InvokeVoidAsync("bindDropdown", _anchor, _panel);
+        _bound = true;
     }
 
     public async ValueTask DisposeAsync()
