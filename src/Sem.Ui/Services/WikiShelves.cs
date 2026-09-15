@@ -251,6 +251,117 @@ public sealed class WikiShelves(DesignSession session)
     }
 
     /// <summary>
+    /// What the game calls this option when it is speaking to somebody else.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The game rewords an option for the empire in front of it, and we have carried those words
+    /// all along and shown them to nobody: a wilderness empire's Devouring Swarm is Devouring
+    /// Wilderness, a lithoid's is Terravore, and a hive mind reading this page was reading prose
+    /// written for an empire it is not. Forty-eight of them across the civics, the origins and the
+    /// perks actually say something different.
+    /// </para>
+    /// <para>
+    /// Two headings, because they are two different answers. Eight change the name, which is the
+    /// thing a reader would otherwise never connect to this page at all; the rest keep the name and
+    /// rewrite the prose, and for those what matters is the prose, which is behind the chip.
+    /// </para>
+    /// <para>
+    /// A swap that declares the same name and the same description as the option itself is left
+    /// out. The game writes several - a pair for the same option differing only in which of them
+    /// fires - and drawn they were a chip saying the page already said it.
+    /// </para>
+    /// </remarks>
+    /// <param name="variants">The swaps, which for most options are none.</param>
+    /// <param name="nameKey">Where the option's own name is.</param>
+    /// <param name="descriptionKey">Where its own prose is.</param>
+    /// <returns>Up to two facts, each dropped by the row where it says nothing.</returns>
+    private IReadOnlyList<WikiFact> Wordings(
+        IReadOnlyList<OptionVariant> variants,
+        string nameKey,
+        string? descriptionKey)
+    {
+        var name = session.Localizer.Text(nameKey, string.Empty);
+        var prose = session.Localizer.Text(descriptionKey, string.Empty);
+
+        List<EmpireChoice> renamed = [];
+        List<EmpireChoice> reworded = [];
+
+        foreach (var variant in variants)
+        {
+            if (Audience(variant.When) is not { Length: > 0 } audience)
+            {
+                continue;
+            }
+
+            var said = session.Localizer.Text(variant.NameKey, string.Empty);
+            var told = session.Localizer.Text(variant.DescriptionKey, string.Empty);
+
+            // Both halves compared as the words they come out as rather than as keys, because the
+            // game writes a swap whose name key is a redirect to the option's own - the same words
+            // under a second name - and by key those look like a change.
+            var callsIt = said is { Length: > 0 } && !string.Equals(said, name, StringComparison.Ordinal);
+            var tellsIt = told is { Length: > 0 } && !string.Equals(told, prose, StringComparison.Ordinal);
+
+            if (callsIt)
+            {
+                renamed.Add(Wording($"{audience}: {said}", variant.DescriptionKey ?? descriptionKey));
+            }
+            else if (tellsIt)
+            {
+                reworded.Add(Wording(audience, variant.DescriptionKey));
+            }
+        }
+
+        return
+        [
+            WikiFact.Of("Also called", [.. renamed.DistinctBy(c => c.Name, StringComparer.Ordinal)]),
+            WikiFact.Of("Reworded for", [.. reworded.DistinctBy(c => c.Name, StringComparer.Ordinal)]),
+        ];
+    }
+
+    /// <summary>One of those, whose panel holds the wording itself.</summary>
+    /// <param name="said">What the chip is labelled.</param>
+    /// <param name="descriptionKey">Where the wording is, so the panel can show it.</param>
+    /// <returns>The chip.</returns>
+    private static EmpireChoice Wording(string said, string? descriptionKey) =>
+        new(said, said, null, null) { Description = descriptionKey };
+
+    /// <summary>
+    /// Who the game is speaking to when it rewords an option.
+    /// </summary>
+    /// <remarks>
+    /// The constants are dropped before the condition is read, which is the one liberty this takes.
+    /// A swap's trigger carries scaffolding the extractor settles for its own purposes - twelve of
+    /// them guard a scope with <c>exists</c> and three ask after a flag - and none of that is an
+    /// answer to "who is this written for". The rules a reader must meet are in the Requirements
+    /// column, where nothing is dropped; this is a label.
+    /// </remarks>
+    /// <param name="when">The swap's trigger.</param>
+    /// <returns>The label, or nothing where the trigger says nothing a reader could use.</returns>
+    private string? Audience(Requirement when) =>
+        session.Conditions.Describe(Bare(when)) is { Length: > 0 } said
+            ? char.ToUpperInvariant(said[0]) + said[1..]
+            : null;
+
+    /// <summary>The same condition with the settled parts taken out.</summary>
+    /// <param name="requirement">The condition.</param>
+    /// <returns>What is left of it.</returns>
+    private static Requirement Bare(Requirement requirement) => requirement switch
+    {
+        AllRequirement all => new AllRequirement([.. Kept(all.Items)]),
+        AnyRequirement any => new AnyRequirement([.. Kept(any.Items)]),
+        NotRequirement not => new NotRequirement(Bare(not.Item)),
+        _ => requirement,
+    };
+
+    /// <summary>The parts of a group that are not constants, each bared in turn.</summary>
+    /// <param name="items">The parts.</param>
+    /// <returns>What is left of them.</returns>
+    private static IEnumerable<Requirement> Kept(IReadOnlyList<Requirement> items) =>
+        items.Where(i => i is not AlwaysRequirement).Select(Bare);
+
+    /// <summary>
     /// What is worth saying about a civic or an origin beyond what it does.
     /// </summary>
     /// <remarks>
@@ -285,6 +396,10 @@ public sealed class WikiShelves(DesignSession session)
             civic.RequiresSecondarySpecies ? "Required" : null),
 
         WikiFact.Of("Second species has", Traits(civic.SecondarySpeciesTraits)),
+
+        // And what somebody else is shown in place of all that. A hive mind reading this page was
+        // reading wording written for an empire it is not.
+        .. Wordings(civic.Variants, civic.NameKey, $"{civic.Key}_desc"),
     ];
 
     /// <summary>
@@ -1600,6 +1715,8 @@ public sealed class WikiShelves(DesignSession session)
                 // a bullet list - while the leader traits, which say tier plainly, have had it as a
                 // fact and a facet all along.
                 WikiFact.Said("Tier", Tier(perk)),
+
+                .. Wordings(perk.Variants, perk.NameKey, perk.DescriptionKey),
             ],
             Wants(perk.Potential, perk.Possible)) with
         {

@@ -158,6 +158,54 @@ public sealed class ConditionWriterTests
             new NotRequirement(new UnknownRequirement("is_councilor"))));
     }
 
+    /// <summary>
+    /// The same thing asked twice is said once.
+    /// </summary>
+    /// <remarks>
+    /// "A, or A and B" is A. The game writes its scripted triggers this way so they answer from
+    /// either scope - Mining Rush asks whether the owner is nomadic, or whether the thing FROM
+    /// points at is a country and is nomadic - and read literally the heading over its numbers came
+    /// out as the same clause twice with a scope check wedged between them.
+    /// </remarks>
+    [Fact]
+    public void ASecondWayOfAskingTheSameThingIsSaidOnce()
+    {
+        var said = Writer().Describe(new AnyRequirement(
+        [
+            Ethic("ethic_militarist"),
+            new AllRequirement([new UnknownRequirement("is_scope_type"), Ethic("ethic_militarist")]),
+        ]));
+
+        Assert.Equal("ethic Militarist", said);
+    }
+
+    /// <summary>And the same law the other way up.</summary>
+    [Fact]
+    public void AndTheSameWhereEverythingMustHold()
+    {
+        var said = Writer().Describe(new AllRequirement(
+        [
+            Ethic("ethic_militarist"),
+            new AnyRequirement([Ethic("ethic_fanatic_xenophile"), Ethic("ethic_militarist")]),
+        ]));
+
+        Assert.Equal("ethic Militarist", said);
+    }
+
+    /// <summary>A branch that is genuinely a second option is not absorbed.</summary>
+    [Fact]
+    public void ARealAlternativeSurvives()
+    {
+        var said = Writer().Describe(new AnyRequirement(
+        [
+            Ethic("ethic_militarist"),
+            new AllRequirement(
+                [new UnknownRequirement("is_scope_type"), Ethic("ethic_fanatic_xenophile")]),
+        ]));
+
+        Assert.Equal("ethic Militarist or scope type and ethic Fanatic Xenophile", said);
+    }
+
     /// <summary>A condition that is always true has nothing to say, and says nothing.</summary>
     /// <remarks>
     /// Null rather than an empty string, because the caller draws nothing at all for null and would

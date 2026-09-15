@@ -85,6 +85,19 @@ public static class EffectsReader
         };
 
     /// <summary>
+    /// The council's triggered block, which for a ruler an empire starts with is the empire's own.
+    /// </summary>
+    /// <remarks>
+    /// A leader's councilor block applies while that leader sits on the council, and the ruler a
+    /// design names always does - so for those thirty-four the scope is not a condition, it is a
+    /// fact, and what is left to say is the block's own trigger.
+    ///
+    /// Four ruler traits write one. Mining Rush is written as nothing else, so it reached the
+    /// picker with no numbers at all and had done for as long as the picker has existed.
+    /// </remarks>
+    private const string CouncilTriggeredBlock = "triggered_councilor_modifier";
+
+    /// <summary>
     /// The triggered block the game shows for everything except a trait.
     /// </summary>
     /// <remarks>
@@ -135,6 +148,10 @@ public static class EffectsReader
     /// Whether this is a leader trait, which states its conditional effects in words of its own -
     /// what it does while not on the council, or while governing a planet.
     /// </param>
+    /// <param name="onTheCouncil">
+    /// Whether this leader is on the council by definition, which a ruler an empire starts with is.
+    /// Its councilor blocks are then the empire's own, and their triggers are the whole condition.
+    /// </param>
     /// <remarks>
     /// True only for traits, whose own documentation says which triggered blocks are displayed and
     /// expects the rest to describe themselves in a tooltip. That rule used to be applied to
@@ -150,7 +167,8 @@ public static class EffectsReader
         string? tagsKey = null,
         bool hidesTriggeredBlocks = false,
         bool readsScriptedUnlocks = false,
-        bool forLeader = false)
+        bool forLeader = false,
+        bool onTheCouncil = false)
     {
         ArgumentNullException.ThrowIfNull(body);
 
@@ -207,6 +225,7 @@ public static class EffectsReader
             }
             else if (ShownTriggeredBlocks.Contains(key, StringComparer.Ordinal) ||
                      (forLeader && LeaderTriggeredBlocks.Contains(key, StringComparer.Ordinal)) ||
+                     (onTheCouncil && key == CouncilTriggeredBlock) ||
                      (key == PlainTriggeredBlock && !hidesTriggeredBlocks))
             {
                 var values = new Dictionary<string, double>(StringComparer.Ordinal);

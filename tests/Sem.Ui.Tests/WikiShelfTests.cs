@@ -1248,6 +1248,92 @@ public sealed class WikiShelfTests
         Assert.Null(rows["pc_ocean"].Fact("Cities"));
     }
 
+    /// <summary>
+    /// A civic says what the game calls it when it is speaking to somebody else.
+    /// </summary>
+    /// <remarks>
+    /// The game rewords an option for the empire in front of it and we have carried those words all
+    /// along without showing them: a wilderness empire's Devouring Swarm is Devouring Wilderness. A
+    /// swap that renames goes under one heading and one that only rewrites the prose under another,
+    /// because they are two different answers - and a swap that declares the option's own name and
+    /// its own prose changes nothing and is left out.
+    /// </remarks>
+    [Fact]
+    public void ACivicSaysWhatSomebodyElseIsShownInstead()
+    {
+        var rows = Wordings().Of(WikiKind.Civics).Rows.ToDictionary(r => r.Key, StringComparer.Ordinal);
+
+        var called = rows["civic_hive_devouring_swarm"].Fact("Also called")!.Chips;
+        Assert.Equal(["Wilderness empire: Devouring Wilderness"], called.Select(c => c.Name));
+
+        // The panel behind it holds the wording itself, which is the whole point of carrying it.
+        Assert.Equal("civic_wilderness_devouring_swarm_desc", Assert.Single(called).Description);
+
+        var reworded = rows["civic_warrior_culture"].Fact("Reworded for")!.Chips;
+        Assert.Equal(["With Overlord"], reworded.Select(c => c.Name));
+
+        // And the swap that says what the civic already says reaches no column at all.
+        Assert.Null(rows["civic_beacon_of_liberty"].Fact("Also called"));
+        Assert.Null(rows["civic_beacon_of_liberty"].Fact("Reworded for"));
+    }
+
+    /// <summary>Three civics: one renamed for a wilderness empire, one reworded, one unchanged.</summary>
+    private static WikiShelves Wordings() =>
+        Shelves(
+            new GameDatabase
+            {
+                SchemaVersion = GameDatabase.CurrentSchemaVersion,
+                GameVersion = "test",
+                ExtractorVersion = "test",
+                Defines = new GameDefines { EthicsPoints = 3, CivicPoints = 2, CityPopLevel = 4 },
+                Civics =
+                [
+                    new CivicDefinition("civic_hive_devouring_swarm", false)
+                    {
+                        Variants =
+                        [
+                            new OptionVariant(
+                                new PredicateRequirement("is_wilderness_empire"),
+                                "civic_wilderness_devouring_swarm",
+                                "civic_wilderness_devouring_swarm_desc"),
+                        ],
+                    },
+
+                    new CivicDefinition("civic_warrior_culture", false)
+                    {
+                        Variants =
+                        [
+                            new OptionVariant(
+                                new DlcRequirement("Overlord"),
+                                null,
+                                "civic_warrior_culture_overlord_desc"),
+                        ],
+                    },
+
+                    // The swap whose name key is a redirect to the civic's own, which by key looks
+                    // like a change and by words is not.
+                    new CivicDefinition("civic_beacon_of_liberty", false)
+                    {
+                        Variants =
+                        [
+                            new OptionVariant(
+                                new PredicateRequirement("is_wilderness_empire"),
+                                "civic_beacon_of_liberty_again",
+                                "civic_beacon_of_liberty_desc"),
+                        ],
+                    },
+                ],
+            },
+            ("civic_hive_devouring_swarm", "Devouring Swarm"),
+            ("civic_wilderness_devouring_swarm", "Devouring Wilderness"),
+            ("civic_wilderness_devouring_swarm_desc", "The wilderness consumes."),
+            ("civic_warrior_culture", "Warrior Culture"),
+            ("civic_warrior_culture_desc", "They fight."),
+            ("civic_warrior_culture_overlord_desc", "They fight, and they hold vassals."),
+            ("civic_beacon_of_liberty", "Beacon of Liberty"),
+            ("civic_beacon_of_liberty_again", "Beacon of Liberty"),
+            ("civic_beacon_of_liberty_desc", "A light to others."));
+
     /// <summary>Four worlds and a civic that opens one of them.</summary>
     private static WikiShelves PlanetShelf() =>
         Shelves(new GameDatabase

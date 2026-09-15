@@ -90,7 +90,13 @@ internal static class TraitsExtractor
 
                     // The one option family whose own documentation says which triggered blocks
                     // are displayed, and expects the rest to speak through a tooltip.
-                    hidesTriggeredBlocks: true),
+                    hidesTriggeredBlocks: true,
+
+                    // And the ruler an empire starts with is on its council, so a block scoped to
+                    // the council is that empire's. Four of the thirty-four write a triggered one
+                    // and none of them were read: Mining Rush is written as two of those and
+                    // nothing else, so the ruler's picker offered it with no numbers at all.
+                    onTheCouncil: kind == TraitKind.StartingRuler),
 
                 // A leader trait describes its icon rather than naming one, and is built from that
                 // description. The species traits name theirs outright — fifty-three borrow

@@ -83,6 +83,11 @@ public static class WikiFacet
         // into" is the question a plan is made of, and until now the only way to answer it was to
         // try.
         Many("reform", "Reform", r => Fact(r, "Reform")),
+
+        // Who the game rewords it for, which is how a hive mind or a nomad finds the entry that is
+        // actually about them.
+        Many("wording", "Also called", r => Fact(r, "Also called")),
+        Many("worded", "Reworded for", r => Fact(r, "Reworded for")),
         Many("forces", "Forces", r => Fact(r, "Forces")),
         Many("starts", "Starts on", r => Fact(r, "Starts on")),
         Many("system", "Starting system", r => Fact(r, "Starting system")),
@@ -227,6 +232,7 @@ public static class WikiFacet
         .. Both,
         Many("path", "Path", r => Fact(r, "Path")),
         Many("tier", "Tier", r => Fact(r, "Tier")),
+        Many("worded", "Reworded for", r => Fact(r, "Reworded for")),
         Many("ethic", "Ethics", r => r.Wanting(SelectionCategory.Ethics)),
         Many("civic", "Civics", r => r.Wanting(SelectionCategory.Civics)),
         Many("pack", "Content pack", r => r.PackChoices),

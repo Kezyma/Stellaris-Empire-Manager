@@ -48,7 +48,7 @@
         *@
         @if (Count(PortraitSlot.Character) > 0)
         {
-            <Stepper Label="@Session.Localizer.Label("VARIATION", "Color Variant")"
+            <Stepper Label="@Session.Localizer.Label("VARIATION", "Colour Variant")"
                      Value="@(Design.Ruler.Texture ?? 0)" Count="@Count(PortraitSlot.Character)"
                      OnChange="value => Session.Edit(d => d.Ruler.Texture = value)" />
         }

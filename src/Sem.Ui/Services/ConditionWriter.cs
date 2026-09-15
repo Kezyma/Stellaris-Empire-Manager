@@ -34,6 +34,8 @@ public sealed class ConditionWriter(Localizer localizer)
             return _localizer.Text(text);
         }
 
+        requirement = requirement.Simplified();
+
         var written = Write(requirement, depth: 0, negated: false);
         return string.IsNullOrWhiteSpace(written) ? null : written;
     }

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 17,
   "gameVersion": "v4.5.0",
-  "extractorVersion": "0.1.0\u002B2fd9bb8a432c",
+  "extractorVersion": "0.1.0\u002B0654e71bc8b6",
   "installFingerprint": "4c524a20ddb52a8f",
   "defines": {
     "ethicsPoints": 3,
@@ -1905,11 +1905,75 @@
       "hidden": false,
       "effects": {
         "modifiers": {},
-        "conditional": [],
+        "conditional": [
+          {
+            "when": {
+              "kind": "not",
+              "item": {
+                "kind": "any",
+                "items": [
+                  {
+                    "kind": "predicate",
+                    "name": "is_nomadic"
+                  },
+                  {
+                    "kind": "all",
+                    "items": [
+                      {
+                        "kind": "unknown",
+                        "name": "is_scope_type",
+                        "assume": true
+                      },
+                      {
+                        "kind": "predicate",
+                        "name": "is_nomadic"
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "modifiers": {
+              "planet_jobs_minerals_produces_mult": 0.025
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "predicate",
+                  "name": "is_nomadic"
+                },
+                {
+                  "kind": "all",
+                  "items": [
+                    {
+                      "kind": "unknown",
+                      "name": "is_scope_type",
+                      "assume": true
+                    },
+                    {
+                      "kind": "predicate",
+                      "name": "is_nomadic"
+                    }
+                  ]
+                }
+              ]
+            },
+            "modifiers": {
+              "arkship_harvest_resources_produces_mult": 0.0125
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          }
+        ],
         "tagKeys": [],
         "tooltipReplacesModifiers": false,
         "hideModifiers": false,
-        "isEmpty": true,
+        "isEmpty": false,
         "visibleModifiers": {}
       },
       "icon": "icons/traits/trait_ruler_industrialist.png",
@@ -2076,7 +2140,71 @@
         "modifiers": {
           "armies_upkeep_mult": -0.1
         },
-        "conditional": [],
+        "conditional": [
+          {
+            "when": {
+              "kind": "not",
+              "item": {
+                "kind": "any",
+                "items": [
+                  {
+                    "kind": "predicate",
+                    "name": "is_nomadic"
+                  },
+                  {
+                    "kind": "all",
+                    "items": [
+                      {
+                        "kind": "unknown",
+                        "name": "is_scope_type",
+                        "assume": true
+                      },
+                      {
+                        "kind": "predicate",
+                        "name": "is_nomadic"
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "modifiers": {
+              "ship_orbit_upkeep_mult": -0.05
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "predicate",
+                  "name": "is_nomadic"
+                },
+                {
+                  "kind": "all",
+                  "items": [
+                    {
+                      "kind": "unknown",
+                      "name": "is_scope_type",
+                      "assume": true
+                    },
+                    {
+                      "kind": "predicate",
+                      "name": "is_nomadic"
+                    }
+                  ]
+                }
+              ]
+            },
+            "modifiers": {
+              "ships_upkeep_mult": -0.025
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          }
+        ],
         "tagKeys": [],
         "tooltipReplacesModifiers": false,
         "hideModifiers": false,
@@ -13781,7 +13909,71 @@
           "diplo_weight_naval_mult": 0.1,
           "country_power_projection_influence_produces_add": 0.25
         },
-        "conditional": [],
+        "conditional": [
+          {
+            "when": {
+              "kind": "not",
+              "item": {
+                "kind": "any",
+                "items": [
+                  {
+                    "kind": "predicate",
+                    "name": "is_nomadic"
+                  },
+                  {
+                    "kind": "all",
+                    "items": [
+                      {
+                        "kind": "unknown",
+                        "name": "is_scope_type",
+                        "assume": true
+                      },
+                      {
+                        "kind": "predicate",
+                        "name": "is_nomadic"
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "modifiers": {
+              "ship_orbit_upkeep_mult": -0.05
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          },
+          {
+            "when": {
+              "kind": "any",
+              "items": [
+                {
+                  "kind": "predicate",
+                  "name": "is_nomadic"
+                },
+                {
+                  "kind": "all",
+                  "items": [
+                    {
+                      "kind": "unknown",
+                      "name": "is_scope_type",
+                      "assume": true
+                    },
+                    {
+                      "kind": "predicate",
+                      "name": "is_nomadic"
+                    }
+                  ]
+                }
+              ]
+            },
+            "modifiers": {
+              "ships_upkeep_mult": -0.025
+            },
+            "tooltipReplacesModifiers": false,
+            "tagKeys": []
+          }
+        ],
         "tagKeys": [],
         "tooltipKey": "leader_trait_legendary_origin_desc",
         "tooltipReplacesModifiers": false,
@@ -21057,6 +21249,22 @@
       "declared": false,
       "settled": true
     },
+    "planet_jobs_minerals_produces_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false,
+      "settled": true
+    },
+    "arkship_harvest_resources_produces_mult": {
+      "isPercentage": true,
+      "isGood": true,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": true,
+      "settled": true
+    },
     "ship_weapon_damage": {
       "isPercentage": true,
       "isGood": true,
@@ -21090,6 +21298,22 @@
       "settled": true
     },
     "armies_upkeep_mult": {
+      "isPercentage": true,
+      "isGood": false,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false,
+      "settled": true
+    },
+    "ship_orbit_upkeep_mult": {
+      "isPercentage": true,
+      "isGood": false,
+      "isNeutral": false,
+      "decimals": 2,
+      "declared": false,
+      "settled": true
+    },
+    "ships_upkeep_mult": {
       "isPercentage": true,
       "isGood": false,
       "isNeutral": false,
@@ -21849,14 +22073,6 @@
       "declared": false,
       "settled": true
     },
-    "planet_jobs_minerals_produces_mult": {
-      "isPercentage": true,
-      "isGood": true,
-      "isNeutral": false,
-      "decimals": 2,
-      "declared": false,
-      "settled": true
-    },
     "planet_jobs_alloys_produces_mult": {
       "isPercentage": true,
       "isGood": true,
@@ -21931,14 +22147,6 @@
     },
     "planet_crime_add": {
       "isPercentage": false,
-      "isGood": false,
-      "isNeutral": false,
-      "decimals": 2,
-      "declared": false,
-      "settled": true
-    },
-    "ships_upkeep_mult": {
-      "isPercentage": true,
       "isGood": false,
       "isNeutral": false,
       "decimals": 2,
@@ -24167,14 +24375,6 @@
       "isNeutral": false,
       "decimals": 2,
       "declared": false,
-      "settled": true
-    },
-    "arkship_harvest_resources_produces_mult": {
-      "isPercentage": true,
-      "isGood": true,
-      "isNeutral": false,
-      "decimals": 2,
-      "declared": true,
       "settled": true
     },
     "ship_starbase_stockpile_collection_rate_mult": {
@@ -190538,8 +190738,7 @@
   "newEmpireTemplate": "\u0022New Empire\u0022=\r\n{\r\n\tkey=\u0022New Empire\u0022\r\n\tship_prefix=\r\n\t{\r\n\t\tkey=\u0022\u0022\r\n\t}\r\n\tspecies=\r\n\t{\r\n\t\tclass=\u0022HUM\u0022\r\n\t\tportrait=\u0022human\u0022\r\n\t\tname_list=\u0022HUM1\u0022\r\n\t\tgender=not_set\r\n\t\ttrait=\u0022trait_organic\u0022\r\n\t}\r\n\tname=\r\n\t{\r\n\t\tkey=\u0022\u0022\r\n\t}\r\n\tadjective=\r\n\t{\r\n\t\tkey=\u0022\u0022\r\n\t}\r\n\tauthority=\u0022auth_democratic\u0022\r\n\tgovernment=\u0022gov_despotic_empire\u0022\r\n\tis_nomadic=no\r\n\tplanet_name=\r\n\t{\r\n\t\tkey=\u0022\u0022\r\n\t}\r\n\tplanet_class=\u0022pc_continental\u0022\r\n\tship_size=\u0022civilian_arkship_tier_1\u0022\r\n\tsystem_name=\r\n\t{\r\n\t\tkey=\u0022\u0022\r\n\t}\r\n\tinitializer=\u0022\u0022\r\n\tgraphical_culture=\u0022mammalian_01\u0022\r\n\tcity_graphical_culture=\u0022mammalian_01\u0022\r\n\tempire_flag=\r\n\t{\r\n\t\ticon=\r\n\t\t{\r\n\t\t\tcategory=\u0022pointy\u0022\r\n\t\t\tfile=\u0022flag_pointy_2.dds\u0022\r\n\t\t}\r\n\t\tbackground=\r\n\t\t{\r\n\t\t\tcategory=\u0022backgrounds\u0022\r\n\t\t\tfile=\u0022v.dds\u0022\r\n\t\t}\r\n\t\tcolors=\r\n\t\t{\r\n\t\t\t\u0022red\u0022\r\n\t\t\t\u0022black\u0022\r\n\t\t\t\u0022null\u0022\r\n\t\t\t\u0022null\u0022\r\n\t\t\t\u0022null\u0022\r\n\t\t\t\u0022null\u0022\r\n\t\t}\r\n\t}\r\n\truler=\r\n\t{\r\n\t\tgender=female\r\n\t\tname=\r\n\t\t{\r\n\t\t\tfull_names=\r\n\t\t\t{\r\n\t\t\t\tkey=\u0022\u0022\r\n\t\t\t}\r\n\t\t}\r\n\t\tportrait=\u0022human_female_04\u0022\r\n\t\ttexture=0\r\n\t\tevolution_mask=0\r\n\t\tattachment=0\r\n\t\tclothes=4\r\n\t\tleader_class=\u0022official\u0022\r\n\t}\r\n\tspawn_as_fallen=no\r\n\tignore_portrait_duplication=no\r\n\troom=\u0022default_room\u0022\r\n\tspawn_enabled=no\r\n\torigin=\u0022origin_default\u0022\r\n}\r\n",
   "unrecognisedTriggers": {},
   "unrecognisedEffectConditions": {
-    "owner?": 238,
-    "from?": 230,
+    "is_scope_type": 236,
     "leader_class": 217,
     "is_ruler": 202,
     "resource_expenses_compare": 36,

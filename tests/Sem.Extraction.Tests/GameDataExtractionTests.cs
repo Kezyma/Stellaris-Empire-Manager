@@ -177,6 +177,13 @@ public sealed class GameDataExtractionTests
             "is_galactic_community_member",
             "is_variable_set",
             "check_variable",
+
+            // And the one that arrived when the optional scopes were unwrapped. "owner? = { ... }"
+            // is the empire, so what is inside it now compiles - and what is inside several of them
+            // first asks what kind of thing the scope turned out to be. The answers run from
+            // starbase to megastructure to pop, so it cannot be assumed either way and stays a
+            // question only a game can settle.
+            "is_scope_type",
         ];
 
         var unexpected = database.UnrecognisedEffectConditions.Keys.Except(known, StringComparer.Ordinal);

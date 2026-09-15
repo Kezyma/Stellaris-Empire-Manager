@@ -475,7 +475,15 @@ public sealed class RequirementCompiler
             // Triggers that name a scope rather than a condition; the design is always the country.
             // owner_species among them: the species a design's questions are about is its founder,
             // which is the species this context already answers for.
-            case "country" or "owner" or "this" or "root" or "from" or "owner_species"
+            //
+            // The two with a question mark are the same two scopes written so the game tolerates
+            // their absence, and read as conditions of their own they threw away everything inside
+            // them. Mining Rush is written as two councilor blocks asking "owner? = { is_nomadic }",
+            // so the ruler's picker had a trait whose whole condition was a scope it did not know -
+            // and the other optional scopes stay unread on purpose, because a solar system or a
+            // ship is a thing the design has none of rather than another name for the empire.
+            case "country" or "owner" or "owner?" or "this" or "root" or "from" or "from?"
+                or "owner_species"
                 when node.Block is not null:
                 return CompileTrigger(node.Block, depth + 1);
 

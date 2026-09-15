@@ -67,6 +67,70 @@ public abstract record Requirement
     }
 
     /// <summary>
+    /// The same condition with the branches that add nothing to it taken out.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Absorption, and only absorption: "A, or A and B" is A, and "A, and A or B" is A. Both are
+    /// the same condition with fewer words, so nothing this returns can hold where the original
+    /// would not - which is why it is safe to read a tree through and why the rules engine does not
+    /// need to.
+    /// </para>
+    /// <para>
+    /// For the triggers the game writes defensively. Mining Rush asks its scripted
+    /// <c>trait_is_nomad_check</c>, which is "the owner is nomadic, or the thing FROM points at is
+    /// a country and is nomadic" - one condition written twice so it answers from either scope.
+    /// Read literally it came out as "not nomadic and not scope type or not nomadic", which is a
+    /// heading nobody could use over a number they wanted.
+    /// </para>
+    /// </remarks>
+    /// <returns>The condition, or itself where there was nothing to take out.</returns>
+    public Requirement Simplified() => this switch
+    {
+        NotRequirement not => new NotRequirement(not.Item.Simplified()) { FailureText = FailureText },
+        AllRequirement all => Absorbing(all.Items, every: true),
+        AnyRequirement any => Absorbing(any.Items, every: false),
+        _ => this,
+    };
+
+    /// <summary>One group, with the parts another part already covers dropped.</summary>
+    /// <param name="items">The parts.</param>
+    /// <param name="every">Whether all of them must hold, rather than any one.</param>
+    /// <returns>The group.</returns>
+    private Requirement Absorbing(IReadOnlyList<Requirement> items, bool every)
+    {
+        var parts = items.Select(i => i.Simplified()).ToList();
+
+        var kept = parts
+            .Where(part => Nested(part, every) is not { } nested ||
+                           !nested.Any(inner => parts.Any(
+                               other => !ReferenceEquals(other, part) && other == inner)))
+            .ToList();
+
+        return every
+            ? new AllRequirement(kept) { FailureText = FailureText }
+            : new AnyRequirement(kept) { FailureText = FailureText };
+    }
+
+    /// <summary>
+    /// The parts of a group that could be absorbed by the one it sits in, where it is that shape.
+    /// </summary>
+    /// <remarks>
+    /// The opposite join to the parent's, which is the whole of the law: an "and" inside an "or"
+    /// can be absorbed, and an "or" inside an "and" can be. The same join inside itself is a
+    /// flattening rather than an absorption, and the readers already do that where it helps them.
+    /// </remarks>
+    /// <param name="part">The part.</param>
+    /// <param name="every">Whether the parent is an "and".</param>
+    /// <returns>Its parts, or nothing where it is not the shape that absorbs.</returns>
+    private static IReadOnlyList<Requirement>? Nested(Requirement part, bool every) => part switch
+    {
+        AnyRequirement any when every => any.Items,
+        AllRequirement all when !every => all.Items,
+        _ => null,
+    };
+
+    /// <summary>
     /// What the constants in this condition settle on their own, where they settle it at all.
     /// </summary>
     /// <remarks>

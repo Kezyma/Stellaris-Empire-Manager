@@ -82,7 +82,8 @@ public sealed class ConditionReader(Localizer localizer, GameDatabase database)
     /// </summary>
     /// <param name="requirement">The condition, or nothing.</param>
     /// <returns>The outline, or null where the condition asks nothing at all.</returns>
-    public ConditionOutline? Read(Requirement? requirement) => Build(requirement, wanted: true);
+    public ConditionOutline? Read(Requirement? requirement) =>
+        Build(requirement?.Simplified(), wanted: true);
 
     private ConditionOutline? Build(Requirement? requirement, bool wanted)
     {
