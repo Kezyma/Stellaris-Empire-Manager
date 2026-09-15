@@ -5233,6 +5233,15 @@ button.icon.ended {
     cursor: help;
 }
 
+/*
+   With no picture and no badge there is nothing for the tight left edge to make room for, so the
+   word sat hard against the start of the pill and a whole gap from the end of it. The 3px above is
+   the gutter an icon needs; a chip that is only a word wants the same air on both sides.
+*/
+.sem-chip > button:not(:has(img)):not(:has(.badge)) {
+    padding-left: var(--space-md);
+}
+
 .sem-chip > button:hover { background: var(--bg-hover); }
 
 /*
@@ -7849,6 +7858,42 @@ button.icon.ended {
 }
 
 .sem-wiki-facts .words { color: var(--text-dim); }
+
+/*
+   A label that is not a chip.
+
+   A chip is a thing with a name, a picture and a description behind it, and it looks pressable
+   because it is. These say the whole of what they mean on their face and have nowhere to go -
+   "Start only", "Permanent", "Numbered" - so they keep the pill's shape and give up its edges,
+   its background and its cursor. Nothing here promises a panel.
+*/
+.sem-tag {
+    display: inline-block;
+    padding: 2px var(--space-sm);
+    border-radius: var(--radius-pill);
+    background: var(--bg-hover);
+    color: var(--text-dim);
+    font-size: var(--text-sm);
+    white-space: nowrap;
+}
+
+/*
+   Sentences the game has already written, which are a list of the same kind as a list of modifiers.
+
+   Full width of the answer so they stack rather than flowing along it, since each is a sentence
+   and a row of sentences is a paragraph with gaps in it.
+*/
+.sem-wiki-facts .sem-fact-lines {
+    flex: 1 0 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--text-dim);
+}
+
+.sem-wiki-facts .sem-fact-lines > li {
+    padding: 1px 0;
+}
 
 /*
    In a table cell there is one fact and the heading is the column, so the grid is not wanted: what

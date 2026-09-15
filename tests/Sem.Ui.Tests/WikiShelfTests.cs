@@ -1020,7 +1020,7 @@ public sealed class WikiShelfTests
         // personality files open with and nowhere else. Without it the panel behind one was a name
         // over an empty box, since a behaviour is a yes-or-no and has no numbers to list.
         Assert.Equal(
-            ["sem_personality_conqueror_desc", "sem_personality_subjugator_desc"],
+            ["sem_said_conqueror_desc", "sem_said_subjugator_desc"],
             behaviours.Select(c => c.Description));
 
         // Named properly rather than prettified, and each wearing its own figure: the game localises
@@ -1150,11 +1150,16 @@ public sealed class WikiShelfTests
         var rows = Reformable().Of(WikiKind.Civics).Rows;
 
         Assert.Null(rows.First(r => r.Key == "civic_free_haven").Fact("Reform"));
-        Assert.Equal("Start only", rows.First(r => r.Key == "civic_fanatic_purifiers").Fact("Reform")!.Text);
+
+        // Two labels rather than one sentence, because they are two independent answers - and a
+        // reader comparing two civics compares the same three words rather than four phrasings.
+        Assert.Equal(
+            ["Start only"],
+            rows.First(r => r.Key == "civic_fanatic_purifiers").Fact("Reform")!.Tags);
 
         Assert.Equal(
-            "Permanent once taken",
-            rows.First(r => r.Key == "civic_hive_mind").Fact("Reform")!.Text);
+            ["Permanent"],
+            rows.First(r => r.Key == "civic_hive_mind").Fact("Reform")!.Tags);
     }
 
     /// <summary>And the origin draws what it forces on the empire.</summary>

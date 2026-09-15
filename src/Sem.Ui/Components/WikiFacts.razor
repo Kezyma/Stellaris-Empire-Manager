@@ -17,6 +17,15 @@
                 <span class="words">@text</span>
             }
 
+            @*
+                Labels rather than chips, for what has nothing behind it. A chip looks pressable and
+                opens a description; these say the whole of what they mean on their face.
+            *@
+            @foreach (var tag in fact.Tags)
+            {
+                <span class="sem-tag">@tag</span>
+            }
+
             @foreach (var chip in fact.Chips)
             {
                 @*
@@ -28,6 +37,21 @@
                             DescriptionKey="@chip.Description" Effects="@chip.Effects"
                             Badge="@chip.Badge" BadgeLevel="@chip.BadgeLevel"
                             Deferred="true" />
+            }
+
+            @*
+                And sentences the game has already written, which are a list of the same kind as a
+                list of modifiers rather than a row of pills. Inside the answer rather than beside
+                it, because the row above is a two-column grid its children fall straight into.
+            *@
+            @if (fact.Lines.Count > 0)
+            {
+                <ul class="sem-fact-lines">
+                    @foreach (var line in fact.Lines)
+                    {
+                        <li>@line</li>
+                    }
+                </ul>
             }
         </div>
     </div>

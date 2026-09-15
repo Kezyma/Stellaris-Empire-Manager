@@ -372,11 +372,14 @@
 
     /// <summary>What a fact holds, as one comparable string.</summary>
     private static string Signature(WikiFact? fact) =>
-        fact is null
-            ? string.Empty
-            : fact.Text is { Length: > 0 } said
-                ? said
-                : string.Join('|', fact.Chips.Select(c => c.Key).Order(StringComparer.Ordinal));
+        fact switch
+        {
+            null => string.Empty,
+            { Text: { Length: > 0 } said } => said,
+            { Tags: { Count: > 0 } tags } => string.Join('|', tags.Order(StringComparer.Ordinal)),
+            { Lines: { Count: > 0 } lines } => string.Join('|', lines.Order(StringComparer.Ordinal)),
+            _ => string.Join('|', fact.Chips.Select(c => c.Key).Order(StringComparer.Ordinal)),
+        };
 
     /// <summary>Whether every step of an entry is described in the same words.</summary>
     private static bool SameProse(WikiRow row) =>
@@ -656,6 +659,8 @@
         row.Fact(heading) switch
         {
             { Text: { Length: > 0 } text } => text,
+            { Tags: { Count: > 0 } tags } => string.Join(", ", tags),
+            { Lines: { Count: > 0 } lines } => string.Join(" ", lines),
             { Chips: { Count: > 0 } chips } => string.Join(", ", chips.Select(c => c.Name)),
             _ => string.Empty,
         };

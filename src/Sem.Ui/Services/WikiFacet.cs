@@ -119,8 +119,6 @@ public static class WikiFacet
         // What the game says about a pop coming to hold it, which is the whole of what an ethic
         // does that the designer never had to know.
         Many("pops", "Pops", r => Fact(r, "Pops")),
-        Many("toward", "Drift toward", r => Fact(r, "Drift toward")),
-        Many("away", "Drift away", r => Fact(r, "Drift away")),
 ];
 
     /// <summary>The authorities, which are eight records with a great deal said about each.</summary>
@@ -289,7 +287,12 @@ public static class WikiFacet
         {
             null => [],
             { Chips.Count: > 0 } named => named.Chips,
+            { Tags.Count: > 0 } tagged => [.. tagged.Tags.Select(t => new EmpireChoice(t, t, null, null))],
             { Text: { Length: > 0 } said } => [new EmpireChoice(said, said, null, null)],
+
+            // A fact that is a list of sentences is not a heading anybody narrows by: the ethics
+            // write a hundred and seven distinct ones between them, and a filter offering all of
+            // them as ticks is a page of its own.
             _ => [],
         };
 

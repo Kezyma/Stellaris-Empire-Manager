@@ -235,6 +235,41 @@ public sealed record WikiFact(string Heading, IReadOnlyList<EmpireChoice> Chips,
     /// <returns>The fact.</returns>
     public static WikiFact Said(string heading, string? text) => new(heading, [], text);
 
+    /// <summary>
+    /// A fact that is a handful of short labels.
+    /// </summary>
+    /// <remarks>
+    /// Not chips. A chip is a thing with a name, a picture and a description behind it, and it
+    /// promises all three by looking pressable - so a row of chips with nothing behind them is a
+    /// row of empty panels. "Start only", "Permanent", "Numbered": these say the whole of what they
+    /// mean on their face and have nowhere to go.
+    /// </remarks>
+    /// <param name="heading">What it answers.</param>
+    /// <param name="tags">The labels, in the order they should be read.</param>
+    /// <returns>The fact.</returns>
+    public static WikiFact Tagged(string heading, IReadOnlyList<string> tags) =>
+        new(heading, [], null) { Tags = tags };
+
+    /// <summary>
+    /// A fact that is several sentences, one to a line.
+    /// </summary>
+    /// <remarks>
+    /// For what the game has already written out: the ethics-drift sentences are a list of the same
+    /// kind as a list of modifiers, and a dozen of them squeezed into pills was a paragraph wearing
+    /// borders. Drawn as lines they read as what they are.
+    /// </remarks>
+    /// <param name="heading">What it answers.</param>
+    /// <param name="lines">The sentences, in the order the game lists them.</param>
+    /// <returns>The fact.</returns>
+    public static WikiFact Listed(string heading, IReadOnlyList<string> lines) =>
+        new(heading, [], null) { Lines = lines };
+
+    /// <summary>Short labels that say the whole of what they mean and open nothing.</summary>
+    public IReadOnlyList<string> Tags { get; init; } = [];
+
+    /// <summary>Sentences the game has already written, one to a line.</summary>
+    public IReadOnlyList<string> Lines { get; init; } = [];
+
     /// <summary>Whether it says anything at all, so an empty one can be left undrawn.</summary>
-    public bool Any => Chips.Count > 0 || Text is { Length: > 0 };
+    public bool Any => Chips.Count > 0 || Tags.Count > 0 || Lines.Count > 0 || Text is { Length: > 0 };
 }

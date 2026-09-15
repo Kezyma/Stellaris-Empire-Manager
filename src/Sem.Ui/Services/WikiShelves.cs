@@ -168,7 +168,12 @@ public sealed class WikiShelves(DesignSession session)
         new(
             "Authorities", "authorities", "authority",
             AuthorityRows(Detail(pack?.Authorities, a => a.Key)),
-            WikiFacet.Authorities);
+            WikiFacet.Authorities)
+        {
+            // A reader of its own even though the pack carries no text, because what an empire's
+            // politics amount to is written here rather than by the game - see Governing.
+            Reader = Reading(new Dictionary<string, string>(StringComparer.Ordinal)),
+        };
 
     /// <summary>The governments, with what each does to an empire's names.</summary>
     /// <param name="pack">What was fetched, or null where nothing was.</param>
@@ -453,7 +458,7 @@ public sealed class WikiShelves(DesignSession session)
     /// <returns>Its facts.</returns>
     private IReadOnlyList<WikiFact> CivicFacts(CivicDefinition civic, CivicDetail? detail) =>
     [
-        WikiFact.Said("Reform", Reform(civic)),
+        WikiFact.Tagged("Reform", Reform(civic)),
         WikiFact.Of("Forces", Traits(civic.ForcedTraits)),
         WikiFact.Of("Grants", Traits(civic.SoftTraits)),
         WikiFact.Of("Starts on", Worlds(civic.StartingColony)),
@@ -543,23 +548,34 @@ public sealed class WikiShelves(DesignSession session)
     /// </remarks>
     /// <param name="civic">The civic or origin.</param>
     /// <returns>What it allows, or null where it allows everything.</returns>
-    private static string? Reform(CivicDefinition civic)
+    private static IReadOnlyList<string> Reform(CivicDefinition civic)
     {
         var added = civic.CanAddLater;
         var dropped = civic.CanRemoveLater;
 
+        // Nothing to say where a reform can do as it likes with it, which is most of them.
         if (added is AlwaysRequirement { Value: true } && dropped is AlwaysRequirement { Value: true })
         {
-            return null;
+            return [];
         }
 
-        return (Never(added), Never(dropped)) switch
+        // Two labels rather than one sentence, because they are two independent answers: whether a
+        // reform can take it on, and whether a reform can give it up. Written as one they had to be
+        // spelled out four ways - "Start only, and permanent" - and a reader comparing two civics
+        // was comparing two sentences instead of two sets of the same three words.
+        List<string> said = [];
+
+        if (Never(added))
         {
-            (true, true) => "Start only, and permanent",
-            (true, false) => "Start only",
-            (false, true) => "Permanent once taken",
-            _ => "Sometimes",
-        };
+            said.Add("Start only");
+        }
+
+        if (Never(dropped))
+        {
+            said.Add("Permanent");
+        }
+
+        return said.Count > 0 ? said : ["Conditional"];
     }
 
     /// <summary>Whether a condition refuses outright rather than asking something.</summary>
@@ -641,8 +657,8 @@ public sealed class WikiShelves(DesignSession session)
         // of the eight carries a single drift sentence.
         WikiFact.Said("Pops", detail is { DriftsInto: false } ? "Cannot drift into it" : null),
 
-        WikiFact.Of("Drift toward", Drift(detail, reader, draws: true)),
-        WikiFact.Of("Drift away", Drift(detail, reader, draws: false)),
+        WikiFact.Listed("Drift toward", Drift(detail, reader, draws: true)),
+        WikiFact.Listed("Drift away", Drift(detail, reader, draws: false)),
 
         // One heading rather than "Stronger form" and "Milder form", which is what it was. The
         // direction reads better on a card and is a disaster in a table: the heading differs by row,
@@ -687,16 +703,17 @@ public sealed class WikiShelves(DesignSession session)
     /// together under one heading a reader would have to read the sign on each to tell which.
     /// </para>
     /// <para>
-    /// The sentence is the chip. These are not names of things - there is nothing to link to and no
-    /// picture to draw - they are the game's own prose, already written for a player, and what the
-    /// page had instead was nothing at all.
+    /// A list rather than a row of chips. These are not names of things - there is nothing to link
+    /// to, no picture to draw and nothing behind them to open - they are sentences, and a dozen
+    /// sentences in pills is a paragraph wearing borders. The same shape a list of modifiers has,
+    /// which is the same kind of thing.
     /// </para>
     /// </remarks>
     /// <param name="detail">What the page fetched, or null before it arrives.</param>
     /// <param name="reader">The text, with the pack's merged in.</param>
     /// <param name="draws">Which of the two headings is being built.</param>
-    /// <returns>The chips.</returns>
-    private static IReadOnlyList<EmpireChoice> Drift(
+    /// <returns>The sentences.</returns>
+    private static IReadOnlyList<string> Drift(
         EthicDetail? detail,
         Localizer reader,
         bool draws) =>
@@ -705,8 +722,7 @@ public sealed class WikiShelves(DesignSession session)
             .Where(d => d.Draws == draws)
             .Select(d => Unsigned(reader.Text(d.DescriptionKey, string.Empty)))
             .Where(said => said is { Length: > 0 })
-            .Distinct(StringComparer.Ordinal)
-            .Select(said => new EmpireChoice(said, said, null, null)),
+            .Distinct(StringComparer.Ordinal),
     ];
 
     /// <summary>
@@ -789,8 +805,28 @@ public sealed class WikiShelves(DesignSession session)
         WikiFact.Said("Reform", detail is { CanReform: false } ? "Never" : null),
 
         WikiFact.Of("Politics", Politics(detail)),
-        WikiFact.Of("Colour", Accent(detail)),
     ];
+
+    /// <summary>
+    /// What each part of an empire's internal politics is, in the game's own terms.
+    /// </summary>
+    /// <remarks>
+    /// Ours, because the game names none of these as a thing: they are yes-and-no fields on an
+    /// authority and the only text anywhere near them is the tooltip of the screen that shows the
+    /// consequences. A chip that opens an empty panel is worse than no chip, and "Mandates" tells
+    /// somebody who has not played an oligarchy nothing at all.
+    /// </remarks>
+    private static readonly Dictionary<string, string> Governing =
+        new(StringComparer.Ordinal)
+        {
+            ["Factions"] = "Its citizens organise into political factions, which hold opinions "
+                + "about how the empire is run and pay out influence when they approve.",
+            ["Agendas"] = "Its ruler pursues an agenda, which the empire works toward for a while "
+                + "and is rewarded for finishing.",
+            ["Mandates"] = "Each elected ruler comes in on a promise, and keeping it pays.",
+            ["Re-election"] = "A ruler whose term is up may stand again rather than stepping down.",
+            ["Emergency elections"] = "An election can be called before the term is up.",
+        };
 
     /// <summary>
     /// What a government does to the names of the people in charge.
@@ -800,8 +836,8 @@ public sealed class WikiShelves(DesignSession session)
     /// same question - an empire can do both, or one, or neither.
     /// </remarks>
     /// <param name="detail">What the page fetched, or null before it arrives.</param>
-    /// <returns>The chips.</returns>
-    private static IReadOnlyList<EmpireChoice> Naming(GovernmentDetail? detail) =>
+    /// <returns>The labels.</returns>
+    private static IReadOnlyList<string> Naming(GovernmentDetail? detail) =>
         detail is null
             ? []
             : [
@@ -811,7 +847,7 @@ public sealed class WikiShelves(DesignSession session)
                         (detail.DynasticNames, "Dynastic"),
                     }
                     .Where(p => p.Has)
-                    .Select(p => new EmpireChoice(p.Said, p.Said, null, null)),
+                    .Select(p => p.Said),
             ];
 
     /// <summary>A term of office, said as the years it is.</summary>
@@ -848,16 +884,11 @@ public sealed class WikiShelves(DesignSession session)
                         (detail.EmergencyElections, "Emergency elections"),
                     }
                     .Where(p => p.Has)
-                    .Select(p => new EmpireChoice(p.Said, p.Said, null, null)),
+                    .Select(p => new EmpireChoice(p.Said, p.Said, null, null)
+                    {
+                        Description = Meaning(p.Said),
+                    }),
             ];
-
-    /// <summary>The game's own accent colour for an authority, drawn rather than named.</summary>
-    /// <param name="detail">What the page fetched, or null before it arrives.</param>
-    /// <returns>The chip, or none.</returns>
-    private static IReadOnlyList<EmpireChoice> Accent(AuthorityDetail? detail) =>
-        detail?.Colour is { Length: > 0 } colour
-            ? [new EmpireChoice("colour", "Accent", null, null) { Swatch = colour }]
-            : [];
 
     /// <summary>
     /// The species classes, which are the one shelf whose entries are a set of pictures.
@@ -1250,6 +1281,12 @@ public sealed class WikiShelves(DesignSession session)
             text[Meaning(field)] = said.Means;
         }
 
+        // And what an authority's politics amount to, which the game names nowhere - see Governing.
+        foreach (var (field, said) in Governing)
+        {
+            text[Meaning(field)] = said;
+        }
+
         return new Localizer(
             text,
             Database.TextIcons,
@@ -1567,9 +1604,13 @@ public sealed class WikiShelves(DesignSession session)
         };
 
     /// <summary>Where one of those sentences is kept, under a key of our own so nothing collides.</summary>
+    /// <remarks>
+    /// Not only a personality's any more: an authority's politics are named nowhere in the game
+    /// either, and a chip reading "Mandates" over an empty panel told a reader nothing.
+    /// </remarks>
     /// <param name="field">The field.</param>
     /// <returns>The key.</returns>
-    private static string Meaning(string field) => $"sem_personality_{field}_desc";
+    private static string Meaning(string field) => $"sem_said_{field}_desc";
 
     /// <summary>
     /// A group of a personality's numbers, each chip wearing its own.
@@ -1889,7 +1930,7 @@ public sealed class WikiShelves(DesignSession session)
         // is the one thing about a government a player is most likely to have wondered about.
         WikiFact.Said("On reform", detail is { ForcesRename: true } ? "Renames the empire" : null),
 
-        WikiFact.Of("Ruler names", Naming(detail)),
+        WikiFact.Tagged("Ruler names", Naming(detail)),
 
         WikiFact.Said("Ruler", Title(government.RulerTitleKey)),
         WikiFact.Said("Ruler (female)", Title(government.RulerTitleFemaleKey)),
