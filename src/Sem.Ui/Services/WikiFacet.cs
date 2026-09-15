@@ -78,6 +78,14 @@ public static class WikiFacet
         Many("ethic", "Ethics", r => r.Wanting(SelectionCategory.Ethics)),
         Many("archetype", "Species", r => r.Wanting(SelectionCategory.SpeciesArchetype)),
         Many("needs", "Other civics", r => r.Wanting(SelectionCategory.Civics)),
+
+        // What the record has always held and the page never drew. "Which of these can I reform
+        // into" is the question a plan is made of, and until now the only way to answer it was to
+        // try.
+        Many("reform", "Reform", r => Fact(r, "Reform")),
+        Many("forces", "Forces", r => Fact(r, "Forces")),
+        Many("starts", "Starts on", r => Fact(r, "Starts on")),
+        Many("system", "Starting system", r => Fact(r, "Starting system")),
         Many("pack", "Content pack", r => r.PackChoices),
         Many("bonus", "Bonus", r => r.Bonuses, Effects),
     ];
@@ -115,6 +123,7 @@ public static class WikiFacet
         .. Both,
         Many("archetype", "Archetype", r => Fact(r, "Archetype")),
         Many("trait", "Always has", r => Fact(r, "Always has")),
+        Many("shipset", "Flies", r => Fact(r, "Flies")),
     ];
 
     /// <summary>
@@ -129,6 +138,7 @@ public static class WikiFacet
     [
         .. Both,
         Many("cost", "Cost", r => Fact(r, "Cost")),
+        Many("category", "Category", r => Fact(r, "Category")),
         Many("archetype", "Archetype", r => Fact(r, "Archetype")),
         Many("class", "Only for", r => Fact(r, "Only for")),
         Many("origin", "Origin", r => Fact(r, "Origin")),
@@ -212,6 +222,7 @@ public static class WikiFacet
     [
         .. Both,
         Many("path", "Path", r => Fact(r, "Path")),
+        Many("tier", "Tier", r => Fact(r, "Tier")),
         Many("ethic", "Ethics", r => r.Wanting(SelectionCategory.Ethics)),
         Many("civic", "Civics", r => r.Wanting(SelectionCategory.Civics)),
         Many("pack", "Content pack", r => r.PackChoices),

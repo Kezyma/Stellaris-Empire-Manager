@@ -242,13 +242,86 @@ public sealed class WikiShelves(DesignSession session)
                     _reader.Read(new AllRequirement([civic.Potential, civic.Possible])),
                     "Any empire"),
             ],
-            [],
+            CivicFacts(civic),
             Wants(civic.Potential, civic.Possible)) with
         {
             Icon = civic.Icon,
             Picture = civic.Picture,
         };
     }
+
+    /// <summary>
+    /// What is worth saying about a civic or an origin beyond what it does.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This list was empty. Everything in it was already extracted and reached no pixel: whether a
+    /// reform can take a civic on or give it up, which is stated by a hundred and forty-two of them;
+    /// the traits an origin nails onto the founding species, which is thirty-two; the system it locks
+    /// the empire into, which is fourteen. The page showed a name, a picture, the prose and the
+    /// conditions, and nothing else the record held.
+    /// </para>
+    /// <para>
+    /// One method for both shelves, because they are one record. An origin states nothing about
+    /// reform and a civic nothing about a starting system, and a fact with nothing in it is dropped
+    /// before it reaches a column - so each page draws only the headings its own entries answer.
+    /// </para>
+    /// </remarks>
+    /// <param name="civic">The civic or origin.</param>
+    /// <returns>Its facts.</returns>
+    private IReadOnlyList<WikiFact> CivicFacts(CivicDefinition civic) =>
+    [
+        WikiFact.Said("Reform", Reform(civic)),
+        WikiFact.Of("Forces", Traits(civic.ForcedTraits)),
+        WikiFact.Of("Grants", Traits(civic.SoftTraits)),
+        WikiFact.Of("Starts on", Worlds(civic.StartingColony)),
+        WikiFact.Of("Suited to", Worlds(civic.HabitabilityPreference)),
+        WikiFact.Of("Starting system", Systems(civic.Initializers)),
+        WikiFact.Of("Opens", Worlds(civic.AddedPlanetClasses)),
+        WikiFact.Of("Closes", Worlds(civic.RemovedPlanetClasses)),
+
+        WikiFact.Said(
+            "Second species",
+            civic.RequiresSecondarySpecies ? "Required" : null),
+
+        WikiFact.Of("Second species has", Traits(civic.SecondarySpeciesTraits)),
+    ];
+
+    /// <summary>
+    /// Whether a government reform can take this on or give it up.
+    /// </summary>
+    /// <remarks>
+    /// The game's own <c>modification</c> field, which its comment describes as "set to no to prevent
+    /// adding or removing this after creation of the empire". Ninety-six civics refuse outright and
+    /// thirty-three make it conditional; the rest say nothing and mean yes, and those draw nothing
+    /// here rather than repeating the default a hundred and fifty times.
+    /// </remarks>
+    /// <param name="civic">The civic or origin.</param>
+    /// <returns>What it allows, or null where it allows everything.</returns>
+    private static string? Reform(CivicDefinition civic)
+    {
+        var added = civic.CanAddLater;
+        var dropped = civic.CanRemoveLater;
+
+        if (added is AlwaysRequirement { Value: true } && dropped is AlwaysRequirement { Value: true })
+        {
+            return null;
+        }
+
+        return (Never(added), Never(dropped)) switch
+        {
+            (true, true) => "Start only, and permanent",
+            (true, false) => "Start only",
+            (false, true) => "Permanent once taken",
+            _ => "Sometimes",
+        };
+    }
+
+    /// <summary>Whether a condition refuses outright rather than asking something.</summary>
+    /// <param name="requirement">The condition.</param>
+    /// <returns>True where nothing can satisfy it.</returns>
+    private static bool Never(Requirement? requirement) =>
+        requirement is AlwaysRequirement { Value: false };
 
     /// <summary>
     /// The ethics, which state no conditions at all.
@@ -512,7 +585,52 @@ public sealed class WikiShelves(DesignSession session)
     [
         WikiFact.Of("Archetype", Archetypes(species.Archetype)),
         WikiFact.Of("Always has", Traits(species.ForcedTrait)),
+
+        // Which ships it flies. Every one of the forty-two declares it, it has been extracted all
+        // along, and it is the link between this page and the shipsets.
+        WikiFact.Of("Flies", Shipsets(species.GraphicalCulture)),
+
+        WikiFact.Of("Opens", Worlds(species.AddedPlanetClasses)),
+        WikiFact.Of("Closes", Worlds(species.RemovedPlanetClasses)),
         WikiFact.Said("Portraits", faces.Count.ToString(System.Globalization.CultureInfo.CurrentCulture)),
+    ];
+
+    /// <summary>
+    /// Which of the game's shipset groups a set belongs to.
+    /// </summary>
+    /// <remarks>
+    /// Biological or mechanical, as the game's own two records name them. A set that models no ships
+    /// belongs to neither: mechanical is written as "anything but biological", so a set with no ship
+    /// category at all would match it and be filed as a fleet it does not have.
+    /// </remarks>
+    /// <param name="shipCategory">What kind of ships the set builds, if any.</param>
+    /// <returns>The group's name, or a word saying it has none.</returns>
+    private string Grouping(string? shipCategory) =>
+        shipCategory is { Length: > 0 }
+            ? Database.ShipSets
+                .Where(g => g.Includes(shipCategory))
+                .Select(g => session.Localizer.Text(g.NameKey, Localizer.Prettify(g.Key)))
+                .FirstOrDefault() ?? Localizer.Prettify(shipCategory)
+            : "None of its own";
+
+    /// <summary>Shipsets, which are named by their key shouted and say what they look like.</summary>
+    /// <param name="keys">The graphical cultures.</param>
+    /// <returns>The chips.</returns>
+    private IReadOnlyList<EmpireChoice> Shipsets(params IEnumerable<string?> keys) =>
+    [
+        .. Real(keys).Select(k =>
+        {
+            var set = Database.GraphicalCulture(k);
+
+            return new EmpireChoice(
+                k,
+                session.Localizer.Text(set?.NameKey, Localizer.Prettify(k)),
+                set?.ShipPreview,
+                null)
+            {
+                Description = set?.DescriptionKey,
+            };
+        }),
     ];
 
     /// <summary>One face, where the game has a picture of it.</summary>
@@ -789,15 +907,11 @@ public sealed class WikiShelves(DesignSession session)
     /// <returns>Its facts.</returns>
     private IReadOnlyList<WikiFact> ShipsetFacts(GraphicalCultureDefinition culture) =>
     [
-        // "Fleet" rather than "Ships", which would sit beside the Ship column and mean something
-        // else - that column is a picture of one, this is what the set flies. And the game's two
-        // words read as what they are: default_ship is a fleet that is built, bio_ship one grown.
-        WikiFact.Said("Fleet", culture.ShipCategory switch
-        {
-            "bio_ship" => "Grown",
-            { Length: > 0 } => "Built",
-            _ => "None of its own",
-        }),
+        // The game's own heading for the group, which it keeps in common/ship_sets purely "to
+        // categorize the list of ship graphics cultures in the ship set browser" - its words. We
+        // extract both and the designer's picker uses them; this page was re-deriving the same split
+        // by hand from the string "bio_ship" and calling it something else.
+        WikiFact.Said("Fleet", Grouping(culture.ShipCategory)),
         WikiFact.Said("Cities", culture.HasCityArt ? "Yes" : "No"),
         WikiFact.Said(
             "Falls back to",
@@ -1046,6 +1160,34 @@ public sealed class WikiShelves(DesignSession session)
         WikiFact.Said("Heir", Title(government.HeirTitleKey)),
         WikiFact.Said("Heir (female)", Title(government.HeirTitleFemaleKey)),
         WikiFact.Said("Weight", Number(government.Weight)),
+
+        // And what multiplies it. The weight alone made two governments that rank differently for a
+        // design look tied: thirteen of them double their own odds against a civic, which the record
+        // has always carried and the page has never said. A militarist empire with Distinguished
+        // Admiralty is twice as likely to be called a Star Empire.
+        WikiFact.Of("More likely", Multipliers(government.Factors)),
+    ];
+
+    /// <summary>
+    /// What raises a government's odds, and by how much.
+    /// </summary>
+    /// <remarks>
+    /// The condition read as a sentence and the multiplier as the chip's badge, which is the shape
+    /// the personality numbers already use. Written through <see cref="ConditionWriter"/> rather than
+    /// the outline reader because a chip wants one line rather than a bulleted tree.
+    /// </remarks>
+    /// <param name="factors">The weight factors, which are usually none.</param>
+    /// <returns>The chips, one per factor that says something.</returns>
+    private IReadOnlyList<EmpireChoice> Multipliers(IReadOnlyList<WeightFactor> factors) =>
+    [
+        .. factors
+            .Select(f => (Said: session.Conditions.Describe(f.When), f.Factor))
+            .Where(f => f.Said is { Length: > 0 })
+            .Select(f => new EmpireChoice(f.Said!, f.Said!, null, null)
+            {
+                Badge = $"x{Number(f.Factor)}",
+                BadgeLevel = f.Factor,
+            }),
     ];
 
     /// <summary>One title as the game writes it, or nothing where it names none.</summary>
@@ -1081,6 +1223,38 @@ public sealed class WikiShelves(DesignSession session)
             .OrderBy(r => r.Name, StringComparer.CurrentCulture),
     ];
 
+    /// <summary>
+    /// Which tier of the ascension a perk sits at, counting from one.
+    /// </summary>
+    /// <remarks>
+    /// Read out of the condition rather than off the record, because the game keeps no tier field:
+    /// it writes <c>num_ascension_perks &gt; 1</c> inside <c>possible</c> and means "this is a second
+    /// tier perk". Twenty-four of the forty-nine say so. The comparison decides the arithmetic -
+    /// "more than one" is tier two and "at least one" is tier one - and the highest wins where a perk
+    /// states more than one, since they are all gates it must pass.
+    /// </remarks>
+    /// <param name="perk">The perk.</param>
+    /// <returns>The tier, or null where it names none and so is open from the start.</returns>
+    private static string? Tier(AscensionPerkDefinition perk)
+    {
+        var tiers = new AllRequirement([perk.Potential, perk.Possible])
+            .AndNested()
+            .OfType<CountRequirement>()
+            .Where(c => c.Of == SelectionCategory.AscensionPerk)
+            .Select(c => c.Comparison switch
+            {
+                CountComparison.Above => c.Value + 2,
+                CountComparison.AtLeast => c.Value + 1,
+                _ => 0,
+            })
+            .Where(t => t > 0)
+            .ToList();
+
+        return tiers.Count == 0
+            ? null
+            : tiers.Max().ToString(System.Globalization.CultureInfo.CurrentCulture);
+    }
+
     /// <summary>One perk, with the path it belongs to.</summary>
     /// <param name="perk">The ascension perk.</param>
     /// <returns>Its row.</returns>
@@ -1101,7 +1275,15 @@ public sealed class WikiShelves(DesignSession session)
             // The path read rather than prettified. The game names these - "Ascensions",
             // "Ambitions" - and nothing asked for the key until this column existed, so the pruner
             // had thrown the words away and the column said "Ap Category Ascensions".
-            [WikiFact.Said("Path", Title(perk.Category))],
+            [
+                WikiFact.Said("Path", Title(perk.Category)),
+
+                // How far in it sits. The game states this as a count of perks already taken rather
+                // than as a number of its own, so it rendered as "Ascension Perk more than 2" inside
+                // a bullet list - while the leader traits, which say tier plainly, have had it as a
+                // fact and a facet all along.
+                WikiFact.Said("Tier", Tier(perk)),
+            ],
             Wants(perk.Potential, perk.Possible)) with
         {
             Icon = perk.Icon,
@@ -1615,6 +1797,11 @@ public sealed class WikiShelves(DesignSession session)
         // Said as a number rather than as chips, and sortable, because the whole of picking traits
         // is spending a budget: two points for Intelligent, and a drawback to pay for it.
         WikiFact.Said("Cost", trait.Cost.ToString(System.Globalization.CultureInfo.CurrentCulture)),
+        // Which ascension unlocks it, in the game's own word: robotic, cyborg, overtuned, psionic.
+        // A hundred and ninety traits say so, the extractor has always read it, and the page has
+        // never drawn it - so there was no way to ask for the cyborg traits.
+        WikiFact.Said("Category", Localizer.Prettify(trait.Category ?? string.Empty)),
+
         WikiFact.Of("Archetype", Archetypes(trait.AllowedArchetypes)),
         WikiFact.Of("Only for", Classes(trait.AllowedSpeciesClasses)),
         WikiFact.Of("Rules out", Traits(trait.Opposites)),
@@ -1708,6 +1895,33 @@ public sealed class WikiShelves(DesignSession session)
     /// </remarks>
     private IReadOnlyList<EmpireChoice> Leaders(params IEnumerable<string?> keys) =>
         [.. Real(keys).Select(k => Chip(k, Database.LeaderClass(k)?.Icon))];
+
+    /// <summary>
+    /// Starting systems, which an origin locks an empire into.
+    /// </summary>
+    /// <remarks>
+    /// Named under the key with <c>_NAME</c> after it rather than under the key itself, which is the
+    /// game's own arrangement and why one read plainly comes out as "Custom Starting Init 01" where
+    /// the game says "Random Trinary I".
+    /// </remarks>
+    /// <param name="keys">The systems.</param>
+    /// <returns>The chips.</returns>
+    private IReadOnlyList<EmpireChoice> Systems(params IEnumerable<string?> keys) =>
+    [
+        .. Real(keys).Select(k =>
+        {
+            var system = Database.Initializer(k);
+
+            return new EmpireChoice(
+                k,
+                session.Localizer.Text(system?.NameKey, Localizer.Prettify(k)),
+                null,
+                null)
+            {
+                Description = system?.DescriptionKey,
+            };
+        }),
+    ];
 
     /// <summary>
     /// Homeworlds, which say nothing about themselves.

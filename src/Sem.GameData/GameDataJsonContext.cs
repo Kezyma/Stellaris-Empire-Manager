@@ -31,6 +31,11 @@ namespace Sem.GameData;
 // is mostly of no use to a designer, and a reader who never opens a page should not fetch it. One
 // line each as they arrive.
 [JsonSerializable(typeof(LeaderTraitPack))]
+
+// And the wiki's own files, one per domain, for the same reason carried further: what the wiki shows
+// is mostly of no use to a designer, and a reader who never opens a page should not fetch it. One
+// line each as they arrive.
+[JsonSerializable(typeof(LeaderTraitPack))]
 [JsonSerializable(typeof(ShipsetPack))]
 [JsonSerializable(typeof(PersonalityPack))]
 public sealed partial class GameDataJsonContext : JsonSerializerContext;

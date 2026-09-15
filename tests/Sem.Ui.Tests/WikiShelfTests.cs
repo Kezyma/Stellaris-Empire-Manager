@@ -908,14 +908,26 @@ public sealed class WikiShelfTests
         Assert.Equal("Humanoid 01", rows.First(r => r.Key == "humanoid_01").Name);
     }
 
-    /// <summary>And a set that flies nothing of its own says so rather than saying nothing.</summary>
+    /// <summary>
+    /// A set is filed under the game's own heading, and one that flies nothing says so.
+    /// </summary>
+    /// <remarks>
+    /// The headings are the two records in <c>common/ship_sets</c>, which exist - the file says so -
+    /// "to categorize the list of ship graphics cultures in the ship set browser". We extract both
+    /// and the designer's picker uses them; this page was re-deriving the same split by hand from
+    /// the string <c>bio_ship</c> and calling it Grown and Built instead.
+    ///
+    /// A set with no ships of its own belongs to neither. Mechanical is written as "anything but
+    /// biological", so a set with no category at all matches it and would be filed under a fleet it
+    /// does not have.
+    /// </remarks>
     [Fact]
-    public void AShipsetWithNoShipsOfItsOwnSaysSo()
+    public void AShipsetIsFiledUnderTheGamesOwnHeading()
     {
         var rows = Shipsets().Shipsets(pack: null).Rows;
 
-        Assert.Equal("Grown", rows.First(r => r.Key == "biogenesis_01").Fact("Fleet")!.Text);
-        Assert.Equal("Built", rows.First(r => r.Key == "humanoid_01").Fact("Fleet")!.Text);
+        Assert.Equal("Biological", rows.First(r => r.Key == "biogenesis_01").Fact("Fleet")!.Text);
+        Assert.Equal("Mechanical", rows.First(r => r.Key == "humanoid_01").Fact("Fleet")!.Text);
         Assert.Equal("None of its own", rows.First(r => r.Key == "solarpunk_01").Fact("Fleet")!.Text);
     }
 
@@ -1016,6 +1028,73 @@ public sealed class WikiShelfTests
         Assert.Equal("Ascensions", row.Fact("Path")!.Text);
     }
 
+    /// <summary>
+    /// A civic says whether a reform can take it on, and an origin what it nails down.
+    /// </summary>
+    /// <remarks>
+    /// Both pages passed an empty facts list, so everything here was extracted and reached no pixel:
+    /// a hundred and forty-two civics state whether they can be added or dropped, and the origins
+    /// state the traits, the world and the system they lock an empire into.
+    /// </remarks>
+    [Fact]
+    public void ACivicSaysWhetherAReformCanTakeItOn()
+    {
+        var rows = Reformable().Of(WikiKind.Civics).Rows;
+
+        Assert.Null(rows.First(r => r.Key == "civic_free_haven").Fact("Reform"));
+        Assert.Equal("Start only", rows.First(r => r.Key == "civic_fanatic_purifiers").Fact("Reform")!.Text);
+
+        Assert.Equal(
+            "Permanent once taken",
+            rows.First(r => r.Key == "civic_hive_mind").Fact("Reform")!.Text);
+    }
+
+    /// <summary>And the origin draws what it forces on the empire.</summary>
+    [Fact]
+    public void AnOriginSaysWhatItLocksDown()
+    {
+        var row = Assert.Single(Reformable().Of(WikiKind.Origins).Rows);
+
+        Assert.Equal(["trait_void_dweller"], row.Fact("Forces")!.Chips.Select(c => c.Key));
+        Assert.Equal(["pc_habitat"], row.Fact("Starts on")!.Chips.Select(c => c.Key));
+        Assert.Equal("Required", row.Fact("Second species")!.Text);
+    }
+
+    /// <summary>Three civics stating each shape of the reform field, and one origin.</summary>
+    private static WikiShelves Reformable() =>
+        Shelves(new GameDatabase
+        {
+            SchemaVersion = GameDatabase.CurrentSchemaVersion,
+            GameVersion = "test",
+            ExtractorVersion = "test",
+            Defines = new GameDefines { EthicsPoints = 3, CivicPoints = 2, CityPopLevel = 4 },
+            Civics =
+            [
+                // Says nothing, and so means yes - which draws nothing rather than repeating the
+                // default on a hundred and fifty rows.
+                new CivicDefinition("civic_free_haven", false),
+
+                new CivicDefinition("civic_fanatic_purifiers", false)
+                {
+                    CanAddLater = new AlwaysRequirement(false),
+                },
+
+                new CivicDefinition("civic_hive_mind", false)
+                {
+                    CanRemoveLater = new AlwaysRequirement(false),
+                },
+
+                new CivicDefinition("origin_void_dwellers", true)
+                {
+                    ForcedTraits = ["trait_void_dweller"],
+                    StartingColony = "pc_habitat",
+                    RequiresSecondarySpecies = true,
+                },
+            ],
+            PlanetClasses = [new PlanetClassDefinition("pc_habitat")],
+            Traits = [new TraitDefinition("trait_void_dweller", TraitKind.Species)],
+        });
+
     /// <summary>Four worlds and a civic that opens one of them.</summary>
     private static WikiShelves PlanetShelf() =>
         Shelves(new GameDatabase
@@ -1055,9 +1134,23 @@ public sealed class WikiShelfTests
                     new GraphicalCultureDefinition("humanoid_01") { ShipCategory = "default_ship" },
                     new GraphicalCultureDefinition("solarpunk_01"),
                 ],
+
+                // The game's own two groups, written as it writes them: biological is the set that
+                // builds bio ships, and mechanical is everything else.
+                ShipSets =
+                [
+                    new ShipSetDefinition("biological", "SHIPSET_BIOLOGICAL") { Category = "bio_ship" },
+                    new ShipSetDefinition("mechanical", "SHIPSET_MECHANICAL")
+                    {
+                        Category = "bio_ship",
+                        Inverted = true,
+                    },
+                ],
             },
             ("BIOGENESIS_01", "Spinovore"),
-            ("biogenesis_01_shipset_desc", "Born as much as built."));
+            ("biogenesis_01_shipset_desc", "Born as much as built."),
+            ("SHIPSET_BIOLOGICAL", "Biological"),
+            ("SHIPSET_MECHANICAL", "Mechanical"));
 
     /// <summary>One personality, named the way the game names them.</summary>
     private static WikiShelves Personalities() =>
