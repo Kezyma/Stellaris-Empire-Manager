@@ -73,6 +73,7 @@ public sealed class GameDataCacheTests
                          LeaderTraitPack.Domain, ShipsetPack.Domain, PersonalityPack.Domain,
                          EthicPack.Domain, AuthorityPack.Domain, GovernmentPack.Domain,
                          CivicPack.Domain, SpeciesTraitPack.Domain, SpeciesClassPack.Domain,
+                         WorldPack.Domain,
                      })
             {
                 var pack = Path.Combine(cache.Directory, GameDataWriter.WikiPackFileName(domain));

@@ -151,6 +151,9 @@ public sealed class GameDataExtractor(LayeredContent content)
     /// </remarks>
     public GovernmentFamily Family { get; private set; } = new();
 
+    /// <summary>What each shipset says beyond the ships it flies, which is a page's business.</summary>
+    public IReadOnlyList<ShipsetDetail> Shipsets { get; private set; } = [];
+
     /// <summary>Builds a database from an installation directory.</summary>
     public static GameDatabase ExtractFrom(string installRoot, IProgress<string>? progress = null) =>
         new GameDataExtractor(LayeredContent.ForInstall(installRoot)).Extract(progress);
@@ -220,6 +223,7 @@ public sealed class GameDataExtractor(LayeredContent content)
             Civics = civicDetail,
             SpeciesTraits = speciesTraitDetail,
             SpeciesClasses = speciesClassDetail,
+            Worlds = WorldExtractor.ExtractDetail(loader, requirements),
         };
 
         // What one of these designs is played as when it turns up as somebody's neighbour.
@@ -243,7 +247,10 @@ public sealed class GameDataExtractor(LayeredContent content)
 
         Report("Reading appearance options");
         var rooms = CosmeticsExtractor.ExtractRooms(loader, assets);
-        var graphicalCultures = CosmeticsExtractor.ExtractGraphicalCultures(loader, requirements, assets);
+        var shipsetDetail = new List<ShipsetDetail>();
+        var graphicalCultures = CosmeticsExtractor.ExtractGraphicalCultures(
+            loader, requirements, assets, shipsetDetail);
+        Shipsets = shipsetDetail;
         var shipSets = CosmeticsExtractor.ExtractShipSets(loader);
         var leaderClasses = CosmeticsExtractor.ExtractLeaderClasses(loader, assets);
         var advisorVoices = CosmeticsExtractor.ExtractAdvisorVoices(loader, requirements, assets);

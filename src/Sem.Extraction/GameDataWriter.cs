@@ -204,6 +204,8 @@ public static class GameDataWriter
                     }),
             ],
 
+            Sets = extractor.Shipsets,
+
             // What the classes are called. The game keeps these under their bare keys - corvette,
             // battleship - and nothing in the database reaches one, so the pruner has never had a
             // reason to keep them and the pack carries them itself.
@@ -342,6 +344,28 @@ public static class GameDataWriter
         file.WriteAllBytes(
             Path.Combine(outputDirectory, WikiPackFileName(SpeciesClassPack.Domain)), speciesClassJson);
 
+        var worlds = new WorldPack
+        {
+            Stamp = new WikiPackStamp(
+                GameDataExtractor.ExtractorVersion, WorldPack.CurrentSchemaVersion),
+
+            Worlds = family.Worlds,
+
+            // The districts, which the database reaches through nothing - common/districts is a
+            // folder this app has never opened - and the technologies the terraforming links wait
+            // on, which it reaches through nothing either.
+            Text = LocalisationPruner.Slice(
+                family.Worlds.SelectMany(Spoken),
+                all,
+                database.ScriptedText),
+        };
+
+        var worldJson = JsonSerializer.SerializeToUtf8Bytes(
+            worlds, GameDataJsonContext.Default.WorldPack);
+
+        file.WriteAllBytes(
+            Path.Combine(outputDirectory, WikiPackFileName(WorldPack.Domain)), worldJson);
+
         return
         [
             (LeaderTraitPack.Domain, leaders.Count, json.Length),
@@ -353,6 +377,7 @@ public static class GameDataWriter
             (CivicPack.Domain, family.Civics.Count, civicJson.Length),
             (SpeciesTraitPack.Domain, family.SpeciesTraits.Count, speciesTraitJson.Length),
             (SpeciesClassPack.Domain, family.SpeciesClasses.Count, speciesClassJson.Length),
+            (WorldPack.Domain, family.Worlds.Count, worldJson.Length),
         ];
     }
 
@@ -385,6 +410,51 @@ public static class GameDataWriter
             yield return key;
         }
     }
+
+    /// <summary>
+    /// Every key one world is written in beyond its own name.
+    /// </summary>
+    /// <remarks>
+    /// What a colony here starts with, and what an empire must have researched before it may reshape
+    /// the place. Both are things nothing else in the database names, so without this the page read
+    /// its own keys back prettified - "Tech Terrestrial Sculpting" for Terrestrial Sculpting.
+    /// </remarks>
+    /// <param name="world">The world.</param>
+    /// <returns>The keys, some of which the game may not define.</returns>
+    private static IEnumerable<string> Spoken(WorldDetail world)
+    {
+        foreach (var district in new[] { world.Districts, world.StartingDistrict })
+        {
+            if (district is { Length: > 0 })
+            {
+                yield return district;
+            }
+        }
+
+        foreach (var named in world.Becomes.SelectMany(t => Named(t.Needs)))
+        {
+            yield return named;
+        }
+    }
+
+    /// <summary>
+    /// Everything a compiled condition names, so the words for them can be carried.
+    /// </summary>
+    /// <remarks>
+    /// Only the arguments of the conditions the compiler could not answer, which is where a
+    /// technology or an ascension perk ends up: the rest of the tree is drawn from records the page
+    /// already has.
+    /// </remarks>
+    /// <param name="requirement">The condition, or null where there is none.</param>
+    /// <returns>The keys.</returns>
+    private static IEnumerable<string> Named(Requirement? requirement) => requirement switch
+    {
+        UnknownRequirement { Value: { Length: > 0 } value } => [value],
+        NotRequirement not => Named(not.Item),
+        AllRequirement all => all.Items.SelectMany(Named),
+        AnyRequirement any => any.Items.SelectMany(Named),
+        _ => [],
+    };
 
     /// <summary>The keys one set of effects names, its conditional parts included.</summary>
     private static IEnumerable<string> Said(EffectSet effects)

@@ -357,6 +357,10 @@ else
                     .LoadWikiPackAsync(SpeciesTraitPack.Domain, GameDataJsonContext.Default.SpeciesTraitPack)
                     .ConfigureAwait(true)),
 
+                WikiKind.Planets => shelves.Planets(await Source
+                    .LoadWikiPackAsync(WorldPack.Domain, GameDataJsonContext.Default.WorldPack)
+                    .ConfigureAwait(true)),
+
                 WikiKind.Species => shelves.Species(await Source
                     .LoadWikiPackAsync(SpeciesClassPack.Domain, GameDataJsonContext.Default.SpeciesClassPack)
                     .ConfigureAwait(true)),

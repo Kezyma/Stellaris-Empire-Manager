@@ -109,6 +109,7 @@ public sealed class GameDataCache
                 CivicPack.Domain,
                 SpeciesTraitPack.Domain,
                 SpeciesClassPack.Domain,
+                WorldPack.Domain,
             ];
 
             if (domains.Any(d => !File.Exists(

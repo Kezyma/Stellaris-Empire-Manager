@@ -540,6 +540,13 @@ public sealed partial class EmpireRules(GameDatabase database)
             return null;
         }
 
+        // Not auto_trait_prio, which looks like the answer and is not. Nineteen classes write it
+        // and an ocean world's says trait_auto_wet_preference - a trait covering all three wet
+        // classes at once, with a penalty to the dry ones. That is the preference the game picks
+        // when it is choosing one for a species itself; an empire founded on an ocean world gets
+        // Ocean Preference, which is what the naming convention below finds and what the test on
+        // Hydrocentric checks. The field is carried to the wiki instead, under its own heading.
+        //
         // The game names a preference after the thing that grants it: a planet class, or a climate
         // where several classes share one. Those two answers are kept first so that a species the
         // trait suits still gets the trait the game names after its world.

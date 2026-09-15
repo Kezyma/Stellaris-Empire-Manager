@@ -103,6 +103,11 @@ public static class DesignPredicates
         "species",
         "any_owned_pop_group",
         "uses_ship_category",
+
+        // Whose planet it is, which the terraforming folder asks twice: the two links that turn a
+        // Gaia world into a machine or hive world want it to be the empire's own or not a holy
+        // world. A design holds no planets, so it can answer neither.
+        "is_owned_by",
     };
 
     /// <summary>
@@ -210,6 +215,12 @@ public static class DesignPredicates
         "species",
         "any_owned_pop_group",
         "uses_ship_category",
+
+        // And whose planet it is, which is the same two answers in the same two places: a design
+        // owns nothing, and a plan means to own the world it is terraforming. Settled as false, the
+        // two links that turn a Gaia world into a machine or hive world read "never or not a holy
+        // world" - a sentence that opens by saying the thing is impossible.
+        "is_owned_by",
     };
 
     /// <summary>

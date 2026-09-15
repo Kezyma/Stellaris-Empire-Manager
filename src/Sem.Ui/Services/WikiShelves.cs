@@ -236,6 +236,18 @@ public sealed class WikiShelves(DesignSession session)
             "Species", "species classes", "species class",
             SpeciesRows(Detail(pack?.Classes, c => c.Key)), WikiFacet.Species);
 
+    /// <summary>
+    /// The worlds, with what living on one actually does.
+    /// </summary>
+    /// <param name="pack">What was fetched, or null where nothing was.</param>
+    /// <returns>The shelf.</returns>
+    public WikiShelf Planets(WorldPack? pack) =>
+        new("Planets", "planets", "planet", PlanetRows(pack), WikiFacet.Planets)
+        {
+            Picture = "Sky",
+            Reader = pack is null ? null : Reading(pack.Text),
+        };
+
     private WikiShelf Read(WikiKind kind) => kind switch
     {
         WikiKind.Origins => new WikiShelf(
@@ -257,7 +269,8 @@ public sealed class WikiShelves(DesignSession session)
             SpeciesTraitRows(pack: null), WikiFacet.SpeciesTraits),
 
         WikiKind.Planets => new WikiShelf(
-            "Planets", "planets", "planet", Planets(), WikiFacet.Planets) { Picture = "Sky" },
+            "Planets", "planets", "planet",
+            PlanetRows(pack: null), WikiFacet.Planets) { Picture = "Sky" },
 
         WikiKind.Governments => new WikiShelf(
             "Governments", "governments", "government",
@@ -1145,12 +1158,29 @@ public sealed class WikiShelves(DesignSession session)
     /// decided by evolution. Sixty-nine rows of the same paragraph is not prose, it is wallpaper.
     /// What a world actually has to say is in the numbers beside it.
     /// </remarks>
-    private IReadOnlyList<WikiRow> Planets() =>
-    [
-        .. Database.PlanetClasses
-            .Select(Planet)
-            .OrderBy(r => r.Name, StringComparer.CurrentCulture),
-    ];
+    private IReadOnlyList<WikiRow> PlanetRows(WorldPack? pack)
+    {
+        var detail = Detail(pack?.Worlds, w => w.Key);
+        var reader = pack is null ? session.Localizer : Reading(pack.Text);
+
+        // The same links read the other way round, which is the half a reader asks second: a Gaia
+        // world is the target of forty-one of them and says so nowhere in its own record.
+        var from = (pack?.Worlds ?? [])
+            .SelectMany(w => w.Becomes.Select(t => (Source: w.Key, Link: t)))
+            .GroupBy(pair => pair.Link.World, StringComparer.Ordinal)
+            .ToDictionary(
+                g => g.Key,
+                g => (IReadOnlyList<Terraforming>)[.. g.Select(pair => pair.Link with { World = pair.Source })],
+                StringComparer.Ordinal);
+
+        return
+        [
+            .. Database.PlanetClasses
+                .Select(w => Planet(
+                    w, detail.GetValueOrDefault(w.Key), from.GetValueOrDefault(w.Key) ?? [], reader))
+                .OrderBy(r => r.Name, StringComparer.CurrentCulture),
+        ];
+    }
 
     /// <summary>
     /// One world, with the trait it grants standing in for its own prose and numbers.
@@ -1161,8 +1191,15 @@ public sealed class WikiShelves(DesignSession session)
     /// dozen a reader can pick from and the rest of the galaxy.
     /// </remarks>
     /// <param name="world">The planet class.</param>
+    /// <param name="detail">What the page fetched about it, or null before that arrives.</param>
+    /// <param name="from">The terraforming links that end here rather than start here.</param>
+    /// <param name="reader">The text, with the pack's merged in.</param>
     /// <returns>Its row.</returns>
-    private WikiRow Planet(PlanetClassDefinition world)
+    private WikiRow Planet(
+        PlanetClassDefinition world,
+        WorldDetail? detail,
+        IReadOnlyList<Terraforming> from,
+        Localizer reader)
     {
         var preference = session.Rules.HabitabilityTraitFor(world.Key);
         var opened = OpenedBy(world.Key);
@@ -1170,7 +1207,13 @@ public sealed class WikiShelves(DesignSession session)
 
         return Row(
             world.Key,
-            Database.Trait(preference)?.Effects ?? EffectSet.None,
+            // The world's own numbers where it states any, and the habitability trait's where it
+            // does not. Fifteen classes declare a modifier block - a Gaia world gives ten per cent
+            // to job output, to happiness and to growth - and until now the column beside them was
+            // fed entirely by the trait, so a world's own bonuses appeared nowhere at all.
+            detail?.Effects is { IsEmpty: false } own
+                ? own
+                : Database.Trait(preference)?.Effects ?? EffectSet.None,
             world.Potential,
             offered,
             offered ? null : "Not a homeworld",
@@ -1179,7 +1222,7 @@ public sealed class WikiShelves(DesignSession session)
                 : "Nothing offers this world to start on. An empire finds it during a game rather "
                     + "than waking up on it.",
             [new WikiCondition("Requirements", _reader.Read(world.Potential), "Any empire")],
-            PlanetFacts(world, preference, opened),
+            PlanetFacts(world, preference, opened, detail, from, reader),
             Wants(world.Potential)) with
         {
             Icon = world.Icon,
@@ -1246,11 +1289,17 @@ public sealed class WikiShelves(DesignSession session)
     /// <param name="world">The planet class.</param>
     /// <param name="preference">The habitability trait it grants, where it grants one.</param>
     /// <param name="opened">What adds it to the picker, where anything does.</param>
+    /// <param name="detail">What the page fetched about it, or null before that arrives.</param>
+    /// <param name="from">The terraforming links that end here rather than start here.</param>
+    /// <param name="reader">The text, with the pack's merged in.</param>
     /// <returns>Its facts.</returns>
     private IReadOnlyList<WikiFact> PlanetFacts(
         PlanetClassDefinition world,
         string? preference,
-        IReadOnlyList<EmpireChoice> opened) =>
+        IReadOnlyList<EmpireChoice> opened,
+        WorldDetail? detail,
+        IReadOnlyList<Terraforming> from,
+        Localizer reader) =>
     [
         // "None" rather than nothing for the thirty-eight outside the climate system, because a
         // fact nobody states on the first row is a column that ends up drawn last. It is also true:
@@ -1270,6 +1319,137 @@ public sealed class WikiShelves(DesignSession session)
         // backdrop rather than about the world: it says whether the game paints an empire's own
         // towers over the picture, which is why it read "Built on it" on a gas giant.
         WikiFact.Said("Colonisable", world.Colonizable ? "Yes" : "No"),
+
+        WikiFact.Said("Ideal", detail is { Ideal: true } ? "Yes" : null),
+
+        // Which is not the Preference above it. That one is what an empire founded here starts
+        // with; this is what the game reaches for when it is picking a preference for a species
+        // itself, and an ocean world answers the two questions differently.
+        WikiFact.Of("Auto preference", Traits(detail?.AutoPreference ?? [])),
+
+        // How big one turns up, which for the artificial worlds is a single size and for the rest a
+        // range the galaxy rolls within.
+        WikiFact.Said("Size", Between(detail?.SmallestSize, detail?.LargestSize)),
+        WikiFact.Said("As a moon", Between(detail?.SmallestMoon, detail?.LargestMoon)),
+
+        // The district set, which is a grouping the game gives no name of its own - Standard, Ring
+        // World, Nomad are this app's prettified spelling of its key - and the district a colony
+        // starts with, which the game does name. Two headings rather than one so that an internal
+        // word is not sitting in the same list as a real one.
+        WikiFact.Of("Districts", Chip(detail?.Districts, reader)),
+        WikiFact.Of("Starts with", Chip(detail?.StartingDistrict, reader)),
+
+        WikiFact.Said(
+            "Housing",
+            detail?.CarryCapacity is { } capacity ? Number(capacity) + " per free district" : null),
+
+        // The one-word classifications, which the page could infer nothing equivalent to.
+        WikiFact.Tagged("Kind", Kinds(detail)),
+
+        // And what it can be turned into, from an entire folder nobody had opened - two hundred and
+        // thirty links - which is the second question a reader asks after habitability. Then the
+        // same links the other way, which is the third: a Gaia world is the end of fourteen of them
+        // and its own record says so nowhere.
+        WikiFact.Of("Becomes", Becomes(detail?.Becomes ?? [])),
+        WikiFact.Of("Made from", Becomes(from)),
+
+        // And what the empire has to have researched first, which the chips have no room for. One
+        // line per distinct answer, naming the worlds it covers, because a world's links do not
+        // agree: an ocean world reaches eight of its fourteen through Terrestrial Sculpting and the
+        // other six from the start.
+        WikiFact.Listed("Terraforming needs", Waits(detail?.Becomes ?? [], reader)),
+    ];
+
+    /// <summary>One district, named the way the game names it where it names it at all.</summary>
+    /// <param name="district">The key, or null where the world states none.</param>
+    /// <param name="reader">The text, with the pack's merged in.</param>
+    /// <returns>The chip, or nothing.</returns>
+    private static IReadOnlyList<EmpireChoice> Chip(string? district, Localizer reader) =>
+        district is { Length: > 0 } key
+            ? [new EmpireChoice(key, reader.Text(key, Localizer.Prettify(key)), null, null)]
+            : [];
+
+    /// <summary>
+    /// What a set of terraforming links waits on, one sentence for each distinct answer.
+    /// </summary>
+    /// <remarks>
+    /// Read through the same writer every other condition on the site goes through, so a technology
+    /// comes out as its name rather than as the key it is written under. Links that state nothing
+    /// are left out entirely - saying "these eight need nothing" is not worth a line.
+    /// </remarks>
+    /// <param name="links">The links.</param>
+    /// <param name="reader">The text, with the pack's merged in.</param>
+    /// <returns>The sentences.</returns>
+    private IReadOnlyList<string> Waits(IReadOnlyList<Terraforming> links, Localizer reader)
+    {
+        var writer = new ConditionWriter(reader);
+
+        return
+        [
+            .. links
+                .Select(t => (Said: writer.Describe(t.Needs), t.World))
+                .Where(pair => pair.Said is { Length: > 0 })
+                .GroupBy(pair => pair.Said!, StringComparer.Ordinal)
+                .Select(g => $"{Listing(g.Select(pair => pair.World))}: {g.Key}")
+                .OrderBy(said => said, StringComparer.CurrentCulture),
+        ];
+    }
+
+    /// <summary>A range the game rolls within, or the one size it fixes.</summary>
+    /// <param name="smallest">The low end.</param>
+    /// <param name="largest">The high end.</param>
+    /// <returns>The words, or nothing where the class states no size.</returns>
+    private static string? Between(int? smallest, int? largest) => (smallest, largest) switch
+    {
+        (null, null) => null,
+        ({ } only, null) => Number(only),
+        (null, { } only) => Number(only),
+        ({ } low, { } high) when low == high => Number(low),
+        ({ } low, { } high) => $"{Number(low)} to {Number(high)}",
+    };
+
+    /// <summary>Several worlds named in a row, the way a sentence would name them.</summary>
+    /// <param name="keys">The classes.</param>
+    /// <returns>Their names, or the keys where the game names none.</returns>
+    private string Listing(IEnumerable<string> keys) =>
+        string.Join(", ", Worlds([.. keys]).Select(w => w.Name));
+
+    /// <summary>The one-word classifications a world carries.</summary>
+    /// <param name="detail">What the page fetched, or null before it arrives.</param>
+    /// <returns>The labels.</returns>
+    private static IReadOnlyList<string> Kinds(WorldDetail? detail) =>
+        detail is null
+            ? []
+            : [
+                .. new (bool Has, string Said)[]
+                    {
+                        (detail.Artificial, "Artificial"),
+                        (detail.Ringworld, "Ring segment"),
+                        (detail.Asteroid, "Asteroid"),
+                        (detail.Habitat, "Habitat"),
+                    }
+                    .Where(k => k.Has)
+                    .Select(k => k.Said),
+            ];
+
+    /// <summary>
+    /// What this world can be terraformed into, each wearing how long the work takes.
+    /// </summary>
+    /// <remarks>
+    /// The duration as the badge, in years rather than the days the game counts in, because a
+    /// reader comparing two of these is comparing how long they wait. The cost is left where it is:
+    /// every link states it through scripted inline calls, and a figure read out of one of those
+    /// would be a number this app had assembled rather than one the game gives.
+    /// </remarks>
+    /// <param name="links">The links, in whichever direction the heading reads them.</param>
+    /// <returns>The chips.</returns>
+    private IReadOnlyList<EmpireChoice> Becomes(IReadOnlyList<Terraforming> links) =>
+    [
+        .. links
+            .Select(t => Worlds(t.World).FirstOrDefault() is { } chip
+                ? chip with { Badge = t.Days > 0 ? $"{Number(t.Days / 360)}y" : null }
+                : null)
+            .OfType<EmpireChoice>(),
     ];
 
     /// <summary>
@@ -1284,6 +1464,7 @@ public sealed class WikiShelves(DesignSession session)
     private IReadOnlyList<WikiRow> ShipsetRows(ShipsetPack? pack)
     {
         var fleets = (pack?.Fleets ?? []).ToDictionary(f => f.Set, StringComparer.Ordinal);
+        var detail = Detail(pack?.Sets, d => d.Key);
 
         var reader = pack is null
             ? session.Localizer
@@ -1292,7 +1473,8 @@ public sealed class WikiShelves(DesignSession session)
         return
         [
             .. Database.GraphicalCultures
-                .Select(c => Shipset(c, fleets.GetValueOrDefault(c.Key), reader))
+                .Select(c => Shipset(
+                    c, fleets.GetValueOrDefault(c.Key), detail.GetValueOrDefault(c.Key), reader))
                 .OrderBy(r => r.Name, StringComparer.CurrentCulture),
         ];
     }
@@ -1360,11 +1542,13 @@ public sealed class WikiShelves(DesignSession session)
     /// <summary>One shipset, with a ship of its own drawn during extraction.</summary>
     /// <param name="culture">The graphical culture.</param>
     /// <param name="fleet">Every ship it flies, where the page has fetched them.</param>
+    /// <param name="detail">What the set says about itself, where the page has fetched it.</param>
     /// <param name="reader">The text, with the pack's merged in.</param>
     /// <returns>Its row.</returns>
     private WikiRow Shipset(
         GraphicalCultureDefinition culture,
         ShipsetFleet? fleet,
+        ShipsetDetail? detail,
         Localizer reader)
     {
         var offered = culture.Selectable is not AlwaysRequirement { Value: false };
@@ -1377,9 +1561,11 @@ public sealed class WikiShelves(DesignSession session)
             offered ? null : "Unplayable",
             offered
                 ? null
-                : "The game keeps this set for its own empires and does not offer it in the designer.",
+                : "Nothing an empire does reaches this set. The designer will not offer it and the "
+                  + "galaxy will not roll it either - the game's two gates agree - so it is worn "
+                  + "only by the empires an event places.",
             [new WikiCondition("Requirements", _reader.Read(culture.Selectable), "Any empire")],
-            ShipsetFacts(culture),
+            ShipsetFacts(culture, detail),
             Wants(culture.Selectable),
             nameKey: culture.NameKey,
             proseKey: culture.DescriptionKey) with
@@ -1409,8 +1595,11 @@ public sealed class WikiShelves(DesignSession session)
     /// them in whatever their fallback builds. Which is why the fallback is named beside it.
     /// </remarks>
     /// <param name="culture">The graphical culture.</param>
+    /// <param name="detail">What the set says about itself, where the page has fetched it.</param>
     /// <returns>Its facts.</returns>
-    private IReadOnlyList<WikiFact> ShipsetFacts(GraphicalCultureDefinition culture) =>
+    private IReadOnlyList<WikiFact> ShipsetFacts(
+        GraphicalCultureDefinition culture,
+        ShipsetDetail? detail) =>
     [
         // The game's own heading for the group, which it keeps in common/ship_sets purely "to
         // categorize the list of ship graphics cultures in the ship set browser" - its words. We
@@ -1418,6 +1607,11 @@ public sealed class WikiShelves(DesignSession session)
         // by hand from the string "bio_ship" and calling it something else.
         WikiFact.Said("Fleet", Grouping(culture.ShipCategory)),
         WikiFact.Said("Cities", culture.HasCityArt ? "Yes" : "No"),
+
+        // Whether the hulls are painted in the empire's own colours or come as the artist drew them,
+        // which is half the reason a reader is looking at this page at all. Twenty-five say yes and
+        // the rest keep their own livery whatever the flag says.
+        WikiFact.Said("Empire colours", detail is null ? null : detail.TakesColour ? "Yes" : "No"),
         WikiFact.Said(
             "Falls back to",
             culture.Fallback is { Length: > 0 } back ? Localizer.Prettify(back) : string.Empty),

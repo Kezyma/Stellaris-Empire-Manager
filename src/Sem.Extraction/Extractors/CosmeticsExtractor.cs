@@ -174,11 +174,19 @@ internal static class CosmeticsExtractor
     /// A set without a <c>selectable</c> condition is offered; the game marks the ones reserved
     /// for fallen empires and pirates by making that condition never true.
     /// </remarks>
+    /// <param name="loader">The script loader.</param>
+    /// <param name="requirements">The compiler.</param>
+    /// <param name="assets">Where the artwork is registered.</param>
+    /// <param name="detail">Filled in with what a page about the shipsets needs.</param>
+    /// <returns>The graphical cultures.</returns>
     public static List<GraphicalCultureDefinition> ExtractGraphicalCultures(
         ScriptLoader loader,
         RequirementCompiler requirements,
-        AssetCatalog assets)
+        AssetCatalog assets,
+        List<ShipsetDetail> detail)
     {
+        ArgumentNullException.ThrowIfNull(detail);
+
         var results = new List<GraphicalCultureDefinition>();
         var bands = CityBands(loader);
 
@@ -206,6 +214,10 @@ internal static class CosmeticsExtractor
                     .Select(n => n.ScalarValue)
                     .FirstOrDefault(v => v is { Length: > 0 }),
             });
+
+            // And what the page about them wants, which a designer's picker never did: whether the
+            // hulls are painted in the empire's colours or come as the artist drew them.
+            detail.Add(new ShipsetDetail(entry.Key) { TakesColour = body.GetBool("ship_color") });
         }
 
         return results;

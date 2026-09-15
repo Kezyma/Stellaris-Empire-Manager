@@ -193,6 +193,15 @@ public static class WikiFacet
         Many("settled", "Colonisable", r => Fact(r, "Colonisable")),
         Many("pack", "Content pack", r => r.PackChoices),
         Many("bonus", "Bonus", r => r.Bonuses, Effects),
+        Many("ideal", "Ideal", r => Fact(r, "Ideal")),
+        Many("kind", "Kind", r => Fact(r, "Kind")),
+        Many("districts", "Districts", r => Fact(r, "Districts")),
+
+        // What a world can be turned into, which is the second question a reader asks after
+        // habitability and the one the wiki held nothing of at all - and the same links read the
+        // other way, which is how a reader finds the worlds a Gaia world can be made from.
+        Many("becomes", "Becomes", r => Fact(r, "Becomes")),
+        Many("made", "Made from", r => Fact(r, "Made from")),
     ];
 
     /// <summary>
@@ -207,6 +216,7 @@ public static class WikiFacet
         .. Both,
         Many("fleet", "Fleet", r => Fact(r, "Fleet")),
         Many("cities", "Cities", r => Fact(r, "Cities")),
+        Many("colour", "Empire colours", r => Fact(r, "Empire colours")),
         Many("pack", "Content pack", r => r.PackChoices),
     ];
 

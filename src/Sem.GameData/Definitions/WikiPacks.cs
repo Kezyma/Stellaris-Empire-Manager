@@ -249,7 +249,7 @@ public sealed record ShipsetPack : IWikiPack
     public const string Domain = "shipsets";
 
     /// <summary>The shape these records are in, bumped when it changes.</summary>
-    public const int CurrentSchemaVersion = 1;
+    public const int CurrentSchemaVersion = 2;
 
     /// <inheritdoc />
     public static int ExpectedSchemaVersion => CurrentSchemaVersion;
@@ -259,6 +259,9 @@ public sealed record ShipsetPack : IWikiPack
 
     /// <summary>What each set flies.</summary>
     public IReadOnlyList<ShipsetFleet> Fleets { get; init; } = [];
+
+    /// <summary>What each set says about itself beyond the ships it flies.</summary>
+    public IReadOnlyList<ShipsetDetail> Sets { get; init; } = [];
 
     /// <summary>The names the ship classes are written in.</summary>
     public IReadOnlyDictionary<string, string> Text { get; init; } =
@@ -624,6 +627,9 @@ public sealed record GovernmentFamily
 
     /// <summary>What each species class says beyond what choosing one needs.</summary>
     public IReadOnlyList<SpeciesClassDetail> SpeciesClasses { get; init; } = [];
+
+    /// <summary>What each world says about itself beyond the sky over it.</summary>
+    public IReadOnlyList<WorldDetail> Worlds { get; init; } = [];
 }
 
 /// <summary>
@@ -750,4 +756,147 @@ public sealed record SpeciesClassPack : IWikiPack
 
     /// <summary>The classes, in the order the game declares them.</summary>
     public IReadOnlyList<SpeciesClassDetail> Classes { get; init; } = [];
+}
+
+/// <summary>
+/// One world a class can be turned into, and what it takes.
+/// </summary>
+/// <param name="World">The class it becomes.</param>
+/// <param name="Days">How long the work takes, in the days the game counts in.</param>
+public sealed record Terraforming(string World, int Days)
+{
+    /// <summary>
+    /// What the empire has to have researched before the link is offered.
+    /// </summary>
+    /// <remarks>
+    /// A hundred and forty-five of the live links are gated on a technology and eleven on an
+    /// ascension perk, so a page listing them without this would be telling a reader a fresh empire
+    /// can reshape a planet on turn one. The rest state nothing and are open from the start.
+    /// </remarks>
+    public Requirement? Needs { get; init; }
+}
+
+/// <summary>
+/// What a world says about itself beyond the sky over it.
+/// </summary>
+/// <remarks>
+/// The thinnest record in the game and the last stage of the audit: eight of the sixty-three fields
+/// the folder declares were read, and the Bonus column was fed entirely by the habitability trait -
+/// so a Gaia world's own ten per cent to job output, happiness and growth appeared nowhere at all.
+/// </remarks>
+/// <param name="Key">The class's own key.</param>
+public sealed record WorldDetail(string Key)
+{
+    /// <summary>What living here does, which is the world's own and not its trait's.</summary>
+    public EffectSet Effects { get; init; } = EffectSet.None;
+
+    /// <summary>Whether the game calls it an ideal world.</summary>
+    public bool Ideal { get; init; }
+
+    /// <summary>
+    /// The preference the game gives a species it is choosing one for here, best first.
+    /// </summary>
+    /// <remarks>
+    /// The game's <c>auto_trait_prio</c>, on nineteen classes, and not the same thing as the
+    /// preference an empire founded here starts with: an ocean world names
+    /// <c>trait_auto_wet_preference</c>, which covers all three wet classes at once and penalises
+    /// the dry ones, where an empire founded on one gets Ocean Preference. Two mechanics, two
+    /// answers, and only one of them was ever on the page.
+    /// </remarks>
+    public IReadOnlyList<string> AutoPreference { get; init; } = [];
+
+    /// <summary>The size a world of this class generates at, smallest first.</summary>
+    public int? SmallestSize { get; init; }
+
+    /// <inheritdoc cref="SmallestSize" />
+    public int? LargestSize { get; init; }
+
+    /// <summary>And the same for one that turns up as a moon.</summary>
+    public int? SmallestMoon { get; init; }
+
+    /// <inheritdoc cref="SmallestMoon" />
+    public int? LargestMoon { get; init; }
+
+    /// <summary>Which set of districts it allows, where it allows any.</summary>
+    public string? Districts { get; init; }
+
+    /// <summary>The district a colony here starts with.</summary>
+    public string? StartingDistrict { get; init; }
+
+    /// <summary>How much population each free district here supports.</summary>
+    public int? CarryCapacity { get; init; }
+
+    /// <summary>The one-word classifications the game gives it.</summary>
+    public bool Artificial { get; init; }
+
+    /// <inheritdoc cref="Artificial" />
+    public bool Ringworld { get; init; }
+
+    /// <inheritdoc cref="Artificial" />
+    public bool Asteroid { get; init; }
+
+    /// <inheritdoc cref="Artificial" />
+    public bool Habitat { get; init; }
+
+    /// <summary>
+    /// What this world can be terraformed into.
+    /// </summary>
+    /// <remarks>
+    /// An entire folder nobody had opened: two hundred and fifty-eight links across thirty-five
+    /// source classes and twenty-seven targets. "What can this world become" is the second question
+    /// a reader asks after habitability, and the wiki held none of it.
+    /// </remarks>
+    public IReadOnlyList<Terraforming> Becomes { get; init; } = [];
+}
+
+/// <summary>
+/// What a shipset says about itself beyond the ships it flies.
+/// </summary>
+/// <param name="Key">The set's own key.</param>
+public sealed record ShipsetDetail(string Key)
+{
+    /// <summary>
+    /// Whether its hulls take the empire's chosen colours.
+    /// </summary>
+    /// <remarks>
+    /// Forty-eight say, and roughly half say no - which is directly visible the moment a fleet is
+    /// drawn, and the one thing a reader picking a set by its look would want to know.
+    /// </remarks>
+    public bool TakesColour { get; init; }
+
+    // And not randomized, the sibling gate to selectable, which looked like the one real gap on
+    // this page and is not: compiled and compared, the two are written identically in all
+    // fifty-two sets, so a second row saying the same thing is all it would add. What it does buy
+    // is the note beside an unplayable set - see AShipsetTheGameKeepsIsNotOneItHandsOut - because a
+    // set the designer will not offer and no roll will produce is not one the game saves for its
+    // own empires, it is one nothing reaches but an event.
+    //
+    // And not the rest of ship_kinds, which looks like a gap and is not. Twenty-seven sets declare
+    // six kinds each and the last five are the same five everywhere - space amoeba, tiyanki,
+    // voidworm, cutholoid, crystalline entity, which are the galaxy's wildlife rather than anything
+    // the empire flies. The only kind that varies is the first, default_ship against bio_ship, and
+    // that is the split the page already shows under Fleet.
+}
+
+/// <summary>Every world, as a page about them needs them.</summary>
+public sealed record WorldPack : IWikiPack
+{
+    /// <summary>Where this pack lives, which is the whole of what names the file.</summary>
+    public const string Domain = "planets";
+
+    /// <summary>The shape these records are in, bumped when it changes.</summary>
+    public const int CurrentSchemaVersion = 1;
+
+    /// <inheritdoc />
+    public static int ExpectedSchemaVersion => CurrentSchemaVersion;
+
+    /// <inheritdoc />
+    public required WikiPackStamp Stamp { get; init; }
+
+    /// <summary>The worlds, in the order the game declares them.</summary>
+    public IReadOnlyList<WorldDetail> Worlds { get; init; } = [];
+
+    /// <summary>The district-set names, which nothing in the database reaches.</summary>
+    public IReadOnlyDictionary<string, string> Text { get; init; } =
+        new Dictionary<string, string>(StringComparer.Ordinal);
 }

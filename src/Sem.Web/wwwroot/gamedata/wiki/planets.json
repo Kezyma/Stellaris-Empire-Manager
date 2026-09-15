@@ -1,0 +1,3820 @@
+{
+  "stamp": {
+    "extractorVersion": "0.1.0\u002B8708cf40997f",
+    "schemaVersion": 1
+  },
+  "worlds": [
+    {
+      "key": "pc_desert",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [
+        "trait_auto_dry_preference"
+      ],
+      "smallestSize": 12,
+      "largestSize": 25,
+      "smallestMoon": 10,
+      "largestMoon": 15,
+      "districts": "standard",
+      "carryCapacity": 400,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": [
+        {
+          "world": "pc_arid",
+          "days": 1800,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_savannah",
+          "days": 1800,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_tropical",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_continental",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_ocean",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_arctic",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_tundra",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_alpine",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_volcanic",
+          "days": 1000
+        },
+        {
+          "world": "pc_gaia",
+          "days": 3600
+        },
+        {
+          "world": "pc_machine",
+          "days": 7200
+        },
+        {
+          "world": "pc_hive",
+          "days": 7200
+        },
+        {
+          "world": "pc_nuked",
+          "days": 3600
+        }
+      ]
+    },
+    {
+      "key": "pc_arid",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [
+        "trait_auto_dry_preference"
+      ],
+      "smallestSize": 12,
+      "largestSize": 25,
+      "smallestMoon": 10,
+      "largestMoon": 15,
+      "districts": "standard",
+      "carryCapacity": 400,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": [
+        {
+          "world": "pc_desert",
+          "days": 1800,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_savannah",
+          "days": 1800,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_tropical",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_continental",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_ocean",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_arctic",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_tundra",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_alpine",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_volcanic",
+          "days": 1800
+        },
+        {
+          "world": "pc_gaia",
+          "days": 3600
+        },
+        {
+          "world": "pc_machine",
+          "days": 7200
+        },
+        {
+          "world": "pc_hive",
+          "days": 7200
+        },
+        {
+          "world": "pc_nuked",
+          "days": 3600
+        }
+      ]
+    },
+    {
+      "key": "pc_savannah",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [
+        "trait_auto_dry_preference"
+      ],
+      "smallestSize": 12,
+      "largestSize": 25,
+      "smallestMoon": 10,
+      "largestMoon": 15,
+      "districts": "standard",
+      "carryCapacity": 400,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": [
+        {
+          "world": "pc_desert",
+          "days": 1800,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_arid",
+          "days": 1800,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_tropical",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_continental",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_ocean",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_arctic",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_tundra",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_alpine",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_volcanic",
+          "days": 1800
+        },
+        {
+          "world": "pc_gaia",
+          "days": 3600
+        },
+        {
+          "world": "pc_machine",
+          "days": 7200
+        },
+        {
+          "world": "pc_hive",
+          "days": 7200
+        },
+        {
+          "world": "pc_nuked",
+          "days": 3600
+        }
+      ]
+    },
+    {
+      "key": "pc_tropical",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [
+        "trait_auto_wet_preference"
+      ],
+      "smallestSize": 12,
+      "largestSize": 25,
+      "smallestMoon": 10,
+      "largestMoon": 15,
+      "districts": "standard",
+      "carryCapacity": 400,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": [
+        {
+          "world": "pc_continental",
+          "days": 1800,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_ocean",
+          "days": 1800,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_desert",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_arid",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_savannah",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_arctic",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_tundra",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_alpine",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_volcanic",
+          "days": 3600
+        },
+        {
+          "world": "pc_gaia",
+          "days": 3600
+        },
+        {
+          "world": "pc_machine",
+          "days": 7200
+        },
+        {
+          "world": "pc_hive",
+          "days": 7200
+        },
+        {
+          "world": "pc_nuked",
+          "days": 3600
+        }
+      ]
+    },
+    {
+      "key": "pc_continental",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [
+        "trait_auto_wet_preference"
+      ],
+      "smallestSize": 12,
+      "largestSize": 25,
+      "smallestMoon": 10,
+      "largestMoon": 15,
+      "districts": "standard",
+      "carryCapacity": 400,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": [
+        {
+          "world": "pc_tropical",
+          "days": 1800,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_ocean",
+          "days": 1800,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_gaia",
+          "days": 1800
+        },
+        {
+          "world": "pc_desert",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_arid",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_savannah",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_arctic",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_tundra",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_alpine",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_volcanic",
+          "days": 3600
+        },
+        {
+          "world": "pc_machine",
+          "days": 7200
+        },
+        {
+          "world": "pc_hive",
+          "days": 7200
+        },
+        {
+          "world": "pc_nuked",
+          "days": 3600
+        }
+      ]
+    },
+    {
+      "key": "pc_ocean",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [
+        "trait_auto_wet_preference"
+      ],
+      "smallestSize": 12,
+      "largestSize": 25,
+      "smallestMoon": 10,
+      "largestMoon": 15,
+      "districts": "standard",
+      "carryCapacity": 400,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": [
+        {
+          "world": "pc_continental",
+          "days": 1800,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_tropical",
+          "days": 1800,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_desert",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_arid",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_savannah",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_arctic",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_tundra",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_alpine",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_volcanic",
+          "days": 5000
+        },
+        {
+          "world": "pc_gaia",
+          "days": 3600
+        },
+        {
+          "world": "pc_machine",
+          "days": 7200
+        },
+        {
+          "world": "pc_hive",
+          "days": 7200
+        },
+        {
+          "world": "pc_nuked",
+          "days": 3600
+        }
+      ]
+    },
+    {
+      "key": "pc_tundra",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [
+        "trait_auto_cold_preference"
+      ],
+      "smallestSize": 12,
+      "largestSize": 25,
+      "smallestMoon": 10,
+      "largestMoon": 15,
+      "districts": "standard",
+      "carryCapacity": 400,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": [
+        {
+          "world": "pc_alpine",
+          "days": 1800,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_arctic",
+          "days": 1800,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_tropical",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_continental",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_ocean",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_arid",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_desert",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_savannah",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_volcanic",
+          "days": 3600
+        },
+        {
+          "world": "pc_gaia",
+          "days": 3600
+        },
+        {
+          "world": "pc_machine",
+          "days": 7200
+        },
+        {
+          "world": "pc_hive",
+          "days": 7200
+        },
+        {
+          "world": "pc_nuked",
+          "days": 3600
+        }
+      ]
+    },
+    {
+      "key": "pc_arctic",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [
+        "trait_auto_cold_preference"
+      ],
+      "smallestSize": 12,
+      "largestSize": 25,
+      "smallestMoon": 10,
+      "largestMoon": 15,
+      "districts": "standard",
+      "carryCapacity": 400,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": [
+        {
+          "world": "pc_alpine",
+          "days": 1800,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_tundra",
+          "days": 1800,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_tropical",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_continental",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_ocean",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_arid",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_desert",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_savannah",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_volcanic",
+          "days": 3600
+        },
+        {
+          "world": "pc_gaia",
+          "days": 3600
+        },
+        {
+          "world": "pc_machine",
+          "days": 7200
+        },
+        {
+          "world": "pc_hive",
+          "days": 7200
+        },
+        {
+          "world": "pc_nuked",
+          "days": 3600
+        }
+      ]
+    },
+    {
+      "key": "pc_alpine",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [
+        "trait_auto_cold_preference"
+      ],
+      "smallestSize": 12,
+      "largestSize": 25,
+      "smallestMoon": 10,
+      "largestMoon": 15,
+      "districts": "standard",
+      "carryCapacity": 400,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": [
+        {
+          "world": "pc_arctic",
+          "days": 1800,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_tundra",
+          "days": 1800,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_tropical",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_continental",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_ocean",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_arid",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_desert",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_savannah",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_terrestrial_sculpting"
+          }
+        },
+        {
+          "world": "pc_volcanic",
+          "days": 3600
+        },
+        {
+          "world": "pc_gaia",
+          "days": 3600
+        },
+        {
+          "world": "pc_machine",
+          "days": 7200
+        },
+        {
+          "world": "pc_hive",
+          "days": 7200
+        },
+        {
+          "world": "pc_nuked",
+          "days": 3600
+        }
+      ]
+    },
+    {
+      "key": "pc_volcanic",
+      "effects": {
+        "modifiers": {
+          "planet_jobs_alloys_produces_mult": 0.05
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_jobs_alloys_produces_mult": 0.05
+        }
+      },
+      "ideal": false,
+      "autoPreference": [
+        "trait_auto_pc_volcanic_preference"
+      ],
+      "smallestSize": 12,
+      "largestSize": 25,
+      "smallestMoon": 10,
+      "largestMoon": 15,
+      "districts": "volcanic_world",
+      "carryCapacity": 400,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": [
+        {
+          "world": "pc_tropical",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_volcanic_terraforming"
+          }
+        },
+        {
+          "world": "pc_continental",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_volcanic_terraforming"
+          }
+        },
+        {
+          "world": "pc_ocean",
+          "days": 5000,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_volcanic_terraforming"
+          }
+        },
+        {
+          "world": "pc_arctic",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_volcanic_terraforming"
+          }
+        },
+        {
+          "world": "pc_tundra",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_volcanic_terraforming"
+          }
+        },
+        {
+          "world": "pc_alpine",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_volcanic_terraforming"
+          }
+        },
+        {
+          "world": "pc_arid",
+          "days": 1800,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_volcanic_terraforming"
+          }
+        },
+        {
+          "world": "pc_savannah",
+          "days": 1800,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_volcanic_terraforming"
+          }
+        },
+        {
+          "world": "pc_desert",
+          "days": 1000,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_volcanic_terraforming"
+          }
+        },
+        {
+          "world": "pc_machine",
+          "days": 7200,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_volcanic_terraforming"
+          }
+        },
+        {
+          "world": "pc_hive",
+          "days": 7200,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_volcanic_terraforming"
+          }
+        },
+        {
+          "world": "pc_nuked",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_volcanic_terraforming"
+          }
+        },
+        {
+          "world": "pc_gaia",
+          "days": 3600
+        }
+      ]
+    },
+    {
+      "key": "pc_gas_giant",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 20,
+      "largestSize": 30,
+      "smallestMoon": 8,
+      "largestMoon": 15,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_asteroid",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": true,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_ice_asteroid",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": true,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_rare_crystal_asteroid",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": true,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_molten",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 14,
+      "largestSize": 30,
+      "smallestMoon": 6,
+      "largestMoon": 12,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_barren",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 12,
+      "largestSize": 30,
+      "smallestMoon": 6,
+      "largestMoon": 10,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": [
+        {
+          "world": "pc_gaia",
+          "days": 9000,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_desert",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_arid",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_savannah",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_continental",
+          "days": 5400,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_tropical",
+          "days": 5400,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_ocean",
+          "days": 5400,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_arctic",
+          "days": 7200,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_tundra",
+          "days": 7200,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_alpine",
+          "days": 7200,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_machine",
+          "days": 7200
+        },
+        {
+          "world": "pc_hive",
+          "days": 7200
+        },
+        {
+          "world": "pc_nuked",
+          "days": 9000,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_volcanic",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        }
+      ]
+    },
+    {
+      "key": "pc_barren_cold",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 12,
+      "largestSize": 30,
+      "smallestMoon": 6,
+      "largestMoon": 10,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": [
+        {
+          "world": "pc_gaia",
+          "days": 9000,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_arctic",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_tundra",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_alpine",
+          "days": 3600,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_continental",
+          "days": 5400,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_tropical",
+          "days": 5400,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_ocean",
+          "days": 5400,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_desert",
+          "days": 7200,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_arid",
+          "days": 7200,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_savannah",
+          "days": 7200,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_machine",
+          "days": 7200
+        },
+        {
+          "world": "pc_hive",
+          "days": 7200
+        }
+      ]
+    },
+    {
+      "key": "pc_toxic",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 12,
+      "largestSize": 25,
+      "smallestMoon": 6,
+      "largestMoon": 10,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": [
+        {
+          "world": "pc_desert",
+          "days": 7200,
+          "needs": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "any",
+                "items": [
+                  {
+                    "kind": "selection",
+                    "category": "AscensionPerk",
+                    "key": "ap_detox"
+                  },
+                  {
+                    "kind": "unknown",
+                    "name": "has_country_flag",
+                    "assume": true,
+                    "value": "knights_detox"
+                  }
+                ]
+              },
+              {
+                "kind": "unknown",
+                "name": "has_technology",
+                "assume": true,
+                "value": "tech_climate_restoration"
+              }
+            ]
+          }
+        },
+        {
+          "world": "pc_arid",
+          "days": 7200,
+          "needs": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "any",
+                "items": [
+                  {
+                    "kind": "selection",
+                    "category": "AscensionPerk",
+                    "key": "ap_detox"
+                  },
+                  {
+                    "kind": "unknown",
+                    "name": "has_country_flag",
+                    "assume": true,
+                    "value": "knights_detox"
+                  }
+                ]
+              },
+              {
+                "kind": "unknown",
+                "name": "has_technology",
+                "assume": true,
+                "value": "tech_climate_restoration"
+              }
+            ]
+          }
+        },
+        {
+          "world": "pc_savannah",
+          "days": 7200,
+          "needs": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "any",
+                "items": [
+                  {
+                    "kind": "selection",
+                    "category": "AscensionPerk",
+                    "key": "ap_detox"
+                  },
+                  {
+                    "kind": "unknown",
+                    "name": "has_country_flag",
+                    "assume": true,
+                    "value": "knights_detox"
+                  }
+                ]
+              },
+              {
+                "kind": "unknown",
+                "name": "has_technology",
+                "assume": true,
+                "value": "tech_climate_restoration"
+              }
+            ]
+          }
+        },
+        {
+          "world": "pc_continental",
+          "days": 7200,
+          "needs": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "any",
+                "items": [
+                  {
+                    "kind": "selection",
+                    "category": "AscensionPerk",
+                    "key": "ap_detox"
+                  },
+                  {
+                    "kind": "unknown",
+                    "name": "has_country_flag",
+                    "assume": true,
+                    "value": "knights_detox"
+                  }
+                ]
+              },
+              {
+                "kind": "unknown",
+                "name": "has_technology",
+                "assume": true,
+                "value": "tech_climate_restoration"
+              }
+            ]
+          }
+        },
+        {
+          "world": "pc_tropical",
+          "days": 7200,
+          "needs": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "any",
+                "items": [
+                  {
+                    "kind": "selection",
+                    "category": "AscensionPerk",
+                    "key": "ap_detox"
+                  },
+                  {
+                    "kind": "unknown",
+                    "name": "has_country_flag",
+                    "assume": true,
+                    "value": "knights_detox"
+                  }
+                ]
+              },
+              {
+                "kind": "unknown",
+                "name": "has_technology",
+                "assume": true,
+                "value": "tech_climate_restoration"
+              }
+            ]
+          }
+        },
+        {
+          "world": "pc_ocean",
+          "days": 7200,
+          "needs": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "any",
+                "items": [
+                  {
+                    "kind": "selection",
+                    "category": "AscensionPerk",
+                    "key": "ap_detox"
+                  },
+                  {
+                    "kind": "unknown",
+                    "name": "has_country_flag",
+                    "assume": true,
+                    "value": "knights_detox"
+                  }
+                ]
+              },
+              {
+                "kind": "unknown",
+                "name": "has_technology",
+                "assume": true,
+                "value": "tech_climate_restoration"
+              }
+            ]
+          }
+        },
+        {
+          "world": "pc_arctic",
+          "days": 7200,
+          "needs": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "any",
+                "items": [
+                  {
+                    "kind": "selection",
+                    "category": "AscensionPerk",
+                    "key": "ap_detox"
+                  },
+                  {
+                    "kind": "unknown",
+                    "name": "has_country_flag",
+                    "assume": true,
+                    "value": "knights_detox"
+                  }
+                ]
+              },
+              {
+                "kind": "unknown",
+                "name": "has_technology",
+                "assume": true,
+                "value": "tech_climate_restoration"
+              }
+            ]
+          }
+        },
+        {
+          "world": "pc_tundra",
+          "days": 7200,
+          "needs": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "any",
+                "items": [
+                  {
+                    "kind": "selection",
+                    "category": "AscensionPerk",
+                    "key": "ap_detox"
+                  },
+                  {
+                    "kind": "unknown",
+                    "name": "has_country_flag",
+                    "assume": true,
+                    "value": "knights_detox"
+                  }
+                ]
+              },
+              {
+                "kind": "unknown",
+                "name": "has_technology",
+                "assume": true,
+                "value": "tech_climate_restoration"
+              }
+            ]
+          }
+        },
+        {
+          "world": "pc_alpine",
+          "days": 7200,
+          "needs": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "any",
+                "items": [
+                  {
+                    "kind": "selection",
+                    "category": "AscensionPerk",
+                    "key": "ap_detox"
+                  },
+                  {
+                    "kind": "unknown",
+                    "name": "has_country_flag",
+                    "assume": true,
+                    "value": "knights_detox"
+                  }
+                ]
+              },
+              {
+                "kind": "unknown",
+                "name": "has_technology",
+                "assume": true,
+                "value": "tech_climate_restoration"
+              }
+            ]
+          }
+        },
+        {
+          "world": "pc_hive",
+          "days": 7200,
+          "needs": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "any",
+                "items": [
+                  {
+                    "kind": "selection",
+                    "category": "AscensionPerk",
+                    "key": "ap_detox"
+                  },
+                  {
+                    "kind": "unknown",
+                    "name": "has_country_flag",
+                    "assume": true,
+                    "value": "knights_detox"
+                  }
+                ]
+              },
+              {
+                "kind": "unknown",
+                "name": "has_technology",
+                "assume": true,
+                "value": "tech_climate_restoration"
+              },
+              {
+                "kind": "selection",
+                "category": "AscensionPerk",
+                "key": "ap_hive_worlds"
+              }
+            ]
+          }
+        },
+        {
+          "world": "pc_volcanic",
+          "days": 3600,
+          "needs": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "AscensionPerk",
+                "key": "ap_detox"
+              },
+              {
+                "kind": "unknown",
+                "name": "has_technology",
+                "assume": true,
+                "value": "tech_climate_restoration"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "key": "pc_frozen",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 10,
+      "largestSize": 25,
+      "smallestMoon": 6,
+      "largestMoon": 10,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": [
+        {
+          "world": "pc_ocean",
+          "days": 3600,
+          "needs": {
+            "kind": "all",
+            "items": [
+              {
+                "kind": "selection",
+                "category": "AscensionPerk",
+                "key": "ap_hydrocentric"
+              },
+              {
+                "kind": "unknown",
+                "name": "has_technology",
+                "assume": true,
+                "value": "tech_climate_restoration"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "key": "pc_nuked",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [
+        "trait_auto_pc_nuked_preference"
+      ],
+      "smallestSize": 12,
+      "largestSize": 25,
+      "smallestMoon": 10,
+      "largestMoon": 15,
+      "districts": "standard",
+      "carryCapacity": 300,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": [
+        {
+          "world": "pc_desert",
+          "days": 7200,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_arid",
+          "days": 7200,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_savannah",
+          "days": 7200,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_arctic",
+          "days": 7200,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_tundra",
+          "days": 7200,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_alpine",
+          "days": 7200,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_continental",
+          "days": 7200,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_tropical",
+          "days": 7200,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_ocean",
+          "days": 7200,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_gaia",
+          "days": 9000,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_machine",
+          "days": 7200
+        },
+        {
+          "world": "pc_hive",
+          "days": 7200
+        },
+        {
+          "world": "pc_volcanic",
+          "days": 7200,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        }
+      ]
+    },
+    {
+      "key": "pc_hive",
+      "effects": {
+        "modifiers": {
+          "planet_jobs_produces_mult": 0.1,
+          "planet_resettlement_unemployed_destination_mult": 0.5,
+          "pop_environment_tolerance": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_jobs_produces_mult": 0.1,
+          "planet_resettlement_unemployed_destination_mult": 0.5,
+          "pop_environment_tolerance": 1
+        }
+      },
+      "ideal": true,
+      "autoPreference": [],
+      "smallestSize": 12,
+      "largestSize": 25,
+      "smallestMoon": 10,
+      "largestMoon": 15,
+      "districts": "hive_world",
+      "carryCapacity": 600,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": [
+        {
+          "world": "pc_machine",
+          "days": 7200
+        },
+        {
+          "world": "pc_desert",
+          "days": 7200
+        },
+        {
+          "world": "pc_arid",
+          "days": 7200
+        },
+        {
+          "world": "pc_savannah",
+          "days": 7200
+        },
+        {
+          "world": "pc_arctic",
+          "days": 7200
+        },
+        {
+          "world": "pc_tundra",
+          "days": 7200
+        },
+        {
+          "world": "pc_alpine",
+          "days": 7200
+        },
+        {
+          "world": "pc_continental",
+          "days": 7200
+        },
+        {
+          "world": "pc_tropical",
+          "days": 7200
+        },
+        {
+          "world": "pc_ocean",
+          "days": 7200
+        },
+        {
+          "world": "pc_volcanic",
+          "days": 7200
+        }
+      ]
+    },
+    {
+      "key": "pc_machine",
+      "effects": {
+        "modifiers": {
+          "planet_jobs_produces_mult": 0.1,
+          "pop_housing_usage_mult": -0.1,
+          "pop_environment_tolerance": 0,
+          "planet_resettlement_unemployed_destination_mult": 0.5
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_jobs_produces_mult": 0.1,
+          "pop_housing_usage_mult": -0.1,
+          "pop_environment_tolerance": 0,
+          "planet_resettlement_unemployed_destination_mult": 0.5
+        }
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 12,
+      "largestSize": 25,
+      "smallestMoon": 10,
+      "largestMoon": 15,
+      "districts": "machine_world",
+      "carryCapacity": 300,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": [
+        {
+          "world": "pc_desert",
+          "days": 7200
+        },
+        {
+          "world": "pc_arid",
+          "days": 7200
+        },
+        {
+          "world": "pc_savannah",
+          "days": 7200
+        },
+        {
+          "world": "pc_arctic",
+          "days": 7200
+        },
+        {
+          "world": "pc_tundra",
+          "days": 7200
+        },
+        {
+          "world": "pc_alpine",
+          "days": 7200
+        },
+        {
+          "world": "pc_continental",
+          "days": 7200
+        },
+        {
+          "world": "pc_tropical",
+          "days": 7200
+        },
+        {
+          "world": "pc_ocean",
+          "days": 7200
+        },
+        {
+          "world": "pc_hive",
+          "days": 7200
+        },
+        {
+          "world": "pc_volcanic",
+          "days": 7200
+        }
+      ]
+    },
+    {
+      "key": "pc_machine_broken",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 12,
+      "largestSize": 25,
+      "smallestMoon": 10,
+      "largestMoon": 15,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_shielded",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 12,
+      "largestSize": 25,
+      "smallestMoon": 10,
+      "largestMoon": 15,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_ai",
+      "effects": {
+        "modifiers": {
+          "planet_orbital_bombardment_damage": -0.75
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_orbital_bombardment_damage": -0.75
+        }
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 12,
+      "largestSize": 25,
+      "smallestMoon": 10,
+      "largestMoon": 15,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_infested",
+      "effects": {
+        "modifiers": {
+          "planet_orbital_bombardment_damage": -0.5
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_orbital_bombardment_damage": -0.5
+        }
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 12,
+      "largestSize": 25,
+      "smallestMoon": 7,
+      "largestMoon": 12,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_gaia",
+      "effects": {
+        "modifiers": {
+          "planet_jobs_produces_mult": 0.1,
+          "pop_happiness": 0.1,
+          "logistic_growth_mult": 0.15,
+          "planet_resettlement_unemployed_destination_mult": 0.5,
+          "pop_environment_tolerance": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_jobs_produces_mult": 0.1,
+          "pop_happiness": 0.1,
+          "logistic_growth_mult": 0.15,
+          "planet_resettlement_unemployed_destination_mult": 0.5,
+          "pop_environment_tolerance": 1
+        }
+      },
+      "ideal": true,
+      "autoPreference": [
+        "trait_auto_pc_gaia_preference"
+      ],
+      "smallestSize": 12,
+      "largestSize": 25,
+      "smallestMoon": 10,
+      "largestMoon": 15,
+      "districts": "standard",
+      "carryCapacity": 600,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": [
+        {
+          "world": "pc_machine",
+          "days": 7200,
+          "needs": {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "unknown",
+                "name": "is_owned_by",
+                "assume": true,
+                "value": "root"
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "unknown",
+                  "name": "has_modifier",
+                  "assume": true,
+                  "value": "holy_planet"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "world": "pc_hive",
+          "days": 7200,
+          "needs": {
+            "kind": "any",
+            "items": [
+              {
+                "kind": "unknown",
+                "name": "is_owned_by",
+                "assume": true,
+                "value": "root"
+              },
+              {
+                "kind": "not",
+                "item": {
+                  "kind": "unknown",
+                  "name": "has_modifier",
+                  "assume": true,
+                  "value": "holy_planet"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "world": "pc_nuked",
+          "days": 5400,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_volcanic",
+          "days": 5400,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        }
+      ]
+    },
+    {
+      "key": "pc_cybrex",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "districts": "ring_world",
+      "artificial": true,
+      "ringworld": true,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_nanotech",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 12,
+      "largestSize": 25,
+      "smallestMoon": 6,
+      "largestMoon": 10,
+      "districts": "machine_world",
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": [
+        {
+          "world": "pc_desert",
+          "days": 360,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_arid",
+          "days": 360,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_savannah",
+          "days": 360,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_ocean",
+          "days": 360,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_continental",
+          "days": 360,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_tropical",
+          "days": 360,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_arctic",
+          "days": 360,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_alpine",
+          "days": 360,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_tundra",
+          "days": 360,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_gaia",
+          "days": 360,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_machine",
+          "days": 7200,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_hive",
+          "days": 7200,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_volcanic",
+          "days": 360,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        }
+      ]
+    },
+    {
+      "key": "pc_b_star",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 20,
+      "largestSize": 35,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_a_star",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 20,
+      "largestSize": 35,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_f_star",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 20,
+      "largestSize": 35,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_g_star",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 20,
+      "largestSize": 35,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_k_star",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 20,
+      "largestSize": 35,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_m_star",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 20,
+      "largestSize": 35,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_m_giant_star",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 30,
+      "largestSize": 35,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_t_star",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 30,
+      "largestSize": 35,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_black_hole",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 20,
+      "largestSize": 35,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_neutron_star",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 20,
+      "largestSize": 35,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_pulsar",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 20,
+      "largestSize": 35,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_ringworld_habitable",
+      "effects": {
+        "modifiers": {
+          "planet_resettlement_unemployed_destination_mult": 0.5,
+          "pop_environment_tolerance": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_resettlement_unemployed_destination_mult": 0.5,
+          "pop_environment_tolerance": 1
+        }
+      },
+      "ideal": true,
+      "autoPreference": [
+        "trait_auto_pc_ringworld_habitable_preference"
+      ],
+      "districts": "ring_world",
+      "startingDistrict": "district_rw_city",
+      "carryCapacity": 600,
+      "artificial": true,
+      "ringworld": true,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_ringworld_habitable_damaged",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "artificial": false,
+      "ringworld": true,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_ringworld_tech",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "artificial": true,
+      "ringworld": true,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_ringworld_tech_damaged",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "artificial": true,
+      "ringworld": true,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_ringworld_seam",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "artificial": true,
+      "ringworld": true,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_ringworld_seam_damaged",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "artificial": true,
+      "ringworld": true,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_shattered_ring_habitable",
+      "effects": {
+        "modifiers": {
+          "pop_environment_tolerance": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "pop_environment_tolerance": 1
+        }
+      },
+      "ideal": false,
+      "autoPreference": [
+        "trait_auto_pc_ringworld_habitable_preference"
+      ],
+      "districts": "shattered_ring_world",
+      "carryCapacity": 400,
+      "artificial": true,
+      "ringworld": true,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_habitat",
+      "effects": {
+        "modifiers": {
+          "planet_colony_development_speed_mult": 2,
+          "pop_environment_tolerance": 0.4
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_colony_development_speed_mult": 2,
+          "pop_environment_tolerance": 0.4
+        }
+      },
+      "ideal": false,
+      "autoPreference": [
+        "trait_auto_pc_habitat_preference"
+      ],
+      "districts": "habitat",
+      "startingDistrict": "district_hab_housing",
+      "carryCapacity": 300,
+      "artificial": true,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": true,
+      "becomes": []
+    },
+    {
+      "key": "pc_cosmogenesis_world",
+      "effects": {
+        "modifiers": {
+          "pop_environment_tolerance": 0.85,
+          "district_cosmogenesis_goverment_max_add": 1,
+          "logistic_growth_mult": -1,
+          "planet_crime_mult": -1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "pop_environment_tolerance": 0.85,
+          "district_cosmogenesis_goverment_max_add": 1,
+          "logistic_growth_mult": -1,
+          "planet_crime_mult": -1
+        }
+      },
+      "ideal": false,
+      "autoPreference": [
+        "trait_auto_pc_cosmogenesis_world_preference"
+      ],
+      "districts": "cosmogenesis_world",
+      "startingDistrict": "district_cosmogenesis_goverment",
+      "carryCapacity": 300,
+      "artificial": true,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_shrouded",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 10,
+      "largestSize": 25,
+      "smallestMoon": 6,
+      "largestMoon": 10,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_broken",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 12,
+      "largestSize": 30,
+      "smallestMoon": 6,
+      "largestMoon": 10,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_shattered",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 12,
+      "largestSize": 30,
+      "smallestMoon": 6,
+      "largestMoon": 10,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_toxoid_star",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 20,
+      "largestSize": 35,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_rift_star",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_astral_scar",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 20,
+      "largestSize": 35,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_gray_goo",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 12,
+      "largestSize": 25,
+      "smallestMoon": 6,
+      "largestMoon": 10,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": [
+        {
+          "world": "pc_desert",
+          "days": 360,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_arid",
+          "days": 360,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_savannah",
+          "days": 360,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_ocean",
+          "days": 360,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_continental",
+          "days": 360,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_tropical",
+          "days": 360,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_arctic",
+          "days": 360,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_alpine",
+          "days": 360,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_tundra",
+          "days": 360,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        },
+        {
+          "world": "pc_volcanic",
+          "days": 360,
+          "needs": {
+            "kind": "unknown",
+            "name": "has_technology",
+            "assume": true,
+            "value": "tech_climate_restoration"
+          }
+        }
+      ]
+    },
+    {
+      "key": "pc_egg_cracked",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestMoon": 6,
+      "largestMoon": 10,
+      "artificial": false,
+      "ringworld": true,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_crystal_habitat",
+      "effects": {
+        "modifiers": {
+          "planet_colony_development_speed_mult": 2,
+          "pop_environment_tolerance": 0.7
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_colony_development_speed_mult": 2,
+          "pop_environment_tolerance": 0.7
+        }
+      },
+      "ideal": true,
+      "autoPreference": [],
+      "districts": "habitat",
+      "carryCapacity": 300,
+      "artificial": true,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": true,
+      "becomes": []
+    },
+    {
+      "key": "pc_warden_guardian",
+      "effects": {
+        "modifiers": {
+          "planet_colony_development_speed_mult": 2,
+          "pop_environment_tolerance": 0.7
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_colony_development_speed_mult": 2,
+          "pop_environment_tolerance": 0.7
+        }
+      },
+      "ideal": true,
+      "autoPreference": [],
+      "districts": "habitat",
+      "carryCapacity": 300,
+      "artificial": true,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": true,
+      "becomes": []
+    },
+    {
+      "key": "pc_crystal_asteroid",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": true,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_ringworld_shielded",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": true,
+      "autoPreference": [],
+      "artificial": false,
+      "ringworld": true,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_habitat_shielded",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": true,
+      "autoPreference": [],
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": true,
+      "becomes": []
+    },
+    {
+      "key": "pc_city",
+      "effects": {
+        "modifiers": {
+          "planet_jobs_produces_mult": 0.2,
+          "planet_pop_assembly_mult": 0.15,
+          "bonus_pop_growth_mult": 0.15,
+          "planet_resettlement_unemployed_destination_mult": 0.5,
+          "pop_environment_tolerance": 1
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "planet_jobs_produces_mult": 0.2,
+          "planet_pop_assembly_mult": 0.15,
+          "bonus_pop_growth_mult": 0.15,
+          "planet_resettlement_unemployed_destination_mult": 0.5,
+          "pop_environment_tolerance": 1
+        }
+      },
+      "ideal": true,
+      "autoPreference": [
+        "trait_auto_pc_city_preference"
+      ],
+      "smallestSize": 12,
+      "largestSize": 25,
+      "smallestMoon": 10,
+      "largestMoon": 15,
+      "districts": "city_world",
+      "carryCapacity": 600,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_relic",
+      "effects": {
+        "modifiers": {
+          "pop_environment_tolerance": 0.8
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "pop_environment_tolerance": 0.8
+        }
+      },
+      "ideal": false,
+      "autoPreference": [
+        "trait_auto_pc_relic_preference"
+      ],
+      "smallestSize": 12,
+      "largestSize": 25,
+      "smallestMoon": 10,
+      "largestMoon": 15,
+      "districts": "standard",
+      "carryCapacity": 400,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_shattered_2",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 12,
+      "largestSize": 30,
+      "smallestMoon": 6,
+      "largestMoon": 10,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_cutholoid",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": true,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_junk",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": true,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_ark",
+      "effects": {
+        "modifiers": {
+          "pop_environment_tolerance": 0.4
+        },
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": false,
+        "visibleModifiers": {
+          "pop_environment_tolerance": 0.4
+        }
+      },
+      "ideal": false,
+      "autoPreference": [
+        "trait_auto_pc_ark_preference"
+      ],
+      "smallestSize": 9,
+      "largestSize": 9,
+      "districts": "nomad",
+      "startingDistrict": "district_ark_city",
+      "carryCapacity": 400,
+      "artificial": true,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    },
+    {
+      "key": "pc_protostar",
+      "effects": {
+        "modifiers": {},
+        "conditional": [],
+        "tagKeys": [],
+        "tooltipReplacesModifiers": false,
+        "hideModifiers": false,
+        "isEmpty": true,
+        "visibleModifiers": {}
+      },
+      "ideal": false,
+      "autoPreference": [],
+      "smallestSize": 30,
+      "largestSize": 35,
+      "artificial": false,
+      "ringworld": false,
+      "asteroid": false,
+      "habitat": false,
+      "becomes": []
+    }
+  ],
+  "text": {
+    "tech_terrestrial_sculpting": "Terrestrial Sculpting",
+    "tech_volcanic_terraforming": "Volcanic Terraforming",
+    "tech_climate_restoration": "Climate Restoration",
+    "hive_world": "Hive World",
+    "holy_planet": "Holy World",
+    "district_rw_city": "City Segment",
+    "district_hab_housing": "Habitation District",
+    "district_cosmogenesis_goverment": "Synaptic $building_lathe_capital$",
+    "district_ark_city": "Habitation Decks",
+    "building_lathe_capital": "Processing Unit"
+  }
+}

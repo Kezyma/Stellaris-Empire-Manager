@@ -53,6 +53,7 @@ internal static class WorldExtractor
                 // answers a narrower question, so a gas giant and a habitat both read "No" and only
                 // one of them is a place an empire can ever live.
                 Colonizable = body.GetBool("colonizable"),
+
                 Potential = requirements.CompileTrigger(body.GetBlock("potential")),
 
                 // Each class names its own picture, and the larger of the two is a frame of a strip
@@ -84,6 +85,133 @@ internal static class WorldExtractor
         }
 
         return results;
+    }
+
+    /// <summary>
+    /// What every world says about itself beyond the sky over it.
+    /// </summary>
+    /// <remarks>
+    /// The thinnest record in the game: eight of the sixty-three fields the folder declares were
+    /// read, and the page's Bonus column was fed entirely by the habitability trait - so a Gaia
+    /// world's own ten per cent to job output, happiness and growth appeared nowhere.
+    /// </remarks>
+    /// <param name="loader">The script loader.</param>
+    /// <param name="requirements">The compiler, for the conditions inside a modifier block.</param>
+    /// <returns>What a page about the worlds needs.</returns>
+    public static List<WorldDetail> ExtractDetail(
+        ScriptLoader loader,
+        RequirementCompiler requirements)
+    {
+        var becomes = Terraforming(loader, requirements);
+        var results = new List<WorldDetail>();
+
+        foreach (var entry in loader.LoadDefinitions("common/planet_classes"))
+        {
+            if (entry.Key == RandomListBlock)
+            {
+                continue;
+            }
+
+            var body = entry.Body;
+            var size = body.GetBlock("planet_size");
+            var moon = body.GetBlock("moon_size");
+
+            results.Add(new WorldDetail(entry.Key)
+            {
+                Effects = EffectsReader.Read(body, loader, requirements),
+                Ideal = body.GetBool("ideal"),
+                AutoPreference = body.GetList("auto_trait_prio"),
+                SmallestSize = loader.ResolveInt(size?.GetString("min")),
+                LargestSize = loader.ResolveInt(size?.GetString("max")),
+                SmallestMoon = loader.ResolveInt(moon?.GetString("min")),
+                LargestMoon = loader.ResolveInt(moon?.GetString("max")),
+                Districts = body.GetString("district_set"),
+                StartingDistrict = body.GetString("starting_district"),
+                CarryCapacity = loader.ResolveInt(body.GetString("carry_cap_per_free_district")),
+                Artificial = body.GetBool("is_artificial_planet"),
+                Ringworld = body.GetBool("ringworld"),
+                Asteroid = body.GetBool("asteroid"),
+                Habitat = body.GetBool("habitat"),
+                Becomes = becomes.GetValueOrDefault(entry.Key) ?? [],
+            });
+        }
+
+        return results;
+    }
+
+    /// <summary>
+    /// What each world can be turned into, read from a folder nobody had opened.
+    /// </summary>
+    /// <remarks>
+    /// Two hundred and fifty-eight links in the folder and two hundred and thirty worth keeping,
+    /// from twenty source classes to fourteen. Each is a <c>terraform_link</c> naming a world to
+    /// start from, a world to end at, how long it takes and what the empire needs first; the cost is
+    /// a block of scripted inline calls and is deliberately left, since what a reader wants first is
+    /// what a world can become.
+    /// </remarks>
+    /// <param name="loader">The script loader.</param>
+    /// <param name="requirements">The compiler, for the condition on a link.</param>
+    /// <returns>The links, by the world they start from.</returns>
+    private static Dictionary<string, List<Terraforming>> Terraforming(
+        ScriptLoader loader,
+        RequirementCompiler requirements)
+    {
+        var links = new Dictionary<string, List<Terraforming>>(StringComparer.Ordinal);
+
+        foreach (var entry in loader.LoadEntries("common/terraform"))
+        {
+            if (entry.Node.Key != "terraform_link" || entry.Node.Block is not { } link)
+            {
+                continue;
+            }
+
+            if (link.GetString("from") is not { Length: > 0 } from ||
+                link.GetString("to") is not { Length: > 0 } to)
+            {
+                continue;
+            }
+
+            // Compiled the way a plan is compiled, which is what this question is: a technology the
+            // empire has not researched yet is unknown rather than refused, and asked the other way
+            // round every one of the hundred and forty-five links that wait on one reads as never.
+            //
+            // Which leaves the fourteen the game itself has switched off, all of them the link from
+            // a normal world to a hive world and all of them a second copy of one that exists live
+            // a few lines above. Read without asking, the page told a reader every world in the
+            // game can be turned into a Hive World.
+            var needs = link.GetBlock("condition") is { } condition
+                ? requirements.CompilePlanTrigger(condition)
+                : null;
+
+            if (needs?.Settled() is false)
+            {
+                continue;
+            }
+
+            // And a world that becomes itself, which is the Wilderness origin regrowing a planet it
+            // has stripped rather than a world turning into another one. Ten of them, and under a
+            // heading saying what this becomes every one reads as a mistake.
+            if (string.Equals(from, to, StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            if (!links.TryGetValue(from, out var into))
+            {
+                into = [];
+                links[from] = into;
+            }
+
+            if (!into.Any(t => string.Equals(t.World, to, StringComparison.Ordinal)))
+            {
+                into.Add(new Terraforming(to, loader.ResolveInt(link.GetString("duration")) ?? 0)
+                {
+                    Needs = needs,
+                });
+            }
+        }
+
+        return links;
     }
 
     /// <summary>

@@ -22,6 +22,7 @@ public sealed record PlanetClassDefinition(string Key)
     /// </remarks>
     public bool Colonizable { get; init; }
 
+
     /// <summary>What must hold for this to be offered, normally owning a content pack.</summary>
     public Requirement Potential { get; init; } = new AlwaysRequirement(true);
 
