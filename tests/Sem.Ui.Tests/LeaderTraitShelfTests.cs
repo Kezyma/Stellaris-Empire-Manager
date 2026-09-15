@@ -197,8 +197,13 @@ public sealed class LeaderTraitShelfTests
     }
 
     /// <summary>What a leader trait says about itself beyond what it does.</summary>
+    /// <remarks>
+    /// The game calls the grouping <c>sort</c> and calls the groups themselves traits - a Destiny
+    /// Trait, a Veteran Trait - so the column is headed Kind. Sort was the field name on the page,
+    /// which asked a reader to guess what it sorted.
+    /// </remarks>
     [Fact]
-    public void ATraitSaysWhoMayHoldItAndWhatSortItIs()
+    public void ATraitSaysWhoMayHoldItAndWhatKindItIs()
     {
         var row = Assert.Single(Shelves()
             .LeaderTraits(Pack(
@@ -215,7 +220,7 @@ public sealed class LeaderTraitShelfTests
             .Rows);
 
         Assert.Equal(["scientist"], row.Fact("Class")!.Chips.Select(c => c.Key));
-        Assert.Equal("Veteran", row.Fact("Sort")!.Text);
+        Assert.Equal("Veteran", row.Fact("Kind")!.Text);
         Assert.Equal("Common", row.Fact("Rarity")!.Text);
         Assert.Equal("Galactic Paragons", Assert.Single(row.Packs).Name);
     }

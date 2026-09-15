@@ -295,6 +295,11 @@ internal static partial class LocalisationPruner
         foreach (var government in database.GovernmentTypes)
         {
             Add(government.NameKey);
+
+            // Which the game writes for all hundred and seventy of them and this loop did not ask
+            // for, so every card on the largest pack-backed shelf was a title with nothing under it.
+            Add(government.DescriptionKey);
+
             Add(government.RulerTitleKey);
             Add(government.HeirTitleKey);
             Add(government.HeirTitleFemaleKey);
@@ -305,6 +310,12 @@ internal static partial class LocalisationPruner
         foreach (var planet in database.PlanetClasses)
         {
             Add(planet.NameKey);
+
+            // The same hole, and the same paragraph missing: the game describes sixty-seven of the
+            // sixty-nine - "Dry, rocky world with a nitrogen-oxygen atmosphere" - and the shelf drew
+            // none of it.
+            Add(planet.DescriptionKey);
+
             AddRequirement(planet.Potential);
         }
 

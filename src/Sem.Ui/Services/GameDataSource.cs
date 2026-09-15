@@ -213,10 +213,28 @@ public sealed class HttpGameDataSource(HttpClient client, string baseUrl = "game
                     ? null
                     : pack;
             }
-            catch (HttpRequestException)
+            catch (Exception failed) when (failed is HttpRequestException or JsonException
+                                           or TaskCanceledException)
             {
                 // A host that did not publish one is not a fault, and neither is being offline. The
                 // page that wants it says so rather than failing.
+                //
+                // JSON as well as HTTP, which is the half that was missing. A pack is optional
+                // everywhere else in this app - every shelf takes a null one and says so on the page
+                // - but a two hundred carrying an empty body, a proxy's error page or a truncated
+                // download threw out of OnInitializedAsync and took the whole application down with
+                // it: no nav, no heading, nothing but the error bar until a full reload. Seen in
+                // development the moment the dev server answered a pack with zero bytes, and a
+                // stale service worker or a half-finished deploy does the same thing.
+                //
+                // The failure is not remembered either - see the caller, which drops the entry so
+                // the next reader of the page asks again rather than inheriting a dead shelf for
+                // the life of the session.
+                lock (_packs)
+                {
+                    _packs.Remove(domain);
+                }
+
                 return null;
             }
         }

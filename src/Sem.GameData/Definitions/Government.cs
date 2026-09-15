@@ -241,6 +241,16 @@ public sealed record GovernmentTypeDefinition(string Key, double Weight, int Fil
 
     /// <summary>Localisation key for the display name.</summary>
     public string NameKey => Key;
+
+    /// <summary>
+    /// Localisation key for the description, which the game writes for every one of them.
+    /// </summary>
+    /// <remarks>
+    /// Stated here so the pruner has something to seed from - see the same on
+    /// <see cref="PlanetClassDefinition"/>, which had the same hole. A hundred and seventy names
+    /// reached the wiki and not one of the hundred and seventy descriptions beside them.
+    /// </remarks>
+    public string DescriptionKey => $"{Key}_desc";
 }
 
 /// <summary>

@@ -44,7 +44,20 @@
         }
 
         <div class="title">
-            <h2>@Row.Name</h2>
+            @*
+                The name is the control, and it is the only one that selects.
+
+                Pressing anywhere on the card does the same thing, and did the whole job until
+                somebody arrived without a mouse: an article with an onclick is not focusable and not
+                announced, so a reader on a keyboard could copy a link and could not pick anything
+                out. Made a button here rather than on the article because the article holds buttons
+                already - chips, the link - and interactive markup inside a role="button" is the
+                other half of the same problem.
+            *@
+            <h2>
+                <button type="button" class="sem-wiki-pick" aria-pressed="@(Chosen ? "true" : "false")"
+                        @onclick="OnChoose" @onclick:stopPropagation="true">@Row.Name</button>
+            </h2>
 
             <div class="sem-wiki-badges">
                 @*
@@ -72,9 +85,14 @@
 
     @if (Row.Tiers.Count == 0)
     {
-        @if (Row.Description is { Length: > 0 })
+        @*
+            Asked of the reader that is about to draw it, not of the session's. The two are the same
+            on most shelves and are not on a shelf whose words arrive in a pack, and gating on one
+            while rendering the other is how prose goes missing silently - see Prose below.
+        *@
+        @if (Prose(Row) is { Length: > 0 } prose)
         {
-            <p class="sem-wiki-prose">@((MarkupString)Wording.Html(Row.DescriptionKey, string.Empty))</p>
+            <p class="sem-wiki-prose">@((MarkupString)prose)</p>
         }
     }
     else
@@ -93,7 +111,7 @@
             <div class="sem-wiki-step" data-entry="@step.Key">
                 @{ var tier = step.Fact("Tier")?.Text; }
 
-                @if (Heads(step))
+                @if (Heads(step, tier))
                 {
                     <div class="heading">
                         <GameIcon Path="@step.Icon" Alt="@step.Name" />
@@ -106,11 +124,9 @@
                     </div>
                 }
 
-                @if (step.Description is { Length: > 0 } && Told.Add(step.Description))
+                @if (Prose(step) is { Length: > 0 } said && Told.Add(said))
                 {
-                    <p class="sem-wiki-prose">
-                        @((MarkupString)Wording.Html(step.DescriptionKey, string.Empty))
-                    </p>
+                    <p class="sem-wiki-prose">@((MarkupString)said)</p>
                 }
 
                 <EffectsList Effects="@step.Effects" />
@@ -140,9 +156,10 @@
     }
 
     @*
-        Whatever conditions this kind of entry states, each under its own heading. A civic keeps two
-        apart - what makes it appear at all against what then makes it legal - an authority states
-        only the second, and an ethic states none and so draws none of this.
+        Whatever conditions this kind of entry states, each under its own heading. Most shelves state
+        one; the species traits state three, since what may be added to a species later and what may
+        be taken away again are separate questions from what it needs to be given at all. An ethic
+        states none and so draws none of this.
     *@
     <dl class="sem-wiki-conditions">
         @foreach (var condition in Row.Conditions)
@@ -177,6 +194,20 @@
     private Localizer Wording => Reader ?? Session.Localizer;
 
     /// <summary>
+    /// What an entry says about itself, read the way it is about to be drawn.
+    /// </summary>
+    /// <remarks>
+    /// <see cref="WikiRow.Description"/> is resolved through the session's own words when the row is
+    /// built, and this draws through the shelf's, which has a pack's merged over it. Testing one and
+    /// printing the other means prose that lives only in a pack is gated out by a reader that has
+    /// never seen it - it worked only because the leader traits overwrite Description after the fact
+    /// and no other shelf had tried. Asking once, here, is both the test and the answer.
+    /// </remarks>
+    /// <param name="row">The entry or one step of it.</param>
+    /// <returns>Its prose as markup, or an empty string where it says nothing.</returns>
+    private string Prose(WikiRow row) => Wording.Html(row.DescriptionKey, string.Empty);
+
+    /// <summary>
     /// The facts that belong to the whole entry rather than to one step of it.
     /// </summary>
     /// <remarks>
@@ -185,21 +216,29 @@
     /// own name instead.
     /// </remarks>
     private IReadOnlyList<WikiFact> Shared =>
-        Row.Tiers.Count == 0
+        _shared ??= Row.Tiers.Count == 0
             ? Row.Facts
             : [.. Row.Facts.Where(f => !string.Equals(f.Heading, "Tier", StringComparison.Ordinal))];
+
+    /// <summary>Held for the draw, since the markup asks twice and a filter is not free.</summary>
+    private IReadOnlyList<WikiFact>? _shared;
 
     /// <summary>
     /// The prose already printed on this card, so a path does not say the same thing three times.
     /// </summary>
     /// <remarks>
     /// The game writes a second tier's description as a reference to the first's, so the steps of a
-    /// path very often read identically. Rebuilt on every render because the card is drawn afresh
-    /// each time and a set kept between renders would suppress everything after the first.
+    /// path very often read identically. Compared as drawn rather than as stored, for the reason
+    /// <see cref="Prose"/> gives, and cleared on every render because the card is drawn afresh each
+    /// time and a set kept between renders would suppress everything after the first.
     /// </remarks>
     private HashSet<string> Told { get; } = new(StringComparer.Ordinal);
 
-    protected override void OnParametersSet() => Told.Clear();
+    protected override void OnParametersSet()
+    {
+        Told.Clear();
+        _shared = null;
+    }
 
     /// <summary>
     /// Whether a step of an upgrade path draws a heading of its own.
@@ -212,9 +251,10 @@
     /// tier on its base at all, so position answers for it where the number cannot.
     /// </remarks>
     /// <param name="step">The step.</param>
+    /// <param name="tier">What it says its tier is, which the caller has already read.</param>
     /// <returns>True where it draws a name, an icon and a numeral.</returns>
-    private bool Heads(WikiRow step) =>
-        step.Fact("Tier")?.Text is { Length: > 0 } tier
+    private bool Heads(WikiRow step, string? tier) =>
+        tier is { Length: > 0 }
             ? !string.Equals(tier, "1", StringComparison.Ordinal)
             : !string.Equals(step.Key, Row.Tiers[0].Key, StringComparison.Ordinal);
 

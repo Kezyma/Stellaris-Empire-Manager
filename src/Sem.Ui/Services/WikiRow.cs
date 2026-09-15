@@ -103,9 +103,10 @@ public sealed record WikiRow
     /// What an empire has to be for this, in whichever senses the game distinguishes for its kind.
     /// </summary>
     /// <remarks>
-    /// A civic keeps two apart - what makes it appear at all against what then makes it legal - an
-    /// authority states only the second, and an ethic states none. Whatever a kind does not state
-    /// simply is not in the list, and the column for it is not drawn.
+    /// Most shelves ask one question and call it Requirements. The species traits ask three - what a
+    /// trait needs to be given at all, what lets it be added to a species later, and what lets it be
+    /// taken away again - and a personality asks who it is played by. An ethic asks nothing. Whatever
+    /// a kind does not state simply is not in the list, and the column for it is not drawn.
     /// </remarks>
     public required IReadOnlyList<WikiCondition> Conditions { get; init; }
 

@@ -299,8 +299,8 @@
     /// <summary>What the any-or-all switch is doing, said the same way in the label and the tip.</summary>
     private string Switching(Facet<TRow> facet) =>
         Filter.RequiresAll(facet.Key)
-            ? $"Asking for empires with every one of the {facet.Label.ToLowerInvariant()} ticked"
-            : $"Asking for empires with any of the {facet.Label.ToLowerInvariant()} ticked";
+            ? $"Asking for every one of the {facet.Label.ToLowerInvariant()} ticked"
+            : $"Asking for any of the {facet.Label.ToLowerInvariant()} ticked";
 
     /// <summary>Everything the rows hold under one heading, once each, in the order it reads in.</summary>
     private IReadOnlyList<EmpireChoice> Offered(Facet<TRow> facet)

@@ -1,5 +1,7 @@
 using System.Text;
 using Sem.Extraction;
+using Sem.Extraction.Extractors;
+using Sem.GameData;
 
 namespace Sem.Extraction.Tests;
 
@@ -18,6 +20,69 @@ public sealed class LocalisationTests
 
         var source = new InMemoryContentSource().Add("localisation/english/test_l_english.yml", bytes);
         return new GameDataExtractor(source.AsContent()).ExtractLocalisation();
+    }
+
+    /// <summary>
+    /// The pruner keeps the words for everything a page can open, descriptions included.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <c>loc/en.json</c> is cut down to what the database reaches, seeded one kind at a time. Two
+    /// kinds named only their title: the planet classes and the government types, neither of which
+    /// had a <c>DescriptionKey</c> to seed from. So sixty-seven planet paragraphs and a hundred and
+    /// seventy government ones were dropped, and both wiki shelves drew a name with nothing under
+    /// it - on a page whose whole job is saying what a thing is.
+    /// </para>
+    /// <para>
+    /// This is the test that catches it, and it has to live here rather than beside the shelf: a
+    /// test over the wiki hands the session its own words and would pass either way. What failed
+    /// was the file being written, not the row reading it.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void KeepsTheDescriptionOfEveryKindAPageCanOpen()
+    {
+        var database = new GameDatabase
+        {
+            SchemaVersion = GameDatabase.CurrentSchemaVersion,
+            GameVersion = "test",
+            ExtractorVersion = "test",
+            Defines = new GameDefines { EthicsPoints = 3, CivicPoints = 2, CityPopLevel = 4 },
+            PlanetClasses = [new PlanetClassDefinition("pc_ocean")],
+            GovernmentTypes = [new GovernmentTypeDefinition("gov_test", 10, 0)],
+            Ethics = [new EthicDefinition("ethic_militarist", 1, "militarist")],
+            Authorities = [new AuthorityDefinition("auth_democratic")],
+        };
+
+        var all = new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["pc_ocean"] = "Ocean World",
+            ["pc_ocean_desc"] = "Rocky world with a significant hydrosphere.",
+            ["gov_test"] = "Test Dominion",
+            ["gov_test_desc"] = "A government of some kind.",
+            ["ethic_militarist"] = "Militarist",
+            ["ethic_militarist_desc"] = "War is the answer.",
+            ["auth_democratic"] = "Democratic",
+            ["auth_democratic_desc"] = "Elections every so often.",
+            ["unreferenced_key"] = "Nothing points at this.",
+        };
+
+        var kept = LocalisationPruner.Prune(database, all);
+
+        // Each kind's name and its prose, which is what a card is made of.
+        foreach (var key in new[]
+        {
+            "pc_ocean", "pc_ocean_desc",
+            "gov_test", "gov_test_desc",
+            "ethic_militarist", "ethic_militarist_desc",
+            "auth_democratic", "auth_democratic_desc",
+        })
+        {
+            Assert.True(kept.ContainsKey(key), $"{key} was pruned away.");
+        }
+
+        // And the pruning still prunes, or this would pass by keeping the whole file.
+        Assert.False(kept.ContainsKey("unreferenced_key"));
     }
 
     [Fact]

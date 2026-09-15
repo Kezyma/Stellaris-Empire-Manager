@@ -62,6 +62,18 @@ public sealed record PlanetClassDefinition(string Key)
 
     /// <summary>Localisation key for the display name.</summary>
     public string NameKey => Key;
+
+    /// <summary>
+    /// Localisation key for the description, which the game writes for sixty-seven of the
+    /// sixty-nine.
+    /// </summary>
+    /// <remarks>
+    /// Stated here so the pruner has something to seed from. Without it <c>loc/en.json</c> carried
+    /// seventy-one planet names and not one planet description, and every card on the shelf drew a
+    /// title with nothing under it - while the game has a paragraph for each: "Dry, rocky world with
+    /// a nitrogen-oxygen atmosphere." Only the crystal habitat and the warden guardian say nothing.
+    /// </remarks>
+    public string DescriptionKey => $"{Key}_desc";
 }
 
 /// <summary>How a starting system may be used.</summary>

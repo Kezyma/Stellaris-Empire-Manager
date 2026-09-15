@@ -15,8 +15,9 @@
     of the table's width to leave empty and cost the longer one the room - and they are read
     together anyway, the name being what the description is about.
 
-    The two conditions get a column each for the opposite reason: they are different questions, and
-    a table is for putting the same question of every row under itself.
+    Where a shelf states several conditions they get a column each, for the opposite reason: they are
+    different questions - what a species trait needs to be given against what lets it be taken away
+    later - and a table is for putting the same question of every row under itself.
 
     The scene leads, on the pages that have one. It is the most recognisable thing about an origin
     and the thing a reader scans down the column for.
@@ -143,7 +144,24 @@
                             {
                                 <GameIcon Path="@step.Icon" Alt="@step.Name" />
                             }
-                            <span class="title">@step.Name</span>
+                            @*
+                                The name is the control - see the same on the card. Only on the
+                                first line of an entry, because selecting picks out the whole of an
+                                upgrade path rather than one tier of it.
+                            *@
+                            <span class="title">
+                                @if (first)
+                                {
+                                    <button type="button" class="sem-wiki-pick"
+                                            aria-pressed="@(row.Steps.Any(s => s.Key == Chosen) ? "true" : "false")"
+                                            @onclick="() => Press(row)"
+                                            @onclick:stopPropagation="true">@step.Name</button>
+                                }
+                                else
+                                {
+                                    @step.Name
+                                }
+                            </span>
 
                             @* The link to this one entry, at the end of the line it names. *@
                             @if (first)
@@ -157,11 +175,14 @@
                             game writes a second tier's prose as a reference to the first's, so the
                             same sentence would otherwise be printed three times over.
                         *@
-                        @if (step.Description is { Length: > 0 } && (first || !SameProse(row)))
+                        @*
+                            Read through the shelf's own reader rather than tested through the
+                            session's - see the same on the card, and WikiCard.Prose for why.
+                        *@
+                        @if ((first || !SameProse(row))
+                             && Wording.Html(step.DescriptionKey, string.Empty) is { Length: > 0 } said)
                         {
-                            <span class="prose">
-                                @((MarkupString)Wording.Html(step.DescriptionKey, string.Empty))
-                            </span>
+                            <span class="prose">@((MarkupString)said)</span>
                         }
                     </th>
 
@@ -328,15 +349,23 @@
     /// </remarks>
     /// <param name="row">The entry.</param>
     /// <returns>The classes, which may be empty.</returns>
-    private string Marks(WikiRow row) =>
-        string.Join(' ', new[]
-        {
-            row.Playable ? null : "unreachable",
+    private string? Marks(WikiRow row)
+    {
+        // Any step of it, because a link may name a second tier and the whole entry is what is
+        // picked out - the alternative highlights one line of a path and leaves the rest pale.
+        var chosen = row.Steps.Any(s => s.Key == Chosen);
 
-            // Any step of it, because a link may name a second tier and the whole entry is what is
-            // picked out - the alternative highlights one line of a path and leaves the rest pale.
-            row.Steps.Any(s => s.Key == Chosen) ? "chosen" : null,
-        }.OfType<string>());
+        // Spelled out rather than joined from a list. Every row of the table asks this twice on
+        // every render and all four answers are constants; building an array and a string to pick
+        // one of them was the kind of small cost that only shows up multiplied by seven hundred.
+        return (row.Playable, chosen) switch
+        {
+            (true, false) => null,
+            (true, true) => "chosen",
+            (false, false) => "unreachable",
+            (false, true) => "unreachable chosen",
+        };
+    }
 
     /// <summary>
     /// The lines one entry is drawn as, each with whether it is the first and how many there are.
@@ -632,15 +661,22 @@
     /// </remarks>
     private IOrderedEnumerable<WikiRow> Fact(string heading)
     {
-        if (Rows.All(r => Number(r, heading) is not null))
-        {
-            return Key(r => Number(r, heading)!.Value);
-        }
-
         // Anything with nothing to say under the heading goes last whichever way the column is
         // turned. A run of blanks is not an answer, and putting it at whichever end happens to be
         // first is the sort thrown away.
         var placed = Rows.OrderBy(r => Said(r, heading).Length == 0 ? 1 : 0);
+
+        // Asked of the rows that answer, not of all of them. Written as "every row parses as a
+        // number" it turned itself off the moment one row left the column blank - which is most
+        // columns, since an empty fact is dropped when the row is built - so the branch that exists
+        // to stop 10 landing between 1 and 2 was never the branch that ran.
+        if (Rows.Any(r => Said(r, heading).Length > 0)
+            && Rows.All(r => Said(r, heading).Length == 0 || Number(r, heading) is not null))
+        {
+            return _descending
+                ? placed.ThenByDescending(r => Number(r, heading) ?? 0)
+                : placed.ThenBy(r => Number(r, heading) ?? 0);
+        }
 
         return _descending
             ? placed.ThenByDescending(r => Said(r, heading), StringComparer.CurrentCulture)

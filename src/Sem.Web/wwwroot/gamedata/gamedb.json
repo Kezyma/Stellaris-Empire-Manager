@@ -1,7 +1,7 @@
 {
   "schemaVersion": 17,
   "gameVersion": "v4.5.0",
-  "extractorVersion": "0.1.0\u002B8708cf40997f",
+  "extractorVersion": "0.1.0\u002B22f45b58a7ce",
   "installFingerprint": "4c524a20ddb52a8f",
   "defines": {
     "ethicsPoints": 3,
@@ -99311,7 +99311,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EMPEROR",
       "rulerTitleFemaleKey": "RT_EMPRESS",
-      "nameKey": "gov_stagnant_ascendancy"
+      "nameKey": "gov_stagnant_ascendancy",
+      "descriptionKey": "gov_stagnant_ascendancy_desc"
     },
     {
       "key": "gov_awakened_ascendancy",
@@ -99340,7 +99341,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EMPEROR",
       "rulerTitleFemaleKey": "RT_EMPRESS",
-      "nameKey": "gov_awakened_ascendancy"
+      "nameKey": "gov_awakened_ascendancy",
+      "descriptionKey": "gov_awakened_ascendancy_desc"
     },
     {
       "key": "gov_custodian_matrix",
@@ -99369,7 +99371,8 @@
       "factors": [],
       "rulerTitleKey": "RT_CUSTODIAN",
       "rulerTitleFemaleKey": "RT_CUSTODIAN",
-      "nameKey": "gov_custodian_matrix"
+      "nameKey": "gov_custodian_matrix",
+      "descriptionKey": "gov_custodian_matrix_desc"
     },
     {
       "key": "gov_berserker_machine",
@@ -99398,7 +99401,8 @@
       "factors": [],
       "rulerTitleKey": "RT_CUSTODIAN",
       "rulerTitleFemaleKey": "RT_CUSTODIAN",
-      "nameKey": "gov_berserker_machine"
+      "nameKey": "gov_berserker_machine",
+      "descriptionKey": "gov_berserker_machine_desc"
     },
     {
       "key": "gov_galactic_defense_unit",
@@ -99427,7 +99431,8 @@
       "factors": [],
       "rulerTitleKey": "RT_ERROR",
       "rulerTitleFemaleKey": "RT_ERROR",
-      "nameKey": "gov_galactic_defense_unit"
+      "nameKey": "gov_galactic_defense_unit",
+      "descriptionKey": "gov_galactic_defense_unit_desc"
     },
     {
       "key": "gov_war_splinter",
@@ -99456,7 +99461,8 @@
       "factors": [],
       "rulerTitleKey": "RT_INCOMPLETE_OVERMIND",
       "rulerTitleFemaleKey": "RT_INCOMPLETE_OVERMIND",
-      "nameKey": "gov_war_splinter"
+      "nameKey": "gov_war_splinter",
+      "descriptionKey": "gov_war_splinter_desc"
     },
     {
       "key": "gov_growth_splinter",
@@ -99485,7 +99491,8 @@
       "factors": [],
       "rulerTitleKey": "RT_INCOMPLETE_OVERMIND",
       "rulerTitleFemaleKey": "RT_INCOMPLETE_OVERMIND",
-      "nameKey": "gov_growth_splinter"
+      "nameKey": "gov_growth_splinter",
+      "descriptionKey": "gov_growth_splinter_desc"
     },
     {
       "key": "gov_control_splinter",
@@ -99514,7 +99521,8 @@
       "factors": [],
       "rulerTitleKey": "RT_INCOMPLETE_OVERMIND",
       "rulerTitleFemaleKey": "RT_INCOMPLETE_OVERMIND",
-      "nameKey": "gov_control_splinter"
+      "nameKey": "gov_control_splinter",
+      "descriptionKey": "gov_control_splinter_desc"
     },
     {
       "key": "gov_fused_ascendancy",
@@ -99538,7 +99546,8 @@
       "factors": [],
       "rulerTitleKey": "RT_HIVE_MIND",
       "rulerTitleFemaleKey": "RT_HIVE_MIND",
-      "nameKey": "gov_fused_ascendancy"
+      "nameKey": "gov_fused_ascendancy",
+      "descriptionKey": "gov_fused_ascendancy_desc"
     },
     {
       "key": "gov_tribal_society",
@@ -99567,7 +99576,8 @@
       "factors": [],
       "rulerTitleKey": "RT_KING",
       "rulerTitleFemaleKey": "RT_QUEEN",
-      "nameKey": "gov_tribal_society"
+      "nameKey": "gov_tribal_society",
+      "descriptionKey": "gov_tribal_society_desc"
     },
     {
       "key": "gov_feudal_realms",
@@ -99596,7 +99606,8 @@
       "factors": [],
       "rulerTitleKey": "RT_KING",
       "rulerTitleFemaleKey": "RT_QUEEN",
-      "nameKey": "gov_feudal_realms"
+      "nameKey": "gov_feudal_realms",
+      "descriptionKey": "gov_feudal_realms_desc"
     },
     {
       "key": "gov_fragmented_nation_states",
@@ -99625,7 +99636,8 @@
       "factors": [],
       "rulerTitleKey": "RT_SECRETARY",
       "rulerTitleFemaleKey": "RT_SECRETARY_FEMALE",
-      "nameKey": "gov_fragmented_nation_states"
+      "nameKey": "gov_fragmented_nation_states",
+      "descriptionKey": "gov_fragmented_nation_states_desc"
     },
     {
       "key": "gov_curator_enclave",
@@ -99648,7 +99660,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_HIGH_CURATOR",
-      "nameKey": "gov_curator_enclave"
+      "nameKey": "gov_curator_enclave",
+      "descriptionKey": "gov_curator_enclave_desc"
     },
     {
       "key": "gov_trader_enclave",
@@ -99671,7 +99684,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_HIGH_TRADER",
-      "nameKey": "gov_trader_enclave"
+      "nameKey": "gov_trader_enclave",
+      "descriptionKey": "gov_trader_enclave_desc"
     },
     {
       "key": "gov_artist_enclave",
@@ -99694,7 +99708,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_HIGH_ARTIST",
-      "nameKey": "gov_artist_enclave"
+      "nameKey": "gov_artist_enclave",
+      "descriptionKey": "gov_artist_enclave_desc"
     },
     {
       "key": "gov_marauder_clans",
@@ -99717,7 +99732,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_RELUCTANT_EMISSARY",
-      "nameKey": "gov_marauder_clans"
+      "nameKey": "gov_marauder_clans",
+      "descriptionKey": "gov_marauder_clans_desc"
     },
     {
       "key": "gov_marauder_khanate",
@@ -99745,7 +99761,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_GREAT_KHAN",
-      "nameKey": "gov_marauder_khanate"
+      "nameKey": "gov_marauder_khanate",
+      "descriptionKey": "gov_marauder_khanate_desc"
     },
     {
       "key": "gov_diadochi",
@@ -99768,7 +99785,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_KHAN",
-      "nameKey": "gov_diadochi"
+      "nameKey": "gov_diadochi",
+      "descriptionKey": "gov_diadochi_desc"
     },
     {
       "key": "gov_successor_khanate",
@@ -99791,7 +99809,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_KHAN",
-      "nameKey": "gov_successor_khanate"
+      "nameKey": "gov_successor_khanate",
+      "descriptionKey": "gov_successor_khanate_desc"
     },
     {
       "key": "gov_military_order",
@@ -99814,7 +99833,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_GRAND_MASTER",
-      "nameKey": "gov_military_order"
+      "nameKey": "gov_military_order",
+      "descriptionKey": "gov_military_order_desc"
     },
     {
       "key": "gov_ancient_machine_intelligence",
@@ -99837,7 +99857,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_CORE_DIRECTIVE",
-      "nameKey": "gov_ancient_machine_intelligence"
+      "nameKey": "gov_ancient_machine_intelligence",
+      "descriptionKey": "gov_ancient_machine_intelligence_desc"
     },
     {
       "key": "gov_mercenary_enclave",
@@ -99860,7 +99881,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_HIGH_ADMIRAL",
-      "nameKey": "gov_mercenary_enclave"
+      "nameKey": "gov_mercenary_enclave",
+      "descriptionKey": "gov_mercenary_enclave_desc"
     },
     {
       "key": "gov_salvager_enclave",
@@ -99883,7 +99905,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_PRINCIPAL_ENGINEER",
-      "nameKey": "gov_salvager_enclave"
+      "nameKey": "gov_salvager_enclave",
+      "descriptionKey": "gov_salvager_enclave_desc"
     },
     {
       "key": "gov_shroudwalker_enclave",
@@ -99906,7 +99929,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_ELDER",
-      "nameKey": "gov_shroudwalker_enclave"
+      "nameKey": "gov_shroudwalker_enclave",
+      "descriptionKey": "gov_shroudwalker_enclave_desc"
     },
     {
       "key": "gov_mindwarden_enclave",
@@ -99929,7 +99953,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_ELDER",
-      "nameKey": "gov_mindwarden_enclave"
+      "nameKey": "gov_mindwarden_enclave",
+      "descriptionKey": "gov_mindwarden_enclave_desc"
     },
     {
       "key": "gov_unplugged_assimilator_empire",
@@ -99952,7 +99977,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_UNPLUGGED_ASSIMILATOR",
-      "nameKey": "gov_unplugged_assimilator_empire"
+      "nameKey": "gov_unplugged_assimilator_empire",
+      "descriptionKey": "gov_unplugged_assimilator_empire_desc"
     },
     {
       "key": "gov_champions_forge_enclave",
@@ -99975,7 +100001,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_ETERNAL_CHAMPION",
-      "nameKey": "gov_champions_forge_enclave"
+      "nameKey": "gov_champions_forge_enclave",
+      "descriptionKey": "gov_champions_forge_enclave_desc"
     },
     {
       "key": "gov_representative_democracy",
@@ -99989,7 +100016,8 @@
       "factors": [],
       "rulerTitleKey": "RT_PRESIDENT",
       "rulerTitleFemaleKey": "RT_PRESIDENT_FEMALE",
-      "nameKey": "gov_representative_democracy"
+      "nameKey": "gov_representative_democracy",
+      "descriptionKey": "gov_representative_democracy_desc"
     },
     {
       "key": "gov_plutocratic_oligarchy",
@@ -100003,7 +100031,8 @@
       "factors": [],
       "rulerTitleKey": "RT_HIGH_COMMISSIONER",
       "rulerTitleFemaleKey": "RT_HIGH_COMMISSIONER_FEMALE",
-      "nameKey": "gov_plutocratic_oligarchy"
+      "nameKey": "gov_plutocratic_oligarchy",
+      "descriptionKey": "gov_plutocratic_oligarchy_desc"
     },
     {
       "key": "gov_constitutional_dictatorship",
@@ -100017,7 +100046,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EXECUTOR",
       "rulerTitleFemaleKey": "RT_EXECUTOR_FEMALE",
-      "nameKey": "gov_constitutional_dictatorship"
+      "nameKey": "gov_constitutional_dictatorship",
+      "descriptionKey": "gov_constitutional_dictatorship_desc"
     },
     {
       "key": "gov_despotic_empire",
@@ -100033,7 +100063,8 @@
       "rulerTitleFemaleKey": "RT_EMPRESS",
       "heirTitleKey": "HT_CROWN_PRINCE",
       "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
-      "nameKey": "gov_despotic_empire"
+      "nameKey": "gov_despotic_empire",
+      "descriptionKey": "gov_despotic_empire_desc"
     },
     {
       "key": "gov_hive_mind",
@@ -100058,7 +100089,8 @@
       "factors": [],
       "rulerTitleKey": "RT_HIVE_MIND",
       "rulerTitleFemaleKey": "RT_HIVE_MIND_FEMALE",
-      "nameKey": "gov_hive_mind"
+      "nameKey": "gov_hive_mind",
+      "descriptionKey": "gov_hive_mind_desc"
     },
     {
       "key": "gov_machine_empire",
@@ -100070,7 +100102,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_CPU",
-      "nameKey": "gov_machine_empire"
+      "nameKey": "gov_machine_empire",
+      "descriptionKey": "gov_machine_empire_desc"
     },
     {
       "key": "gov_megacorporation",
@@ -100103,7 +100136,8 @@
       "factors": [],
       "rulerTitleKey": "RT_CEO",
       "rulerTitleFemaleKey": "RT_CEO_FEMALE",
-      "nameKey": "gov_megacorporation"
+      "nameKey": "gov_megacorporation",
+      "descriptionKey": "gov_megacorporation_desc"
     },
     {
       "key": "gov_wilderness",
@@ -100129,7 +100163,8 @@
       "factors": [],
       "rulerTitleKey": "RT_WILDERNESS",
       "rulerTitleFemaleKey": "RT_WILDERNESS_FEMALE",
-      "nameKey": "gov_wilderness"
+      "nameKey": "gov_wilderness",
+      "descriptionKey": "gov_wilderness_desc"
     },
     {
       "key": "gov_fallback",
@@ -100141,7 +100176,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_KING",
-      "nameKey": "gov_fallback"
+      "nameKey": "gov_fallback",
+      "descriptionKey": "gov_fallback_desc"
     },
     {
       "key": "gov_theocratic_republic",
@@ -100175,7 +100211,8 @@
       "factors": [],
       "rulerTitleKey": "RT_REVERED_ELDER",
       "rulerTitleFemaleKey": "RT_REVERED_ELDER_FEMALE",
-      "nameKey": "gov_theocratic_republic"
+      "nameKey": "gov_theocratic_republic",
+      "descriptionKey": "gov_theocratic_republic_desc"
     },
     {
       "key": "gov_theocratic_oligarchy",
@@ -100209,7 +100246,8 @@
       "factors": [],
       "rulerTitleKey": "RT_CHIEF_PRECENTOR",
       "rulerTitleFemaleKey": "RT_CHIEF_PRECENTOR_FEMALE",
-      "nameKey": "gov_theocratic_oligarchy"
+      "nameKey": "gov_theocratic_oligarchy",
+      "descriptionKey": "gov_theocratic_oligarchy_desc"
     },
     {
       "key": "gov_theocratic_dictatorship",
@@ -100243,7 +100281,8 @@
       "factors": [],
       "rulerTitleKey": "RT_PATRIARCH",
       "rulerTitleFemaleKey": "RT_MATRIARCH",
-      "nameKey": "gov_theocratic_dictatorship"
+      "nameKey": "gov_theocratic_dictatorship",
+      "descriptionKey": "gov_theocratic_dictatorship_desc"
     },
     {
       "key": "gov_theocratic_monarchy",
@@ -100279,7 +100318,8 @@
       "rulerTitleFemaleKey": "RT_ARCHPROPHETESS",
       "heirTitleKey": "HT_PRIEST",
       "heirTitleFemaleKey": "HT_PRIESTESS",
-      "nameKey": "gov_theocratic_monarchy"
+      "nameKey": "gov_theocratic_monarchy",
+      "descriptionKey": "gov_theocratic_monarchy_desc"
     },
     {
       "key": "gov_direct_democracy",
@@ -100313,7 +100353,8 @@
       "factors": [],
       "rulerTitleKey": "RT_CHANCELLOR",
       "rulerTitleFemaleKey": "RT_CHANCELLOR_FEMALE",
-      "nameKey": "gov_direct_democracy"
+      "nameKey": "gov_direct_democracy",
+      "descriptionKey": "gov_direct_democracy_desc"
     },
     {
       "key": "gov_executive_committee",
@@ -100347,7 +100388,8 @@
       "factors": [],
       "rulerTitleKey": "RT_CHAIRMAN",
       "rulerTitleFemaleKey": "RT_CHAIRWOMAN",
-      "nameKey": "gov_executive_committee"
+      "nameKey": "gov_executive_committee",
+      "descriptionKey": "gov_executive_committee_desc"
     },
     {
       "key": "gov_totalitarian_regime",
@@ -100381,7 +100423,8 @@
       "factors": [],
       "rulerTitleKey": "RT_PRIMARCH",
       "rulerTitleFemaleKey": "RT_PRIMARCH_FEMALE",
-      "nameKey": "gov_totalitarian_regime"
+      "nameKey": "gov_totalitarian_regime",
+      "descriptionKey": "gov_totalitarian_regime_desc"
     },
     {
       "key": "gov_despotic_hegemony",
@@ -100417,7 +100460,8 @@
       "rulerTitleFemaleKey": "RT_OVERLORD_FEMALE",
       "heirTitleKey": "HT_DEPUTY_OVERLORD",
       "heirTitleFemaleKey": "HT_DEPUTY_OVERLORD_FEMALE",
-      "nameKey": "gov_despotic_hegemony"
+      "nameKey": "gov_despotic_hegemony",
+      "descriptionKey": "gov_despotic_hegemony_desc"
     },
     {
       "key": "gov_star_empire",
@@ -100472,7 +100516,8 @@
       "rulerTitleFemaleKey": "RT_EMPRESS",
       "heirTitleKey": "HT_CROWN_PRINCE",
       "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
-      "nameKey": "gov_star_empire"
+      "nameKey": "gov_star_empire",
+      "descriptionKey": "gov_star_empire_desc"
     },
     {
       "key": "gov_military_dictatorship",
@@ -100525,7 +100570,8 @@
       ],
       "rulerTitleKey": "RT_GRAND_MARSHAL",
       "rulerTitleFemaleKey": "RT_GRAND_MARSHAL_FEMALE",
-      "nameKey": "gov_military_dictatorship"
+      "nameKey": "gov_military_dictatorship",
+      "descriptionKey": "gov_military_dictatorship_desc"
     },
     {
       "key": "gov_military_junta",
@@ -100578,7 +100624,8 @@
       ],
       "rulerTitleKey": "RT_ARCHON",
       "rulerTitleFemaleKey": "RT_ARCHON_FEMALE",
-      "nameKey": "gov_military_junta"
+      "nameKey": "gov_military_junta",
+      "descriptionKey": "gov_military_junta_desc"
     },
     {
       "key": "gov_military_commissariat",
@@ -100631,7 +100678,8 @@
       ],
       "rulerTitleKey": "RT_COMMISSARY_GENERAL",
       "rulerTitleFemaleKey": "RT_COMMISSARY_GENERAL_FEMALE",
-      "nameKey": "gov_military_commissariat"
+      "nameKey": "gov_military_commissariat",
+      "descriptionKey": "gov_military_commissariat_desc"
     },
     {
       "key": "gov_moral_democracy",
@@ -100665,7 +100713,8 @@
       "factors": [],
       "rulerTitleKey": "RT_PRIME_MINISTER",
       "rulerTitleFemaleKey": "RT_PRIME_MINISTER_FEMALE",
-      "nameKey": "gov_moral_democracy"
+      "nameKey": "gov_moral_democracy",
+      "descriptionKey": "gov_moral_democracy_desc"
     },
     {
       "key": "gov_irenic_bureaucracy",
@@ -100699,7 +100748,8 @@
       "factors": [],
       "rulerTitleKey": "RT_COORDINATOR",
       "rulerTitleFemaleKey": "RT_COORDINATOR_FEMALE",
-      "nameKey": "gov_irenic_bureaucracy"
+      "nameKey": "gov_irenic_bureaucracy",
+      "descriptionKey": "gov_irenic_bureaucracy_desc"
     },
     {
       "key": "gov_irenic_dictatorship",
@@ -100733,7 +100783,8 @@
       "factors": [],
       "rulerTitleKey": "RT_SERENE_PROTECTOR",
       "rulerTitleFemaleKey": "RT_SERENE_PROTECTOR_FEMALE",
-      "nameKey": "gov_irenic_dictatorship"
+      "nameKey": "gov_irenic_dictatorship",
+      "descriptionKey": "gov_irenic_dictatorship_desc"
     },
     {
       "key": "gov_irenic_monarchy",
@@ -100769,7 +100820,8 @@
       "rulerTitleFemaleKey": "RT_QUEEN",
       "heirTitleKey": "HT_CROWN_PRINCE",
       "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
-      "nameKey": "gov_irenic_monarchy"
+      "nameKey": "gov_irenic_monarchy",
+      "descriptionKey": "gov_irenic_monarchy_desc"
     },
     {
       "key": "gov_divine_empire",
@@ -100795,7 +100847,8 @@
       "rulerTitleFemaleKey": "RT_GOD_EMPRESS",
       "heirTitleKey": "HT_SAINT",
       "heirTitleFemaleKey": "HT_SAINT_FEMALE",
-      "nameKey": "gov_divine_empire"
+      "nameKey": "gov_divine_empire",
+      "descriptionKey": "gov_divine_empire_desc"
     },
     {
       "key": "gov_holy_tribunal",
@@ -100819,7 +100872,8 @@
       "factors": [],
       "rulerTitleKey": "RT_HIGH_INQUISITOR",
       "rulerTitleFemaleKey": "RT_HIGH_INQUISITOR_FEMALE",
-      "nameKey": "gov_holy_tribunal"
+      "nameKey": "gov_holy_tribunal",
+      "descriptionKey": "gov_holy_tribunal_desc"
     },
     {
       "key": "gov_megachurch",
@@ -100881,7 +100935,8 @@
       ],
       "rulerTitleKey": "RT_HALLOWED_COMPTROLLER",
       "rulerTitleFemaleKey": "RT_HALLOWED_COMPTROLLER_FEMALE",
-      "nameKey": "gov_megachurch"
+      "nameKey": "gov_megachurch",
+      "descriptionKey": "gov_megachurch_desc"
     },
     {
       "key": "gov_martial_empire",
@@ -100907,7 +100962,8 @@
       "rulerTitleFemaleKey": "RT_EMPRESS",
       "heirTitleKey": "HT_CROWN_PRINCE",
       "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
-      "nameKey": "gov_martial_empire"
+      "nameKey": "gov_martial_empire",
+      "descriptionKey": "gov_martial_empire_desc"
     },
     {
       "key": "gov_martial_dictatorship",
@@ -100931,7 +100987,8 @@
       "factors": [],
       "rulerTitleKey": "RT_IMPERATOR",
       "rulerTitleFemaleKey": "RT_IMPERATRIX",
-      "nameKey": "gov_martial_dictatorship"
+      "nameKey": "gov_martial_dictatorship",
+      "descriptionKey": "gov_martial_dictatorship_desc"
     },
     {
       "key": "gov_war_council",
@@ -100955,7 +101012,8 @@
       "factors": [],
       "rulerTitleKey": "RT_WARLORD",
       "rulerTitleFemaleKey": "RT_WARLORD_FEMALE",
-      "nameKey": "gov_war_council"
+      "nameKey": "gov_war_council",
+      "descriptionKey": "gov_war_council_desc"
     },
     {
       "key": "gov_assembly_of_clans",
@@ -100979,7 +101037,8 @@
       "factors": [],
       "rulerTitleKey": "RT_CLAN_SPEAKER",
       "rulerTitleFemaleKey": "RT_CLAN_SPEAKER_FEMALE",
-      "nameKey": "gov_assembly_of_clans"
+      "nameKey": "gov_assembly_of_clans",
+      "descriptionKey": "gov_assembly_of_clans_desc"
     },
     {
       "key": "gov_citizen_stratocracy",
@@ -101003,7 +101062,8 @@
       "factors": [],
       "rulerTitleKey": "RT_STRATEGOS",
       "rulerTitleFemaleKey": "RT_STRATEGOS_FEMALE",
-      "nameKey": "gov_citizen_stratocracy"
+      "nameKey": "gov_citizen_stratocracy",
+      "descriptionKey": "gov_citizen_stratocracy_desc"
     },
     {
       "key": "gov_citizen_republic",
@@ -101027,7 +101087,8 @@
       "factors": [],
       "rulerTitleKey": "RT_CONSUL",
       "rulerTitleFemaleKey": "RT_CONSUL_FEMALE",
-      "nameKey": "gov_citizen_republic"
+      "nameKey": "gov_citizen_republic",
+      "descriptionKey": "gov_citizen_republic_desc"
     },
     {
       "key": "gov_celestial_empire",
@@ -101068,7 +101129,8 @@
       "rulerTitleFemaleKey": "RT_CELESTIAL_EMPRESS",
       "heirTitleKey": "HT_CROWN_PRINCE",
       "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
-      "nameKey": "gov_celestial_empire"
+      "nameKey": "gov_celestial_empire",
+      "descriptionKey": "gov_celestial_empire_desc"
     },
     {
       "key": "gov_rational_consensus",
@@ -101092,7 +101154,8 @@
       "factors": [],
       "rulerTitleKey": "RT_FIRST_SPEAKER",
       "rulerTitleFemaleKey": "RT_FIRST_SPEAKER_FEMALE",
-      "nameKey": "gov_rational_consensus"
+      "nameKey": "gov_rational_consensus",
+      "descriptionKey": "gov_rational_consensus_desc"
     },
     {
       "key": "gov_science_directorate",
@@ -101116,7 +101179,8 @@
       "factors": [],
       "rulerTitleKey": "RT_DIRECTOR_GENERAL",
       "rulerTitleFemaleKey": "RT_DIRECTOR_GENERAL_FEMALE",
-      "nameKey": "gov_science_directorate"
+      "nameKey": "gov_science_directorate",
+      "descriptionKey": "gov_science_directorate_desc"
     },
     {
       "key": "gov_technocratic_dictatorship",
@@ -101140,7 +101204,8 @@
       "factors": [],
       "rulerTitleKey": "RT_OVERSEER",
       "rulerTitleFemaleKey": "RT_OVERSEER_FEMALE",
-      "nameKey": "gov_technocratic_dictatorship"
+      "nameKey": "gov_technocratic_dictatorship",
+      "descriptionKey": "gov_technocratic_dictatorship_desc"
     },
     {
       "key": "gov_illuminated_autocracy",
@@ -101166,7 +101231,8 @@
       "rulerTitleFemaleKey": "RT_PRIMUS_FEMALE",
       "heirTitleKey": "HT_SECUNDUS",
       "heirTitleFemaleKey": "HT_SECUNDUS_FEMALE",
-      "nameKey": "gov_illuminated_autocracy"
+      "nameKey": "gov_illuminated_autocracy",
+      "descriptionKey": "gov_illuminated_autocracy_desc"
     },
     {
       "key": "gov_feudal_empire",
@@ -101192,7 +101258,8 @@
       "rulerTitleFemaleKey": "RT_EMPRESS",
       "heirTitleKey": "HT_CROWN_PRINCE",
       "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
-      "nameKey": "gov_feudal_empire"
+      "nameKey": "gov_feudal_empire",
+      "descriptionKey": "gov_feudal_empire_desc"
     },
     {
       "key": "gov_enlightened_monarchy",
@@ -101218,7 +101285,8 @@
       "rulerTitleFemaleKey": "RT_HIGH_QUEEN",
       "heirTitleKey": "HT_CROWN_PRINCE",
       "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
-      "nameKey": "gov_enlightened_monarchy"
+      "nameKey": "gov_enlightened_monarchy",
+      "descriptionKey": "gov_enlightened_monarchy_desc"
     },
     {
       "key": "gov_elective_monarchy",
@@ -101242,7 +101310,8 @@
       "factors": [],
       "rulerTitleKey": "RT_HIGH_KING",
       "rulerTitleFemaleKey": "RT_HIGH_QUEEN",
-      "nameKey": "gov_elective_monarchy"
+      "nameKey": "gov_elective_monarchy",
+      "descriptionKey": "gov_elective_monarchy_desc"
     },
     {
       "key": "gov_machine_research",
@@ -101317,7 +101386,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_LINK",
-      "nameKey": "gov_machine_research"
+      "nameKey": "gov_machine_research",
+      "descriptionKey": "gov_machine_research_desc"
     },
     {
       "key": "gov_machine_industrial",
@@ -101392,7 +101462,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_HUB",
-      "nameKey": "gov_machine_industrial"
+      "nameKey": "gov_machine_industrial",
+      "descriptionKey": "gov_machine_industrial_desc"
     },
     {
       "key": "gov_worker_coop",
@@ -101405,7 +101476,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_PRESIDING_SPEAKING",
-      "nameKey": "gov_worker_coop"
+      "nameKey": "gov_worker_coop",
+      "descriptionKey": "gov_worker_coop_desc"
     },
     {
       "key": "gov_communal_parity",
@@ -101418,7 +101490,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_PRESIDING_SPEAKING",
-      "nameKey": "gov_communal_parity"
+      "nameKey": "gov_communal_parity",
+      "descriptionKey": "gov_communal_parity_desc"
     },
     {
       "key": "gov_bandit_kingdom",
@@ -101452,7 +101525,8 @@
       "factors": [],
       "rulerTitleKey": "RT_WARLORD",
       "heirTitleKey": "HT_RAIDER",
-      "nameKey": "gov_bandit_kingdom"
+      "nameKey": "gov_bandit_kingdom",
+      "descriptionKey": "gov_bandit_kingdom_desc"
     },
     {
       "key": "gov_bandit_commune",
@@ -101485,7 +101559,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_WARLORD",
-      "nameKey": "gov_bandit_commune"
+      "nameKey": "gov_bandit_commune",
+      "descriptionKey": "gov_bandit_commune_desc"
     },
     {
       "key": "gov_grim_council",
@@ -101508,7 +101583,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_DREAD_CARDINAL",
-      "nameKey": "gov_grim_council"
+      "nameKey": "gov_grim_council",
+      "descriptionKey": "gov_grim_council_desc"
     },
     {
       "key": "gov_mortal_empire",
@@ -101534,7 +101610,8 @@
       "rulerTitleFemaleKey": "RT_DEATH_MONARCH_FEMALE",
       "heirTitleKey": "HT_DEATH_PRINCE",
       "heirTitleFemaleKey": "HT_DEATH_PRINCESS",
-      "nameKey": "gov_mortal_empire"
+      "nameKey": "gov_mortal_empire",
+      "descriptionKey": "gov_mortal_empire_desc"
     },
     {
       "key": "gov_band_blood",
@@ -101579,7 +101656,8 @@
       "rulerTitleFemaleKey": "RT_BLOODLADY",
       "heirTitleKey": "HT_BLOODPRINCE",
       "heirTitleFemaleKey": "HT_BLOODPRINCESS",
-      "nameKey": "gov_band_blood"
+      "nameKey": "gov_band_blood",
+      "descriptionKey": "gov_band_blood_desc"
     },
     {
       "key": "gov_sacrificial_megachurch",
@@ -101621,7 +101699,8 @@
         }
       ],
       "rulerTitleKey": "RT_GRAVE_ADMINISTRATOR",
-      "nameKey": "gov_sacrificial_megachurch"
+      "nameKey": "gov_sacrificial_megachurch",
+      "descriptionKey": "gov_sacrificial_megachurch_desc"
     },
     {
       "key": "gov_defensive_union",
@@ -101635,7 +101714,8 @@
       "factors": [],
       "rulerTitleKey": "RT_DEFENSIVE_UNION",
       "heirTitleKey": "HT_DEFENSIVE_UNION",
-      "nameKey": "gov_defensive_union"
+      "nameKey": "gov_defensive_union",
+      "descriptionKey": "gov_defensive_union_desc"
     },
     {
       "key": "gov_dimensional_covenant",
@@ -101649,7 +101729,8 @@
       "factors": [],
       "rulerTitleKey": "RT_DIMENSIONAL_COVENANT",
       "heirTitleKey": "HT_DIMENSIONAL_COVENANT",
-      "nameKey": "gov_dimensional_covenant"
+      "nameKey": "gov_dimensional_covenant",
+      "descriptionKey": "gov_dimensional_covenant_desc"
     },
     {
       "key": "gov_parasitic_overmind",
@@ -101672,7 +101753,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_PAR",
-      "nameKey": "gov_parasitic_overmind"
+      "nameKey": "gov_parasitic_overmind",
+      "descriptionKey": "gov_parasitic_overmind_desc"
     },
     {
       "key": "gov_trade_league",
@@ -101760,7 +101842,8 @@
       "factors": [],
       "rulerTitleKey": "RT_CHAIRMAN",
       "rulerTitleFemaleKey": "RT_CHAIRWOMAN",
-      "nameKey": "gov_trade_league"
+      "nameKey": "gov_trade_league",
+      "descriptionKey": "gov_trade_league_desc"
     },
     {
       "key": "gov_machine_servitor",
@@ -101782,7 +101865,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_SUPERVISORY",
-      "nameKey": "gov_machine_servitor"
+      "nameKey": "gov_machine_servitor",
+      "descriptionKey": "gov_machine_servitor_desc"
     },
     {
       "key": "gov_machine_assimilator",
@@ -101812,7 +101896,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_CONDUIT",
-      "nameKey": "gov_machine_assimilator"
+      "nameKey": "gov_machine_assimilator",
+      "descriptionKey": "gov_machine_assimilator_desc"
     },
     {
       "key": "gov_purity_assembly",
@@ -101836,7 +101921,8 @@
       "factors": [],
       "rulerTitleKey": "RT_PRIME_JUSTICIAR",
       "rulerTitleFemaleKey": "RT_PRIME_JUSTICIAR_FEMALE",
-      "nameKey": "gov_purity_assembly"
+      "nameKey": "gov_purity_assembly",
+      "descriptionKey": "gov_purity_assembly_desc"
     },
     {
       "key": "gov_purification_committee",
@@ -101860,7 +101946,8 @@
       "factors": [],
       "rulerTitleKey": "RT_GRAND_ARBITER",
       "rulerTitleFemaleKey": "RT_GRAND_ARBITER_FEMALE",
-      "nameKey": "gov_purification_committee"
+      "nameKey": "gov_purification_committee",
+      "descriptionKey": "gov_purification_committee_desc"
     },
     {
       "key": "gov_purity_order",
@@ -101884,7 +101971,8 @@
       "factors": [],
       "rulerTitleKey": "RT_LORD_PURIFIER",
       "rulerTitleFemaleKey": "RT_LADY_PURIFIER",
-      "nameKey": "gov_purity_order"
+      "nameKey": "gov_purity_order",
+      "descriptionKey": "gov_purity_order_desc"
     },
     {
       "key": "gov_blood_court",
@@ -101910,7 +101998,8 @@
       "rulerTitleFemaleKey": "RT_HIGH_EXECUTIONER_FEMALE",
       "heirTitleKey": "HT_SENIOR_EXECUTIONER",
       "heirTitleFemaleKey": "HT_SENIOR_EXECUTIONER_FEMALE",
-      "nameKey": "gov_blood_court"
+      "nameKey": "gov_blood_court",
+      "descriptionKey": "gov_blood_court_desc"
     },
     {
       "key": "gov_devouring_swarm",
@@ -101940,7 +102029,8 @@
       "factors": [],
       "rulerTitleKey": "RT_HIVE_MIND",
       "rulerTitleFemaleKey": "RT_HIVE_MIND_FEMALE",
-      "nameKey": "gov_devouring_swarm"
+      "nameKey": "gov_devouring_swarm",
+      "descriptionKey": "gov_devouring_swarm_desc"
     },
     {
       "key": "gov_blood_forest",
@@ -101963,7 +102053,8 @@
       "factors": [],
       "rulerTitleKey": "RT_WILDERNESS",
       "rulerTitleFemaleKey": "RT_WILDERNESS_FEMALE",
-      "nameKey": "gov_blood_forest"
+      "nameKey": "gov_blood_forest",
+      "descriptionKey": "gov_blood_forest_desc"
     },
     {
       "key": "gov_machine_terminator",
@@ -101985,7 +102076,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_CORE",
-      "nameKey": "gov_machine_terminator"
+      "nameKey": "gov_machine_terminator",
+      "descriptionKey": "gov_machine_terminator_desc"
     },
     {
       "key": "gov_criminal_syndicate",
@@ -102007,7 +102099,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_OLIGARCH",
-      "nameKey": "gov_criminal_syndicate"
+      "nameKey": "gov_criminal_syndicate",
+      "descriptionKey": "gov_criminal_syndicate_desc"
     },
     {
       "key": "gov_pirate_haven",
@@ -102053,7 +102146,8 @@
         }
       ],
       "rulerTitleKey": "RT_OLIGARCH",
-      "nameKey": "gov_pirate_haven"
+      "nameKey": "gov_pirate_haven",
+      "descriptionKey": "gov_pirate_haven_desc"
     },
     {
       "key": "gov_subversive_cult",
@@ -102099,7 +102193,8 @@
         }
       ],
       "rulerTitleKey": "RT_ORACLE",
-      "nameKey": "gov_subversive_cult"
+      "nameKey": "gov_subversive_cult",
+      "descriptionKey": "gov_subversive_cult_desc"
     },
     {
       "key": "gov_imperial_domain",
@@ -102127,7 +102222,8 @@
       "rulerTitleFemaleKey": "RT_GAL_EMPRESS",
       "heirTitleKey": "HT_CROWN_PRINCE",
       "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
-      "nameKey": "gov_imperial_domain"
+      "nameKey": "gov_imperial_domain",
+      "descriptionKey": "gov_imperial_domain_desc"
     },
     {
       "key": "gov_imperial_domain_hives",
@@ -102157,7 +102253,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_GALACTIC_OVERMIND",
-      "nameKey": "gov_imperial_domain_hives"
+      "nameKey": "gov_imperial_domain_hives",
+      "descriptionKey": "gov_imperial_domain_hives_desc"
     },
     {
       "key": "gov_imperial_domain_machines",
@@ -102179,7 +102276,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_GALACTIC_INTELLIGENCE",
-      "nameKey": "gov_imperial_domain_machines"
+      "nameKey": "gov_imperial_domain_machines",
+      "descriptionKey": "gov_imperial_domain_machines_desc"
     },
     {
       "key": "gov_imperial_domain_megacorp",
@@ -102205,7 +102303,8 @@
       "factors": [],
       "rulerTitleKey": "RT_IMP_EXECUTIVE",
       "heirTitleKey": "HT_IMP_VICE_EXECUTIVE",
-      "nameKey": "gov_imperial_domain_megacorp"
+      "nameKey": "gov_imperial_domain_megacorp",
+      "descriptionKey": "gov_imperial_domain_megacorp_desc"
     },
     {
       "key": "gov_cyber_democracy_individualist",
@@ -102229,7 +102328,8 @@
       "factors": [],
       "rulerTitleKey": "RT_PRESIDENT",
       "rulerTitleFemaleKey": "RT_PRESIDENT_FEMALE",
-      "nameKey": "gov_cyber_democracy_individualist"
+      "nameKey": "gov_cyber_democracy_individualist",
+      "descriptionKey": "gov_cyber_democracy_individualist_desc"
     },
     {
       "key": "gov_cyber_democracy_collectivist",
@@ -102253,7 +102353,8 @@
       "factors": [],
       "rulerTitleKey": "RT_PRESIDENT",
       "rulerTitleFemaleKey": "RT_PRESIDENT_FEMALE",
-      "nameKey": "gov_cyber_democracy_collectivist"
+      "nameKey": "gov_cyber_democracy_collectivist",
+      "descriptionKey": "gov_cyber_democracy_collectivist_desc"
     },
     {
       "key": "gov_cyber_oligarchy_individualist",
@@ -102277,7 +102378,8 @@
       "factors": [],
       "rulerTitleKey": "RT_CHIEF_PRECENTOR",
       "rulerTitleFemaleKey": "RT_CHIEF_PRECENTOR_FEMALE",
-      "nameKey": "gov_cyber_oligarchy_individualist"
+      "nameKey": "gov_cyber_oligarchy_individualist",
+      "descriptionKey": "gov_cyber_oligarchy_individualist_desc"
     },
     {
       "key": "gov_cyber_oligarchy_collectivist",
@@ -102301,7 +102403,8 @@
       "factors": [],
       "rulerTitleKey": "RT_CHIEF_PRECENTOR",
       "rulerTitleFemaleKey": "RT_CHIEF_PRECENTOR_FEMALE",
-      "nameKey": "gov_cyber_oligarchy_collectivist"
+      "nameKey": "gov_cyber_oligarchy_collectivist",
+      "descriptionKey": "gov_cyber_oligarchy_collectivist_desc"
     },
     {
       "key": "gov_cyber_dictatorial_individualist",
@@ -102325,7 +102428,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EXECUTOR",
       "rulerTitleFemaleKey": "RT_EXECUTOR_FEMALE",
-      "nameKey": "gov_cyber_dictatorial_individualist"
+      "nameKey": "gov_cyber_dictatorial_individualist",
+      "descriptionKey": "gov_cyber_dictatorial_individualist_desc"
     },
     {
       "key": "gov_cyber_dictatorial_collectivist",
@@ -102349,7 +102453,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EXECUTOR",
       "rulerTitleFemaleKey": "RT_EXECUTOR_FEMALE",
-      "nameKey": "gov_cyber_dictatorial_collectivist"
+      "nameKey": "gov_cyber_dictatorial_collectivist",
+      "descriptionKey": "gov_cyber_dictatorial_collectivist_desc"
     },
     {
       "key": "gov_cyber_imperial_individualist",
@@ -102375,7 +102480,8 @@
       "rulerTitleFemaleKey": "RT_EMPRESS",
       "heirTitleKey": "HT_CROWN_PRINCE",
       "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
-      "nameKey": "gov_cyber_imperial_individualist"
+      "nameKey": "gov_cyber_imperial_individualist",
+      "descriptionKey": "gov_cyber_imperial_individualist_desc"
     },
     {
       "key": "gov_cyber_imperial_collectivist",
@@ -102401,7 +102507,8 @@
       "rulerTitleFemaleKey": "RT_EMPRESS",
       "heirTitleKey": "HT_CROWN_PRINCE",
       "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
-      "nameKey": "gov_cyber_imperial_collectivist"
+      "nameKey": "gov_cyber_imperial_collectivist",
+      "descriptionKey": "gov_cyber_imperial_collectivist_desc"
     },
     {
       "key": "gov_cyber_corporate_individualist",
@@ -102424,7 +102531,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EXECUTOR",
       "rulerTitleFemaleKey": "RT_EXECUTOR_FEMALE",
-      "nameKey": "gov_cyber_corporate_individualist"
+      "nameKey": "gov_cyber_corporate_individualist",
+      "descriptionKey": "gov_cyber_corporate_individualist_desc"
     },
     {
       "key": "gov_cyber_corporate_collectivist",
@@ -102447,7 +102555,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EXECUTOR",
       "rulerTitleFemaleKey": "RT_EXECUTOR_FEMALE",
-      "nameKey": "gov_cyber_corporate_collectivist"
+      "nameKey": "gov_cyber_corporate_collectivist",
+      "descriptionKey": "gov_cyber_corporate_collectivist_desc"
     },
     {
       "key": "gov_cyber_hive_volitional",
@@ -102470,7 +102579,8 @@
       "factors": [],
       "rulerTitleKey": "RT_HIVE_MIND",
       "rulerTitleFemaleKey": "RT_HIVE_MIND_FEMALE",
-      "nameKey": "gov_cyber_hive_volitional"
+      "nameKey": "gov_cyber_hive_volitional",
+      "descriptionKey": "gov_cyber_hive_volitional_desc"
     },
     {
       "key": "gov_cyber_hive_integrated",
@@ -102493,7 +102603,8 @@
       "factors": [],
       "rulerTitleKey": "RT_HIVE_MIND",
       "rulerTitleFemaleKey": "RT_HIVE_MIND_FEMALE",
-      "nameKey": "gov_cyber_hive_integrated"
+      "nameKey": "gov_cyber_hive_integrated",
+      "descriptionKey": "gov_cyber_hive_integrated_desc"
     },
     {
       "key": "gov_cyber_creed_monarchy",
@@ -102544,7 +102655,8 @@
       "rulerTitleFemaleKey": "RT_ARCHPROPHETESS",
       "heirTitleKey": "HT_PRIEST",
       "heirTitleFemaleKey": "HT_PRIESTESS",
-      "nameKey": "gov_cyber_creed_monarchy"
+      "nameKey": "gov_cyber_creed_monarchy",
+      "descriptionKey": "gov_cyber_creed_monarchy_desc"
     },
     {
       "key": "gov_cyber_creed_dictatorship",
@@ -102593,7 +102705,8 @@
       "factors": [],
       "rulerTitleKey": "RT_PATRIARCH",
       "rulerTitleFemaleKey": "RT_MATRIARCH",
-      "nameKey": "gov_cyber_creed_dictatorship"
+      "nameKey": "gov_cyber_creed_dictatorship",
+      "descriptionKey": "gov_cyber_creed_dictatorship_desc"
     },
     {
       "key": "gov_cyber_creed_oligarchy",
@@ -102642,7 +102755,8 @@
       "factors": [],
       "rulerTitleKey": "RT_CHIEF_PRECENTOR",
       "rulerTitleFemaleKey": "RT_CHIEF_PRECENTOR_FEMALE",
-      "nameKey": "gov_cyber_creed_oligarchy"
+      "nameKey": "gov_cyber_creed_oligarchy",
+      "descriptionKey": "gov_cyber_creed_oligarchy_desc"
     },
     {
       "key": "gov_cyber_creed_democracy",
@@ -102691,7 +102805,8 @@
       "factors": [],
       "rulerTitleKey": "RT_REVERED_ELDER",
       "rulerTitleFemaleKey": "RT_REVERED_ELDER_FEMALE",
-      "nameKey": "gov_cyber_creed_democracy"
+      "nameKey": "gov_cyber_creed_democracy",
+      "descriptionKey": "gov_cyber_creed_democracy_desc"
     },
     {
       "key": "gov_cyber_creed_divine_empire",
@@ -102741,7 +102856,8 @@
       "rulerTitleFemaleKey": "RT_GOD_EMPRESS",
       "heirTitleKey": "HT_SAINT",
       "heirTitleFemaleKey": "HT_SAINT_FEMALE",
-      "nameKey": "gov_cyber_creed_divine_empire"
+      "nameKey": "gov_cyber_creed_divine_empire",
+      "descriptionKey": "gov_cyber_creed_divine_empire_desc"
     },
     {
       "key": "gov_cyber_creed_megachurch",
@@ -102831,7 +102947,8 @@
       ],
       "rulerTitleKey": "RT_HALLOWED_COMPTROLLER",
       "rulerTitleFemaleKey": "RT_HALLOWED_COMPTROLLER_FEMALE",
-      "nameKey": "gov_cyber_creed_megachurch"
+      "nameKey": "gov_cyber_creed_megachurch",
+      "descriptionKey": "gov_cyber_creed_megachurch_desc"
     },
     {
       "key": "gov_cyber_creed_holy_tribunal",
@@ -102897,7 +103014,8 @@
       ],
       "rulerTitleKey": "RT_HIGH_INQUISITOR",
       "rulerTitleFemaleKey": "RT_HIGH_INQUISITOR_FEMALE",
-      "nameKey": "gov_cyber_creed_holy_tribunal"
+      "nameKey": "gov_cyber_creed_holy_tribunal",
+      "descriptionKey": "gov_cyber_creed_holy_tribunal_desc"
     },
     {
       "key": "gov_cyber_creed_subversive_cult",
@@ -102956,7 +103074,8 @@
         }
       ],
       "rulerTitleKey": "RT_ORACLE",
-      "nameKey": "gov_cyber_creed_subversive_cult"
+      "nameKey": "gov_cyber_creed_subversive_cult",
+      "descriptionKey": "gov_cyber_creed_subversive_cult_desc"
     },
     {
       "key": "gov_synth_democracy_physical",
@@ -102980,7 +103099,8 @@
       "factors": [],
       "rulerTitleKey": "RT_PRESIDENT",
       "rulerTitleFemaleKey": "RT_PRESIDENT_FEMALE",
-      "nameKey": "gov_synth_democracy_physical"
+      "nameKey": "gov_synth_democracy_physical",
+      "descriptionKey": "gov_synth_democracy_physical_desc"
     },
     {
       "key": "gov_synth_democracy_virtual",
@@ -103004,7 +103124,8 @@
       "factors": [],
       "rulerTitleKey": "RT_PRESIDENT",
       "rulerTitleFemaleKey": "RT_PRESIDENT_FEMALE",
-      "nameKey": "gov_synth_democracy_virtual"
+      "nameKey": "gov_synth_democracy_virtual",
+      "descriptionKey": "gov_synth_democracy_virtual_desc"
     },
     {
       "key": "gov_synth_oligarchy_physical",
@@ -103028,7 +103149,8 @@
       "factors": [],
       "rulerTitleKey": "RT_CHIEF_PRECENTOR",
       "rulerTitleFemaleKey": "RT_CHIEF_PRECENTOR_FEMALE",
-      "nameKey": "gov_synth_oligarchy_physical"
+      "nameKey": "gov_synth_oligarchy_physical",
+      "descriptionKey": "gov_synth_oligarchy_physical_desc"
     },
     {
       "key": "gov_synth_oligarchy_virtual",
@@ -103052,7 +103174,8 @@
       "factors": [],
       "rulerTitleKey": "RT_CHIEF_PRECENTOR",
       "rulerTitleFemaleKey": "RT_CHIEF_PRECENTOR_FEMALE",
-      "nameKey": "gov_synth_oligarchy_virtual"
+      "nameKey": "gov_synth_oligarchy_virtual",
+      "descriptionKey": "gov_synth_oligarchy_virtual_desc"
     },
     {
       "key": "gov_synth_dictatorship_physical",
@@ -103076,7 +103199,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EXECUTOR",
       "rulerTitleFemaleKey": "RT_EXECUTOR_FEMALE",
-      "nameKey": "gov_synth_dictatorship_physical"
+      "nameKey": "gov_synth_dictatorship_physical",
+      "descriptionKey": "gov_synth_dictatorship_physical_desc"
     },
     {
       "key": "gov_synth_dictatorship_virtual",
@@ -103100,7 +103224,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EXECUTOR",
       "rulerTitleFemaleKey": "RT_EXECUTOR_FEMALE",
-      "nameKey": "gov_synth_dictatorship_virtual"
+      "nameKey": "gov_synth_dictatorship_virtual",
+      "descriptionKey": "gov_synth_dictatorship_virtual_desc"
     },
     {
       "key": "gov_synth_imperial_physical",
@@ -103126,7 +103251,8 @@
       "rulerTitleFemaleKey": "RT_EMPRESS",
       "heirTitleKey": "HT_CROWN_PRINCE",
       "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
-      "nameKey": "gov_synth_imperial_physical"
+      "nameKey": "gov_synth_imperial_physical",
+      "descriptionKey": "gov_synth_imperial_physical_desc"
     },
     {
       "key": "gov_synth_imperial_virtual",
@@ -103152,7 +103278,8 @@
       "rulerTitleFemaleKey": "RT_EMPRESS",
       "heirTitleKey": "HT_CROWN_PRINCE",
       "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
-      "nameKey": "gov_synth_imperial_virtual"
+      "nameKey": "gov_synth_imperial_virtual",
+      "descriptionKey": "gov_synth_imperial_virtual_desc"
     },
     {
       "key": "gov_synth_corporate_physical",
@@ -103175,7 +103302,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EXECUTOR",
       "rulerTitleFemaleKey": "RT_EXECUTOR_FEMALE",
-      "nameKey": "gov_synth_corporate_physical"
+      "nameKey": "gov_synth_corporate_physical",
+      "descriptionKey": "gov_synth_corporate_physical_desc"
     },
     {
       "key": "gov_synth_corporate_virtual",
@@ -103198,7 +103326,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EXECUTOR",
       "rulerTitleFemaleKey": "RT_EXECUTOR_FEMALE",
-      "nameKey": "gov_synth_corporate_virtual"
+      "nameKey": "gov_synth_corporate_virtual",
+      "descriptionKey": "gov_synth_corporate_virtual_desc"
     },
     {
       "key": "gov_memory_aggregator",
@@ -103220,7 +103349,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_CENTRAL_AGGREGATOR",
-      "nameKey": "gov_memory_aggregator"
+      "nameKey": "gov_memory_aggregator",
+      "descriptionKey": "gov_memory_aggregator_desc"
     },
     {
       "key": "gov_neural_chorus",
@@ -103242,7 +103372,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_NEURAL_CHORUS",
-      "nameKey": "gov_neural_chorus"
+      "nameKey": "gov_neural_chorus",
+      "descriptionKey": "gov_neural_chorus_desc"
     },
     {
       "key": "gov_bio_democratic_phenotypical_autonomy",
@@ -103266,7 +103397,8 @@
       "factors": [],
       "rulerTitleKey": "RT_PRESIDENT",
       "rulerTitleFemaleKey": "RT_PRESIDENT_FEMALE",
-      "nameKey": "gov_bio_democratic_phenotypical_autonomy"
+      "nameKey": "gov_bio_democratic_phenotypical_autonomy",
+      "descriptionKey": "gov_bio_democratic_phenotypical_autonomy_desc"
     },
     {
       "key": "gov_bio_imperial_biotic_dominion",
@@ -103290,7 +103422,8 @@
       "factors": [],
       "rulerTitleKey": "RT_CHIEF_PRECENTOR",
       "rulerTitleFemaleKey": "RT_CHIEF_PRECENTOR_FEMALE",
-      "nameKey": "gov_bio_imperial_biotic_dominion"
+      "nameKey": "gov_bio_imperial_biotic_dominion",
+      "descriptionKey": "gov_bio_imperial_biotic_dominion_desc"
     },
     {
       "key": "gov_bio_oligarchic_eugenic_hierarchy",
@@ -103316,7 +103449,8 @@
       "rulerTitleFemaleKey": "RT_EMPRESS",
       "heirTitleKey": "HT_CROWN_PRINCE",
       "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
-      "nameKey": "gov_bio_oligarchic_eugenic_hierarchy"
+      "nameKey": "gov_bio_oligarchic_eugenic_hierarchy",
+      "descriptionKey": "gov_bio_oligarchic_eugenic_hierarchy_desc"
     },
     {
       "key": "gov_bio_corporate_organic_syndicate",
@@ -103339,7 +103473,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EXECUTOR",
       "rulerTitleFemaleKey": "RT_EXECUTOR_FEMALE",
-      "nameKey": "gov_bio_corporate_organic_syndicate"
+      "nameKey": "gov_bio_corporate_organic_syndicate",
+      "descriptionKey": "gov_bio_corporate_organic_syndicate_desc"
     },
     {
       "key": "gov_bio_dictatorial_nucleic_judiciary",
@@ -103363,7 +103498,8 @@
       "factors": [],
       "rulerTitleKey": "RT_PATRIARCH",
       "rulerTitleFemaleKey": "RT_MATRIARCH",
-      "nameKey": "gov_bio_dictatorial_nucleic_judiciary"
+      "nameKey": "gov_bio_dictatorial_nucleic_judiciary",
+      "descriptionKey": "gov_bio_dictatorial_nucleic_judiciary_desc"
     },
     {
       "key": "gov_bio_hive_mind_purity_paradigm",
@@ -103386,7 +103522,8 @@
       "factors": [],
       "rulerTitleKey": "RT_HIVE_MIND",
       "rulerTitleFemaleKey": "RT_HIVE_MIND_FEMALE",
-      "nameKey": "gov_bio_hive_mind_purity_paradigm"
+      "nameKey": "gov_bio_hive_mind_purity_paradigm",
+      "descriptionKey": "gov_bio_hive_mind_purity_paradigm_desc"
     },
     {
       "key": "gov_bio_democratic_cordant_multiplicity",
@@ -103410,7 +103547,8 @@
       "factors": [],
       "rulerTitleKey": "RT_PRESIDENT",
       "rulerTitleFemaleKey": "RT_PRESIDENT_FEMALE",
-      "nameKey": "gov_bio_democratic_cordant_multiplicity"
+      "nameKey": "gov_bio_democratic_cordant_multiplicity",
+      "descriptionKey": "gov_bio_democratic_cordant_multiplicity_desc"
     },
     {
       "key": "gov_bio_oligarchic_replicating_regency",
@@ -103434,7 +103572,8 @@
       "factors": [],
       "rulerTitleKey": "RT_CHIEF_PRECENTOR",
       "rulerTitleFemaleKey": "RT_CHIEF_PRECENTOR_FEMALE",
-      "nameKey": "gov_bio_oligarchic_replicating_regency"
+      "nameKey": "gov_bio_oligarchic_replicating_regency",
+      "descriptionKey": "gov_bio_oligarchic_replicating_regency_desc"
     },
     {
       "key": "gov_bio_imperial_hereditary_continuity",
@@ -103460,7 +103599,8 @@
       "rulerTitleFemaleKey": "RT_EMPRESS",
       "heirTitleKey": "HT_CROWN_PRINCE",
       "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
-      "nameKey": "gov_bio_imperial_hereditary_continuity"
+      "nameKey": "gov_bio_imperial_hereditary_continuity",
+      "descriptionKey": "gov_bio_imperial_hereditary_continuity_desc"
     },
     {
       "key": "gov_bio_corporate_replicatory_association",
@@ -103483,7 +103623,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EXECUTOR",
       "rulerTitleFemaleKey": "RT_EXECUTOR_FEMALE",
-      "nameKey": "gov_bio_corporate_replicatory_association"
+      "nameKey": "gov_bio_corporate_replicatory_association",
+      "descriptionKey": "gov_bio_corporate_replicatory_association_desc"
     },
     {
       "key": "gov_bio_dictatorial_homogenous_submission",
@@ -103507,7 +103648,8 @@
       "factors": [],
       "rulerTitleKey": "RT_PATRIARCH",
       "rulerTitleFemaleKey": "RT_MATRIARCH",
-      "nameKey": "gov_bio_dictatorial_homogenous_submission"
+      "nameKey": "gov_bio_dictatorial_homogenous_submission",
+      "descriptionKey": "gov_bio_dictatorial_homogenous_submission_desc"
     },
     {
       "key": "gov_bio_hive_mind_replicating_horde",
@@ -103530,7 +103672,8 @@
       "factors": [],
       "rulerTitleKey": "RT_HIVE_MIND",
       "rulerTitleFemaleKey": "RT_HIVE_MIND_FEMALE",
-      "nameKey": "gov_bio_hive_mind_replicating_horde"
+      "nameKey": "gov_bio_hive_mind_replicating_horde",
+      "descriptionKey": "gov_bio_hive_mind_replicating_horde_desc"
     },
     {
       "key": "gov_bio_democratic_biodiverse_liberty",
@@ -103562,7 +103705,8 @@
       "factors": [],
       "rulerTitleKey": "RT_PRESIDENT",
       "rulerTitleFemaleKey": "RT_PRESIDENT_FEMALE",
-      "nameKey": "gov_bio_democratic_biodiverse_liberty"
+      "nameKey": "gov_bio_democratic_biodiverse_liberty",
+      "descriptionKey": "gov_bio_democratic_biodiverse_liberty_desc"
     },
     {
       "key": "gov_bio_democratic_evopred_mutation",
@@ -103591,7 +103735,8 @@
       "factors": [],
       "rulerTitleKey": "RT_PRESIDENT",
       "rulerTitleFemaleKey": "RT_PRESIDENT_FEMALE",
-      "nameKey": "gov_bio_democratic_evopred_mutation"
+      "nameKey": "gov_bio_democratic_evopred_mutation",
+      "descriptionKey": "gov_bio_democratic_evopred_mutation_desc"
     },
     {
       "key": "gov_bio_oligarchic_catalytic_command",
@@ -103623,7 +103768,8 @@
       "factors": [],
       "rulerTitleKey": "RT_CHIEF_PRECENTOR",
       "rulerTitleFemaleKey": "RT_CHIEF_PRECENTOR_FEMALE",
-      "nameKey": "gov_bio_oligarchic_catalytic_command"
+      "nameKey": "gov_bio_oligarchic_catalytic_command",
+      "descriptionKey": "gov_bio_oligarchic_catalytic_command_desc"
     },
     {
       "key": "gov_bio_oligarchic_evopred_mutation",
@@ -103652,7 +103798,8 @@
       "factors": [],
       "rulerTitleKey": "RT_CHIEF_PRECENTOR",
       "rulerTitleFemaleKey": "RT_CHIEF_PRECENTOR_FEMALE",
-      "nameKey": "gov_bio_oligarchic_evopred_mutation"
+      "nameKey": "gov_bio_oligarchic_evopred_mutation",
+      "descriptionKey": "gov_bio_oligarchic_evopred_mutation_desc"
     },
     {
       "key": "gov_bio_imperial_genomic_expansionist",
@@ -103686,7 +103833,8 @@
       "rulerTitleFemaleKey": "RT_EMPRESS",
       "heirTitleKey": "HT_CROWN_PRINCE",
       "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
-      "nameKey": "gov_bio_imperial_genomic_expansionist"
+      "nameKey": "gov_bio_imperial_genomic_expansionist",
+      "descriptionKey": "gov_bio_imperial_genomic_expansionist_desc"
     },
     {
       "key": "gov_bio_imperial_evopred_mutation",
@@ -103717,7 +103865,8 @@
       "rulerTitleFemaleKey": "RT_EMPRESS",
       "heirTitleKey": "HT_CROWN_PRINCE",
       "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
-      "nameKey": "gov_bio_imperial_evopred_mutation"
+      "nameKey": "gov_bio_imperial_evopred_mutation",
+      "descriptionKey": "gov_bio_imperial_evopred_mutation_desc"
     },
     {
       "key": "gov_bio_corporate_organ_usury",
@@ -103748,7 +103897,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EXECUTOR",
       "rulerTitleFemaleKey": "RT_EXECUTOR_FEMALE",
-      "nameKey": "gov_bio_corporate_organ_usury"
+      "nameKey": "gov_bio_corporate_organ_usury",
+      "descriptionKey": "gov_bio_corporate_organ_usury_desc"
     },
     {
       "key": "gov_bio_corporate_evopred_mutation",
@@ -103776,7 +103926,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EXECUTOR",
       "rulerTitleFemaleKey": "RT_EXECUTOR_FEMALE",
-      "nameKey": "gov_bio_corporate_evopred_mutation"
+      "nameKey": "gov_bio_corporate_evopred_mutation",
+      "descriptionKey": "gov_bio_corporate_evopred_mutation_desc"
     },
     {
       "key": "gov_bio_dictatorial_hybrid_mandate",
@@ -103808,7 +103959,8 @@
       "factors": [],
       "rulerTitleKey": "RT_PATRIARCH",
       "rulerTitleFemaleKey": "RT_MATRIARCH",
-      "nameKey": "gov_bio_dictatorial_hybrid_mandate"
+      "nameKey": "gov_bio_dictatorial_hybrid_mandate",
+      "descriptionKey": "gov_bio_dictatorial_hybrid_mandate_desc"
     },
     {
       "key": "gov_bio_dictatorial_evopred_mutation",
@@ -103837,7 +103989,8 @@
       "factors": [],
       "rulerTitleKey": "RT_PATRIARCH",
       "rulerTitleFemaleKey": "RT_MATRIARCH",
-      "nameKey": "gov_bio_dictatorial_evopred_mutation"
+      "nameKey": "gov_bio_dictatorial_evopred_mutation",
+      "descriptionKey": "gov_bio_dictatorial_evopred_mutation_desc"
     },
     {
       "key": "gov_bio_hive_mind_adaptive_dominion",
@@ -103868,7 +104021,8 @@
       "factors": [],
       "rulerTitleKey": "RT_HIVE_MIND",
       "rulerTitleFemaleKey": "RT_HIVE_MIND_FEMALE",
-      "nameKey": "gov_bio_hive_mind_adaptive_dominion"
+      "nameKey": "gov_bio_hive_mind_adaptive_dominion",
+      "descriptionKey": "gov_bio_hive_mind_adaptive_dominion_desc"
     },
     {
       "key": "gov_bio_hive_mind_evopred_mutation",
@@ -103896,7 +104050,8 @@
       "factors": [],
       "rulerTitleKey": "RT_HIVE_MIND",
       "rulerTitleFemaleKey": "RT_HIVE_MIND_FEMALE",
-      "nameKey": "gov_bio_hive_mind_evopred_mutation"
+      "nameKey": "gov_bio_hive_mind_evopred_mutation",
+      "descriptionKey": "gov_bio_hive_mind_evopred_mutation_desc"
     },
     {
       "key": "gov_storm_chasers",
@@ -103938,7 +104093,8 @@
       "factors": [],
       "rulerTitleKey": "RT_ELDER_SPEAKER",
       "rulerTitleFemaleKey": "RT_ELDER_SPEAKER_FEMALE",
-      "nameKey": "gov_storm_chasers"
+      "nameKey": "gov_storm_chasers",
+      "descriptionKey": "gov_storm_chasers_desc"
     },
     {
       "key": "gov_shroud_transcendent_democracy",
@@ -103962,7 +104118,8 @@
       "factors": [],
       "rulerTitleKey": "RT_PRESIDENT",
       "rulerTitleFemaleKey": "RT_PRESIDENT_FEMALE",
-      "nameKey": "gov_shroud_transcendent_democracy"
+      "nameKey": "gov_shroud_transcendent_democracy",
+      "descriptionKey": "gov_shroud_transcendent_democracy_desc"
     },
     {
       "key": "gov_shroud_transcendent_oligarchy",
@@ -103986,7 +104143,8 @@
       "factors": [],
       "rulerTitleKey": "RT_CHIEF_PRECENTOR",
       "rulerTitleFemaleKey": "RT_CHIEF_PRECENTOR_FEMALE",
-      "nameKey": "gov_shroud_transcendent_oligarchy"
+      "nameKey": "gov_shroud_transcendent_oligarchy",
+      "descriptionKey": "gov_shroud_transcendent_oligarchy_desc"
     },
     {
       "key": "gov_shroud_transcendent_dictatorial",
@@ -104010,7 +104168,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EXECUTOR",
       "rulerTitleFemaleKey": "RT_EXECUTOR_FEMALE",
-      "nameKey": "gov_shroud_transcendent_dictatorial"
+      "nameKey": "gov_shroud_transcendent_dictatorial",
+      "descriptionKey": "gov_shroud_transcendent_dictatorial_desc"
     },
     {
       "key": "gov_shroud_transcendent_imperial",
@@ -104036,7 +104195,8 @@
       "rulerTitleFemaleKey": "RT_EMPRESS",
       "heirTitleKey": "HT_CROWN_PRINCE",
       "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
-      "nameKey": "gov_shroud_transcendent_imperial"
+      "nameKey": "gov_shroud_transcendent_imperial",
+      "descriptionKey": "gov_shroud_transcendent_imperial_desc"
     },
     {
       "key": "gov_shroud_transcendent_corporate",
@@ -104059,7 +104219,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EXECUTOR",
       "rulerTitleFemaleKey": "RT_EXECUTOR_FEMALE",
-      "nameKey": "gov_shroud_transcendent_corporate"
+      "nameKey": "gov_shroud_transcendent_corporate",
+      "descriptionKey": "gov_shroud_transcendent_corporate_desc"
     },
     {
       "key": "gov_shroud_transcendent_hive",
@@ -104082,7 +104243,8 @@
       "factors": [],
       "rulerTitleKey": "RT_HIVE_MIND",
       "rulerTitleFemaleKey": "RT_HIVE_MIND_FEMALE",
-      "nameKey": "gov_shroud_transcendent_hive"
+      "nameKey": "gov_shroud_transcendent_hive",
+      "descriptionKey": "gov_shroud_transcendent_hive_desc"
     },
     {
       "key": "gov_shroud_transcendent_machine",
@@ -104104,7 +104266,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_CENTRAL_AGGREGATOR",
-      "nameKey": "gov_shroud_transcendent_machine"
+      "nameKey": "gov_shroud_transcendent_machine",
+      "descriptionKey": "gov_shroud_transcendent_machine_desc"
     },
     {
       "key": "gov_shroud_corporeal_democracy",
@@ -104128,7 +104291,8 @@
       "factors": [],
       "rulerTitleKey": "RT_PRESIDENT",
       "rulerTitleFemaleKey": "RT_PRESIDENT_FEMALE",
-      "nameKey": "gov_shroud_corporeal_democracy"
+      "nameKey": "gov_shroud_corporeal_democracy",
+      "descriptionKey": "gov_shroud_corporeal_democracy_desc"
     },
     {
       "key": "gov_shroud_corporeal_oligarchy",
@@ -104152,7 +104316,8 @@
       "factors": [],
       "rulerTitleKey": "RT_CHIEF_PRECENTOR",
       "rulerTitleFemaleKey": "RT_CHIEF_PRECENTOR_FEMALE",
-      "nameKey": "gov_shroud_corporeal_oligarchy"
+      "nameKey": "gov_shroud_corporeal_oligarchy",
+      "descriptionKey": "gov_shroud_corporeal_oligarchy_desc"
     },
     {
       "key": "gov_shroud_corporeal_dictatorial",
@@ -104176,7 +104341,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EXECUTOR",
       "rulerTitleFemaleKey": "RT_EXECUTOR_FEMALE",
-      "nameKey": "gov_shroud_corporeal_dictatorial"
+      "nameKey": "gov_shroud_corporeal_dictatorial",
+      "descriptionKey": "gov_shroud_corporeal_dictatorial_desc"
     },
     {
       "key": "gov_shroud_corporeal_imperial",
@@ -104202,7 +104368,8 @@
       "rulerTitleFemaleKey": "RT_EMPRESS",
       "heirTitleKey": "HT_CROWN_PRINCE",
       "heirTitleFemaleKey": "HT_CROWN_PRINCESS",
-      "nameKey": "gov_shroud_corporeal_imperial"
+      "nameKey": "gov_shroud_corporeal_imperial",
+      "descriptionKey": "gov_shroud_corporeal_imperial_desc"
     },
     {
       "key": "gov_shroud_corporeal_corporate",
@@ -104225,7 +104392,8 @@
       "factors": [],
       "rulerTitleKey": "RT_EXECUTOR",
       "rulerTitleFemaleKey": "RT_EXECUTOR_FEMALE",
-      "nameKey": "gov_shroud_corporeal_corporate"
+      "nameKey": "gov_shroud_corporeal_corporate",
+      "descriptionKey": "gov_shroud_corporeal_corporate_desc"
     },
     {
       "key": "gov_shroud_corporeal_hive",
@@ -104248,7 +104416,8 @@
       "factors": [],
       "rulerTitleKey": "RT_HIVE_MIND",
       "rulerTitleFemaleKey": "RT_HIVE_MIND_FEMALE",
-      "nameKey": "gov_shroud_corporeal_hive"
+      "nameKey": "gov_shroud_corporeal_hive",
+      "descriptionKey": "gov_shroud_corporeal_hive_desc"
     },
     {
       "key": "gov_shroud_corporeal_machine",
@@ -104270,7 +104439,8 @@
       },
       "factors": [],
       "rulerTitleKey": "RT_CENTRAL_AGGREGATOR",
-      "nameKey": "gov_shroud_corporeal_machine"
+      "nameKey": "gov_shroud_corporeal_machine",
+      "descriptionKey": "gov_shroud_corporeal_machine_desc"
     }
   ],
   "personalities": [
@@ -107070,7 +107240,8 @@
         }
       ],
       "showsCity": true,
-      "nameKey": "pc_desert"
+      "nameKey": "pc_desert",
+      "descriptionKey": "pc_desert_desc"
     },
     {
       "key": "pc_arid",
@@ -107098,7 +107269,8 @@
         }
       ],
       "showsCity": true,
-      "nameKey": "pc_arid"
+      "nameKey": "pc_arid",
+      "descriptionKey": "pc_arid_desc"
     },
     {
       "key": "pc_savannah",
@@ -107126,7 +107298,8 @@
         }
       ],
       "showsCity": true,
-      "nameKey": "pc_savannah"
+      "nameKey": "pc_savannah",
+      "descriptionKey": "pc_savannah_desc"
     },
     {
       "key": "pc_tropical",
@@ -107158,7 +107331,8 @@
         }
       ],
       "showsCity": true,
-      "nameKey": "pc_tropical"
+      "nameKey": "pc_tropical",
+      "descriptionKey": "pc_tropical_desc"
     },
     {
       "key": "pc_continental",
@@ -107190,7 +107364,8 @@
         }
       ],
       "showsCity": true,
-      "nameKey": "pc_continental"
+      "nameKey": "pc_continental",
+      "descriptionKey": "pc_continental_desc"
     },
     {
       "key": "pc_ocean",
@@ -107222,7 +107397,8 @@
         }
       ],
       "showsCity": true,
-      "nameKey": "pc_ocean"
+      "nameKey": "pc_ocean",
+      "descriptionKey": "pc_ocean_desc"
     },
     {
       "key": "pc_tundra",
@@ -107250,7 +107426,8 @@
         }
       ],
       "showsCity": true,
-      "nameKey": "pc_tundra"
+      "nameKey": "pc_tundra",
+      "descriptionKey": "pc_tundra_desc"
     },
     {
       "key": "pc_arctic",
@@ -107278,7 +107455,8 @@
         }
       ],
       "showsCity": true,
-      "nameKey": "pc_arctic"
+      "nameKey": "pc_arctic",
+      "descriptionKey": "pc_arctic_desc"
     },
     {
       "key": "pc_alpine",
@@ -107310,7 +107488,8 @@
         }
       ],
       "showsCity": true,
-      "nameKey": "pc_alpine"
+      "nameKey": "pc_alpine",
+      "descriptionKey": "pc_alpine_desc"
     },
     {
       "key": "pc_volcanic",
@@ -107342,7 +107521,8 @@
         }
       ],
       "showsCity": true,
-      "nameKey": "pc_volcanic"
+      "nameKey": "pc_volcanic",
+      "descriptionKey": "pc_volcanic_desc"
     },
     {
       "key": "pc_gas_giant",
@@ -107356,7 +107536,8 @@
       "sky": "worlds/pc_gas_giant_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_gas_giant"
+      "nameKey": "pc_gas_giant",
+      "descriptionKey": "pc_gas_giant_desc"
     },
     {
       "key": "pc_asteroid",
@@ -107370,7 +107551,8 @@
       "sky": "worlds/pc_asteroid_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_asteroid"
+      "nameKey": "pc_asteroid",
+      "descriptionKey": "pc_asteroid_desc"
     },
     {
       "key": "pc_ice_asteroid",
@@ -107384,7 +107566,8 @@
       "sky": "worlds/pc_ice_asteroid_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_ice_asteroid"
+      "nameKey": "pc_ice_asteroid",
+      "descriptionKey": "pc_ice_asteroid_desc"
     },
     {
       "key": "pc_rare_crystal_asteroid",
@@ -107398,7 +107581,8 @@
       "sky": "worlds/pc_crystal_asteroid_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_rare_crystal_asteroid"
+      "nameKey": "pc_rare_crystal_asteroid",
+      "descriptionKey": "pc_rare_crystal_asteroid_desc"
     },
     {
       "key": "pc_molten",
@@ -107412,7 +107596,8 @@
       "sky": "worlds/pc_molten_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_molten"
+      "nameKey": "pc_molten",
+      "descriptionKey": "pc_molten_desc"
     },
     {
       "key": "pc_barren",
@@ -107426,7 +107611,8 @@
       "sky": "worlds/pc_barren_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_barren"
+      "nameKey": "pc_barren",
+      "descriptionKey": "pc_barren_desc"
     },
     {
       "key": "pc_barren_cold",
@@ -107440,7 +107626,8 @@
       "sky": "worlds/pc_barren_cold_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_barren_cold"
+      "nameKey": "pc_barren_cold",
+      "descriptionKey": "pc_barren_cold_desc"
     },
     {
       "key": "pc_toxic",
@@ -107454,7 +107641,8 @@
       "sky": "worlds/pc_toxic_sky.png",
       "scenery": [],
       "showsCity": false,
-      "nameKey": "pc_toxic"
+      "nameKey": "pc_toxic",
+      "descriptionKey": "pc_toxic_desc"
     },
     {
       "key": "pc_frozen",
@@ -107468,7 +107656,8 @@
       "sky": "worlds/pc_frozen_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_frozen"
+      "nameKey": "pc_frozen",
+      "descriptionKey": "pc_frozen_desc"
     },
     {
       "key": "pc_nuked",
@@ -107499,7 +107688,8 @@
         }
       ],
       "showsCity": true,
-      "nameKey": "pc_nuked"
+      "nameKey": "pc_nuked",
+      "descriptionKey": "pc_nuked_desc"
     },
     {
       "key": "pc_hive",
@@ -107513,7 +107703,8 @@
       "sky": "worlds/pc_infested_sky.png",
       "scenery": [],
       "showsCity": false,
-      "nameKey": "pc_hive"
+      "nameKey": "pc_hive",
+      "descriptionKey": "pc_hive_desc"
     },
     {
       "key": "pc_machine",
@@ -107527,7 +107718,8 @@
       "sky": "worlds/pc_ai_sky.png",
       "scenery": [],
       "showsCity": false,
-      "nameKey": "pc_machine"
+      "nameKey": "pc_machine",
+      "descriptionKey": "pc_machine_desc"
     },
     {
       "key": "pc_machine_broken",
@@ -107541,7 +107733,8 @@
       "sky": "worlds/pc_ai_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_machine_broken"
+      "nameKey": "pc_machine_broken",
+      "descriptionKey": "pc_machine_broken_desc"
     },
     {
       "key": "pc_shielded",
@@ -107555,7 +107748,8 @@
       "sky": "worlds/pc_shielded_sky.png",
       "scenery": [],
       "showsCity": false,
-      "nameKey": "pc_shielded"
+      "nameKey": "pc_shielded",
+      "descriptionKey": "pc_shielded_desc"
     },
     {
       "key": "pc_ai",
@@ -107569,7 +107763,8 @@
       "sky": "worlds/pc_ai_sky.png",
       "scenery": [],
       "showsCity": false,
-      "nameKey": "pc_ai"
+      "nameKey": "pc_ai",
+      "descriptionKey": "pc_ai_desc"
     },
     {
       "key": "pc_infested",
@@ -107583,7 +107778,8 @@
       "sky": "worlds/pc_infested_sky.png",
       "scenery": [],
       "showsCity": false,
-      "nameKey": "pc_infested"
+      "nameKey": "pc_infested",
+      "descriptionKey": "pc_infested_desc"
     },
     {
       "key": "pc_gaia",
@@ -107614,7 +107810,8 @@
         }
       ],
       "showsCity": true,
-      "nameKey": "pc_gaia"
+      "nameKey": "pc_gaia",
+      "descriptionKey": "pc_gaia_desc"
     },
     {
       "key": "pc_cybrex",
@@ -107628,7 +107825,8 @@
       "sky": "worlds/pc_ai_sky.png",
       "scenery": [],
       "showsCity": false,
-      "nameKey": "pc_cybrex"
+      "nameKey": "pc_cybrex",
+      "descriptionKey": "pc_cybrex_desc"
     },
     {
       "key": "pc_nanotech",
@@ -107642,7 +107840,8 @@
       "sky": "worlds/pc_nanotech_sky.png",
       "scenery": [],
       "showsCity": false,
-      "nameKey": "pc_nanotech"
+      "nameKey": "pc_nanotech",
+      "descriptionKey": "pc_nanotech_desc"
     },
     {
       "key": "pc_b_star",
@@ -107657,7 +107856,8 @@
       "sky": "worlds/pc_b_star_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_b_star"
+      "nameKey": "pc_b_star",
+      "descriptionKey": "pc_b_star_desc"
     },
     {
       "key": "pc_a_star",
@@ -107672,7 +107872,8 @@
       "sky": "worlds/pc_a_star_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_a_star"
+      "nameKey": "pc_a_star",
+      "descriptionKey": "pc_a_star_desc"
     },
     {
       "key": "pc_f_star",
@@ -107687,7 +107888,8 @@
       "sky": "worlds/pc_f_star_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_f_star"
+      "nameKey": "pc_f_star",
+      "descriptionKey": "pc_f_star_desc"
     },
     {
       "key": "pc_g_star",
@@ -107702,7 +107904,8 @@
       "sky": "worlds/pc_g_star_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_g_star"
+      "nameKey": "pc_g_star",
+      "descriptionKey": "pc_g_star_desc"
     },
     {
       "key": "pc_k_star",
@@ -107717,7 +107920,8 @@
       "sky": "worlds/pc_k_star_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_k_star"
+      "nameKey": "pc_k_star",
+      "descriptionKey": "pc_k_star_desc"
     },
     {
       "key": "pc_m_star",
@@ -107732,7 +107936,8 @@
       "sky": "worlds/pc_m_star_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_m_star"
+      "nameKey": "pc_m_star",
+      "descriptionKey": "pc_m_star_desc"
     },
     {
       "key": "pc_m_giant_star",
@@ -107747,7 +107952,8 @@
       "sky": "worlds/pc_m_star_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_m_giant_star"
+      "nameKey": "pc_m_giant_star",
+      "descriptionKey": "pc_m_giant_star_desc"
     },
     {
       "key": "pc_t_star",
@@ -107762,7 +107968,8 @@
       "sky": "worlds/pc_browndwarf_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_t_star"
+      "nameKey": "pc_t_star",
+      "descriptionKey": "pc_t_star_desc"
     },
     {
       "key": "pc_black_hole",
@@ -107777,7 +107984,8 @@
       "sky": "worlds/pc_black_hole_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_black_hole"
+      "nameKey": "pc_black_hole",
+      "descriptionKey": "pc_black_hole_desc"
     },
     {
       "key": "pc_neutron_star",
@@ -107792,7 +108000,8 @@
       "sky": "worlds/pc_neutron_star_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_neutron_star"
+      "nameKey": "pc_neutron_star",
+      "descriptionKey": "pc_neutron_star_desc"
     },
     {
       "key": "pc_pulsar",
@@ -107807,7 +108016,8 @@
       "sky": "worlds/pc_pulsar_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_pulsar"
+      "nameKey": "pc_pulsar",
+      "descriptionKey": "pc_pulsar_desc"
     },
     {
       "key": "pc_ringworld_habitable",
@@ -107839,7 +108049,8 @@
         }
       ],
       "showsCity": true,
-      "nameKey": "pc_ringworld_habitable"
+      "nameKey": "pc_ringworld_habitable",
+      "descriptionKey": "pc_ringworld_habitable_desc"
     },
     {
       "key": "pc_ringworld_habitable_damaged",
@@ -107853,7 +108064,8 @@
       "sky": "worlds/pc_ringworld_broken_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_ringworld_habitable_damaged"
+      "nameKey": "pc_ringworld_habitable_damaged",
+      "descriptionKey": "pc_ringworld_habitable_damaged_desc"
     },
     {
       "key": "pc_ringworld_tech",
@@ -107867,7 +108079,8 @@
       "sky": "worlds/pc_ringworld_section_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_ringworld_tech"
+      "nameKey": "pc_ringworld_tech",
+      "descriptionKey": "pc_ringworld_tech_desc"
     },
     {
       "key": "pc_ringworld_tech_damaged",
@@ -107881,7 +108094,8 @@
       "sky": "worlds/pc_ringworld_broken_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_ringworld_tech_damaged"
+      "nameKey": "pc_ringworld_tech_damaged",
+      "descriptionKey": "pc_ringworld_tech_damaged_desc"
     },
     {
       "key": "pc_ringworld_seam",
@@ -107895,7 +108109,8 @@
       "sky": "worlds/pc_ringworld_section_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_ringworld_seam"
+      "nameKey": "pc_ringworld_seam",
+      "descriptionKey": "pc_ringworld_seam_desc"
     },
     {
       "key": "pc_ringworld_seam_damaged",
@@ -107909,7 +108124,8 @@
       "sky": "worlds/pc_ringworld_broken_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_ringworld_seam_damaged"
+      "nameKey": "pc_ringworld_seam_damaged",
+      "descriptionKey": "pc_ringworld_seam_damaged_desc"
     },
     {
       "key": "pc_shattered_ring_habitable",
@@ -107941,7 +108157,8 @@
         }
       ],
       "showsCity": true,
-      "nameKey": "pc_shattered_ring_habitable"
+      "nameKey": "pc_shattered_ring_habitable",
+      "descriptionKey": "pc_shattered_ring_habitable_desc"
     },
     {
       "key": "pc_habitat",
@@ -107956,7 +108173,8 @@
       "sky": "worlds/pc_habitat_sky.png",
       "scenery": [],
       "showsCity": false,
-      "nameKey": "pc_habitat"
+      "nameKey": "pc_habitat",
+      "descriptionKey": "pc_habitat_desc"
     },
     {
       "key": "pc_cosmogenesis_world",
@@ -107971,7 +108189,8 @@
       "sky": "worlds/pc_cosmogenesis_world_sky.png",
       "scenery": [],
       "showsCity": false,
-      "nameKey": "pc_cosmogenesis_world"
+      "nameKey": "pc_cosmogenesis_world",
+      "descriptionKey": "pc_cosmogenesis_world_desc"
     },
     {
       "key": "pc_shrouded",
@@ -107985,7 +108204,8 @@
       "sky": "worlds/pc_shrouded_sky.png",
       "scenery": [],
       "showsCity": false,
-      "nameKey": "pc_shrouded"
+      "nameKey": "pc_shrouded",
+      "descriptionKey": "pc_shrouded_desc"
     },
     {
       "key": "pc_broken",
@@ -107999,7 +108219,8 @@
       "sky": "worlds/pc_broken_sky.png",
       "scenery": [],
       "showsCity": false,
-      "nameKey": "pc_broken"
+      "nameKey": "pc_broken",
+      "descriptionKey": "pc_broken_desc"
     },
     {
       "key": "pc_shattered",
@@ -108013,7 +108234,8 @@
       "sky": "worlds/pc_shattered_sky.png",
       "scenery": [],
       "showsCity": false,
-      "nameKey": "pc_shattered"
+      "nameKey": "pc_shattered",
+      "descriptionKey": "pc_shattered_desc"
     },
     {
       "key": "pc_toxoid_star",
@@ -108028,7 +108250,8 @@
       "sky": "worlds/pc_x_star_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_toxoid_star"
+      "nameKey": "pc_toxoid_star",
+      "descriptionKey": "pc_toxoid_star_desc"
     },
     {
       "key": "pc_rift_star",
@@ -108043,7 +108266,8 @@
       "sky": "worlds/pc_rift_star_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_rift_star"
+      "nameKey": "pc_rift_star",
+      "descriptionKey": "pc_rift_star_desc"
     },
     {
       "key": "pc_astral_scar",
@@ -108057,7 +108281,8 @@
       "sky": "worlds/pc_astral_scar_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_astral_scar"
+      "nameKey": "pc_astral_scar",
+      "descriptionKey": "pc_astral_scar_desc"
     },
     {
       "key": "pc_gray_goo",
@@ -108071,7 +108296,8 @@
       "sky": "worlds/pc_gray_goo_sky.png",
       "scenery": [],
       "showsCity": false,
-      "nameKey": "pc_gray_goo"
+      "nameKey": "pc_gray_goo",
+      "descriptionKey": "pc_gray_goo_desc"
     },
     {
       "key": "pc_egg_cracked",
@@ -108085,7 +108311,8 @@
       "sky": "worlds/pc_egg_cracked_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_egg_cracked"
+      "nameKey": "pc_egg_cracked",
+      "descriptionKey": "pc_egg_cracked_desc"
     },
     {
       "key": "pc_crystal_habitat",
@@ -108099,7 +108326,8 @@
       "sky": "worlds/pc_habitat_sky.png",
       "scenery": [],
       "showsCity": false,
-      "nameKey": "pc_crystal_habitat"
+      "nameKey": "pc_crystal_habitat",
+      "descriptionKey": "pc_crystal_habitat_desc"
     },
     {
       "key": "pc_warden_guardian",
@@ -108113,7 +108341,8 @@
       "sky": "worlds/pc_habitat_sky.png",
       "scenery": [],
       "showsCity": false,
-      "nameKey": "pc_warden_guardian"
+      "nameKey": "pc_warden_guardian",
+      "descriptionKey": "pc_warden_guardian_desc"
     },
     {
       "key": "pc_crystal_asteroid",
@@ -108127,7 +108356,8 @@
       "sky": "worlds/pc_crystal_asteroid_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_crystal_asteroid"
+      "nameKey": "pc_crystal_asteroid",
+      "descriptionKey": "pc_crystal_asteroid_desc"
     },
     {
       "key": "pc_ringworld_shielded",
@@ -108158,7 +108388,8 @@
         }
       ],
       "showsCity": false,
-      "nameKey": "pc_ringworld_shielded"
+      "nameKey": "pc_ringworld_shielded",
+      "descriptionKey": "pc_ringworld_shielded_desc"
     },
     {
       "key": "pc_habitat_shielded",
@@ -108172,7 +108403,8 @@
       "sky": "worlds/pc_habitat_sky.png",
       "scenery": [],
       "showsCity": false,
-      "nameKey": "pc_habitat_shielded"
+      "nameKey": "pc_habitat_shielded",
+      "descriptionKey": "pc_habitat_shielded_desc"
     },
     {
       "key": "pc_city",
@@ -108188,7 +108420,8 @@
       "scenery": [],
       "showsCity": true,
       "fixedCityLevel": 6,
-      "nameKey": "pc_city"
+      "nameKey": "pc_city",
+      "descriptionKey": "pc_city_desc"
     },
     {
       "key": "pc_relic",
@@ -108203,7 +108436,8 @@
       "sky": "worlds/pc_relic_sky.png",
       "scenery": [],
       "showsCity": false,
-      "nameKey": "pc_relic"
+      "nameKey": "pc_relic",
+      "descriptionKey": "pc_relic_desc"
     },
     {
       "key": "pc_shattered_2",
@@ -108217,7 +108451,8 @@
       "sky": "worlds/pc_shattered_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_shattered_2"
+      "nameKey": "pc_shattered_2",
+      "descriptionKey": "pc_shattered_2_desc"
     },
     {
       "key": "pc_cutholoid",
@@ -108231,7 +108466,8 @@
       "sky": "worlds/pc_cutholoid_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_cutholoid"
+      "nameKey": "pc_cutholoid",
+      "descriptionKey": "pc_cutholoid_desc"
     },
     {
       "key": "pc_junk",
@@ -108245,7 +108481,8 @@
       "sky": "worlds/pc_junk_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_junk"
+      "nameKey": "pc_junk",
+      "descriptionKey": "pc_junk_desc"
     },
     {
       "key": "pc_ark",
@@ -108259,7 +108496,8 @@
       "icon": "icons/planets/pc_ark.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_ark"
+      "nameKey": "pc_ark",
+      "descriptionKey": "pc_ark_desc"
     },
     {
       "key": "pc_protostar",
@@ -108274,7 +108512,8 @@
       "sky": "worlds/pc_browndwarf_sky.png",
       "scenery": [],
       "showsCity": true,
-      "nameKey": "pc_protostar"
+      "nameKey": "pc_protostar",
+      "descriptionKey": "pc_protostar_desc"
     }
   ],
   "portraitCategories": [

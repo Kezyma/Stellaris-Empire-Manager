@@ -14,6 +14,136 @@ namespace Sem.Ui.Tests;
 /// </remarks>
 public sealed class WikiShelfTests
 {
+    /// <summary>
+    /// A world says what the game says about it, which for two whole shelves it did not.
+    /// </summary>
+    /// <remarks>
+    /// The pruner seeds <c>loc/en.json</c> from what the database reaches, and neither the planet
+    /// classes nor the government types named their description - so sixty-seven planet paragraphs
+    /// and a hundred and seventy government ones were thrown away, and both shelves drew a title
+    /// with nothing under it. Asserted here rather than left to the extraction tests because what
+    /// broke was the row, not the file: the key is built by <c>Row()</c> and nothing had ever asked
+    /// a row of either shelf what its prose said.
+    /// </remarks>
+    [Fact]
+    public void AWorldSaysWhatTheGameSaysAboutIt()
+    {
+        var session = Session(
+            new GameDatabase
+            {
+                SchemaVersion = GameDatabase.CurrentSchemaVersion,
+                GameVersion = "test",
+                ExtractorVersion = "test",
+                Defines = new GameDefines { EthicsPoints = 3, CivicPoints = 2, CityPopLevel = 4 },
+                PlanetClasses = [new PlanetClassDefinition("pc_ocean") { Colonizable = true }],
+            },
+            new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                ["pc_ocean"] = "Ocean World",
+                ["pc_ocean_desc"] = "Rocky world with a significant hydrosphere.",
+            });
+
+        var row = Assert.Single(new WikiShelves(session).Planets(pack: null).Rows);
+
+        Assert.Equal("Ocean World", row.Name);
+        Assert.Equal("pc_ocean_desc", row.DescriptionKey);
+        Assert.Equal("Rocky world with a significant hydrosphere.", row.Description);
+
+        // And the typed word reaches it, which is the other half of a description going missing:
+        // the search matches on the prose as well as the name.
+        Assert.Contains("hydrosphere", row.Text, StringComparison.Ordinal);
+    }
+
+    /// <summary>A government does the same, under the same key convention.</summary>
+    [Fact]
+    public void AGovernmentSaysWhatTheGameSaysAboutIt()
+    {
+        var session = Session(
+            new GameDatabase
+            {
+                SchemaVersion = GameDatabase.CurrentSchemaVersion,
+                GameVersion = "test",
+                ExtractorVersion = "test",
+                Defines = new GameDefines { EthicsPoints = 3, CivicPoints = 2, CityPopLevel = 4 },
+                GovernmentTypes = [new GovernmentTypeDefinition("gov_test", 10, 0)],
+            },
+            new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                ["gov_test"] = "Test Dominion",
+                ["gov_test_desc"] = "A government of some kind.",
+            });
+
+        var row = Assert.Single(new WikiShelves(session).Governments(pack: null).Rows);
+
+        Assert.Equal("Test Dominion", row.Name);
+        Assert.Equal("A government of some kind.", row.Description);
+    }
+
+    /// <summary>
+    /// The shelf a page builds and the shelf a test builds are the same shelf.
+    /// </summary>
+    /// <remarks>
+    /// They were written out twice - once taking a pack, once not - and had already drifted: the
+    /// authorities grew a reader of their own on the page's side and not on this one, so the copy
+    /// every test in this file was asserting on drew its Politics tags with no meanings behind them.
+    /// <c>Of</c> forwards to the same methods now, and this is what says so.
+    /// </remarks>
+    [Fact]
+    public void TheShelfAPageAsksForIsTheShelfATestAsksFor()
+    {
+        var session = Session(
+            new GameDatabase
+            {
+                SchemaVersion = GameDatabase.CurrentSchemaVersion,
+                GameVersion = "test",
+                ExtractorVersion = "test",
+                Defines = new GameDefines { EthicsPoints = 3, CivicPoints = 2, CityPopLevel = 4 },
+            },
+            new Dictionary<string, string>(StringComparer.Ordinal));
+
+        var shelves = new WikiShelves(session);
+
+        foreach (var (kind, built) in new (WikiKind, WikiShelf)[]
+        {
+            (WikiKind.Civics, shelves.Civics(WikiKind.Civics, pack: null)),
+            (WikiKind.Origins, shelves.Civics(WikiKind.Origins, pack: null)),
+            (WikiKind.Ethics, shelves.Ethics(pack: null)),
+            (WikiKind.Authorities, shelves.Authorities(pack: null)),
+            (WikiKind.Species, shelves.Species(pack: null)),
+            (WikiKind.SpeciesTraits, shelves.SpeciesTraits(pack: null)),
+            (WikiKind.Planets, shelves.Planets(pack: null)),
+            (WikiKind.Governments, shelves.Governments(pack: null)),
+            (WikiKind.Shipsets, shelves.Shipsets(pack: null)),
+            (WikiKind.Personalities, shelves.Personalities(pack: null)),
+        })
+        {
+            var asked = shelves.Of(kind);
+
+            Assert.Equal(built.Title, asked.Title);
+            Assert.Equal(built.Noun, asked.Noun);
+            Assert.Equal(built.One, asked.One);
+            Assert.Equal(built.Picture, asked.Picture);
+            Assert.Equal(built.Shape, asked.Shape);
+            Assert.Same(built.Facets, asked.Facets);
+            Assert.Equal(built.Reader is null, asked.Reader is null);
+        }
+    }
+
+    /// <summary>A session over one database and one set of words, for the tests above.</summary>
+    /// <param name="database">The game.</param>
+    /// <param name="text">What it is written in.</param>
+    /// <returns>The session.</returns>
+    private static DesignSession Session(
+        GameDatabase database,
+        IReadOnlyDictionary<string, string> text)
+    {
+        var session = new DesignSession(
+            new Sem.Ui.Services.GameData(database, text, "assets"));
+
+        session.StartEmptyFile();
+        return session;
+    }
+
     private static WikiShelves Shelves(params CivicDefinition[] civics) => Shelves(civics, []);
 
     private static WikiShelves Shelves(CivicDefinition[] civics, EthicDefinition[] ethics)

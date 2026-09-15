@@ -248,47 +248,39 @@ public sealed class WikiShelves(DesignSession session)
             Reader = pack is null ? null : Reading(pack.Text),
         };
 
+    /// <summary>
+    /// A shelf before its page has fetched anything, which is the same shelf with no pack.
+    /// </summary>
+    /// <remarks>
+    /// Every arm forwards to the method the page itself calls. Written out a second time - which is
+    /// what it was - each shelf's title, plural, singular and list of headings existed twice and
+    /// nothing held the two copies together: the authorities had grown a reader of their own on one
+    /// side and not the other, so the same shelf built here drew its Politics tags with no meanings
+    /// behind them.
+    ///
+    /// Which matters more than tidiness, because this is the path the tests take.
+    /// </remarks>
+    /// <param name="kind">Which shelf.</param>
+    /// <returns>The shelf, with whatever a pack would have added left out.</returns>
     private WikiShelf Read(WikiKind kind) => kind switch
     {
-        WikiKind.Origins => new WikiShelf(
-            "Origins", "origins", "origin", Civics(origins: true, None<CivicDetail>()), WikiFacet.Civics),
-
-        WikiKind.Ethics => new WikiShelf(
-            "Ethics", "ethics", "ethic", EthicRows(pack: null), WikiFacet.Ethics),
-
-        WikiKind.Authorities => new WikiShelf(
-            "Authorities", "authorities", "authority",
-            AuthorityRows(None<AuthorityDetail>()), WikiFacet.Authorities),
-
-        WikiKind.Species => new WikiShelf(
-            "Species", "species classes", "species class",
-            SpeciesRows(None<SpeciesClassDetail>()), WikiFacet.Species),
-
-        WikiKind.SpeciesTraits => new WikiShelf(
-            "Species Traits", "species traits", "species trait",
-            SpeciesTraitRows(pack: null), WikiFacet.SpeciesTraits),
-
-        WikiKind.Planets => new WikiShelf(
-            "Planets", "planets", "planet",
-            PlanetRows(pack: null), WikiFacet.Planets) { Picture = "Sky" },
-
-        WikiKind.Governments => new WikiShelf(
-            "Governments", "governments", "government",
-            GovernmentRows(None<GovernmentDetail>()), WikiFacet.Governments),
+        WikiKind.Origins => Civics(WikiKind.Origins, pack: null),
+        WikiKind.Ethics => Ethics(pack: null),
+        WikiKind.Authorities => Authorities(pack: null),
+        WikiKind.Species => Species(pack: null),
+        WikiKind.SpeciesTraits => SpeciesTraits(pack: null),
+        WikiKind.Planets => Planets(pack: null),
+        WikiKind.Governments => Governments(pack: null),
+        WikiKind.Shipsets => Shipsets(pack: null),
+        WikiKind.Personalities => Personalities(pack: null),
+        WikiKind.LeaderTraits => LeaderTraits(pack: null),
 
         WikiKind.AscensionPerks => new WikiShelf(
             "Ascension Perks", "ascension perks", "ascension perk",
             AscensionPerks(), WikiFacet.AscensionPerks),
 
-        _ => new WikiShelf(
-            "Civics", "civics", "civic", Civics(origins: false, None<CivicDetail>()), WikiFacet.Civics),
+        _ => Civics(WikiKind.Civics, pack: null),
     };
-
-    /// <summary>No detail at all, for a shelf built before its page has fetched one.</summary>
-    /// <typeparam name="T">What the pack would have held.</typeparam>
-    /// <returns>An empty lookup.</returns>
-    private static IReadOnlyDictionary<string, T> None<T>() =>
-        new Dictionary<string, T>(StringComparer.Ordinal);
 
     /// <summary>
     /// The civics, or the origins, which are the same records with a flag set.
@@ -2808,7 +2800,11 @@ public sealed class WikiShelves(DesignSession session)
         // is a short list of the ones a player can have rather than seven hundred noes.
         WikiFact.Said("At start", trait.CanStart ? "Yes" : null),
         WikiFact.Of("Class", Leaders(trait.LeaderClasses)),
-        WikiFact.Said("Sort", trait.Sort is { Length: > 0 } sort ? Localizer.Prettify(sort) : null),
+        // The game's own grouping - veteran, destiny, negative, subclass - and it writes them out in
+        // its own text as "First Destiny Trait". Its field is called sort, which named the column
+        // until somebody read the page: "Sort: Destiny" is a heading asking the reader to guess.
+        // Kind is what the planets already call a one-word classification.
+        WikiFact.Said("Kind", trait.Sort is { Length: > 0 } sort ? Localizer.Prettify(sort) : null),
         WikiFact.Said("Rarity", trait.Rarity is { Length: > 0 } rare ? Localizer.Prettify(rare) : null),
 
         // Said only where the game says it. A tier of zero is a trait that is not part of a chain

@@ -7325,6 +7325,26 @@ button.icon.ended {
     margin: 0;
 }
 
+/*
+   The name, which is a button on both views so that a reader without a mouse can pick an entry out.
+
+   Drawn as the text it replaces and nothing else: no ground, no border, no padding. The card and the
+   row are already pressable anywhere, so a second thing that looked pressable would be saying the
+   same offer twice. What it adds is a focus ring, which is the whole point of it - and that comes
+   from the global :focus-visible rule rather than from here.
+*/
+.sem-wiki-pick {
+    font: inherit;
+    color: inherit;
+    letter-spacing: inherit;
+    text-align: left;
+    background: none;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+}
+
 .sem-wiki-prose {
     margin: 0;
     color: var(--text-dim);

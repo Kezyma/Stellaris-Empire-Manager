@@ -197,6 +197,12 @@ public static class WikiFacet
         Many("kind", "Kind", r => Fact(r, "Kind")),
         Many("districts", "Districts", r => Fact(r, "Districts")),
 
+        // Which is the question the shelf exists to answer and the one it could not be asked: there
+        // was no way to say "show me the worlds that grant ocean preference", on a page whose whole
+        // subject is where a species is suited to live.
+        Many("preference", "Preference", r => Fact(r, "Preference")),
+        Many("size", "Size", r => Fact(r, "Size")),
+
         // What a world can be turned into, which is the second question a reader asks after
         // habitability and the one the wiki held nothing of at all - and the same links read the
         // other way, which is how a reader finds the worlds a Gaia world can be made from.
@@ -289,7 +295,7 @@ public static class WikiFacet
     public static IReadOnlyList<Facet<WikiRow>> LeaderTraits { get; } =
     [
         Many("class", "Class", r => Fact(r, "Class")),
-        Many("sort", "Sort", r => Fact(r, "Sort")),
+        Many("sort", "Kind", r => Fact(r, "Kind")),
         Many("rarity", "Rarity", r => Fact(r, "Rarity")),
         Many("tier", "Tier", r => Fact(r, "Tier")),
         Many("pack", "Content pack", r => r.PackChoices),
