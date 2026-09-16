@@ -49,11 +49,7 @@ public sealed class ConditionWriter(Localizer localizer)
 
         return requirement switch
         {
-            // Lower-cased, because this one is written into the middle of a sentence where the
-            // outline draws it as a statement of its own. Same answer either way - see Unreachable.
-            AlwaysRequirement always => always.Value == !negated
-                ? null
-                : Unreachable.Words(always.Because).ToLowerInvariant(),
+            AlwaysRequirement always => always.Value == !negated ? null : "never",
 
             NotRequirement not => Write(not.Item, depth, !negated),
 
@@ -95,6 +91,14 @@ public sealed class ConditionWriter(Localizer localizer)
                 ? $"not {written}"
                 : written,
 
+            // A technology names itself. "has technology Terrestrial Sculpting" carries a subject
+            // that says nothing the value does not - the game has one word for the thing and this
+            // put two in front of it - and read inside a longer phrase it is the part that makes it
+            // stop scanning: "10 years, with has technology Climate Restoration".
+            UnknownRequirement { Name: "has_technology", Value: { Length: > 0 } tech }
+                when _localizer.Text(tech, string.Empty) is { Length: > 0 } named =>
+                negated ? $"not {named}" : named,
+
             UnknownRequirement unknown => Phrase(
                 negated ? "not" : null,
                 Words(unknown.Name),
@@ -123,6 +127,14 @@ public sealed class ConditionWriter(Localizer localizer)
         if (prefix is { Length: > 0 })
         {
             builder.Append(prefix).Append(' ');
+        }
+
+        // A kind of selection the writer has no word for - an ascension perk, a tradition - names
+        // itself through its value, and appending nothing here used to leave the space that follows
+        // it: "with  Hydrocentric".
+        if (subject.Length == 0)
+        {
+            return builder.Append(value).ToString().Trim();
         }
 
         builder.Append(subject);

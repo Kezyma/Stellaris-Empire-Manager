@@ -7880,6 +7880,41 @@ button.icon.ended {
 .sem-wiki-facts .words { color: var(--text-dim); }
 
 /*
+   A run of chips under the word they share.
+
+   Full width of the answer column so each run starts on its own line, and the label above rather
+   than beside it: a card's fact column is a couple of hundred pixels and a second inline column
+   would leave the chips nowhere to go, which is the problem the runs exist to solve.
+*/
+.sem-wiki-facts > .one.grouped {
+    display: block;
+    grid-column: 1 / -1;
+    min-width: 0;
+}
+
+.sem-wiki-facts > .one.grouped > .said { display: block; }
+
+.sem-wiki-facts .run {
+    flex: 1 0 100%;
+    min-width: 0;
+}
+
+.sem-wiki-facts .run > .label {
+    color: var(--text-faint);
+    font-size: var(--text-xs);
+    margin-bottom: 2px;
+}
+
+.sem-wiki-facts .run > .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    min-width: 0;
+}
+
+.sem-wiki-facts .run + .run { margin-top: var(--space-sm); }
+
+/*
    A label that is not a chip.
 
    A chip is a thing with a name, a picture and a description behind it, and it looks pressable

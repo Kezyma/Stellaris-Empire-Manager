@@ -1342,14 +1342,8 @@ public sealed class WikiShelves(DesignSession session)
         // thirty links - which is the second question a reader asks after habitability. Then the
         // same links the other way, which is the third: a Gaia world is the end of fourteen of them
         // and its own record says so nowhere.
-        WikiFact.Of("Becomes", Becomes(detail?.Becomes ?? [])),
-        WikiFact.Of("Made from", Becomes(from)),
-
-        // And what the empire has to have researched first, which the chips have no room for. One
-        // line per distinct answer, naming the worlds it covers, because a world's links do not
-        // agree: an ocean world reaches eight of its fourteen through Terrestrial Sculpting and the
-        // other six from the start.
-        WikiFact.Listed("Terraforming needs", Waits(detail?.Becomes ?? [], reader)),
+        WikiFact.Grouped("Becomes", Becomes(detail?.Becomes ?? [], reader)),
+        WikiFact.Grouped("Made from", Becomes(from, reader)),
     ];
 
     /// <summary>One district, named the way the game names it where it names it at all.</summary>
@@ -1360,32 +1354,6 @@ public sealed class WikiShelves(DesignSession session)
         district is { Length: > 0 } key
             ? [new EmpireChoice(key, reader.Text(key, Localizer.Prettify(key)), null, null)]
             : [];
-
-    /// <summary>
-    /// What a set of terraforming links waits on, one sentence for each distinct answer.
-    /// </summary>
-    /// <remarks>
-    /// Read through the same writer every other condition on the site goes through, so a technology
-    /// comes out as its name rather than as the key it is written under. Links that state nothing
-    /// are left out entirely - saying "these eight need nothing" is not worth a line.
-    /// </remarks>
-    /// <param name="links">The links.</param>
-    /// <param name="reader">The text, with the pack's merged in.</param>
-    /// <returns>The sentences.</returns>
-    private IReadOnlyList<string> Waits(IReadOnlyList<Terraforming> links, Localizer reader)
-    {
-        var writer = new ConditionWriter(reader);
-
-        return
-        [
-            .. links
-                .Select(t => (Said: writer.Describe(t.Needs), t.World))
-                .Where(pair => pair.Said is { Length: > 0 })
-                .GroupBy(pair => pair.Said!, StringComparer.Ordinal)
-                .Select(g => $"{Listing(g.Select(pair => pair.World))}: {g.Key}")
-                .OrderBy(said => said, StringComparer.CurrentCulture),
-        ];
-    }
 
     /// <summary>A range the game rolls within, or the one size it fixes.</summary>
     /// <param name="smallest">The low end.</param>
@@ -1399,12 +1367,6 @@ public sealed class WikiShelves(DesignSession session)
         ({ } low, { } high) when low == high => Number(low),
         ({ } low, { } high) => $"{Number(low)} to {Number(high)}",
     };
-
-    /// <summary>Several worlds named in a row, the way a sentence would name them.</summary>
-    /// <param name="keys">The classes.</param>
-    /// <returns>Their names, or the keys where the game names none.</returns>
-    private string Listing(IEnumerable<string> keys) =>
-        string.Join(", ", Worlds([.. keys]).Select(w => w.Name));
 
     /// <summary>The one-word classifications a world carries.</summary>
     /// <param name="detail">What the page fetched, or null before it arrives.</param>
@@ -1434,15 +1396,57 @@ public sealed class WikiShelves(DesignSession session)
     /// would be a number this app had assembled rather than one the game gives.
     /// </remarks>
     /// <param name="links">The links, in whichever direction the heading reads them.</param>
-    /// <returns>The chips.</returns>
-    private IReadOnlyList<EmpireChoice> Becomes(IReadOnlyList<Terraforming> links) =>
-    [
-        .. links
-            .Select(t => Worlds(t.World).FirstOrDefault() is { } chip
-                ? chip with { Badge = t.Days > 0 ? $"{Number(t.Days / 360)}y" : null }
-                : null)
-            .OfType<EmpireChoice>(),
-    ];
+    /// <param name="reader">The text, with the pack's merged in.</param>
+    /// <returns>The runs, shortest wait first.</returns>
+    private IReadOnlyList<WikiFactGroup> Becomes(
+        IReadOnlyList<Terraforming> links,
+        Localizer reader)
+    {
+        var writer = new ConditionWriter(reader);
+
+        return
+        [
+            .. links
+                .GroupBy(t => (t.Days, Needs: writer.Describe(t.Needs) ?? string.Empty))
+                .OrderBy(g => g.Key.Days)
+                .ThenBy(g => g.Key.Needs, StringComparer.CurrentCulture)
+                .Select(g => new WikiFactGroup(
+                    Waiting(g.Key.Days, g.Key.Needs),
+                    Worlds([.. g.Select(t => t.World)])))
+                .Where(g => g.Chips.Count > 0),
+        ];
+    }
+
+    /// <summary>
+    /// How long a terraforming link takes, as a heading over the worlds that take that long.
+    /// </summary>
+    /// <remarks>
+    /// On the chips it was a badge each, and the badges are four numbers repeated: an ocean world
+    /// reaches two worlds in five years and eight in ten. A chip carrying "10y" beside a world's
+    /// icon and its name is wider than a card's fact column, so every one of the fourteen took a
+    /// line of its own. Said once above the run, they fit several to a line.
+    /// </remarks>
+    /// <param name="days">The duration the game counts in.</param>
+    /// <param name="needs">What the empire must have first, or empty where it needs nothing.</param>
+    /// <returns>The words.</returns>
+    private static string Waiting(int days, string needs)
+    {
+        var waited = (days / 360) switch
+        {
+            <= 0 => "At once",
+            1 => "1 year",
+            var years => $"{Number(years)} years",
+        };
+
+        // And what it waits on, said here rather than under a heading of its own.
+        //
+        // It had one - "Terraforming needs" - and it listed the same worlds a second time, under a
+        // name that reads as something the world requires rather than something the empire does. A
+        // reader met three lists of planets and no way to tell which was which. Said on the run it
+        // belongs to, each group is the whole of one answer: these worlds, this long, once you have
+        // this.
+        return needs.Length == 0 ? waited : $"{waited}, with {needs}";
+    }
 
     /// <summary>
     /// The shipsets, which the game names by showing you one.
@@ -3158,7 +3162,12 @@ public sealed class WikiShelves(DesignSession session)
     /// </remarks>
     private IReadOnlyList<EmpireChoice> Worlds(params IEnumerable<string?> keys) =>
     [
-        .. Real(keys).Select(k =>
+        // By name, not by key. The game gives two classes the same words twice over - pc_barren and
+        // pc_barren_cold are both "Barren World", pc_gray_goo and pc_nanotech both "Nanite World" -
+        // and a run of chips saying Barren World, Barren World reads as a fault in the page. They
+        // are two classes and a reader has no way to tell which is which, so showing one is all the
+        // information there ever was.
+        .. Named(Real(keys).Select(k =>
         {
             var habitability = session.Rules.HabitabilityTraitFor(k);
 
@@ -3167,8 +3176,14 @@ public sealed class WikiShelves(DesignSession session)
                 Database.PlanetClass(k)?.Icon,
                 Database.Trait(habitability)?.Effects,
                 habitability is { Length: > 0 } trait ? $"{trait}_desc" : null);
-        }),
+        })),
     ];
+
+    /// <summary>The same chips with anything the game names twice said once.</summary>
+    /// <param name="chips">The chips, in the order they should be read.</param>
+    /// <returns>The first of each name.</returns>
+    private static IEnumerable<EmpireChoice> Named(IEnumerable<EmpireChoice> chips) =>
+        chips.DistinctBy(c => c.Name, StringComparer.CurrentCulture);
 
     /// <summary>
     /// Leader traits, which are in the wiki's own file rather than the database.

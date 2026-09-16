@@ -83,9 +83,19 @@ public sealed class ConditionReader(Localizer localizer, GameDatabase database)
     /// <param name="requirement">The condition, or nothing.</param>
     /// <returns>The outline, or null where the condition asks nothing at all.</returns>
     public ConditionOutline? Read(Requirement? requirement) =>
-        Build(requirement?.Simplified(), wanted: true);
+        Build(requirement?.Simplified(), wanted: true, spine: true);
 
-    private ConditionOutline? Build(Requirement? requirement, bool wanted)
+    /// <summary>
+    /// Builds one part of an outline.
+    /// </summary>
+    /// <param name="requirement">The part.</param>
+    /// <param name="wanted">Whether it is being asked for or asked against.</param>
+    /// <param name="spine">
+    /// Whether this sits on the run of conjunctions leading back to the whole condition, so that a
+    /// refusal here refuses the option outright. Only there can one be left undrawn - see Group.
+    /// </param>
+    /// <returns>The outline, or null where the part says nothing.</returns>
+    private ConditionOutline? Build(Requirement? requirement, bool wanted, bool spine)
     {
         switch (requirement)
         {
@@ -93,29 +103,39 @@ public sealed class ConditionReader(Localizer localizer, GameDatabase database)
                 return null;
 
             // A condition that always holds says nothing worth a bullet. One that never does says
-            // the only thing about the option that matters, so it gets one - and says why, where the
-            // compiler recorded why. See Unreachable: a bare "never" beside two real requirements
-            // leaves the reader to guess which of the three is the one they cannot meet.
+            // the only thing about the option that matters, so it gets one - as a statement rather
+            // than as a thing to have or not have. All sixteen of the hidden origins are written
+            // this way, and it is the whole story about them.
             case AlwaysRequirement always:
                 return always.Value == wanted
                     ? null
-                    : new ConditionOutline(ConditionJoin.Leaf, false)
-                    {
-                        Text = Unreachable.Words(always.Because),
-                        Plain = true,
-                    };
+                    : new ConditionOutline(ConditionJoin.Leaf, false) { Text = "Never", Plain = true };
 
+            // Past a negation nothing is on the spine any more: what refuses the option inside one
+            // is what permits it outside.
             case NotRequirement not:
-                return Build(not.Item, !wanted);
+                return Build(not.Item, !wanted, spine: false);
 
             // De Morgan, so that a negation never has to be carried on a group. "Not all of these"
             // is "any of these, not held", and written that way every bullet on the page reads the
             // same: a tick or a cross against one thing.
             case AllRequirement all:
-                return Group(all.Items, wanted ? ConditionJoin.All : ConditionJoin.Any, wanted);
+                return Group(
+                    all.Items,
+                    wanted ? ConditionJoin.All : ConditionJoin.Any,
+                    wanted,
+
+                    // Still the spine where this is a conjunction being asked for. Read the other
+                    // way round it is an "any of", and one part of those refusing says nothing about
+                    // the whole.
+                    spine && wanted);
 
             case AnyRequirement any:
-                return Group(any.Items, wanted ? ConditionJoin.Any : ConditionJoin.All, wanted);
+                return Group(
+                    any.Items,
+                    wanted ? ConditionJoin.Any : ConditionJoin.All,
+                    wanted,
+                    spine && !wanted);
 
             case SelectionRequirement selection:
                 return new ConditionOutline(ConditionJoin.Leaf, wanted) { Chip = Chip(selection) };
@@ -150,9 +170,14 @@ public sealed class ConditionReader(Localizer localizer, GameDatabase database)
     /// empty parts matters for the same reason: half of what an <c>AND</c> holds is often an
     /// <c>always = yes</c> that exists to make the script tidy.
     /// </remarks>
-    private ConditionOutline? Group(IReadOnlyList<Requirement> items, ConditionJoin join, bool wanted)
+    private ConditionOutline? Group(
+        IReadOnlyList<Requirement> items,
+        ConditionJoin join,
+        bool wanted,
+        bool spine)
     {
         List<ConditionOutline> parts = [];
+        List<ConditionOutline> refusals = [];
 
         foreach (var item in items)
         {
@@ -170,7 +195,7 @@ public sealed class ConditionReader(Localizer localizer, GameDatabase database)
                 continue;
             }
 
-            var built = Build(item, wanted);
+            var built = Build(item, wanted, spine && join == ConditionJoin.All);
 
             // Nothing to draw, which means two different things. In an "all of" it is a part that
             // asks for nothing and the rest of the group still stands. In an "any of" it is a part
@@ -191,6 +216,34 @@ public sealed class ConditionReader(Localizer localizer, GameDatabase database)
                 continue;
             }
 
+            // A refusal on the spine, held back rather than drawn.
+            //
+            // It refuses the option outright, so the row is already marked out of reach and already
+            // carries the whole explanation on its badge: "Not at the start", "Never drawn", and a
+            // sentence behind each saying what it waits on. Drawn again here it is a third copy of
+            // that answer, written in a grammar the rest of the list does not use - a bare statement
+            // sitting between a tick and a cross - and a hundred and twenty-four of them land in the
+            // middle of requirements a reader can perfectly well meet.
+            //
+            // Held rather than dropped, because where nothing else survives it is the whole story
+            // and the sixteen hidden origins are exactly that case.
+            // A part nothing can satisfy, held aside rather than drawn among the rest. What it
+            // means depends on the join, and both readings are exact rather than merely tidy:
+            //
+            //   In an "any of" it is one fewer way in. Two ways of passing where one is dead is one
+            //   way of passing, so the arm goes - and where that leaves a single arm the group
+            //   unwraps to it below.
+            //
+            //   In an "all of" it is the whole group: everything has to hold and this cannot, so
+            //   reading out its siblings afterwards is describing a door that is bricked up.
+            //
+            // Either way, where nothing at all survives the refusal is the answer and is drawn.
+            if (built.Plain)
+            {
+                refusals.Add(built);
+                continue;
+            }
+
             // A group of the same kind nested directly inside this one is the same question asked
             // twice. Lifting its parts here keeps the indentation to the nesting that means
             // something.
@@ -208,6 +261,24 @@ public sealed class ConditionReader(Localizer localizer, GameDatabase database)
         // here, and twenty-five civics name the same thing in both - so without this a reader would
         // be told twice, in the same words, that their empire must not be a gestalt.
         parts = [.. parts.Distinct()];
+
+        if (refusals.Count > 0)
+        {
+            // Nothing else said anything, so the refusal is the answer - which is the sixteen hidden
+            // origins, and an "any of" every arm of which is dead.
+            if (parts.Count == 0)
+            {
+                return refusals[0];
+            }
+
+            // An "all of" off the spine is false and says so. On the spine it is false too, but
+            // there the row already carries the whole explanation on its badge - "Not at the
+            // start", "Never drawn" - so what is worth drawing is the part a reader can still read.
+            if (join == ConditionJoin.All && !spine)
+            {
+                return refusals[0];
+            }
+        }
 
         return parts.Count switch
         {

@@ -8,7 +8,13 @@
 
 @foreach (var fact in Facts)
 {
-    <div class="one">
+    @*
+        A fact whose chips come in runs takes the whole width instead of the answer column. The
+        heading column is as wide as the longest heading on the card - "Terraforming needs" - and
+        what is left in a card four across is narrower than one world chip, which is how fourteen
+        chips became fourteen lines.
+    *@
+    <div class="one @(fact.Groups.Count > 0 ? "grouped" : null)">
         <div class="heading">@fact.Heading</div>
 
         <div class="said">
@@ -26,17 +32,43 @@
                 <span class="sem-tag">@tag</span>
             }
 
-            @foreach (var chip in fact.Chips)
+            @*
+                In runs, where the fact came in runs - see WikiFact.Grouped. The word they share is
+                said once above them instead of on each chip, which is most of a card's width back.
+            *@
+            @if (fact.Groups.Count > 0)
             {
-                @*
-                    The badge travels too. A personality's numbers are chips wearing their own
-                    figure - aggressiveness 1.75, bravery 1.5 - and without this they were a row of
-                    words with the numbers dropped on the floor.
-                *@
-                <OptionChip Key="@chip.Key" Name="@chip.Name" Icon="@chip.Icon"
-                            DescriptionKey="@chip.Description" Effects="@chip.Effects"
-                            Badge="@chip.Badge" BadgeLevel="@chip.BadgeLevel"
-                            Deferred="true" />
+                @foreach (var group in fact.Groups)
+                {
+                    <div class="run">
+                        <div class="label">@group.Label</div>
+
+                        <div class="chips">
+                            @foreach (var chip in group.Chips)
+                            {
+                                <OptionChip Key="@chip.Key" Name="@chip.Name" Icon="@chip.Icon"
+                                            DescriptionKey="@chip.Description" Effects="@chip.Effects"
+                                            Badge="@chip.Badge" BadgeLevel="@chip.BadgeLevel"
+                                            Deferred="true" />
+                            }
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                @foreach (var chip in fact.Chips)
+                {
+                    @*
+                        The badge travels too. A personality's numbers are chips wearing their own
+                        figure - aggressiveness 1.75, bravery 1.5 - and without this they were a row
+                        of words with the numbers dropped on the floor.
+                    *@
+                    <OptionChip Key="@chip.Key" Name="@chip.Name" Icon="@chip.Icon"
+                                DescriptionKey="@chip.Description" Effects="@chip.Effects"
+                                Badge="@chip.Badge" BadgeLevel="@chip.BadgeLevel"
+                                Deferred="true" />
+                }
             }
 
             @*

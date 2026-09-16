@@ -208,6 +208,13 @@ public sealed record WikiPack(string Key, string Name, string? Icon, bool Wanted
 }
 
 /// <summary>
+/// One run of a fact's chips, under a word saying what they have in common.
+/// </summary>
+/// <param name="Label">What the run shares - "10 years", "Terrestrial Sculpting".</param>
+/// <param name="Chips">The things in it.</param>
+public sealed record WikiFactGroup(string Label, IReadOnlyList<EmpireChoice> Chips);
+
+/// <summary>
 /// Something true of one kind of thing and not of the others.
 /// </summary>
 /// <remarks>
@@ -268,8 +275,33 @@ public sealed record WikiFact(string Heading, IReadOnlyList<EmpireChoice> Chips,
     /// <summary>Short labels that say the whole of what they mean and open nothing.</summary>
     public IReadOnlyList<string> Tags { get; init; } = [];
 
+    /// <summary>The chips in named runs, where what divides them is worth a word of its own.</summary>
+    public IReadOnlyList<WikiFactGroup> Groups { get; init; } = [];
+
     /// <summary>Sentences the game has already written, one to a line.</summary>
     public IReadOnlyList<string> Lines { get; init; } = [];
+
+    /// <summary>
+    /// A fact whose chips fall into named runs.
+    /// </summary>
+    /// <remarks>
+    /// For a heading whose chips all carry the same small figure, where the figure divides them
+    /// rather than describing each. A world's terraforming links are the case: fourteen chips each
+    /// wearing its own duration filled a card with one chip per line, and the durations are four
+    /// numbers repeated - so they become four headings and the chips get their width back.
+    ///
+    /// The flattened chips come too, so a heading is still one list to the filter and to the table's
+    /// sort. Nothing that reads a fact has to know about this.
+    /// </remarks>
+    /// <param name="heading">What it answers.</param>
+    /// <param name="groups">The runs, in the order they should be read.</param>
+    /// <returns>The fact.</returns>
+    public static WikiFact Grouped(string heading, IReadOnlyList<WikiFactGroup> groups)
+    {
+        ArgumentNullException.ThrowIfNull(groups);
+
+        return new WikiFact(heading, [.. groups.SelectMany(g => g.Chips)], null) { Groups = groups };
+    }
 
     /// <summary>Whether it says anything at all, so an empty one can be left undrawn.</summary>
     public bool Any => Chips.Count > 0 || Tags.Count > 0 || Lines.Count > 0 || Text is { Length: > 0 };

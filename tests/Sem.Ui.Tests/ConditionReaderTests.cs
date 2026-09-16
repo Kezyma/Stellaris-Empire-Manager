@@ -63,15 +63,16 @@ public sealed class ConditionReaderTests
     }
 
     /// <summary>
-    /// A condition that can never hold says why, where the compiler recorded why.
+    /// A refusal beside requirements a reader can meet is not drawn.
     /// </summary>
     /// <remarks>
-    /// Seventy-one governments read "is a hive empire, and never, and not Evolutionary Predators",
-    /// leaving the reader to work out which of the three they cannot meet. The answer was on the
-    /// node all along - the compiler writes down which trigger settled it - and nothing drew it.
+    /// A government read "is a hive empire, and never, and not Evolutionary Predators", which asks
+    /// the reader to work out which of the three is the one they cannot meet - and the row already
+    /// carries the whole answer on its badge, in prose, written for that page. A hundred and
+    /// twenty-four land in the middle of a list like this.
     /// </remarks>
     [Fact]
-    public void AConditionThatCanNeverHoldSaysWhy()
+    public void ARefusalBesideRealRequirementsIsNotDrawn()
     {
         var node = Reader().Read(new AllRequirement(
         [
@@ -79,9 +80,49 @@ public sealed class ConditionReaderTests
             new AlwaysRequirement(false) { Because = "has_country_flag" },
         ]))!;
 
-        Assert.Equal(ConditionJoin.All, node.Join);
-        Assert.Contains(node.Parts, p => p.Text == "Something an event sets");
-        Assert.DoesNotContain(node.Parts, p => p.Text == "Never");
+        Assert.Equal(ConditionJoin.Leaf, node.Join);
+        Assert.Equal("Militarist", node.Chip!.Name);
+    }
+
+    /// <summary>
+    /// And is drawn where nothing else survives, because then it is the whole story.
+    /// </summary>
+    /// <remarks>
+    /// Dropping it there would leave an empty outline, which the card reads as "any empire" - the
+    /// opposite of what the condition says. The sixteen hidden origins are exactly this case.
+    /// </remarks>
+    [Fact]
+    public void ARefusalOnItsOwnIsStillDrawn()
+    {
+        var node = Reader().Read(new AllRequirement(
+        [
+            new AlwaysRequirement(true),
+            new AlwaysRequirement(false) { Because = "has_country_flag" },
+        ]))!;
+
+        Assert.Equal("Never", node.Text);
+    }
+
+    /// <summary>
+    /// A dead arm of an "any of" is taken away, leaving what is actually on offer.
+    /// </summary>
+    /// <remarks>
+    /// "Be a militarist and something impossible, or be a pacifist" is "be a pacifist", and eleven
+    /// personalities were written the first way: an ethic beside a country type no design is, as one
+    /// of two ways of being played as it. Drawn literally it is two offers, one of which is a
+    /// trapdoor.
+    /// </remarks>
+    [Fact]
+    public void ADeadArmOfAnAnyOfIsTakenAway()
+    {
+        var node = Reader().Read(new AnyRequirement(
+        [
+            new AllRequirement([Ethic("ethic_militarist"), new AlwaysRequirement(false)]),
+            Ethic("ethic_pacifist"),
+        ]))!;
+
+        Assert.Equal(ConditionJoin.Leaf, node.Join);
+        Assert.Equal("Pacifist", node.Chip!.Name);
     }
 
     /// <summary>
