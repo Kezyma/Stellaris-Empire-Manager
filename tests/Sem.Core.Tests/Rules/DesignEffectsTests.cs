@@ -40,6 +40,19 @@ public sealed class DesignEffectsTests
                             new ConditionalEffects(
                                 new UnknownRequirement("has_tradition"),
                                 new Dictionary<string, double> { ["country_unity_produces_mult"] = 0.15 }),
+
+                            // The shape the game writes four thousand times: a scope guard, and then
+                            // the condition it protects. The guard compiles to an unknown, so the
+                            // pair is undecidable and the modifier stays out - which is the same
+                            // answer it got when the guard compiled to a flat refusal, and the whole
+                            // reason changing the guard was safe to do.
+                            new ConditionalEffects(
+                                new AllRequirement(
+                                [
+                                    new UnknownRequirement("exists") { Value = "owner" },
+                                    new PredicateRequirement("is_nomadic").Negated(),
+                                ]),
+                                new Dictionary<string, double> { ["pop_growth_speed"] = 0.25 }),
                         ],
                     },
                 },
@@ -113,6 +126,31 @@ public sealed class DesignEffectsTests
         Assert.Null(Total(Context(nomadic: false), "country_unity_produces_mult"));
     }
 
+    /// <summary>
+    /// A modifier behind a scope guard stays out of the totals, guard or no guard.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <c>exists = owner</c> used to compile to a flat refusal, which decided the condition and
+    /// excluded the modifier. It now compiles to an unknown, which does not decide it - and
+    /// <see cref="RequirementEvaluator.CanDecide"/> keeps an undecidable group out of the
+    /// arithmetic, so the number is the same.
+    /// </para>
+    /// <para>
+    /// That equivalence is the whole licence for the change. Answering the guard <em>true</em> would
+    /// have made the pair decidable on the strength of the rest, and folded in a bonus on evidence
+    /// nothing has.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void AGuardedModifierStaysOutOfTheTotals()
+    {
+        // Not nomadic, so the half of the condition the design can read is satisfied. The guard is
+        // still the reason the group is left alone.
+        Assert.Null(Total(Context(nomadic: false), "pop_growth_speed"));
+        Assert.Null(Total(Context(nomadic: true), "pop_growth_speed"));
+    }
+
     [Fact]
     public void UnconditionalModifiersAreUnaffected()
     {
@@ -122,8 +160,8 @@ public sealed class DesignEffectsTests
     [Fact]
     public void TheFootnoteIsAboutWhatWasActuallyLeftOut()
     {
-        // Both empires carry conditions; both have one that could not be settled. Take that one away
-        // and the note must go, even though two settled conditions remain.
+        // Both empires carry conditions; both have ones that could not be settled. Take those away
+        // and the note must go, even though the settled conditions remain.
         Assert.True(DesignEffects.AnyConditional(Context(nomadic: false)));
 
         var settled = Database with
@@ -135,7 +173,10 @@ public sealed class DesignEffectsTests
                     {
                         Effects = e.Effects with
                         {
-                            Conditional = [.. e.Effects.Conditional.Where(c => c.When is not UnknownRequirement)],
+                            // Anything holding an unknown anywhere in it, not only an unknown at
+                            // the top. A scope guard sits inside an AND beside the condition it
+                            // protects, and that pair is exactly as undecidable as a bare unknown.
+                            Conditional = [.. e.Effects.Conditional.Where(c => !Unreadable(c.When))],
                         },
                     }
                     : e),
@@ -150,6 +191,18 @@ public sealed class DesignEffectsTests
         Assert.False(DesignEffects.AnyConditional(context));
         Assert.Equal(-0.1, Total(context, "country_claim_influence_cost_mult"));
     }
+
+    /// <summary>Whether a condition holds anything the design cannot answer.</summary>
+    /// <param name="requirement">The condition.</param>
+    /// <returns>True where an unknown is in it anywhere.</returns>
+    private static bool Unreadable(Requirement requirement) => requirement switch
+    {
+        UnknownRequirement => true,
+        NotRequirement not => Unreadable(not.Item),
+        AllRequirement all => all.Items.Any(Unreadable),
+        AnyRequirement any => any.Items.Any(Unreadable),
+        _ => false,
+    };
 
     [Fact]
     public void TheFoundersTraitsAreCountedAlongsideTheEmpiresOwnChoices()

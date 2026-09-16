@@ -1,6 +1,6 @@
 {
   "stamp": {
-    "extractorVersion": "0.1.0\u002B22f45b58a7ce",
+    "extractorVersion": "0.1.0\u002Bbf19c95e4bb7",
     "schemaVersion": 3
   },
   "traits": [
@@ -1575,7 +1575,8 @@
             "kind": "unknown",
             "name": "exists",
             "assume": true,
-            "value": "owner"
+            "value": "owner",
+            "said": "an owner"
           },
           {
             "kind": "selection",
@@ -4147,9 +4148,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "not",
@@ -4157,9 +4160,10 @@
                         "kind": "all",
                         "items": [
                           {
-                            "kind": "always",
-                            "value": false,
-                            "because": "exists"
+                            "kind": "unknown",
+                            "name": "exists",
+                            "assume": true,
+                            "value": "this"
                           },
                           {
                             "kind": "always",
@@ -4193,17 +4197,20 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "all",
                       "items": [
                         {
-                          "kind": "always",
-                          "value": false,
-                          "because": "exists"
+                          "kind": "unknown",
+                          "name": "exists",
+                          "assume": true,
+                          "value": "this"
                         },
                         {
                           "kind": "always",
@@ -7474,7 +7481,8 @@
             "kind": "unknown",
             "name": "exists",
             "assume": true,
-            "value": "owner"
+            "value": "owner",
+            "said": "an owner"
           },
           {
             "kind": "not",
@@ -8038,7 +8046,8 @@
             "kind": "unknown",
             "name": "exists",
             "assume": true,
-            "value": "owner"
+            "value": "owner",
+            "said": "an owner"
           },
           {
             "kind": "not",
@@ -10425,9 +10434,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "any",
@@ -10497,9 +10508,10 @@
                           "kind": "all",
                           "items": [
                             {
-                              "kind": "always",
-                              "value": false,
-                              "because": "exists"
+                              "kind": "unknown",
+                              "name": "exists",
+                              "assume": true,
+                              "value": "this"
                             },
                             {
                               "kind": "always",
@@ -10535,9 +10547,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "not",
@@ -10609,9 +10623,10 @@
                             "kind": "all",
                             "items": [
                               {
-                                "kind": "always",
-                                "value": false,
-                                "because": "exists"
+                                "kind": "unknown",
+                                "name": "exists",
+                                "assume": true,
+                                "value": "this"
                               },
                               {
                                 "kind": "always",
@@ -10659,9 +10674,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "any",
@@ -10731,9 +10748,10 @@
                           "kind": "all",
                           "items": [
                             {
-                              "kind": "always",
-                              "value": false,
-                              "because": "exists"
+                              "kind": "unknown",
+                              "name": "exists",
+                              "assume": true,
+                              "value": "this"
                             },
                             {
                               "kind": "always",
@@ -10769,9 +10787,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "not",
@@ -10843,9 +10863,10 @@
                             "kind": "all",
                             "items": [
                               {
-                                "kind": "always",
-                                "value": false,
-                                "because": "exists"
+                                "kind": "unknown",
+                                "name": "exists",
+                                "assume": true,
+                                "value": "this"
                               },
                               {
                                 "kind": "always",
@@ -11069,9 +11090,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "planet",
+                      "said": "a planet"
                     },
                     {
                       "kind": "unknown",
@@ -11102,9 +11125,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "planet",
+                      "said": "a planet"
                     },
                     {
                       "kind": "unknown",
@@ -11928,7 +11953,8 @@
             "kind": "unknown",
             "name": "exists",
             "assume": true,
-            "value": "owner"
+            "value": "owner",
+            "said": "an owner"
           },
           {
             "kind": "not",
@@ -13878,7 +13904,8 @@
                 "kind": "unknown",
                 "name": "exists",
                 "assume": true,
-                "value": "owner"
+                "value": "owner",
+                "said": "an owner"
               },
               {
                 "kind": "unknown",
@@ -14314,9 +14341,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -14372,9 +14400,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -14686,9 +14715,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -14744,9 +14774,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -14869,9 +14900,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -14927,9 +14959,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -15268,9 +15301,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -15326,9 +15360,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -15381,9 +15416,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -15439,9 +15475,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -15564,9 +15601,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -15622,9 +15660,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -15677,9 +15716,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -15940,7 +15980,8 @@
             "kind": "unknown",
             "name": "exists",
             "assume": true,
-            "value": "owner"
+            "value": "owner",
+            "said": "an owner"
           },
           {
             "kind": "any",
@@ -16090,9 +16131,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -16148,9 +16190,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -16203,9 +16246,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -16324,9 +16368,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "not",
@@ -16359,9 +16405,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -16438,9 +16486,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "not",
@@ -16473,9 +16523,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -16687,7 +16739,8 @@
                 "kind": "unknown",
                 "name": "exists",
                 "assume": true,
-                "value": "owner"
+                "value": "owner",
+                "said": "an owner"
               },
               {
                 "kind": "unknown",
@@ -16785,9 +16838,11 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "owner",
+                  "said": "an owner"
                 },
                 {
                   "kind": "unknown",
@@ -16825,14 +16880,17 @@
                       "assume": true
                     },
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -16859,9 +16917,11 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "owner",
+                  "said": "an owner"
                 },
                 {
                   "kind": "all",
@@ -16907,9 +16967,11 @@
                   ]
                 },
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "owner",
+                  "said": "an owner"
                 },
                 {
                   "kind": "all",
@@ -16957,9 +17019,11 @@
                       "assume": true
                     },
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "all",
@@ -17010,9 +17074,11 @@
                       "assume": true
                     },
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "all",
@@ -17066,9 +17132,11 @@
                       "assume": true
                     },
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "all",
@@ -17118,9 +17186,11 @@
                       "assume": true
                     },
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "all",
@@ -17250,9 +17320,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -17331,9 +17402,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -17386,9 +17458,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -17743,9 +17816,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -17798,9 +17872,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -17853,9 +17928,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -17978,9 +18054,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -18036,9 +18113,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -18268,7 +18346,8 @@
             "kind": "unknown",
             "name": "exists",
             "assume": true,
-            "value": "owner"
+            "value": "owner",
+            "said": "an owner"
           },
           {
             "kind": "all",
@@ -18401,9 +18480,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -18459,9 +18539,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -18584,9 +18665,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -18642,9 +18724,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -18723,9 +18806,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -19010,9 +19094,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -19068,9 +19153,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -19149,9 +19235,10 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "FROM"
                     },
                     {
                       "kind": "unknown",
@@ -19273,7 +19360,8 @@
                 "kind": "unknown",
                 "name": "exists",
                 "assume": true,
-                "value": "owner"
+                "value": "owner",
+                "said": "an owner"
               },
               {
                 "kind": "unknown",
@@ -19506,7 +19594,8 @@
             "kind": "unknown",
             "name": "exists",
             "assume": true,
-            "value": "owner"
+            "value": "owner",
+            "said": "an owner"
           },
           {
             "kind": "unknown",
@@ -19589,9 +19678,11 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "planet",
+                  "said": "a planet"
                 },
                 {
                   "kind": "unknown",
@@ -19700,9 +19791,11 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "planet",
+                  "said": "a planet"
                 },
                 {
                   "kind": "unknown",
@@ -22053,7 +22146,8 @@
             "kind": "unknown",
             "name": "exists",
             "assume": true,
-            "value": "owner"
+            "value": "owner",
+            "said": "an owner"
           },
           {
             "kind": "unknown",
@@ -22118,7 +22212,8 @@
             "kind": "unknown",
             "name": "exists",
             "assume": true,
-            "value": "owner"
+            "value": "owner",
+            "said": "an owner"
           },
           {
             "kind": "unknown",
@@ -22365,7 +22460,8 @@
             "kind": "unknown",
             "name": "exists",
             "assume": true,
-            "value": "owner"
+            "value": "owner",
+            "said": "an owner"
           },
           {
             "kind": "any",
@@ -22463,7 +22559,8 @@
                 "kind": "unknown",
                 "name": "exists",
                 "assume": true,
-                "value": "owner"
+                "value": "owner",
+                "said": "an owner"
               },
               {
                 "kind": "unknown",
@@ -22512,9 +22609,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "not",
@@ -22560,9 +22659,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "any",
@@ -22605,9 +22706,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "any",
@@ -22677,9 +22780,10 @@
                           "kind": "all",
                           "items": [
                             {
-                              "kind": "always",
-                              "value": false,
-                              "because": "exists"
+                              "kind": "unknown",
+                              "name": "exists",
+                              "assume": true,
+                              "value": "this"
                             },
                             {
                               "kind": "always",
@@ -22881,7 +22985,8 @@
             "kind": "unknown",
             "name": "exists",
             "assume": true,
-            "value": "owner"
+            "value": "owner",
+            "said": "an owner"
           },
           {
             "kind": "any",
@@ -23699,7 +23804,8 @@
             "kind": "unknown",
             "name": "exists",
             "assume": true,
-            "value": "owner"
+            "value": "owner",
+            "said": "an owner"
           },
           {
             "kind": "any",
@@ -24012,7 +24118,8 @@
             "kind": "unknown",
             "name": "exists",
             "assume": true,
-            "value": "owner"
+            "value": "owner",
+            "said": "an owner"
           },
           {
             "kind": "any",
@@ -24220,9 +24327,11 @@
                       }
                     },
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "planet",
+                      "said": "a planet"
                     },
                     {
                       "kind": "unknown",
@@ -24278,9 +24387,11 @@
                       }
                     },
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "planet",
+                      "said": "a planet"
                     },
                     {
                       "kind": "unknown",
@@ -24336,9 +24447,11 @@
                       }
                     },
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "planet",
+                      "said": "a planet"
                     },
                     {
                       "kind": "unknown",
@@ -25147,7 +25260,8 @@
             "kind": "unknown",
             "name": "exists",
             "assume": true,
-            "value": "owner"
+            "value": "owner",
+            "said": "an owner"
           },
           {
             "kind": "not",
@@ -26639,7 +26753,8 @@
             "kind": "unknown",
             "name": "exists",
             "assume": true,
-            "value": "owner"
+            "value": "owner",
+            "said": "an owner"
           },
           {
             "kind": "not",
@@ -27776,7 +27891,8 @@
             "kind": "unknown",
             "name": "exists",
             "assume": true,
-            "value": "owner"
+            "value": "owner",
+            "said": "an owner"
           },
           {
             "kind": "any",
@@ -29423,7 +29539,8 @@
             "kind": "unknown",
             "name": "exists",
             "assume": true,
-            "value": "owner"
+            "value": "owner",
+            "said": "an owner"
           },
           {
             "kind": "all",
@@ -30193,7 +30310,8 @@
             "kind": "unknown",
             "name": "exists",
             "assume": true,
-            "value": "owner"
+            "value": "owner",
+            "said": "an owner"
           },
           {
             "kind": "any",
@@ -32027,9 +32145,11 @@
                   "assume": true
                 },
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "planet",
+                  "said": "a planet"
                 }
               ]
             },
@@ -32049,9 +32169,11 @@
                   "assume": true
                 },
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "planet",
+                  "said": "a planet"
                 }
               ]
             },
@@ -32071,9 +32193,11 @@
                   "assume": true
                 },
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "planet",
+                  "said": "a planet"
                 }
               ]
             },
@@ -32093,9 +32217,11 @@
                   "assume": true
                 },
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "planet",
+                  "said": "a planet"
                 }
               ]
             },
@@ -32343,7 +32469,8 @@
             "kind": "unknown",
             "name": "exists",
             "assume": true,
-            "value": "owner"
+            "value": "owner",
+            "said": "an owner"
           },
           {
             "kind": "not",
@@ -33494,7 +33621,8 @@
             "kind": "unknown",
             "name": "exists",
             "assume": true,
-            "value": "owner"
+            "value": "owner",
+            "said": "an owner"
           },
           {
             "kind": "not",
@@ -40007,9 +40135,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -40040,9 +40170,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -40114,7 +40246,8 @@
                           "kind": "unknown",
                           "name": "exists",
                           "assume": true,
-                          "value": "owner"
+                          "value": "owner",
+                          "said": "an owner"
                         },
                         {
                           "kind": "predicate",
@@ -40154,7 +40287,8 @@
                       "kind": "unknown",
                       "name": "exists",
                       "assume": true,
-                      "value": "owner"
+                      "value": "owner",
+                      "said": "an owner"
                     }
                   },
                   {
@@ -40164,7 +40298,8 @@
                         "kind": "unknown",
                         "name": "exists",
                         "assume": true,
-                        "value": "owner"
+                        "value": "owner",
+                        "said": "an owner"
                       },
                       {
                         "kind": "not",
@@ -40308,9 +40443,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -40341,9 +40478,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -40423,9 +40562,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -40456,9 +40597,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -40540,9 +40683,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -40573,9 +40718,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -40647,7 +40794,8 @@
                           "kind": "unknown",
                           "name": "exists",
                           "assume": true,
-                          "value": "owner"
+                          "value": "owner",
+                          "said": "an owner"
                         },
                         {
                           "kind": "predicate",
@@ -40687,7 +40835,8 @@
                       "kind": "unknown",
                       "name": "exists",
                       "assume": true,
-                      "value": "owner"
+                      "value": "owner",
+                      "said": "an owner"
                     }
                   },
                   {
@@ -40697,7 +40846,8 @@
                         "kind": "unknown",
                         "name": "exists",
                         "assume": true,
-                        "value": "owner"
+                        "value": "owner",
+                        "said": "an owner"
                       },
                       {
                         "kind": "not",
@@ -40828,9 +40978,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -40861,9 +41013,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -40956,9 +41110,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -40989,9 +41145,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -41073,9 +41231,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -41106,9 +41266,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -41180,7 +41342,8 @@
                           "kind": "unknown",
                           "name": "exists",
                           "assume": true,
-                          "value": "owner"
+                          "value": "owner",
+                          "said": "an owner"
                         },
                         {
                           "kind": "predicate",
@@ -41220,7 +41383,8 @@
                       "kind": "unknown",
                       "name": "exists",
                       "assume": true,
-                      "value": "owner"
+                      "value": "owner",
+                      "said": "an owner"
                     }
                   },
                   {
@@ -41230,7 +41394,8 @@
                         "kind": "unknown",
                         "name": "exists",
                         "assume": true,
-                        "value": "owner"
+                        "value": "owner",
+                        "said": "an owner"
                       },
                       {
                         "kind": "not",
@@ -41374,9 +41539,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -41407,9 +41574,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -41489,9 +41658,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -41522,9 +41693,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -41606,9 +41779,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -41639,9 +41814,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -41713,7 +41890,8 @@
                           "kind": "unknown",
                           "name": "exists",
                           "assume": true,
-                          "value": "owner"
+                          "value": "owner",
+                          "said": "an owner"
                         },
                         {
                           "kind": "predicate",
@@ -41753,7 +41931,8 @@
                       "kind": "unknown",
                       "name": "exists",
                       "assume": true,
-                      "value": "owner"
+                      "value": "owner",
+                      "said": "an owner"
                     }
                   },
                   {
@@ -41763,7 +41942,8 @@
                         "kind": "unknown",
                         "name": "exists",
                         "assume": true,
-                        "value": "owner"
+                        "value": "owner",
+                        "said": "an owner"
                       },
                       {
                         "kind": "not",
@@ -41907,9 +42087,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -41940,9 +42122,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -42022,9 +42206,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -42055,9 +42241,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -42139,9 +42327,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -42172,9 +42362,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -42241,7 +42433,8 @@
                           "kind": "unknown",
                           "name": "exists",
                           "assume": true,
-                          "value": "owner"
+                          "value": "owner",
+                          "said": "an owner"
                         },
                         {
                           "kind": "predicate",
@@ -42281,7 +42474,8 @@
                       "kind": "unknown",
                       "name": "exists",
                       "assume": true,
-                      "value": "owner"
+                      "value": "owner",
+                      "said": "an owner"
                     }
                   },
                   {
@@ -42291,7 +42485,8 @@
                         "kind": "unknown",
                         "name": "exists",
                         "assume": true,
-                        "value": "owner"
+                        "value": "owner",
+                        "said": "an owner"
                       },
                       {
                         "kind": "not",
@@ -42435,9 +42630,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -42468,9 +42665,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -42550,9 +42749,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -42583,9 +42784,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -42667,9 +42870,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -42700,9 +42905,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -42769,7 +42976,8 @@
                           "kind": "unknown",
                           "name": "exists",
                           "assume": true,
-                          "value": "owner"
+                          "value": "owner",
+                          "said": "an owner"
                         },
                         {
                           "kind": "predicate",
@@ -42809,7 +43017,8 @@
                       "kind": "unknown",
                       "name": "exists",
                       "assume": true,
-                      "value": "owner"
+                      "value": "owner",
+                      "said": "an owner"
                     }
                   },
                   {
@@ -42819,7 +43028,8 @@
                         "kind": "unknown",
                         "name": "exists",
                         "assume": true,
-                        "value": "owner"
+                        "value": "owner",
+                        "said": "an owner"
                       },
                       {
                         "kind": "not",
@@ -42963,9 +43173,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -42996,9 +43208,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -43078,9 +43292,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -43111,9 +43327,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -43195,9 +43413,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -43228,9 +43448,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -43297,7 +43519,8 @@
                           "kind": "unknown",
                           "name": "exists",
                           "assume": true,
-                          "value": "owner"
+                          "value": "owner",
+                          "said": "an owner"
                         },
                         {
                           "kind": "predicate",
@@ -43337,7 +43560,8 @@
                       "kind": "unknown",
                       "name": "exists",
                       "assume": true,
-                      "value": "owner"
+                      "value": "owner",
+                      "said": "an owner"
                     }
                   },
                   {
@@ -43347,7 +43571,8 @@
                         "kind": "unknown",
                         "name": "exists",
                         "assume": true,
-                        "value": "owner"
+                        "value": "owner",
+                        "said": "an owner"
                       },
                       {
                         "kind": "not",
@@ -43491,9 +43716,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -43524,9 +43751,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -43606,9 +43835,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -43639,9 +43870,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -43723,9 +43956,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -43756,9 +43991,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -43840,7 +44077,8 @@
                           "kind": "unknown",
                           "name": "exists",
                           "assume": true,
-                          "value": "owner"
+                          "value": "owner",
+                          "said": "an owner"
                         },
                         {
                           "kind": "predicate",
@@ -43880,7 +44118,8 @@
                       "kind": "unknown",
                       "name": "exists",
                       "assume": true,
-                      "value": "owner"
+                      "value": "owner",
+                      "said": "an owner"
                     }
                   },
                   {
@@ -43890,7 +44129,8 @@
                         "kind": "unknown",
                         "name": "exists",
                         "assume": true,
-                        "value": "owner"
+                        "value": "owner",
+                        "said": "an owner"
                       },
                       {
                         "kind": "not",
@@ -44063,7 +44303,8 @@
                     "kind": "unknown",
                     "name": "exists",
                     "assume": true,
-                    "value": "owner"
+                    "value": "owner",
+                    "said": "an owner"
                   },
                   {
                     "kind": "any",
@@ -44146,9 +44387,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -44179,9 +44422,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -44261,9 +44506,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -44294,9 +44541,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -44378,9 +44627,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -44411,9 +44662,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -44495,7 +44748,8 @@
                           "kind": "unknown",
                           "name": "exists",
                           "assume": true,
-                          "value": "owner"
+                          "value": "owner",
+                          "said": "an owner"
                         },
                         {
                           "kind": "predicate",
@@ -44535,7 +44789,8 @@
                       "kind": "unknown",
                       "name": "exists",
                       "assume": true,
-                      "value": "owner"
+                      "value": "owner",
+                      "said": "an owner"
                     }
                   },
                   {
@@ -44545,7 +44800,8 @@
                         "kind": "unknown",
                         "name": "exists",
                         "assume": true,
-                        "value": "owner"
+                        "value": "owner",
+                        "said": "an owner"
                       },
                       {
                         "kind": "not",
@@ -44689,9 +44945,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -44722,9 +44980,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -44804,9 +45064,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -44837,9 +45099,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -44921,9 +45185,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -44954,9 +45220,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -45038,7 +45306,8 @@
                           "kind": "unknown",
                           "name": "exists",
                           "assume": true,
-                          "value": "owner"
+                          "value": "owner",
+                          "said": "an owner"
                         },
                         {
                           "kind": "predicate",
@@ -45078,7 +45347,8 @@
                       "kind": "unknown",
                       "name": "exists",
                       "assume": true,
-                      "value": "owner"
+                      "value": "owner",
+                      "said": "an owner"
                     }
                   },
                   {
@@ -45088,7 +45358,8 @@
                         "kind": "unknown",
                         "name": "exists",
                         "assume": true,
-                        "value": "owner"
+                        "value": "owner",
+                        "said": "an owner"
                       },
                       {
                         "kind": "not",
@@ -45232,9 +45503,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -45265,9 +45538,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -45347,9 +45622,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -45380,9 +45657,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -45464,9 +45743,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -45497,9 +45778,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -45581,7 +45864,8 @@
                           "kind": "unknown",
                           "name": "exists",
                           "assume": true,
-                          "value": "owner"
+                          "value": "owner",
+                          "said": "an owner"
                         },
                         {
                           "kind": "predicate",
@@ -45621,7 +45905,8 @@
                       "kind": "unknown",
                       "name": "exists",
                       "assume": true,
-                      "value": "owner"
+                      "value": "owner",
+                      "said": "an owner"
                     }
                   },
                   {
@@ -45631,7 +45916,8 @@
                         "kind": "unknown",
                         "name": "exists",
                         "assume": true,
-                        "value": "owner"
+                        "value": "owner",
+                        "said": "an owner"
                       },
                       {
                         "kind": "not",
@@ -45775,9 +46061,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -45808,9 +46096,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -45890,9 +46180,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -45923,9 +46215,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -46007,9 +46301,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -46040,9 +46336,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -46124,7 +46422,8 @@
                           "kind": "unknown",
                           "name": "exists",
                           "assume": true,
-                          "value": "owner"
+                          "value": "owner",
+                          "said": "an owner"
                         },
                         {
                           "kind": "predicate",
@@ -46164,7 +46463,8 @@
                       "kind": "unknown",
                       "name": "exists",
                       "assume": true,
-                      "value": "owner"
+                      "value": "owner",
+                      "said": "an owner"
                     }
                   },
                   {
@@ -46174,7 +46474,8 @@
                         "kind": "unknown",
                         "name": "exists",
                         "assume": true,
-                        "value": "owner"
+                        "value": "owner",
+                        "said": "an owner"
                       },
                       {
                         "kind": "not",
@@ -46318,9 +46619,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -46351,9 +46654,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -46433,9 +46738,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -46466,9 +46773,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -46551,9 +46860,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -46583,9 +46894,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -46666,7 +46979,8 @@
                           "kind": "unknown",
                           "name": "exists",
                           "assume": true,
-                          "value": "owner"
+                          "value": "owner",
+                          "said": "an owner"
                         },
                         {
                           "kind": "predicate",
@@ -46706,7 +47020,8 @@
                       "kind": "unknown",
                       "name": "exists",
                       "assume": true,
-                      "value": "owner"
+                      "value": "owner",
+                      "said": "an owner"
                     }
                   },
                   {
@@ -46716,7 +47031,8 @@
                         "kind": "unknown",
                         "name": "exists",
                         "assume": true,
-                        "value": "owner"
+                        "value": "owner",
+                        "said": "an owner"
                       },
                       {
                         "kind": "not",
@@ -46812,7 +47128,8 @@
             "kind": "unknown",
             "name": "exists",
             "assume": true,
-            "value": "owner"
+            "value": "owner",
+            "said": "an owner"
           },
           {
             "kind": "any",
@@ -46901,9 +47218,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -46933,9 +47252,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -47015,9 +47336,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -47047,9 +47370,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -47467,7 +47792,8 @@
             "kind": "unknown",
             "name": "exists",
             "assume": true,
-            "value": "owner"
+            "value": "owner",
+            "said": "an owner"
           },
           {
             "kind": "any",
@@ -49294,9 +49620,11 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "owner",
+                  "said": "an owner"
                 },
                 {
                   "kind": "all",
@@ -49341,9 +49669,11 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "owner",
+                  "said": "an owner"
                 },
                 {
                   "kind": "all",
@@ -49688,9 +50018,11 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "owner",
+                  "said": "an owner"
                 },
                 {
                   "kind": "unknown",
@@ -49764,9 +50096,11 @@
                       "assume": true
                     },
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "not",
@@ -49803,9 +50137,11 @@
                       "assume": true
                     },
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "predicate",
@@ -49905,9 +50241,11 @@
                       "assume": true
                     },
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "all",
@@ -50014,9 +50352,11 @@
                   "assume": true
                 },
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "owner",
+                  "said": "an owner"
                 },
                 {
                   "kind": "selection",
@@ -50053,9 +50393,11 @@
                   "assume": true
                 },
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "owner",
+                  "said": "an owner"
                 },
                 {
                   "kind": "selection",
@@ -50203,9 +50545,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "always",
@@ -50227,9 +50571,11 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "owner",
+                  "said": "an owner"
                 },
                 {
                   "kind": "always",
@@ -50302,9 +50648,11 @@
                       "assume": true
                     },
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "not",
@@ -50341,9 +50689,11 @@
                       "assume": true
                     },
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "predicate",
@@ -50537,9 +50887,11 @@
                   "assume": true
                 },
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "owner",
+                  "said": "an owner"
                 },
                 {
                   "kind": "selection",
@@ -50576,9 +50928,11 @@
                   "assume": true
                 },
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "owner",
+                  "said": "an owner"
                 },
                 {
                   "kind": "selection",
@@ -51128,9 +51482,11 @@
                       "assume": true
                     },
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "not",
@@ -51167,9 +51523,11 @@
                       "assume": true
                     },
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "predicate",
@@ -51962,9 +52320,11 @@
                       }
                     },
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "planet",
+                      "said": "a planet"
                     },
                     {
                       "kind": "unknown",
@@ -52009,9 +52369,11 @@
                       }
                     },
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "planet",
+                      "said": "a planet"
                     },
                     {
                       "kind": "unknown",
@@ -58385,7 +58747,8 @@
             "kind": "unknown",
             "name": "exists",
             "assume": true,
-            "value": "owner"
+            "value": "owner",
+            "said": "an owner"
           },
           {
             "kind": "not",
@@ -58727,7 +59090,8 @@
             "kind": "unknown",
             "name": "exists",
             "assume": true,
-            "value": "owner"
+            "value": "owner",
+            "said": "an owner"
           },
           {
             "kind": "not",
@@ -58950,7 +59314,8 @@
             "kind": "unknown",
             "name": "exists",
             "assume": true,
-            "value": "owner"
+            "value": "owner",
+            "said": "an owner"
           },
           {
             "kind": "not",
@@ -59150,7 +59515,8 @@
             "kind": "unknown",
             "name": "exists",
             "assume": true,
-            "value": "owner"
+            "value": "owner",
+            "said": "an owner"
           },
           {
             "kind": "not",
@@ -59529,7 +59895,8 @@
                 "kind": "unknown",
                 "name": "exists",
                 "assume": true,
-                "value": "owner"
+                "value": "owner",
+                "said": "an owner"
               },
               {
                 "kind": "unknown",
@@ -59711,7 +60078,8 @@
                 "kind": "unknown",
                 "name": "exists",
                 "assume": true,
-                "value": "owner"
+                "value": "owner",
+                "said": "an owner"
               },
               {
                 "kind": "unknown",
@@ -59896,7 +60264,8 @@
                 "kind": "unknown",
                 "name": "exists",
                 "assume": true,
-                "value": "owner"
+                "value": "owner",
+                "said": "an owner"
               },
               {
                 "kind": "unknown",
@@ -60084,7 +60453,8 @@
                 "kind": "unknown",
                 "name": "exists",
                 "assume": true,
-                "value": "owner"
+                "value": "owner",
+                "said": "an owner"
               },
               {
                 "kind": "unknown",
@@ -60318,7 +60688,8 @@
                 "kind": "unknown",
                 "name": "exists",
                 "assume": true,
-                "value": "owner"
+                "value": "owner",
+                "said": "an owner"
               },
               {
                 "kind": "unknown",
@@ -60604,7 +60975,8 @@
                 "kind": "unknown",
                 "name": "exists",
                 "assume": true,
-                "value": "owner"
+                "value": "owner",
+                "said": "an owner"
               },
               {
                 "kind": "unknown",
@@ -60786,7 +61158,8 @@
                 "kind": "unknown",
                 "name": "exists",
                 "assume": true,
-                "value": "owner"
+                "value": "owner",
+                "said": "an owner"
               },
               {
                 "kind": "unknown",
@@ -60968,7 +61341,8 @@
                 "kind": "unknown",
                 "name": "exists",
                 "assume": true,
-                "value": "owner"
+                "value": "owner",
+                "said": "an owner"
               },
               {
                 "kind": "unknown",
@@ -61150,7 +61524,8 @@
                 "kind": "unknown",
                 "name": "exists",
                 "assume": true,
-                "value": "owner"
+                "value": "owner",
+                "said": "an owner"
               },
               {
                 "kind": "unknown",
@@ -61332,7 +61707,8 @@
                 "kind": "unknown",
                 "name": "exists",
                 "assume": true,
-                "value": "owner"
+                "value": "owner",
+                "said": "an owner"
               },
               {
                 "kind": "unknown",
@@ -61521,7 +61897,8 @@
                     "kind": "unknown",
                     "name": "exists",
                     "assume": true,
-                    "value": "owner"
+                    "value": "owner",
+                    "said": "an owner"
                   },
                   {
                     "kind": "unknown",
@@ -61712,7 +62089,8 @@
                     "kind": "unknown",
                     "name": "exists",
                     "assume": true,
-                    "value": "owner"
+                    "value": "owner",
+                    "said": "an owner"
                   },
                   {
                     "kind": "unknown",
@@ -61903,7 +62281,8 @@
                     "kind": "unknown",
                     "name": "exists",
                     "assume": true,
-                    "value": "owner"
+                    "value": "owner",
+                    "said": "an owner"
                   },
                   {
                     "kind": "unknown",
@@ -62094,7 +62473,8 @@
                     "kind": "unknown",
                     "name": "exists",
                     "assume": true,
-                    "value": "owner"
+                    "value": "owner",
+                    "said": "an owner"
                   },
                   {
                     "kind": "unknown",
@@ -62281,7 +62661,8 @@
                 "kind": "unknown",
                 "name": "exists",
                 "assume": true,
-                "value": "owner"
+                "value": "owner",
+                "said": "an owner"
               },
               {
                 "kind": "unknown",
@@ -62468,13 +62849,15 @@
                 "kind": "unknown",
                 "name": "exists",
                 "assume": true,
-                "value": "owner"
+                "value": "owner",
+                "said": "an owner"
               },
               {
                 "kind": "unknown",
                 "name": "exists",
                 "assume": true,
-                "value": "federation"
+                "value": "federation",
+                "said": "a federation"
               },
               {
                 "kind": "not",
@@ -62648,13 +63031,15 @@
                 "kind": "unknown",
                 "name": "exists",
                 "assume": true,
-                "value": "owner"
+                "value": "owner",
+                "said": "an owner"
               },
               {
                 "kind": "unknown",
                 "name": "exists",
                 "assume": true,
-                "value": "federation"
+                "value": "federation",
+                "said": "a federation"
               },
               {
                 "kind": "not",
@@ -62828,13 +63213,15 @@
                 "kind": "unknown",
                 "name": "exists",
                 "assume": true,
-                "value": "owner"
+                "value": "owner",
+                "said": "an owner"
               },
               {
                 "kind": "unknown",
                 "name": "exists",
                 "assume": true,
-                "value": "federation"
+                "value": "federation",
+                "said": "a federation"
               },
               {
                 "kind": "not",
@@ -63009,13 +63396,15 @@
                 "kind": "unknown",
                 "name": "exists",
                 "assume": true,
-                "value": "owner"
+                "value": "owner",
+                "said": "an owner"
               },
               {
                 "kind": "unknown",
                 "name": "exists",
                 "assume": true,
-                "value": "federation"
+                "value": "federation",
+                "said": "a federation"
               },
               {
                 "kind": "not",
@@ -68666,14 +69055,17 @@
                             "kind": "all",
                             "items": [
                               {
-                                "kind": "always",
-                                "value": false,
-                                "because": "exists"
+                                "kind": "unknown",
+                                "name": "exists",
+                                "assume": true,
+                                "value": "fleet",
+                                "said": "a fleet"
                               },
                               {
-                                "kind": "always",
-                                "value": false,
-                                "because": "exists"
+                                "kind": "unknown",
+                                "name": "exists",
+                                "assume": true,
+                                "value": "fleet.solar_system"
                               },
                               {
                                 "kind": "unknown",
@@ -68735,14 +69127,17 @@
                           "kind": "all",
                           "items": [
                             {
-                              "kind": "always",
-                              "value": false,
-                              "because": "exists"
+                              "kind": "unknown",
+                              "name": "exists",
+                              "assume": true,
+                              "value": "fleet",
+                              "said": "a fleet"
                             },
                             {
-                              "kind": "always",
-                              "value": false,
-                              "because": "exists"
+                              "kind": "unknown",
+                              "name": "exists",
+                              "assume": true,
+                              "value": "fleet.solar_system"
                             },
                             {
                               "kind": "unknown",
@@ -68850,7 +69245,8 @@
             "kind": "unknown",
             "name": "exists",
             "assume": true,
-            "value": "owner"
+            "value": "owner",
+            "said": "an owner"
           },
           {
             "kind": "selection",
@@ -68942,14 +69338,17 @@
                         "kind": "all",
                         "items": [
                           {
-                            "kind": "always",
-                            "value": false,
-                            "because": "exists"
+                            "kind": "unknown",
+                            "name": "exists",
+                            "assume": true,
+                            "value": "fleet",
+                            "said": "a fleet"
                           },
                           {
-                            "kind": "always",
-                            "value": false,
-                            "because": "exists"
+                            "kind": "unknown",
+                            "name": "exists",
+                            "assume": true,
+                            "value": "fleet.solar_system"
                           },
                           {
                             "kind": "unknown",
@@ -69002,14 +69401,17 @@
                       "kind": "all",
                       "items": [
                         {
-                          "kind": "always",
-                          "value": false,
-                          "because": "exists"
+                          "kind": "unknown",
+                          "name": "exists",
+                          "assume": true,
+                          "value": "fleet",
+                          "said": "a fleet"
                         },
                         {
-                          "kind": "always",
-                          "value": false,
-                          "because": "exists"
+                          "kind": "unknown",
+                          "name": "exists",
+                          "assume": true,
+                          "value": "fleet.solar_system"
                         },
                         {
                           "kind": "unknown",
@@ -69069,14 +69471,17 @@
                           "kind": "all",
                           "items": [
                             {
-                              "kind": "always",
-                              "value": false,
-                              "because": "exists"
+                              "kind": "unknown",
+                              "name": "exists",
+                              "assume": true,
+                              "value": "fleet",
+                              "said": "a fleet"
                             },
                             {
-                              "kind": "always",
-                              "value": false,
-                              "because": "exists"
+                              "kind": "unknown",
+                              "name": "exists",
+                              "assume": true,
+                              "value": "fleet.solar_system"
                             },
                             {
                               "kind": "unknown",
@@ -69139,14 +69544,17 @@
                           "kind": "all",
                           "items": [
                             {
-                              "kind": "always",
-                              "value": false,
-                              "because": "exists"
+                              "kind": "unknown",
+                              "name": "exists",
+                              "assume": true,
+                              "value": "fleet",
+                              "said": "a fleet"
                             },
                             {
-                              "kind": "always",
-                              "value": false,
-                              "because": "exists"
+                              "kind": "unknown",
+                              "name": "exists",
+                              "assume": true,
+                              "value": "fleet.solar_system"
                             },
                             {
                               "kind": "unknown",
@@ -69206,7 +69614,8 @@
             "kind": "unknown",
             "name": "exists",
             "assume": true,
-            "value": "owner"
+            "value": "owner",
+            "said": "an owner"
           },
           {
             "kind": "selection",
@@ -69306,14 +69715,17 @@
                             "kind": "all",
                             "items": [
                               {
-                                "kind": "always",
-                                "value": false,
-                                "because": "exists"
+                                "kind": "unknown",
+                                "name": "exists",
+                                "assume": true,
+                                "value": "fleet",
+                                "said": "a fleet"
                               },
                               {
-                                "kind": "always",
-                                "value": false,
-                                "because": "exists"
+                                "kind": "unknown",
+                                "name": "exists",
+                                "assume": true,
+                                "value": "fleet.solar_system"
                               },
                               {
                                 "kind": "unknown",
@@ -69376,14 +69788,17 @@
                           "kind": "all",
                           "items": [
                             {
-                              "kind": "always",
-                              "value": false,
-                              "because": "exists"
+                              "kind": "unknown",
+                              "name": "exists",
+                              "assume": true,
+                              "value": "fleet",
+                              "said": "a fleet"
                             },
                             {
-                              "kind": "always",
-                              "value": false,
-                              "because": "exists"
+                              "kind": "unknown",
+                              "name": "exists",
+                              "assume": true,
+                              "value": "fleet.solar_system"
                             },
                             {
                               "kind": "unknown",
@@ -69447,14 +69862,17 @@
                             "kind": "all",
                             "items": [
                               {
-                                "kind": "always",
-                                "value": false,
-                                "because": "exists"
+                                "kind": "unknown",
+                                "name": "exists",
+                                "assume": true,
+                                "value": "fleet",
+                                "said": "a fleet"
                               },
                               {
-                                "kind": "always",
-                                "value": false,
-                                "because": "exists"
+                                "kind": "unknown",
+                                "name": "exists",
+                                "assume": true,
+                                "value": "fleet.solar_system"
                               },
                               {
                                 "kind": "unknown",
@@ -69517,14 +69935,17 @@
                           "kind": "all",
                           "items": [
                             {
-                              "kind": "always",
-                              "value": false,
-                              "because": "exists"
+                              "kind": "unknown",
+                              "name": "exists",
+                              "assume": true,
+                              "value": "fleet",
+                              "said": "a fleet"
                             },
                             {
-                              "kind": "always",
-                              "value": false,
-                              "because": "exists"
+                              "kind": "unknown",
+                              "name": "exists",
+                              "assume": true,
+                              "value": "fleet.solar_system"
                             },
                             {
                               "kind": "unknown",
@@ -70684,7 +71105,8 @@
             "kind": "unknown",
             "name": "exists",
             "assume": true,
-            "value": "owner"
+            "value": "owner",
+            "said": "an owner"
           },
           {
             "kind": "any",
@@ -71080,9 +71502,11 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "owner",
+                  "said": "an owner"
                 },
                 {
                   "kind": "all",
@@ -71155,9 +71579,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "all",
@@ -71217,9 +71643,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "all",
@@ -71279,9 +71707,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "all",
@@ -71354,7 +71784,8 @@
             "kind": "unknown",
             "name": "exists",
             "assume": true,
-            "value": "owner"
+            "value": "owner",
+            "said": "an owner"
           },
           {
             "kind": "all",
@@ -71457,9 +71888,11 @@
                 "kind": "all",
                 "items": [
                   {
-                    "kind": "always",
-                    "value": false,
-                    "because": "exists"
+                    "kind": "unknown",
+                    "name": "exists",
+                    "assume": true,
+                    "value": "owner",
+                    "said": "an owner"
                   },
                   {
                     "kind": "always",
@@ -71664,9 +72097,11 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "owner",
+                  "said": "an owner"
                 },
                 {
                   "kind": "always",
@@ -71871,9 +72306,11 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "owner",
+                  "said": "an owner"
                 },
                 {
                   "kind": "all",
@@ -71944,9 +72381,11 @@
                 "kind": "all",
                 "items": [
                   {
-                    "kind": "always",
-                    "value": false,
-                    "because": "exists"
+                    "kind": "unknown",
+                    "name": "exists",
+                    "assume": true,
+                    "value": "owner",
+                    "said": "an owner"
                   },
                   {
                     "kind": "always",
@@ -72153,9 +72592,11 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "owner",
+                  "said": "an owner"
                 },
                 {
                   "kind": "always",
@@ -72360,9 +72801,11 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "owner",
+                  "said": "an owner"
                 },
                 {
                   "kind": "all",
@@ -72431,9 +72874,11 @@
                 "kind": "all",
                 "items": [
                   {
-                    "kind": "always",
-                    "value": false,
-                    "because": "exists"
+                    "kind": "unknown",
+                    "name": "exists",
+                    "assume": true,
+                    "value": "owner",
+                    "said": "an owner"
                   },
                   {
                     "kind": "always",
@@ -72640,9 +73085,11 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "owner",
+                  "said": "an owner"
                 },
                 {
                   "kind": "always",
@@ -72848,9 +73295,11 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "owner",
+                  "said": "an owner"
                 },
                 {
                   "kind": "all",
@@ -73260,9 +73709,11 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "owner",
+                  "said": "an owner"
                 },
                 {
                   "kind": "all",
@@ -73306,9 +73757,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "all",
@@ -73353,9 +73806,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "all",
@@ -73401,9 +73856,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "all",
@@ -73573,9 +74030,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "not",
@@ -73620,9 +74079,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "not",
@@ -74716,9 +75177,11 @@
                       }
                     },
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "not",
@@ -74785,9 +75248,11 @@
                       }
                     },
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -74929,9 +75394,11 @@
                       }
                     },
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "not",
@@ -74998,9 +75465,11 @@
                       }
                     },
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "selection",
@@ -76229,9 +76698,11 @@
                 {
                   "kind": "not",
                   "item": {
-                    "kind": "always",
-                    "value": false,
-                    "because": "exists"
+                    "kind": "unknown",
+                    "name": "exists",
+                    "assume": true,
+                    "value": "owner",
+                    "said": "an owner"
                   }
                 }
               ]
@@ -76254,9 +76725,11 @@
                   "assume": true
                 },
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "owner",
+                  "said": "an owner"
                 }
               ]
             },
@@ -76341,9 +76814,11 @@
                 {
                   "kind": "not",
                   "item": {
-                    "kind": "always",
-                    "value": false,
-                    "because": "exists"
+                    "kind": "unknown",
+                    "name": "exists",
+                    "assume": true,
+                    "value": "owner",
+                    "said": "an owner"
                   }
                 }
               ]
@@ -76367,9 +76842,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "not",
@@ -76513,9 +76990,11 @@
                   "assume": true
                 },
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "owner",
+                  "said": "an owner"
                 }
               ]
             },
@@ -77552,9 +78031,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "not",
@@ -77733,7 +78214,8 @@
                   "kind": "unknown",
                   "name": "exists",
                   "assume": true,
-                  "value": "owner"
+                  "value": "owner",
+                  "said": "an owner"
                 },
                 {
                   "kind": "predicate",
@@ -77897,9 +78379,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "not",
@@ -77936,7 +78420,8 @@
               "kind": "unknown",
               "name": "exists",
               "assume": true,
-              "value": "owner"
+              "value": "owner",
+              "said": "an owner"
             },
             {
               "kind": "predicate",
@@ -77982,9 +78467,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "not",
@@ -78022,7 +78509,8 @@
               "kind": "unknown",
               "name": "exists",
               "assume": true,
-              "value": "owner"
+              "value": "owner",
+              "said": "an owner"
             },
             {
               "kind": "predicate",
@@ -78209,9 +78697,11 @@
                   "kind": "all",
                   "items": [
                     {
-                      "kind": "always",
-                      "value": false,
-                      "because": "exists"
+                      "kind": "unknown",
+                      "name": "exists",
+                      "assume": true,
+                      "value": "owner",
+                      "said": "an owner"
                     },
                     {
                       "kind": "not",
@@ -78248,7 +78738,8 @@
               "kind": "unknown",
               "name": "exists",
               "assume": true,
-              "value": "owner"
+              "value": "owner",
+              "said": "an owner"
             },
             {
               "kind": "predicate",

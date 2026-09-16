@@ -557,6 +557,19 @@ public sealed class RequirementCompiler
             return count;
         }
 
+        // Whether a scope is there at all, which is a guard rather than a gate - see ScopeGuards.
+        // Asked before the two lists below and whatever is being compiled, because the answer does
+        // not depend on either: nothing here models scopes, so the honest answer is always that it
+        // cannot say.
+        if (DesignPredicates.ScopeGuards.Contains(key))
+        {
+            return new UnknownRequirement(key)
+            {
+                Value = node.ScalarValue,
+                Said = Guarding(node.ScalarValue),
+            };
+        }
+
         // Something a running game would know and this empire will find out. Only while compiling a
         // plan, and only as an assumption rather than a constant, so that a negation stays as
         // permissive as the condition it wraps.
@@ -647,6 +660,36 @@ public sealed class RequirementCompiler
     /// <param name="word">The word.</param>
     /// <returns>It, with the underscores out.</returns>
     private static string Worded(string word) => word.Replace('_', ' ');
+
+    /// <summary>
+    /// What a scope guard asks, where the scope is a thing with an English name.
+    /// </summary>
+    /// <remarks>
+    /// Three quarters of them are. The rest are script-relative - <c>from</c>, <c>this</c>,
+    /// <c>fromfrom</c>, anything with a dot in it - and mean whatever the block around them is
+    /// scoped to, which is not a sentence. Those keep no wording and are drawn as "Exists", which
+    /// says little and claims nothing.
+    /// </remarks>
+    /// <param name="scope">What the guard names.</param>
+    /// <returns>The phrase, or nothing where the scope has no name of its own.</returns>
+    /// <remarks>
+    /// A bare noun rather than a sentence, because every one of these is drawn under a tick or a
+    /// cross that supplies the verb. "There is an owner" came out as "must not have there is an
+    /// owner" the one place the game negates a guard; "an owner" reads correctly both ways.
+    /// </remarks>
+    private static string? Guarding(string? scope) => scope switch
+    {
+        "owner" => "an owner",
+        "planet" => "a planet",
+        "leader" => "a leader",
+        "ruler" => "a ruler",
+        "overlord" => "an overlord",
+        "fleet" => "a fleet",
+        "federation" => "a federation",
+        "starbase" => "a starbase",
+        "solar_system" => "a system",
+        _ => null,
+    };
 
     /// <summary>
     /// None of these, which is what the game's <c>NOT</c> and <c>NOR</c> both mean.

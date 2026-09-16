@@ -1,7 +1,7 @@
 {
   "schemaVersion": 17,
   "gameVersion": "v4.5.0",
-  "extractorVersion": "0.1.0\u002B22f45b58a7ce",
+  "extractorVersion": "0.1.0\u002Bbf19c95e4bb7",
   "installFingerprint": "4c524a20ddb52a8f",
   "defines": {
     "ethicsPoints": 3,
@@ -7580,9 +7580,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "any",
@@ -7700,9 +7701,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "not",
@@ -7724,9 +7726,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "predicate",
@@ -7745,9 +7748,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "always",
@@ -7769,9 +7773,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "selection",
@@ -7791,9 +7796,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "selection",
@@ -7813,9 +7819,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "all",
@@ -7844,9 +7851,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "all",
@@ -10862,9 +10870,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "any",
@@ -10935,9 +10944,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "any",
@@ -11617,9 +11627,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "not",
@@ -11641,9 +11652,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "predicate",
@@ -11662,9 +11674,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "always",
@@ -11686,9 +11699,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "selection",
@@ -11708,9 +11722,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "selection",
@@ -11730,9 +11745,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "all",
@@ -11761,9 +11777,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "all",
@@ -12377,9 +12394,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "all",
@@ -17798,9 +17816,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "always",
@@ -17820,9 +17839,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "always",
@@ -17842,9 +17862,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "always",
@@ -17864,9 +17885,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "always",
@@ -17886,9 +17908,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "always",
@@ -17909,9 +17932,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "always",
@@ -17931,9 +17955,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "always",
@@ -17953,9 +17978,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "always",
@@ -17975,9 +18001,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "always",
@@ -17997,9 +18024,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "always",
@@ -18055,9 +18083,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "not",
@@ -18080,9 +18109,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "selection",
@@ -18137,9 +18167,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "not",
@@ -18162,9 +18193,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "selection",
@@ -18219,9 +18251,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "not",
@@ -18244,9 +18277,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "selection",
@@ -18301,9 +18335,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "not",
@@ -18326,9 +18361,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "selection",
@@ -18383,9 +18419,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "not",
@@ -18408,9 +18445,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "selection",
@@ -18465,9 +18503,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "not",
@@ -18491,9 +18530,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "selection",
@@ -18549,9 +18589,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "not",
@@ -18574,9 +18615,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "selection",
@@ -18631,9 +18673,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "not",
@@ -18656,9 +18699,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "selection",
@@ -18751,9 +18795,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "not",
@@ -18776,9 +18821,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "selection",
@@ -18833,9 +18879,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "not",
@@ -18858,9 +18905,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "selection",
@@ -18915,9 +18963,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "not",
@@ -18940,9 +18989,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "selection",
@@ -18997,9 +19047,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "not",
@@ -19022,9 +19073,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "selection",
@@ -19079,9 +19131,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "not",
@@ -19104,9 +19157,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "selection",
@@ -19161,9 +19215,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "not",
@@ -19187,9 +19242,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "selection",
@@ -19245,9 +19301,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "not",
@@ -19270,9 +19327,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "selection",
@@ -19327,9 +19385,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "not",
@@ -19352,9 +19411,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "from"
                 },
                 {
                   "kind": "selection",
@@ -36369,9 +36429,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "this"
                 },
                 {
                   "kind": "predicate",
@@ -36470,9 +36531,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "this"
                 },
                 {
                   "kind": "predicate",
@@ -36570,9 +36632,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "this"
                 },
                 {
                   "kind": "predicate",
@@ -36670,9 +36733,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "this"
                 },
                 {
                   "kind": "predicate",
@@ -36754,9 +36818,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "this"
                 },
                 {
                   "kind": "predicate",
@@ -36838,9 +36903,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "this"
                 },
                 {
                   "kind": "predicate",
@@ -36909,9 +36975,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "this"
                 },
                 {
                   "kind": "predicate",
@@ -37013,9 +37080,10 @@
               "kind": "all",
               "items": [
                 {
-                  "kind": "always",
-                  "value": false,
-                  "because": "exists"
+                  "kind": "unknown",
+                  "name": "exists",
+                  "assume": true,
+                  "value": "this"
                 },
                 {
                   "kind": "predicate",
@@ -37548,9 +37616,10 @@
             "kind": "all",
             "items": [
               {
-                "kind": "always",
-                "value": false,
-                "because": "exists"
+                "kind": "unknown",
+                "name": "exists",
+                "assume": true,
+                "value": "this"
               },
               {
                 "kind": "selection",
@@ -48286,9 +48355,10 @@
             "kind": "all",
             "items": [
               {
-                "kind": "always",
-                "value": false,
-                "because": "exists"
+                "kind": "unknown",
+                "name": "exists",
+                "assume": true,
+                "value": "this"
               },
               {
                 "kind": "predicate",
@@ -48538,9 +48608,10 @@
                 "name": "is_nomadic"
               },
               {
-                "kind": "always",
-                "value": false,
-                "because": "exists"
+                "kind": "unknown",
+                "name": "exists",
+                "assume": true,
+                "value": "this"
               },
               {
                 "kind": "selection",
@@ -48578,9 +48649,10 @@
             "kind": "all",
             "items": [
               {
-                "kind": "always",
-                "value": false,
-                "because": "exists"
+                "kind": "unknown",
+                "name": "exists",
+                "assume": true,
+                "value": "this"
               },
               {
                 "kind": "not",
@@ -59825,9 +59897,11 @@
             "kind": "all",
             "items": [
               {
-                "kind": "always",
-                "value": false,
-                "because": "exists"
+                "kind": "unknown",
+                "name": "exists",
+                "assume": true,
+                "value": "owner",
+                "said": "an owner"
               },
               {
                 "kind": "not",
@@ -59849,9 +59923,11 @@
             "kind": "all",
             "items": [
               {
-                "kind": "always",
-                "value": false,
-                "because": "exists"
+                "kind": "unknown",
+                "name": "exists",
+                "assume": true,
+                "value": "owner",
+                "said": "an owner"
               },
               {
                 "kind": "predicate",
@@ -59870,9 +59946,11 @@
             "kind": "all",
             "items": [
               {
-                "kind": "always",
-                "value": false,
-                "because": "exists"
+                "kind": "unknown",
+                "name": "exists",
+                "assume": true,
+                "value": "owner",
+                "said": "an owner"
               },
               {
                 "kind": "predicate",
@@ -61301,9 +61379,10 @@
             "kind": "all",
             "items": [
               {
-                "kind": "always",
-                "value": false,
-                "because": "exists"
+                "kind": "unknown",
+                "name": "exists",
+                "assume": true,
+                "value": "this"
               },
               {
                 "kind": "predicate",
@@ -62356,9 +62435,10 @@
             "kind": "all",
             "items": [
               {
-                "kind": "always",
-                "value": false,
-                "because": "exists"
+                "kind": "unknown",
+                "name": "exists",
+                "assume": true,
+                "value": "this"
               },
               {
                 "kind": "selection",
@@ -62381,9 +62461,10 @@
             "kind": "all",
             "items": [
               {
-                "kind": "always",
-                "value": false,
-                "because": "exists"
+                "kind": "unknown",
+                "name": "exists",
+                "assume": true,
+                "value": "this"
               },
               {
                 "kind": "not",
@@ -62407,9 +62488,10 @@
             "kind": "all",
             "items": [
               {
-                "kind": "always",
-                "value": false,
-                "because": "exists"
+                "kind": "unknown",
+                "name": "exists",
+                "assume": true,
+                "value": "this"
               },
               {
                 "kind": "selection",
@@ -73644,9 +73726,10 @@
             "kind": "all",
             "items": [
               {
-                "kind": "always",
-                "value": false,
-                "because": "exists"
+                "kind": "unknown",
+                "name": "exists",
+                "assume": true,
+                "value": "this"
               },
               {
                 "kind": "predicate",

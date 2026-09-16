@@ -62,6 +62,72 @@ public sealed class ConditionReaderTests
         Assert.Null(Reader().Read(new AlwaysRequirement(true)));
     }
 
+    /// <summary>
+    /// A scope guard beside the thing it guards is not drawn.
+    /// </summary>
+    /// <remarks>
+    /// The game writes <c>exists = owner</c> immediately above <c>owner = { ... }</c> so the second
+    /// is not evaluated on a leader with no owner, and marks it <c>hidden_trigger</c> when it wants
+    /// to be explicit that this is plumbing. Nine hundred of them reach the pages. Left in, a leader
+    /// trait's Given when opened "has ancrel, and an owner, and owner has Archaeoengineers"
+    /// - a requirement to have an owner, which is not a thing anybody can fail.
+    /// </remarks>
+    [Fact]
+    public void AScopeGuardBesideWhatItGuardsIsNotDrawn()
+    {
+        var node = Reader().Read(new AllRequirement(
+        [
+            new UnknownRequirement("exists") { Value = "owner", Said = "an owner" },
+            Ethic("ethic_militarist"),
+        ]))!;
+
+        // The guard gone, the one real condition is left standing on its own.
+        Assert.Equal(ConditionJoin.Leaf, node.Join);
+        Assert.Equal("Militarist", node.Chip!.Name);
+    }
+
+    /// <summary>
+    /// And is drawn everywhere it carries meaning.
+    /// </summary>
+    /// <remarks>
+    /// Only a conjunction can spare it. Negated it is a real condition - the game's own
+    /// documentation gives <c>NOT = { exists = from }</c> as how a species trait says "not being
+    /// asked about a pop" - and in an "any of" it holds the group up, so dropping it there would
+    /// widen the condition rather than tidy it.
+    /// </remarks>
+    [Fact]
+    public void AScopeGuardIsKeptWhereItCarriesMeaning()
+    {
+        var guard = new UnknownRequirement("exists") { Value = "from" };
+
+        var negated = Reader().Read(new NotRequirement(guard))!;
+
+        Assert.Equal(ConditionJoin.Leaf, negated.Join);
+        Assert.False(negated.Wanted);
+
+        // And beside a sibling under an "any of", where it is one of the ways to pass.
+        var either = Reader().Read(new AnyRequirement([guard, Ethic("ethic_militarist")]))!;
+
+        Assert.Equal(ConditionJoin.Any, either.Join);
+        Assert.Equal(2, either.Parts.Count);
+    }
+
+    /// <summary>
+    /// A condition that is nothing but a guard still says something rather than vanishing.
+    /// </summary>
+    /// <remarks>
+    /// Dropping it here would turn "we cannot tell" into "no conditions at all", which reads as a
+    /// promise. It is only redundant beside the thing it guards.
+    /// </remarks>
+    [Fact]
+    public void AConditionThatIsOnlyAGuardIsStillDrawn()
+    {
+        var node = Reader().Read(new UnknownRequirement("exists") { Value = "owner", Said = "an owner" });
+
+        Assert.NotNull(node);
+        Assert.Equal(ConditionJoin.Leaf, node.Join);
+    }
+
     /// <summary>One thing asked for is one bullet with a tick.</summary>
     [Fact]
     public void OneThingAskedForIsOneBulletWithATick()

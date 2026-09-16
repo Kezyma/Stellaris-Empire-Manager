@@ -152,6 +152,20 @@ public sealed class ConditionReader(Localizer localizer, GameDatabase database)
 
         foreach (var item in items)
         {
+            // A scope guard, and only where it is one of several things all of which must hold.
+            // There it says nothing a reader can act on: the game writes exists = owner immediately
+            // above owner = { ... } so that a leader with no owner does not evaluate the block, and
+            // marks it hidden_trigger when it wants to be plain about that. Nine hundred of them
+            // reach the pages, and drawn they read as a requirement to have an owner.
+            //
+            // Nowhere else. Negated - "there is no pop" - it is a real condition, and in an "any of"
+            // it carries the group with it, so both keep it. The join says which case this is: a
+            // negated "all of" is drawn as an "any of" and never reaches this branch.
+            if (wanted && join == ConditionJoin.All && Guard(item))
+            {
+                continue;
+            }
+
             var built = Build(item, wanted);
 
             // Nothing to draw, which means two different things. In an "all of" it is a part that
@@ -198,6 +212,12 @@ public sealed class ConditionReader(Localizer localizer, GameDatabase database)
             _ => new ConditionOutline(join, true) { Parts = parts },
         };
     }
+
+    /// <summary>Whether a part only asks whether a scope is there at all.</summary>
+    /// <param name="item">The part.</param>
+    /// <returns>True for a scope guard.</returns>
+    private static bool Guard(Requirement item) =>
+        item is UnknownRequirement unknown && DesignPredicates.ScopeGuards.Contains(unknown.Name);
 
     /// <summary>
     /// The chip for whatever a selection names, looked up by what kind of thing it is.

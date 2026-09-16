@@ -24,6 +24,78 @@ public sealed class RequirementCompilerTests
         return compiler;
     }
 
+    /// <summary>
+    /// A scope guard is answered as unknown, wherever it is being compiled.
+    /// </summary>
+    /// <remarks>
+    /// The game writes <c>exists = owner</c> immediately above the block it protects, so that a
+    /// leader with no owner does not evaluate <c>owner = { ... }</c>. Read as a refusal - which is
+    /// where it sat, in <c>NeverTrueInDesigner</c> - three hundred compiled conditions carried a
+    /// bare "never" in the middle of a list of real requirements.
+    ///
+    /// Unknown and not true, and the difference is the whole of why this is safe: see
+    /// <c>AGuardedModifierStaysOutOfTheTotals</c> in the rules tests.
+    /// </remarks>
+    [Fact]
+    public void AScopeGuardIsUnknownRatherThanRefused()
+    {
+        foreach (var compiled in new[]
+        {
+            new RequirementCompiler().CompileTrigger(Block("exists = owner")),
+            new RequirementCompiler().CompileEffectCondition(Block("exists = owner")),
+            new RequirementCompiler().CompilePlanTrigger(Block("exists = owner")),
+        })
+        {
+            var unknown = Assert.IsType<UnknownRequirement>(compiled);
+
+            Assert.Equal("exists", unknown.Name);
+            Assert.Equal("owner", unknown.Value);
+            Assert.Equal("an owner", unknown.Said);
+
+            // Which is what stops it settling a condition it is only guarding.
+            Assert.Null(compiled.Settled());
+        }
+    }
+
+    /// <summary>
+    /// The block a guard protects is still read, and the guard no longer refuses it.
+    /// </summary>
+    /// <remarks>
+    /// This is the shape four thousand two hundred and sixty of them take. Before, the pair
+    /// compiled to "never and has ascension perk", which settled false and drew as never; now the
+    /// guard settles nothing and the real condition stands on its own.
+    /// </remarks>
+    [Fact]
+    public void AGuardDoesNotRefuseTheBlockItGuards()
+    {
+        var compiled = new RequirementCompiler().CompileTrigger(
+            Block("exists = owner owner = { has_ascension_perk = ap_archaeoengineers }"));
+
+        var all = Assert.IsType<AllRequirement>(compiled);
+
+        Assert.Contains(all.Items, i => i is UnknownRequirement { Name: "exists" });
+        Assert.Contains(
+            all.Items,
+            i => i is SelectionRequirement
+            {
+                Category: SelectionCategory.AscensionPerk,
+                Key: "ap_archaeoengineers",
+            });
+
+        Assert.Null(compiled.Settled());
+    }
+
+    /// <summary>A scope the game does not name in English keeps no wording rather than a wrong one.</summary>
+    [Fact]
+    public void AScriptRelativeScopeIsLeftUnworded()
+    {
+        var unknown = Assert.IsType<UnknownRequirement>(
+            new RequirementCompiler().CompileTrigger(Block("exists = from")));
+
+        Assert.Equal("from", unknown.Value);
+        Assert.Null(unknown.Said);
+    }
+
     [Fact]
     public void BareValuesInACategoryAreAllRequired()
     {

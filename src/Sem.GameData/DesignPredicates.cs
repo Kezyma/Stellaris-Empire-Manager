@@ -99,7 +99,10 @@ public static class DesignPredicates
         "is_galactic_emperor",
 
         // Scopes over things a design has none of: pops, fleets, other countries.
-        "exists",
+        //
+        // Not "exists", which is in ScopeGuards below and answered there before this list is
+        // reached. It asks whether a scope is there at all rather than whether the design is
+        // anything, and read as a refusal it made three hundred conditions say never.
         "species",
         "any_owned_pop_group",
         "uses_ship_category",
@@ -108,6 +111,37 @@ public static class DesignPredicates
         // Gaia world into a machine or hive world want it to be the empire's own or not a holy
         // world. A design holds no planets, so it can answer neither.
         "is_owned_by",
+    };
+
+    /// <summary>
+    /// Conditions that only ask whether a scope is there at all.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The game writes these defensively, immediately above the block they protect: a leader trait
+    /// asks <c>exists = owner</c> and then <c>owner = { has_ascension_perk = ap_archaeoengineers }</c>
+    /// on the next line, so that a leader with no owner does not evaluate the second. Four thousand
+    /// two hundred and sixty of the four and a half thousand in the game are that exact shape.
+    /// </para>
+    /// <para>
+    /// Which makes it the one thing in this file that is neither a gate nor a fact about the empire.
+    /// Read as <see cref="NeverTrueInDesigner"/> - which is where it was - three hundred and seven
+    /// compiled conditions carried a bare "Never" in the middle of a list of real requirements, and
+    /// the two hundred and twenty on the leader traits were the most visible of them: "Given when:
+    /// has ancrel, and never, and owner has Archaeoengineers."
+    /// </para>
+    /// <para>
+    /// Answered as unknown rather than as true, and unconditionally rather than only while planning.
+    /// Unknown is what it honestly is - this app models no scopes and cannot say whether one is
+    /// there - and it is also what keeps the arithmetic where it was:
+    /// <c>RequirementEvaluator.CanDecide</c> says no to an unknown, so a conditional modifier
+    /// guarded by one stays out of an empire's totals exactly as it did when the guard read false.
+    /// True would have decided it, and folded in bonuses nothing has evidence for.
+    /// </para>
+    /// </remarks>
+    public static IReadOnlySet<string> ScopeGuards { get; } = new HashSet<string>(StringComparer.Ordinal)
+    {
+        "exists",
     };
 
     /// <summary>
