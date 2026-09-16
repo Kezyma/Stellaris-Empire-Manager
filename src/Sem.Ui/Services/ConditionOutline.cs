@@ -93,13 +93,17 @@ public sealed class ConditionReader(Localizer localizer, GameDatabase database)
                 return null;
 
             // A condition that always holds says nothing worth a bullet. One that never does says
-            // the only thing about the option that matters, so it gets one - as a statement rather
-            // than as a thing to have or not have. All sixteen of the hidden origins are written
-            // this way, and it is the whole story about them.
+            // the only thing about the option that matters, so it gets one - and says why, where the
+            // compiler recorded why. See Unreachable: a bare "never" beside two real requirements
+            // leaves the reader to guess which of the three is the one they cannot meet.
             case AlwaysRequirement always:
                 return always.Value == wanted
                     ? null
-                    : new ConditionOutline(ConditionJoin.Leaf, false) { Text = "Never", Plain = true };
+                    : new ConditionOutline(ConditionJoin.Leaf, false)
+                    {
+                        Text = Unreachable.Words(always.Because),
+                        Plain = true,
+                    };
 
             case NotRequirement not:
                 return Build(not.Item, !wanted);

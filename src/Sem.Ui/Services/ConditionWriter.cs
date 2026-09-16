@@ -49,7 +49,11 @@ public sealed class ConditionWriter(Localizer localizer)
 
         return requirement switch
         {
-            AlwaysRequirement always => always.Value == !negated ? null : "never",
+            // Lower-cased, because this one is written into the middle of a sentence where the
+            // outline draws it as a statement of its own. Same answer either way - see Unreachable.
+            AlwaysRequirement always => always.Value == !negated
+                ? null
+                : Unreachable.Words(always.Because).ToLowerInvariant(),
 
             NotRequirement not => Write(not.Item, depth, !negated),
 

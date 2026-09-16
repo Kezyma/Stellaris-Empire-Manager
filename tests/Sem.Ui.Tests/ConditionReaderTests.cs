@@ -63,6 +63,56 @@ public sealed class ConditionReaderTests
     }
 
     /// <summary>
+    /// A condition that can never hold says why, where the compiler recorded why.
+    /// </summary>
+    /// <remarks>
+    /// Seventy-one governments read "is a hive empire, and never, and not Evolutionary Predators",
+    /// leaving the reader to work out which of the three they cannot meet. The answer was on the
+    /// node all along - the compiler writes down which trigger settled it - and nothing drew it.
+    /// </remarks>
+    [Fact]
+    public void AConditionThatCanNeverHoldSaysWhy()
+    {
+        var node = Reader().Read(new AllRequirement(
+        [
+            Ethic("ethic_militarist"),
+            new AlwaysRequirement(false) { Because = "has_country_flag" },
+        ]))!;
+
+        Assert.Equal(ConditionJoin.All, node.Join);
+        Assert.Contains(node.Parts, p => p.Text == "Something an event sets");
+        Assert.DoesNotContain(node.Parts, p => p.Text == "Never");
+    }
+
+    /// <summary>
+    /// And the game's own refusal keeps the word it has always had.
+    /// </summary>
+    /// <remarks>
+    /// <c>always = no</c> carries no cause because there is none to carry: the game is not saying
+    /// a design falls short of something, it is saying the thing is switched off. Four hundred and
+    /// eighty-six of them ship, and "Never" is the whole story about each.
+    /// </remarks>
+    [Fact]
+    public void TheGamesOwnRefusalIsStillJustNever()
+    {
+        var node = Reader().Read(new AlwaysRequirement(false))!;
+
+        Assert.Equal("Never", node.Text);
+    }
+
+    /// <summary>A refusal a reader is not asking for is dropped, not explained.</summary>
+    /// <remarks>
+    /// "Must not be an AI empire" is true of every design there is, so it is not a condition anybody
+    /// needs to read - and the negation is what the outline already pushes down to the leaves.
+    /// </remarks>
+    [Fact]
+    public void ARefusalAskedAgainstIsNotDrawnAtAll()
+    {
+        Assert.Null(Reader().Read(
+            new NotRequirement(new AlwaysRequirement(false) { Because = "is_ai" })));
+    }
+
+    /// <summary>
     /// A scope guard beside the thing it guards is not drawn.
     /// </summary>
     /// <remarks>
